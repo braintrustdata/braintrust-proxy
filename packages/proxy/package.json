@@ -1,0 +1,33 @@
+{
+  "name": "@braintrust/proxy",
+  "version": "0.0.0",
+  "description": "A proxy server that load balances across AI providers.",
+  "main": "./dist/index.js",
+  "browser": {
+    "./dist/index.js": "./dist/browser.js",
+    "./dist/index.d.ts": "./dist/browser.d.ts"
+  },
+  "scripts": {
+    "build": "run-p build:*",
+    "build:node": "esbuild --platform=node --bundle src/index.ts --outfile=dist/index.js",
+    "build:browser": "esbuild --bundle src/browser.ts --outfile=dist/browser.js --format=esm",
+    "build:declarations": "tsc --declaration  --emitDeclarationOnly --outDir dist",
+    "clean": "rm -r dist/*",
+    "watch": "run-p watch:*",
+    "watch:node": "esbuild --platform=node --bundle src/index.ts --outfile=dist/index.js --watch=forever",
+    "watch:browser": "esbuild --bundle src/browser.ts --outfile=dist/browser.js --watch=forever --format=esm",
+    "watch:declarations": "tsc --declaration  --emitDeclarationOnly --outDir dist --watch"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.9.4",
+    "esbuild": "^0.19.7",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.3.2"
+  },
+  "dependencies": {
+    "eventsource-parser": "^1.1.1",
+    "openai": "^4.19.1"
+  }
+}

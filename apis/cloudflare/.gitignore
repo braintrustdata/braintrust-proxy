@@ -170,5 +170,5 @@ dist
 
 .wrangler/
 
-# dev vars
 .dev.vars
+wrangler.toml

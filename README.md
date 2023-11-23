@@ -1,59 +1,103 @@
----
-name: Monorepo with Turborepo
-slug: monorepo-turborepo
-description: Learn to implement a monorepo with a single Next.js site that has installed two local packages.
-framework: Next.js
-useCase:
-  - Monorepos
-  - Documentation
-css: Tailwind
-deployUrl: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fsolutions%2Fmonorepo&project-name=monorepo&repository-name=monorepo&root-directory=apps%2Fapp
-demoUrl: https://solutions-monorepo.vercel.sh
-relatedTemplates:
-  - monorepo-nx
-  - turborepo-next-basic
-  - turborepo-sveltekit-starter
----
+# Braintrust AI Proxy
 
-# Monorepo
+The Braintrust AI proxy is the easiest way to access the world's best AI models with a single API, including
+all of [OpenAI's](https://platform.openai.com/docs/models) models, [Anthropic](https://docs.anthropic.com/claude/reference/getting-started-with-the-api) models, [LLaMa 2](https://ai.meta.com/llama/),
+[Mistral](https://mistral.ai/), and others. The proxy:
 
-This is a monorepo example with a single Next.js site ([./apps/app](./apps/app)) that has installed two local packages:
+- **Simplifies your code** by providing a single API across AI providers.
+- **Reduces your costs** by automatically caching results and reusing them when possible.
+- **Increases observability** by automatically logging your requests. \[Coming soon\]
 
-- [./packages/ui](./packages/ui): Exports UI components that use TypeScript and Tailwind CSS and is compiled by SWC.
-- [./packages/utils](./packages/utils): Exports utility functions that use TypeScript.
+To read more about why we launched the AI proxy, check out our [blog post](https://braintrustdata.com/blog/ai-proxy) announcing the feature.
 
-The monorepo is using [Turborepo](https://turborepo.org/) and [pnpm workspaces](https://pnpm.io/workspaces) to link packages together.
+This repository contains the code for the proxy — both the underlying implementation and wrappers that allow you to
+deploy it on [Vercel](https://vercel.com), [Cloudflare](https://developers.cloudflare.com/workers/),
+[AWS Lambda](https://aws.amazon.com/lambda/), or an [Express](https://expressjs.com/) server.
 
-For more examples on monorepos check out the [official Turborepo examples](https://github.com/vercel/turborepo/tree/main/examples).
+## Just let me try it!
 
-## Demo
+You can communicate with the proxy via the standard OpenAI drivers/API, and simply set the base url to
+`https://proxy.braintrustapi.com/v1`. Try running the following script in your favorite language, twice.
 
-https://solutions-monorepo.vercel.sh
+### Typescript
 
-## How to Use
+```javascript copy
+import { OpenAI } from "openai";
+const client = new OpenAI({
+  baseURL: "https://proxy.braintrustapi.com/v1",
+  apiKey: process.env.OPENAI_API_KEY, // Can use Braintrust, Anthropic, etc. keys here too
+});
 
-You can choose from one of the following two methods to use this repository:
+async function main() {
+  const start = performance.now();
+  const response = await client.chat.completions.create({
+    model: "gpt-3.5-turbo", // // Can use claude-2, llama-2-13b-chat here too
+    messages: [{ role: "user", content: "What is a proxy?" }],
+    seed: 1, // A seed activates the proxy's cache
+  });
+  console.log(response.choices[0].message.content);
+  console.log(`Took ${(performance.now() - start) / 1000}s`);
+}
 
-### One-Click Deploy
-
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/solutions/monorepo&project-name=monorepo&repository-name=monorepo&root-directory=apps/app&install-command=pnpm%20install&build-command=cd%20..%2F..%20%26%26%20pnpm%20build%20--filter%3Dapp...&ignore-command=npx%20turbo-ignore)
-
-### Clone and Deploy
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [pnpm](https://pnpm.io/installation) to bootstrap the example:
-
-```bash
-pnpm create next-app --example https://github.com/vercel/examples/tree/main/solutions/monorepo monorepo
+main();
 ```
 
-Next, run `app` in development mode:
+### Python
 
-```bash
-pnpm dev
+```python copy
+from openai import OpenAI
+import os
+import time
+
+client = OpenAI(
+  base_url="https://proxy.braintrustapi.com/v1",
+  api_key=os.environ["OPENAI_API_KEY"], # Can use Braintrust, Anthropic, etc. keys here too
+)
+
+start = time.time()
+response = client.chat.completions.create(
+	model="gpt-3.5-turbo", # Can use claude-2, llama-2-13b-chat here too
+	messages=[{"role": "user", "content": "What is a proxy?"}],
+	seed=1, # A seed activates the proxy's cache
+)
+print(response.choices[0].message.content)
+print(f"Took {time.time()-start}s")
 ```
 
-The app should be up and running at http://localhost:3000.
+### cURL
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=monorepo-example) ([Documentation](https://nextjs.org/docs/deployment)).
+```bash copy
+time curl -i https://proxy.braintrustapi.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "gpt-3.5-turbo", # Can use claude-2, llama-2-13b-chat here too
+    "messages": [
+      {
+        "role": "user",
+        "content": "What is a proxy?"
+      }
+    ],
+    "seed": 1
+  }' \
+  -H "Authorization: Bearer $OPENAI_API_KEY" # Can use Braintrust, Anthropic, etc. keys here too
+```
+
+## Docs
+
+You can find the full documentation for the proxy [here](https://www.braintrustdata.com/docs/guides/proxy).
+
+To see docs for how to deploy on each platform, see the READMEs in the corresponding folders:
+
+- [Vercel](./apis/vercel)
+- [Cloudflare](./apis/cloudflare)
+- [AWS Lambda](./apis/node)
+- [Express](./apis/node)
+
+## Developing
+
+To build the proxy, run:
+
+```bash
+pnpm install
+pnpm build
+```

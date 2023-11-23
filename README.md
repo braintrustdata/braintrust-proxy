@@ -84,9 +84,11 @@ time curl -i https://proxy.braintrustapi.com/v1/chat/completions \
 
 ## Docs
 
-You can find the full documentation for the proxy [here](https://www.braintrustdata.com/docs/guides/proxy).
+You can find the full documentation for using the proxy [here](https://www.braintrustdata.com/docs/guides/proxy).
+The proxy is hosted for you, with end-to-end encryption, at `https://proxy.braintrustapi.com/v1`. However, you
+can also deploy it yourself and customize its behavior.
 
-To see docs for how to deploy on each platform, see the READMEs in the corresponding folders:
+To see docs for how to deploy on various platforms, see the READMEs in the corresponding folders:
 
 - [Vercel](./apis/vercel)
 - [Cloudflare](./apis/cloudflare)
@@ -95,7 +97,7 @@ To see docs for how to deploy on each platform, see the READMEs in the correspon
 
 ## Developing
 
-To build the proxy, run:
+To build the proxy, install [pnpm](https://pnpm.io/installation) and run:
 
 ```bash
 pnpm install

@@ -36,7 +36,29 @@
     "edge/dist/**/*",
     "edge/schema/**/*"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://www.braintrustdata.com/docs/guides/proxy",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/braintrustdata/braintrust-proxy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/braintrustdata/braintrust-proxy/issues"
+  },
+  "keywords": [
+    "ai",
+    "proxy",
+    "vercel",
+    "cloudflare",
+    "workers",
+    "edge",
+    "openai",
+    "lambda",
+    "express"
+  ],
   "devDependencies": {
     "@types/node": "^20.9.4",
     "esbuild": "^0.19.7",

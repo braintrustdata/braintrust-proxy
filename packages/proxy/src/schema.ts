@@ -54,27 +54,6 @@ export const MessageTypeToMessageType: {
   human: "user",
 };
 
-export const CompletionPlaceholders = {
-  openai: "Write a tagline for an ice cream shop.",
-  anthropic: undefined,
-  js: "Enter some text or variables to echo back.",
-};
-
-export const ChatPlaceholders: {
-  [name in ModelFormat]: { [messageType: string]: string };
-} = {
-  openai: {
-    user: "Enter a user message here.",
-    system: "You are a helpful assistant.",
-    assistant: "Enter an assistant message here.",
-  },
-  anthropic: {
-    human: "Let's think step-by-step.",
-    assistant: "Can I think step-by-step?",
-  },
-  js: {},
-};
-
 interface BrainTrustModelParams {
   use_cache?: boolean;
 }

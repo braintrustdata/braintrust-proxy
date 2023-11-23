@@ -3,27 +3,45 @@
   "version": "0.0.0",
   "description": "A proxy server that load balances across AI providers.",
   "main": "./dist/index.js",
-  "browser": {
-    "./dist/index.js": "./dist/browser.js",
-    "./dist/index.d.ts": "./dist/browser.d.ts"
-  },
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "run-p build:*",
-    "build:node": "esbuild --platform=node --bundle src/index.ts --outfile=dist/index.js",
-    "build:browser": "esbuild --bundle src/browser.ts --outfile=dist/browser.js --format=esm",
-    "build:declarations": "tsc --declaration  --emitDeclarationOnly --outDir dist",
-    "clean": "rm -r dist/*",
-    "watch": "run-p watch:*",
-    "watch:node": "esbuild --platform=node --bundle src/index.ts --outfile=dist/index.js --watch=forever",
-    "watch:browser": "esbuild --bundle src/browser.ts --outfile=dist/browser.js --watch=forever --format=esm",
-    "watch:declarations": "tsc --declaration  --emitDeclarationOnly --outDir dist --watch"
+    "build": "tsup",
+    "watch": "tsup --watch",
+    "clean": "rm -r dist/*"
   },
-  "author": "",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "module": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./edge": {
+      "types": "./edge/dist/index.d.ts",
+      "import": "./edge/dist/index.mjs",
+      "module": "./edge/dist/index.mjs",
+      "require": "./edge/dist/index.js"
+    },
+    "./schema": {
+      "types": "./schema/dist/index.d.ts",
+      "import": "./schema/dist/index.mjs",
+      "module": "./schema/dist/index.mjs",
+      "require": "./schema/dist/index.js"
+    }
+  },
+  "files": [
+    "dist/**/*",
+    "edge/dist/**/*",
+    "edge/schema/**/*"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^20.9.4",
     "esbuild": "^0.19.7",
     "npm-run-all": "^4.1.5",
+    "tsup": "^8.0.1",
     "typescript": "^5.3.2"
   },
   "dependencies": {

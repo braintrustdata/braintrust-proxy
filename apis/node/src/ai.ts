@@ -11,9 +11,8 @@ import {
   buildAnthropicPrompt,
   defaultModelParams,
   getModelEndpointTypes,
-  getRandomInt,
-  parseAuthHeader,
-} from "@braintrust/proxy";
+} from "@braintrust/proxy/schema";
+import { getRandomInt, parseAuthHeader } from "@braintrust/proxy";
 import { lookupApiSecret } from "./login";
 import { ChatCompletionTool } from "openai/resources";
 import { getRedis } from "./cache";

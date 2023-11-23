@@ -15,7 +15,7 @@ import {
   ModelEndpointType,
   getModelEndpointTypes,
   ModelFormat,
-} from "./schema";
+} from "../schema";
 import {
   flattenChunks,
   getRandomInt,

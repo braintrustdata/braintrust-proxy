@@ -47,30 +47,3 @@ export function isEmpty(a: any): a is null | undefined {
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
-
-interface SecretRowBase {
-  id?: string;
-  org_name?: string;
-  name?: string;
-  secret: string;
-  metadata?: Record<string, unknown>;
-}
-
-export type SecretRow = SecretRowBase &
-  (
-    | {
-        type: Exclude<ModelEndpointType, "azure">;
-        metadata?: {
-          models?: string[];
-        };
-      }
-    | {
-        type: "azure";
-        metadata?: {
-          api_base: string;
-          api_version: string;
-          deployment?: string;
-          models?: string[];
-        };
-      }
-  );

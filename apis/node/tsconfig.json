@@ -1,12 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext",
-      "node"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "preserveConstEnums": true,
     "sourceMap": false,
@@ -22,9 +17,7 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "#/*": [
-        "./*"
-      ]
+      "#/*": ["./*"]
     },
     "plugins": [
       {
@@ -32,13 +25,6 @@
       }
     ]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

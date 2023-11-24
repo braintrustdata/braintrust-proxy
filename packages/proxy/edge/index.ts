@@ -1,9 +1,9 @@
 import { DEFAULT_BRAINTRUST_API_URL } from "@lib/constants";
 import { decryptMessage, encryptMessage, EncryptedMessage } from "@lib/encrypt";
 import { proxyV1 } from "@lib/proxy";
-import { SecretRow, isEmpty } from "@lib/util";
+import { isEmpty } from "@lib/util";
 
-import { ModelEndpointType } from "@schema";
+import { ModelEndpointType, APISecret } from "@schema";
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;
 }
@@ -65,7 +65,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       authToken: string,
       types: ModelEndpointType[],
       org_name?: string
-    ): Promise<SecretRow[]> => {
+    ): Promise<APISecret[]> => {
       const cacheKey = await digestMessage(
         `${types.join(":")}/${org_name ? org_name + ":" : ""}${authToken}`
       );
@@ -80,7 +80,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         console.log("API KEY CACHE MISS");
       }
 
-      let secrets: SecretRow[] = [];
+      let secrets: APISecret[] = [];
       // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
       // that changes roll out quickly enough too.
       let ttl = 60;

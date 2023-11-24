@@ -1,7 +1,6 @@
-import { SupabaseClient, createClient } from "@supabase/supabase-js";
 import bsearch from "binary-search";
 import { Env } from "./env";
-import { ModelEndpointType, SecretRow } from "@braintrust/proxy";
+import { ModelEndpointType, APISecret } from "@braintrust/proxy/schema";
 
 export async function lookupApiSecret(
   loginToken: string,
@@ -14,9 +13,9 @@ export async function lookupApiSecret(
     return cached;
   }
 
-  let secrets: SecretRow[] = [];
+  let secrets: APISecret[] = [];
   try {
-    const response = await fetch(`${Env.allowedOrigin}/api/secret`, {
+    const response = await fetch(`${Env.braintrustApiUrl}/api/secret`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${loginToken}`,
@@ -30,7 +29,7 @@ export async function lookupApiSecret(
     });
     if (response.ok) {
       secrets = (await response.json()).filter(
-        (row: SecretRow) => Env.orgName === "*" || row.org_name === Env.orgName
+        (row: APISecret) => Env.orgName === "*" || row.org_name === Env.orgName
       );
     }
   } catch (e) {
@@ -129,4 +128,4 @@ class TTLCache<V> {
 }
 
 const dbTokenCache = new TTLCache<string>(128);
-const loginTokenToApiKey = new TTLCache<SecretRow[]>(128);
+const loginTokenToApiKey = new TTLCache<APISecret[]>(128);

@@ -15,14 +15,14 @@ import {
   ModelEndpointType,
   getModelEndpointTypes,
   ModelFormat,
-} from "../schema";
+  APISecret,
+} from "@schema";
 import {
   flattenChunks,
   getRandomInt,
   isEmpty,
   isObject,
   parseAuthHeader,
-  SecretRow,
 } from "./util";
 import {
   anthropicCompletionToOpenAICompletion,
@@ -52,7 +52,7 @@ export async function proxyV1(
     authToken: string,
     types: ModelEndpointType[],
     org_name?: string
-  ) => Promise<SecretRow[]>,
+  ) => Promise<APISecret[]>,
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
   cachePut: (encryptionKey: string, key: string, value: string) => void,
   digest: (message: string) => Promise<string>
@@ -262,7 +262,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   body: string,
-  getApiSecrets: (types: ModelEndpointType[]) => Promise<SecretRow[]>
+  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>
 ): Promise<ModelResponse> {
   let bodyData = null;
   try {
@@ -360,7 +360,7 @@ async function fetchModel(
   url: string,
   headers: Record<string, string>,
   body: string,
-  secret: SecretRow,
+  secret: APISecret,
   bodyData: null | any
 ) {
   switch (format) {
@@ -379,7 +379,7 @@ async function fetchOpenAI(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: SecretRow
+  secret: APISecret
 ): Promise<ModelResponse> {
   let baseURL =
     (secret.type === "azure" && secret.metadata?.api_base) ||
@@ -443,7 +443,7 @@ async function fetchAnthropic(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: SecretRow
+  secret: APISecret
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
 

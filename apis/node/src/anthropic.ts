@@ -1,4 +1,4 @@
-import { type AIStreamCallbacks } from "ai";
+import { AIStreamCallbacksAndOptions } from "ai";
 import { AIStream } from "ai";
 
 // https://github.com/anthropics/anthropic-sdk-typescript/blob/0fc31f4f1ae2976afd0af3236e82d9e2c84c43c9/src/resources/completions.ts#L28-L49
@@ -62,7 +62,7 @@ function parseAnthropicStream(): (data: string) => string | void {
 
 export function AnthropicStream(
   res: Response,
-  cb?: AIStreamCallbacks
+  cb?: AIStreamCallbacksAndOptions
 ): ReadableStream {
   return AIStream(res, parseAnthropicStream(), cb);
 }

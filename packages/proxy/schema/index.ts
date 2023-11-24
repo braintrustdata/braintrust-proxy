@@ -275,3 +275,30 @@ export function translateParams(
   }
   return translatedParams;
 }
+
+interface APISecretBase {
+  id?: string;
+  org_name?: string;
+  name?: string;
+  secret: string;
+  metadata?: Record<string, unknown>;
+}
+
+export type APISecret = APISecretBase &
+  (
+    | {
+        type: Exclude<ModelEndpointType, "azure">;
+        metadata?: {
+          models?: string[];
+        };
+      }
+    | {
+        type: "azure";
+        metadata?: {
+          api_base: string;
+          api_version: string;
+          deployment?: string;
+          models?: string[];
+        };
+      }
+  );

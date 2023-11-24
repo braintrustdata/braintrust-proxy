@@ -4,16 +4,11 @@ import cors from "cors";
 import { pipeline } from "stream/promises";
 
 import { completion } from "./ai";
-import { Env } from "./env";
 import { nodeProxyV1 } from "./node-proxy";
+import { resetEnv } from "./env";
 
-dotenv.config({ path: "../app/.env.development" });
-dotenv.config({ path: "../app/.env.local" });
-
-Env.allowedOrigin = "http://localhost:3000";
-Env.orgName = "*";
-Env.redisHost = "127.0.0.1";
-Env.redisPort = 6479;
+dotenv.config({ path: ".env.local" });
+resetEnv();
 
 const app = express();
 app.use(express.text({ type: "*/*", limit: "50mb" }));

@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "run-p build:*",
+    "build:typecheck": "tsc --noEmit",
     "build:local": "esbuild --platform=node --bundle src/local.ts --outfile=dist/local.js --minify --sourcemap --target=es2020",
     "build:lambda": "esbuild --platform=node --external:@aws-sdk --bundle src/index.js --outfile=dist/index.js --minify --sourcemap --target=es2020",
     "watch:local": "esbuild --platform=node --bundle src/local.ts --outfile=dist/local.js --sourcemap --target=es2020 --watch",

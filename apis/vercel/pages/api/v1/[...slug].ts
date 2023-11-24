@@ -24,7 +24,7 @@ export default EdgeProxyV1({
   getRelativeURL: (request) => {
     const url = new URL(request.url);
     const params = url.searchParams.getAll("slug");
-    return "/" + params.map(encodeURIComponent).join("/");
+    return "/" + params.join("/");
   },
   cors: true,
   credentialsCache: KVCache,

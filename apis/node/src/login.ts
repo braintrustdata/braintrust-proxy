@@ -3,12 +3,13 @@ import { Env } from "./env";
 import { ModelEndpointType, APISecret } from "@braintrust/proxy/schema";
 
 export async function lookupApiSecret(
+  useCache: boolean,
   loginToken: string,
   types: ModelEndpointType[],
   org_name?: string
 ) {
   const cacheKey = `${loginToken}:${types.join(",")}`;
-  const cached = loginTokenToApiKey.get(cacheKey);
+  const cached = useCache ? loginTokenToApiKey.get(cacheKey) : undefined;
   if (cached !== undefined) {
     return cached;
   }

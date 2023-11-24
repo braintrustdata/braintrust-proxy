@@ -75,7 +75,7 @@ export async function completion(
     }
   }
 
-  const secrets = await lookupApiSecret(authToken, endpoints, org_name);
+  const secrets = await lookupApiSecret(true, authToken, endpoints, org_name);
   if (secrets.length === 0) {
     throw new Error("No API key found");
   }

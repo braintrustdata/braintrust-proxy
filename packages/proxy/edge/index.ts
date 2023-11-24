@@ -4,6 +4,9 @@ import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 
 import { ModelEndpointType, APISecret } from "@schema";
+
+const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
+
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;
 }
@@ -62,6 +65,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     });
 
     const fetchApiSecrets = async (
+      useCache: boolean,
       authToken: string,
       types: ModelEndpointType[],
       org_name?: string
@@ -71,6 +75,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       );
 
       const response =
+        useCache &&
         opts.credentialsCache &&
         (await encryptedGet(opts.credentialsCache, cacheKey, cacheKey));
       if (response) {

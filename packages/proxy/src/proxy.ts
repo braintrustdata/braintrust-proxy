@@ -35,6 +35,7 @@ interface CachedData {
 }
 
 const CACHE_HEADER = "x-bt-use-cache";
+const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
 const ENDPOINT_NAME = "x-bt-endpoint-name";
 
@@ -49,6 +50,7 @@ export async function proxyV1(
   setStatusCode: (code: number) => void,
   res: WritableStream<Uint8Array>,
   getApiSecrets: (
+    useCache: boolean,
     authToken: string,
     types: ModelEndpointType[],
     org_name?: string
@@ -68,6 +70,7 @@ export async function proxyV1(
     if (
       hLower.startsWith("x-amzn") ||
       hLower == CACHE_HEADER ||
+      hLower == CREDS_CACHE_HEADER ||
       hLower == "content-length"
     ) {
       delete headers[h];
@@ -94,10 +97,14 @@ export async function proxyV1(
       `Invalid ${CACHE_HEADER} header '${useCacheModeHeader}'. Must be one of auto, always, or never`
     );
   }
-  const useCacheMode = (useCacheModeHeader || "auto") as
-    | "auto"
-    | "always"
-    | "never";
+  const useCacheMode = parseCacheModeHeader(
+    CACHE_HEADER,
+    proxyHeaders[CACHE_HEADER]
+  );
+  const useCredentialsCacheMode = parseCacheModeHeader(
+    CACHE_HEADER,
+    proxyHeaders[CREDS_CACHE_HEADER]
+  );
 
   const cacheableEndpoint =
     url === "/embeddings" ||
@@ -169,7 +176,12 @@ export async function proxyV1(
   if (stream === null) {
     const { response: proxyResponse, stream: proxyStream } =
       await fetchModelLoop(method, url, headers, body, async (types) => {
-        const secrets = await getApiSecrets(authToken, types, orgName);
+        const secrets = await getApiSecrets(
+          useCredentialsCacheMode !== "never",
+          authToken,
+          types,
+          orgName
+        );
         if (endpointName) {
           return secrets.filter((s) => s.name === endpointName);
         } else {
@@ -414,6 +426,11 @@ async function fetchOpenAI(
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
     headers["api-key"] = secret.secret;
     delete bodyData["seed"];
+  } else if (
+    secret.type === "openai" &&
+    !isEmpty(secret.metadata?.organization_id)
+  ) {
+    headers["OpenAI-Organization"] = secret.metadata.organization_id;
   }
 
   const proxyResponse = await fetch(
@@ -594,3 +611,20 @@ export function createEventStreamTransformer(
   });
 }
 // --------------------------------------------------
+
+export function parseCacheModeHeader(headerName: string, value?: string) {
+  const useCacheModeHeader = value && value.toLowerCase();
+  if (
+    useCacheModeHeader &&
+    !(
+      useCacheModeHeader === "auto" ||
+      useCacheModeHeader === "always" ||
+      useCacheModeHeader === "never"
+    )
+  ) {
+    throw new Error(
+      `Invalid ${headerName} header '${useCacheModeHeader}'. Must be one of auto, always, or never`
+    );
+  }
+  return (useCacheModeHeader || "auto") as "auto" | "always" | "never";
+}

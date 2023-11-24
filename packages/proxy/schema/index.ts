@@ -284,21 +284,28 @@ interface APISecretBase {
   metadata?: Record<string, unknown>;
 }
 
+interface BaseMetadata {
+  models?: string[];
+}
+
 export type APISecret = APISecretBase &
   (
     | {
-        type: Exclude<ModelEndpointType, "azure">;
-        metadata?: {
-          models?: string[];
+        type: "perplexity" | "anthropic" | "js";
+        metadata?: BaseMetadata;
+      }
+    | {
+        type: "openai";
+        metadata?: BaseMetadata & {
+          organization_id?: string;
         };
       }
     | {
         type: "azure";
-        metadata?: {
+        metadata?: BaseMetadata & {
           api_base: string;
           api_version: string;
           deployment?: string;
-          models?: string[];
         };
       }
   );

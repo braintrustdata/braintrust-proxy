@@ -1,4 +1,4 @@
-# Braintrust AI Proxy (Node)
+# Braintrust AI Proxy (Node, AWS Lambda)
 
 This directory contains an implementation of the Braintrust AI Proxy that runs on
 [Node.js](https://nodejs.org/) runtimes and can be bundled as an [Express server](https://expressjs.com/)

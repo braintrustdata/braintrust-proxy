@@ -22,7 +22,7 @@ pnpm build
 Then, you return to this directory and setup a KV namespace for the proxy:
 
 ```bash copy
-wrangler kv:namespace create ai-proxy
+wrangler kv:namespace create ai_proxy
 ```
 
 Record the ID of the namespace that you just created. Then, copy `wrangler-template.toml` to

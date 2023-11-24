@@ -4,7 +4,7 @@ compatibility_date = "2023-10-30"
 
 kv_namespaces = [
     # Configure this id to map to the id returned from
-    #   wrangler kv:namespace create ai-proxy
+    #   wrangler kv:namespace create ai_proxy
     { binding = "ai_proxy", id = "<YOUR_KV_ID>" },
 ]
 

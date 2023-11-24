@@ -70,7 +70,7 @@ print(f"Took {time.time()-start}s")
 time curl -i https://proxy.braintrustapi.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "gpt-3.5-turbo", # Can use claude-2, llama-2-13b-chat here too
+    "model": "gpt-3.5-turbo",
     "messages": [
       {
         "role": "user",

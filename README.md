@@ -17,14 +17,14 @@ deploy it on [Vercel](https://vercel.com), [Cloudflare](https://developers.cloud
 ## Just let me try it!
 
 You can communicate with the proxy via the standard OpenAI drivers/API, and simply set the base url to
-`https://proxy.braintrustapi.com/v1`. Try running the following script in your favorite language, twice.
+`https://braintrustproxy.com/v1`. Try running the following script in your favorite language, twice.
 
 ### Typescript
 
 ```javascript copy
 import { OpenAI } from "openai";
 const client = new OpenAI({
-  baseURL: "https://proxy.braintrustapi.com/v1",
+  baseURL: "https://braintrustproxy.com/v1",
   apiKey: process.env.OPENAI_API_KEY, // Can use Braintrust, Anthropic, etc. keys here too
 });
 
@@ -50,7 +50,7 @@ import os
 import time
 
 client = OpenAI(
-  base_url="https://proxy.braintrustapi.com/v1",
+  base_url="https://braintrustproxy.com/v1",
   api_key=os.environ["OPENAI_API_KEY"], # Can use Braintrust, Anthropic, etc. keys here too
 )
 
@@ -67,7 +67,7 @@ print(f"Took {time.time()-start}s")
 ### cURL
 
 ```bash copy
-time curl -i https://proxy.braintrustapi.com/v1/chat/completions \
+time curl -i https://braintrustproxy.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-3.5-turbo",
@@ -82,10 +82,10 @@ time curl -i https://proxy.braintrustapi.com/v1/chat/completions \
   -H "Authorization: Bearer $OPENAI_API_KEY" # Can use Braintrust, Anthropic, etc. keys here too
 ```
 
-## Docs
+## Deploying
 
 You can find the full documentation for using the proxy [here](https://www.braintrustdata.com/docs/guides/proxy).
-The proxy is hosted for you, with end-to-end encryption, at `https://proxy.braintrustapi.com/v1`. However, you
+The proxy is hosted for you, with end-to-end encryption, at `https://braintrustproxy.com/v1`. However, you
 can also deploy it yourself and customize its behavior.
 
 To see docs for how to deploy on various platforms, see the READMEs in the corresponding folders:

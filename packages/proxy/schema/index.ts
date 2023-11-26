@@ -6,12 +6,15 @@ import {
 export type PromptInputType = "completion" | "chat";
 
 export type ModelFormat = "openai" | "anthropic" | "js";
-export type ModelEndpointType =
-  | "openai"
-  | "azure"
-  | "perplexity"
-  | "anthropic"
-  | "js";
+export const ModelEndpointType = [
+  "openai",
+  "azure",
+  "perplexity",
+  "replicate",
+  "anthropic",
+  "js",
+] as const;
+export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
 export interface ModelSpec {
   format: ModelFormat;
@@ -182,6 +185,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-2.0": { format: "anthropic", flavor: "chat" },
   "claude-2.1": { format: "anthropic", flavor: "chat" },
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
+  "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
@@ -212,6 +216,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "openhermes-2.5-mistral-7b": ["perplexity"],
   "pplx-7b-chat-alpha": ["perplexity"],
   "pplx-70b-chat-alpha": ["perplexity"],
+  "meta/llama-2-70b-chat": ["replicate"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -225,6 +230,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   OPENAI_API_KEY: "openai",
   ANTHROPIC_API_KEY: "anthropic",
   PERPLEXITY_API_KEY: "perplexity",
+  REPLICATE_API_KEY: "replicate",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -233,6 +239,7 @@ export const EndpointProviderToBaseURL: {
   openai: "https://api.openai.com/v1",
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
+  replicate: "https://openai-proxy.replicate.com/v1",
   azure: null,
   js: null,
 };
@@ -291,7 +298,7 @@ interface BaseMetadata {
 export type APISecret = APISecretBase &
   (
     | {
-        type: "perplexity" | "anthropic" | "js";
+        type: "perplexity" | "anthropic" | "replicate" | "js";
         metadata?: BaseMetadata;
       }
     | {

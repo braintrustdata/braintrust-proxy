@@ -411,9 +411,10 @@ async function fetchOpenAI(
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
         secret.metadata.deployment
       )}`;
-    } else if (bodyData?.model) {
+    } else if (bodyData?.model || bodyData?.engine) {
+      const model = bodyData.model || bodyData.engine;
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        bodyData.model.replace("gpt-3.5", "gpt-35")
+        model.replace("gpt-3.5", "gpt-35")
       )}`;
     } else {
       throw new Error(

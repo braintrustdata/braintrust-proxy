@@ -86,6 +86,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
 
       let secrets: APISecret[] = [];
+      let lookupFailed = false;
       // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
       // that changes roll out quickly enough too.
       let ttl = 60;
@@ -108,16 +109,18 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         if (response.ok) {
           secrets = await response.json();
         } else {
+          lookupFailed = true;
           console.warn("Failed to lookup api key", await response.text());
         }
       } catch (e) {
+        lookupFailed = true;
         console.warn(
           "Failed to lookup api key. Falling back to provided key",
           e
         );
       }
 
-      if (secrets.length === 0) {
+      if (lookupFailed) {
         secrets.push({
           secret: authToken,
           type: types[0],

@@ -359,7 +359,11 @@ async function fetchModelLoop(
     if (lastException) {
       throw lastException;
     } else {
-      throw new Error("No API keys found");
+      throw new Error(
+        `No API keys found (tried ${types.join(
+          ", "
+        )}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`
+      );
     }
   }
 

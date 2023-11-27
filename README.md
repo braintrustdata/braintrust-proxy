@@ -1,14 +1,14 @@
 # Braintrust AI Proxy
 
-The Braintrust AI proxy is the easiest way to access the world's best AI models with a single API, including
-all of [OpenAI's](https://platform.openai.com/docs/models) models, [Anthropic](https://docs.anthropic.com/claude/reference/getting-started-with-the-api) models, [LLaMa 2](https://ai.meta.com/llama/),
-[Mistral](https://mistral.ai/), and others. The proxy:
+The Braintrust AI proxy offers a unified way to access the world's leading AI models through a single API, including
+models from [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https://docs.anthropic.com/claude/reference/getting-started-with-the-api), [LLaMa 2](https://ai.meta.com/llama/),
+[Mistral](https://mistral.ai/), and more. The benefits of using the proxy include:
 
-- **Simplifies your code** by providing a single API across AI providers.
-- **Reduces your costs** by automatically caching results and reusing them when possible.
-- **Increases observability** by automatically logging your requests. \[Coming soon\]
+- **Code Simplification**: Use a consistent API across different AI providers.
+- **Cost Reduction**: The proxy automatically caches results, reusing them when possible.
+- **Enhanced Observability**: Log requests automatically for better tracking and debugging. \[Coming soon\]
 
-To read more about why we launched the AI proxy, check out our [blog post](https://braintrustdata.com/blog/ai-proxy) announcing the feature.
+To read more about why we launched the AI proxy, check out our [announcement blog post](https://braintrustdata.com/blog/ai-proxy).
 
 This repository contains the code for the proxy — both the underlying implementation and wrappers that allow you to
 deploy it on [Vercel](https://vercel.com), [Cloudflare](https://developers.cloudflare.com/workers/),

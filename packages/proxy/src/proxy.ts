@@ -433,7 +433,8 @@ async function fetchOpenAI(
     delete bodyData["seed"];
   } else if (
     secret.type === "openai" &&
-    !isEmpty(secret.metadata?.organization_id)
+    !isEmpty(secret.metadata?.organization_id) &&
+    secret.metadata.organization_id.length > 0
   ) {
     headers["OpenAI-Organization"] = secret.metadata.organization_id;
   }

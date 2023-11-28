@@ -62,7 +62,7 @@ function parseAnthropicStream(): (data: string) => string | void {
 
 export function AnthropicStream(
   res: Response,
-  cb?: AIStreamCallbacksAndOptions
+  cb?: AIStreamCallbacksAndOptions,
 ): ReadableStream {
   return AIStream(res, parseAnthropicStream(), cb);
 }

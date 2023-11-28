@@ -14,7 +14,7 @@ export const ModelEndpointType = [
   "anthropic",
   "js",
 ] as const;
-export type ModelEndpointType = (typeof ModelEndpointType)[number];
+export type ModelEndpointType = typeof ModelEndpointType[number];
 
 export interface ModelSpec {
   format: ModelFormat;

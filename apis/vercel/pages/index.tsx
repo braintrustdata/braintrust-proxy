@@ -1,5 +1,5 @@
-import { Layout, Page, Text, Link } from '@vercel/examples-ui'
-import Headers from '@components/headers'
+import { Layout, Page, Text, Link } from "@vercel/examples-ui";
+import Headers from "@components/headers";
 
 export default function Index() {
   return (
@@ -12,12 +12,12 @@ export default function Index() {
         address.
       </Text>
       <Text className="mb-4">
-        For the demo below, you can send a maximum of{' '}
+        For the demo below, you can send a maximum of{" "}
         <b>5 requests every 10 seconds</b>.
       </Text>
       <Headers path="/api/ping">Make a request</Headers>
       <Text>
-        The pattern we&apos;re using in this example is inspired by the{' '}
+        The pattern we&apos;re using in this example is inspired by the{" "}
         <Link
           href="https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting"
           target="_blank"
@@ -28,7 +28,7 @@ export default function Index() {
         .
       </Text>
     </Page>
-  )
+  );
 }
 
-Index.Layout = Layout
+Index.Layout = Layout;

@@ -28,7 +28,7 @@ app.post("/stream/completion", async (req, res, next) => {
   try {
     const aiStream = (await completion(
       req.headers,
-      body
+      body,
     )) as unknown as NodeJS.ReadableStream;
 
     res.write("[");
@@ -49,7 +49,7 @@ app.get("/proxy/v1/*", async (req, res, next) => {
       null,
       res.setHeader.bind(res),
       res.status.bind(res),
-      () => res
+      () => res,
     );
   } catch (e: any) {
     console.error(e);
@@ -67,7 +67,7 @@ app.post("/proxy/v1/*", async (req, res, next) => {
       req.body,
       res.setHeader.bind(res),
       res.status.bind(res),
-      () => res
+      () => res,
     );
   } catch (e: any) {
     console.error(e);

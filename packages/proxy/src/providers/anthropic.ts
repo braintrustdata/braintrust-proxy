@@ -39,7 +39,7 @@ export interface AnthropicCompletion {
 
 export function anthropicEventToOpenAIEvent(
   idx: number,
-  event: AnthropicStreamEvent
+  event: AnthropicStreamEvent,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
   if (!event.completion) {
     return {
@@ -74,7 +74,7 @@ export function anthropicEventToOpenAIEvent(
 }
 
 export function anthropicCompletionToOpenAICompletion(
-  completion: AnthropicCompletion
+  completion: AnthropicCompletion,
 ): ChatCompletion {
   return {
     id: completion.log_id,
@@ -96,11 +96,11 @@ export function anthropicCompletionToOpenAICompletion(
 }
 
 function anthropicFinishReason(
-  stop_reason: string
+  stop_reason: string,
 ): ChatCompletion.Choice["finish_reason"] | null {
   return stop_reason === "stop_reason"
     ? "stop"
     : stop_reason === "max_tokens"
-    ? "length"
-    : null;
+      ? "length"
+      : null;
 }

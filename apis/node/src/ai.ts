@@ -28,7 +28,7 @@ interface RequestBody {
 
 export async function completion(
   headers: Record<string, string | string[] | undefined>,
-  body: RequestBody | string
+  body: RequestBody | string,
 ): Promise<ReadableStream> {
   const authToken = parseAuthHeader(headers);
   if (!authToken) {
@@ -44,7 +44,7 @@ export async function completion(
   }
 
   const endpoints = getModelEndpointTypes(model).filter(
-    (e) => e !== "azure" // TODO: Support Azure
+    (e) => e !== "azure", // TODO: Support Azure
   );
 
   const mergedParams: ModelParams = {
@@ -165,7 +165,7 @@ export async function completion(
     }
   } else {
     throw new Error(
-      `Unsupported provider ${modelSpec.flavor} (this is likely a bug)`
+      `Unsupported provider ${modelSpec.flavor} (this is likely a bug)`,
     );
   }
 

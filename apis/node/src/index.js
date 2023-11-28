@@ -75,7 +75,7 @@ export const handler = awslambda.streamifyResponse(
           (code) => {
             metadata.statusCode = code;
           },
-          wrap
+          wrap,
         );
       } catch (err) {
         console.error(err);
@@ -89,5 +89,5 @@ export const handler = awslambda.streamifyResponse(
       responseStream.write("Not Found");
       responseStream.end();
     }
-  }
+  },
 );

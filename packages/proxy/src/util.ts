@@ -1,7 +1,7 @@
 import { ModelEndpointType } from "../schema";
 
 export function parseAuthHeader(
-  headers: Record<string, string | string[] | undefined>
+  headers: Record<string, string | string[] | undefined>,
 ) {
   const authHeader = headers["authorization"];
   let authValue = null;

@@ -1,12 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  transpilePackages: ['ai-proxy'],
+  transpilePackages: ["ai-proxy"],
   typescript: {
-    ignoreBuildErrors: true
+    ignoreBuildErrors: true,
   },
   eslint: {
-    ignoreDuringBuilds: true
-  }
-}
- 
+    ignoreDuringBuilds: true,
+  },
+};
+
 module.exports = nextConfig;

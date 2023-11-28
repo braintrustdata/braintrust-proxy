@@ -6,7 +6,7 @@ export async function lookupApiSecret(
   useCache: boolean,
   loginToken: string,
   types: ModelEndpointType[],
-  org_name?: string
+  org_name?: string,
 ) {
   const cacheKey = `${loginToken}:${types.join(",")}`;
   const cached = useCache ? loginTokenToApiKey.get(cacheKey) : undefined;
@@ -30,7 +30,7 @@ export async function lookupApiSecret(
     });
     if (response.ok) {
       secrets = (await response.json()).filter(
-        (row: APISecret) => Env.orgName === "*" || row.org_name === Env.orgName
+        (row: APISecret) => Env.orgName === "*" || row.org_name === Env.orgName,
       );
     }
   } catch (e) {
@@ -45,7 +45,7 @@ export async function lookupApiSecret(
   loginTokenToApiKey.insert(
     cacheKey,
     secrets,
-    Number(new Date()) / 1000 + 3600
+    Number(new Date()) / 1000 + 3600,
   );
 
   return secrets;
@@ -77,8 +77,8 @@ class TTLCache<V> {
       bsearch(
         this.expirations,
         { expiration, key },
-        (a, b) => a.expiration - b.expiration
-      )
+        (a, b) => a.expiration - b.expiration,
+      ),
     );
     if (pos < 0) {
       pos = -pos - 1;
@@ -108,8 +108,8 @@ class TTLCache<V> {
       bsearch(
         this.expirations,
         { expiration: now, key: "" },
-        (a, b) => a.expiration - b.expiration
-      )
+        (a, b) => a.expiration - b.expiration,
+      ),
     );
 
     if (

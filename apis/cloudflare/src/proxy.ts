@@ -16,7 +16,7 @@ function apiCacheKey(key: string) {
 export async function handleProxyV1(
   request: Request,
   env: Env,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ): Promise<Response> {
   const cache = await caches.open("apikey:cache");
   return EdgeProxyV1({
@@ -40,7 +40,7 @@ export async function handleProxyV1(
             headers: {
               "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
             },
-          })
+          }),
         );
       },
     },

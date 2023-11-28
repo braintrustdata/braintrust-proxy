@@ -15,7 +15,7 @@ const KVCache = {
         ? {
             ex: opts.ttl,
           }
-        : {}
+        : {},
     );
   },
 };

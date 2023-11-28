@@ -12,14 +12,14 @@ function base64ToArrayBuffer(base64: string) {
 export async function decryptMessage(
   keyString: string,
   iv: string,
-  message: string
+  message: string,
 ): Promise<string> {
   const key = await crypto.subtle.importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
     false,
-    ["decrypt"]
+    ["decrypt"],
   );
 
   const decoded = await crypto.subtle.decrypt(
@@ -28,7 +28,7 @@ export async function decryptMessage(
       iv: base64ToArrayBuffer(iv),
     },
     key,
-    base64ToArrayBuffer(message)
+    base64ToArrayBuffer(message),
   );
 
   return new TextDecoder().decode(decoded);
@@ -41,14 +41,14 @@ export interface EncryptedMessage {
 
 export async function encryptMessage(
   keyString: string,
-  message: string
+  message: string,
 ): Promise<EncryptedMessage> {
   const key = await crypto.subtle.importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
     false,
-    ["encrypt"]
+    ["encrypt"],
   );
 
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -58,7 +58,7 @@ export async function encryptMessage(
       iv,
     },
     key,
-    new TextEncoder().encode(message)
+    new TextEncoder().encode(message),
   );
 
   return {

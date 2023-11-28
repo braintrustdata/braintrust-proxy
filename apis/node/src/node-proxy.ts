@@ -16,7 +16,7 @@ export async function nodeProxyV1(
   body: any,
   setHeader: (name: string, value: string) => void,
   setStatusCode: (code: number) => void,
-  getRes: () => Writable
+  getRes: () => Writable,
 ): Promise<void> {
   // Unlike the Cloudflare worker API, which supports public access, this API
   // mandates authentication
@@ -31,7 +31,7 @@ export async function nodeProxyV1(
   const cachePut = async (
     encryptionKey: string,
     key: string,
-    value: string
+    value: string,
   ) => {
     const redis = await getRedis();
     if (!redis) {
@@ -58,7 +58,7 @@ export async function nodeProxyV1(
     cachePut,
     async (message: string) => {
       return crypto.createHash("md5").update(message).digest("hex");
-    }
+    },
   );
 
   const res = getRes();

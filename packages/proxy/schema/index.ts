@@ -192,8 +192,10 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
   "openhermes-2-mistral-7b": { format: "openai", flavor: "chat" },
   "openhermes-2.5-mistral-7b": { format: "openai", flavor: "chat" },
-  "pplx-7b-chat-alpha": { format: "openai", flavor: "chat" },
-  "pplx-70b-chat-alpha": { format: "openai", flavor: "chat" },
+  "pplx-7b-chat": { format: "openai", flavor: "chat" },
+  "pplx-70b-chat": { format: "openai", flavor: "chat" },
+  "pplx-7b-online": { format: "openai", flavor: "chat" },
+  "pplx-70b-online": { format: "openai", flavor: "chat" },
   "text-block": { format: "js", flavor: "completion" },
 };
 
@@ -214,8 +216,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral-7b-instruct": ["perplexity"],
   "openhermes-2-mistral-7b": ["perplexity"],
   "openhermes-2.5-mistral-7b": ["perplexity"],
-  "pplx-7b-chat-alpha": ["perplexity"],
-  "pplx-70b-chat-alpha": ["perplexity"],
+  "pplx-7b-chat": ["perplexity"],
+  "pplx-70b-chat": ["perplexity"],
+  "pplx-7b-online": ["perplexity"],
+  "pplx-70b-online": ["perplexity"],
   "meta/llama-2-70b-chat": ["replicate"],
 };
 
@@ -264,7 +268,7 @@ export function buildAnthropicPrompt(messages: Message[]) {
 
 export function translateParams(
   toProvider: ModelFormat,
-  params: Record<string, string>,
+  params: Record<string, string>
 ): Record<string, unknown> {
   const translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {

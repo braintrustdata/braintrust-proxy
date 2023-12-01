@@ -1,6 +1,6 @@
 {
   "name": "@braintrust/proxy",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A proxy server that load balances across AI providers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

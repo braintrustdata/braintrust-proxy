@@ -431,11 +431,7 @@ async function fetchOpenAI(
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
     headers["api-key"] = secret.secret;
     delete bodyData["seed"];
-  } else if (
-    secret.type === "openai" &&
-    !isEmpty(secret.metadata?.organization_id) &&
-    secret.metadata.organization_id.length > 0
-  ) {
+  } else if (secret.type === "openai" && secret.metadata?.organization_id) {
     headers["OpenAI-Organization"] = secret.metadata.organization_id;
   }
 

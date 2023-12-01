@@ -268,7 +268,7 @@ export function buildAnthropicPrompt(messages: Message[]) {
 
 export function translateParams(
   toProvider: ModelFormat,
-  params: Record<string, string>
+  params: Record<string, string>,
 ): Record<string, unknown> {
   const translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {

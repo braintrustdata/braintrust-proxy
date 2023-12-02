@@ -13,7 +13,7 @@
     "watch:lambda": "esbuild --platform=node --external:@aws-sdk --bundle src/index.js --outfile=dist/index.js --sourcemap --target=es2020 --watch",
     "dev": "run-p dev:serve watch:*",
     "dev:serve": "nodemon dist/local.js",
-    "postbuild": "cd dist && zip -r index.zip index.js*"
+    "postbuild": "cd dist && zip -r index.zip index.js"
   },
   "author": "",
   "license": "ISC",

@@ -13,10 +13,17 @@ function apiCacheKey(key: string) {
   return `http://apikey.cache/${encodeURIComponent(key)}.jpg`;
 }
 
+const metricReader = new PeriodicExportingMetricReader({
+  exporter: new ConsoleMetricExporter(),
+
+  // Default is 60000ms (60 seconds). Set to 3 seconds for demonstrative purposes only.
+  exportIntervalMillis: 3000,
+});
+
 export async function handleProxyV1(
   request: Request,
   env: Env,
-  ctx: ExecutionContext,
+  ctx: ExecutionContext
 ): Promise<Response> {
   const cache = await caches.open("apikey:cache");
   return EdgeProxyV1({
@@ -40,7 +47,7 @@ export async function handleProxyV1(
             headers: {
               "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
             },
-          }),
+          })
         );
       },
     },

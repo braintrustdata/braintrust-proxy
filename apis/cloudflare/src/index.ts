@@ -1,14 +1,13 @@
+import { ResolveConfigFn, instrument } from "@microlabs/otel-cf-workers";
 import { proxyV1Prefix, handleProxyV1 } from "./proxy";
 
-// Export a default object containing event handlers
-// eslint-disable-next-line import/no-anonymous-default-export
-export default {
-  // The fetch handler is invoked when this worker receives a HTTP(S) request
-  // and should return a Response (optionally wrapped in a Promise)
+// The fetch handler is invoked when this worker receives a HTTP(S) request
+// and should return a Response (optionally wrapped in a Promise)
+const handler = {
   async fetch(
     request: Request,
     env: Env,
-    ctx: ExecutionContext,
+    ctx: ExecutionContext
   ): Promise<Response> {
     // You'll find it helpful to parse the request.url string into a URL object. Learn more at https://developer.mozilla.org/en-US/docs/Web/API/URL
     const url = new URL(request.url);
@@ -23,3 +22,14 @@ export default {
     });
   },
 };
+
+const config: ResolveConfigFn = (env: Env, _trigger) => {
+  return {
+    exporter: {
+      url: "http://localhost:4318/v1/traces",
+    },
+    service: { name: "greetings" },
+  };
+};
+
+export default instrument(handler, config);

@@ -1,6 +1,7 @@
 name = "proxy"
 main = "src/index.ts"
 compatibility_date = "2023-10-30"
+compatibility_flags = ["nodejs_compat"]
 
 kv_namespaces = [
     # Configure this id to map to the id returned from

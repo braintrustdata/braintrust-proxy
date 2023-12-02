@@ -14,7 +14,8 @@
     "wrangler": "^3.17.1"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "@braintrust/proxy": "workspace:*"
+    "@braintrust/proxy": "workspace:*",
+    "@microlabs/otel-cf-workers": "1.0.0-rc.15",
+    "dotenv": "^16.3.1"
   }
 }

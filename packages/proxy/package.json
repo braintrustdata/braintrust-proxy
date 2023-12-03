@@ -8,7 +8,8 @@
   "scripts": {
     "build": "tsup",
     "watch": "tsup --watch",
-    "clean": "rm -r dist/*"
+    "clean": "rm -r dist/*",
+    "proto": "./node_modules/.bin/pbjs -t static-module -o prom/prom.js prom/prom.proto && ./node_modules/.bin/pbts -o prom/prom.d.ts prom/prom.js"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -29,12 +30,19 @@
       "import": "./schema/dist/index.mjs",
       "module": "./schema/dist/index.mjs",
       "require": "./schema/dist/index.js"
+    },
+    "./prom": {
+      "types": "./prom/dist/index.d.ts",
+      "import": "./prom/dist/index.mjs",
+      "module": "./prom/dist/index.mjs",
+      "require": "./prom/dist/index.js"
     }
   },
   "files": [
     "dist/**/*",
     "edge/dist/**/*",
-    "schema/dist/**/*"
+    "schema/dist/**/*",
+    "prom/dist/**/*"
   ],
   "license": "MIT",
   "publishConfig": {
@@ -62,8 +70,9 @@
   "devDependencies": {
     "@types/node": "^20.9.4",
     "esbuild": "^0.19.7",
+    "long": "^5.2.3",
     "npm-run-all": "^4.1.5",
-    "ts-protoc-gen": "^0.15.0",
+    "protobufjs-cli": "^1.1.2",
     "tsup": "^8.0.1",
     "typescript": "^5.3.2"
   },

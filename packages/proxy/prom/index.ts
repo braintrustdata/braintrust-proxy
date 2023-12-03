@@ -1,10 +1,44 @@
 import * as SnappyJS from "snappyjs";
-import * as protobuf from "protobufjs";
 import * as prom from "./prom";
 
-const __holder = {
-  type: null,
-};
+interface Sample {
+  value: number;
+  timestamp?: number;
+}
+
+interface Timeseries {
+  // Labels for every sample
+  labels: {
+    // Key for sample, should end with _totals, etc, see https://prometheus.io/docs/practices/naming/
+    __name__: string;
+    // Optional properties, i.e. instance, job, service
+    [key: string]: string;
+  };
+  // List of samples, timestamp is optional, will be set by pushTimeseries
+  samples: Sample[];
+}
+
+interface Options {
+  url: string;
+  auth?: {
+    username?: string;
+    password?: string;
+  };
+  verbose?: boolean;
+  timing?: boolean;
+  proto?: string;
+  labels?: { [key: string]: string };
+  timeout?: number;
+  console?: Console;
+  headers?: { [key: string]: string };
+}
+
+interface Result {
+  // Status 200 OK
+  status: number;
+  statusText: string;
+  errorMessage?: string;
+}
 
 const kv = (o: any) =>
   typeof o === "object"
@@ -14,45 +48,25 @@ const kv = (o: any) =>
       }))
     : undefined;
 
-/** Loads protocol definition, cache it */
-async function loadProto(options) {
-  if (__holder.root) {
-    return __holder.type;
-  }
-
-  if (options?.proto) {
-    const root = await protobuf.load(options?.proto);
-    if (options?.verbose) {
-      console.info("Loaded protocol definitions", options?.proto, root);
-    }
-    const WriteRequest = root.lookupType("prometheus.WriteRequest");
-    __holder.type = WriteRequest;
-    return WriteRequest;
-  }
-
-  return prom.prometheus.WriteRequest;
-}
+const WriteRequest = prom.prometheus.WriteRequest;
 
 /** Serializes JSON as protobuf buffer */
-async function serialize(payload, options) {
-  const type = await loadProto(options);
-  const errMsg = type.verify(payload);
+function serialize(payload: Record<string, any>) {
+  const errMsg = WriteRequest.verify(payload);
   if (errMsg) {
     throw new Error(errMsg);
   }
-  const buffer = type.encode(payload).finish();
+  const buffer = WriteRequest.encode(payload).finish();
   return buffer;
 }
 
 /**
  * Sends metrics over HTTP(s)
- *
- * @param {import("./types").Timeseries | import("./types").Timeseries[]} timeseries
- * @param {import("./types").Options} options
- * @return {Promise<import("./types").Result>}
  */
-async function pushTimeseries(timeseries, options) {
-  const orig = timeseries;
+async function pushTimeseries(
+  timeseries: Timeseries | Timeseries[],
+  options: Options
+): Promise<Result> {
   // Brush up a little
   timeseries = !Array.isArray(timeseries) ? [timeseries] : timeseries;
 
@@ -68,9 +82,9 @@ async function pushTimeseries(timeseries, options) {
   const writeRequest = {
     timeseries: timeseries.map((t) => ({
       labels: Array.isArray(t.labels)
-        ? [t.labels, ...(kv(options?.labels) || [])]
+        ? [t.labels, ...(kv(options.labels) || [])]
         : kv({
-            ...options?.labels,
+            ...options.labels,
             ...t.labels,
           }),
       samples: t.samples.map((s) => ({
@@ -79,81 +93,70 @@ async function pushTimeseries(timeseries, options) {
       })),
     })),
   };
-  const buffer = await serialize(writeRequest, options?.proto);
+  const buffer = serialize(writeRequest);
 
-  const logger = options?.console || console;
+  const logger = options.console || console;
 
   const start2 = Date.now();
-  if (options?.timing) {
+  if (options.timing) {
     logger.info("Serialized in", start2 - start1, "ms");
   }
 
-  if (options?.url) {
-    /** @type import("./types").MinimalFetch */
-    let fetch = options.fetch || require("node-fetch").default;
-    return fetch(options?.url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/vnd.google.protobuf",
-        ...(options?.auth?.username && options?.auth?.password
-          ? {
-              Authorization:
-                "Basic " +
-                btoa(options?.auth.username + ":" + options?.auth?.password),
-            }
-          : undefined),
-        ...(options.headers || {}),
-      },
-      body: SnappyJS.compress(buffer),
-      timeout: options.timeout,
-    }).then(async (r) => {
-      const text = await r.text();
+  return fetch(options.url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/vnd.google.protobuf",
+      ...(options.auth?.username && options.auth?.password
+        ? {
+            Authorization:
+              "Basic " +
+              btoa(options.auth.username + ":" + options.auth?.password),
+          }
+        : undefined),
+      ...(options.headers || {}),
+    },
+    body: SnappyJS.compress(buffer),
+    signal: options.timeout ? AbortSignal.timeout(options.timeout) : undefined,
+  }).then(async (r: Response) => {
+    const text = await r.text();
 
-      if (options?.verbose && r.status != 200) {
-        logger.warn(
-          "Failed to send write request, error",
-          r.status + " " + r.statusText + " " + text,
-          writeRequest
-        );
-      } else if (options?.verbose && !options?.timing) {
-        logger.info(
-          "Write request sent",
-          r.status + " " + r.statusText + " " + text,
-          writeRequest
-        );
-      } else if (options?.verbose && options?.timing) {
-        logger.info(
-          "Write request sent",
-          r.status + " " + r.statusText + " in",
-          Date.now() - start2,
-          "ms",
-          writeRequest
-        );
-      }
+    if (options.verbose && r.status != 200) {
+      logger.warn(
+        "Failed to send write request, error",
+        r.status + " " + r.statusText + " " + text,
+        writeRequest
+      );
+    } else if (options.verbose && !options.timing) {
+      logger.info(
+        "Write request sent",
+        r.status + " " + r.statusText + " " + text,
+        writeRequest
+      );
+    } else if (options.verbose && options.timing) {
+      logger.info(
+        "Write request sent",
+        r.status + " " + r.statusText + " in",
+        Date.now() - start2,
+        "ms",
+        writeRequest
+      );
+    }
 
-      return {
-        status: r.status,
-        statusText: r.statusText,
-        errorMessage: r.status !== 200 ? text : undefined,
-      };
-    });
-  } else {
     return {
-      status: 400,
-      statusText: "Bad request",
-      errorMessage: "No endpoint configured",
+      status: r.status,
+      statusText: r.statusText,
+      errorMessage: r.status !== 200 ? text : undefined,
     };
-  }
+  });
 }
 
 /**
  * Sends metrics over HTTP(s)
- *
- * @param {Record<string,number>} metrics
- * @param {import("./types").Options=} options
- * @return {Promise<import("./types").Result>}
  */
-async function pushMetrics(metrics, options) {
+async function pushMetrics(
+  metrics: Record<string, number>,
+  options: Options
+): Promise<Result> {
   return pushTimeseries(
     Object.entries(metrics).map((c) => ({
       labels: { __name__: c[0] },
@@ -165,7 +168,6 @@ async function pushMetrics(metrics, options) {
 
 module.exports = {
   serialize,
-  loadProto,
   pushTimeseries,
   pushMetrics,
 };

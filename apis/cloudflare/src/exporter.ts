@@ -22,6 +22,7 @@ import {
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
 import { DEFAULT_AGGREGATION_TEMPORALITY_SELECTOR } from "@opentelemetry/sdk-metrics/build/src/export/AggregationSelector";
+import { PrometheusSerializer } from "./PrometheusSerializer";
 
 interface ConsoleMetricExporterOptions {
   temporalitySelector?: AggregationTemporalitySelector;
@@ -31,10 +32,16 @@ interface ConsoleMetricExporterOptions {
 export class ConsoleMetricExporter implements PushMetricExporter {
   protected _shutdown = false;
   protected _temporalitySelector: AggregationTemporalitySelector;
+  private _serializer: PrometheusSerializer;
 
   constructor(options?: ConsoleMetricExporterOptions) {
     this._temporalitySelector =
       options?.temporalitySelector ?? DEFAULT_AGGREGATION_TEMPORALITY_SELECTOR;
+    this._serializer = new PrometheusSerializer(
+      // XXX These parameters should be configurable
+      "" /* prefix */,
+      true /* appendTimestamp */
+    );
   }
 
   export(
@@ -47,7 +54,7 @@ export class ConsoleMetricExporter implements PushMetricExporter {
       return;
     }
 
-    return ConsoleMetricExporter._sendMetrics(metrics, resultCallback);
+    return this._sendMetrics(metrics, resultCallback);
   }
 
   forceFlush(): Promise<void> {
@@ -65,18 +72,20 @@ export class ConsoleMetricExporter implements PushMetricExporter {
     return Promise.resolve();
   }
 
-  private static _sendMetrics(
+  private _sendMetrics(
     metrics: ResourceMetrics,
     done: (result: ExportResult) => void
   ): void {
     console.log("SEND???", metrics.scopeMetrics);
+    console.log("PROMETHEUS FORMAT");
+    console.log(this._serializer.serialize(metrics));
     for (const scopeMetrics of metrics.scopeMetrics) {
       for (const metric of scopeMetrics.metrics) {
-        console.log("METRIC?", metric);
-        console.dir({
+        console.log({
           descriptor: metric.descriptor,
           dataPointType: metric.dataPointType,
           dataPoints: metric.dataPoints,
+          value: metric.dataPoints[0].value,
         });
       }
     }

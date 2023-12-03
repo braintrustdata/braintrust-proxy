@@ -23,6 +23,8 @@ import {
 } from "@opentelemetry/core";
 import { diag } from "@opentelemetry/api";
 import {
+  Aggregation,
+  AggregationTemporality,
   MetricProducer,
   MetricReader,
   PushMetricExporter,
@@ -65,6 +67,14 @@ export class PeriodicExportingMetricReader extends MetricReader {
 
   constructor(options: PeriodicExportingMetricReaderOptions) {
     super({
+      aggregationSelector: (_instrumentType) => Aggregation.Default(),
+      aggregationTemporalitySelector: (_instrumentType) =>
+        AggregationTemporality.CUMULATIVE,
+      metricProducers: options.metricProducers,
+    });
+    /*
+    XXX Changed this??
+    super({
       aggregationSelector: options.exporter.selectAggregation?.bind(
         options.exporter
       ),
@@ -72,6 +82,7 @@ export class PeriodicExportingMetricReader extends MetricReader {
         options.exporter.selectAggregationTemporality?.bind(options.exporter),
       metricProducers: options.metricProducers,
     });
+    */
 
     if (
       options.exportIntervalMillis !== undefined &&

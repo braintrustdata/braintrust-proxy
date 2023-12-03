@@ -3,7 +3,9 @@ import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { EdgeProxyV1 } from "@braintrust/proxy/edge";
 import { ConsoleMetricExporter } from "./exporter";
-import { PeriodicExportingMetricReader } from "./metrics";
+import { PeriodicExportingMetricReader } from "./periodic-reader";
+import { Resource } from "@opentelemetry/resources";
+import { SemanticResourceAttributes } from "@opentelemetry/semantic-conventions";
 
 export const proxyV1Prefix = "/v1";
 
@@ -33,7 +35,17 @@ export async function handleProxyV1(
 ): Promise<Response> {
   // Which of these things can happen outside of a request?
   if (!initialized) {
-    const myServiceMeterProvider = new MeterProvider({});
+    const resource = Resource.default().merge(
+      new Resource({
+        [SemanticResourceAttributes.SERVICE_NAME]: "dice-server",
+        [SemanticResourceAttributes.SERVICE_VERSION]: "0.1.0",
+        job: "foo-job",
+      })
+    );
+
+    const myServiceMeterProvider = new MeterProvider({
+      resource,
+    });
     myServiceMeterProvider.addMetricReader(metricReader);
 
     // Set this MeterProvider to be global to the app being instrumented.
@@ -43,6 +55,7 @@ export async function handleProxyV1(
   }
   const myMeter = opentelemetry.metrics.getMeter("my-service-meter");
   const counter = myMeter.createCounter("events.counter");
+  const histogram = myMeter.createHistogram("events.histogram");
 
   const cache = await caches.open("apikey:cache");
 
@@ -76,7 +89,12 @@ export async function handleProxyV1(
         get: async (key) => {
           const ret = await env.ai_proxy.get(key);
           if (ret) {
-            counter.add(1);
+            counter.add(1, { foo: "a" });
+            counter.add(1, { foo: "b" });
+            histogram.record(10000 * Math.random());
+            histogram.record(10000 * Math.random());
+            histogram.record(10000 * Math.random());
+            histogram.record(10000 * Math.random());
             return JSON.parse(ret);
           } else {
             return null;

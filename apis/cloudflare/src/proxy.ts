@@ -37,6 +37,7 @@ export async function handleProxyV1(
       }
     );
   }
+
   const meter = getMeter("cloudflare-metrics");
 
   const cacheGetLatency = meter.createHistogram("results_cache_get_latency");

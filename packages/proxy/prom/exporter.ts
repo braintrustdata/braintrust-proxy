@@ -51,11 +51,13 @@ export class PrometheusRemoteWriteExporter extends MetricReader {
     }
     const resp = await remoteWriteMetrics(resourceMetrics, this.options);
     if (!resp.ok) {
-      throw new Error(
+      const error = Error(
         `Error while exporting metrics: ${resp.status} (${
           resp.statusText
         }): ${await resp.text()}`
       );
+      console.log("Error while exporting metrics", error);
+      throw error;
     }
   }
 

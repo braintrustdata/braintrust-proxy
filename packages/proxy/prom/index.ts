@@ -48,7 +48,6 @@ export function otelToWriteRequest(
   const resourceLabels = Object.fromEntries(
     serializeAttributes(metrics.resource.attributes)
   );
-  console.log("HI? 3");
   if (
     resourceLabels.job === undefined ||
     resourceLabels.instance === undefined
@@ -56,14 +55,12 @@ export function otelToWriteRequest(
     throw new Error("Resource must have job and instance labels");
   }
 
-  console.log("HI? 1");
   for (const scopeMetrics of metrics.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       timeseries.push(...parseMetric(metric, resourceLabels));
     }
   }
 
-  console.log("HI? 2");
   return {
     timeseries,
   };
@@ -72,10 +69,10 @@ export function otelToWriteRequest(
 /**
  * Sends metrics over HTTP(s)
  */
-export async function remoteWriteMetrics(
+export function remoteWriteMetrics(
   metrics: ResourceMetrics,
   options: Options
-): Promise<Result> {
+): Promise<Response> {
   const writeRequest = otelToWriteRequest(metrics);
   const buffer = prometheus.WriteRequest.encode(writeRequest).finish();
 
@@ -94,14 +91,6 @@ export async function remoteWriteMetrics(
     },
     body: SnappyJS.compress(buffer),
     signal: options.timeout ? AbortSignal.timeout(options.timeout) : undefined,
-  }).then(async (r: Response) => {
-    const text = await r.text();
-
-    return {
-      status: r.status,
-      statusText: r.statusText,
-      errorMessage: r.status !== 200 ? text : undefined,
-    };
   });
 }
 

@@ -53,14 +53,14 @@ export async function proxyV1(
     useCache: boolean,
     authToken: string,
     types: ModelEndpointType[],
-    org_name?: string,
+    org_name?: string
   ) => Promise<APISecret[]>,
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
   cachePut: (encryptionKey: string, key: string, value: string) => void,
-  digest: (message: string) => Promise<string>,
+  digest: (message: string) => Promise<string>
 ): Promise<void> {
   proxyHeaders = Object.fromEntries(
-    Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
+    Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v])
   );
   const headers: Record<string, string> = {
     ...proxyHeaders,
@@ -94,16 +94,16 @@ export async function proxyV1(
     )
   ) {
     throw new Error(
-      `Invalid ${CACHE_HEADER} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
+      `Invalid ${CACHE_HEADER} header '${useCacheModeHeader}'. Must be one of auto, always, or never`
     );
   }
   const useCacheMode = parseCacheModeHeader(
     CACHE_HEADER,
-    proxyHeaders[CACHE_HEADER],
+    proxyHeaders[CACHE_HEADER]
   );
   const useCredentialsCacheMode = parseCacheModeHeader(
     CACHE_HEADER,
-    proxyHeaders[CREDS_CACHE_HEADER],
+    proxyHeaders[CREDS_CACHE_HEADER]
   );
 
   const cacheableEndpoint =
@@ -148,7 +148,7 @@ export async function proxyV1(
         authToken,
         orgName,
         endpointName,
-      }),
+      })
     ));
 
   const encryptionKey = await digest(`${authToken}:${orgName || ""}`);
@@ -180,7 +180,7 @@ export async function proxyV1(
           useCredentialsCacheMode !== "never",
           authToken,
           types,
-          orgName,
+          orgName
         );
         if (endpointName) {
           return secrets.filter((s) => s.name === endpointName);
@@ -238,7 +238,7 @@ export async function proxyV1(
           cachePut(
             encryptionKey,
             cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, body: text }),
+            JSON.stringify({ headers: proxyResponseHeaders, body: text })
           );
         },
       });
@@ -274,7 +274,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   body: string,
-  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>,
+  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>
 ): Promise<ModelResponse> {
   let bodyData = null;
   try {
@@ -325,7 +325,7 @@ async function fetchModelLoop(
         headers,
         body,
         secret,
-        bodyData,
+        bodyData
       );
       if (
         proxyResponse.response.ok ||
@@ -338,7 +338,7 @@ async function fetchModelLoop(
         console.warn(
           "Received retryable error. Will try the next endpoint",
           proxyResponse.response.status,
-          proxyResponse.response.statusText,
+          proxyResponse.response.statusText
         );
       }
     } catch (e) {
@@ -347,7 +347,7 @@ async function fetchModelLoop(
         console.log(
           "Failed to fetch (most likely an invalid URL",
           secret.id,
-          e,
+          e
         );
         continue;
       }
@@ -361,8 +361,8 @@ async function fetchModelLoop(
     } else {
       throw new Error(
         `No API keys found (tried ${types.join(
-          ", ",
-        )}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
+          ", "
+        )}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`
       );
     }
   }
@@ -377,7 +377,7 @@ async function fetchModel(
   headers: Record<string, string>,
   body: string,
   secret: APISecret,
-  bodyData: null | any,
+  bodyData: null | any
 ) {
   switch (format) {
     case "openai":
@@ -395,30 +395,30 @@ async function fetchOpenAI(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: APISecret,
+  secret: APISecret
 ): Promise<ModelResponse> {
   let baseURL =
     (secret.type === "azure" && secret.metadata?.api_base) ||
     EndpointProviderToBaseURL[secret.type];
   if (baseURL === null) {
     throw new Error(
-      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
+      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`
     );
   }
 
   if (secret.type === "azure") {
     if (secret.metadata?.deployment) {
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        secret.metadata.deployment,
+        secret.metadata.deployment
       )}`;
     } else if (bodyData?.model || bodyData?.engine) {
       const model = bodyData.model || bodyData.engine;
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        model.replace("gpt-3.5", "gpt-35"),
+        model.replace("gpt-3.5", "gpt-35")
       )}`;
     } else {
       throw new Error(
-        `Azure provider ${secret.id} must have a deployment or model specified`,
+        `Azure provider ${secret.id} must have a deployment or model specified`
       );
     }
   }
@@ -448,7 +448,7 @@ async function fetchOpenAI(
           method,
           headers,
           keepalive: true,
-        },
+        }
   );
 
   return {
@@ -462,7 +462,7 @@ async function fetchAnthropic(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: APISecret,
+  secret: APISecret
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
 
@@ -471,7 +471,7 @@ async function fetchAnthropic(
   headers["anthropic-version"] = "2023-06-01";
   const fullURL = new URL(
     (secret.metadata?.api_base || EndpointProviderToBaseURL.anthropic) +
-      "/complete",
+      "/complete"
   );
   headers["host"] = fullURL.host;
   headers["x-api-key"] = secret.secret;
@@ -516,7 +516,7 @@ async function fetchAnthropic(
             data: ret.event && JSON.stringify(ret.event),
             finished: ret.finished,
           };
-        }),
+        })
       );
     } else {
       const allChunks: Uint8Array[] = [];
@@ -530,12 +530,12 @@ async function fetchAnthropic(
             const data = JSON.parse(text);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
-              ),
+                JSON.stringify(anthropicCompletionToOpenAICompletion(data))
+              )
             );
             controller.terminate();
           },
-        }),
+        })
       );
     }
   }
@@ -566,7 +566,7 @@ export interface AIStreamParser {
  * @returns {TransformStream<Uint8Array, Uint8Array>} TransformStream parsing events.
  */
 export function createEventStreamTransformer(
-  customParser: AIStreamParser,
+  customParser: AIStreamParser
 ): TransformStream<Uint8Array, Uint8Array> {
   const textDecoder = new TextDecoder();
   let eventSourceParser: EventSourceParser;
@@ -596,16 +596,14 @@ export function createEventStreamTransformer(
             const parsedMessage = customParser(event.data);
             if (parsedMessage.data !== null) {
               controller.enqueue(
-                new TextEncoder().encode(
-                  "data: " + parsedMessage.data + "\n\n",
-                ),
+                new TextEncoder().encode("data: " + parsedMessage.data + "\n\n")
               );
             }
             if (parsedMessage.finished) {
               finish(controller);
             }
           }
-        },
+        }
       );
     },
 
@@ -627,7 +625,7 @@ export function parseCacheModeHeader(headerName: string, value?: string) {
     )
   ) {
     throw new Error(
-      `Invalid ${headerName} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
+      `Invalid ${headerName} header '${useCacheModeHeader}'. Must be one of auto, always, or never`
     );
   }
   return (useCacheModeHeader || "auto") as "auto" | "always" | "never";

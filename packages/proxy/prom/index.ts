@@ -48,6 +48,7 @@ export function otelToWriteRequest(
   const resourceLabels = Object.fromEntries(
     serializeAttributes(metrics.resource.attributes)
   );
+  console.log("HI? 3");
   if (
     resourceLabels.job === undefined ||
     resourceLabels.instance === undefined
@@ -55,12 +56,14 @@ export function otelToWriteRequest(
     throw new Error("Resource must have job and instance labels");
   }
 
+  console.log("HI? 1");
   for (const scopeMetrics of metrics.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
       timeseries.push(...parseMetric(metric, resourceLabels));
     }
   }
 
+  console.log("HI? 2");
   return {
     timeseries,
   };
@@ -69,7 +72,7 @@ export function otelToWriteRequest(
 /**
  * Sends metrics over HTTP(s)
  */
-async function pushMetrics(
+export async function remoteWriteMetrics(
   metrics: ResourceMetrics,
   options: Options
 ): Promise<Result> {
@@ -155,7 +158,10 @@ function parseMetric(
     allTimeseries.push({
       labels: labelList
         .concat(Object.entries(resourceLabels))
-        .map(([name, value]) => ({ name, value })),
+        .map(([name, value]) => ({
+          name: sanitizeString(name, "label"),
+          value,
+        })),
       samples,
     });
   }
@@ -181,14 +187,14 @@ function parseHistogramDataPoint(dp: DataPoint<Histogram>, name: string) {
 
   const handleBucket = (
     value: number,
-    bound?: number | string,
-    nameOverride?: string
+    bound: number | string | null,
+    suffix: string
   ) => {
     const attrs: [string, string][] = [
       ...baseAttrs,
-      ["__name__", sanitizeString(nameOverride || name, "name")],
+      ["__name__", sanitizeString(name + (suffix ? `_${suffix}` : ""), "name")],
     ];
-    if (bound !== undefined) {
+    if (bound !== null) {
       attrs.push(["le", `${bound}`]);
     }
     return { attrs, sample: { value, timestamp } };
@@ -200,20 +206,16 @@ function parseHistogramDataPoint(dp: DataPoint<Histogram>, name: string) {
     b,
   ])) {
     sampleAttrPairs.push(
-      handleBucket(dp.value.buckets.counts[boundPos], bucket)
+      handleBucket(dp.value.buckets.counts[boundPos], bucket, "bucket")
     );
   }
 
   // Add the last label for implicit +inf bucket
-  sampleAttrPairs.push(handleBucket(dp.value.count, "+Inf"));
+  sampleAttrPairs.push(handleBucket(dp.value.count, "+Inf", "bucket"));
 
   // Lastly, add series for count & sum
-  sampleAttrPairs.push(
-    handleBucket(dp.value.sum || 0, undefined, `${name}_sum`)
-  );
-  sampleAttrPairs.push(
-    handleBucket(dp.value.count, undefined, `${name}_count`)
-  );
+  sampleAttrPairs.push(handleBucket(dp.value.sum || 0, null, "sum"));
+  sampleAttrPairs.push(handleBucket(dp.value.count, null, "count"));
 
   return sampleAttrPairs;
 }

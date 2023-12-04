@@ -9,7 +9,7 @@
     "build": "tsup",
     "watch": "tsup --watch",
     "clean": "rm -r dist/*",
-    "proto": "./node_modules/.bin/pbjs -t static-module -o prom/prom.js prom/prom.proto && ./node_modules/.bin/pbts -o prom/prom.d.ts prom/prom.js"
+    "proto": "./node_modules/.bin/pbjs -t static-module -w es6 -o prom/prom.js prom/prom.proto && ./node_modules/.bin/pbts -o prom/prom.d.ts prom/prom.js"
   },
   "exports": {
     "./package.json": "./package.json",

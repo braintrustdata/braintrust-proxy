@@ -37,9 +37,10 @@ export async function handleProxyV1(
   if (!initialized) {
     const resource = Resource.default().merge(
       new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: "dice-server",
-        [SemanticResourceAttributes.SERVICE_VERSION]: "0.1.0",
-        job: "foo-job",
+        [SemanticResourceAttributes.SERVICE_NAME]: "braintrust-proxy",
+        job: "braintrust-proxy-cloudflare",
+        // XXX change to uuid when we move to proxy package
+        instance: `${Math.floor(Math.random() * 10000)}`,
       })
     );
 
@@ -109,6 +110,7 @@ export async function handleProxyV1(
       braintrustApiUrl: env.BRAINTRUST_API_URL,
     })(request, ctx);
   } finally {
+    await metricReader.forceFlush(); // XXX
     ctx.waitUntil(metricReader.forceFlush());
   }
 }

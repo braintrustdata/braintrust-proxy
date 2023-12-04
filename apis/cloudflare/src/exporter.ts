@@ -81,7 +81,8 @@ export class ConsoleMetricExporter implements PushMetricExporter {
     console.log("PROMETHEUS FORMAT");
     console.log(this._serializer.serialize(metrics));
     console.log("WRITE REQUEST");
-    console.log(otelToWriteRequest(metrics));
+    console.log(JSON.stringify(otelToWriteRequest(metrics), null, 2));
+    console.log("DONE?");
     for (const scopeMetrics of metrics.scopeMetrics) {
       for (const metric of scopeMetrics.metrics) {
         console.log({

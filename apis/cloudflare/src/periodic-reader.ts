@@ -32,6 +32,8 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import { callWithTimeout } from "@opentelemetry/sdk-metrics/build/src/utils";
 
+import { remoteWriteMetrics } from "@braintrust/proxy/prom";
+
 export type PeriodicExportingMetricReaderOptions = {
   /**
    * The backing exporter for the metric reader.
@@ -134,6 +136,10 @@ export class PeriodicExportingMetricReader extends MetricReader {
       timeoutMillis: this._exportTimeout,
     });
     console.log("COLLECTED", resourceMetrics, errors);
+    const resp = await remoteWriteMetrics(resourceMetrics, {
+      url: "http://localhost:9090/api/v1/write",
+    });
+    console.log("RAN REMOTE WRITE", resp);
 
     if (errors.length > 0) {
       api.diag.error(

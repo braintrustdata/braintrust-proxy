@@ -1,7 +1,7 @@
 name = "proxy"
 main = "src/index.ts"
 compatibility_date = "2023-10-30"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat"] # for OTEL
 
 kv_namespaces = [
     # Configure this id to map to the id returned from
@@ -14,6 +14,12 @@ kv_namespaces = [
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
+# If you set the following variables, the proxy will track a bunch of metrics and remote_write them
+# to a Prometheus server. You can then use Grafana to visualize the metrics.
+# PROMETHEUS_REMOTE_WRITE_URL = ""
+# PROMETHEUS_REMOTE_WRITE_USERNAME = ""
+# PROMETHEUS_REMOTE_WRITE_PASSWORD = ""
+
 # You should not need to edit this
 BRAINTRUST_API_URL = "https://www.braintrustdata.com"
 

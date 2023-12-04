@@ -1,5 +1,6 @@
 import { EdgeProxyV1 } from "@braintrust/proxy/edge";
 import { getMeter, safeInitMetrics } from "@braintrust/proxy";
+import { PrometheusRemoteWriteExporter } from "@braintrust/proxy/prom";
 
 export const proxyV1Prefix = "/v1";
 
@@ -7,6 +8,9 @@ declare global {
   interface Env {
     ai_proxy: KVNamespace;
     BRAINTRUST_API_URL: string;
+    PROMETHEUS_REMOTE_WRITE_URL?: string;
+    PROMETHEUS_REMOTE_WRITE_USERNAME?: string;
+    PROMETHEUS_REMOTE_WRITE_PASSWORD?: string;
   }
 }
 
@@ -19,13 +23,24 @@ export async function handleProxyV1(
   env: Env,
   ctx: ExecutionContext
 ): Promise<Response> {
-  safeInitMetrics("http://localhost:9090/api/v1/write"); // XXX Move to edge proxy
-  const myMeter = getMeter("cloudflare-metrics");
+  if (env.PROMETHEUS_REMOTE_WRITE_URL !== undefined) {
+    safeInitMetrics(
+      new PrometheusRemoteWriteExporter({
+        url: env.PROMETHEUS_REMOTE_WRITE_URL,
+        auth: {
+          username: env.PROMETHEUS_REMOTE_WRITE_USERNAME,
+          password: env.PROMETHEUS_REMOTE_WRITE_PASSWORD,
+        },
+      }),
+      {
+        platform: "cloudflare",
+      }
+    );
+  }
+  const meter = getMeter("cloudflare-metrics");
 
-  const cacheHits = myMeter.createCounter("results_cache_hits");
-  const cacheMisses = myMeter.createCounter("results_cache_misses");
-  const cacheGetLatency = myMeter.createHistogram("results_cache_get_latency");
-  const cacheSetLatency = myMeter.createHistogram("results_cache_set_latency");
+  const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
+  const cacheSetLatency = meter.createHistogram("results_cache_set_latency");
 
   const cache = await caches.open("apikey:cache");
 
@@ -61,10 +76,8 @@ export async function handleProxyV1(
         const end = performance.now();
         cacheGetLatency.record(end - start);
         if (ret) {
-          cacheHits.add(1);
           return JSON.parse(ret);
         } else {
-          cacheMisses.add(1);
           return null;
         }
       },

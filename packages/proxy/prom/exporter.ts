@@ -21,28 +21,24 @@ import {
   MetricReader,
 } from "@opentelemetry/sdk-metrics";
 
-import { remoteWriteMetrics } from "../prom";
-
-export interface ExporterConfig {
-  url: string;
-}
+import { Options, remoteWriteMetrics } from "./remote_write";
 
 export class PrometheusRemoteWriteExporter extends MetricReader {
-  private readonly url: string;
+  private readonly options: Options;
 
   /**
    * Constructor
    * @param config Exporter configuration
    * @param callback Callback to be called after a server was started
    */
-  constructor(config: ExporterConfig) {
+  constructor(options: Options) {
     super({
       aggregationSelector: (_instrumentType) => Aggregation.Default(),
       aggregationTemporalitySelector: (_instrumentType) =>
         AggregationTemporality.CUMULATIVE,
     });
 
-    this.url = config.url;
+    this.options = options;
   }
 
   override async onForceFlush(): Promise<void> {
@@ -53,9 +49,7 @@ export class PrometheusRemoteWriteExporter extends MetricReader {
         diag.error("Error while exporting metrics", error);
       }
     }
-    const resp = await remoteWriteMetrics(resourceMetrics, {
-      url: this.url,
-    });
+    const resp = await remoteWriteMetrics(resourceMetrics, this.options);
     if (!resp.ok) {
       throw new Error(
         `Error while exporting metrics: ${resp.status} (${

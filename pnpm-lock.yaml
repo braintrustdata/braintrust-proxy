@@ -22,21 +22,6 @@ importers:
       '@microlabs/otel-cf-workers':
         specifier: 1.0.0-rc.15
         version: 1.0.0-rc.15
-      '@opentelemetry/api':
-        specifier: ^1.7.0
-        version: 1.7.0
-      '@opentelemetry/core':
-        specifier: ^1.18.1
-        version: 1.18.1(@opentelemetry/api@1.7.0)
-      '@opentelemetry/resources':
-        specifier: ^1.18.1
-        version: 1.18.1(@opentelemetry/api@1.7.0)
-      '@opentelemetry/sdk-metrics':
-        specifier: ^1.18.1
-        version: 1.18.1(@opentelemetry/api@1.7.0)
-      '@opentelemetry/semantic-conventions':
-        specifier: ^1.18.1
-        version: 1.18.1
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1

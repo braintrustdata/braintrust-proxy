@@ -181,6 +181,15 @@ importers:
 
   packages/proxy:
     dependencies:
+      '@opentelemetry/api':
+        specifier: ^1.7.0
+        version: 1.7.0
+      '@opentelemetry/core':
+        specifier: ^1.18.1
+        version: 1.18.1(@opentelemetry/api@1.7.0)
+      '@opentelemetry/sdk-metrics':
+        specifier: ^1.18.1
+        version: 1.18.1(@opentelemetry/api@1.7.0)
       eventsource-parser:
         specifier: ^1.1.1
         version: 1.1.1

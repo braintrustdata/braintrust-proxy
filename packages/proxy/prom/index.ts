@@ -1,8 +1,9 @@
 import * as SnappyJS from "snappyjs";
-import * as prom from "./prom";
+import { prometheus } from "./prom";
 import {
   DataPoint,
   DataPointType,
+  Histogram,
   MetricData,
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
@@ -17,10 +18,7 @@ interface Options {
   };
   verbose?: boolean;
   timing?: boolean;
-  proto?: string;
-  labels?: { [key: string]: string };
   timeout?: number;
-  console?: Console;
   headers?: { [key: string]: string };
 }
 
@@ -40,27 +38,12 @@ const kv = (o: any) =>
       }))
     : undefined;
 
-// XXX Remove?
-const WriteRequest = prom.prometheus.WriteRequest;
-
-// XXX Remove?
-/** Serializes JSON as protobuf buffer */
-function serialize(payload: Record<string, any>) {
-  const errMsg = WriteRequest.verify(payload);
-  if (errMsg) {
-    throw new Error(errMsg);
-  }
-  const buffer = WriteRequest.encode(payload).finish();
-  return buffer;
-}
-
 export function otelToWriteRequest(
   metrics: ResourceMetrics
-): prom.prometheus.IWriteRequest {
+): prometheus.IWriteRequest {
   // I don't think there's anything we can use from `ResourceMetrics` other than
   // the metrics themselves.
-  const timeseries: prom.prometheus.ITimeSeries[] = [];
-  const metadata: prom.prometheus.IMetricMetadata[] = [];
+  const timeseries: prometheus.ITimeSeries[] = [];
 
   const resourceLabels = Object.fromEntries(
     serializeAttributes(metrics.resource.attributes)
@@ -74,25 +57,12 @@ export function otelToWriteRequest(
 
   for (const scopeMetrics of metrics.scopeMetrics) {
     for (const metric of scopeMetrics.metrics) {
-      switch (metric.dataPointType) {
-        case DataPointType.SUM:
-          for (const dp of metric.dataPoints) {
-          }
-          break;
-        case DataPointType.GAUGE:
-          break;
-        case DataPointType.HISTOGRAM:
-          break;
-        case DataPointType.EXPONENTIAL_HISTOGRAM:
-          throw new Error("Not implemented: Exponential Histogram");
-          break;
-      }
+      timeseries.push(...parseMetric(metric, resourceLabels));
     }
   }
 
   return {
     timeseries,
-    metadata,
   };
 }
 
@@ -103,40 +73,8 @@ async function pushMetrics(
   metrics: ResourceMetrics,
   options: Options
 ): Promise<Result> {
-  // Brush up a little
-  timeseries = !Array.isArray(timeseries) ? [timeseries] : timeseries;
-
-  // Nothing to do
-  if (timeseries.length === 0) {
-    return {
-      status: 200,
-      statusText: "OK",
-    };
-  }
-
-  const start1 = Date.now();
-  const writeRequest = {
-    timeseries: timeseries.map((t) => ({
-      labels: Array.isArray(t.labels)
-        ? [t.labels, ...(kv(options.labels) || [])]
-        : kv({
-            ...options.labels,
-            ...t.labels,
-          }),
-      samples: t.samples.map((s) => ({
-        value: s.value,
-        timestamp: s.timestamp ? s.timestamp : Date.now(),
-      })),
-    })),
-  };
-  const buffer = serialize(writeRequest);
-
-  const logger = options.console || console;
-
-  const start2 = Date.now();
-  if (options.timing) {
-    logger.info("Serialized in", start2 - start1, "ms");
-  }
+  const writeRequest = otelToWriteRequest(metrics);
+  const buffer = prometheus.WriteRequest.encode(writeRequest).finish();
 
   return fetch(options.url, {
     method: "POST",
@@ -156,28 +94,6 @@ async function pushMetrics(
   }).then(async (r: Response) => {
     const text = await r.text();
 
-    if (options.verbose && r.status != 200) {
-      logger.warn(
-        "Failed to send write request, error",
-        r.status + " " + r.statusText + " " + text,
-        writeRequest
-      );
-    } else if (options.verbose && !options.timing) {
-      logger.info(
-        "Write request sent",
-        r.status + " " + r.statusText + " " + text,
-        writeRequest
-      );
-    } else if (options.verbose && options.timing) {
-      logger.info(
-        "Write request sent",
-        r.status + " " + r.statusText + " in",
-        Date.now() - start2,
-        "ms",
-        writeRequest
-      );
-    }
-
     return {
       status: r.status,
       statusText: r.statusText,
@@ -190,57 +106,122 @@ export type ResourceLabels = Record<string, string>;
 
 // This implementation is based on the Python OTEL->remote_write code:
 // https://github.com/open-telemetry/opentelemetry-python-contrib/blob/78874df5c210797d6d939b13de57539a584356c1/exporter/opentelemetry-exporter-prometheus-remote-write/src/opentelemetry/exporter/prometheus_remote_write/__init__.py
-function parseMetric(metric: MetricData, resourceLabels: ResourceLabels) {
-  const timeseries: prom.prometheus.ITimeSeries[] = [];
-  const metadata: prom.prometheus.IMetricMetadata[] = [];
-
+function parseMetric(
+  metric: MetricData,
+  resourceLabels: ResourceLabels
+): prometheus.ITimeSeries[] {
   const name = metric.descriptor.unit
     ? `${metric.descriptor.name}_${metric.descriptor.unit}`
     : metric.descriptor.name;
 
-  const sampleLabels: Record<string, [string, string][]> = {};
-  const sampleSets: Record<string, prom.prometheus.ISample[]> = {};
+  // First convert metrics into pairs of attriubutes and samples
+  const data = [];
   switch (metric.dataPointType) {
     case DataPointType.SUM:
     case DataPointType.GAUGE:
       for (const dp of metric.dataPoints) {
-        const { attrs, sample } = parseDataPoint(dp, name);
-        const attrKey = JSON.stringify(attrs);
-        if (sampleLabels[attrKey] === undefined) {
-          sampleLabels[attrKey] = attrs;
-        }
-        sampleSets[attrKey] = (sampleSets[attrKey] || []).concat([sample]);
+        data.push(parseDataPoint(dp, name));
       }
       break;
     case DataPointType.HISTOGRAM:
+      for (const dp of metric.dataPoints) {
+        data.push(...parseHistogramDataPoint(dp, name));
+      }
       break;
     case DataPointType.EXPONENTIAL_HISTOGRAM:
       throw new Error("Not implemented: Exponential Histogram");
-      break;
   }
-}
 
-function serializeAttributes(attrs?: Attributes): [string, string][] {
-  return Object.entries(attrs || {})
-    .filter(([_, value]) => value !== undefined)
-    .map(([key, value]) => [key, `${value}`]);
+  // Then, group by attributes
+  const sampleLabels: Record<string, [string, string][]> = {};
+  const sampleSets: Record<string, prometheus.ISample[]> = {};
+
+  for (const { attrs, sample } of data) {
+    // This is not in the Python implementation but ensures that label order does
+    // not affect equality.
+    attrs.sort((a, b) => a[0].localeCompare(b[0]));
+
+    const attrKey = JSON.stringify(attrs);
+    if (sampleLabels[attrKey] === undefined) {
+      sampleLabels[attrKey] = attrs;
+    }
+    sampleSets[attrKey] = (sampleSets[attrKey] || []).concat([sample]);
+  }
+
+  // Finally, convert to the Prometheus format
+  const allTimeseries: prometheus.ITimeSeries[] = [];
+  for (const [key, labelList] of Object.entries(sampleLabels)) {
+    const samples = sampleSets[key] || [];
+    allTimeseries.push({
+      labels: labelList
+        .concat(Object.entries(resourceLabels))
+        .map(([name, value]) => ({ name, value })),
+      samples,
+    });
+  }
+
+  return allTimeseries;
 }
 
 function parseDataPoint(dp: DataPoint<number>, name: string) {
   const attrs = serializeAttributes(dp.attributes).concat([
     ["__name__", sanitizeString(name, "name")],
   ]);
-
-  // This is not in the Python implementation but ensures that label order does
-  // not affect equality.
-  attrs.sort((a, b) => a[0].localeCompare(b[0]));
-
-  const sample = new prom.prometheus.Sample({
+  const sample = {
     value: dp.value,
     timestamp: hrTimeToMilliseconds(dp.endTime),
-  });
+  };
 
   return { attrs, sample };
+}
+
+function parseHistogramDataPoint(dp: DataPoint<Histogram>, name: string) {
+  const baseAttrs = serializeAttributes(dp.attributes);
+  const timestamp = hrTimeToMilliseconds(dp.endTime);
+
+  const handleBucket = (
+    value: number,
+    bound?: number | string,
+    nameOverride?: string
+  ) => {
+    const attrs: [string, string][] = [
+      ...baseAttrs,
+      ["__name__", sanitizeString(nameOverride || name, "name")],
+    ];
+    if (bound !== undefined) {
+      attrs.push(["le", `${bound}`]);
+    }
+    return { attrs, sample: { value, timestamp } };
+  };
+
+  const sampleAttrPairs = [];
+  for (const [boundPos, bucket] of dp.value.buckets.boundaries.map((b, i) => [
+    i,
+    b,
+  ])) {
+    sampleAttrPairs.push(
+      handleBucket(dp.value.buckets.counts[boundPos], bucket)
+    );
+  }
+
+  // Add the last label for implicit +inf bucket
+  sampleAttrPairs.push(handleBucket(dp.value.count, "+Inf"));
+
+  // Lastly, add series for count & sum
+  sampleAttrPairs.push(
+    handleBucket(dp.value.sum || 0, undefined, `${name}_sum`)
+  );
+  sampleAttrPairs.push(
+    handleBucket(dp.value.count, undefined, `${name}_count`)
+  );
+
+  return sampleAttrPairs;
+}
+
+function serializeAttributes(attrs?: Attributes): [string, string][] {
+  return Object.entries(attrs || {})
+    .filter(([_, value]) => value !== undefined)
+    .map(([key, value]) => [key, `${value}`]);
 }
 
 function sanitizeString(string: string, type: "name" | "label") {

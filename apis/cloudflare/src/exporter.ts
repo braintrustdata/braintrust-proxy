@@ -23,6 +23,7 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import { DEFAULT_AGGREGATION_TEMPORALITY_SELECTOR } from "@opentelemetry/sdk-metrics/build/src/export/AggregationSelector";
 import { PrometheusSerializer } from "./PrometheusSerializer";
+import { otelToWriteRequest } from "@braintrust/proxy/prom";
 
 interface ConsoleMetricExporterOptions {
   temporalitySelector?: AggregationTemporalitySelector;
@@ -79,6 +80,8 @@ export class ConsoleMetricExporter implements PushMetricExporter {
     console.log("SEND???", metrics.scopeMetrics);
     console.log("PROMETHEUS FORMAT");
     console.log(this._serializer.serialize(metrics));
+    console.log("WRITE REQUEST");
+    console.log(otelToWriteRequest(metrics));
     for (const scopeMetrics of metrics.scopeMetrics) {
       for (const metric of scopeMetrics.metrics) {
         console.log({

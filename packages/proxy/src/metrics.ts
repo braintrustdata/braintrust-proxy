@@ -2,7 +2,6 @@ import { MeterProvider, MetricReader } from "@opentelemetry/sdk-metrics";
 import { Resource } from "@opentelemetry/resources";
 import { v4 as uuidv4 } from "uuid";
 
-export { ResourceMetrics } from "@opentelemetry/sdk-metrics";
 export { NOOP_METER_PROVIDER } from "@opentelemetry/api/build/src/metrics/NoopMeterProvider";
 
 export function initMetrics(

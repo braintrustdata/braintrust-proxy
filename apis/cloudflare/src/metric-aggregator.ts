@@ -1,5 +1,14 @@
 import { prometheus } from "@braintrust/proxy/prom";
-import { ResourceMetrics } from "@opentelemetry/sdk-metrics";
+import {
+  DataPoint,
+  DataPointType,
+  Histogram,
+  HistogramMetricData,
+  MetricData,
+  ResourceMetrics,
+} from "@opentelemetry/sdk-metrics";
+import { HrTime } from "@opentelemetry/api";
+import { hrTimeToMicroseconds } from "@opentelemetry/core";
 
 declare global {
   interface Env {
@@ -37,48 +46,69 @@ export class PrometheusMetricAggregator {
   }
 
   async handlePush(request: Request): Promise<Response> {
-    const data = (await request.json()) as ResourceMetrics;
+    const metrics = (await request.json()) as ResourceMetrics;
 
-    // NOTE: We should be able to batch these get operations
-    // into sets of keys at most 128 in length
-    for (let { labels, samples } of data.timeseries || []) {
-      labels = (labels || []).filter(
-        (label) => label.name !== "instance" && label.name !== "job"
-      );
-      if (!samples || samples.length !== 1) {
-        return new Response(
-          `Invalid sample (length must be 1, was ${(samples || []).length}`,
-          { status: 400 }
-        );
-      }
-      const labelKey = JSON.stringify(labels);
-      const sample = samples[0];
+    for (const scopeMetrics of metrics.scopeMetrics) {
+      for (const metric of scopeMetrics.metrics) {
+        for (let i = 0; i < metric.dataPoints.length; i++) {
+          // NOTE: We should be able to batch these get operations
+          // into sets of keys at most 128 in length
+          const metricKey = JSON.stringify({
+            type: "metric",
+            dataPointType: metric.dataPointType,
+            labels: metric.dataPoints[i].attributes,
+          });
 
-      const key = `metric/${labelKey}`;
-      let existing = await this.state.storage.get<prometheus.ITimeSeries>(key);
-      if (existing === undefined) {
-        existing = {
-          labels,
-          samples,
-        };
-      } else {
-        const existingSample = existing.samples![0];
-        if (sample.timestamp) {
-          existingSample.timestamp = Math.max(
-            sample.timestamp,
-            existingSample.timestamp || 0
-          );
+          let existing = (await this.state.storage.get<MetricData>(
+            metricKey
+          )) || {
+            dataPointType: metric.dataPointType,
+            dataPoints: [],
+          };
+          if (existing && existing.dataPointType !== metric.dataPointType) {
+            throw new Error("Invalid data point (type mismatch)");
+          }
+
+          let newValue = undefined;
+          switch (metric.dataPointType) {
+            case DataPointType.SUM:
+              newValue = coalesceFn(
+                existing.dataPoints[0] as DataPoint<number>,
+                metric.dataPoints[i],
+                mergeCounters
+              );
+              break;
+            case DataPointType.GAUGE:
+              newValue = coalesceFn(
+                existing.dataPoints[0] as DataPoint<number>,
+                metric.dataPoints[i],
+                mergeGauges
+              );
+              break;
+            case DataPointType.HISTOGRAM:
+              newValue = coalesceFn(
+                existing.dataPoints[0] as DataPoint<Histogram>,
+                metric.dataPoints[i],
+                mergeHistograms
+              );
+              break;
+            case DataPointType.EXPONENTIAL_HISTOGRAM:
+              return new Response("Not Implemented: Exponential Histogram", {
+                status: 501,
+              });
+          }
+
+          if (newValue !== undefined) {
+            existing.dataPoints[0] = newValue;
+            // See "Write buffer behavior" in https://developers.cloudflare.com/durable-objects/api/transactional-storage-api/
+            // The only reason to await this put is to apply backpressure, which should be unecessary given the small # of metrics
+            // we're aggregating over
+            this.state.storage.put(metricKey, existing);
+          }
         }
-        // Accumulate all values. Note: this works for histograms and counters, but
-        // not for gauges.
-        if (sample.value) {
-          existingSample.value = (existingSample.value || 0) + sample.value;
-        }
       }
-
-      writes.push(this.state.storage.put(key, existing));
     }
-    await Promise.all(writes);
+
     return new Response(null, { status: 204 });
   }
 
@@ -89,4 +119,82 @@ export class PrometheusMetricAggregator {
   static metricsTTL(env: Env): number {
     return env.METRICS_TTL ?? 24 * 7 * 3600;
   }
+}
+
+function mergeHistograms(
+  base: DataPoint<Histogram>,
+  delta: DataPoint<Histogram>
+): DataPoint<Histogram> {
+  if (
+    JSON.stringify(base.value.buckets.boundaries) !==
+    JSON.stringify(delta.value.buckets.boundaries)
+  ) {
+    throw new Error(
+      "Unsupported: merging histograms with different bucket boundaries"
+    );
+  }
+
+  return {
+    startTime: minHrTime(base.startTime, delta.startTime),
+    endTime: maxHrTime(base.endTime, delta.endTime),
+    attributes: { ...base.attributes } /* these are assumed to be the same */,
+    value: {
+      buckets: {
+        boundaries: [...base.value.buckets.boundaries],
+        counts: base.value.buckets.counts.map(
+          (count, i) => count + delta.value.buckets.counts[i]
+        ),
+      },
+      sum: (base.value.sum || 0) + (delta.value.sum || 0),
+      count: base.value.count + delta.value.count,
+      min: coalesceFn(base.value.max, delta.value.max, Math.min),
+      max: coalesceFn(base.value.max, delta.value.max, Math.max),
+    },
+  };
+}
+
+function mergeGauges(
+  base: DataPoint<number>,
+  delta: DataPoint<number>
+): DataPoint<number> {
+  const baseT = hrTimeToMicroseconds(base.endTime);
+  const deltaT = hrTimeToMicroseconds(delta.endTime);
+  return {
+    startTime: deltaT >= baseT ? base.startTime : delta.startTime,
+    endTime: maxHrTime(base.endTime, delta.endTime),
+    attributes: { ...base.attributes } /* these are assumed to be the same */,
+    value: deltaT >= baseT ? delta.value : base.value,
+  };
+}
+
+function mergeCounters(
+  base: DataPoint<number>,
+  delta: DataPoint<number>
+): DataPoint<number> {
+  return {
+    startTime: minHrTime(base.startTime, delta.startTime),
+    endTime: maxHrTime(base.endTime, delta.endTime),
+    attributes: { ...base.attributes } /* these are assumed to be the same */,
+    value: base.value + delta.value,
+  };
+}
+
+function minHrTime(a: HrTime, b: HrTime): HrTime {
+  const at = hrTimeToMicroseconds(a);
+  const bt = hrTimeToMicroseconds(b);
+  return at <= bt ? a : b;
+}
+
+function maxHrTime(a: HrTime, b: HrTime): HrTime {
+  const at = hrTimeToMicroseconds(a);
+  const bt = hrTimeToMicroseconds(b);
+  return at >= bt ? a : b;
+}
+
+function coalesceFn<T>(
+  a: T | undefined,
+  b: T | undefined,
+  coalesce: (a: T, b: T) => T
+): T | undefined {
+  return a === undefined ? b : b === undefined ? a : coalesce(a, b);
 }

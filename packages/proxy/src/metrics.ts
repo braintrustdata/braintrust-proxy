@@ -1,22 +1,14 @@
 import { MeterProvider, MetricReader } from "@opentelemetry/sdk-metrics";
 import { Resource } from "@opentelemetry/resources";
 import { v4 as uuidv4 } from "uuid";
-import opentelemetry from "@opentelemetry/api";
 
-let metricsInitialized = false;
-declare global {
-  var metricReader: MetricReader | undefined;
-}
-export function safeInitMetrics(
+export { NOOP_METER_PROVIDER } from "@opentelemetry/api/build/src/metrics/NoopMeterProvider";
+
+export function initMetrics(
   metricReader: MetricReader,
   resourceLabels?: Record<string, string>
 ) {
-  if (metricsInitialized) {
-    return;
-  }
-
-  globalThis.metricReader = metricReader;
-
+  // XXX UPDATE THIS COMMENT
   // DEVNOTE: This means that each request will be its own instance, which will explode
   // timeseries cardinality in Prometheus. This is probably okay, unless we have a really significant
   // number of requests (10k+ per second, assuming we have around 20 metrics, according to
@@ -37,22 +29,12 @@ export function safeInitMetrics(
   const myServiceMeterProvider = new MeterProvider({
     resource,
   });
-  myServiceMeterProvider.addMetricReader(globalThis.metricReader);
-
-  // Set this MeterProvider to be global to the app being instrumented.
-  opentelemetry.metrics.setGlobalMeterProvider(myServiceMeterProvider);
-
-  metricsInitialized = true;
+  myServiceMeterProvider.addMetricReader(metricReader);
+  return myServiceMeterProvider;
 }
 
-export function getMeter(scope: string) {
-  return opentelemetry.metrics.getMeter("cloudflare-metrics");
-}
-
-export async function flushMetrics() {
-  if (globalThis.metricReader !== undefined) {
-    await globalThis.metricReader.forceFlush();
-  }
+export async function flushMetrics(meterProvider: MeterProvider) {
+  await meterProvider.forceFlush();
 }
 
 // These are copied from prom-client

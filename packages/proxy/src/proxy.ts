@@ -28,7 +28,8 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
 } from "./providers/anthropic";
-import { getMeter, nowMs } from "./metrics";
+import { MeterProvider } from "@opentelemetry/api";
+import { NOOP_METER_PROVIDER } from "./metrics";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -58,9 +59,10 @@ export async function proxyV1(
   ) => Promise<APISecret[]>,
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
   cachePut: (encryptionKey: string, key: string, value: string) => void,
-  digest: (message: string) => Promise<string>
+  digest: (message: string) => Promise<string>,
+  meterProvider: MeterProvider = NOOP_METER_PROVIDER
 ): Promise<void> {
-  const meter = getMeter("proxy-metrics");
+  const meter = meterProvider.getMeter("proxy-metrics");
 
   const cacheHits = meter.createCounter("results_cache_hits");
   const cacheMisses = meter.createCounter("results_cache_misses");

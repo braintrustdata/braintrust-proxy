@@ -1,5 +1,5 @@
 import { EdgeProxyV1 } from "@braintrust/proxy/edge";
-import { getMeter, safeInitMetrics } from "@braintrust/proxy";
+import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusRemoteWriteExporter } from "@braintrust/proxy/prom";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 
@@ -25,6 +25,7 @@ export async function handleProxyV1(
   env: Env,
   ctx: ExecutionContext
 ): Promise<Response> {
+  let meterProvider = undefined;
   if (env.PROMETHEUS_REMOTE_WRITE_URL !== undefined) {
     // XXX Need to override this so that we can use the new exporter.
     const metricShard = Math.floor(
@@ -37,7 +38,7 @@ export async function handleProxyV1(
     const metricAggURL = new URL(request.url);
     metricAggURL.pathname = "/push";
 
-    safeInitMetrics(
+    meterProvider = initMetrics(
       new PrometheusRemoteWriteExporter({
         url: env.PROMETHEUS_REMOTE_WRITE_URL,
         auth: {
@@ -59,7 +60,9 @@ export async function handleProxyV1(
     );
   }
 
-  const meter = getMeter("cloudflare-metrics");
+  const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
+    "cloudflare-metrics"
+  );
 
   const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
   const cacheSetLatency = meter.createHistogram("results_cache_set_latency");
@@ -113,5 +116,6 @@ export async function handleProxyV1(
       },
     },
     braintrustApiUrl: env.BRAINTRUST_API_URL,
+    meterProvider,
   })(request, ctx);
 }

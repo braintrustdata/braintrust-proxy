@@ -31,10 +31,6 @@ export class PrometheusMetricAggregator {
 
   async handlePush(request: Request): Promise<Response> {
     const data = (await request.json()) as prometheus.IWriteRequest;
-    console.log("RECEIVED DATA", JSON.stringify(data, null, 2));
-
-    console.log("ALL DATA", await this.state.storage.list());
-
     // NOTE: We should be able to batch these get operations
     // into sets of keys at most 128 in length
     const writes = [];
@@ -58,7 +54,6 @@ export class PrometheusMetricAggregator {
 
       const key = `metric/${labelKey}`;
       let existing = await this.state.storage.get<prometheus.ITimeSeries>(key);
-      console.log("STARTING STATE IS ", existing);
       if (existing === undefined) {
         existing = {
           labels,
@@ -72,11 +67,12 @@ export class PrometheusMetricAggregator {
             existingSample.timestamp || 0
           );
         }
+        // Accumulate all values. Note: this works for histograms and counters, but
+        // not for gauges.
         if (sample.value) {
           existingSample.value = (existingSample.value || 0) + sample.value;
         }
       }
-      console.log("NOW THE STATE IS", existing);
 
       writes.push(this.state.storage.put(key, existing));
     }

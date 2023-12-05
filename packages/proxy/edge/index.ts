@@ -3,6 +3,7 @@ import { decryptMessage, encryptMessage, EncryptedMessage } from "@lib/encrypt";
 import { flushMetrics } from "@lib/metrics";
 import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
+import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { ModelEndpointType, APISecret } from "@schema";
 
@@ -24,9 +25,11 @@ export interface ProxyOpts {
   credentialsCache?: Cache;
   completionsCache?: Cache;
   braintrustApiUrl?: string;
+  meterProvider?: MeterProvider;
 }
 
 export function EdgeProxyV1(opts: ProxyOpts) {
+  const meterProvider = opts.meterProvider;
   return async (request: Request, ctx: EdgeContext) => {
     if (request.method !== "GET" && request.method !== "POST") {
       return new Response("Method not allowed", {
@@ -185,7 +188,8 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         fetchApiSecrets,
         cacheGet,
         cachePut,
-        digestMessage
+        digestMessage,
+        meterProvider
       );
     } catch (e) {
       return new Response(`${e}`, {
@@ -193,7 +197,9 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         headers: { "Content-Type": "text/plain" },
       });
     } finally {
-      ctx.waitUntil(flushMetrics());
+      if (meterProvider) {
+        ctx.waitUntil(flushMetrics(meterProvider));
+      }
     }
 
     return new Response(readable, {

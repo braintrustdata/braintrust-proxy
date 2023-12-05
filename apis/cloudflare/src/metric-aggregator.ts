@@ -3,7 +3,13 @@ import { prometheus } from "@braintrust/proxy/prom/dist";
 declare global {
   interface Env {
     METRICS_AGGREGATOR: DurableObjectNamespace;
+    // The number of durable objects to use for metrics aggregation. Each shard (times the number
+    // of other distinct sets of labels) works out to one Prometheus timeseries. Shards allow us to
+    // essentially aggregate _across_ workers.
     METRICS_SHARDS?: number;
+    // If a metric doesn't show up for this many seconds, it'll be deleted from the store. We detect
+    // this at read time.
+    METRICS_TTL?: number;
   }
 }
 
@@ -35,13 +41,8 @@ export class PrometheusMetricAggregator {
     // into sets of keys at most 128 in length
     const writes = [];
     for (let { labels, samples } of data.timeseries || []) {
-      labels = (labels || []).map((label) =>
-        label.name === "instance"
-          ? {
-              name: "instance",
-              value: `do_${this.state.id}`,
-            }
-          : label
+      labels = (labels || []).filter(
+        (label) => label.name !== "instance" && label.name !== "job"
       );
       if (!samples || samples.length !== 1) {
         return new Response(
@@ -82,5 +83,9 @@ export class PrometheusMetricAggregator {
 
   static numShards(env: Env): number {
     return env.METRICS_SHARDS ?? 2;
+  }
+
+  static metricsTTL(env: Env): number {
+    return env.METRICS_TTL ?? 24 * 7 * 3600;
   }
 }

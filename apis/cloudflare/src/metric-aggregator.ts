@@ -1,4 +1,5 @@
-import { prometheus } from "@braintrust/proxy/prom/dist";
+import { prometheus } from "@braintrust/proxy/prom";
+import { ResourceMetrics } from "@opentelemetry/sdk-metrics";
 
 declare global {
   interface Env {
@@ -36,10 +37,10 @@ export class PrometheusMetricAggregator {
   }
 
   async handlePush(request: Request): Promise<Response> {
-    const data = (await request.json()) as prometheus.IWriteRequest;
+    const data = (await request.json()) as ResourceMetrics;
+
     // NOTE: We should be able to batch these get operations
     // into sets of keys at most 128 in length
-    const writes = [];
     for (let { labels, samples } of data.timeseries || []) {
       labels = (labels || []).filter(
         (label) => label.name !== "instance" && label.name !== "job"

@@ -54,7 +54,7 @@ export class PrometheusRemoteWriteExporter extends MetricReader {
       }
     }
     const resp = await (this.options.writeFn
-      ? this.options.writeFn(otelToWriteRequest(resourceMetrics))
+      ? this.options.writeFn(resourceMetrics)
       : remoteWriteMetrics(resourceMetrics, this.options));
 
     if (!resp.ok) {

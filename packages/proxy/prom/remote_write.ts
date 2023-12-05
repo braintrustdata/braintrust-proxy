@@ -16,7 +16,7 @@ export interface Options {
     username?: string;
     password?: string;
   };
-  writeFn?: (metrics: prometheus.IWriteRequest) => Promise<Response>;
+  writeFn?: (metrics: ResourceMetrics) => Promise<Response>;
   verbose?: boolean;
   timing?: boolean;
   timeout?: number;

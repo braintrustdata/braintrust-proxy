@@ -16,6 +16,7 @@
   "dependencies": {
     "@braintrust/proxy": "workspace:*",
     "@microlabs/otel-cf-workers": "1.0.0-rc.15",
+    "@opentelemetry/sdk-metrics": "^1.18.1",
     "dotenv": "^16.3.1"
   }
 }

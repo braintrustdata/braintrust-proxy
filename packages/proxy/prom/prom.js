@@ -371,7 +371,7 @@ export const prometheus = $root.prometheus = (() => {
          * @memberof prometheus
          * @interface ISample
          * @property {number|null} [value] Sample value
-         * @property {number|Long|null} [timestamp] Sample timestamp
+         * @property {number|null} [timestamp] Sample timestamp
          */
 
         /**
@@ -399,7 +399,7 @@ export const prometheus = $root.prometheus = (() => {
 
         /**
          * Sample timestamp.
-         * @member {number|Long} timestamp
+         * @member {number} timestamp
          * @memberof prometheus.Sample
          * @instance
          */
@@ -613,7 +613,7 @@ export const prometheus = $root.prometheus = (() => {
          * @interface IExemplar
          * @property {Array.<prometheus.ILabel>|null} [labels] Exemplar labels
          * @property {number|null} [value] Exemplar value
-         * @property {number|Long|null} [timestamp] Exemplar timestamp
+         * @property {number|null} [timestamp] Exemplar timestamp
          */
 
         /**
@@ -650,7 +650,7 @@ export const prometheus = $root.prometheus = (() => {
 
         /**
          * Exemplar timestamp.
-         * @member {number|Long} timestamp
+         * @member {number} timestamp
          * @memberof prometheus.Exemplar
          * @instance
          */

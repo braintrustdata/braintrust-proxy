@@ -1,6 +1,7 @@
 import { EdgeProxyV1 } from "@braintrust/proxy/edge";
 import { getMeter, safeInitMetrics } from "@braintrust/proxy";
 import { PrometheusRemoteWriteExporter } from "@braintrust/proxy/prom";
+import { PrometheusMetricAggregator } from "./metric-aggregator";
 
 export const proxyV1Prefix = "/v1";
 
@@ -8,6 +9,7 @@ declare global {
   interface Env {
     ai_proxy: KVNamespace;
     BRAINTRUST_API_URL: string;
+    // XXX REMOVE?
     PROMETHEUS_REMOTE_WRITE_URL?: string;
     PROMETHEUS_REMOTE_WRITE_USERNAME?: string;
     PROMETHEUS_REMOTE_WRITE_PASSWORD?: string;
@@ -24,6 +26,17 @@ export async function handleProxyV1(
   ctx: ExecutionContext
 ): Promise<Response> {
   if (env.PROMETHEUS_REMOTE_WRITE_URL !== undefined) {
+    // XXX Need to override this so that we can use the new exporter.
+    const metricShard = Math.floor(
+      Math.random() * PrometheusMetricAggregator.numShards(env)
+    );
+    console.log("SHARD", metricShard);
+    const aggregator = env.METRICS_AGGREGATOR.get(
+      env.METRICS_AGGREGATOR.idFromName(metricShard.toString())
+    );
+    const metricAggURL = new URL(request.url);
+    metricAggURL.pathname = "/push";
+
     safeInitMetrics(
       new PrometheusRemoteWriteExporter({
         url: env.PROMETHEUS_REMOTE_WRITE_URL,
@@ -31,6 +44,14 @@ export async function handleProxyV1(
           username: env.PROMETHEUS_REMOTE_WRITE_USERNAME,
           password: env.PROMETHEUS_REMOTE_WRITE_PASSWORD,
         },
+        writeFn: (resourceMetrics) =>
+          aggregator.fetch(metricAggURL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(resourceMetrics),
+          }),
       }),
       {
         platform: "cloudflare",

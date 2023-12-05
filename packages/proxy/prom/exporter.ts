@@ -21,7 +21,11 @@ import {
   MetricReader,
 } from "@opentelemetry/sdk-metrics";
 
-import { Options, remoteWriteMetrics } from "./remote_write";
+import {
+  Options,
+  otelToWriteRequest,
+  remoteWriteMetrics,
+} from "./remote_write";
 
 export class PrometheusRemoteWriteExporter extends MetricReader {
   private readonly options: Options;
@@ -49,7 +53,10 @@ export class PrometheusRemoteWriteExporter extends MetricReader {
         diag.error("Error while exporting metrics", error);
       }
     }
-    const resp = await remoteWriteMetrics(resourceMetrics, this.options);
+    const resp = await (this.options.writeFn
+      ? this.options.writeFn(otelToWriteRequest(resourceMetrics))
+      : remoteWriteMetrics(resourceMetrics, this.options));
+
     if (!resp.ok) {
       const error = Error(
         `Error while exporting metrics: ${resp.status} (${

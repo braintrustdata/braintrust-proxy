@@ -1,5 +1,4 @@
 import * as $protobuf from "protobufjs";
-import Long = require("long");
 /** Namespace prometheus. */
 export namespace prometheus {
 
@@ -140,7 +139,7 @@ export namespace prometheus {
         value?: (number|null);
 
         /** Sample timestamp */
-        timestamp?: (number|Long|null);
+        timestamp?: (number|null);
     }
 
     /** Represents a Sample. */
@@ -156,7 +155,7 @@ export namespace prometheus {
         public value: number;
 
         /** Sample timestamp. */
-        public timestamp: (number|Long);
+        public timestamp: number;
 
         /**
          * Creates a new Sample instance using the specified properties.
@@ -246,7 +245,7 @@ export namespace prometheus {
         value?: (number|null);
 
         /** Exemplar timestamp */
-        timestamp?: (number|Long|null);
+        timestamp?: (number|null);
     }
 
     /** Represents an Exemplar. */
@@ -265,7 +264,7 @@ export namespace prometheus {
         public value: number;
 
         /** Exemplar timestamp. */
-        public timestamp: (number|Long);
+        public timestamp: number;
 
         /**
          * Creates a new Exemplar instance using the specified properties.

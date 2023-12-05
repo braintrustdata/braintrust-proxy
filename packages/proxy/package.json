@@ -9,7 +9,7 @@
     "build": "tsup",
     "watch": "tsup --watch",
     "clean": "rm -r dist/*",
-    "proto": "./node_modules/.bin/pbjs -t static-module -w es6 -o prom/prom.js prom/prom.proto && ./node_modules/.bin/pbts -o prom/prom.d.ts prom/prom.js"
+    "proto": "./node_modules/.bin/pbjs -t static-module --force-number -w es6 -o prom/prom.js prom/prom.proto && ./node_modules/.bin/pbts --force-number -o prom.d.ts prom/prom.js && grep -v Long prom.d.ts > prom/prom.d.ts && rm prom.d.ts"
   },
   "exports": {
     "./package.json": "./package.json",
@@ -71,7 +71,6 @@
     "@types/node": "^20.9.4",
     "@types/uuid": "^9.0.7",
     "esbuild": "^0.19.7",
-    "long": "^5.2.3",
     "npm-run-all": "^4.1.5",
     "protobufjs-cli": "^1.1.2",
     "tsup": "^8.0.1",

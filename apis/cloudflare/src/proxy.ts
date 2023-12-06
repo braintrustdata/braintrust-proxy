@@ -31,7 +31,6 @@ export async function handleProxyV1(
     const metricShard = Math.floor(
       Math.random() * PrometheusMetricAggregator.numShards(env)
     );
-    console.log("SHARD", metricShard);
     const aggregator = env.METRICS_AGGREGATOR.get(
       env.METRICS_AGGREGATOR.idFromName(metricShard.toString())
     );

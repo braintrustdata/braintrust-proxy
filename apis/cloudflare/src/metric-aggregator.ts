@@ -2,7 +2,6 @@ import {
   DataPoint,
   DataPointType,
   Histogram,
-  HistogramMetricData,
   MetricData,
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
@@ -106,11 +105,6 @@ export class PrometheusMetricAggregator {
             // The only reason to await this put is to apply backpressure, which should be unecessary given the small # of metrics
             // we're aggregating over
             this.state.storage.put(metricKey, existing);
-            console.log(
-              "Wrote metric",
-              metricKey,
-              JSON.stringify(newValue, null, 2)
-            );
           }
         }
       }
@@ -123,7 +117,6 @@ export class PrometheusMetricAggregator {
     const metrics = await this.state.storage.list<MetricData>({
       prefix: "otel_metric_",
     });
-    console.log("METRICS", metrics);
     const resource: ResourceMetrics = {
       resource: Resource.default(),
       scopeMetrics: [
@@ -132,17 +125,20 @@ export class PrometheusMetricAggregator {
             name: "cloudflare-metric-aggregator",
           },
           // metrics is a map. can you create a list of its values
-          metrics: Array.from(metrics.values()),
+          metrics: Array.from(metrics.values()).map((m) => ({
+            ...m,
+            dataPoints: m.dataPoints.map((dp) => ({
+              ...dp,
+              attributes: {
+                ...dp.attributes,
+                metric_shard: this.state.id.toString(),
+              },
+            })),
+          })) as MetricData[],
         },
       ],
     };
-    console.log("READ", JSON.stringify(resource, null, 2));
     const serializer = new PrometheusSerializer("", true /*appendTimestamp*/);
-    try {
-      console.log("SERIALIZED", serializer.serialize(resource));
-    } catch (e) {
-      console.error(e);
-    }
 
     return new Response(serializer.serialize(resource), {
       headers: {

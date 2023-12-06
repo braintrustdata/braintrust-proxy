@@ -1,4 +1,3 @@
-import { prometheus } from "@braintrust/proxy/prom";
 import {
   DataPoint,
   DataPointType,
@@ -9,6 +8,8 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import { HrTime } from "@opentelemetry/api";
 import { hrTimeToMicroseconds } from "@opentelemetry/core";
+import { Resource } from "@opentelemetry/resources";
+import { PrometheusSerializer } from "./PrometheusSerializer";
 
 declare global {
   interface Env {
@@ -37,7 +38,7 @@ export class PrometheusMetricAggregator {
     if (url.pathname === "/push") {
       return await this.handlePush(request);
     } else if (url.pathname === "/metrics") {
-      return new Response("NOT IMPLEMENTED", { status: 501 });
+      return await this.handlePromScrape(request);
     } else {
       return new Response("Not found", {
         status: 404,
@@ -53,16 +54,17 @@ export class PrometheusMetricAggregator {
         for (let i = 0; i < metric.dataPoints.length; i++) {
           // NOTE: We should be able to batch these get operations
           // into sets of keys at most 128 in length
-          const metricKey = JSON.stringify({
-            type: "metric",
-            dataPointType: metric.dataPointType,
-            labels: metric.dataPoints[i].attributes,
-          });
+          const metricKey =
+            "otel_metric_" +
+            JSON.stringify({
+              dataPointType: metric.dataPointType,
+              labels: metric.dataPoints[i].attributes,
+            });
 
           let existing = (await this.state.storage.get<MetricData>(
             metricKey
           )) || {
-            dataPointType: metric.dataPointType,
+            ...metric,
             dataPoints: [],
           };
           if (existing && existing.dataPointType !== metric.dataPointType) {
@@ -104,12 +106,50 @@ export class PrometheusMetricAggregator {
             // The only reason to await this put is to apply backpressure, which should be unecessary given the small # of metrics
             // we're aggregating over
             this.state.storage.put(metricKey, existing);
+            console.log(
+              "Wrote metric",
+              metricKey,
+              JSON.stringify(newValue, null, 2)
+            );
           }
         }
       }
     }
 
     return new Response(null, { status: 204 });
+  }
+
+  async handlePromScrape(request: Request): Promise<Response> {
+    const metrics = await this.state.storage.list<MetricData>({
+      prefix: "otel_metric_",
+    });
+    console.log("METRICS", metrics);
+    const resource: ResourceMetrics = {
+      resource: Resource.default(),
+      scopeMetrics: [
+        {
+          scope: {
+            name: "cloudflare-metric-aggregator",
+          },
+          // metrics is a map. can you create a list of its values
+          metrics: Array.from(metrics.values()),
+        },
+      ],
+    };
+    console.log("READ", JSON.stringify(resource, null, 2));
+    const serializer = new PrometheusSerializer("", true /*appendTimestamp*/);
+    try {
+      console.log("SERIALIZED", serializer.serialize(resource));
+    } catch (e) {
+      console.error(e);
+    }
+
+    return new Response(serializer.serialize(resource), {
+      headers: {
+        "Content-Type": "text/plain",
+      },
+      status: 200,
+    });
   }
 
   static numShards(env: Env): number {

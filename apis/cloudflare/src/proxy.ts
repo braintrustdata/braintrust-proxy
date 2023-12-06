@@ -119,3 +119,40 @@ export async function handleProxyV1(
     meterProvider,
   })(request, ctx);
 }
+
+export async function handlePrometheusScrape(
+  request: Request,
+  env: Env,
+  ctx: ExecutionContext
+): Promise<Response> {
+  // Array from 0 ... numShards
+  const shards = await Promise.all(
+    Array.from(
+      { length: PrometheusMetricAggregator.numShards(env) },
+      async (_, i) => {
+        const aggregator = env.METRICS_AGGREGATOR.get(
+          env.METRICS_AGGREGATOR.idFromName(i.toString())
+        );
+        const url = new URL(request.url);
+        url.pathname = "/metrics";
+        const resp = await aggregator.fetch(url, {
+          method: "POST",
+        });
+        if (resp.status !== 200) {
+          throw new Error(
+            `Unexpected status code ${resp.status} ${
+              resp.statusText
+            }: ${await resp.text()}`
+          );
+        } else {
+          return await resp.text();
+        }
+      }
+    )
+  );
+  return new Response(shards.join("\n"), {
+    headers: {
+      "Content-Type": "text/plain",
+    },
+  });
+}

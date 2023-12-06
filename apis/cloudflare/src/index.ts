@@ -1,5 +1,5 @@
 import { ResolveConfigFn, instrument } from "@microlabs/otel-cf-workers";
-import { proxyV1Prefix, handleProxyV1 } from "./proxy";
+import { proxyV1Prefix, handleProxyV1, handlePrometheusScrape } from "./proxy";
 export { PrometheusMetricAggregator } from "./metric-aggregator";
 
 // The fetch handler is invoked when this worker receives a HTTP(S) request
@@ -13,6 +13,8 @@ const handler = {
     const url = new URL(request.url);
     if (url.pathname.startsWith(proxyV1Prefix)) {
       return handleProxyV1(request, env, ctx);
+    } else if (url.pathname === "/metrics") {
+      return handlePrometheusScrape(request, env, ctx);
     }
 
     return new Response("Not found", {

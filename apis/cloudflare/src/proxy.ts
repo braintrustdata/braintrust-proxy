@@ -9,10 +9,8 @@ declare global {
   interface Env {
     ai_proxy: KVNamespace;
     BRAINTRUST_API_URL: string;
-    // XXX REMOVE?
-    PROMETHEUS_REMOTE_WRITE_URL?: string;
-    PROMETHEUS_REMOTE_WRITE_USERNAME?: string;
-    PROMETHEUS_REMOTE_WRITE_PASSWORD?: string;
+    PROMETHEUS_SCRAPE_USER?: string;
+    PROMETHEUS_SCRAPE_PASSWORD?: string;
   }
 }
 
@@ -26,7 +24,7 @@ export async function handleProxyV1(
   ctx: ExecutionContext
 ): Promise<Response> {
   let meterProvider = undefined;
-  if (env.PROMETHEUS_REMOTE_WRITE_URL !== undefined) {
+  if (true /* XXX env.PROMETHEUS_REMOTE_WRITE_URL !== undefined */) {
     // XXX Need to override this so that we can use the new exporter.
     const metricShard = Math.floor(
       Math.random() * PrometheusMetricAggregator.numShards(env)
@@ -39,11 +37,7 @@ export async function handleProxyV1(
 
     meterProvider = initMetrics(
       new PrometheusRemoteWriteExporter({
-        url: env.PROMETHEUS_REMOTE_WRITE_URL,
-        auth: {
-          username: env.PROMETHEUS_REMOTE_WRITE_USERNAME,
-          password: env.PROMETHEUS_REMOTE_WRITE_PASSWORD,
-        },
+        url: "foo", // XXX
         writeFn: (resourceMetrics) =>
           aggregator.fetch(metricAggURL, {
             method: "POST",
@@ -114,7 +108,8 @@ export async function handleProxyV1(
         cacheSetLatency.record(end - start);
       },
     },
-    braintrustApiUrl: env.BRAINTRUST_API_URL,
+    braintrustApiUrl:
+      env.BRAINTRUST_API_URL || "https://www.braintrustdata.com",
     meterProvider,
   })(request, ctx);
 }
@@ -124,6 +119,30 @@ export async function handlePrometheusScrape(
   env: Env,
   ctx: ExecutionContext
 ): Promise<Response> {
+  if (
+    env.PROMETHEUS_SCRAPE_USER !== undefined ||
+    env.PROMETHEUS_SCRAPE_PASSWORD !== undefined
+  ) {
+    const unauthorized = new Response("Unauthorized", {
+      status: 401,
+      headers: {
+        "WWW-Authenticate": 'Basic realm="Braintrust Proxy Metrics"',
+      },
+    });
+
+    const auth = request.headers.get("Authorization");
+    if (!auth || auth.indexOf("Basic ") !== 0) {
+      return unauthorized;
+    }
+
+    const userPass = atob(auth.slice("Basic ".length)).split(":");
+    if (
+      userPass[0] !== env.PROMETHEUS_SCRAPE_USER ||
+      userPass[1] !== env.PROMETHEUS_SCRAPE_PASSWORD
+    ) {
+      return unauthorized;
+    }
+  }
   // Array from 0 ... numShards
   const shards = await Promise.all(
     Array.from(

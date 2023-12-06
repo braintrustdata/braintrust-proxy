@@ -19,10 +19,4 @@ export default defineConfig([
     outDir: "schema/dist",
     dts: true,
   },
-  {
-    entry: ["prom/index.ts"],
-    format: ["cjs", "esm"],
-    outDir: "prom/dist",
-    dts: true,
-  },
 ]);

@@ -56,12 +56,13 @@ export class PrometheusMetricAggregator {
           const metricKey =
             "otel_metric_" +
             JSON.stringify({
+              name: metric.descriptor.name,
               dataPointType: metric.dataPointType,
               labels: metric.dataPoints[i].attributes,
             });
 
           let existing = (await this.state.storage.get<MetricData>(
-            metricKey
+            metricKey,
           )) || {
             ...metric,
             dataPoints: [],
@@ -76,21 +77,21 @@ export class PrometheusMetricAggregator {
               newValue = coalesceFn(
                 existing.dataPoints[0] as DataPoint<number>,
                 metric.dataPoints[i],
-                mergeCounters
+                mergeCounters,
               );
               break;
             case DataPointType.GAUGE:
               newValue = coalesceFn(
                 existing.dataPoints[0] as DataPoint<number>,
                 metric.dataPoints[i],
-                mergeGauges
+                mergeGauges,
               );
               break;
             case DataPointType.HISTOGRAM:
               newValue = coalesceFn(
                 existing.dataPoints[0] as DataPoint<Histogram>,
                 metric.dataPoints[i],
-                mergeHistograms
+                mergeHistograms,
               );
               break;
             case DataPointType.EXPONENTIAL_HISTOGRAM:
@@ -100,9 +101,10 @@ export class PrometheusMetricAggregator {
           }
 
           if (newValue !== undefined) {
+            (existing as any).descriptor = metric.descriptor; // Update the descriptor in case the code changes it
             existing.dataPoints[0] = newValue;
             // See "Write buffer behavior" in https://developers.cloudflare.com/durable-objects/api/transactional-storage-api/
-            // The only reason to await this put is to apply backpressure, which should be unecessary given the small # of metrics
+            // The only reason to await this put is to apply backpressure, which should be unnecessary given the small # of metrics
             // we're aggregating over
             this.state.storage.put(metricKey, existing);
           }
@@ -163,14 +165,14 @@ export class PrometheusMetricAggregator {
 
 function mergeHistograms(
   base: DataPoint<Histogram>,
-  delta: DataPoint<Histogram>
+  delta: DataPoint<Histogram>,
 ): DataPoint<Histogram> {
   if (
     JSON.stringify(base.value.buckets.boundaries) !==
     JSON.stringify(delta.value.buckets.boundaries)
   ) {
     throw new Error(
-      "Unsupported: merging histograms with different bucket boundaries"
+      "Unsupported: merging histograms with different bucket boundaries",
     );
   }
 
@@ -182,7 +184,7 @@ function mergeHistograms(
       buckets: {
         boundaries: [...base.value.buckets.boundaries],
         counts: base.value.buckets.counts.map(
-          (count, i) => count + delta.value.buckets.counts[i]
+          (count, i) => count + delta.value.buckets.counts[i],
         ),
       },
       sum: (base.value.sum || 0) + (delta.value.sum || 0),
@@ -195,7 +197,7 @@ function mergeHistograms(
 
 function mergeGauges(
   base: DataPoint<number>,
-  delta: DataPoint<number>
+  delta: DataPoint<number>,
 ): DataPoint<number> {
   const baseT = hrTimeToMicroseconds(base.endTime);
   const deltaT = hrTimeToMicroseconds(delta.endTime);
@@ -209,7 +211,7 @@ function mergeGauges(
 
 function mergeCounters(
   base: DataPoint<number>,
-  delta: DataPoint<number>
+  delta: DataPoint<number>,
 ): DataPoint<number> {
   return {
     startTime: minHrTime(base.startTime, delta.startTime),
@@ -234,7 +236,7 @@ function maxHrTime(a: HrTime, b: HrTime): HrTime {
 function coalesceFn<T>(
   a: T | undefined,
   b: T | undefined,
-  coalesce: (a: T, b: T) => T
+  coalesce: (a: T, b: T) => T,
 ): T | undefined {
   return a === undefined ? b : b === undefined ? a : coalesce(a, b);
 }

@@ -1,6 +1,5 @@
 import { EdgeProxyV1, FlushingExporter } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
-import { PrometheusRemoteWriteExporter } from "@braintrust/proxy/prom";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 
 export const proxyV1Prefix = "/v1";
@@ -22,15 +21,15 @@ function apiCacheKey(key: string) {
 export async function handleProxyV1(
   request: Request,
   env: Env,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ): Promise<Response> {
   let meterProvider = undefined;
   if (!env.DISABLE_METRICS) {
     const metricShard = Math.floor(
-      Math.random() * PrometheusMetricAggregator.numShards(env)
+      Math.random() * PrometheusMetricAggregator.numShards(env),
     );
     const aggregator = env.METRICS_AGGREGATOR.get(
-      env.METRICS_AGGREGATOR.idFromName(metricShard.toString())
+      env.METRICS_AGGREGATOR.idFromName(metricShard.toString()),
     );
     const metricAggURL = new URL(request.url);
     metricAggURL.pathname = "/push";
@@ -43,13 +42,13 @@ export async function handleProxyV1(
             "Content-Type": "application/json",
           },
           body: JSON.stringify(resourceMetrics),
-        })
-      )
+        }),
+      ),
     );
   }
 
   const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
-    "cloudflare-metrics"
+    "cloudflare-metrics",
   );
 
   const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
@@ -78,7 +77,7 @@ export async function handleProxyV1(
             headers: {
               "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
             },
-          })
+          }),
         );
       },
     },
@@ -112,7 +111,7 @@ export async function handleProxyV1(
 export async function handlePrometheusScrape(
   request: Request,
   env: Env,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ): Promise<Response> {
   if (
     env.PROMETHEUS_SCRAPE_USER !== undefined ||
@@ -144,7 +143,7 @@ export async function handlePrometheusScrape(
       { length: PrometheusMetricAggregator.numShards(env) },
       async (_, i) => {
         const aggregator = env.METRICS_AGGREGATOR.get(
-          env.METRICS_AGGREGATOR.idFromName(i.toString())
+          env.METRICS_AGGREGATOR.idFromName(i.toString()),
         );
         const url = new URL(request.url);
         url.pathname = "/metrics";
@@ -155,13 +154,13 @@ export async function handlePrometheusScrape(
           throw new Error(
             `Unexpected status code ${resp.status} ${
               resp.statusText
-            }: ${await resp.text()}`
+            }: ${await resp.text()}`,
           );
         } else {
           return await resp.text();
         }
-      }
-    )
+      },
+    ),
   );
   return new Response(shards.join("\n"), {
     headers: {

@@ -175,19 +175,19 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     };
 
     try {
-      await proxyV1(
-        request.method,
-        relativeURL,
+      await proxyV1({
+        method: request.method,
+        url: relativeURL,
         proxyHeaders,
-        await request.text(),
+        body: await request.text(),
         setHeader,
-        setStatus,
-        writable,
-        fetchApiSecrets,
+        setStatusCode: setStatus,
+        res: writable,
+        getApiSecrets: fetchApiSecrets,
         cacheGet,
         cachePut,
-        digestMessage,
-      );
+        digest: digestMessage,
+      });
     } catch (e) {
       return new Response(`${e}`, {
         status: 400,

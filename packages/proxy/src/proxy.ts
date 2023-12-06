@@ -39,43 +39,60 @@ const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
 const ENDPOINT_NAME = "x-bt-endpoint-name";
 
+// Options to control how the cache key is generated.
+export interface CacheKeyOptions {
+  excludeAuthToken?: boolean;
+  excludeOrgName?: boolean;
+}
+
 // This is an isomorphic implementation of proxyV1, which is used by both edge functions
 // in CloudFlare and by the node proxy (locally and in lambda).
-export async function proxyV1(
-  method: "GET" | "POST",
-  url: string,
-  proxyHeaders: Record<string, string>,
-  body: string,
-  setHeader: (name: string, value: string) => void,
-  setStatusCode: (code: number) => void,
-  res: WritableStream<Uint8Array>,
+export async function proxyV1({
+  method,
+  url,
+  proxyHeaders,
+  body,
+  setHeader,
+  setStatusCode,
+  res,
+  getApiSecrets,
+  cacheGet,
+  cachePut,
+  digest,
+  cacheKeyOptions,
+}: {
+  method: "GET" | "POST";
+  url: string;
+  proxyHeaders: Record<string, string>;
+  body: string;
+  setHeader: (name: string, value: string) => void;
+  setStatusCode: (code: number) => void;
+  res: WritableStream<Uint8Array>;
   getApiSecrets: (
     useCache: boolean,
     authToken: string,
     types: ModelEndpointType[],
     org_name?: string,
-  ) => Promise<APISecret[]>,
-  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
-  cachePut: (encryptionKey: string, key: string, value: string) => void,
-  digest: (message: string) => Promise<string>,
-): Promise<void> {
+  ) => Promise<APISecret[]>;
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
+  cachePut: (encryptionKey: string, key: string, value: string) => void;
+  digest: (message: string) => Promise<string>;
+  cacheKeyOptions?: CacheKeyOptions;
+}): Promise<void> {
   proxyHeaders = Object.fromEntries(
     Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
   );
-  const headers: Record<string, string> = {
-    ...proxyHeaders,
-  };
-  for (const h of Object.keys(headers)) {
-    const hLower = h.toLowerCase();
-    if (
-      hLower.startsWith("x-amzn") ||
-      hLower == CACHE_HEADER ||
-      hLower == CREDS_CACHE_HEADER ||
-      hLower == "content-length"
-    ) {
-      delete headers[h];
-    }
-  }
+  const headers = Object.fromEntries(
+    Object.entries(proxyHeaders).filter(
+      ([h, _]) =>
+        !(
+          h.startsWith("x-amzn") ||
+          h == CACHE_HEADER ||
+          h == CREDS_CACHE_HEADER ||
+          h == "content-length"
+        ),
+    ),
+  );
 
   const authToken = parseAuthHeader(proxyHeaders);
   if (!authToken) {
@@ -145,8 +162,8 @@ export async function proxyV1(
       JSON.stringify({
         url,
         body,
-        authToken,
-        orgName,
+        authToken: cacheKeyOptions?.excludeAuthToken || authToken,
+        orgName: cacheKeyOptions?.excludeOrgName || orgName,
         endpointName,
       }),
     ));

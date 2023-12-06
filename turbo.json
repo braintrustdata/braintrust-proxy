@@ -4,7 +4,7 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
-      "env": ["BRAINTRUST_API_URL", "ORG_NAME", "REDIS_HOST", "REDIS_PORT"]
+      "env": ["BRAINTRUST_API_URL", "ORG_NAME", "REDIS_HOST", "REDIS_PORT", "BRAINTRUST_PROXY_LOCAL_CACHE_PATH"]
     },
     "test": {
       "dependsOn": ["^build"],

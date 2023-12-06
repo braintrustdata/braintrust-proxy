@@ -1,10 +1,3 @@
-interface EnvParams {
-  braintrustApiUrl: string;
-  orgName?: string;
-  redisHost?: string;
-  redisPort?: number;
-}
-
 function reloadEnv() {
   return {
     braintrustApiUrl:
@@ -12,6 +5,7 @@ function reloadEnv() {
     orgName: process.env.ORG_NAME || "*",
     redisHost: process.env.REDIS_HOST,
     redisPort: parseInt(process.env.REDIS_PORT || "6379"),
+    localCachePath: process.env.BRAINTRUST_PROXY_LOCAL_CACHE_PATH || "",
   };
 }
 

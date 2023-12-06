@@ -15,8 +15,6 @@
   },
   "dependencies": {
     "@braintrust/proxy": "workspace:*",
-    "@opentelemetry/api": "^1.7.0",
-    "@opentelemetry/core": "^1.18.1",
     "@opentelemetry/resources": "^1.18.1",
     "@opentelemetry/sdk-metrics": "^1.18.1",
     "dotenv": "^16.3.1"

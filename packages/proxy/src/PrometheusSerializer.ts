@@ -97,7 +97,7 @@ function sanitizePrometheusMetricName(name: string): string {
  */
 function enforcePrometheusNamingConvention(
   name: string,
-  type: InstrumentType
+  type: InstrumentType,
 ): string {
   // Prometheus requires that metrics of the Counter kind have "_total" suffix
   if (!name.endsWith("_total") && type === InstrumentType.COUNTER) {
@@ -142,7 +142,7 @@ function stringify(
   attributes: MetricAttributes,
   value: number,
   timestamp?: number,
-  additionalAttributes?: MetricAttributes
+  additionalAttributes?: MetricAttributes,
 ) {
   let hasAttribute = false;
   let attributesStr = "";
@@ -210,7 +210,7 @@ export class PrometheusSerializer {
 
   private _serializeMetricData(metricData: MetricData) {
     let name = sanitizePrometheusMetricName(
-      escapeString(metricData.descriptor.name)
+      escapeString(metricData.descriptor.name),
     );
     if (this._prefix) {
       name = `${this._prefix}${name}`;
@@ -220,7 +220,7 @@ export class PrometheusSerializer {
     name = enforcePrometheusNamingConvention(name, metricData.descriptor.type);
 
     const help = `# HELP ${name} ${escapeString(
-      metricData.descriptor.description || "description missing"
+      metricData.descriptor.description || "description missing",
     )}`;
     const unit = metricData.descriptor.unit
       ? `\n# UNIT ${name} ${escapeString(metricData.descriptor.unit)}`
@@ -236,8 +236,8 @@ export class PrometheusSerializer {
             this._serializeSingularDataPoint(
               name,
               metricData.descriptor.type,
-              it
-            )
+              it,
+            ),
           )
           .join("");
         break;
@@ -248,15 +248,15 @@ export class PrometheusSerializer {
             this._serializeHistogramDataPoint(
               name,
               metricData.descriptor.type,
-              it
-            )
+              it,
+            ),
           )
           .join("");
         break;
       }
       default: {
         diag.error(
-          `Unrecognizable DataPointType: ${dataPointType} for metric "${name}"`
+          `Unrecognizable DataPointType: ${dataPointType} for metric "${name}"`,
         );
       }
     }
@@ -267,7 +267,7 @@ export class PrometheusSerializer {
   private _serializeSingularDataPoint(
     name: string,
     type: InstrumentType,
-    dataPoint: DataPoint<number>
+    dataPoint: DataPoint<number>,
   ): string {
     let results = "";
 
@@ -279,7 +279,7 @@ export class PrometheusSerializer {
       attributes,
       value,
       this._appendTimestamp ? timestamp : undefined,
-      undefined
+      undefined,
     );
     return results;
   }
@@ -287,7 +287,7 @@ export class PrometheusSerializer {
   private _serializeHistogramDataPoint(
     name: string,
     type: InstrumentType,
-    dataPoint: DataPoint<Histogram>
+    dataPoint: DataPoint<Histogram>,
   ): string {
     let results = "";
 
@@ -304,7 +304,7 @@ export class PrometheusSerializer {
           attributes,
           value,
           this._appendTimestamp ? timestamp : undefined,
-          undefined
+          undefined,
         );
     }
 
@@ -336,7 +336,7 @@ export class PrometheusSerializer {
             upperBound === undefined || upperBound === Infinity
               ? "+Inf"
               : String(upperBound),
-        }
+        },
       );
     }
 

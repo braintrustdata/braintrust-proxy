@@ -113,6 +113,9 @@ export async function handlePrometheusScrape(
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
+  if (env.DISABLE_METRICS) {
+    return new Response("Metrics disabled", { status: 403 });
+  }
   if (
     env.PROMETHEUS_SCRAPE_USER !== undefined ||
     env.PROMETHEUS_SCRAPE_PASSWORD !== undefined

@@ -19,12 +19,6 @@ importers:
       '@braintrust/proxy':
         specifier: workspace:*
         version: link:../../packages/proxy
-      '@opentelemetry/api':
-        specifier: ^1.7.0
-        version: 1.7.0
-      '@opentelemetry/core':
-        specifier: ^1.18.1
-        version: 1.18.1(@opentelemetry/api@1.7.0)
       '@opentelemetry/resources':
         specifier: ^1.18.1
         version: 1.18.1(@opentelemetry/api@1.7.0)
@@ -178,6 +172,9 @@ importers:
       '@opentelemetry/api':
         specifier: ^1.7.0
         version: 1.7.0
+      '@opentelemetry/core':
+        specifier: ^1.18.1
+        version: 1.18.1(@opentelemetry/api@1.7.0)
       '@opentelemetry/resources':
         specifier: ^1.18.1
         version: 1.18.1(@opentelemetry/api@1.7.0)

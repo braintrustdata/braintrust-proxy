@@ -1,4 +1,4 @@
-import { EdgeProxyV1 } from "@braintrust/proxy/edge";
+import { EdgeProxyV1, FlushingExporter } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusRemoteWriteExporter } from "@braintrust/proxy/prom";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
@@ -9,6 +9,7 @@ declare global {
   interface Env {
     ai_proxy: KVNamespace;
     BRAINTRUST_API_URL: string;
+    DISABLE_METRICS?: boolean;
     PROMETHEUS_SCRAPE_USER?: string;
     PROMETHEUS_SCRAPE_PASSWORD?: string;
   }
@@ -24,8 +25,7 @@ export async function handleProxyV1(
   ctx: ExecutionContext
 ): Promise<Response> {
   let meterProvider = undefined;
-  if (true /* XXX env.PROMETHEUS_REMOTE_WRITE_URL !== undefined */) {
-    // XXX Need to override this so that we can use the new exporter.
+  if (!env.DISABLE_METRICS) {
     const metricShard = Math.floor(
       Math.random() * PrometheusMetricAggregator.numShards(env)
     );
@@ -36,20 +36,15 @@ export async function handleProxyV1(
     metricAggURL.pathname = "/push";
 
     meterProvider = initMetrics(
-      new PrometheusRemoteWriteExporter({
-        url: "foo", // XXX
-        writeFn: (resourceMetrics) =>
-          aggregator.fetch(metricAggURL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(resourceMetrics),
-          }),
-      }),
-      {
-        platform: "cloudflare",
-      }
+      new FlushingExporter((resourceMetrics) =>
+        aggregator.fetch(metricAggURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(resourceMetrics),
+        })
+      )
     );
   }
 

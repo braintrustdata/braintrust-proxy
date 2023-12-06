@@ -21,28 +21,18 @@ import {
   MetricReader,
 } from "@opentelemetry/sdk-metrics";
 
-import {
-  Options,
-  otelToWriteRequest,
-  remoteWriteMetrics,
-} from "./remote_write";
-
-export class PrometheusRemoteWriteExporter extends MetricReader {
-  private readonly options: Options;
-
+export class FlushingExporter extends MetricReader {
   /**
    * Constructor
    * @param config Exporter configuration
    * @param callback Callback to be called after a server was started
    */
-  constructor(options: Options) {
+  constructor(private flushFn: (resourceMetrics: any) => Promise<Response>) {
     super({
       aggregationSelector: (_instrumentType) => Aggregation.Default(),
       aggregationTemporalitySelector: (_instrumentType) =>
         AggregationTemporality.CUMULATIVE,
     });
-
-    this.options = options;
   }
 
   override async onForceFlush(): Promise<void> {
@@ -53,15 +43,15 @@ export class PrometheusRemoteWriteExporter extends MetricReader {
         diag.error("Error while exporting metrics", error);
       }
     }
-    const resp = await remoteWriteMetrics(resourceMetrics, this.options);
+    const resp = await this.flushFn(resourceMetrics);
 
     if (!resp.ok) {
       const error = Error(
-        `Error while exporting metrics: ${resp.status} (${
+        `Error while flushing metrics: ${resp.status} (${
           resp.statusText
         }): ${await resp.text()}`
       );
-      console.log("Error while exporting metrics", error);
+      console.log("Error while flushing metrics", error);
       throw error;
     }
   }

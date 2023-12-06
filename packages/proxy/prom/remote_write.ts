@@ -16,7 +16,6 @@ export interface Options {
     username?: string;
     password?: string;
   };
-  writeFn?: (metrics: ResourceMetrics) => Promise<Response>;
   verbose?: boolean;
   timing?: boolean;
   timeout?: number;

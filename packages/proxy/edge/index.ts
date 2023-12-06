@@ -7,6 +7,8 @@ import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { ModelEndpointType, APISecret } from "@schema";
 
+export { FlushingExporter } from "./exporter";
+
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;
 }

@@ -19,6 +19,11 @@ kv_namespaces = [
 # PROMETHEUS_SCRAPE_USER = ""
 # PROMETHEUS_SCRAPE_PASSWORD = ""
 
+# Configure this to disable the prometheus endpoint. Note that even with this flag enabled, the proxy will not
+# "push" any of its own telemetry. Instead, it will only report telemetry when scraped, behind a username and
+# password you can configure.
+# DISABLE_METRICS = true
+
 # Split metric aggregations into multiple shards. This is useful if you expect a lot of throughput and want
 # to avoid hitting rate limits on the durable objects used to aggregate metrics.
 # METRICS_SHARDS = 10

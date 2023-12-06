@@ -5,3 +5,8 @@ support for publishing them via the [`remote_write`](https://prometheus.io/docs/
 
 Much of the code is forked from the [prometheus-remote-write](https://github.com/huksley/prometheus-remote-write)
 package, but has been modified to use vanilla `fetch` and upgraded to TypeScript.
+
+## Status
+
+This code is not currently in use, due to scalability concerns with `remote_write` (specifically, issuing one
+`remote_write` per worker process, resulting in time-series cardinality explosion).

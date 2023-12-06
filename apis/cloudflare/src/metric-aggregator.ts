@@ -114,11 +114,15 @@ export class PrometheusMetricAggregator {
   }
 
   async handlePromScrape(request: Request): Promise<Response> {
+    const resource = Resource.default();
+    resource.attributes["service"] = "braintrust-proxy-cloudflare";
+
     const metrics = await this.state.storage.list<MetricData>({
       prefix: "otel_metric_",
     });
-    const resource: ResourceMetrics = {
-      resource: Resource.default(),
+
+    const resourceMetrics: ResourceMetrics = {
+      resource,
       scopeMetrics: [
         {
           scope: {
@@ -140,7 +144,7 @@ export class PrometheusMetricAggregator {
     };
     const serializer = new PrometheusSerializer("", true /*appendTimestamp*/);
 
-    return new Response(serializer.serialize(resource), {
+    return new Response(serializer.serialize(resourceMetrics), {
       headers: {
         "Content-Type": "text/plain",
       },

@@ -16,7 +16,6 @@ declare global {
   }
 }
 
-// XXX Move the meat of this implementation into the proxy package (with callback hooks to durable storage)
 export class PrometheusMetricAggregator {
   state: DurableObjectState;
   constructor(state: DurableObjectState, env: Env) {

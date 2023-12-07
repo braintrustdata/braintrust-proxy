@@ -28,6 +28,8 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
 } from "./providers/anthropic";
+import { Meter, MeterProvider } from "@opentelemetry/api";
+import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -59,6 +61,7 @@ export async function proxyV1({
   cacheGet,
   cachePut,
   digest,
+  meterProvider = NOOP_METER_PROVIDER,
   cacheKeyOptions,
 }: {
   method: "GET" | "POST";
@@ -77,8 +80,18 @@ export async function proxyV1({
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
   cachePut: (encryptionKey: string, key: string, value: string) => void;
   digest: (message: string) => Promise<string>;
+  meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
 }): Promise<void> {
+  const meter = meterProvider.getMeter("proxy-metrics");
+
+  const totalCalls = meter.createCounter("total_calls");
+  const cacheHits = meter.createCounter("results_cache_hits");
+  const cacheMisses = meter.createCounter("results_cache_misses");
+  const cacheSkips = meter.createCounter("results_cache_skips");
+
+  totalCalls.add(1);
+
   proxyHeaders = Object.fromEntries(
     Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
   );
@@ -173,7 +186,9 @@ export async function proxyV1({
   let stream: ReadableStream<Uint8Array> | null = null;
   if (useCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
+
     if (cached !== null) {
+      cacheHits.add(1);
       const cachedData: CachedData = JSON.parse(cached);
 
       for (const [name, value] of Object.entries(cachedData.headers)) {
@@ -187,12 +202,16 @@ export async function proxyV1({
           controller.close();
         },
       });
+    } else {
+      cacheMisses.add(1);
     }
+  } else {
+    cacheSkips.add(1);
   }
 
   if (stream === null) {
     const { response: proxyResponse, stream: proxyStream } =
-      await fetchModelLoop(method, url, headers, body, async (types) => {
+      await fetchModelLoop(meter, method, url, headers, body, async (types) => {
         const secrets = await getApiSecrets(
           useCredentialsCacheMode !== "never",
           authToken,
@@ -265,7 +284,7 @@ export async function proxyV1({
   }
 
   if (stream) {
-    stream.pipeTo(res);
+    await stream.pipeTo(res);
   } else {
     res.close();
   }
@@ -287,6 +306,7 @@ const RETRY_ERROR_CODES = [
 ];
 
 async function fetchModelLoop(
+  meter: Meter,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
@@ -299,6 +319,19 @@ async function fetchModelLoop(
   } catch (e) {
     console.warn("Failed to parse body. Will fall back to default (OpenAI)", e);
   }
+
+  const endpointCalls = meter.createCounter("endpoint_calls");
+  const endpointFailures = meter.createCounter("endpoint_failures");
+  const endpointRetryableErrors = meter.createCounter(
+    "endpoint_retryable_errors",
+  );
+  const retriesPerCall = meter.createHistogram("retries_per_call", {
+    advice: {
+      explicitBucketBoundaries: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    },
+  });
+  const llmTtft = meter.createHistogram("llm_ttft");
+  const llmLatency = meter.createHistogram("llm_latency");
 
   let model = null;
   let format: ModelFormat = "openai";
@@ -320,10 +353,19 @@ async function fetchModelLoop(
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse = null;
   let lastException = null;
+  let loggableInfo: Record<string, any> = {};
 
-  for (let i = 0; i < secrets.length; i++) {
+  let i = 0;
+  for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
+
+    loggableInfo = {
+      model,
+      endpoint_id: secret.id,
+      type: secret.type,
+      format,
+    };
 
     if (
       !isEmpty(model) &&
@@ -334,6 +376,8 @@ async function fetchModelLoop(
       continue;
     }
 
+    let httpCode = undefined;
+    endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
         format,
@@ -357,6 +401,7 @@ async function fetchModelLoop(
           proxyResponse.response.status,
           proxyResponse.response.statusText,
         );
+        httpCode = proxyResponse.response.status;
       }
     } catch (e) {
       lastException = e;
@@ -366,11 +411,19 @@ async function fetchModelLoop(
           secret.id,
           e,
         );
-        continue;
+      } else {
+        endpointFailures.add(1, loggableInfo);
+        throw e;
       }
-      throw e;
     }
+
+    endpointRetryableErrors.add(1, {
+      ...loggableInfo,
+      http_code: httpCode,
+    });
   }
+
+  retriesPerCall.record(i, loggableInfo);
 
   if (!proxyResponse) {
     if (lastException) {
@@ -384,7 +437,31 @@ async function fetchModelLoop(
     }
   }
 
-  return proxyResponse;
+  let stream = proxyResponse.stream;
+  if (!proxyResponse.response.ok) {
+    endpointFailures.add(1, loggableInfo);
+  } else if (stream) {
+    let first = true;
+    const timingStart = nowMs();
+    const timingStream = new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        if (first) {
+          llmTtft.record(nowMs() - timingStart, loggableInfo);
+          first = false;
+        }
+        controller.enqueue(chunk);
+      },
+      async flush(controller) {
+        const duration = nowMs() - timingStart;
+        llmLatency.record(duration, loggableInfo);
+      },
+    });
+    stream = stream.pipeThrough(timingStream);
+  }
+  return {
+    stream,
+    response: proxyResponse.response,
+  };
 }
 
 async function fetchModel(

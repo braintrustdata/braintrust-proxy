@@ -144,7 +144,7 @@ export async function aggregateMetrics(
 }
 
 export function prometheusSerialize(metrics: ResourceMetrics): string {
-  const serializer = new PrometheusSerializer("", true /*appendTimestamp*/);
+  const serializer = new PrometheusSerializer("", false /*appendTimestamp*/);
   return serializer.serialize(metrics);
 }
 

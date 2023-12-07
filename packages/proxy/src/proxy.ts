@@ -307,6 +307,11 @@ async function fetchModelLoop(
   const endpointRetryableErrors = meter.createCounter(
     "endpoint_retryable_errors",
   );
+  const retriesPerCall = meter.createHistogram("retries_per_call", {
+    advice: {
+      explicitBucketBoundaries: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    },
+  });
   const llmTtft = meter.createHistogram("llm_ttft");
   const llmLatency = meter.createHistogram("llm_latency");
 
@@ -330,9 +335,10 @@ async function fetchModelLoop(
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse = null;
   let lastException = null;
-  let loggableInfo = {};
+  let loggableInfo: Record<string, any> = {};
 
-  for (let i = 0; i < secrets.length; i++) {
+  let i = 0;
+  for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
 
@@ -352,6 +358,7 @@ async function fetchModelLoop(
       continue;
     }
 
+    let httpCode = undefined;
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
@@ -376,6 +383,7 @@ async function fetchModelLoop(
           proxyResponse.response.status,
           proxyResponse.response.statusText,
         );
+        httpCode = proxyResponse.response.status;
       }
     } catch (e) {
       lastException = e;
@@ -391,8 +399,13 @@ async function fetchModelLoop(
       }
     }
 
-    endpointRetryableErrors.add(1, loggableInfo);
+    endpointRetryableErrors.add(1, {
+      ...loggableInfo,
+      http_code: httpCode,
+    });
   }
+
+  retriesPerCall.record(i, loggableInfo);
 
   if (!proxyResponse) {
     if (lastException) {

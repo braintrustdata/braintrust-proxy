@@ -1,6 +1,7 @@
 name = "proxy"
 main = "src/index.ts"
 compatibility_date = "2023-10-30"
+compatibility_flags = ["nodejs_compat"] # for OTEL
 
 kv_namespaces = [
     # Configure this id to map to the id returned from
@@ -13,9 +14,21 @@ kv_namespaces = [
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
-# You should not need to edit this
-BRAINTRUST_API_URL = "https://www.braintrustdata.com"
+# --- Braintrust proxy args
+# Configure this username and password to protect your Prometheus metrics endpoint.
+# PROMETHEUS_SCRAPE_USER = ""
+# PROMETHEUS_SCRAPE_PASSWORD = ""
 
+# Configure this to disable the prometheus endpoint. Note that even with this flag enabled, the proxy will not
+# "push" any of its own telemetry. Instead, it will only report telemetry when scraped, behind a username and
+# password you can configure.
+# DISABLE_METRICS = true
+
+# Split metric aggregations into multiple shards. This is useful if you expect a lot of throughput and want
+# to avoid hitting rate limits on the durable objects used to aggregate metrics.
+# METRICS_SHARDS = 10
+
+# --- Standard Cloudflare args
 # Bind an R2 Bucket. Use R2 to store arbitrarily large blobs of data, such as files.
 # Docs: https://developers.cloudflare.com/r2/api/workers/workers-api-usage/
 # [[r2_buckets]]

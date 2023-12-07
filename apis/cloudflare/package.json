@@ -11,10 +11,12 @@
     "@cloudflare/workers-types": "^4.20230419.0",
     "itty-router": "^3.0.12",
     "typescript": "^5.0.4",
-    "wrangler": "^3.17.1"
+    "wrangler": "^3.19.0"
   },
   "dependencies": {
-    "dotenv": "^16.3.1",
-    "@braintrust/proxy": "workspace:*"
+    "@braintrust/proxy": "workspace:*",
+    "@opentelemetry/resources": "^1.18.1",
+    "@opentelemetry/sdk-metrics": "^1.18.1",
+    "dotenv": "^16.3.1"
   }
 }

@@ -45,7 +45,10 @@ export async function nodeProxyV1(
 
   let { readable, writable } = new TransformStream();
 
-  await proxyV1(
+  // Note: we must resolve the proxy after forwarding the stream to `res`,
+  // because the proxy promise resolves after its internal stream has finished
+  // writing.
+  const proxyPromise = proxyV1(
     method,
     url,
     proxyHeaders,
@@ -64,4 +67,5 @@ export async function nodeProxyV1(
   const res = getRes();
   const readableNode = Readable.fromWeb(readable as streamWeb.ReadableStream);
   readableNode.pipe(res, { end: true });
+  await proxyPromise;
 }

@@ -72,10 +72,10 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       useCache: boolean,
       authToken: string,
       types: ModelEndpointType[],
-      org_name?: string
+      org_name?: string,
     ): Promise<APISecret[]> => {
       const cacheKey = await digestMessage(
-        `${types.join(":")}/${org_name ? org_name + ":" : ""}${authToken}`
+        `${types.join(":")}/${org_name ? org_name + ":" : ""}${authToken}`,
       );
 
       const response =
@@ -108,7 +108,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
               org_name,
               mode: "full",
             }),
-          }
+          },
         );
         if (response.ok) {
           secrets = await response.json();
@@ -120,7 +120,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         lookupFailed = true;
         console.warn(
           "Failed to lookup api key. Falling back to provided key",
-          e
+          e,
         );
       }
 
@@ -140,8 +140,8 @@ export function EdgeProxyV1(opts: ProxyOpts) {
             JSON.stringify(secrets),
             {
               ttl,
-            }
-          )
+            },
+          ),
         );
       }
 
@@ -159,14 +159,14 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     const cachePut = async (
       encryptionKey: string,
       key: string,
-      value: string
+      value: string,
     ) => {
       if (opts.completionsCache) {
         ctx.waitUntil(
           encryptedPut(opts.completionsCache, encryptionKey, key, value, {
             // 1 week
             ttl: 60 * 60 * 24 * 7,
-          })
+          }),
         );
       }
     };
@@ -226,7 +226,7 @@ async function encryptedPut(
   encryptionKey: string,
   key: string,
   value: string,
-  options?: { ttl?: number }
+  options?: { ttl?: number },
 ) {
   options = options || {};
 

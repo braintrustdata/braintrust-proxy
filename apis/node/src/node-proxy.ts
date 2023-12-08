@@ -4,33 +4,10 @@ import * as crypto from "crypto";
 // https://stackoverflow.com/questions/73308289/typescript-error-converting-a-native-fetch-body-webstream-to-a-node-stream
 import type * as streamWeb from "node:stream/web";
 
-import { CacheKeyOptions, proxyV1 } from "@braintrust/proxy";
+import { proxyV1 } from "@braintrust/proxy";
 
 import { getRedis } from "./cache";
 import { lookupApiSecret } from "./login";
-
-async function defaultCacheGet(_encryptionKey: string, key: string) {
-  const redis = await getRedis();
-  if (!redis) {
-    return null;
-  }
-  return await redis.get(key);
-}
-
-async function defaultCachePut(
-  _encryptionKey: string,
-  key: string,
-  value: string,
-) {
-  const redis = await getRedis();
-  if (!redis) {
-    return null;
-  }
-  redis.set(key, value, {
-    // Cache it for a week
-    EX: 60 * 60 * 24 * 7,
-  });
-}
 
 export async function nodeProxyV1({
   method,
@@ -40,9 +17,6 @@ export async function nodeProxyV1({
   setHeader,
   setStatusCode,
   getRes,
-  cacheGet,
-  cachePut,
-  cacheKeyOptions,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -51,12 +25,31 @@ export async function nodeProxyV1({
   setHeader: (name: string, value: string) => void;
   setStatusCode: (code: number) => void;
   getRes: () => Writable;
-  cacheGet?: (encryptionKey: string, key: string) => Promise<string | null>;
-  cachePut?: (encryptionKey: string, key: string, value: string) => void;
-  cacheKeyOptions?: CacheKeyOptions;
 }): Promise<void> {
   // Unlike the Cloudflare worker API, which supports public access, this API
   // mandates authentication
+
+  const cacheGet = async (encryptionKey: string, key: string) => {
+    const redis = await getRedis();
+    if (!redis) {
+      return null;
+    }
+    return await redis.get(key);
+  };
+  const cachePut = async (
+    encryptionKey: string,
+    key: string,
+    value: string,
+  ) => {
+    const redis = await getRedis();
+    if (!redis) {
+      return null;
+    }
+    redis.set(key, value, {
+      // Cache it for a week
+      EX: 60 * 60 * 24 * 7,
+    });
+  };
 
   let { readable, writable } = new TransformStream();
 
@@ -72,12 +65,11 @@ export async function nodeProxyV1({
     setStatusCode,
     res: writable,
     getApiSecrets: lookupApiSecret,
-    cacheGet: cacheGet ?? defaultCacheGet,
-    cachePut: cachePut ?? defaultCachePut,
+    cacheGet,
+    cachePut,
     digest: async (message: string) => {
       return crypto.createHash("md5").update(message).digest("hex");
     },
-    cacheKeyOptions,
   });
 
   const res = getRes();

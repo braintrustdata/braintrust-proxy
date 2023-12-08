@@ -62,7 +62,7 @@ export async function proxyV1({
   cachePut,
   digest,
   meterProvider = NOOP_METER_PROVIDER,
-  cacheKeyOptions,
+  cacheKeyOptions = {},
 }: {
   method: "GET" | "POST";
   url: string;
@@ -175,8 +175,8 @@ export async function proxyV1({
       JSON.stringify({
         url,
         body,
-        authToken: cacheKeyOptions?.excludeAuthToken || authToken,
-        orgName: cacheKeyOptions?.excludeOrgName || orgName,
+        authToken: cacheKeyOptions.excludeAuthToken || authToken,
+        orgName: cacheKeyOptions.excludeOrgName || orgName,
         endpointName,
       }),
     ));

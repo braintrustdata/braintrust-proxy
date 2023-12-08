@@ -1,10 +1,3 @@
-interface EnvParams {
-  braintrustApiUrl: string;
-  orgName?: string;
-  redisHost?: string;
-  redisPort?: number;
-}
-
 function reloadEnv() {
   return {
     braintrustApiUrl:

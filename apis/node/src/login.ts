@@ -32,6 +32,8 @@ export async function lookupApiSecret(
       secrets = (await response.json()).filter(
         (row: APISecret) => Env.orgName === "*" || row.org_name === Env.orgName,
       );
+    } else {
+      throw new Error(await response.text());
     }
   } catch (e) {
     console.warn("Failed to lookup api key. Falling back to provided key", e);

@@ -42,33 +42,33 @@ app.post("/stream/completion", async (req, res, next) => {
 app.get("/proxy/v1/*", async (req, res, next) => {
   const url = req.url.slice("/proxy/v1".length);
   try {
-    await nodeProxyV1(
-      "GET",
+    await nodeProxyV1({
+      method: "GET",
       url,
-      req.headers,
-      null,
-      res.setHeader.bind(res),
-      res.status.bind(res),
-      () => res,
-    );
+      proxyHeaders: req.headers,
+      body: null,
+      setHeader: res.setHeader.bind(res),
+      setStatusCode: res.status.bind(res),
+      getRes: () => res,
+    });
   } catch (e: any) {
     console.error(e);
     throw e;
   }
 });
 
-app.post("/proxy/v1/*", async (req, res, next) => {
+app.post("/proxy/v1/*", async (req, res) => {
   const url = req.url.slice("/proxy/v1".length);
   try {
-    await nodeProxyV1(
-      "POST",
+    await nodeProxyV1({
+      method: "POST",
       url,
-      req.headers,
-      req.body,
-      res.setHeader.bind(res),
-      res.status.bind(res),
-      () => res,
-    );
+      proxyHeaders: req.headers,
+      body: req.body,
+      setHeader: res.setHeader.bind(res),
+      setStatusCode: res.status.bind(res),
+      getRes: () => res,
+    });
   } catch (e: any) {
     console.error(e);
     throw e;
@@ -76,5 +76,5 @@ app.post("/proxy/v1/*", async (req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+  console.log(`[server]: Server is running at http://${host}:${port}`);
 });

@@ -9,15 +9,23 @@ import { proxyV1 } from "@braintrust/proxy";
 import { getRedis } from "./cache";
 import { lookupApiSecret } from "./login";
 
-export async function nodeProxyV1(
-  method: "GET" | "POST",
-  url: string,
-  proxyHeaders: any,
-  body: any,
-  setHeader: (name: string, value: string) => void,
-  setStatusCode: (code: number) => void,
-  getRes: () => Writable,
-): Promise<void> {
+export async function nodeProxyV1({
+  method,
+  url,
+  proxyHeaders,
+  body,
+  setHeader,
+  setStatusCode,
+  getRes,
+}: {
+  method: "GET" | "POST";
+  url: string;
+  proxyHeaders: any;
+  body: any;
+  setHeader: (name: string, value: string) => void;
+  setStatusCode: (code: number) => void;
+  getRes: () => Writable;
+}): Promise<void> {
   // Unlike the Cloudflare worker API, which supports public access, this API
   // mandates authentication
 
@@ -48,21 +56,21 @@ export async function nodeProxyV1(
   // Note: we must resolve the proxy after forwarding the stream to `res`,
   // because the proxy promise resolves after its internal stream has finished
   // writing.
-  const proxyPromise = proxyV1(
+  const proxyPromise = proxyV1({
     method,
     url,
     proxyHeaders,
     body,
     setHeader,
     setStatusCode,
-    writable,
-    lookupApiSecret,
+    res: writable,
+    getApiSecrets: lookupApiSecret,
     cacheGet,
     cachePut,
-    async (message: string) => {
+    digest: async (message: string) => {
       return crypto.createHash("md5").update(message).digest("hex");
     },
-  );
+  });
 
   const res = getRes();
   const readableNode = Readable.fromWeb(readable as streamWeb.ReadableStream);

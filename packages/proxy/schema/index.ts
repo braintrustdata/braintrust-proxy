@@ -242,6 +242,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   ANTHROPIC_API_KEY: "anthropic",
   PERPLEXITY_API_KEY: "perplexity",
   REPLICATE_API_KEY: "replicate",
+  TOGETHER_API_KEY: "together",
 };
 
 export const EndpointProviderToBaseURL: {

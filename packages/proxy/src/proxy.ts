@@ -654,6 +654,7 @@ async function fetchTogether(
       `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
     );
   }
+  headers["authorization"] = "Bearer " + secret.secret;
   headers["content-type"] = "application/json";
 
   const { messages: oaiMessages, prompt: oaiPrompt, ...params } = bodyData;

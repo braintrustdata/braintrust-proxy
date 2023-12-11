@@ -16,6 +16,7 @@ import {
   getModelEndpointTypes,
   ModelFormat,
   APISecret,
+  buildClassicChatPrompt,
 } from "@schema";
 import {
   flattenChunks,
@@ -30,6 +31,10 @@ import {
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import {
+  classicChatCompletionToOpenAICompletion,
+  classicChatEventToOpenAIEvent,
+} from "./providers/together";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -482,6 +487,15 @@ async function fetchOpenAI(
     );
   }
 
+  if (secret.type === "together") {
+    if (method !== "POST") {
+      throw new Error(`Together provider only supports POST requests`);
+    }
+    // TODO: Eventually we should factor out the various formats / parameters
+    // into a common format, if possible.
+    return await fetchTogether(method, url, headers, bodyData, secret);
+  }
+
   if (secret.type === "azure") {
     if (secret.metadata?.deployment) {
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
@@ -607,6 +621,79 @@ async function fetchAnthropic(
             controller.enqueue(
               new TextEncoder().encode(
                 JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
+              ),
+            );
+            controller.terminate();
+          },
+        }),
+      );
+    }
+  }
+  return {
+    stream,
+    response: proxyResponse,
+  };
+}
+
+async function fetchTogether(
+  method: "POST",
+  url: string,
+  headers: Record<string, string>,
+  bodyData: null | any,
+  secret: APISecret,
+): Promise<ModelResponse> {
+  const baseURL = EndpointProviderToBaseURL[secret.type];
+  if (baseURL === null) {
+    throw new Error(
+      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
+    );
+  }
+  headers["content-type"] = "application/json";
+
+  const { messages: oaiMessages, ...params } = bodyData;
+  const togetherPrompt = buildClassicChatPrompt(oaiMessages);
+  const proxyResponse = await fetch(baseURL.toString(), {
+    method,
+    headers,
+    body: JSON.stringify({
+      prompt: togetherPrompt,
+      stop: ["<|im_end|>", "<|im_start|>"],
+      ...params,
+    }),
+    keepalive: true,
+  });
+
+  let stream = proxyResponse.body || createEmptyReadableStream();
+  if (proxyResponse.ok) {
+    if (params.stream) {
+      let idx = 0;
+      stream = stream.pipeThrough(
+        createEventStreamTransformer((data) => {
+          const ret = classicChatEventToOpenAIEvent(
+            idx,
+            bodyData.model,
+            JSON.parse(data),
+          );
+          idx += 1;
+          return {
+            data: ret.event && JSON.stringify(ret.event),
+            finished: ret.finished,
+          };
+        }),
+      );
+    } else {
+      const allChunks: Uint8Array[] = [];
+      stream = stream.pipeThrough(
+        new TransformStream<Uint8Array, Uint8Array>({
+          transform(chunk, controller) {
+            allChunks.push(chunk);
+          },
+          async flush(controller) {
+            const text = flattenChunks(allChunks);
+            const data = JSON.parse(text);
+            controller.enqueue(
+              new TextEncoder().encode(
+                JSON.stringify(classicChatCompletionToOpenAICompletion(data)),
               ),
             );
             controller.terminate();

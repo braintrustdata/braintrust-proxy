@@ -12,6 +12,7 @@ export const ModelEndpointType = [
   "perplexity",
   "replicate",
   "anthropic",
+  "together",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
@@ -185,6 +186,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-2.0": { format: "anthropic", flavor: "chat" },
   "claude-2.1": { format: "anthropic", flavor: "chat" },
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
+  "DiscoResearch/DiscoLM-mixtral-8x7b-v2": { format: "openai", flavor: "chat" },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
@@ -221,6 +223,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pplx-7b-online": ["perplexity"],
   "pplx-70b-online": ["perplexity"],
   "meta/llama-2-70b-chat": ["replicate"],
+  "DiscoResearch/DiscoLM-mixtral-8x7b-v2": ["together"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -244,6 +247,7 @@ export const EndpointProviderToBaseURL: {
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",
+  together: "https://api.together.xyz/inference",
   azure: null,
   js: null,
 };
@@ -263,6 +267,17 @@ export function buildAnthropicPrompt(messages: Message[]) {
         }
       })
       .join("\n\n") + "\n\nAssistant:"
+  );
+}
+
+export function buildClassicChatPrompt(messages: Message[]) {
+  return (
+    messages
+      .map(
+        ({ content, role }) => `<|im_start|>${role}
+${content}<|im_end|>`,
+      )
+      .join("\n") + "\n<|im_start|>assistant"
   );
 }
 
@@ -302,7 +317,7 @@ interface BaseMetadata {
 export type APISecret = APISecretBase &
   (
     | {
-        type: "perplexity" | "anthropic" | "replicate" | "js";
+        type: "perplexity" | "anthropic" | "replicate" | "together" | "js";
         metadata?: BaseMetadata;
       }
     | {

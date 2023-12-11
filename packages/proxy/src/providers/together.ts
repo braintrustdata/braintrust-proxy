@@ -13,10 +13,14 @@ data: {"choices":[{"text":" west"}],"id":"83405eaa0f0a6899-SJC","token":{"id":76
 data: {"choices":[{"text":" coast"}],"id":"83405eaa0f0a6899-SJC","token":{"id":9437,"text":" coast","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null}
 */
 
-import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
+import {
+  ChatCompletion,
+  ChatCompletionChunk,
+  Completion,
+} from "openai/resources";
 import { getTimestampInSeconds } from "..";
 
-export interface ClassicChatStreamEvent {
+export interface TogetherStreamEvent {
   choices: { text: string }[];
   id: string;
   token: { id: number; text: string; logprob: number; special: boolean };
@@ -36,7 +40,7 @@ om the mid-50s to the mid-60s Fahrenheit (approximately 12-18 degrees Celsius). 
 ty is also known for its vibrant arts and music scene, with numerous galleries, museums, and theaters showcasing the work of local and international artists.\n\nOverall, San Francisco is a fascinating and dynamic city that offers something for everyone, from its stunning natural beauty to its rich cultural heritage, vibrant arts scene, and
  thriving technology industry.普 \n\n"}]}}
  */
-export interface ClassicChatCompletion {
+export interface TogetherCompletion {
   id: string;
   status: string;
   prompt: string[];
@@ -51,10 +55,10 @@ export interface ClassicChatCompletion {
   };
 }
 
-export function classicChatEventToOpenAIEvent(
+export function togetherEventToOpenAIChatEvent(
   idx: number,
   model: string,
-  event: ClassicChatStreamEvent,
+  event: TogetherStreamEvent,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
   if (!event.choices) {
     return {
@@ -82,8 +86,8 @@ export function classicChatEventToOpenAIEvent(
   };
 }
 
-export function classicChatCompletionToOpenAICompletion(
-  completion: ClassicChatCompletion,
+export function togetherCompletionToOpenAIChatCompletion(
+  completion: TogetherCompletion,
 ): ChatCompletion {
   return {
     id: completion.id,
@@ -97,6 +101,52 @@ export function classicChatCompletionToOpenAICompletion(
         content: choice.text.trimStart(),
         role: "assistant",
       },
+    })),
+  };
+}
+
+export function togetherEventToOpenAICompletionEvent(
+  idx: number,
+  model: string,
+  event: TogetherStreamEvent,
+): { event: Completion | null; finished: boolean } {
+  if (!event.choices) {
+    return {
+      event: null,
+      finished: false,
+    };
+  }
+
+  return {
+    event: {
+      id: event.id,
+      choices: event.choices.map((choice) => ({
+        text: choice.text,
+        index: 0,
+        finish_reason: null as any /* together never sets this */,
+        logprobs: null,
+      })),
+      created: getTimestampInSeconds(),
+      model,
+      object: "text_completion",
+    },
+    finished: false,
+  };
+}
+
+export function togetherCompletionToOpenAICompletion(
+  completion: TogetherCompletion,
+): Completion {
+  return {
+    id: completion.id,
+    created: getTimestampInSeconds(),
+    model: completion.model,
+    object: "text_completion",
+    choices: completion.output.choices.map((choice) => ({
+      finish_reason: "stop",
+      index: 0,
+      text: choice.text,
+      logprobs: null,
     })),
   };
 }

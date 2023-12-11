@@ -192,6 +192,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
+  "mistralai/mixtral-8x7b-32kseqlen": { format: "openai", flavor: "chat" },
   "openhermes-2-mistral-7b": { format: "openai", flavor: "chat" },
   "openhermes-2.5-mistral-7b": { format: "openai", flavor: "chat" },
   "pplx-7b-chat": { format: "openai", flavor: "chat" },
@@ -223,13 +224,16 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pplx-7b-online": ["perplexity"],
   "pplx-70b-online": ["perplexity"],
   "meta/llama-2-70b-chat": ["replicate"],
+  "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "DiscoResearch/DiscoLM-mixtral-8x7b-v2": ["together"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
-    DefaultEndpointTypes[AvailableModels[model].format]
+    (AvailableModels[model] &&
+      DefaultEndpointTypes[AvailableModels[model].format]) ||
+    []
   );
 }
 

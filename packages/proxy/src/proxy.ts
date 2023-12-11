@@ -32,8 +32,10 @@ import {
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
-  classicChatCompletionToOpenAICompletion,
-  classicChatEventToOpenAIEvent,
+  togetherCompletionToOpenAIChatCompletion,
+  togetherCompletionToOpenAICompletion,
+  togetherEventToOpenAIChatEvent,
+  togetherEventToOpenAICompletionEvent,
 } from "./providers/together";
 
 interface CachedData {
@@ -326,13 +328,17 @@ async function fetchModelLoop(
 
   if (
     method === "POST" &&
-    url == "/chat/completions" &&
+    (url === "/chat/completions" || url === "/completions") &&
     isObject(bodyData) &&
     bodyData.model
   ) {
     model = bodyData.model;
     format = AvailableModels[model]?.format || "openai";
     types = getModelEndpointTypes(model);
+
+    if (types.length === 0) {
+      throw new Error(`Unsupported model ${model}`);
+    }
   }
 
   // TODO: Make this smarter. For now, just pick a random one.
@@ -650,14 +656,20 @@ async function fetchTogether(
   }
   headers["content-type"] = "application/json";
 
-  const { messages: oaiMessages, ...params } = bodyData;
-  const togetherPrompt = buildClassicChatPrompt(oaiMessages);
+  const { messages: oaiMessages, prompt: oaiPrompt, ...params } = bodyData;
+  const isChat = oaiMessages !== undefined;
+  const togetherPrompt = isChat
+    ? buildClassicChatPrompt(oaiMessages)
+    : oaiPrompt;
+  if (togetherPrompt === undefined) {
+    throw new Error("Must specify either messages or prompt");
+  }
   const proxyResponse = await fetch(baseURL.toString(), {
     method,
     headers,
     body: JSON.stringify({
       prompt: togetherPrompt,
-      stop: ["<|im_end|>", "<|im_start|>"],
+      stop: isChat ? ["<|im_end|>", "<|im_start|>"] : undefined,
       ...params,
     }),
     keepalive: true,
@@ -669,11 +681,11 @@ async function fetchTogether(
       let idx = 0;
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
-          const ret = classicChatEventToOpenAIEvent(
-            idx,
-            bodyData.model,
-            JSON.parse(data),
-          );
+          const ret = (
+            isChat
+              ? togetherEventToOpenAIChatEvent
+              : togetherEventToOpenAICompletionEvent
+          )(idx, bodyData.model, JSON.parse(data));
           idx += 1;
           return {
             data: ret.event && JSON.stringify(ret.event),
@@ -693,7 +705,11 @@ async function fetchTogether(
             const data = JSON.parse(text);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(classicChatCompletionToOpenAICompletion(data)),
+                JSON.stringify(
+                  (isChat
+                    ? togetherCompletionToOpenAIChatCompletion
+                    : togetherCompletionToOpenAICompletion)(data),
+                ),
               ),
             );
             controller.terminate();

@@ -31,11 +31,13 @@ import {
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { resumeSpanFromHeaders, logOutput } from "./tracing";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
+import { noopSpan } from "braintrust";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -115,6 +117,9 @@ export async function proxyV1({
     ),
   );
 
+  const span = resumeSpanFromHeaders(url, proxyHeaders);
+  let shouldEndSpan = true;
+
   const authToken = parseAuthHeader(proxyHeaders);
   if (!authToken) {
     throw new Error("Missing Authentication header");
@@ -150,6 +155,12 @@ export async function proxyV1({
     } catch (e) {
       console.warn("Failed to parse body. This doesn't really matter", e);
     }
+  }
+
+  const isStreamRequest = bodyData?.stream ?? false;
+  if (bodyData) {
+    const { messages, ...metadata } = bodyData;
+    span.log({ input: messages ?? null, metadata });
   }
 
   // According to https://platform.openai.com/docs/api-reference, temperature is
@@ -205,6 +216,9 @@ export async function proxyV1({
           controller.close();
         },
       });
+
+      span.log({ metadata: { cached: true } });
+      logOutput(span, cachedData.body, isStreamRequest);
     } else {
       cacheMisses.add(1);
     }
@@ -230,6 +244,7 @@ export async function proxyV1({
       );
     }
 
+    const startTime = Date.now() / 1000;
     const { response: proxyResponse, stream: proxyStream } =
       await fetchModelLoop(
         meter,
@@ -290,24 +305,35 @@ export async function proxyV1({
     }
     setHeader("x-cached", "false");
 
-    if (stream && proxyResponse.ok && useCache) {
+    if (stream && proxyResponse.ok && (useCache || span !== noopSpan)) {
       const allChunks: Uint8Array[] = [];
       const cacheStream = new TransformStream<Uint8Array, Uint8Array>({
         transform(chunk, controller) {
+          if (isStreamRequest && allChunks.length === 0) {
+            span.log({
+              metrics: { time_to_first_token: Date.now() / 1000 - startTime },
+            });
+          }
           allChunks.push(chunk);
           controller.enqueue(chunk);
         },
         async flush(controller) {
           const text = flattenChunks(allChunks);
-          cachePut(
-            encryptionKey,
-            cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, body: text }),
-          );
+          logOutput(span, text, isStreamRequest);
+          span.end();
+          span.flush();
+          if (useCache) {
+            cachePut(
+              encryptionKey,
+              cacheKey,
+              JSON.stringify({ headers: proxyResponseHeaders, body: text }),
+            );
+          }
         },
       });
 
       stream = stream.pipeThrough(cacheStream);
+      shouldEndSpan = false;
     }
   }
 
@@ -319,6 +345,11 @@ export async function proxyV1({
     stream.pipeTo(res);
   } else {
     res.close();
+  }
+
+  if (shouldEndSpan) {
+    span.end();
+    span.flush();
   }
 }
 

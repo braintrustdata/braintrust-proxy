@@ -74,6 +74,7 @@
     "@opentelemetry/resources": "^1.18.1",
     "@opentelemetry/sdk-metrics": "^1.18.1",
     "ai": "2.2.22",
+    "braintrust": "link:../../../sdk/js",
     "eventsource-parser": "^1.1.1",
     "openai": "^4.19.1",
     "uuid": "^9.0.1"

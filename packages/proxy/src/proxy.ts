@@ -309,7 +309,7 @@ export async function proxyV1({
   }
 
   if (stream) {
-    await stream.pipeTo(res);
+    stream.pipeTo(res);
   } else {
     res.close();
   }

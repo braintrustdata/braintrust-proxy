@@ -56,7 +56,7 @@ export async function handleProxyV1(
 
   const cache = await caches.open("apikey:cache");
 
-  return await EdgeProxyV1({
+  return EdgeProxyV1({
     getRelativeURL(request: Request): string {
       return new URL(request.url).pathname.slice(proxyV1Prefix.length);
     },

@@ -178,10 +178,7 @@ export async function proxyV1({
       JSON.stringify({
         url,
         body,
-        authToken:
-          cacheKeyOptions.excludeAuthToken ||
-          cacheBy === "org-name" ||
-          authToken,
+        authToken: cacheKeyOptions.excludeAuthToken || authToken,
         orgName: cacheKeyOptions.excludeOrgName || orgName,
         endpointName,
       }),

@@ -1,7 +1,6 @@
 import stream from "stream";
 import util from "util";
 
-import { completion } from "./ai";
 import { nodeProxyV1 } from "./node-proxy";
 
 const pipeline = util.promisify(stream.pipeline);
@@ -47,22 +46,7 @@ export const handler = awslambda.streamifyResponse(
     } else if (event.rawPath === "/empty") {
       responseStream = wrap();
       responseStream.end();
-    } else if (event.rawPath === "/stream/completion") {
-      responseStream = wrap();
-      try {
-        aiStream = await completion(event.headers, event.body);
-
-        // Write a starting character because Lambda 502s on empty responses
-        responseStream.write("[");
-        await pipeline(aiStream, responseStream);
-      } catch (err) {
-        console.error(err);
-        processError(responseStream, err);
-      }
-      responseStream.end();
     } else if (event.rawPath.startsWith("/proxy/v1")) {
-      console.log(event);
-      console.log(context);
       try {
         await nodeProxyV1(
           event.requestContext.http.method,

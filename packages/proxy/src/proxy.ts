@@ -45,10 +45,13 @@ interface CachedData {
 }
 
 const CACHE_HEADER = "x-bt-use-cache";
+const CACHE_KEY_BY = "x-bt-cache-by";
 const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
 const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 const FORMAT_HEADER = "x-bt-stream-fmt";
+
+const CACHE_MODES = ["auto", "always", "never"] as const;
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -109,9 +112,8 @@ export async function proxyV1({
       ([h, _]) =>
         !(
           h.startsWith("x-amzn") ||
-          h == CACHE_HEADER ||
-          h == CREDS_CACHE_HEADER ||
-          h == "content-length"
+          h.startsWith("x-bt") ||
+          h === "content-length"
         ),
     ),
   );
@@ -122,15 +124,26 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  const useCacheMode = parseCacheModeHeader(
+  const useCacheMode = parseEnumHeader(
     CACHE_HEADER,
+    CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
-  const useCredentialsCacheMode = parseCacheModeHeader(
+  const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
+    CACHE_MODES,
     proxyHeaders[CREDS_CACHE_HEADER],
   );
-  const streamFormat = parseStreamFormatHeader(proxyHeaders[FORMAT_HEADER]);
+  const streamFormat = parseEnumHeader(
+    FORMAT_HEADER,
+    ["openai", "vercel-ai"] as const,
+    proxyHeaders[FORMAT_HEADER],
+  );
+  const cacheBy = parseEnumHeader(
+    CACHE_KEY_BY,
+    ["api-key", "org-name"] as const,
+    proxyHeaders[CACHE_KEY_BY],
+  );
 
   const cacheableEndpoint =
     url === "/auto" ||
@@ -162,8 +175,14 @@ export async function proxyV1({
     useCacheMode !== "never" &&
     (useCacheMode === "always" || !temperatureNonZero);
 
-  const orgName = headers[ORG_NAME_HEADER];
-  const endpointName = headers[ENDPOINT_NAME_HEADER];
+  const orgName = proxyHeaders[ORG_NAME_HEADER];
+  const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
+
+  if (cacheBy === "org-name" && !orgName) {
+    throw new Error(
+      `Missing ${ORG_NAME_HEADER} header. Can only x-bt-cache-by: org-name if ${ORG_NAME_HEADER} is set`,
+    );
+  }
 
   const cacheKey =
     "aiproxy/proxy/v1:" +
@@ -171,7 +190,10 @@ export async function proxyV1({
       JSON.stringify({
         url,
         body,
-        authToken: cacheKeyOptions.excludeAuthToken || authToken,
+        authToken:
+          cacheKeyOptions.excludeAuthToken ||
+          cacheBy === "org-name" ||
+          authToken,
         orgName: cacheKeyOptions.excludeOrgName || orgName,
         endpointName,
       }),
@@ -841,32 +863,18 @@ export function createEventStreamTransformer(
 }
 // --------------------------------------------------
 
-export function parseCacheModeHeader(headerName: string, value?: string) {
-  const useCacheModeHeader = value && value.toLowerCase();
-  if (
-    useCacheModeHeader &&
-    !(
-      useCacheModeHeader === "auto" ||
-      useCacheModeHeader === "always" ||
-      useCacheModeHeader === "never"
-    )
-  ) {
+function parseEnumHeader<T>(
+  headerName: string,
+  headerTypes: readonly T[],
+  value?: string,
+): (typeof headerTypes)[number] {
+  const header = value && value.toLowerCase();
+  if (header && !headerTypes.includes(header as T)) {
     throw new Error(
-      `Invalid ${headerName} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
+      `Invalid ${headerName} header '${header}'. Must be one of ${headerTypes.join(
+        ", ",
+      )}`,
     );
   }
-  return (useCacheModeHeader || "auto") as "auto" | "always" | "never";
-}
-
-function parseStreamFormatHeader(value?: string) {
-  const formatHeader = value && value.toLowerCase();
-  if (
-    formatHeader &&
-    !(formatHeader === "openai" || formatHeader === "vercel-ai")
-  ) {
-    throw new Error(
-      `Invalid ${FORMAT_HEADER} header '${formatHeader}'. Must be one of openai or vercel-ai`,
-    );
-  }
-  return (formatHeader || "openai") as "openai" | "vercel-ai";
+  return (header || headerTypes[0]) as (typeof headerTypes)[number];
 }

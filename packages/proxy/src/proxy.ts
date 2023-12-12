@@ -4,6 +4,7 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
+import { OpenAIStream } from "ai";
 
 import {
   AvailableModels,
@@ -46,7 +47,8 @@ interface CachedData {
 const CACHE_HEADER = "x-bt-use-cache";
 const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
-const ENDPOINT_NAME = "x-bt-endpoint-name";
+const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
+const FORMAT_HEADER = "x-bt-stream-fmt";
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -120,20 +122,6 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  const useCacheModeHeader =
-    proxyHeaders[CACHE_HEADER] && proxyHeaders[CACHE_HEADER].toLowerCase();
-  if (
-    useCacheModeHeader &&
-    !(
-      useCacheModeHeader === "auto" ||
-      useCacheModeHeader === "always" ||
-      useCacheModeHeader === "never"
-    )
-  ) {
-    throw new Error(
-      `Invalid ${CACHE_HEADER} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
-    );
-  }
   const useCacheMode = parseCacheModeHeader(
     CACHE_HEADER,
     proxyHeaders[CACHE_HEADER],
@@ -142,6 +130,7 @@ export async function proxyV1({
     CACHE_HEADER,
     proxyHeaders[CREDS_CACHE_HEADER],
   );
+  const streamFormat = parseStreamFormatHeader(proxyHeaders[FORMAT_HEADER]);
 
   const cacheableEndpoint =
     url === "/embeddings" ||
@@ -174,7 +163,7 @@ export async function proxyV1({
     (useCacheMode === "always" || !temperatureNonZero);
 
   const orgName = headers[ORG_NAME_HEADER];
-  const endpointName = headers[ENDPOINT_NAME];
+  const endpointName = headers[ENDPOINT_NAME_HEADER];
 
   const cacheKey =
     "aiproxy/proxy/v1:" +
@@ -288,6 +277,10 @@ export async function proxyV1({
 
       stream = stream.pipeThrough(cacheStream);
     }
+  }
+
+  if (stream && streamFormat === "vercel-ai") {
+    stream = OpenAIStream(new Response(stream));
   }
 
   if (stream) {
@@ -829,4 +822,17 @@ export function parseCacheModeHeader(headerName: string, value?: string) {
     );
   }
   return (useCacheModeHeader || "auto") as "auto" | "always" | "never";
+}
+
+function parseStreamFormatHeader(value?: string) {
+  const formatHeader = value && value.toLowerCase();
+  if (
+    formatHeader &&
+    !(formatHeader === "openai" || formatHeader === "vercel-ai")
+  ) {
+    throw new Error(
+      `Invalid ${FORMAT_HEADER} header '${formatHeader}'. Must be one of openai or vercel-ai`,
+    );
+  }
+  return (formatHeader || "openai") as "openai" | "vercel-ai";
 }

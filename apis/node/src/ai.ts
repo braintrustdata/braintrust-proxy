@@ -6,7 +6,6 @@ import {
   AvailableModels,
   EndpointProviderToBaseURL,
   Message,
-  ModelEndpointType,
   ModelParams,
   buildAnthropicPrompt,
   defaultModelParams,

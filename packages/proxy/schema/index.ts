@@ -180,6 +180,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "gpt-4-32k-0613": { format: "openai", flavor: "chat" },
   "gpt-4-0314": { format: "openai", flavor: "chat" },
   "gpt-4-32k-0314": { format: "openai", flavor: "chat" },
+  "gpt-3.5-turbo-instruct": { format: "openai", flavor: "completion" },
+  "gpt-3.5-turbo-instruct-0914": { format: "openai", flavor: "completion" },
   "text-davinci-003": { format: "openai", flavor: "completion" },
   "claude-2": { format: "anthropic", flavor: "chat" },
   "claude-instant-1": { format: "anthropic", flavor: "chat" },

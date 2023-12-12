@@ -30,9 +30,44 @@ export interface ProxyOpts {
   meterProvider?: MeterProvider;
 }
 
+const corsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-credentials": "true",
+  "access-control-allow-methods": "GET,OPTIONS,POST",
+};
+
+// https://developers.cloudflare.com/workers/examples/cors-header-proxy/
+async function handleOptions(request: Request) {
+  if (
+    request.headers.get("Origin") !== null &&
+    request.headers.get("Access-Control-Request-Method") !== null &&
+    request.headers.get("Access-Control-Request-Headers") !== null
+  ) {
+    // Handle CORS preflight requests.
+    return new Response(null, {
+      headers: {
+        ...corsHeaders,
+        "access-control-allow-headers": request.headers.get(
+          "Access-Control-Request-Headers",
+        )!,
+      },
+    });
+  } else {
+    // Handle standard OPTIONS request.
+    return new Response(null, {
+      headers: {
+        Allow: "GET, HEAD, POST, OPTIONS",
+      },
+    });
+  }
+}
+
 export function EdgeProxyV1(opts: ProxyOpts) {
   const meterProvider = opts.meterProvider;
   return async (request: Request, ctx: EdgeContext) => {
+    if (request.method === "OPTIONS") {
+      return handleOptions(request);
+    }
     if (request.method !== "GET" && request.method !== "POST") {
       return new Response("Method not allowed", {
         status: 405,
@@ -48,13 +83,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 
     let status = 200;
 
-    let headers: Record<string, string> = opts.cors
-      ? {
-          "access-control-allow-origin": "*",
-          "access-control-allow-credentials": "true",
-          "access-control-allow-methods": "GET,OPTIONS,POST",
-        }
-      : {};
+    let headers: Record<string, string> = opts.cors ? corsHeaders : {};
 
     const setStatus = (code: number) => {
       status = code;

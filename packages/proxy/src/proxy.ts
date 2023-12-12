@@ -45,7 +45,6 @@ interface CachedData {
 }
 
 const CACHE_HEADER = "x-bt-use-cache";
-const CACHE_KEY_BY = "x-bt-cache-by";
 const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
 const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
@@ -139,11 +138,6 @@ export async function proxyV1({
     ["openai", "vercel-ai"] as const,
     proxyHeaders[FORMAT_HEADER],
   );
-  const cacheBy = parseEnumHeader(
-    CACHE_KEY_BY,
-    ["api-key", "org-name"] as const,
-    proxyHeaders[CACHE_KEY_BY],
-  );
 
   const cacheableEndpoint =
     url === "/auto" ||
@@ -177,12 +171,6 @@ export async function proxyV1({
 
   const orgName = proxyHeaders[ORG_NAME_HEADER];
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
-
-  if (cacheBy === "org-name" && !orgName) {
-    throw new Error(
-      `Missing ${ORG_NAME_HEADER} header. Can only x-bt-cache-by: org-name if ${ORG_NAME_HEADER} is set`,
-    );
-  }
 
   const cacheKey =
     "aiproxy/proxy/v1:" +

@@ -16,6 +16,7 @@ import { getRandomInt, parseAuthHeader } from "@braintrust/proxy";
 import { lookupApiSecret } from "./login";
 import { ChatCompletionTool } from "openai/resources";
 import { getRedis } from "./cache";
+import { nodeProxyV1 } from "./node-proxy";
 
 interface RequestBody {
   prompt?: string;
@@ -98,6 +99,37 @@ export async function completion(
         if (messages === undefined) {
           throw new Error(`No messages provided for chat model ${model}`);
         }
+
+        const openAiParams = {
+          model,
+          stream: true,
+          messages: messages as any, // Assume roles have been validated
+          functions:
+            tools && tools.length > 0
+              ? tools.map((t) => t.function)
+              : undefined,
+          ...modelParams,
+          tool_choice: undefined,
+          function_call:
+            "tool_choice" in modelParams && modelParams.tool_choice
+              ? typeof modelParams.tool_choice === "string"
+                ? modelParams.tool_choice
+                : modelParams.tool_choice.function
+              : undefined,
+        };
+
+        // Create an identity TransformStream (a.k.a. a pipe).
+        // The readable side will become our new response body.
+        let { readable, writable } = new TransformStream();
+        await nodeProxyV1({
+          method: "POST",
+          url: "/chat/completions",
+          proxyHeaders: {},
+          body: JSON.stringify(openAiParams),
+          setHeader: res.setHeader.bind(res),
+          setStatusCode: res.status.bind(res),
+          getRes: () => writable,
+        });
 
         response = await openai.chat.completions.create({
           model,

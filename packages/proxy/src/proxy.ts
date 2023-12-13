@@ -5,7 +5,7 @@ import {
   type ReconnectInterval,
 } from "eventsource-parser";
 import { OpenAIStream } from "ai";
-import { Content, Part } from "@google/generative-ai";
+import { processStream } from "@google/generative-ai/dist/src/requests/stream-reader";
 
 import {
   AvailableModels,
@@ -32,7 +32,12 @@ import {
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
-import { googleCompletionToOpenAICompletion } from "./providers/google";
+import {
+  google_readFromReader,
+  googleCompletionToOpenAICompletion,
+  googleEventToOpenAIChatEvent,
+} from "./providers/google";
+import { GenerateContentResponse } from "@google/generative-ai";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -714,9 +719,14 @@ async function fetchGoogle(
 
   const fullURL = new URL(
     EndpointProviderToBaseURL.google! +
-      `/models/${encodeURIComponent(model)}:generateContent`,
+      `/models/${encodeURIComponent(model)}:${
+        streamingMode ? "streamGenerateContent" : "generateContent"
+      }`,
   );
   fullURL.searchParams.set("key", secret.secret);
+  if (streamingMode) {
+    fullURL.searchParams.set("alt", "sse");
+  }
 
   delete headers["authorization"];
   headers["content-type"] = "application/json";
@@ -733,16 +743,23 @@ async function fetchGoogle(
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {
-    if (params.stream) {
+    if (streamingMode) {
       let idx = 0;
-      stream = stream.pipeThrough(
-        createEventStreamTransformer((data) => {
-          const ret = anthropicEventToOpenAIEvent(idx, JSON.parse(data));
-          idx += 1;
-          return {
-            data: ret.event && JSON.stringify(ret.event),
-            finished: ret.finished,
-          };
+      const responseStream = google_readFromReader(stream.getReader());
+      stream = responseStream.pipeThrough(
+        new TransformStream<GenerateContentResponse, Uint8Array>({
+          transform(chunk, controller) {
+            const ret = googleEventToOpenAIChatEvent(model, chunk);
+            console.log("RET", ret);
+            if (ret.event !== null) {
+              controller.enqueue(
+                new TextEncoder().encode(JSON.stringify(ret.event)),
+              );
+            }
+            if (ret.finished) {
+              controller.terminate();
+            }
+          },
         }),
       );
     } else {
@@ -755,7 +772,6 @@ async function fetchGoogle(
           async flush(controller) {
             const text = flattenChunks(allChunks);
             const data = JSON.parse(text);
-            console.log(data);
             controller.enqueue(
               new TextEncoder().encode(
                 JSON.stringify(googleCompletionToOpenAICompletion(model, data)),

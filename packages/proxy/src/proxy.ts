@@ -5,6 +5,7 @@ import {
   type ReconnectInterval,
 } from "eventsource-parser";
 import { OpenAIStream } from "ai";
+import { Content, Part } from "@google/generative-ai";
 
 import {
   AvailableModels,
@@ -517,6 +518,9 @@ async function fetchModel(
     case "anthropic":
       console.assert(method === "POST");
       return await fetchAnthropic("POST", url, headers, bodyData, secret);
+    case "google":
+      console.assert(method === "POST");
+      return await fetchGoogle("POST", url, headers, bodyData, secret);
     default:
       throw new Error(`Unsupported model provider ${format}`);
   }
@@ -625,6 +629,90 @@ async function fetchAnthropic(
     max_tokens_to_sample: 256, // Required param
     ...translateParams("anthropic", oaiParams),
   };
+
+  const proxyResponse = await fetch(fullURL.toString(), {
+    method,
+    headers,
+    body: JSON.stringify({
+      prompt: buildAnthropicPrompt(messages),
+      ...params,
+    }),
+    keepalive: true,
+  });
+
+  let stream = proxyResponse.body || createEmptyReadableStream();
+  if (proxyResponse.ok) {
+    if (params.stream) {
+      let idx = 0;
+      stream = stream.pipeThrough(
+        createEventStreamTransformer((data) => {
+          const ret = anthropicEventToOpenAIEvent(idx, JSON.parse(data));
+          idx += 1;
+          return {
+            data: ret.event && JSON.stringify(ret.event),
+            finished: ret.finished,
+          };
+        }),
+      );
+    } else {
+      const allChunks: Uint8Array[] = [];
+      stream = stream.pipeThrough(
+        new TransformStream<Uint8Array, Uint8Array>({
+          transform(chunk, controller) {
+            allChunks.push(chunk);
+          },
+          async flush(controller) {
+            const text = flattenChunks(allChunks);
+            const data = JSON.parse(text);
+            controller.enqueue(
+              new TextEncoder().encode(
+                JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
+              ),
+            );
+            controller.terminate();
+          },
+        }),
+      );
+    }
+  }
+  return {
+    stream,
+    response: proxyResponse,
+  };
+}
+
+async function fetchGoogle(
+  method: "POST",
+  url: string,
+  headers: Record<string, string>,
+  bodyData: null | any,
+  secret: APISecret,
+): Promise<ModelResponse> {
+  console.assert(url === "/chat/completions");
+
+  if (isEmpty(bodyData)) {
+    throw new Error("Google request must have a valid JSON-parsable body");
+  }
+
+  const {
+    messages: oaiMessages,
+    seed, // extract seed so that it's not sent to Google (we just use it for the cache)
+    ...oaiParams
+  } = bodyData;
+  const content = oaiMessages.map((m: Message) => ({
+    parts: [{ text: m.content }],
+    // TODO: We need to generalize this properly
+    role:
+      m.role === "assistant" ? "model" : m.role === "system" ? "user" : m.role,
+  }));
+  const params: Record<string, unknown> = {
+    ...translateParams("google", oaiParams),
+  };
+
+  const fullURL = new URL(
+    (secret.metadata?.api_base || EndpointProviderToBaseURL.google) +
+      "/complete",
+  );
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,

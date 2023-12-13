@@ -34,6 +34,7 @@ import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
+  OpenAIParamsToGoogleParams,
 } from "./providers/google";
 
 interface CachedData {
@@ -710,9 +711,18 @@ async function fetchGoogle(
     role:
       m.role === "assistant" ? "model" : m.role === "system" ? "user" : m.role,
   }));
-  const params: Record<string, unknown> = {
-    ...translateParams("google", oaiParams),
-  };
+  const params = Object.fromEntries(
+    Object.entries(translateParams("google", oaiParams))
+      .map(([key, value]) => {
+        const translatedKey = OpenAIParamsToGoogleParams[key];
+        if (translatedKey === null) {
+          // These are unsupported params
+          return [null, null];
+        }
+        return [translatedKey ?? key, value];
+      })
+      .filter(([k, _]) => k !== null),
+  );
 
   const fullURL = new URL(
     EndpointProviderToBaseURL.google! +
@@ -733,7 +743,7 @@ async function fetchGoogle(
     headers,
     body: JSON.stringify({
       contents: [content],
-      ...params,
+      generationConfig: params,
     }),
     keepalive: true,
   });

@@ -92,7 +92,7 @@ interface AnthropicModelParams {
   top_k?: number;
 }
 
-interface GoogleModelParams {
+export interface GoogleModelParams {
   temperature: number;
   maxOutputTokens?: number;
   topP?: number;
@@ -123,7 +123,7 @@ export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
   },
   google: {
     temperature: 0,
-    max_tokens_to_sample: 1024,
+    maxOutputTokens: 1024,
     use_cache: true,
   },
   js: {},
@@ -154,6 +154,7 @@ export const sliderSpecs: {
   top_p: [0, 1, 0.01],
   max_tokens: [1, 10240, 1],
   max_tokens_to_sample: [1, 10240, 1],
+  maxOutputTokens: [1, 10240, 1],
   frequency_penalty: [0, 1, 0.01],
   presence_penalty: [0, 1, 0.01],
   top_k: [1, 100, 1],

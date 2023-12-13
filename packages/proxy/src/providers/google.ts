@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { FinishReason, GenerateContentResponse } from "@google/generative-ai";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "..";
+import { GoogleModelParams, OpenAIModelParams } from "@schema";
 
 function translateFinishReason(
   reason?: FinishReason,
@@ -27,7 +28,6 @@ export function googleEventToOpenAIChatEvent(
   model: string,
   data: GenerateContentResponse,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
-  console.log("DATA", data);
   return {
     event: data.candidates
       ? {
@@ -69,3 +69,14 @@ export function googleCompletionToOpenAICompletion(
     object: "chat.completion",
   };
 }
+
+export const OpenAIParamsToGoogleParams: {
+  [name: string]: string | null;
+} = {
+  temperature: "temperature",
+  top_p: "topP",
+  max_tokens: "maxOutputTokens",
+  frequency_penalty: null,
+  presence_penalty: null,
+  tool_choice: null,
+};

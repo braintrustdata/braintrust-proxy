@@ -369,7 +369,13 @@ interface BaseMetadata {
 export type APISecret = APISecretBase &
   (
     | {
-        type: "perplexity" | "anthropic" | "replicate" | "together" | "js";
+        type:
+          | "perplexity"
+          | "anthropic"
+          | "google"
+          | "replicate"
+          | "together"
+          | "js";
         metadata?: BaseMetadata;
       }
     | {

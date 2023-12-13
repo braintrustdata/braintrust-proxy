@@ -188,13 +188,19 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-2.0": { format: "anthropic", flavor: "chat" },
   "claude-2.1": { format: "anthropic", flavor: "chat" },
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
-  "DiscoResearch/DiscoLM-mixtral-8x7b-v2": { format: "openai", flavor: "chat" },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
-  "mistralai/mixtral-8x7b-32kseqlen": { format: "openai", flavor: "chat" },
+  "mistralai/mixtral-8x7b-32kseqlen": {
+    format: "openai",
+    flavor: "completion",
+  },
+  "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+  },
   "openhermes-2-mistral-7b": { format: "openai", flavor: "chat" },
   "openhermes-2.5-mistral-7b": { format: "openai", flavor: "chat" },
   "pplx-7b-chat": { format: "openai", flavor: "chat" },
@@ -227,7 +233,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pplx-70b-online": ["perplexity"],
   "meta/llama-2-70b-chat": ["replicate"],
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
-  "DiscoResearch/DiscoLM-mixtral-8x7b-v2": ["together"],
+  "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -254,7 +260,7 @@ export const EndpointProviderToBaseURL: {
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",
-  together: "https://api.together.xyz/inference",
+  together: "https://api.together.xyz/v1",
   azure: null,
   js: null,
 };

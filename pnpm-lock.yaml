@@ -181,6 +181,9 @@ importers:
       '@opentelemetry/sdk-metrics':
         specifier: ^1.18.1
         version: 1.18.1(@opentelemetry/api@1.7.0)
+      ai:
+        specifier: 2.2.22
+        version: 2.2.22(react@18.2.0)(solid-js@1.8.7)(svelte@4.2.8)(vue@3.3.10)
       eventsource-parser:
         specifier: ^1.1.1
         version: 1.1.1
@@ -1536,7 +1539,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.3.10
       '@vue/shared': 3.3.10
-      vue: 3.3.10
+      vue: 3.3.10(typescript@5.3.2)
     dev: false
 
   /@vue/shared@3.3.10:
@@ -1648,7 +1651,7 @@ packages:
       swr: 2.2.0(react@18.2.0)
       swr-store: 0.10.6
       swrv: 1.0.4(vue@3.3.10)
-      vue: 3.3.10
+      vue: 3.3.10(typescript@5.3.2)
     dev: false
 
   /ajv@6.12.6:
@@ -5206,7 +5209,7 @@ packages:
     peerDependencies:
       vue: '>=3.2.26 < 4'
     dependencies:
-      vue: 3.3.10
+      vue: 3.3.10(typescript@5.3.2)
     dev: false
 
   /tailwindcss@3.2.7(postcss@8.4.21):
@@ -5571,7 +5574,6 @@ packages:
     resolution: {integrity: sha512-6l+RyNy7oAHDfxC4FzSJcz9vnjTKxrLpDG5M2Vu4SHRVNg6xzqZp6LYSR9zjqQTu8DU/f5xwxUdADOkbrIX2gQ==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
@@ -5677,7 +5679,7 @@ packages:
     engines: {node: '>= 0.8'}
     dev: false
 
-  /vue@3.3.10:
+  /vue@3.3.10(typescript@5.3.2):
     resolution: {integrity: sha512-zg6SIXZdTBwiqCw/1p+m04VyHjLfwtjwz8N57sPaBhEex31ND0RYECVOC1YrRwMRmxFf5T1dabl6SGUbMKKuVw==}
     peerDependencies:
       typescript: '*'
@@ -5690,6 +5692,7 @@ packages:
       '@vue/runtime-dom': 3.3.10
       '@vue/server-renderer': 3.3.10(vue@3.3.10)
       '@vue/shared': 3.3.10
+      typescript: 5.3.2
     dev: false
 
   /watchpack@2.4.0:

@@ -4,6 +4,7 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
+import { OpenAIStream } from "ai";
 
 import {
   AvailableModels,
@@ -46,7 +47,10 @@ interface CachedData {
 const CACHE_HEADER = "x-bt-use-cache";
 const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
-const ENDPOINT_NAME = "x-bt-endpoint-name";
+const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
+const FORMAT_HEADER = "x-bt-stream-fmt";
+
+const CACHE_MODES = ["auto", "always", "never"] as const;
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -107,9 +111,8 @@ export async function proxyV1({
       ([h, _]) =>
         !(
           h.startsWith("x-amzn") ||
-          h == CACHE_HEADER ||
-          h == CREDS_CACHE_HEADER ||
-          h == "content-length"
+          h.startsWith("x-bt") ||
+          h === "content-length"
         ),
     ),
   );
@@ -120,36 +123,29 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  const useCacheModeHeader =
-    proxyHeaders[CACHE_HEADER] && proxyHeaders[CACHE_HEADER].toLowerCase();
-  if (
-    useCacheModeHeader &&
-    !(
-      useCacheModeHeader === "auto" ||
-      useCacheModeHeader === "always" ||
-      useCacheModeHeader === "never"
-    )
-  ) {
-    throw new Error(
-      `Invalid ${CACHE_HEADER} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
-    );
-  }
-  const useCacheMode = parseCacheModeHeader(
+  const useCacheMode = parseEnumHeader(
     CACHE_HEADER,
+    CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
-  const useCredentialsCacheMode = parseCacheModeHeader(
+  const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
+    CACHE_MODES,
     proxyHeaders[CREDS_CACHE_HEADER],
+  );
+  const streamFormat = parseEnumHeader(
+    FORMAT_HEADER,
+    ["openai", "vercel-ai"] as const,
+    proxyHeaders[FORMAT_HEADER],
   );
 
   const cacheableEndpoint =
+    url === "/auto" ||
     url === "/embeddings" ||
     url === "/chat/completions" ||
     url === "/completions";
-
   let bodyData = null;
-  if (url === "/chat/completions" || url === "/completions") {
+  if (url === "auto" || url === "/chat/completions" || url === "/completions") {
     try {
       bodyData = JSON.parse(body);
     } catch (e) {
@@ -173,8 +169,8 @@ export async function proxyV1({
     useCacheMode !== "never" &&
     (useCacheMode === "always" || !temperatureNonZero);
 
-  const orgName = headers[ORG_NAME_HEADER];
-  const endpointName = headers[ENDPOINT_NAME];
+  const orgName = proxyHeaders[ORG_NAME_HEADER];
+  const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
   const cacheKey =
     "aiproxy/proxy/v1:" +
@@ -216,25 +212,50 @@ export async function proxyV1({
     cacheSkips.add(1);
   }
 
+  let responseFailed = false;
   if (stream === null) {
+    let bodyData = null;
+    try {
+      bodyData = JSON.parse(body);
+    } catch (e) {
+      console.warn(
+        "Failed to parse body. Will fall back to default (OpenAI)",
+        e,
+      );
+    }
+
+    if (streamFormat === "vercel-ai" && !bodyData?.stream) {
+      throw new Error(
+        "Vercel AI format requires the stream parameter to be set to true",
+      );
+    }
+
     const { response: proxyResponse, stream: proxyStream } =
-      await fetchModelLoop(meter, method, url, headers, body, async (types) => {
-        const secrets = await getApiSecrets(
-          useCredentialsCacheMode !== "never",
-          authToken,
-          types,
-          orgName,
-        );
-        if (endpointName) {
-          return secrets.filter((s) => s.name === endpointName);
-        } else {
-          return secrets;
-        }
-      });
+      await fetchModelLoop(
+        meter,
+        method,
+        url,
+        headers,
+        bodyData,
+        async (types) => {
+          const secrets = await getApiSecrets(
+            useCredentialsCacheMode !== "never",
+            authToken,
+            types,
+            orgName,
+          );
+          if (endpointName) {
+            return secrets.filter((s) => s.name === endpointName);
+          } else {
+            return secrets;
+          }
+        },
+      );
     stream = proxyStream;
 
     if (!proxyResponse.ok) {
       setStatusCode(proxyResponse.status);
+      responseFailed = true;
     }
 
     const proxyResponseHeaders: Record<string, string> = {};
@@ -290,8 +311,12 @@ export async function proxyV1({
     }
   }
 
+  if (stream && streamFormat === "vercel-ai" && !responseFailed) {
+    stream = OpenAIStream(new Response(stream));
+  }
+
   if (stream) {
-    await stream.pipeTo(res);
+    stream.pipeTo(res);
   } else {
     res.close();
   }
@@ -317,16 +342,9 @@ async function fetchModelLoop(
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
-  body: string,
+  bodyData: any | null,
   getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>,
 ): Promise<ModelResponse> {
-  let bodyData = null;
-  try {
-    bodyData = JSON.parse(body);
-  } catch (e) {
-    console.warn("Failed to parse body. Will fall back to default (OpenAI)", e);
-  }
-
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -346,7 +364,9 @@ async function fetchModelLoop(
 
   if (
     method === "POST" &&
-    (url === "/chat/completions" || url === "/completions") &&
+    (url === "/auto" ||
+      url === "/chat/completions" ||
+      url === "/completions") &&
     isObject(bodyData) &&
     bodyData.model
   ) {
@@ -356,6 +376,22 @@ async function fetchModelLoop(
 
     if (types.length === 0) {
       throw new Error(`Unsupported model ${model}`);
+    }
+  }
+
+  let endpointUrl = url;
+  if (endpointUrl === "/auto") {
+    switch (AvailableModels[model]?.flavor) {
+      case "chat":
+        endpointUrl = "/chat/completions";
+        break;
+      case "completion":
+        endpointUrl = "/completions";
+        break;
+      default:
+        throw new Error(
+          `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
+        );
     }
   }
 
@@ -393,9 +429,8 @@ async function fetchModelLoop(
       proxyResponse = await fetchModel(
         format,
         method,
-        url,
+        endpointUrl,
         headers,
-        body,
         secret,
         bodyData,
       );
@@ -480,7 +515,6 @@ async function fetchModel(
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
-  body: string,
   secret: APISecret,
   bodyData: null | any,
 ) {
@@ -814,19 +848,18 @@ export function createEventStreamTransformer(
 }
 // --------------------------------------------------
 
-export function parseCacheModeHeader(headerName: string, value?: string) {
-  const useCacheModeHeader = value && value.toLowerCase();
-  if (
-    useCacheModeHeader &&
-    !(
-      useCacheModeHeader === "auto" ||
-      useCacheModeHeader === "always" ||
-      useCacheModeHeader === "never"
-    )
-  ) {
+function parseEnumHeader<T>(
+  headerName: string,
+  headerTypes: readonly T[],
+  value?: string,
+): (typeof headerTypes)[number] {
+  const header = value && value.toLowerCase();
+  if (header && !headerTypes.includes(header as T)) {
     throw new Error(
-      `Invalid ${headerName} header '${useCacheModeHeader}'. Must be one of auto, always, or never`,
+      `Invalid ${headerName} header '${header}'. Must be one of ${headerTypes.join(
+        ", ",
+      )}`,
     );
   }
-  return (useCacheModeHeader || "auto") as "auto" | "always" | "never";
+  return (header || headerTypes[0]) as (typeof headerTypes)[number];
 }

@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { pipeline } from "stream/promises";
 
-import { completion } from "./ai";
 import { nodeProxyV1 } from "./node-proxy";
 import { resetEnv } from "./env";
 
@@ -21,23 +20,6 @@ function processError(res: Response, err: any) {
   res.write("!");
   res.write(`${err}`);
 }
-
-app.post("/stream/completion", async (req, res, next) => {
-  res.setHeader("Content-Type", "text/plain");
-  const body = JSON.parse(req.body);
-  try {
-    const aiStream = (await completion(
-      req.headers,
-      body,
-    )) as unknown as NodeJS.ReadableStream;
-
-    res.write("[");
-    await pipeline(aiStream, res, { end: true });
-  } catch (e: any) {
-    processError(res, e);
-  }
-  return res.end();
-});
 
 app.get("/proxy/v1/*", async (req, res, next) => {
   const url = req.url.slice("/proxy/v1".length);

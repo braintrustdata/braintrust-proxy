@@ -32,11 +32,9 @@ import {
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
-  google_readFromReader,
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
 } from "./providers/google";
-import { GenerateContentResponse } from "@google/generative-ai";
 
 interface CachedData {
   headers: Record<string, string>;

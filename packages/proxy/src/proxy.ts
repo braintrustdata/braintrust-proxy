@@ -32,6 +32,7 @@ import {
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { googleCompletionToOpenAICompletion } from "./providers/google";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -695,6 +696,8 @@ async function fetchGoogle(
   }
 
   const {
+    model,
+    stream: streamingMode,
     messages: oaiMessages,
     seed, // extract seed so that it's not sent to Google (we just use it for the cache)
     ...oaiParams
@@ -710,15 +713,19 @@ async function fetchGoogle(
   };
 
   const fullURL = new URL(
-    (secret.metadata?.api_base || EndpointProviderToBaseURL.google) +
-      "/complete",
+    EndpointProviderToBaseURL.google! +
+      `/models/${encodeURIComponent(model)}:generateContent`,
   );
+  fullURL.searchParams.set("key", secret.secret);
+
+  delete headers["authorization"];
+  headers["content-type"] = "application/json";
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,
     headers,
     body: JSON.stringify({
-      prompt: buildAnthropicPrompt(messages),
+      contents: [content],
       ...params,
     }),
     keepalive: true,
@@ -748,9 +755,10 @@ async function fetchGoogle(
           async flush(controller) {
             const text = flattenChunks(allChunks);
             const data = JSON.parse(text);
+            console.log(data);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
+                JSON.stringify(googleCompletionToOpenAICompletion(model, data)),
               ),
             );
             controller.terminate();

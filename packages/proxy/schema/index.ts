@@ -5,10 +5,11 @@ import {
 
 export type PromptInputType = "completion" | "chat";
 
-export type ModelFormat = "openai" | "anthropic" | "js";
+export type ModelFormat = "openai" | "anthropic" | "google" | "js";
 export const ModelEndpointType = [
   "openai",
   "azure",
+  "google",
   "perplexity",
   "replicate",
   "anthropic",
@@ -22,11 +23,18 @@ export interface ModelSpec {
   flavor: PromptInputType;
 }
 
-export type Role = "system" | "user" | "assistant" | "function" | "human";
+export type Role =
+  | "system"
+  | "user"
+  | "assistant"
+  | "function"
+  | "human"
+  | "model";
 
 export const MessageTypes: { [name in ModelFormat]: Role[] } = {
   openai: ["system", "user", "assistant" /*, "function" */],
   anthropic: ["system", "human", "assistant"],
+  google: ["user", "model"],
   js: ["system"],
 };
 
@@ -56,6 +64,7 @@ export const MessageTypeToMessageType: {
   user: "human",
   assistant: "assistant",
   human: "user",
+  model: "assistant",
 };
 
 interface BrainTrustModelParams {
@@ -83,11 +92,19 @@ interface AnthropicModelParams {
   top_k?: number;
 }
 
+interface GoogleModelParams {
+  temperature: number;
+  maxOutputTokens?: number;
+  topP?: number;
+  topK?: number;
+}
+
 interface JSCompletionParams {}
 
 export type ModelParams = (
   | OpenAIModelParams
   | AnthropicModelParams
+  | GoogleModelParams
   | JSCompletionParams
 ) &
   BrainTrustModelParams &
@@ -104,12 +121,18 @@ export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
     max_tokens_to_sample: 1024,
     use_cache: true,
   },
+  google: {
+    temperature: 0,
+    max_tokens_to_sample: 1024,
+    use_cache: true,
+  },
   js: {},
 };
 
 export const modelParamToModelParam: {
   [name in keyof (OpenAIModelParams &
     AnthropicModelParams &
+    GoogleModelParams &
     BrainTrustModelParams)]:
     | keyof (OpenAIModelParams & AnthropicModelParams & BrainTrustModelParams)
     | undefined;
@@ -119,6 +142,9 @@ export const modelParamToModelParam: {
   max_tokens: "max_tokens_to_sample",
   max_tokens_to_sample: "max_tokens",
   use_cache: "use_cache",
+  maxOutputTokens: "max_tokens",
+  topP: "top_p",
+  topK: "top_k",
 };
 
 export const sliderSpecs: {
@@ -153,6 +179,13 @@ export const defaultModelParamSettings: {
     top_k: 5,
     use_cache: true,
   },
+  google: {
+    temperature: 0,
+    maxOutputTokens: 1024,
+    topP: 0.7,
+    topK: 5,
+    use_cache: true,
+  },
   js: {},
 };
 
@@ -161,6 +194,7 @@ export const modelProviderHasTools: {
 } = {
   openai: true,
   anthropic: false,
+  google: false,
   js: false,
 };
 
@@ -207,6 +241,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "pplx-70b-chat": { format: "openai", flavor: "chat" },
   "pplx-7b-online": { format: "openai", flavor: "chat" },
   "pplx-70b-online": { format: "openai", flavor: "chat" },
+  "gemini-pro": { format: "google", flavor: "chat" },
   "text-block": { format: "js", flavor: "completion" },
 };
 
@@ -215,6 +250,7 @@ export const DefaultEndpointTypes: {
 } = {
   openai: ["openai", "azure"],
   anthropic: ["anthropic"],
+  google: ["google"],
   js: ["js"],
 };
 
@@ -251,6 +287,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   PERPLEXITY_API_KEY: "perplexity",
   REPLICATE_API_KEY: "replicate",
   TOGETHER_API_KEY: "together",
+  GOOGLE_API_KEY: "google",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -261,6 +298,7 @@ export const EndpointProviderToBaseURL: {
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",
   together: "https://api.together.xyz/v1",
+  google: "https://generativelanguage.googleapis.com/v1beta",
   azure: null,
   js: null,
 };

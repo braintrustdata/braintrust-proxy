@@ -5,7 +5,6 @@ import {
   type ReconnectInterval,
 } from "eventsource-parser";
 import { OpenAIStream } from "ai";
-import { processStream } from "@google/generative-ai/dist/src/requests/stream-reader";
 
 import {
   AvailableModels,
@@ -745,21 +744,14 @@ async function fetchGoogle(
   if (proxyResponse.ok) {
     if (streamingMode) {
       let idx = 0;
-      const responseStream = google_readFromReader(stream.getReader());
-      stream = responseStream.pipeThrough(
-        new TransformStream<GenerateContentResponse, Uint8Array>({
-          transform(chunk, controller) {
-            const ret = googleEventToOpenAIChatEvent(model, chunk);
-            console.log("RET", ret);
-            if (ret.event !== null) {
-              controller.enqueue(
-                new TextEncoder().encode(JSON.stringify(ret.event)),
-              );
-            }
-            if (ret.finished) {
-              controller.terminate();
-            }
-          },
+      stream = stream.pipeThrough(
+        createEventStreamTransformer((data) => {
+          const ret = googleEventToOpenAIChatEvent(model, JSON.parse(data));
+          idx += 1;
+          return {
+            data: ret.event && JSON.stringify(ret.event),
+            finished: ret.finished,
+          };
         }),
       );
     } else {

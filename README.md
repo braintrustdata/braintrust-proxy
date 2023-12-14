@@ -8,6 +8,7 @@ models from [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https
 - **Cost Reduction**: The proxy automatically caches results, reusing them when possible.
 - **Enhanced Observability**: Log requests automatically for better tracking and debugging. \[Coming soon\]
 
+See the full list of supported models [here](https://www.braintrustdata.com/docs/guides/proxy#supported-models).
 To read more about why we launched the AI proxy, check out our [announcement blog post](https://braintrustdata.com/blog/ai-proxy).
 
 This repository contains the code for the proxy — both the underlying implementation and wrappers that allow you to

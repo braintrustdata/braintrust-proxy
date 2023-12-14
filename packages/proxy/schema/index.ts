@@ -14,6 +14,7 @@ export const ModelEndpointType = [
   "replicate",
   "anthropic",
   "together",
+  "mistral",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
@@ -236,6 +237,9 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
   },
+  "mistral-tiny": { format: "openai", flavor: "chat" },
+  "mistral-small": { format: "openai", flavor: "chat" },
+  "mistral-medium": { format: "openai", flavor: "chat" },
   "openhermes-2-mistral-7b": { format: "openai", flavor: "chat" },
   "openhermes-2.5-mistral-7b": { format: "openai", flavor: "chat" },
   "pplx-7b-chat": { format: "openai", flavor: "chat" },
@@ -271,6 +275,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta/llama-2-70b-chat": ["replicate"],
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
+  "mistral-tiny": ["mistral"],
+  "mistral-small": ["mistral"],
+  "mistral-medium": ["mistral"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -289,6 +296,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   REPLICATE_API_KEY: "replicate",
   TOGETHER_API_KEY: "together",
   GOOGLE_API_KEY: "google",
+  MISTRAL_API_KEY: "mistral",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -300,6 +308,7 @@ export const EndpointProviderToBaseURL: {
   replicate: "https://openai-proxy.replicate.com/v1",
   together: "https://api.together.xyz/v1",
   google: "https://generativelanguage.googleapis.com/v1beta",
+  mistral: "https://api.mistral.ai/v1",
   azure: null,
   js: null,
 };
@@ -375,6 +384,7 @@ export type APISecret = APISecretBase &
           | "google"
           | "replicate"
           | "together"
+          | "mistral"
           | "js";
         metadata?: BaseMetadata;
       }

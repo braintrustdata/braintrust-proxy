@@ -142,6 +142,7 @@ export async function proxyV1({
     url === "/embeddings" ||
     url === "/chat/completions" ||
     url === "/completions";
+
   let bodyData = null;
   if (url === "auto" || url === "/chat/completions" || url === "/completions") {
     try {
@@ -158,6 +159,7 @@ export async function proxyV1({
   // OpenAI now allows you to set a seed, and if that is set, we should cache even
   // if temperature is non-zero.
   const temperatureNonZero =
+    (url === "/chat/completions" || url === "/completions") &&
     bodyData &&
     bodyData.temperature !== 0 &&
     (bodyData.seed === undefined || bodyData.seed === null);

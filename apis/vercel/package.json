@@ -1,6 +1,6 @@
 {
-  "name": "api-rate-limit",
-  "repository": "https://github.com/vercel/examples.git",
+  "name": "braintrust-proxy",
+  "repository": "https://github.com/braintrustdata/braintrust-proxy",
   "license": "MIT",
   "private": true,
   "scripts": {

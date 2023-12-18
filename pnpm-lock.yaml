@@ -191,9 +191,6 @@ importers:
       ai:
         specifier: 2.2.22
         version: 2.2.22(react@18.2.0)(solid-js@1.8.7)(svelte@4.2.8)(vue@3.3.12)
-      braintrust:
-        specifier: link:../../../sdk/js
-        version: link:../../../sdk/js
       eventsource-parser:
         specifier: ^1.1.1
         version: 1.1.1

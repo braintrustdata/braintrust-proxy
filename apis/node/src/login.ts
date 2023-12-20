@@ -36,7 +36,7 @@ export async function lookupApiSecret(
       throw new Error(await response.text());
     }
   } catch (e) {
-    console.warn("Failed to lookup api key. Falling back to provided key", e);
+    throw new Error(`Failed to lookup api key: ${e}`);
   }
 
   if (secrets.length === 0) {

@@ -1,7 +1,4 @@
-import { Span, resumeSpan, noopSpan } from "braintrust";
-
-const PARENT_SPAN_HEADER = "x-bt-parent-span";
-const SERIALIZED_STATE_HEADER = "x-bt-serialized-state";
+import { Span, startSpanUnderSerialized, noopSpan } from "braintrust";
 
 const URL_TO_SPAN_NAME: Record<string, string> = {
   "/chat/completions": "Chat Completion",
@@ -9,26 +6,29 @@ const URL_TO_SPAN_NAME: Record<string, string> = {
 
 // Returns `noopSpan` if there is no span to resume or we are not tracing this
 // request URL. The returned span must be flushed and ended manually.
-export function resumeSpanFromHeaders(
-  url: string,
-  headers: Record<string, string>,
-): Span {
+export function startSpanFromHeaders({
+  url,
+  orgNameHeader,
+  parentSpanHeader,
+  authToken,
+  apiUrl,
+}: {
+  url: string;
+  orgNameHeader: string | undefined;
+  parentSpanHeader: string | undefined;
+  authToken: string;
+  apiUrl: string | undefined;
+}): Span {
   if (
-    !(
-      PARENT_SPAN_HEADER in headers &&
-      SERIALIZED_STATE_HEADER in headers &&
-      url in URL_TO_SPAN_NAME
-    )
+    !(orgNameHeader && parentSpanHeader && apiUrl && url in URL_TO_SPAN_NAME)
   ) {
     return noopSpan;
   }
-  const rootSpan = resumeSpan(headers[PARENT_SPAN_HEADER], {
-    serializedLoginInfo: headers[SERIALIZED_STATE_HEADER],
+  return startSpanUnderSerialized(parentSpanHeader, URL_TO_SPAN_NAME[url], {
+    logUrl: apiUrl,
+    logToken: authToken,
     flushOnExit: false,
   });
-  return rootSpan.startSpan(URL_TO_SPAN_NAME[url]);
-  // It shouldn't matter that we didn't end the resumed root span, because the
-  // caller is expected to end it.
 }
 
 function parseStreamingOutput(body: string): Record<string, unknown> {

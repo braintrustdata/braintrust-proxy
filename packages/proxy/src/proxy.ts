@@ -31,7 +31,7 @@ import {
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
-import { resumeSpanFromHeaders, logOutput } from "./tracing";
+import { startSpanFromHeaders, logOutput } from "./tracing";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
@@ -49,6 +49,7 @@ const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 const ORG_NAME_HEADER = "x-bt-org-name";
 const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 const FORMAT_HEADER = "x-bt-stream-fmt";
+const PARENT_SPAN_HEADER = "x-bt-parent-span";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
@@ -117,9 +118,6 @@ export async function proxyV1({
     ),
   );
 
-  const span = resumeSpanFromHeaders(url, proxyHeaders);
-  let shouldEndSpan = true;
-
   const authToken = parseAuthHeader(proxyHeaders);
   if (!authToken) {
     throw new Error("Missing Authentication header");
@@ -148,14 +146,30 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/completions";
 
-  let bodyData = null;
-  if (url === "auto" || url === "/chat/completions" || url === "/completions") {
-    try {
-      bodyData = JSON.parse(body);
-    } catch (e) {
-      console.warn("Failed to parse body. This doesn't really matter", e);
-    }
-  }
+  const orgName = proxyHeaders[ORG_NAME_HEADER];
+  const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
+
+  const parsedBody = parseBody({ method, url, body });
+  const { bodyData, types } = parsedBody;
+
+  const secrets = await getApiSecrets(
+    useCredentialsCacheMode !== "never",
+    authToken,
+    types,
+    orgName,
+  );
+
+  const apiUrl =
+    orgName && secrets.find((s) => s.org_name === orgName)?.api_url;
+
+  const span = startSpanFromHeaders({
+    url,
+    orgNameHeader: orgName,
+    parentSpanHeader: proxyHeaders[PARENT_SPAN_HEADER],
+    authToken,
+    apiUrl,
+  });
+  let shouldEndSpan = true;
 
   const isStreamRequest = bodyData?.stream ?? false;
   if (bodyData) {
@@ -179,9 +193,6 @@ export async function proxyV1({
     cacheableEndpoint &&
     useCacheMode !== "never" &&
     (useCacheMode === "always" || !temperatureNonZero);
-
-  const orgName = proxyHeaders[ORG_NAME_HEADER];
-  const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
   const cacheKey =
     "aiproxy/proxy/v1:" +
@@ -246,26 +257,7 @@ export async function proxyV1({
 
     const startTime = Date.now() / 1000;
     const { response: proxyResponse, stream: proxyStream } =
-      await fetchModelLoop(
-        meter,
-        method,
-        url,
-        headers,
-        bodyData,
-        async (types) => {
-          const secrets = await getApiSecrets(
-            useCredentialsCacheMode !== "never",
-            authToken,
-            types,
-            orgName,
-          );
-          if (endpointName) {
-            return secrets.filter((s) => s.name === endpointName);
-          } else {
-            return secrets;
-          }
-        },
-      );
+      await fetchModelLoop(meter, method, url, headers, parsedBody, secrets);
     stream = proxyStream;
 
     if (!proxyResponse.ok) {
@@ -368,14 +360,67 @@ const RETRY_ERROR_CODES = [
   429,
 ];
 
+interface ParsedBodyResult {
+  // Will be `null` if we don't support the URL or the body fails to parse to
+  // JSON.
+  bodyData: any;
+  model: string | null;
+  format: ModelFormat;
+  types: ModelEndpointType[];
+}
+
+function parseBody({
+  method,
+  url,
+  body,
+}: {
+  method: "GET" | "POST";
+  url: string;
+  body: string;
+}) {
+  let bodyData = null;
+  if (url === "auto" || url === "/chat/completions" || url === "/completions") {
+    try {
+      bodyData = JSON.parse(body);
+    } catch (e) {
+      console.warn("Failed to parse body. This doesn't really matter", e);
+    }
+  }
+
+  let model: string | null = null;
+  let format: ModelFormat = "openai";
+  let types: ModelEndpointType[] = ["openai", "azure"];
+
+  if (
+    method === "POST" &&
+    (url === "/auto" ||
+      url === "/chat/completions" ||
+      url === "/completions") &&
+    isObject(bodyData) &&
+    bodyData.model
+  ) {
+    model = bodyData.model as string;
+    format = AvailableModels[model]?.format || "openai";
+    types = getModelEndpointTypes(model);
+
+    if (types.length === 0) {
+      throw new Error(`Unsupported model ${model}`);
+    }
+  }
+
+  return { bodyData, model, format, types };
+}
+
 async function fetchModelLoop(
   meter: Meter,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
-  bodyData: any | null,
-  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>,
+  parsedBody: ParsedBodyResult,
+  secrets: APISecret[],
 ): Promise<ModelResponse> {
+  const { bodyData, model, format, types } = parsedBody;
+
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -389,29 +434,8 @@ async function fetchModelLoop(
   const llmTtft = meter.createHistogram("llm_ttft");
   const llmLatency = meter.createHistogram("llm_latency");
 
-  let model = null;
-  let format: ModelFormat = "openai";
-  let types: ModelEndpointType[] = ["openai", "azure"];
-
-  if (
-    method === "POST" &&
-    (url === "/auto" ||
-      url === "/chat/completions" ||
-      url === "/completions") &&
-    isObject(bodyData) &&
-    bodyData.model
-  ) {
-    model = bodyData.model;
-    format = AvailableModels[model]?.format || "openai";
-    types = getModelEndpointTypes(model);
-
-    if (types.length === 0) {
-      throw new Error(`Unsupported model ${model}`);
-    }
-  }
-
   let endpointUrl = url;
-  if (endpointUrl === "/auto") {
+  if (endpointUrl === "/auto" && model) {
     switch (AvailableModels[model]?.flavor) {
       case "chat":
         endpointUrl = "/chat/completions";
@@ -427,7 +451,6 @@ async function fetchModelLoop(
   }
 
   // TODO: Make this smarter. For now, just pick a random one.
-  const secrets = await getApiSecrets(types);
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse = null;
   let lastException = null;

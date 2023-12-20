@@ -17,11 +17,11 @@ const host = "localhost";
 const port = 8001;
 
 function processError(res: Response, err: any) {
-  res.write("!");
-  res.write(`${err}`);
+  res.write(`!${err}`);
+  res.end();
 }
 
-app.get("/proxy/v1/*", async (req, res, next) => {
+app.get("/proxy/v1/*", async (req, res) => {
   const url = req.url.slice("/proxy/v1".length);
   try {
     await nodeProxyV1({
@@ -35,7 +35,7 @@ app.get("/proxy/v1/*", async (req, res, next) => {
     });
   } catch (e: any) {
     console.error(e);
-    throw e;
+    processError(res, e);
   }
 });
 
@@ -53,7 +53,7 @@ app.post("/proxy/v1/*", async (req, res) => {
     });
   } catch (e: any) {
     console.error(e);
-    throw e;
+    processError(res, e);
   }
 });
 

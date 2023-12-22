@@ -327,14 +327,18 @@ interface ModelResponse {
   response: Response;
 }
 
-const RETRY_ERROR_CODES = [
+const RATE_LIMIT_ERROR_CODE = 429;
+const RATE_LIMIT_MAX_WAIT_MS = 600 * 1000; // Wait up to 10 minutes while retrying
+const BACKOFF_EXPONENT = 2;
+
+const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   // 404 means the model or endpoint doesn't exist. We may want to propagate these errors, or
   // report them elsewhere, but for now round robin.
   404,
 
   // 429 is rate limiting. We may want to track stats about this and potentially handle more
   // intelligently, eg if all APIs are rate limited, back off and try something else.
-  429,
+  RATE_LIMIT_ERROR_CODE,
 ];
 
 async function fetchModelLoop(
@@ -403,6 +407,9 @@ async function fetchModelLoop(
   let loggableInfo: Record<string, any> = {};
 
   let i = 0;
+  let delayMs = 50;
+  let totalWaitedTime = 0;
+
   for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
@@ -438,7 +445,9 @@ async function fetchModelLoop(
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
           proxyResponse.response.status < 500 &&
-          !RETRY_ERROR_CODES.includes(proxyResponse.response.status))
+          !TRY_ANOTHER_ENDPOINT_ERROR_CODES.includes(
+            proxyResponse.response.status,
+          ))
       ) {
         break;
       } else {
@@ -448,6 +457,27 @@ async function fetchModelLoop(
           proxyResponse.response.statusText,
         );
         httpCode = proxyResponse.response.status;
+
+        // If we hit a rate-limit error, and we're at the end of the
+        // loop, and we haven't waited the maximum allotted time, then
+        // sleep for a bit, and reset the loop.
+        if (
+          httpCode === RATE_LIMIT_ERROR_CODE &&
+          i === secrets.length - 1 &&
+          totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
+        ) {
+          const limitReset = tryParseRateLimitReset(
+            proxyResponse.response.headers,
+          );
+          delayMs = limitReset ?? delayMs * (BACKOFF_EXPONENT - Math.random());
+          console.warn(
+            `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`,
+          );
+          await new Promise((r) => setTimeout(r, delayMs));
+
+          totalWaitedTime += delayMs;
+          i = -1; // Reset the loop variable
+        }
       }
     } catch (e) {
       lastException = e;
@@ -876,4 +906,22 @@ function parseEnumHeader<T>(
     );
   }
   return (header || headerTypes[0]) as (typeof headerTypes)[number];
+}
+
+function tryParseRateLimitReset(headers: Headers): number | null {
+  const reset =
+    headers.get("x-ratelimit-reset") ??
+    headers.get("x-ratelimit-reset-requests");
+  if (reset) {
+    // reset is time-formatted, i.e. Xms or Xs
+    const match = reset.match(/(\d+)(ms|s)/);
+    if (match) {
+      const [_, num, unit] = match;
+      const parsed = parseInt(num);
+      if (!isNaN(parsed)) {
+        return unit === "ms" ? parsed : parsed * 1000;
+      }
+    }
+  }
+  return null;
 }

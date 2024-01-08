@@ -8,7 +8,7 @@ export async function lookupApiSecret(
   types: ModelEndpointType[],
   org_name?: string,
 ) {
-  const cacheKey = `${loginToken}:${types.join(",")}`;
+  const cacheKey = `${loginToken}:${org_name ?? ""}:${types.join(",")}`;
   const cached = useCache ? loginTokenToApiKey.get(cacheKey) : undefined;
   if (cached !== undefined) {
     return cached;

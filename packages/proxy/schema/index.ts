@@ -366,6 +366,7 @@ export function translateParams(
 interface APISecretBase {
   id?: string;
   org_name?: string;
+  api_url?: string;
   name?: string;
   secret: string;
   metadata?: Record<string, unknown>;

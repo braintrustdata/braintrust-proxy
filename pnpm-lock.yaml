@@ -118,6 +118,9 @@ importers:
       npm-run-all:
         specifier: ^4.1.5
         version: 4.1.5
+      typescript:
+        specifier: ^5.0.4
+        version: 5.3.3
 
   apis/vercel:
     dependencies:

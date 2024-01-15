@@ -24,6 +24,7 @@ new_classes = ["PrometheusMetricAggregator"] # Array of new classes
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
 # --- Braintrust proxy args
+BRAINTRUST_API_URL = "http://localhost:3000"
 # Configure this username and password to protect your Prometheus metrics endpoint.
 # PROMETHEUS_SCRAPE_USER = ""
 # PROMETHEUS_SCRAPE_PASSWORD = ""

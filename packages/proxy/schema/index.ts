@@ -79,6 +79,7 @@ export interface OpenAIModelParams {
   max_tokens: number;
   frequency_penalty?: number;
   presence_penalty?: number;
+  response_format?: null | { type: "json_object" };
   tool_choice?:
     | "auto"
     | "none"
@@ -172,6 +173,7 @@ export const defaultModelParamSettings: {
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
+    response_format: null,
     use_cache: true,
   },
   anthropic: {

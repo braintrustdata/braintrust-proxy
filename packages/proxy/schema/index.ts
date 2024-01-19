@@ -231,6 +231,10 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
+  "mistralai/Mistral-7B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+  },
   "mistralai/mixtral-8x7b-32kseqlen": {
     format: "openai",
     flavor: "completion",
@@ -275,6 +279,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pplx-7b-online": ["perplexity"],
   "pplx-70b-online": ["perplexity"],
   "meta/llama-2-70b-chat": ["replicate"],
+  "mistralai/Mistral-7B-Instruct-v0.1": ["together"],
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
   "mistral-tiny": ["mistral"],

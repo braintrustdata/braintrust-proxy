@@ -83,7 +83,7 @@ export async function proxyV1({
   getApiSecrets: (
     useCache: boolean,
     authToken: string,
-    types: ModelEndpointType[],
+    model: string | null,
     org_name?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
@@ -237,11 +237,11 @@ export async function proxyV1({
         url,
         headers,
         bodyData,
-        async (types) => {
+        async (model) => {
           const secrets = await getApiSecrets(
             useCredentialsCacheMode !== "never",
             authToken,
-            types,
+            model,
             orgName,
           );
           if (endpointName) {
@@ -347,7 +347,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   bodyData: any | null,
-  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>,
+  getApiSecrets: (model: string | null) => Promise<APISecret[]>,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -362,9 +362,7 @@ async function fetchModelLoop(
   const llmTtft = meter.createHistogram("llm_ttft");
   const llmLatency = meter.createHistogram("llm_latency");
 
-  let model = null;
-  let format: ModelFormat = "openai";
-  let types: ModelEndpointType[] = ["openai", "azure"];
+  let model: string | null = null;
 
   if (
     method === "POST" &&
@@ -375,16 +373,10 @@ async function fetchModelLoop(
     bodyData.model
   ) {
     model = bodyData.model;
-    format = AvailableModels[model]?.format || "openai";
-    types = getModelEndpointTypes(model);
-
-    if (types.length === 0) {
-      throw new Error(`Unsupported model ${model}`);
-    }
   }
 
   let endpointUrl = url;
-  if (endpointUrl === "/auto") {
+  if (model !== null && endpointUrl === "/auto") {
     switch (AvailableModels[model]?.flavor) {
       case "chat":
         endpointUrl = "/chat/completions";
@@ -400,7 +392,7 @@ async function fetchModelLoop(
   }
 
   // TODO: Make this smarter. For now, just pick a random one.
-  const secrets = await getApiSecrets(types);
+  const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse = null;
   let lastException = null;

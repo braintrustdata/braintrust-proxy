@@ -100,11 +100,11 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     const fetchApiSecrets = async (
       useCache: boolean,
       authToken: string,
-      types: ModelEndpointType[],
+      model: string | null,
       org_name?: string,
     ): Promise<APISecret[]> => {
       const cacheKey = await digestMessage(
-        `${types.join(":")}/${org_name ? org_name + ":" : ""}${authToken}`,
+        `${model}/${org_name ? org_name + ":" : ""}${authToken}`,
       );
 
       const response =
@@ -133,7 +133,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              types,
+              model,
               org_name,
               mode: "full",
             }),

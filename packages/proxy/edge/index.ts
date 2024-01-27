@@ -5,7 +5,7 @@ import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { ModelEndpointType, APISecret, getModelEndpointTypes } from "@schema";
+import { APISecret, getModelEndpointTypes } from "@schema";
 
 export { FlushingExporter } from "./exporter";
 

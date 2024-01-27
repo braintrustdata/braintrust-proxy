@@ -634,10 +634,7 @@ async function fetchAnthropic(
   // https://docs.anthropic.com/claude/reference/complete_post
   headers["accept"] = "application/json";
   headers["anthropic-version"] = "2023-06-01";
-  const fullURL = new URL(
-    (secret.metadata?.api_base || EndpointProviderToBaseURL.anthropic) +
-      "/complete",
-  );
+  const fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/complete");
   headers["host"] = fullURL.host;
   headers["x-api-key"] = secret.secret;
 

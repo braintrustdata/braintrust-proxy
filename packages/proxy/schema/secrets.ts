@@ -1,24 +1,5 @@
 import { z } from "zod";
 
-interface APISecretBase {
-  id?: string;
-  org_name?: string;
-  name?: string;
-  secret: string;
-  metadata?: Record<string, unknown>;
-}
-
-// XXX: Converge with main ModelSpec
-interface ModelSpec {
-  format: "openai" | "anthropic" | "google" | "js";
-  flavor: "completion" | "chat";
-}
-
-interface BaseMetadata {
-  models?: string[];
-  customModels?: Record<string, ModelSpec>;
-}
-
 export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).optional(),
@@ -79,43 +60,15 @@ export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("openai"),
-      metadata: OpenAIMetadataSchema,
+      metadata: OpenAIMetadataSchema.optional(),
     }),
   ),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("azure"),
-      metadata: AzureMetadataSchema,
+      metadata: AzureMetadataSchema.optional(),
     }),
   ),
 ]);
 
-// XXX REMOVE?
-export type APISecret = APISecretBase &
-  (
-    | {
-        type:
-          | "perplexity"
-          | "anthropic"
-          | "google"
-          | "replicate"
-          | "together"
-          | "mistral"
-          | "js";
-        metadata?: BaseMetadata;
-      }
-    | {
-        type: "openai";
-        metadata?: BaseMetadata & {
-          organization_id?: string;
-        };
-      }
-    | {
-        type: "azure";
-        metadata?: BaseMetadata & {
-          api_base: string;
-          api_version: string;
-          deployment?: string;
-        };
-      }
-  );
+export type APISecret = z.infer<typeof APISecretSchema>;

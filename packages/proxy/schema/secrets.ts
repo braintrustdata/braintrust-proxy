@@ -10,19 +10,20 @@ interface APISecretBase {
 
 // XXX: Converge with main ModelSpec
 interface ModelSpec {
-  format: Omit<"openai" | "anthropic" | "google" | "js", "js">;
+  format: "openai" | "anthropic" | "google" | "js";
   flavor: "completion" | "chat";
 }
 
 interface BaseMetadata {
-  models?: string[] | Record<string, ModelSpec>;
+  models?: string[];
+  customModels?: Record<string, ModelSpec>;
 }
 
-const BaseMetadataSchema = z.object({
-  models: z
-    .union([
-      z.array(z.string()),
-      z.record(
+export const BaseMetadataSchema = z
+  .object({
+    models: z.array(z.string()).optional(),
+    customModels: z
+      .record(
         z.object({
           format: z.union([
             z.literal("openai"),
@@ -31,10 +32,10 @@ const BaseMetadataSchema = z.object({
           ]),
           flavor: z.union([z.literal("completion"), z.literal("chat")]),
         }),
-      ),
-    ])
-    .optional(),
-});
+      )
+      .optional(),
+  })
+  .strict();
 
 export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
@@ -42,20 +43,23 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
     api_version: z.string().default("2023-07-01-preview"),
     deployment: z.string().optional(),
   }),
-);
+).strict();
 
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     organization_id: z.string().optional(),
   }),
-);
-const APISecretBaseSchema = z.object({
-  id: z.string().uuid().optional(),
-  org_name: z.string().optional(),
-  name: z.string().optional(),
-  secret: z.string(),
-  metadata: z.record(z.unknown()).optional(),
-});
+).strict();
+
+const APISecretBaseSchema = z
+  .object({
+    id: z.string().uuid().optional(),
+    org_name: z.string().optional(),
+    name: z.string().optional(),
+    secret: z.string(),
+    metadata: z.record(z.unknown()).optional(),
+  })
+  .strict();
 
 export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(

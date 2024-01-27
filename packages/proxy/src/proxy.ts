@@ -373,22 +373,6 @@ async function fetchModelLoop(
     model = bodyData.model;
   }
 
-  let endpointUrl = url;
-  if (model !== null && endpointUrl === "/auto") {
-    switch (AvailableModels[model]?.flavor) {
-      case "chat":
-        endpointUrl = "/chat/completions";
-        break;
-      case "completion":
-        endpointUrl = "/completions";
-        break;
-      default:
-        throw new Error(
-          `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
-        );
-    }
-  }
-
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
@@ -404,11 +388,32 @@ async function fetchModelLoop(
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
 
+    const modelSpec =
+      (model !== null
+        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        : null) ?? null;
+
+    let endpointUrl = url;
+    if (endpointUrl === "/auto") {
+      switch (modelSpec?.flavor) {
+        case "chat":
+          endpointUrl = "/chat/completions";
+          break;
+        case "completion":
+          endpointUrl = "/completions";
+          break;
+        default:
+          throw new Error(
+            `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
+          );
+      }
+    }
+
     loggableInfo = {
       model,
       endpoint_id: secret.id,
       type: secret.type,
-      format,
+      format: modelSpec?.format,
     };
 
     if (
@@ -424,7 +429,7 @@ async function fetchModelLoop(
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
-        format,
+        modelSpec?.format ?? "openai",
         method,
         endpointUrl,
         headers,
@@ -496,9 +501,7 @@ async function fetchModelLoop(
       throw lastException;
     } else {
       throw new Error(
-        `No API keys found (tried ${types.join(
-          ", ",
-        )}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
+        `No API keys found (for ${model}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
       );
     }
   }

@@ -5,7 +5,7 @@ import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { ModelEndpointType, APISecret } from "@schema";
+import { ModelEndpointType, APISecret, getModelEndpointTypes } from "@schema";
 
 export { FlushingExporter } from "./exporter";
 
@@ -156,7 +156,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       if (lookupFailed) {
         secrets.push({
           secret: authToken,
-          type: types[0],
+          type: !isEmpty(model) ? getModelEndpointTypes(model)[0] : "openai",
         });
       }
 

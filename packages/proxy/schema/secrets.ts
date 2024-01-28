@@ -6,12 +6,8 @@ export const BaseMetadataSchema = z
     customModels: z
       .record(
         z.object({
-          format: z.union([
-            z.literal("openai"),
-            z.literal("anthropic"),
-            z.literal("google"),
-          ]),
-          flavor: z.union([z.literal("completion"), z.literal("chat")]),
+          format: z.enum(["openai", "anthropic", "google"]),
+          flavor: z.enum(["completion", "chat"]),
         }),
       )
       .optional(),
@@ -45,14 +41,14 @@ const APISecretBaseSchema = z
 export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(
     z.object({
-      type: z.union([
-        z.literal("perplexity"),
-        z.literal("anthropic"),
-        z.literal("google"),
-        z.literal("replicate"),
-        z.literal("together"),
-        z.literal("mistral"),
-        z.literal("js"),
+      type: z.enum([
+        "perplexity",
+        "anthropic",
+        "google",
+        "replicate",
+        "together",
+        "mistral",
+        "js",
       ]),
       metadata: BaseMetadataSchema.optional(),
     }),

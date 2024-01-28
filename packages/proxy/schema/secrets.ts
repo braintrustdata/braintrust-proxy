@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const BaseMetadataSchema = z
   .object({
-    models: z.array(z.string()).optional(),
+    models: z.array(z.string()).nullish(),
     customModels: z
       .record(
         z.object({
@@ -10,7 +10,7 @@ export const BaseMetadataSchema = z
           flavor: z.enum(["completion", "chat"]),
         }),
       )
-      .optional(),
+      .nullish(),
   })
   .strict();
 
@@ -18,23 +18,23 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string(),
     api_version: z.string().default("2023-07-01-preview"),
-    deployment: z.string().optional(),
+    deployment: z.string().nullish(),
   }),
 ).strict();
 
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    organization_id: z.string().optional(),
+    organization_id: z.string().nullish(),
   }),
 ).strict();
 
 const APISecretBaseSchema = z
   .object({
-    id: z.string().uuid().optional(),
-    org_name: z.string().optional(),
-    name: z.string().optional(),
+    id: z.string().uuid().nullish(),
+    org_name: z.string().nullish(),
+    name: z.string().nullish(),
     secret: z.string(),
-    metadata: z.record(z.unknown()).optional(),
+    metadata: z.record(z.unknown()).nullish(),
   })
   .strict();
 
@@ -50,19 +50,19 @@ export const APISecretSchema = z.union([
         "mistral",
         "js",
       ]),
-      metadata: BaseMetadataSchema.optional(),
+      metadata: BaseMetadataSchema.nullish(),
     }),
   ),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("openai"),
-      metadata: OpenAIMetadataSchema.optional(),
+      metadata: OpenAIMetadataSchema.nullish(),
     }),
   ),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("azure"),
-      metadata: AzureMetadataSchema.optional(),
+      metadata: AzureMetadataSchema.nullish(),
     }),
   ),
 ]);

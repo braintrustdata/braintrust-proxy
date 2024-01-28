@@ -1,6 +1,6 @@
 import bsearch from "binary-search";
 import { Env } from "./env";
-import { ModelEndpointType, APISecret } from "@braintrust/proxy/schema";
+import { APISecret } from "@braintrust/proxy/schema";
 
 export async function lookupApiSecret(
   useCache: boolean,

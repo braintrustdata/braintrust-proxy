@@ -13,8 +13,6 @@ import {
   EndpointProviderToBaseURL,
   buildAnthropicPrompt,
   translateParams,
-  ModelEndpointType,
-  getModelEndpointTypes,
   ModelFormat,
   APISecret,
 } from "@schema";
@@ -83,7 +81,7 @@ export async function proxyV1({
   getApiSecrets: (
     useCache: boolean,
     authToken: string,
-    types: ModelEndpointType[],
+    model: string | null,
     org_name?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
@@ -237,11 +235,11 @@ export async function proxyV1({
         url,
         headers,
         bodyData,
-        async (types) => {
+        async (model) => {
           const secrets = await getApiSecrets(
             useCredentialsCacheMode !== "never",
             authToken,
-            types,
+            model,
             orgName,
           );
           if (endpointName) {
@@ -347,7 +345,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   bodyData: any | null,
-  getApiSecrets: (types: ModelEndpointType[]) => Promise<APISecret[]>,
+  getApiSecrets: (model: string | null) => Promise<APISecret[]>,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -362,9 +360,7 @@ async function fetchModelLoop(
   const llmTtft = meter.createHistogram("llm_ttft");
   const llmLatency = meter.createHistogram("llm_latency");
 
-  let model = null;
-  let format: ModelFormat = "openai";
-  let types: ModelEndpointType[] = ["openai", "azure"];
+  let model: string | null = null;
 
   if (
     method === "POST" &&
@@ -375,32 +371,10 @@ async function fetchModelLoop(
     bodyData.model
   ) {
     model = bodyData.model;
-    format = AvailableModels[model]?.format || "openai";
-    types = getModelEndpointTypes(model);
-
-    if (types.length === 0) {
-      throw new Error(`Unsupported model ${model}`);
-    }
-  }
-
-  let endpointUrl = url;
-  if (endpointUrl === "/auto") {
-    switch (AvailableModels[model]?.flavor) {
-      case "chat":
-        endpointUrl = "/chat/completions";
-        break;
-      case "completion":
-        endpointUrl = "/completions";
-        break;
-      default:
-        throw new Error(
-          `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
-        );
-    }
   }
 
   // TODO: Make this smarter. For now, just pick a random one.
-  const secrets = await getApiSecrets(types);
+  const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse = null;
   let lastException = null;
@@ -414,11 +388,32 @@ async function fetchModelLoop(
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
 
+    const modelSpec =
+      (model !== null
+        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        : null) ?? null;
+
+    let endpointUrl = url;
+    if (endpointUrl === "/auto") {
+      switch (modelSpec?.flavor) {
+        case "chat":
+          endpointUrl = "/chat/completions";
+          break;
+        case "completion":
+          endpointUrl = "/completions";
+          break;
+        default:
+          throw new Error(
+            `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
+          );
+      }
+    }
+
     loggableInfo = {
       model,
       endpoint_id: secret.id,
       type: secret.type,
-      format,
+      format: modelSpec?.format,
     };
 
     if (
@@ -434,7 +429,7 @@ async function fetchModelLoop(
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
-        format,
+        modelSpec?.format ?? "openai",
         method,
         endpointUrl,
         headers,
@@ -506,9 +501,7 @@ async function fetchModelLoop(
       throw lastException;
     } else {
       throw new Error(
-        `No API keys found (tried ${types.join(
-          ", ",
-        )}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
+        `No API keys found (for ${model}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
       );
     }
   }
@@ -641,10 +634,7 @@ async function fetchAnthropic(
   // https://docs.anthropic.com/claude/reference/complete_post
   headers["accept"] = "application/json";
   headers["anthropic-version"] = "2023-06-01";
-  const fullURL = new URL(
-    (secret.metadata?.api_base || EndpointProviderToBaseURL.anthropic) +
-      "/complete",
-  );
+  const fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/complete");
   headers["host"] = fullURL.host;
   headers["x-api-key"] = secret.secret;
 

@@ -3,6 +3,8 @@ import {
   ChatCompletionMessage,
 } from "openai/resources";
 
+export * from "./secrets";
+
 export type PromptInputType = "completion" | "chat";
 
 export type ModelFormat = "openai" | "anthropic" | "google" | "js";
@@ -372,44 +374,3 @@ export function translateParams(
   }
   return translatedParams;
 }
-
-interface APISecretBase {
-  id?: string;
-  org_name?: string;
-  name?: string;
-  secret: string;
-  metadata?: Record<string, unknown>;
-}
-
-interface BaseMetadata {
-  models?: string[];
-}
-
-export type APISecret = APISecretBase &
-  (
-    | {
-        type:
-          | "perplexity"
-          | "anthropic"
-          | "google"
-          | "replicate"
-          | "together"
-          | "mistral"
-          | "js";
-        metadata?: BaseMetadata;
-      }
-    | {
-        type: "openai";
-        metadata?: BaseMetadata & {
-          organization_id?: string;
-        };
-      }
-    | {
-        type: "azure";
-        metadata?: BaseMetadata & {
-          api_base: string;
-          api_version: string;
-          deployment?: string;
-        };
-      }
-  );

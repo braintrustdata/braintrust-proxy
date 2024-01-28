@@ -1,14 +1,14 @@
 import bsearch from "binary-search";
 import { Env } from "./env";
-import { ModelEndpointType, APISecret } from "@braintrust/proxy/schema";
+import { APISecret } from "@braintrust/proxy/schema";
 
 export async function lookupApiSecret(
   useCache: boolean,
   loginToken: string,
-  types: ModelEndpointType[],
+  model: string | null,
   org_name?: string,
 ) {
-  const cacheKey = `${loginToken}:${types.join(",")}`;
+  const cacheKey = `${loginToken}:${model}`;
   const cached = useCache ? loginTokenToApiKey.get(cacheKey) : undefined;
   if (cached !== undefined) {
     return cached;
@@ -23,7 +23,7 @@ export async function lookupApiSecret(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        types,
+        model,
         org_name,
         mode: "full",
       }),

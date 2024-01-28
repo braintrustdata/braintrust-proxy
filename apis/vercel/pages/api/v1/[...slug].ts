@@ -29,5 +29,5 @@ export default EdgeProxyV1({
   cors: true,
   credentialsCache: KVCache,
   completionsCache: KVCache,
-  braintrustApiUrl: process.env.BRAINTRUST_API_URL,
+  braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
 });

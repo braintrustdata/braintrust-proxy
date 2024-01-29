@@ -260,8 +260,6 @@ export async function proxyV1({
     proxyResponse.headers.forEach((value, name) => {
       const lowerName = name.toLowerCase();
       if (
-        lowerName === "content-length" ||
-        lowerName === "content-encoding" ||
         lowerName === "transfer-encoding" ||
         lowerName === "connection" ||
         lowerName === "keep-alive" ||

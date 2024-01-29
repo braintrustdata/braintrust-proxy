@@ -1,4 +1,4 @@
-import { DEFAULT_BRAINTRUST_API_URL } from "@lib/constants";
+import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { decryptMessage, encryptMessage, EncryptedMessage } from "@lib/encrypt";
 import { flushMetrics } from "@lib/metrics";
 import { proxyV1 } from "@lib/proxy";
@@ -125,7 +125,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       let ttl = 60;
       try {
         const response = await fetch(
-          `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_API_URL}/api/secret`,
+          `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
           {
             method: "POST",
             headers: {

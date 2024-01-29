@@ -7,7 +7,7 @@ export const proxyV1Prefix = "/v1";
 declare global {
   interface Env {
     ai_proxy: KVNamespace;
-    BRAINTRUST_API_URL: string;
+    BRAINTRUST_APP_URL: string;
     DISABLE_METRICS?: boolean;
     PROMETHEUS_SCRAPE_USER?: string;
     PROMETHEUS_SCRAPE_PASSWORD?: string;
@@ -103,7 +103,7 @@ export async function handleProxyV1(
       },
     },
     braintrustApiUrl:
-      env.BRAINTRUST_API_URL || "https://www.braintrustdata.com",
+      env.BRAINTRUST_APP_URL || "https://www.braintrustdata.com",
     meterProvider,
   })(request, ctx);
 }

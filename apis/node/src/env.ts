@@ -5,6 +5,7 @@ function reloadEnv() {
     orgName: process.env.ORG_NAME || "*",
     redisHost: process.env.REDIS_HOST,
     redisPort: parseInt(process.env.REDIS_PORT || "6379"),
+    redisUrl: process.env.REDIS_URL,
   };
 }
 

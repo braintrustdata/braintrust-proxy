@@ -236,6 +236,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
+  "mixtral-8x7b-instruct": { format: "openai", flavor: "chat" },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     format: "openai",
     flavor: "chat",
@@ -277,6 +278,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama-2-13b-chat": ["perplexity"],
   "codellama-34b-instruct": ["perplexity"],
   "mistral-7b-instruct": ["perplexity"],
+  "mixtral-8x7b-instruct": ["perplexity"],
   "openhermes-2-mistral-7b": ["perplexity"],
   "openhermes-2.5-mistral-7b": ["perplexity"],
   "pplx-7b-chat": ["perplexity"],

@@ -78,7 +78,7 @@ interface BrainTrustModelParams {
 export interface OpenAIModelParams {
   temperature: number;
   top_p?: number;
-  max_tokens: number;
+  max_tokens?: number;
   frequency_penalty?: number;
   presence_penalty?: number;
   response_format?: null | { type: "json_object" };
@@ -152,16 +152,17 @@ export const modelParamToModelParam: {
 };
 
 export const sliderSpecs: {
-  [name: string]: [number, number, number];
+  // min, max, step, required
+  [name: string]: [number, number, number, boolean];
 } = {
-  temperature: [0, 1, 0.01],
-  top_p: [0, 1, 0.01],
-  max_tokens: [1, 10240, 1],
-  max_tokens_to_sample: [1, 10240, 1],
-  maxOutputTokens: [1, 10240, 1],
-  frequency_penalty: [0, 1, 0.01],
-  presence_penalty: [0, 1, 0.01],
-  top_k: [1, 100, 1],
+  temperature: [0, 1, 0.01, false],
+  top_p: [0, 1, 0.01, false],
+  max_tokens: [1, 10240, 1, false],
+  max_tokens_to_sample: [1, 10240, 1, true],
+  maxOutputTokens: [1, 10240, 1, true],
+  frequency_penalty: [0, 1, 0.01, false],
+  presence_penalty: [0, 1, 0.01, false],
+  top_k: [1, 100, 1, true],
 };
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.

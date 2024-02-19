@@ -154,9 +154,12 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
 
       if (lookupFailed) {
+        const endpointTypes = !isEmpty(model)
+          ? getModelEndpointTypes(model)
+          : [];
         secrets.push({
           secret: authToken,
-          type: !isEmpty(model) ? getModelEndpointTypes(model)[0] : "openai",
+          type: endpointTypes[0] ?? "openai",
         });
       }
 

@@ -17,6 +17,7 @@ export const ModelEndpointType = [
   "anthropic",
   "together",
   "mistral",
+  "groq",
   "ollama",
   "js",
 ] as const;
@@ -236,6 +237,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
+  "llama2-70b-4096": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
   "mixtral-8x7b-instruct": { format: "openai", flavor: "chat" },
@@ -255,6 +257,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-tiny": { format: "openai", flavor: "chat" },
   "mistral-small": { format: "openai", flavor: "chat" },
   "mistral-medium": { format: "openai", flavor: "chat" },
+  "mixtral-8x7b-32768": { format: "openai", flavor: "chat" },
   "openhermes-2-mistral-7b": { format: "openai", flavor: "chat" },
   "openhermes-2.5-mistral-7b": { format: "openai", flavor: "chat" },
   "pplx-7b-chat": { format: "openai", flavor: "chat" },
@@ -280,6 +283,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-35-turbo-16k": ["azure"],
   "llama-2-70b-chat": ["perplexity"],
   "llama-2-13b-chat": ["perplexity"],
+  "llama2-70b-4096": ["groq"],
   "codellama-34b-instruct": ["perplexity"],
   "mistral-7b-instruct": ["perplexity"],
   "mixtral-8x7b-instruct": ["perplexity"],
@@ -297,6 +301,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral-tiny": ["mistral"],
   "mistral-small": ["mistral"],
   "mistral-medium": ["mistral"],
+  "mixtral-8x7b-32768": ["groq"],
   phi: ["ollama"],
 };
 
@@ -317,6 +322,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   TOGETHER_API_KEY: "together",
   GOOGLE_API_KEY: "google",
   MISTRAL_API_KEY: "mistral",
+  GROQ_API_KEY: "groq",
   OLLAMA_API_KEY: "ollama",
 };
 
@@ -331,6 +337,7 @@ export const EndpointProviderToBaseURL: {
   google: "https://generativelanguage.googleapis.com/v1beta",
   mistral: "https://api.mistral.ai/v1",
   ollama: "http://127.0.0.1:11434/v1",
+  groq: "https://api.groq.com/v1",
   azure: null,
   js: null,
 };

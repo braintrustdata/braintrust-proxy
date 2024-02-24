@@ -1,6 +1,7 @@
 import {
   ChatCompletionCreateParams,
   ChatCompletionMessage,
+  ChatCompletionMessageToolCall,
 } from "openai/resources";
 
 export * from "./secrets";
@@ -32,12 +33,12 @@ export type Role =
   | "user"
   | "assistant"
   | "function"
-  | "human"
+  | "tool"
   | "model";
 
 export const MessageTypes: { [name in ModelFormat]: Role[] } = {
   openai: ["system", "user", "assistant" /*, "function" */],
-  anthropic: ["system", "human", "assistant"],
+  anthropic: ["system", "user", "assistant"],
   google: ["user", "model"],
   js: ["system"],
 };
@@ -56,6 +57,7 @@ export interface Message {
    * not be set.
    */
   function_call?: string | ChatCompletionMessage.FunctionCall;
+  tool_calls?: Array<ChatCompletionMessageToolCall>;
 }
 
 export type FunctionDef = ChatCompletionCreateParams.Function;
@@ -65,9 +67,9 @@ export const MessageTypeToMessageType: {
 } = {
   system: undefined,
   function: undefined,
-  user: "human",
+  tool: undefined,
+  user: "user",
   assistant: "assistant",
-  human: "user",
   model: "assistant",
 };
 
@@ -144,7 +146,7 @@ export const modelParamToModelParam: {
 } = {
   temperature: "temperature",
   top_p: "top_p",
-  max_tokens: "max_tokens_to_sample",
+  max_tokens: "max_tokens",
   max_tokens_to_sample: "max_tokens",
   use_cache: "use_cache",
   maxOutputTokens: "max_tokens",
@@ -182,7 +184,7 @@ export const defaultModelParamSettings: {
   },
   anthropic: {
     temperature: 0,
-    max_tokens_to_sample: 1024,
+    max_tokens: 1024,
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
@@ -334,24 +336,6 @@ export const EndpointProviderToBaseURL: {
   azure: null,
   js: null,
 };
-
-export function buildAnthropicPrompt(messages: Message[]) {
-  return (
-    messages
-      .map(({ content, role }) => {
-        switch (role) {
-          case "user":
-          case "human":
-            return `Human: ${content}`;
-          case "system":
-            return `${content}`;
-          default:
-            return `Assistant: ${content}`;
-        }
-      })
-      .join("\n\n") + "\n\nAssistant:"
-  );
-}
 
 export function buildClassicChatPrompt(messages: Message[]) {
   return (

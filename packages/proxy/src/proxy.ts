@@ -650,6 +650,10 @@ async function fetchAnthropic(
   for (const m of oaiMessages as Message[]) {
     if (m.role === "system") {
       system = m.content;
+    } else if (m.role === "function" || !isEmpty(m.function_call)) {
+      throw new Error(
+        "Anthropic does not support function messages or function_calls",
+      );
     } else if (m.role === "tool" || !isEmpty(m.tool_calls)) {
       throw new Error("Anthropic does not support tool messages or tool_calls");
     } else {

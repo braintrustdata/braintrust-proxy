@@ -48,6 +48,7 @@ export const APISecretSchema = z.union([
         "replicate",
         "together",
         "mistral",
+        "ollama",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),

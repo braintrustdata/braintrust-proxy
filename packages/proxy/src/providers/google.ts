@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import { FinishReason, GenerateContentResponse } from "@google/generative-ai";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "..";
-import { GoogleModelParams, OpenAIModelParams } from "@schema";
 
 function translateFinishReason(
   reason?: FinishReason,
@@ -57,6 +56,7 @@ export function googleCompletionToOpenAICompletion(
   return {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => ({
+      logprobs: null,
       index: candidate.index,
       message: {
         role: "assistant",

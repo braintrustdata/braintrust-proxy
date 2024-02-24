@@ -11,7 +11,6 @@ import {
   Message,
   MessageTypeToMessageType,
   EndpointProviderToBaseURL,
-  buildAnthropicPrompt,
   translateParams,
   ModelFormat,
   APISecret,
@@ -632,7 +631,7 @@ async function fetchAnthropic(
   // https://docs.anthropic.com/claude/reference/complete_post
   headers["accept"] = "application/json";
   headers["anthropic-version"] = "2023-06-01";
-  const fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/complete");
+  const fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
   headers["host"] = fullURL.host;
   headers["x-api-key"] = secret.secret;
 
@@ -645,12 +644,24 @@ async function fetchAnthropic(
     seed, // extract seed so that it's not sent to Anthropic (we just use it for the cache)
     ...oaiParams
   } = bodyData;
-  const messages = oaiMessages.map((m: Message) => ({
-    ...m,
-    role: MessageTypeToMessageType[m.role],
-  }));
+
+  const messages = [];
+  let system = undefined;
+  for (const m of oaiMessages as Message[]) {
+    if (m.role === "system") {
+      system = m.content;
+    } else if (m.role === "tool" || !isEmpty(m.tool_calls)) {
+      throw new Error("Anthropic does not support tool messages or tool_calls");
+    } else {
+      messages.push({
+        role: MessageTypeToMessageType[m.role],
+        content: m.content,
+      });
+    }
+  }
+
   const params: Record<string, unknown> = {
-    max_tokens_to_sample: 256, // Required param
+    max_tokens: 256, // Required param
     ...translateParams("anthropic", oaiParams),
   };
 
@@ -658,7 +669,8 @@ async function fetchAnthropic(
     method,
     headers,
     body: JSON.stringify({
-      prompt: buildAnthropicPrompt(messages),
+      messages,
+      system,
       ...params,
     }),
     keepalive: true,

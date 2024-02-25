@@ -19,6 +19,7 @@ export const ModelEndpointType = [
   "together",
   "mistral",
   "ollama",
+  "groq",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
@@ -238,9 +239,11 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
+  "llama2-70b-4096": { format: "openai", flavor: "chat" },
   "codellama-34b-instruct": { format: "openai", flavor: "chat" },
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
   "mixtral-8x7b-instruct": { format: "openai", flavor: "chat" },
+  "mixtral-8x7b-32768": { format: "openai", flavor: "chat" },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     format: "openai",
     flavor: "chat",
@@ -300,6 +303,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral-small": ["mistral"],
   "mistral-medium": ["mistral"],
   phi: ["ollama"],
+  "llama2-70b-4096": ["groq"],
+  "mixtral-8x7b-32768": ["groq"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -320,6 +325,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   GOOGLE_API_KEY: "google",
   MISTRAL_API_KEY: "mistral",
   OLLAMA_API_KEY: "ollama",
+  GROQ_API_KEY: "groq",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -333,6 +339,7 @@ export const EndpointProviderToBaseURL: {
   google: "https://generativelanguage.googleapis.com/v1beta",
   mistral: "https://api.mistral.ai/v1",
   ollama: "http://127.0.0.1:11434/v1",
+  groq: "https://api.groq.com/openai/v1",
   azure: null,
   js: null,
 };

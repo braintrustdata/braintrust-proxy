@@ -236,6 +236,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-2.0": { format: "anthropic", flavor: "chat" },
   "claude-2.1": { format: "anthropic", flavor: "chat" },
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
+  "claude-3-opus-20240229": { format: "anthropic", flavor: "chat" },
+  "claude-3-sonnet-20240229": { format: "anthropic", flavor: "chat" },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },

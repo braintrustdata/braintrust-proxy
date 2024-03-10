@@ -15,6 +15,14 @@ export default {
       return handleProxyV1(request, env, ctx);
     } else if (url.pathname === "/metrics") {
       return handlePrometheusScrape(request, env, ctx);
+    } else if (url.pathname === "/") {
+      return new Response("Hello World!", {
+        status: 200,
+        headers: {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET,OPTIONS",
+        },
+      });
     }
 
     return new Response("Not found", {

@@ -298,15 +298,25 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-7b-instruct": { format: "openai", flavor: "chat" },
   "mixtral-8x7b-instruct": { format: "openai", flavor: "chat" },
   "mixtral-8x7b-32768": { format: "openai", flavor: "chat" },
-  "mistralai/Mistral-7B-Instruct-v0.1": {
-    format: "openai",
-    flavor: "chat",
-  },
+  "gemma-7b-it": { format: "openai", flavor: "chat" },
+  "mistralai/Mistral-7B-Instruct-v0.1": { format: "openai", flavor: "chat" },
   "mistralai/mixtral-8x7b-32kseqlen": {
     format: "openai",
     flavor: "completion",
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+  },
+  "meta-llama/Llama-2-70b-chat-hf": {
+    format: "openai",
+    flavor: "chat",
+  },
+  "NousResearch/Nous-Hermes-2-Yi-34B": {
+    format: "openai",
+    flavor: "chat",
+  },
+  "deepseek-ai/deepseek-coder-33b-instruct": {
     format: "openai",
     flavor: "chat",
   },
@@ -352,6 +362,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistralai/Mistral-7B-Instruct-v0.1": ["together"],
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
+  "meta-llama/Llama-2-70b-chat-hf": ["together"],
+  "NousResearch/Nous-Hermes-2-Yi-34B": ["together"],
+  "deepseek-ai/deepseek-coder-33b-instruct": ["together"],
   mistral: ["ollama"],
   "mistral-tiny": ["mistral"],
   "mistral-small": ["mistral"],
@@ -359,6 +372,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   phi: ["ollama"],
   "llama2-70b-4096": ["groq"],
   "mixtral-8x7b-32768": ["groq"],
+  "gemma-7b-it": ["groq"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

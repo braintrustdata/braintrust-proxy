@@ -142,10 +142,14 @@ const openAIModelParamsSchema = z.object({
 });
 
 const anthropicModelParamsSchema = z.object({
-  max_tokens_to_sample: z.number(),
+  max_tokens: z.number(),
   temperature: z.number(),
   top_p: z.number().optional(),
   top_k: z.number().optional(),
+  max_tokens_to_sample: z
+    .number()
+    .optional()
+    .describe("This is a legacy parameter that should not be used."),
 });
 
 const googleModelParamsSchema = z.object({

@@ -668,7 +668,6 @@ async function fetchAnthropic(
     max_tokens: 256, // Required param
     ...translateParams("anthropic", oaiParams),
   };
-  console.log("PARAMS", params);
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,

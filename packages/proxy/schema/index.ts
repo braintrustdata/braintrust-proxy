@@ -100,7 +100,8 @@ export interface OpenAIModelParams {
 
 // https://docs.anthropic.com/claude/reference/complete_post
 interface AnthropicModelParams {
-  max_tokens_to_sample: number;
+  max_tokens: number;
+  max_tokens_to_sample?: number; // This is a legacy parameter that should not be used.
   temperature: number;
   top_p?: number;
   top_k?: number;
@@ -174,7 +175,7 @@ export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
   },
   anthropic: {
     temperature: 0,
-    max_tokens_to_sample: 1024,
+    max_tokens: 1024,
     use_cache: true,
   },
   google: {
@@ -191,12 +192,12 @@ export const modelParamToModelParam: {
     GoogleModelParams &
     BrainTrustModelParams)]:
     | keyof (OpenAIModelParams & AnthropicModelParams & BrainTrustModelParams)
-    | undefined;
+    | null;
 } = {
   temperature: "temperature",
   top_p: "top_p",
   max_tokens: "max_tokens",
-  max_tokens_to_sample: "max_tokens",
+  max_tokens_to_sample: null,
   use_cache: "use_cache",
   maxOutputTokens: "max_tokens",
   topP: "top_p",
@@ -210,7 +211,6 @@ export const sliderSpecs: {
   temperature: [0, 1, 0.01, false],
   top_p: [0, 1, 0.01, false],
   max_tokens: [1, 10240, 1, false],
-  max_tokens_to_sample: [1, 10240, 1, true],
   maxOutputTokens: [1, 10240, 1, true],
   frequency_penalty: [0, 1, 0.01, false],
   presence_penalty: [0, 1, 0.01, false],
@@ -286,6 +286,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
   "claude-3-opus-20240229": { format: "anthropic", flavor: "chat" },
   "claude-3-sonnet-20240229": { format: "anthropic", flavor: "chat" },
+  "claude-3-haiku-20240307": { format: "anthropic", flavor: "chat" },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
@@ -427,8 +428,11 @@ export function translateParams(
   for (const [k, v] of Object.entries(params || {})) {
     const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
       | keyof ModelParams
-      | undefined;
-    if (
+      | undefined
+      | null;
+    if (translatedKey === null) {
+      continue;
+    } else if (
       translatedKey !== undefined &&
       defaultModelParamSettings[toProvider][translatedKey] !== undefined
     ) {
@@ -437,5 +441,6 @@ export function translateParams(
       translatedParams[k] = v;
     }
   }
+
   return translatedParams;
 }

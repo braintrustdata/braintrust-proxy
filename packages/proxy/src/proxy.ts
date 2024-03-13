@@ -665,7 +665,7 @@ async function fetchAnthropic(
   }
 
   const params: Record<string, unknown> = {
-    max_tokens: 256, // Required param
+    max_tokens: 1024, // Required param
     ...translateParams("anthropic", oaiParams),
   };
 

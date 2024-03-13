@@ -1,8 +1,4 @@
-import {
-  ChatCompletionCreateParams,
-  ChatCompletionMessage,
-  ChatCompletionMessageToolCall,
-} from "openai/resources";
+import { ChatCompletionCreateParams } from "openai/resources";
 import { z } from "zod";
 
 export * from "./secrets";

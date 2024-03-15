@@ -564,7 +564,6 @@ async function fetchOpenAI(
       "api_base" in secret.metadata &&
       secret.metadata.api_base) ||
     EndpointProviderToBaseURL[secret.type];
-  console.log("BASE URL", baseURL);
   if (baseURL === null) {
     throw new Error(
       `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,

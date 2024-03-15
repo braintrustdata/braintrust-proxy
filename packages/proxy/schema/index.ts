@@ -1,8 +1,5 @@
-import {
-  ChatCompletionCreateParams,
-  ChatCompletionMessage,
-  ChatCompletionMessageToolCall,
-} from "openai/resources";
+import { ChatCompletionCreateParams } from "openai/resources";
+import { z } from "zod";
 
 export * from "./secrets";
 
@@ -29,13 +26,15 @@ export interface ModelSpec {
   flavor: PromptInputType;
 }
 
-export type Role =
-  | "system"
-  | "user"
-  | "assistant"
-  | "function"
-  | "tool"
-  | "model";
+export const roleSchema = z.enum([
+  "system",
+  "user",
+  "assistant",
+  "function",
+  "tool",
+  "model",
+]);
+export type Role = z.infer<typeof roleSchema>;
 
 export const MessageTypes: { [name in ModelFormat]: Role[] } = {
   openai: ["system", "user", "assistant" /*, "function" */],
@@ -44,22 +43,29 @@ export const MessageTypes: { [name in ModelFormat]: Role[] } = {
   js: ["system"],
 };
 
-export interface Message {
-  content: string;
-  role: Role;
-  /**
-   * If the message has a role of `function`, the `name` field is the name of the function.
-   * Otherwise, the name field should not be set.
-   */
-  name?: string;
-  /**
-   * If the assistant role makes a function call, the `function_call` field
-   * contains the function call name and arguments. Otherwise, the field should
-   * not be set.
-   */
-  function_call?: string | ChatCompletionMessage.FunctionCall;
-  tool_calls?: Array<ChatCompletionMessageToolCall>;
-}
+export const functionCallSchema = z.object({
+  name: z.string(),
+  arguments: z.string(),
+});
+
+const toolCallSchema = z.object({
+  id: z.string(),
+  function: z.object({
+    arguments: z.string(),
+    name: z.string(),
+  }),
+  type: z.literal("function"),
+});
+
+export const messageSchema = z.object({
+  content: z.string().default(""),
+  role: roleSchema,
+  name: z.string().optional(),
+  function_call: z.union([z.string(), functionCallSchema]).optional(),
+  tool_calls: z.array(toolCallSchema).optional(),
+});
+
+export type Message = z.infer<typeof messageSchema>;
 
 export type FunctionDef = ChatCompletionCreateParams.Function;
 
@@ -110,14 +116,60 @@ export interface GoogleModelParams {
 
 interface JSCompletionParams {}
 
-export type ModelParams = (
-  | OpenAIModelParams
-  | AnthropicModelParams
-  | GoogleModelParams
-  | JSCompletionParams
-) &
-  BrainTrustModelParams &
-  object;
+const braintrustModelParamsSchema = z.object({
+  use_cache: z.boolean().optional(),
+});
+
+const openAIModelParamsSchema = z.object({
+  temperature: z.number(),
+  top_p: z.number().optional(),
+  max_tokens: z.number().optional(),
+  frequency_penalty: z.number().optional(),
+  presence_penalty: z.number().optional(),
+  response_format: z
+    .union([z.literal(null), z.object({ type: z.literal("json_object") })])
+    .optional(),
+  tool_choice: z
+    .union([
+      z.literal("auto"),
+      z.literal("none"),
+      z.object({
+        type: z.literal("function"),
+        function: z.object({ name: z.string() }),
+      }),
+    ])
+    .optional(),
+});
+
+const anthropicModelParamsSchema = z.object({
+  max_tokens: z.number(),
+  temperature: z.number(),
+  top_p: z.number().optional(),
+  top_k: z.number().optional(),
+  max_tokens_to_sample: z
+    .number()
+    .optional()
+    .describe("This is a legacy parameter that should not be used."),
+});
+
+const googleModelParamsSchema = z.object({
+  temperature: z.number(),
+  maxOutputTokens: z.number().optional(),
+  topP: z.number().optional(),
+  topK: z.number().optional(),
+});
+
+const jsCompletionParamsSchema = z.object({});
+export const modelParamsSchema = braintrustModelParamsSchema.and(
+  z.union([
+    openAIModelParamsSchema,
+    anthropicModelParamsSchema,
+    googleModelParamsSchema,
+    jsCompletionParamsSchema,
+  ]),
+);
+
+export type ModelParams = z.infer<typeof modelParamsSchema>;
 
 export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
   openai: {

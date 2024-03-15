@@ -24,6 +24,7 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
 
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
+    api_base: z.string().nullish(),
     organization_id: z.string().nullish(),
   }),
 ).strict();

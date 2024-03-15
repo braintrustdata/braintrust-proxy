@@ -8,7 +8,6 @@ import { OpenAIStream } from "ai";
 
 import {
   AvailableModels,
-  Message,
   MessageTypeToMessageType,
   EndpointProviderToBaseURL,
   translateParams,
@@ -33,6 +32,7 @@ import {
   googleEventToOpenAIChatEvent,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
+import { Message } from "@braintrust/core/typespecs";
 
 interface CachedData {
   headers: Record<string, string>;

@@ -560,7 +560,9 @@ async function fetchOpenAI(
   secret: APISecret,
 ): Promise<ModelResponse> {
   let baseURL =
-    (secret.type === "azure" && secret.metadata?.api_base) ||
+    (secret.metadata &&
+      "api_base" in secret.metadata &&
+      secret.metadata.api_base) ||
     EndpointProviderToBaseURL[secret.type];
   if (baseURL === null) {
     throw new Error(

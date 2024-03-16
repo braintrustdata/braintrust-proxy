@@ -8,7 +8,6 @@ import { OpenAIStream } from "ai";
 
 import {
   AvailableModels,
-  Message,
   MessageTypeToMessageType,
   EndpointProviderToBaseURL,
   translateParams,
@@ -33,6 +32,7 @@ import {
   googleEventToOpenAIChatEvent,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
+import { Message } from "@braintrust/core/typespecs";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -652,11 +652,17 @@ async function fetchAnthropic(
   for (const m of oaiMessages as Message[]) {
     if (m.role === "system") {
       system = m.content;
-    } else if (m.role === "function" || !isEmpty(m.function_call)) {
+    } else if (
+      m.role === "function" ||
+      ("function_call" in m && !isEmpty(m.function_call))
+    ) {
       throw new Error(
         "Anthropic does not support function messages or function_calls",
       );
-    } else if (m.role === "tool" || !isEmpty(m.tool_calls)) {
+    } else if (
+      m.role === "tool" ||
+      ("tool_calls" in m && !isEmpty(m.tool_calls))
+    ) {
       throw new Error("Anthropic does not support tool messages or tool_calls");
     } else {
       messages.push({

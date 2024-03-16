@@ -1,5 +1,15 @@
-import { ChatCompletionCreateParams } from "openai/resources";
-import { z } from "zod";
+import type {
+  AnyModelParam,
+  Message,
+  MessageRole,
+  ModelParams,
+} from "@braintrust/core/typespecs";
+
+export type {
+  Message,
+  MessageRole,
+  ModelParams,
+} from "@braintrust/core/typespecs";
 
 export * from "./secrets";
 
@@ -26,51 +36,15 @@ export interface ModelSpec {
   flavor: PromptInputType;
 }
 
-export const roleSchema = z.enum([
-  "system",
-  "user",
-  "assistant",
-  "function",
-  "tool",
-  "model",
-]);
-export type Role = z.infer<typeof roleSchema>;
-
-export const MessageTypes: { [name in ModelFormat]: Role[] } = {
+export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {
   openai: ["system", "user", "assistant" /*, "function" */],
   anthropic: ["system", "user", "assistant"],
   google: ["user", "model"],
   js: ["system"],
 };
 
-export const functionCallSchema = z.object({
-  name: z.string(),
-  arguments: z.string(),
-});
-
-const toolCallSchema = z.object({
-  id: z.string(),
-  function: z.object({
-    arguments: z.string(),
-    name: z.string(),
-  }),
-  type: z.literal("function"),
-});
-
-export const messageSchema = z.object({
-  content: z.string().default(""),
-  role: roleSchema,
-  name: z.string().optional(),
-  function_call: z.union([z.string(), functionCallSchema]).optional(),
-  tool_calls: z.array(toolCallSchema).optional(),
-});
-
-export type Message = z.infer<typeof messageSchema>;
-
-export type FunctionDef = ChatCompletionCreateParams.Function;
-
 export const MessageTypeToMessageType: {
-  [messageType in Role]: Role | undefined;
+  [messageType in MessageRole]: MessageRole | undefined;
 } = {
   system: undefined,
   function: undefined,
@@ -79,97 +53,6 @@ export const MessageTypeToMessageType: {
   assistant: "assistant",
   model: "assistant",
 };
-
-interface BrainTrustModelParams {
-  use_cache?: boolean;
-}
-
-// https://platform.openai.com/docs/api-reference/chat/create
-export interface OpenAIModelParams {
-  temperature: number;
-  top_p?: number;
-  max_tokens?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  response_format?: null | { type: "json_object" };
-  tool_choice?:
-    | "auto"
-    | "none"
-    | { type: "function"; function: { name: string } };
-}
-
-// https://docs.anthropic.com/claude/reference/complete_post
-interface AnthropicModelParams {
-  max_tokens: number;
-  max_tokens_to_sample?: number; // This is a legacy parameter that should not be used.
-  temperature: number;
-  top_p?: number;
-  top_k?: number;
-}
-
-export interface GoogleModelParams {
-  temperature: number;
-  maxOutputTokens?: number;
-  topP?: number;
-  topK?: number;
-}
-
-interface JSCompletionParams {}
-
-const braintrustModelParamsSchema = z.object({
-  use_cache: z.boolean().optional(),
-});
-
-const openAIModelParamsSchema = z.object({
-  temperature: z.number(),
-  top_p: z.number().optional(),
-  max_tokens: z.number().optional(),
-  frequency_penalty: z.number().optional(),
-  presence_penalty: z.number().optional(),
-  response_format: z
-    .union([z.literal(null), z.object({ type: z.literal("json_object") })])
-    .optional(),
-  tool_choice: z
-    .union([
-      z.literal("auto"),
-      z.literal("none"),
-      z.object({
-        type: z.literal("function"),
-        function: z.object({ name: z.string() }),
-      }),
-    ])
-    .optional(),
-});
-
-const anthropicModelParamsSchema = z.object({
-  max_tokens: z.number(),
-  temperature: z.number(),
-  top_p: z.number().optional(),
-  top_k: z.number().optional(),
-  max_tokens_to_sample: z
-    .number()
-    .optional()
-    .describe("This is a legacy parameter that should not be used."),
-});
-
-const googleModelParamsSchema = z.object({
-  temperature: z.number(),
-  maxOutputTokens: z.number().optional(),
-  topP: z.number().optional(),
-  topK: z.number().optional(),
-});
-
-const jsCompletionParamsSchema = z.object({});
-export const modelParamsSchema = braintrustModelParamsSchema.and(
-  z.union([
-    openAIModelParamsSchema,
-    anthropicModelParamsSchema,
-    googleModelParamsSchema,
-    jsCompletionParamsSchema,
-  ]),
-);
-
-export type ModelParams = z.infer<typeof modelParamsSchema>;
 
 export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
   openai: {
@@ -191,12 +74,7 @@ export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
 };
 
 export const modelParamToModelParam: {
-  [name in keyof (OpenAIModelParams &
-    AnthropicModelParams &
-    GoogleModelParams &
-    BrainTrustModelParams)]:
-    | keyof (OpenAIModelParams & AnthropicModelParams & BrainTrustModelParams)
-    | null;
+  [name in keyof AnyModelParam]: keyof AnyModelParam | null;
 } = {
   temperature: "temperature",
   top_p: "top_p",

@@ -3,13 +3,13 @@ import type {
   Message,
   MessageRole,
   ModelParams,
-} from "@braintrust/core/typespecs/dist";
+} from "@braintrust/core/typespecs";
 
 export type {
   Message,
   MessageRole,
   ModelParams,
-} from "@braintrust/core/typespecs/dist";
+} from "@braintrust/core/typespecs";
 
 export * from "./secrets";
 

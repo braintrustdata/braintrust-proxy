@@ -32,7 +32,7 @@ import {
   googleEventToOpenAIChatEvent,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { Message } from "@braintrust/core/typespecs/dist";
+import { Message } from "@braintrust/core/typespecs";
 
 interface CachedData {
   headers: Record<string, string>;

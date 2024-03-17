@@ -177,8 +177,8 @@ importers:
   packages/proxy:
     dependencies:
       '@braintrust/core':
-        specifier: ^0.0.24
-        version: 0.0.24
+        specifier: ^0.0.25
+        version: 0.0.25
       '@google/generative-ai':
         specifier: ^0.1.3
         version: 0.1.3
@@ -287,8 +287,8 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@braintrust/core@0.0.24:
-    resolution: {integrity: sha512-PLp2py5ry4JyMGpTwQCicAHFayDf6RPme7RihLfwfML0xa7XIM4hToLtiDWRNfEIBAQskKS6TFQKLE5v0Vvz8g==}
+  /@braintrust/core@0.0.25:
+    resolution: {integrity: sha512-vmJjuIp0GBZqy+hBQxOoWZ2noilK4M/RcBLRP2aiegEYFnuWC2rsQRYBD3kn/TuQiYauG6XafLkF9vDcXYJKJw==}
     dependencies:
       '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.22.4)
       zod: 3.22.4

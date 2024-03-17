@@ -1,6 +1,6 @@
 {
   "name": "@braintrust/proxy",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "A proxy server that load balances across AI providers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -68,7 +68,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@braintrust/core": "^0.0.22",
+    "@braintrust/core": "^0.0.23",
     "@google/generative-ai": "^0.1.3",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/core": "^1.19.0",

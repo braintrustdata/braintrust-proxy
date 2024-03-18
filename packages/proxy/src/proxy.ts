@@ -24,6 +24,7 @@ import {
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
+  openAIContentToAnthropicContent,
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
@@ -81,7 +82,7 @@ export async function proxyV1({
     useCache: boolean,
     authToken: string,
     model: string | null,
-    org_name?: string
+    org_name?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
   cachePut: (encryptionKey: string, key: string, value: string) => void;
@@ -99,7 +100,7 @@ export async function proxyV1({
   totalCalls.add(1);
 
   proxyHeaders = Object.fromEntries(
-    Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v])
+    Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
   );
   const headers = Object.fromEntries(
     Object.entries(proxyHeaders).filter(
@@ -108,8 +109,8 @@ export async function proxyV1({
           h.startsWith("x-amzn") ||
           h.startsWith("x-bt") ||
           h === "content-length"
-        )
-    )
+        ),
+    ),
   );
 
   const authToken = parseAuthHeader(proxyHeaders);
@@ -121,17 +122,17 @@ export async function proxyV1({
   const useCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
-    proxyHeaders[CACHE_HEADER]
+    proxyHeaders[CACHE_HEADER],
   );
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
-    proxyHeaders[CREDS_CACHE_HEADER]
+    proxyHeaders[CREDS_CACHE_HEADER],
   );
   const streamFormat = parseEnumHeader(
     FORMAT_HEADER,
     ["openai", "vercel-ai"] as const,
-    proxyHeaders[FORMAT_HEADER]
+    proxyHeaders[FORMAT_HEADER],
   );
 
   const cacheableEndpoint =
@@ -178,7 +179,7 @@ export async function proxyV1({
         authToken: cacheKeyOptions.excludeAuthToken || authToken,
         orgName: cacheKeyOptions.excludeOrgName || orgName,
         endpointName,
-      })
+      }),
     ));
 
   const encryptionKey = await digest(`${authToken}:${orgName || ""}`);
@@ -217,13 +218,13 @@ export async function proxyV1({
     } catch (e) {
       console.warn(
         "Failed to parse body. Will fall back to default (OpenAI)",
-        e
+        e,
       );
     }
 
     if (streamFormat === "vercel-ai" && !bodyData?.stream) {
       throw new Error(
-        "Vercel AI format requires the stream parameter to be set to true"
+        "Vercel AI format requires the stream parameter to be set to true",
       );
     }
 
@@ -239,14 +240,14 @@ export async function proxyV1({
             useCredentialsCacheMode !== "never",
             authToken,
             model,
-            orgName
+            orgName,
           );
           if (endpointName) {
             return secrets.filter((s) => s.name === endpointName);
           } else {
             return secrets;
           }
-        }
+        },
       );
     stream = proxyStream;
 
@@ -297,7 +298,7 @@ export async function proxyV1({
           cachePut(
             encryptionKey,
             cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, body: text })
+            JSON.stringify({ headers: proxyResponseHeaders, body: text }),
           );
         },
       });
@@ -342,12 +343,12 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   bodyData: any | null,
-  getApiSecrets: (model: string | null) => Promise<APISecret[]>
+  getApiSecrets: (model: string | null) => Promise<APISecret[]>,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
-    "endpoint_retryable_errors"
+    "endpoint_retryable_errors",
   );
   const retriesPerCall = meter.createHistogram("retries_per_call", {
     advice: {
@@ -401,7 +402,7 @@ async function fetchModelLoop(
           break;
         default:
           throw new Error(
-            `Unsupported model ${model} (must be chat or completion for /auto endpoint)`
+            `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
           );
       }
     }
@@ -431,14 +432,14 @@ async function fetchModelLoop(
         endpointUrl,
         headers,
         secret,
-        bodyData
+        bodyData,
       );
       if (
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
           proxyResponse.response.status < 500 &&
           !TRY_ANOTHER_ENDPOINT_ERROR_CODES.includes(
-            proxyResponse.response.status
+            proxyResponse.response.status,
           ))
       ) {
         break;
@@ -446,7 +447,7 @@ async function fetchModelLoop(
         console.warn(
           "Received retryable error. Will try the next endpoint",
           proxyResponse.response.status,
-          proxyResponse.response.statusText
+          proxyResponse.response.statusText,
         );
         httpCode = proxyResponse.response.status;
 
@@ -459,11 +460,11 @@ async function fetchModelLoop(
           totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
         ) {
           const limitReset = tryParseRateLimitReset(
-            proxyResponse.response.headers
+            proxyResponse.response.headers,
           );
           delayMs = limitReset ?? delayMs * (BACKOFF_EXPONENT - Math.random());
           console.warn(
-            `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`
+            `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`,
           );
           await new Promise((r) => setTimeout(r, delayMs));
 
@@ -477,7 +478,7 @@ async function fetchModelLoop(
         console.log(
           "Failed to fetch (most likely an invalid URL",
           secret.id,
-          e
+          e,
         );
       } else {
         endpointFailures.add(1, loggableInfo);
@@ -498,7 +499,7 @@ async function fetchModelLoop(
       throw lastException;
     } else {
       throw new Error(
-        `No API keys found (for ${model}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`
+        `No API keys found (for ${model}). You can configure API secrets at https://www.braintrustdata.com/app/settings?subroute=secrets`,
       );
     }
   }
@@ -536,7 +537,7 @@ async function fetchModel(
   url: string,
   headers: Record<string, string>,
   secret: APISecret,
-  bodyData: null | any
+  bodyData: null | any,
 ) {
   switch (format) {
     case "openai":
@@ -557,7 +558,7 @@ async function fetchOpenAI(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: APISecret
+  secret: APISecret,
 ): Promise<ModelResponse> {
   let baseURL =
     (secret.metadata &&
@@ -566,23 +567,23 @@ async function fetchOpenAI(
     EndpointProviderToBaseURL[secret.type];
   if (baseURL === null) {
     throw new Error(
-      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`
+      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
     );
   }
 
   if (secret.type === "azure") {
     if (secret.metadata?.deployment) {
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        secret.metadata.deployment
+        secret.metadata.deployment,
       )}`;
     } else if (bodyData?.model || bodyData?.engine) {
       const model = bodyData.model || bodyData.engine;
       baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        model.replace("gpt-3.5", "gpt-35")
+        model.replace("gpt-3.5", "gpt-35"),
       )}`;
     } else {
       throw new Error(
-        `Azure provider ${secret.id} must have a deployment or model specified`
+        `Azure provider ${secret.id} must have a deployment or model specified`,
       );
     }
   }
@@ -612,7 +613,7 @@ async function fetchOpenAI(
           method,
           headers,
           keepalive: true,
-        }
+        },
   );
 
   return {
@@ -626,7 +627,7 @@ async function fetchAnthropic(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: APISecret
+  secret: APISecret,
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
 
@@ -650,14 +651,15 @@ async function fetchAnthropic(
   const messages = [];
   let system = undefined;
   for (const m of oaiMessages as Message[]) {
+    const content = openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
-      system = m.content;
+      system = content;
     } else if (
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))
     ) {
       throw new Error(
-        "Anthropic does not support function messages or function_calls"
+        "Anthropic does not support function messages or function_calls",
       );
     } else if (
       m.role === "tool" ||
@@ -667,7 +669,7 @@ async function fetchAnthropic(
     } else {
       messages.push({
         role: MessageTypeToMessageType[m.role],
-        content: m.content,
+        content,
       });
     }
   }
@@ -700,7 +702,7 @@ async function fetchAnthropic(
             data: ret.event && JSON.stringify(ret.event),
             finished: ret.finished,
           };
-        })
+        }),
       );
     } else {
       const allChunks: Uint8Array[] = [];
@@ -714,12 +716,12 @@ async function fetchAnthropic(
             const data = JSON.parse(text);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(anthropicCompletionToOpenAICompletion(data))
-              )
+                JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
+              ),
             );
             controller.terminate();
           },
-        })
+        }),
       );
     }
   }
@@ -734,7 +736,7 @@ async function fetchGoogle(
   url: string,
   headers: Record<string, string>,
   bodyData: null | any,
-  secret: APISecret
+  secret: APISecret,
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
 
@@ -765,14 +767,14 @@ async function fetchGoogle(
         }
         return [translatedKey ?? key, value];
       })
-      .filter(([k, _]) => k !== null)
+      .filter(([k, _]) => k !== null),
   );
 
   const fullURL = new URL(
     EndpointProviderToBaseURL.google! +
       `/models/${encodeURIComponent(model)}:${
         streamingMode ? "streamGenerateContent" : "generateContent"
-      }`
+      }`,
   );
   fullURL.searchParams.set("key", secret.secret);
   if (streamingMode) {
@@ -804,7 +806,7 @@ async function fetchGoogle(
             data: ret.event && JSON.stringify(ret.event),
             finished: ret.finished,
           };
-        })
+        }),
       );
     } else {
       const allChunks: Uint8Array[] = [];
@@ -818,12 +820,12 @@ async function fetchGoogle(
             const data = JSON.parse(text);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(googleCompletionToOpenAICompletion(model, data))
-              )
+                JSON.stringify(googleCompletionToOpenAICompletion(model, data)),
+              ),
             );
             controller.terminate();
           },
-        })
+        }),
       );
     }
   }
@@ -854,7 +856,7 @@ export interface AIStreamParser {
  * @returns {TransformStream<Uint8Array, Uint8Array>} TransformStream parsing events.
  */
 export function createEventStreamTransformer(
-  customParser: AIStreamParser
+  customParser: AIStreamParser,
 ): TransformStream<Uint8Array, Uint8Array> {
   const textDecoder = new TextDecoder();
   let eventSourceParser: EventSourceParser;
@@ -884,14 +886,16 @@ export function createEventStreamTransformer(
             const parsedMessage = customParser(event.data);
             if (parsedMessage.data !== null) {
               controller.enqueue(
-                new TextEncoder().encode("data: " + parsedMessage.data + "\n\n")
+                new TextEncoder().encode(
+                  "data: " + parsedMessage.data + "\n\n",
+                ),
               );
             }
             if (parsedMessage.finished) {
               finish(controller);
             }
           }
-        }
+        },
       );
     },
 
@@ -905,14 +909,14 @@ export function createEventStreamTransformer(
 function parseEnumHeader<T>(
   headerName: string,
   headerTypes: readonly T[],
-  value?: string
+  value?: string,
 ): (typeof headerTypes)[number] {
   const header = value && value.toLowerCase();
   if (header && !headerTypes.includes(header as T)) {
     throw new Error(
       `Invalid ${headerName} header '${header}'. Must be one of ${headerTypes.join(
-        ", "
-      )}`
+        ", ",
+      )}`,
     );
   }
   return (header || headerTypes[0]) as (typeof headerTypes)[number];

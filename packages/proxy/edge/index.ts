@@ -75,13 +75,13 @@ export function EdgeProxyV1(opts: ProxyOpts) {
   const whitelist = opts.whitelist || defaultWhitelist;
   return async (request: Request, ctx: EdgeContext) => {
     // If the host is not in the whitelist, return a 403.
-    const origin = request.headers.get("origin");
+    const origin = request.headers.get("Origin");
     if (
       opts.cors &&
-      (!origin ||
-        !whitelist.some(
-          (w) => w === origin || (w instanceof RegExp && w.test(origin)),
-        ))
+      origin &&
+      !whitelist.some(
+        (w) => w === origin || (w instanceof RegExp && w.test(origin)),
+      )
     ) {
       return new Response("Forbidden", { status: 403 });
     }

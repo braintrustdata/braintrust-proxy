@@ -80,9 +80,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       opts.cors &&
       (!origin ||
         !whitelist.some(
-          (w) =>
-            w === origin ||
-            (typeof w !== "string" && w instanceof RegExp && w.test(origin)),
+          (w) => w === origin || (w instanceof RegExp && w.test(origin)),
         ))
     ) {
       return new Response("Forbidden", { status: 403 });

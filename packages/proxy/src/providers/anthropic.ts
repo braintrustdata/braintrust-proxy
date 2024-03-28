@@ -1,6 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "../util";
+import {
+  AnthropicContent,
+  AnthropicImageBlock,
+  anthropicImageBlockSchema,
+} from "@schema";
+import { Message } from "@braintrust/core/typespecs";
 
 /*
 Example events:
@@ -129,4 +135,35 @@ function anthropicFinishReason(
     : stop_reason === "max_tokens"
       ? "length"
       : null;
+}
+
+const base64ImagePattern =
+  /^data:(image\/(?:jpeg|png|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/;
+
+function makeAnthropicImageBlock(base64Image: string): AnthropicImageBlock {
+  const match = base64Image.match(base64ImagePattern);
+  if (!match) {
+    throw new Error("Unable to parse base64 image: " + base64Image);
+  }
+
+  const [, media_type, data] = match;
+  return anthropicImageBlockSchema.parse({
+    type: "image",
+    source: {
+      type: "base64",
+      media_type,
+      data,
+    },
+  });
+}
+
+export function openAIContentToAnthropicContent(
+  content: Message["content"],
+): AnthropicContent {
+  if (typeof content === "string") {
+    return content;
+  }
+  return content.map((part) =>
+    part.type === "text" ? part : makeAnthropicImageBlock(part.image_url.url),
+  );
 }

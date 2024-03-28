@@ -19,6 +19,12 @@ function apiCacheKey(key: string) {
   return `http://apikey.cache/${encodeURIComponent(key)}.jpg`;
 }
 
+export function originWhitelist(env: Env) {
+  return env.BRAINTRUST_ALLOWED_ORIGIN
+    ? [new RegExp(env.BRAINTRUST_ALLOWED_ORIGIN)]
+    : undefined;
+}
+
 export async function handleProxyV1(
   request: Request,
   env: Env,
@@ -52,9 +58,7 @@ export async function handleProxyV1(
     "cloudflare-metrics",
   );
 
-  const whitelist = env.BRAINTRUST_ALLOWED_ORIGIN
-    ? [new RegExp(env.BRAINTRUST_ALLOWED_ORIGIN)]
-    : undefined;
+  const whitelist = originWhitelist(env);
 
   const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
   const cacheSetLatency = meter.createHistogram("results_cache_set_latency");

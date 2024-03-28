@@ -1,4 +1,10 @@
-import { proxyV1Prefix, handleProxyV1, handlePrometheusScrape } from "./proxy";
+import {
+  proxyV1Prefix,
+  handleProxyV1,
+  handlePrometheusScrape,
+  originWhitelist,
+} from "./proxy";
+import { getCorsHeaders } from "@braintrust/proxy/edge";
 export { PrometheusMetricAggregator } from "./metric-aggregator";
 
 // The fetch handler is invoked when this worker receives a HTTP(S) request
@@ -18,10 +24,7 @@ export default {
     } else if (url.pathname === "/") {
       return new Response("Hello World!", {
         status: 200,
-        headers: {
-          "access-control-allow-origin": "*",
-          "access-control-allow-methods": "GET,OPTIONS",
-        },
+        headers: getCorsHeaders(request, originWhitelist(env)),
       });
     }
 

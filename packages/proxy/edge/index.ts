@@ -28,16 +28,24 @@ export interface ProxyOpts {
   completionsCache?: Cache;
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
+  whitelist?: (string | RegExp)[];
 }
 
-const corsHeaders = {
-  "access-control-allow-origin": "*",
+const defaultWhitelist: (string | RegExp)[] = [
+  "https://www.braintrustdata.com",
+  new RegExp("https://.*-braintrustdata.vercel.app/"),
+];
+
+const baseCorsHeaders = {
   "access-control-allow-credentials": "true",
   "access-control-allow-methods": "GET,OPTIONS,POST",
 };
 
 // https://developers.cloudflare.com/workers/examples/cors-header-proxy/
-async function handleOptions(request: Request) {
+async function handleOptions(
+  request: Request,
+  corsHeaders: Record<string, string>,
+) {
   if (
     request.headers.get("Origin") !== null &&
     request.headers.get("Access-Control-Request-Method") !== null &&
@@ -64,9 +72,27 @@ async function handleOptions(request: Request) {
 
 export function EdgeProxyV1(opts: ProxyOpts) {
   const meterProvider = opts.meterProvider;
+  const whitelist = opts.whitelist || defaultWhitelist;
   return async (request: Request, ctx: EdgeContext) => {
-    if (request.method === "OPTIONS") {
-      return handleOptions(request);
+    // If the host is not in the whitelist, return a 403.
+    const origin = request.headers.get("Origin");
+    if (
+      opts.cors &&
+      origin &&
+      !whitelist.some(
+        (w) => w === origin || (w instanceof RegExp && w.test(origin)),
+      )
+    ) {
+      return new Response("Forbidden", { status: 403 });
+    }
+
+    const corsHeaders = {
+      ...(origin ? { "access-control-allow-origin": origin } : {}),
+      ...baseCorsHeaders,
+    };
+
+    if (request.method === "OPTIONS" && opts.cors) {
+      return handleOptions(request, corsHeaders);
     }
     if (request.method !== "GET" && request.method !== "POST") {
       return new Response("Method not allowed", {

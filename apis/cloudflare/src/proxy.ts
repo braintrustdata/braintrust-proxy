@@ -11,6 +11,7 @@ declare global {
     DISABLE_METRICS?: boolean;
     PROMETHEUS_SCRAPE_USER?: string;
     PROMETHEUS_SCRAPE_PASSWORD?: string;
+    BRAINTRUST_ALLOWED_ORIGIN?: string;
   }
 }
 
@@ -50,6 +51,10 @@ export async function handleProxyV1(
   const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
     "cloudflare-metrics",
   );
+
+  const whitelist = env.BRAINTRUST_ALLOWED_ORIGIN
+    ? [new RegExp(env.BRAINTRUST_ALLOWED_ORIGIN)]
+    : undefined;
 
   const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
   const cacheSetLatency = meter.createHistogram("results_cache_set_latency");
@@ -105,6 +110,7 @@ export async function handleProxyV1(
     braintrustApiUrl:
       env.BRAINTRUST_APP_URL || "https://www.braintrustdata.com",
     meterProvider,
+    whitelist,
   })(request, ctx);
 }
 

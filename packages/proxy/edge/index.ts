@@ -41,6 +41,31 @@ const baseCorsHeaders = {
   "access-control-allow-methods": "GET,OPTIONS,POST",
 };
 
+export function getCorsHeaders(
+  request: Request,
+  whitelist: (string | RegExp)[] | undefined,
+) {
+  whitelist = whitelist || defaultWhitelist;
+
+  // If the host is not in the whitelist, return a 403.
+  const origin = request.headers.get("Origin");
+  if (
+    origin &&
+    !whitelist.some(
+      (w) => w === origin || (w instanceof RegExp && w.test(origin)),
+    )
+  ) {
+    throw new Error("Forbidden");
+  }
+
+  return origin
+    ? {
+        "access-control-allow-origin": origin,
+        ...baseCorsHeaders,
+      }
+    : {};
+}
+
 // https://developers.cloudflare.com/workers/examples/cors-header-proxy/
 async function handleOptions(
   request: Request,
@@ -72,24 +97,15 @@ async function handleOptions(
 
 export function EdgeProxyV1(opts: ProxyOpts) {
   const meterProvider = opts.meterProvider;
-  const whitelist = opts.whitelist || defaultWhitelist;
   return async (request: Request, ctx: EdgeContext) => {
-    // If the host is not in the whitelist, return a 403.
-    const origin = request.headers.get("Origin");
-    if (
-      opts.cors &&
-      origin &&
-      !whitelist.some(
-        (w) => w === origin || (w instanceof RegExp && w.test(origin)),
-      )
-    ) {
+    let corsHeaders = {};
+    try {
+      if (opts.cors) {
+        corsHeaders = getCorsHeaders(request, opts.whitelist);
+      }
+    } catch (e) {
       return new Response("Forbidden", { status: 403 });
     }
-
-    const corsHeaders = {
-      ...(origin ? { "access-control-allow-origin": origin } : {}),
-      ...baseCorsHeaders,
-    };
 
     if (request.method === "OPTIONS" && opts.cors) {
       return handleOptions(request, corsHeaders);

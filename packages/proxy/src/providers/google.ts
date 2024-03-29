@@ -75,6 +75,7 @@ export const OpenAIParamsToGoogleParams: {
 } = {
   temperature: "temperature",
   top_p: "topP",
+  stop: "stopSequences",
   max_tokens: "maxOutputTokens",
   frequency_penalty: null,
   presence_penalty: null,

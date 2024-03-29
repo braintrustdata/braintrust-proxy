@@ -8,7 +8,7 @@ export const BaseMetadataSchema = z
         z.object({
           format: z.enum(["openai", "anthropic", "google"]),
           flavor: z.enum(["completion", "chat"]),
-          multimodal: z.boolean().optional(),
+          multimodal: z.boolean().nullish(),
         }),
       )
       .nullish(),

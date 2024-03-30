@@ -1,3 +1,4 @@
+import { z } from "zod";
 import type {
   AnyModelParam,
   Message,
@@ -28,6 +29,7 @@ export type ModelEndpointType = (typeof ModelEndpointType)[number];
 export interface ModelSpec {
   format: ModelFormat;
   flavor: PromptInputType;
+  multimodal?: boolean;
 }
 
 export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {
@@ -142,6 +144,11 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "gpt-35-turbo-16k": { format: "openai", flavor: "chat" },
   "gpt-4": { format: "openai", flavor: "chat" },
   "gpt-4-32k": { format: "openai", flavor: "chat" },
+  "gpt-4-vision-preview": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+  },
   "gpt-4-turbo-preview": { format: "openai", flavor: "chat" },
   "gpt-4-0125-preview": { format: "openai", flavor: "chat" },
   "gpt-4-1106-preview": { format: "openai", flavor: "chat" },
@@ -160,9 +167,21 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "claude-2.0": { format: "anthropic", flavor: "chat" },
   "claude-2.1": { format: "anthropic", flavor: "chat" },
   "claude-instant-1.2": { format: "anthropic", flavor: "chat" },
-  "claude-3-opus-20240229": { format: "anthropic", flavor: "chat" },
-  "claude-3-sonnet-20240229": { format: "anthropic", flavor: "chat" },
-  "claude-3-haiku-20240307": { format: "anthropic", flavor: "chat" },
+  "claude-3-opus-20240229": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
+  "claude-3-sonnet-20240229": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
+  "claude-3-haiku-20240307": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
@@ -320,3 +339,35 @@ export function translateParams(
 
   return translatedParams;
 }
+
+export const anthropicSupportedMediaTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
+
+export const anthropicTextBlockSchema = z.object({
+  type: z.literal("text").optional(),
+  text: z.string().default(""),
+});
+export const anthropicImageBlockSchema = z.object({
+  type: z.literal("image").optional(),
+  source: z.object({
+    type: z.enum(["base64"]).optional(),
+    media_type: z.enum(["image/jpeg", "image/png", "image/gif", "image/webp"]),
+    data: z.string().default(""),
+  }),
+});
+const anthropicContentBlockSchema = z.union([
+  anthropicTextBlockSchema,
+  anthropicImageBlockSchema,
+]);
+const anthropicContentBlocksSchema = z.array(anthropicContentBlockSchema);
+const anthropicContentSchema = z.union([
+  z.string().default(""),
+  anthropicContentBlocksSchema,
+]);
+
+export type AnthropicImageBlock = z.infer<typeof anthropicImageBlockSchema>;
+export type AnthropicContent = z.infer<typeof anthropicContentSchema>;

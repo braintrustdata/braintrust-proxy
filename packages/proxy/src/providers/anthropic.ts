@@ -166,33 +166,10 @@ const allowedImageTypes = [
 ];
 
 function arrayBufferToBase64(buf: ArrayBuffer): string {
-  const base64Chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
   const bytes = new Uint8Array(buf);
-
-  const binary = bytes.reduce((acc, b) => acc + String.fromCharCode(b), "");
-
-  let base64 = "";
-  for (let i = 0; i < binary.length; i += 3) {
-    const triplet =
-      (binary.charCodeAt(i) << 16) |
-      (binary.charCodeAt(i + 1) << 8) |
-      binary.charCodeAt(i + 2);
-    base64 +=
-      base64Chars[(triplet >> 18) & 0x3f] +
-      base64Chars[(triplet >> 12) & 0x3f] +
-      base64Chars[(triplet >> 6) & 0x3f] +
-      base64Chars[triplet & 0x3f];
-  }
-
-  const padding = binary.length % 3;
-  if (padding === 1) {
-    base64 = base64.slice(0, -2) + "==";
-  } else if (padding === 2) {
-    base64 = base64.slice(0, -1) + "=";
-  }
-
-  return base64;
+  let binaryString = "";
+  bytes.forEach((b) => (binaryString += String.fromCharCode(b)));
+  return btoa(binaryString);
 }
 
 async function convertImageUrl(url: string): Promise<AnthropicImageBlock> {

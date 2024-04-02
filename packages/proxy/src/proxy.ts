@@ -651,7 +651,7 @@ async function fetchAnthropic(
   const messages = [];
   let system = undefined;
   for (const m of oaiMessages as Message[]) {
-    const content = openAIContentToAnthropicContent(m.content);
+    const content = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
     } else if (

@@ -140,10 +140,10 @@ function anthropicFinishReason(
 const base64ImagePattern =
   /^data:(image\/(?:jpeg|png|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/;
 
-function makeAnthropicImageBlock(base64Image: string): AnthropicImageBlock {
-  const match = base64Image.match(base64ImagePattern);
+function convertBase64Image(image: string): AnthropicImageBlock {
+  const match = image.match(base64ImagePattern);
   if (!match) {
-    throw new Error("Unable to parse base64 image: " + base64Image);
+    throw new Error("Unable to parse base64 image: " + image);
   }
 
   const [, media_type, data] = match;
@@ -157,13 +157,96 @@ function makeAnthropicImageBlock(base64Image: string): AnthropicImageBlock {
   });
 }
 
-export function openAIContentToAnthropicContent(
+const maxImageBytes = 5 * 1024 * 1024;
+const allowedImageTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
+
+function arrayBufferToBase64(buf: ArrayBuffer): string {
+  const base64Chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  const bytes = new Uint8Array(buf);
+
+  const binary = bytes.reduce((acc, b) => acc + String.fromCharCode(b), "");
+
+  let base64 = "";
+  for (let i = 0; i < binary.length; i += 3) {
+    const triplet =
+      (binary.charCodeAt(i) << 16) |
+      (binary.charCodeAt(i + 1) << 8) |
+      binary.charCodeAt(i + 2);
+    base64 +=
+      base64Chars[(triplet >> 18) & 0x3f] +
+      base64Chars[(triplet >> 12) & 0x3f] +
+      base64Chars[(triplet >> 6) & 0x3f] +
+      base64Chars[triplet & 0x3f];
+  }
+
+  const padding = binary.length % 3;
+  if (padding === 1) {
+    base64 = base64.slice(0, -2) + "==";
+  } else if (padding === 2) {
+    base64 = base64.slice(0, -1) + "=";
+  }
+
+  return base64;
+}
+
+async function convertImageUrl(url: string): Promise<AnthropicImageBlock> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get("content-type");
+  if (!contentType) {
+    throw new Error("Failed to get content type of the image");
+  }
+  if (!allowedImageTypes.includes(contentType)) {
+    throw new Error(`Unsupported image type: ${contentType}`);
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+  if (arrayBuffer.byteLength > maxImageBytes) {
+    throw new Error("Image size exceeds the 5 MB limit for Claude");
+  }
+
+  const data = arrayBufferToBase64(arrayBuffer);
+
+  return anthropicImageBlockSchema.parse({
+    type: "image",
+    source: {
+      type: "base64",
+      media_type: contentType,
+      data,
+    },
+  });
+}
+
+export async function makeAnthropicImageBlock(
+  image: string,
+): Promise<AnthropicImageBlock> {
+  if (base64ImagePattern.test(image)) {
+    return convertBase64Image(image);
+  }
+
+  return convertImageUrl(image);
+}
+
+export async function openAIContentToAnthropicContent(
   content: Message["content"],
-): AnthropicContent {
+): Promise<AnthropicContent> {
   if (typeof content === "string") {
     return content;
   }
-  return content.map((part) =>
-    part.type === "text" ? part : makeAnthropicImageBlock(part.image_url.url),
+  return Promise.all(
+    content?.map(async (part) =>
+      part.type === "text"
+        ? part
+        : await makeAnthropicImageBlock(part.image_url.url),
+    ) ?? [],
   );
 }

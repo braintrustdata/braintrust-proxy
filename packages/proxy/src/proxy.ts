@@ -25,6 +25,7 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   openAIContentToAnthropicContent,
+  openAIToolsToAnthropicTools,
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
@@ -34,6 +35,7 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import { Message } from "@braintrust/core/typespecs";
+import { ChatCompletionCreateParams } from "openai/resources";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -679,6 +681,27 @@ async function fetchAnthropic(
     ...translateParams("anthropic", oaiParams),
   };
 
+  if (params.function_call) {
+    // This should be in the params object, but since it's deprecated we haven't added it.
+    delete params.function_call;
+  }
+
+  const isFunction = !!params.functions;
+  if (params.tools || params.functions) {
+    headers["anthropic-beta"] = "tools-2024-04-04";
+    params.tools = openAIToolsToAnthropicTools(
+      params.tools ||
+        (params.functions as Array<ChatCompletionCreateParams.Function>).map(
+          (f: any) => ({
+            type: "function",
+            function: f,
+          }),
+        ),
+    );
+
+    delete params.functions;
+  }
+
   const proxyResponse = await fetch(fullURL.toString(), {
     method,
     headers,
@@ -716,7 +739,9 @@ async function fetchAnthropic(
             const data = JSON.parse(text);
             controller.enqueue(
               new TextEncoder().encode(
-                JSON.stringify(anthropicCompletionToOpenAICompletion(data)),
+                JSON.stringify(
+                  anthropicCompletionToOpenAICompletion(data, isFunction),
+                ),
               ),
             );
             controller.terminate();

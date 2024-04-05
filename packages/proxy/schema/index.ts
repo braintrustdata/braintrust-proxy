@@ -80,6 +80,7 @@ export const modelParamToModelParam: {
   maxOutputTokens: "max_tokens",
   topP: "top_p",
   topK: "top_k",
+  tool_choice: null,
 };
 
 export const sliderSpecs: {

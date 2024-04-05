@@ -38,8 +38,8 @@ export interface AnthropicStreamEvent {
     | "ping";
   message?: AnthropicCompletion;
   index?: number;
-  delta?:
-    | { type: "text_delta"; text: string }
+  delta?: // NOTE: At time of writing, Anthropic does not support tool use in the stream API.
+  | { type: "text_delta"; text: string }
     | { stop_reason: string; stop_sequence: string | null };
   usage?: { input_tokens: number; output_tokens: number };
   model?: string;

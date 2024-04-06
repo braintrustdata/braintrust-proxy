@@ -70,7 +70,7 @@ export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
 };
 
 export const modelParamToModelParam: {
-  [name in keyof AnyModelParam]: keyof AnyModelParam | null;
+  [name: string]: keyof AnyModelParam | null;
 } = {
   temperature: "temperature",
   top_p: "top_p",
@@ -81,6 +81,8 @@ export const modelParamToModelParam: {
   topP: "top_p",
   topK: "top_k",
   tool_choice: null,
+  function_call: null,
+  n: null,
 };
 
 export const sliderSpecs: {

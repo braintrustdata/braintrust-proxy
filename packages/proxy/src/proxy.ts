@@ -681,11 +681,6 @@ async function fetchAnthropic(
     ...translateParams("anthropic", oaiParams),
   };
 
-  if (params.function_call) {
-    // This should be in the params object, but since it's deprecated we haven't added it.
-    delete params.function_call;
-  }
-
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
     headers["anthropic-beta"] = "tools-2024-04-04";

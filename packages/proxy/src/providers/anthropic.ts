@@ -115,6 +115,8 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
 ): ChatCompletion {
+  const firstText = completion.content.find((c) => c.type === "text");
+  const firstTool = completion.content.find((c) => c.type === "tool_use");
   return {
     id: completion.id,
     choices: [
@@ -125,29 +127,26 @@ export function anthropicCompletionToOpenAICompletion(
         message: {
           role: "assistant",
           // Anthropic inserts extra whitespace at the beginning of the completion
-          content:
-            completion.content[0].type == "text"
-              ? completion.content[0].text.trimStart()
-              : null,
+          content: firstText ? firstText.text.trimStart() : null,
           tool_calls: isFunction
             ? undefined
-            : completion.content[0].type == "tool_use"
+            : firstTool
               ? [
                   {
-                    id: completion.content[0].id,
+                    id: firstTool.id,
                     type: "function",
                     function: {
-                      name: completion.content[0].name,
-                      arguments: JSON.stringify(completion.content[0].input),
+                      name: firstTool.name,
+                      arguments: JSON.stringify(firstTool.input),
                     },
                   },
                 ]
               : undefined,
           function_call:
-            isFunction && completion.content[0].type == "tool_use"
+            isFunction && firstTool
               ? {
-                  name: completion.content[0].name,
-                  arguments: JSON.stringify(completion.content[0].input),
+                  name: firstTool.name,
+                  arguments: JSON.stringify(firstTool.input),
                 }
               : undefined,
         },

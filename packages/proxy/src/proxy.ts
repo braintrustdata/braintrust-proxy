@@ -172,16 +172,15 @@ export async function proxyV1({
   const orgName = proxyHeaders[ORG_NAME_HEADER];
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
-  // Data key is computed from the input data and used for both the cache key and as an input to the encryption key.
-  const dataKey = (await digest(
-      JSON.stringify({
-        url,
-        body,
-        authToken: cacheKeyOptions.excludeAuthToken || authToken,
-        orgName: cacheKeyOptions.excludeOrgName || orgName,
-        endpointName,
-      })
-    ));
+  const dataKey = await digest(
+    JSON.stringify({
+      url,
+      body,
+      authToken: cacheKeyOptions.excludeAuthToken || authToken,
+      orgName: cacheKeyOptions.excludeOrgName || orgName,
+      endpointName,
+    }),
+  );
 
   // We must hash the data key again to get the cache key, so that the cache key is not reversible to the data key.
   const cacheKey = `aiproxy/proxy/v2:${await digest(dataKey)}`;

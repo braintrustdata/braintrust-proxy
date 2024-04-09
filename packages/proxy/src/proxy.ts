@@ -172,6 +172,7 @@ export async function proxyV1({
   const orgName = proxyHeaders[ORG_NAME_HEADER];
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
+  // Data key is computed from the input data and used for both the cache key and as an input to the encryption key.
   const dataKey = await digest(
     JSON.stringify({
       url,

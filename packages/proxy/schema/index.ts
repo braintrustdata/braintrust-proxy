@@ -5,6 +5,7 @@ import type {
   MessageRole,
   ModelParams,
 } from "@braintrust/core/typespecs";
+import { isEmpty } from "@lib/util";
 
 export * from "./secrets";
 
@@ -83,6 +84,7 @@ export const modelParamToModelParam: {
   tool_choice: null,
   function_call: null,
   n: null,
+  stop: "stop_sequences",
 };
 
 export const sliderSpecs: {
@@ -111,6 +113,7 @@ export const defaultModelParamSettings: {
     presence_penalty: 0,
     response_format: null,
     use_cache: true,
+    tool_choice: "auto",
   },
   anthropic: {
     temperature: 0,
@@ -118,6 +121,7 @@ export const defaultModelParamSettings: {
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
+    stop_sequences: [],
   },
   google: {
     temperature: 0,
@@ -342,7 +346,7 @@ export function translateParams(
       defaultModelParamSettings[toProvider][translatedKey] !== undefined
     ) {
       translatedParams[translatedKey] = v;
-    } else {
+    } else if (!isEmpty(v)) {
       translatedParams[k] = v;
     }
   }

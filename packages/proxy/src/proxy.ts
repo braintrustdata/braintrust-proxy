@@ -696,7 +696,6 @@ async function fetchAnthropic(
 
     delete params.functions;
   }
-  console.log(params);
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,

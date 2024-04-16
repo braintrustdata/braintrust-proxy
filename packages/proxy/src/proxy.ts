@@ -172,19 +172,22 @@ export async function proxyV1({
   const orgName = proxyHeaders[ORG_NAME_HEADER];
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
-  const cacheKey =
-    "aiproxy/proxy/v1:" +
-    (await digest(
-      JSON.stringify({
-        url,
-        body,
-        authToken: cacheKeyOptions.excludeAuthToken || authToken,
-        orgName: cacheKeyOptions.excludeOrgName || orgName,
-        endpointName,
-      }),
-    ));
+  // Data key is computed from the input data and used for both the cache key and as an input to the encryption key.
+  const dataKey = await digest(
+    JSON.stringify({
+      url,
+      body,
+      authToken: cacheKeyOptions.excludeAuthToken || authToken,
+      orgName: cacheKeyOptions.excludeOrgName || orgName,
+      endpointName,
+    }),
+  );
 
-  const encryptionKey = await digest(`${authToken}:${orgName || ""}`);
+  // We must hash the data key again to get the cache key, so that the cache key is not reversible to the data key.
+  const cacheKey = `aiproxy/proxy/v2:${await digest(dataKey)}`;
+
+  // The data key is used as the encryption key, so unless you have the actual incoming data, you can't decrypt the cache.
+  const encryptionKey = await digest(`${dataKey}:${authToken}`);
 
   let stream: ReadableStream<Uint8Array> | null = null;
   if (useCache) {

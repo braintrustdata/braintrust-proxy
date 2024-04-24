@@ -36,6 +36,7 @@ import {
 } from "./providers/google";
 import { Message } from "@braintrust/core/typespecs";
 import { ChatCompletionCreateParams } from "openai/resources";
+import { fetchBedrockAnthropic } from "./providers/bedrock";
 
 interface CachedData {
   headers: Record<string, string>;
@@ -698,6 +699,18 @@ async function fetchAnthropic(
     );
 
     delete params.functions;
+  }
+
+  if (secret.type === "bedrock") {
+    return fetchBedrockAnthropic({
+      secret,
+      body: {
+        ...params,
+        messages,
+        system,
+      },
+      isFunction,
+    });
   }
 
   const proxyResponse = await fetch(fullURL.toString(), {

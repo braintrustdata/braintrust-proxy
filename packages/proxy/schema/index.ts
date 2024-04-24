@@ -15,6 +15,7 @@ export const ModelEndpointType = [
   "openai",
   "azure",
   "google",
+  "bedrock",
   "perplexity",
   "replicate",
   "anthropic",
@@ -196,6 +197,21 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     multimodal: true,
   },
+  "anthropic.claude-3-opus-20240229-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
+  "anthropic.claude-3-haiku-20240307-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
+  "anthropic.claude-3-sonnet-20240229-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+  },
   "meta/llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-70b-chat": { format: "openai", flavor: "chat" },
   "llama-2-13b-chat": { format: "openai", flavor: "chat" },
@@ -297,6 +313,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama2-70b-4096": ["groq"],
   "mixtral-8x7b-32768": ["groq"],
   "gemma-7b-it": ["groq"],
+  "anthropic.claude-3-opus-20240229-v1:0": ["bedrock"],
+  "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
+  "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -332,6 +351,7 @@ export const EndpointProviderToBaseURL: {
   mistral: "https://api.mistral.ai/v1",
   ollama: "http://127.0.0.1:11434/v1",
   groq: "https://api.groq.com/openai/v1",
+  bedrock: null,
   azure: null,
   js: null,
 };

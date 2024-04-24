@@ -23,6 +23,14 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).strict();
 
+export const BedrockMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    region: z.string(),
+    access_key: z.string(),
+  }),
+).strict();
+export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
+
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string().nullish(),
@@ -52,6 +60,7 @@ export const APISecretSchema = z.union([
         "mistral",
         "ollama",
         "groq",
+        "bedrock",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),
@@ -67,6 +76,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("azure"),
       metadata: AzureMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("bedrock"),
+      metadata: BedrockMetadataSchema.nullish(),
     }),
   ),
 ]);

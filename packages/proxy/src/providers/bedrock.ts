@@ -49,6 +49,10 @@ export async function fetchBedrockAnthropic({
     modelId: model,
   };
 
+  const httpResponse = new Response(null, {
+    status: 200,
+  });
+
   let responseStream;
   if (stream) {
     const command = new InvokeModelWithResponseStreamCommand(input);
@@ -99,16 +103,22 @@ export async function fetchBedrockAnthropic({
     const response = await brt.send(command);
     responseStream = new ReadableStream<Uint8Array>({
       start(controller) {
-        controller.enqueue(response.body);
+        const valueData = JSON.parse(new TextDecoder().decode(response.body));
+        const anthropicValue = anthropicCompletionToOpenAICompletion(
+          valueData,
+          isFunction,
+        );
+        controller.enqueue(
+          new TextEncoder().encode(JSON.stringify(anthropicValue)),
+        );
         controller.close();
       },
     });
+    httpResponse.headers.set("Content-Type", "application/json");
   }
 
   return {
     stream: responseStream,
-    response: new Response(null, {
-      status: 200,
-    }),
+    response: httpResponse,
   };
 }

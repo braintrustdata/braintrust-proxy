@@ -33,7 +33,8 @@ export interface ProxyOpts {
 
 const defaultWhitelist: (string | RegExp)[] = [
   "https://www.braintrustdata.com",
-  new RegExp("https://.*-braintrustdata.vercel.app/"),
+  "https://www.braintrust.dev",
+  new RegExp("https://.*-braintrustdata.vercel.app"),
 ];
 
 const baseCorsHeaders = {

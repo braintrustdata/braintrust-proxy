@@ -35,6 +35,9 @@ export async function fetchBedrockAnthropic({
     credentials: {
       accessKeyId: metadata.access_key,
       secretAccessKey: secret.secret,
+      ...(metadata.session_token
+        ? { sessionToken: metadata.session_token }
+        : {}),
     },
   });
 

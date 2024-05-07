@@ -27,6 +27,7 @@ export const BedrockMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     region: z.string(),
     access_key: z.string(),
+    session_token: z.string().nullish(),
   }),
 ).strict();
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;

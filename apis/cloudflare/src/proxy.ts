@@ -11,7 +11,7 @@ declare global {
     DISABLE_METRICS?: boolean;
     PROMETHEUS_SCRAPE_USER?: string;
     PROMETHEUS_SCRAPE_PASSWORD?: string;
-    BRAINTRUST_ALLOWED_ORIGIN?: string;
+    WHITELISTED_ORIGINS?: string;
   }
 }
 
@@ -20,8 +20,10 @@ function apiCacheKey(key: string) {
 }
 
 export function originWhitelist(env: Env) {
-  return env.BRAINTRUST_ALLOWED_ORIGIN
-    ? [new RegExp(env.BRAINTRUST_ALLOWED_ORIGIN)]
+  return env.WHITELISTED_ORIGINS && env.WHITELISTED_ORIGINS.length > 0
+    ? env.WHITELISTED_ORIGINS.split(",")
+        .map((x) => x.trim())
+        .filter((x) => x)
     : undefined;
 }
 

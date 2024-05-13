@@ -147,6 +147,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "gpt-3.5-turbo-16k": { format: "openai", flavor: "chat" },
   "gpt-35-turbo-16k": { format: "openai", flavor: "chat" },
   "gpt-4": { format: "openai", flavor: "chat" },
+  "gpt-4o": { format: "openai", flavor: "chat", multimodal: true },
+  "gpt-4o-2024-05-13": { format: "openai", flavor: "chat", multimodal: true },
   "gpt-4-32k": { format: "openai", flavor: "chat" },
   "gpt-4-vision-preview": {
     format: "openai",

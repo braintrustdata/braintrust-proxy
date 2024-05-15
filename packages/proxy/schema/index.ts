@@ -261,6 +261,9 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "pplx-7b-online": { format: "openai", flavor: "chat" },
   "pplx-70b-online": { format: "openai", flavor: "chat" },
   phi: { format: "openai", flavor: "chat" },
+  "gemini-1.5-flash-latest": { format: "google", flavor: "chat" },
+  "gemini-1.5-pro-latest": { format: "google", flavor: "chat" },
+  "gemini-1.0-pro": { format: "google", flavor: "chat" },
   "gemini-pro": { format: "google", flavor: "chat" },
   "text-block": { format: "js", flavor: "completion" },
 };

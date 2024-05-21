@@ -687,7 +687,7 @@ async function fetchAnthropic(
 
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
-    headers["anthropic-beta"] = "tools-2024-04-04";
+    headers["anthropic-beta"] = "tools-2024-05-16";
     params.tools = openAIToolsToAnthropicTools(
       params.tools ||
         (params.functions as Array<ChatCompletionCreateParams.Function>).map(

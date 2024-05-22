@@ -31,6 +31,8 @@ export interface ModelSpec {
   format: ModelFormat;
   flavor: PromptInputType;
   multimodal?: boolean;
+  input_cost_per_token?: number;
+  output_cost_per_token?: number;
 }
 
 export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {

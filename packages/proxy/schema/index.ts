@@ -747,6 +747,7 @@ export function translateParams(
 ): Record<string, unknown> {
   const translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {
+    const safeValue = v ?? undefined; // Don't propagate "null" along
     const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
       | keyof ModelParams
       | undefined
@@ -757,9 +758,9 @@ export function translateParams(
       translatedKey !== undefined &&
       defaultModelParamSettings[toProvider][translatedKey] !== undefined
     ) {
-      translatedParams[translatedKey] = v;
+      translatedParams[translatedKey] = safeValue;
     } else {
-      translatedParams[k] = v;
+      translatedParams[k] = safeValue;
     }
   }
 

@@ -67,6 +67,13 @@ export function googleCompletionToOpenAICompletion(
     created: getTimestampInSeconds(),
     model,
     object: "chat.completion",
+    usage: data.usageMetadata
+      ? {
+          prompt_tokens: data.usageMetadata.promptTokenCount,
+          completion_tokens: data.usageMetadata.candidatesTokenCount,
+          total_tokens: data.usageMetadata.totalTokenCount,
+        }
+      : undefined,
   };
 }
 

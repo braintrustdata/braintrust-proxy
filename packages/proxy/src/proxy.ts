@@ -16,6 +16,7 @@ import {
 } from "@schema";
 import {
   flattenChunks,
+  flattenChunksArray,
   getRandomInt,
   isEmpty,
   isObject,
@@ -38,10 +39,17 @@ import { Message } from "@braintrust/core/typespecs";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 
-interface CachedData {
+type CachedData = {
   headers: Record<string, string>;
-  body: string;
-}
+} & (
+  | {
+      // DEPRECATION_NOTICE: This can be removed in a couple weeks since writing (e.g. June 9 2024 onwards)
+      body: string;
+    }
+  | {
+      data: string;
+    }
+);
 
 const CACHE_HEADER = "x-bt-use-cache";
 const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
@@ -205,7 +213,16 @@ export async function proxyV1({
 
       stream = new ReadableStream<Uint8Array>({
         start(controller) {
-          controller.enqueue(new TextEncoder().encode(cachedData.body));
+          if ("body" in cachedData && cachedData.body) {
+            controller.enqueue(new TextEncoder().encode(cachedData.body));
+          } else if ("data" in cachedData && cachedData.data) {
+            const data = atob(cachedData.data);
+            const uint8Array = new Uint8Array(data.length);
+            for (let i = 0; i < data.length; i++) {
+              uint8Array[i] = data.charCodeAt(i);
+            }
+            controller.enqueue(uint8Array);
+          }
           controller.close();
         },
       });
@@ -300,11 +317,12 @@ export async function proxyV1({
           controller.enqueue(chunk);
         },
         async flush(controller) {
-          const text = flattenChunks(allChunks);
+          const data = flattenChunksArray(allChunks);
+          const dataB64 = btoa(String.fromCharCode(...data));
           cachePut(
             encryptionKey,
             cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, body: text }),
+            JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
           );
         },
       });

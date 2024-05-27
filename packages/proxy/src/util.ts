@@ -31,12 +31,17 @@ export function getTimestampInSeconds() {
   return Math.floor(Date.now() / 1000);
 }
 
-export function flattenChunks(allChunks: Uint8Array[]) {
+export function flattenChunksArray(allChunks: Uint8Array[]): Uint8Array {
   const flatArray = new Uint8Array(allChunks.reduce((a, b) => a + b.length, 0));
   for (let i = 0, offset = 0; i < allChunks.length; i++) {
     flatArray.set(allChunks[i], offset);
     offset += allChunks[i].length;
   }
+  return flatArray;
+}
+
+export function flattenChunks(allChunks: Uint8Array[]) {
+  const flatArray = flattenChunksArray(allChunks);
   return new TextDecoder().decode(flatArray);
 }
 

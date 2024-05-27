@@ -43,6 +43,7 @@ type CachedData = {
   headers: Record<string, string>;
 } & (
   | {
+      // DEPRECATION_NOTICE: This can be removed in a couple weeks since writing (e.g. June 9 2024 onwards)
       body: string;
     }
   | {

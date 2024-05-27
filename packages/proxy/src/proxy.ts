@@ -5,7 +5,6 @@ import {
   type ReconnectInterval,
 } from "eventsource-parser";
 import { OpenAIStream } from "ai";
-
 import {
   AvailableModels,
   MessageTypeToMessageType,
@@ -38,6 +37,7 @@ import {
 import { Message } from "@braintrust/core/typespecs";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
+import { Buffer } from "node:buffer";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -216,11 +216,8 @@ export async function proxyV1({
           if ("body" in cachedData && cachedData.body) {
             controller.enqueue(new TextEncoder().encode(cachedData.body));
           } else if ("data" in cachedData && cachedData.data) {
-            const data = atob(cachedData.data);
-            const uint8Array = new Uint8Array(data.length);
-            for (let i = 0; i < data.length; i++) {
-              uint8Array[i] = data.charCodeAt(i);
-            }
+            const data = Buffer.from(cachedData.data, "base64");
+            const uint8Array = new Uint8Array(data);
             controller.enqueue(uint8Array);
           }
           controller.close();
@@ -318,7 +315,7 @@ export async function proxyV1({
         },
         async flush(controller) {
           const data = flattenChunksArray(allChunks);
-          const dataB64 = btoa(String.fromCharCode(...data));
+          const dataB64 = Buffer.from(data).toString("base64");
           cachePut(
             encryptionKey,
             cacheKey,

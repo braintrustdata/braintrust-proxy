@@ -86,6 +86,8 @@ export const modelParamToModelParam: {
   tool_choice: null,
   function_call: null,
   n: null,
+  logprobs: null,
+  stream_options: null,
 };
 
 export const sliderSpecs: {

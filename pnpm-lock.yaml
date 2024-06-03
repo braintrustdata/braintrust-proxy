@@ -44,7 +44,7 @@ importers:
         version: 5.3.2
       wrangler:
         specifier: ^3.57.1
-        version: 3.57.1
+        version: 3.57.1(@cloudflare/workers-types@4.20240512.0)
 
   apis/node:
     dependencies:
@@ -210,7 +210,7 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       zod:
-        specifier: ^3.22.4
+        specifier: 3.22.4
         version: 3.22.4
     devDependencies:
       '@types/node':
@@ -5247,7 +5247,7 @@ packages:
       workerd: 1.20240512.0
       ws: 8.17.0
       youch: 3.3.3
-      zod: 3.23.8
+      zod: 3.22.4
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -7172,7 +7172,7 @@ packages:
       '@cloudflare/workerd-windows-64': 1.20240512.0
     dev: true
 
-  /wrangler@3.57.1:
+  /wrangler@3.57.1(@cloudflare/workers-types@4.20240512.0):
     resolution: {integrity: sha512-M8YnWUwdrb8AFiRePtVnzlDn02OX4osWvdl8oVh6eyZqqkqXYg7lwlYBr14Qj92pMN4JvMBmDZoukkYHvwpJRg==}
     engines: {node: '>=16.17.0'}
     hasBin: true
@@ -7183,6 +7183,7 @@ packages:
         optional: true
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.2
+      '@cloudflare/workers-types': 4.20240512.0
       '@esbuild-plugins/node-globals-polyfill': 0.2.3(esbuild@0.17.19)
       '@esbuild-plugins/node-modules-polyfill': 0.2.2(esbuild@0.17.19)
       blake3-wasm: 2.1.5
@@ -7282,8 +7283,3 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: false
-
-  /zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
-    dev: true

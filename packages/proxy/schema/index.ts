@@ -474,6 +474,12 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.0000006,
     output_cost_per_token: 0.0000006,
   },
+  "mistralai/Mixtral-8x7B-Instruct-v0.1-json": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000006,
+    output_cost_per_token: 0.0000006,
+  },
   "mistralai/Mixtral-8x22B": {
     format: "openai",
     flavor: "completion",
@@ -672,6 +678,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistralai/Mixtral-8x22B-Instruct-v0.1": ["together"],
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
+  "mistralai/Mixtral-8x7B-Instruct-v0.1-json": ["together"],
   "meta-llama/Llama-2-70b-chat-hf": ["together"],
   "meta-llama/Meta-Llama-3-70B": ["together"],
   "meta-llama/Llama-3-70b-chat-hf": ["together"],

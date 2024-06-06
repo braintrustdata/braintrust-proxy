@@ -1,3 +1,4 @@
 packages:
   - "apis/*"
   - "packages/*"
+  - "../sdk/core/js"

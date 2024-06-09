@@ -294,7 +294,8 @@ export async function proxyV1({
         lowerName === "access-control-expose-headers" ||
         lowerName === "access-control-max-age" ||
         lowerName === "access-control-allow-methods" ||
-        lowerName === "access-control-allow-headers"
+        lowerName === "access-control-allow-headers" ||
+        lowerName === "content-encoding"
       ) {
         return;
       }

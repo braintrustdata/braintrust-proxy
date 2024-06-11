@@ -1,17 +1,21 @@
 {
-  "name": "ai-proxy-wrangler",
+  "name": "@braintrust/ai-proxy-wrangler",
   "version": "0.0.0",
   "private": true,
+  "main": "./dist/lib.mjs",
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "start": "wrangler dev"
+    "start": "wrangler dev",
+    "watch": "tsup --watch --dts",
+    "build": "tsup --clean --dts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240512.0",
     "itty-router": "^3.0.12",
     "typescript": "^5.0.4",
-    "wrangler": "^3.57.1"
+    "wrangler": "^3.57.1",
+    "tsup": "^8.0.1"
   },
   "dependencies": {
     "@braintrust/proxy": "workspace:*",

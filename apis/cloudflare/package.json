@@ -5,7 +5,7 @@
   "main": "./dist/lib.mjs",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
+    "dev": "wrangler dev --port 8787 --inspector-port 9299",
     "start": "wrangler dev",
     "watch": "tsup --watch --dts",
     "build": "tsup --clean --dts"

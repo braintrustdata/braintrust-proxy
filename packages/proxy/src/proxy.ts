@@ -81,6 +81,7 @@ export async function proxyV1({
   digest,
   meterProvider = NOOP_METER_PROVIDER,
   cacheKeyOptions = {},
+  decompressFetch = false,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -100,6 +101,7 @@ export async function proxyV1({
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
+  decompressFetch?: boolean;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -294,7 +296,8 @@ export async function proxyV1({
         lowerName === "access-control-expose-headers" ||
         lowerName === "access-control-max-age" ||
         lowerName === "access-control-allow-methods" ||
-        lowerName === "access-control-allow-headers"
+        lowerName === "access-control-allow-headers" ||
+        (decompressFetch && lowerName === "content-encoding")
       ) {
         return;
       }

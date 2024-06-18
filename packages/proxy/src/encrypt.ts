@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 // This is copied from duckdb.tsx in the app directory
 function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
@@ -34,10 +36,11 @@ export async function decryptMessage(
   return new TextDecoder().decode(decoded);
 }
 
-export interface EncryptedMessage {
-  iv: string;
-  data: string;
-}
+export const encryptedMessageSchema = z.strictObject({
+  iv: z.string(),
+  data: z.string(),
+});
+export type EncryptedMessage = z.infer<typeof encryptedMessageSchema>;
 
 export async function encryptMessage(
   keyString: string,

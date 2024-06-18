@@ -51,11 +51,11 @@ type CachedData = {
     }
 );
 
-const CACHE_HEADER = "x-bt-use-cache";
-const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
-const ORG_NAME_HEADER = "x-bt-org-name";
-const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
-const FORMAT_HEADER = "x-bt-stream-fmt";
+export const CACHE_HEADER = "x-bt-use-cache";
+export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
+export const ORG_NAME_HEADER = "x-bt-org-name";
+export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
+export const FORMAT_HEADER = "x-bt-stream-fmt";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 

@@ -38,10 +38,7 @@ import {
   ChatCompletion,
   ChatCompletionChunk,
   ChatCompletionCreateParams,
-  Completion,
-  CompletionCreateParamsNonStreaming,
   CreateEmbeddingResponse,
-  Embedding,
 } from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
@@ -280,7 +277,7 @@ export async function proxyV1({
       );
     }
 
-    if (streamFormat === "vercel-ai" && isStreaming) {
+    if (streamFormat === "vercel-ai" && !isStreaming) {
       throw new Error(
         "Vercel AI format requires the stream parameter to be set to true",
       );
@@ -399,8 +396,19 @@ export async function proxyV1({
           if ("data" in event) {
             const result = JSON.parse(event.data) as ChatCompletionChunk;
             if (result) {
+              if (result.usage) {
+                spanLogger.log({
+                  metrics: {
+                    tokens: result.usage.total_tokens,
+                    prompt_tokens: result.usage.prompt_tokens,
+                    completion_tokens: result.usage.completion_tokens,
+                  },
+                });
+              }
+
               const choice = result.choices?.[0];
               const delta = choice?.delta;
+
               if (!choice || !delta) {
                 return;
               }

@@ -38,6 +38,9 @@ import { Message } from "@braintrust/core/typespecs";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
+import { ExperimentLogPartialArgs } from "@braintrust/core";
+import { parseOpenAIStream } from "./providers/openai";
+import { createEventStreamTransformer as aiCreateEventStreamTransformer } from "ai";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -65,6 +68,12 @@ export interface CacheKeyOptions {
   excludeOrgName?: boolean;
 }
 
+export interface SpanLogging {
+  setName: (name: string) => void;
+  log: (args: ExperimentLogPartialArgs) => void;
+  end: () => void;
+}
+
 // This is an isomorphic implementation of proxyV1, which is used by both edge functions
 // in CloudFlare and by the node proxy (locally and in lambda).
 export async function proxyV1({
@@ -82,6 +91,7 @@ export async function proxyV1({
   meterProvider = NOOP_METER_PROVIDER,
   cacheKeyOptions = {},
   decompressFetch = false,
+  spanLogger,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -102,6 +112,7 @@ export async function proxyV1({
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
+  spanLogger?: SpanLogging;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -213,6 +224,18 @@ export async function proxyV1({
       }
       setHeader("x-cached", "true");
 
+      const nameGuess = guessSpanName(url, bodyData?.model);
+      if (spanLogger && nameGuess) {
+        console.log("LOGGING NAME AND METRICS");
+        spanLogger.setName(nameGuess);
+        spanLogger.log({
+          input: "foo",
+          metrics: {
+            cached: 1,
+          },
+        });
+      }
+
       stream = new ReadableStream<Uint8Array>({
         start(controller) {
           if ("body" in cachedData && cachedData.body) {
@@ -270,6 +293,7 @@ export async function proxyV1({
             return secrets;
           }
         },
+        spanLogger,
       );
     stream = proxyStream;
 
@@ -324,6 +348,7 @@ export async function proxyV1({
             cacheKey,
             JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
           );
+          controller.terminate();
         },
       });
 
@@ -331,8 +356,65 @@ export async function proxyV1({
     }
   }
 
+  if (stream) {
+    const allChunks: Uint8Array[] = [];
+    console.log("CREATING LOGGING STREAM");
+    const loggingStream = new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        console.log("TRANSFORMING?");
+        allChunks.push(chunk);
+        controller.enqueue(chunk);
+      },
+      async flush(controller) {
+        console.log("ENDING SPAN");
+        // XXX FIX
+        // spanLogger.end();
+        controller.terminate();
+      },
+    });
+
+    stream = stream.pipeThrough(loggingStream);
+  }
+
   if (stream && streamFormat === "vercel-ai" && !responseFailed) {
-    stream = OpenAIStream(new Response(stream));
+    const textDecoder = new TextDecoder();
+    let eventSourceParser: EventSourceParser;
+
+    const parser = parseOpenAIStream();
+    const parseStream = new TransformStream({
+      async start(controller): Promise<void> {
+        eventSourceParser = createParser(
+          (event: ParsedEvent | ReconnectInterval) => {
+            if (
+              ("data" in event &&
+                event.type === "event" &&
+                event.data === "[DONE]") ||
+              // Replicate doesn't send [DONE] but does send a 'done' event
+              // @see https://replicate.com/docs/streaming
+              (event as any).event === "done"
+            ) {
+              return;
+            }
+
+            if ("data" in event) {
+              const parsedMessage = parser(event.data);
+              if (parsedMessage) {
+                controller.enqueue(new TextEncoder().encode(parsedMessage));
+              }
+            }
+          },
+        );
+      },
+      async flush(controller): Promise<void> {
+        controller.terminate();
+      },
+
+      transform(chunk, controller) {
+        eventSourceParser.feed(textDecoder.decode(chunk));
+      },
+    });
+
+    stream = stream.pipeThrough(parseStream);
   }
 
   if (stream) {
@@ -368,6 +450,7 @@ async function fetchModelLoop(
   headers: Record<string, string>,
   bodyData: any | null,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
+  spanLogger: SpanLogging | undefined,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -406,6 +489,7 @@ async function fetchModelLoop(
   let delayMs = 50;
   let totalWaitedTime = 0;
 
+  const isStreaming = !!bodyData?.stream;
   for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
@@ -429,6 +513,17 @@ async function fetchModelLoop(
             `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
           );
       }
+    }
+
+    const spanName = guessSpanName(endpointUrl, bodyData?.model);
+    if (spanLogger && spanName) {
+      console.log("LOGGING NAME AND METRICS", spanName);
+      spanLogger.setName(spanName);
+      spanLogger.log({
+        input: "foo",
+      });
+    } else {
+      console.log("NO SPAN LOGGER", spanLogger, spanName);
     }
 
     loggableInfo = {
@@ -545,6 +640,7 @@ async function fetchModelLoop(
       async flush(controller) {
         const duration = nowMs() - timingStart;
         llmLatency.record(duration, loggableInfo);
+        controller.terminate();
       },
     });
     stream = stream.pipeThrough(timingStream);
@@ -992,4 +1088,27 @@ function tryParseRateLimitReset(headers: Headers): number | null {
     }
   }
   return null;
+}
+
+export function guessSpanName(url: string, model: string | undefined) {
+  const spanName =
+    url === "/chat/completions"
+      ? "Chat Completion"
+      : url === "/completions"
+        ? "Completion"
+        : url === "/embeddings"
+          ? "Embedding"
+          : undefined;
+  if (spanName) {
+    return spanName;
+  }
+
+  const flavor = model && AvailableModels[model]?.flavor;
+  if (flavor === "chat") {
+    return "Chat Completion";
+  } else if (flavor === "completion") {
+    return "Completion";
+  } else {
+    return undefined;
+  }
 }

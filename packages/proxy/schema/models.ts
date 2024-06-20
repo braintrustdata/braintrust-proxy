@@ -7,62 +7,16 @@ export type ModelFormat = (typeof ModelFormats)[number];
 export interface ModelSpec {
   format: ModelFormat;
   flavor: PromptInputType;
-  multimodal?: boolean;
-  input_cost_per_token?: number;
-  output_cost_per_token?: number;
+  multimodal?: boolean | null;
+  input_cost_per_token?: number | null;
+  output_cost_per_token?: number | null;
   displayName: string;
 }
-
+/**
+ * NOTE: Ordering of models determines ordering in dropdown
+ */
 export const AvailableModels: { [name: string]: ModelSpec } = {
-  "gpt-3.5-turbo": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000005,
-    output_cost_per_token: 0.0000015,
-    displayName: "GPT 3.5T",
-  },
-  "gpt-35-turbo": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000005,
-    output_cost_per_token: 0.0000015,
-    displayName: "GPT 3.5T",
-  },
-  "gpt-3.5-turbo-0125": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000005,
-    output_cost_per_token: 0.0000015,
-    displayName: "GPT 3.5T 0125",
-  },
-  "gpt-3.5-turbo-1106": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.000001,
-    output_cost_per_token: 0.000002,
-    displayName: "GPT 3.5T 1106",
-  },
-  "gpt-3.5-turbo-16k": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.000003,
-    output_cost_per_token: 0.000004,
-    displayName: "GPT 3.5T 16k",
-  },
-  "gpt-35-turbo-16k": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.000003,
-    output_cost_per_token: 0.000004,
-    displayName: "GPT 3.5T 16k",
-  },
-  "gpt-4": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.00003,
-    output_cost_per_token: 0.00006,
-    displayName: "GPT 4",
-  },
+  // OPENAI / AZURE MODELS
   "gpt-4o": {
     format: "openai",
     flavor: "chat",
@@ -78,29 +32,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.000005,
     output_cost_per_token: 0.000015,
     displayName: "GPT 4o 2024-05-13",
-  },
-  "gpt-4-32k": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.00006,
-    output_cost_per_token: 0.00012,
-    displayName: "GPT 4 32k",
-  },
-  "gpt-4-vision-preview": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_token: 0.00001,
-    output_cost_per_token: 0.00003,
-    displayName: "GPT 4 Vision-Preview",
-  },
-  "gpt-4-1106-vision-preview": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_token: 0.00001,
-    output_cost_per_token: 0.00003,
-    displayName: "GPT 4 1106 Vision-Preview",
   },
   "gpt-4-turbo": {
     format: "openai",
@@ -139,26 +70,12 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00003,
     displayName: "GPT 4 1106 Preview",
   },
-  "gpt-3.5-turbo-0613": {
+  "gpt-4": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000015,
-    output_cost_per_token: 0.000002,
-    displayName: "GPT 3.5T 0613",
-  },
-  "gpt-3.5-turbo-16k-0613": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.000003,
-    output_cost_per_token: 0.000004,
-    displayName: "GPT 3.5T 16k 0613",
-  },
-  "gpt-3.5-turbo-0301": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000015,
-    output_cost_per_token: 0.000002,
-    displayName: "GPT 3.5T 0301",
+    input_cost_per_token: 0.00003,
+    output_cost_per_token: 0.00006,
+    displayName: "GPT 4",
   },
   "gpt-4-0613": {
     format: "openai",
@@ -167,13 +84,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00006,
     displayName: "GPT 4 0613",
   },
-  "gpt-4-32k-0613": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.00006,
-    output_cost_per_token: 0.00012,
-    displayName: "GPT 4 32k 0613",
-  },
   "gpt-4-0314": {
     format: "openai",
     flavor: "chat",
@@ -181,12 +91,33 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00006,
     displayName: "GPT 4 0314",
   },
-  "gpt-4-32k-0314": {
+  "gpt-3.5-turbo-0125": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.00006,
-    output_cost_per_token: 0.00012,
-    displayName: "GPT 4 32k 0314",
+    input_cost_per_token: 0.0000005,
+    output_cost_per_token: 0.0000015,
+    displayName: "GPT 3.5T 0125",
+  },
+  "gpt-3.5-turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000005,
+    output_cost_per_token: 0.0000015,
+    displayName: "GPT 3.5T",
+  },
+  "gpt-35-turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000005,
+    output_cost_per_token: 0.0000015,
+    displayName: "GPT 3.5T",
+  },
+  "gpt-3.5-turbo-1106": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000001,
+    output_cost_per_token: 0.000002,
+    displayName: "GPT 3.5T 1106",
   },
   "gpt-3.5-turbo-instruct": {
     format: "openai",
@@ -202,6 +133,78 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.000002,
     displayName: "GPT 3.5T Instruct 0914",
   },
+  "gpt-4-32k": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.00006,
+    output_cost_per_token: 0.00012,
+    displayName: "GPT 4 32k",
+  },
+  "gpt-4-32k-0613": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.00006,
+    output_cost_per_token: 0.00012,
+    displayName: "GPT 4 32k 0613",
+  },
+  "gpt-4-32k-0314": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.00006,
+    output_cost_per_token: 0.00012,
+    displayName: "GPT 4 32k 0314",
+  },
+  "gpt-4-vision-preview": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.00001,
+    output_cost_per_token: 0.00003,
+    displayName: "GPT 4 Vision-Preview",
+  },
+  "gpt-4-1106-vision-preview": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.00001,
+    output_cost_per_token: 0.00003,
+    displayName: "GPT 4 1106 Vision-Preview",
+  },
+  "gpt-3.5-turbo-16k": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000004,
+    displayName: "GPT 3.5T 16k",
+  },
+  "gpt-35-turbo-16k": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000004,
+    displayName: "GPT 3.5T 16k",
+  },
+  "gpt-3.5-turbo-16k-0613": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000004,
+    displayName: "GPT 3.5T 16k 0613",
+  },
+  "gpt-3.5-turbo-0613": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000015,
+    output_cost_per_token: 0.000002,
+    displayName: "GPT 3.5T 0613",
+  },
+  "gpt-3.5-turbo-0301": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000015,
+    output_cost_per_token: 0.000002,
+    displayName: "GPT 3.5T 0301",
+  },
   "text-davinci-003": {
     format: "openai",
     flavor: "completion",
@@ -209,41 +212,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.000002,
     displayName: "Text Davinci 003",
   },
-  "claude-2": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_token: 0.000008,
-    output_cost_per_token: 0.000024,
-    displayName: "Claude 2",
-  },
-  "claude-instant-1": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_token: 0.0000008,
-    output_cost_per_token: 0.0000024,
-    displayName: "Claude Instant 1",
-  },
-  "claude-2.0": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_token: 0.000008,
-    output_cost_per_token: 0.000024,
-    displayName: "Claude 2.0",
-  },
-  "claude-2.1": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_token: 0.000008,
-    output_cost_per_token: 0.000024,
-    displayName: "Claude 2.1",
-  },
-  "claude-instant-1.2": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_token: 0.0000008,
-    output_cost_per_token: 0.0000024,
-    displayName: "Claude Instant 1.2",
-  },
+
+  // ANTHROPIC MODELS
   "claude-3-5-sonnet-20240620": {
     format: "anthropic",
     flavor: "chat",
@@ -251,22 +221,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.000003,
     output_cost_per_token: 0.000015,
     displayName: "Claude 3.5 Sonnet",
-  },
-  "claude-3-opus-20240229": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_token: 0.000015,
-    output_cost_per_token: 0.000075,
-    displayName: "Claude 3 Opus",
-  },
-  "claude-3-sonnet-20240229": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_token: 0.000003,
-    output_cost_per_token: 0.000015,
-    displayName: "Claude 3 Sonnet",
   },
   "claude-3-haiku-20240307": {
     format: "anthropic",
@@ -276,6 +230,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00000125,
     displayName: "Claude 3 Haiku",
   },
+  "claude-3-sonnet-20240229": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000015,
+    displayName: "Claude 3 Sonnet",
+  },
+  "claude-3-opus-20240229": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.000015,
+    output_cost_per_token: 0.000075,
+    displayName: "Claude 3 Opus",
+  },
   "anthropic.claude-3-5-sonnet-20240620-v1:0": {
     format: "anthropic",
     flavor: "chat",
@@ -283,14 +253,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.000003,
     output_cost_per_token: 0.000015,
     displayName: "Claude 3.5 Sonnet v1.0",
-  },
-  "anthropic.claude-3-opus-20240229-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_token: 0.000015,
-    output_cost_per_token: 0.000075,
-    displayName: "Claude 3 Opus v1.0",
   },
   "anthropic.claude-3-haiku-20240307-v1:0": {
     format: "anthropic",
@@ -308,6 +270,51 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.000015,
     displayName: "Claude 3 Sonnet v1.0",
   },
+  "anthropic.claude-3-opus-20240229-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.000015,
+    output_cost_per_token: 0.000075,
+    displayName: "Claude 3 Opus v1.0",
+  },
+  "claude-instant-1.2": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_token: 0.0000008,
+    output_cost_per_token: 0.0000024,
+    displayName: "Claude Instant 1.2",
+  },
+  "claude-instant-1": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_token: 0.0000008,
+    output_cost_per_token: 0.0000024,
+    displayName: "Claude Instant 1",
+  },
+  "claude-2.1": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_token: 0.000008,
+    output_cost_per_token: 0.000024,
+    displayName: "Claude 2.1",
+  },
+  "claude-2.0": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_token: 0.000008,
+    output_cost_per_token: 0.000024,
+    displayName: "Claude 2.0",
+  },
+  "claude-2": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_token: 0.000008,
+    output_cost_per_token: 0.000024,
+    displayName: "Claude 2",
+  },
+
+  // REPLICATE MODELS
   "meta/llama-2-70b-chat": {
     format: "openai",
     flavor: "chat",
@@ -315,12 +322,79 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00000275,
     displayName: "LLaMA 2 70b Chat",
   },
-  "llama-2-70b-chat": {
+
+  // OLLAMA MODELS
+  mistral: {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0,
+    output_cost_per_token: 0.0,
+    displayName: "Mistral",
+  },
+  phi: {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0,
+    output_cost_per_token: 0.0,
+    displayName: "Phi",
+  },
+
+  // PERPLEXITY MODELS
+  "pplx-7b-chat": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.00000007,
+    output_cost_per_token: 0.00000028,
+    displayName: "Perplexity 7b Chat",
+  },
+  "pplx-7b-online": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "Perplexity 7b Online",
+  },
+  "pplx-70b-chat": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000007,
+    output_cost_per_token: 0.0000028,
+    displayName: "Perplexity 70b Chat",
+  },
+  "pplx-70b-online": {
     format: "openai",
     flavor: "chat",
     input_cost_per_token: 0.000001,
     output_cost_per_token: 0.000001,
-    displayName: "LLaMA 2 70b Chat",
+    displayName: "Perplexity 70b Online",
+  },
+  "codellama-34b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.00000035,
+    output_cost_per_token: 0.0000014,
+    displayName: "Code Llama 34b Instruct",
+  },
+  "codellama-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000007,
+    output_cost_per_token: 0.0000028,
+    displayName: "Code Llama 70b Instruct",
+  },
+  "llama-3-8b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "LLaMA 3 8b Instruct",
+  },
+  "llama-3-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000001,
+    output_cost_per_token: 0.000001,
+    displayName: "LLaMA 3 70b Instruct",
   },
   "llama-2-13b-chat": {
     format: "openai",
@@ -329,33 +403,12 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.00000056,
     displayName: "LLaMA 2 13b Chat",
   },
-  "llama3-8b-8192": {
+  "llama-2-70b-chat": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000001,
-    output_cost_per_token: 0.0000001,
-    displayName: "LLaMA 3 8b 8192",
-  },
-  "llama3-70b-8192": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.00000064,
-    output_cost_per_token: 0.0000008,
-    displayName: "LLaMA 3 70b 8192",
-  },
-  "llama2-70b-4096": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000007,
-    output_cost_per_token: 0.0000008,
-    displayName: "LLaMA 2 70b 4096",
-  },
-  "codellama-34b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.00000035,
-    output_cost_per_token: 0.0000014,
-    displayName: "LLaMA Code 34b Instruct",
+    input_cost_per_token: 0.000001,
+    output_cost_per_token: 0.000001,
+    displayName: "LLaMA 2 70b Chat",
   },
   "mistral-7b-instruct": {
     format: "openai",
@@ -378,26 +431,63 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.000001,
     displayName: "Mixtral 8x22B Instruct",
   },
-  "mixtral-8x7b-32768": {
+  "openhermes-2-mistral-7b": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.00000027,
-    output_cost_per_token: 0.00000027,
-    displayName: "Mixtral 8x7B 32768",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "OpenHermes 2",
   },
-  "gemma-7b-it": {
+  "openhermes-2.5-mistral-7b": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000001,
-    output_cost_per_token: 0.0000001,
-    displayName: "Gemma 7b IT",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "OpenHermes 2.5",
+  },
+
+  // TOGETHER MODELS
+  "meta-llama/Meta-Llama-3-70B": {
+    format: "openai",
+    flavor: "completion",
+    input_cost_per_token: 0.0000009,
+    output_cost_per_token: 0.0000009,
+    displayName: "LLaMA 3 70b",
+  },
+  "meta-llama/Llama-3-8b-hf": {
+    format: "openai",
+    flavor: "completion",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "LLaMA 3 8b HF",
+  },
+  "meta-llama/Llama-3-8b-chat-hf": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000002,
+    output_cost_per_token: 0.0000002,
+    displayName: "LLaMA 3 8b Chat HF",
+  },
+  "meta-llama/Llama-3-70b-chat-hf": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000009,
+    output_cost_per_token: 0.0000009,
+    displayName: "LLaMA 3 70b Chat HF",
+  },
+  "meta-llama/Llama-2-70b-chat-hf": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000009,
+    output_cost_per_token: 0.0000009,
+    displayName: "LLaMA 2 70b Chat HF",
   },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     format: "openai",
     flavor: "chat",
     input_cost_per_token: 0.0000002,
     output_cost_per_token: 0.0000002,
-    displayName: "Mistral 7b Intruct v0.1",
+    displayName: "Mistral 7b Instruct v0.1",
   },
   "mistralai/mixtral-8x7b-32kseqlen": {
     format: "openai",
@@ -434,41 +524,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.0000012,
     displayName: "Mixtral 8x22B Instruct",
   },
-  "meta-llama/Llama-2-70b-chat-hf": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000009,
-    output_cost_per_token: 0.0000009,
-    displayName: "LLaMA 2 70b Chat HF",
-  },
-  "meta-llama/Meta-Llama-3-70B": {
-    format: "openai",
-    flavor: "completion",
-    input_cost_per_token: 0.0000009,
-    output_cost_per_token: 0.0000009,
-    displayName: "LLaMA 3 70b",
-  },
-  "meta-llama/Llama-3-70b-chat-hf": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000009,
-    output_cost_per_token: 0.0000009,
-    displayName: "LLaMA 3 70b Chat HF",
-  },
-  "meta-llama/Llama-3-8b-hf": {
-    format: "openai",
-    flavor: "completion",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "LLaMA 3 8b HF",
-  },
-  "meta-llama/Llama-3-8b-chat-hf": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "LLaMA 3 8b Chat HF",
-  },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
     format: "openai",
     flavor: "chat",
@@ -483,34 +538,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.0000008,
     displayName: "Deepseek Coder 33b Instruct",
   },
-  "llama-3-8b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "LLaMA 3 8b Instruct",
-  },
-  "llama-3-70b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.000001,
-    output_cost_per_token: 0.000001,
-    displayName: "LLaMA 3 70b Instruct",
-  },
-  "codellama-70b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0000007,
-    output_cost_per_token: 0.0000028,
-    displayName: "LLaMA Code 70b Instruct",
-  },
-  mistral: {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0,
-    output_cost_per_token: 0.0,
-    displayName: "Mistral",
-  },
+
+  // MISTRAL MODELS
   "mistral-tiny": {
     format: "openai",
     flavor: "chat",
@@ -532,54 +561,51 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.0000081,
     displayName: "Mistral Medium",
   },
-  "openhermes-2-mistral-7b": {
+
+  // GROQ MODELS
+  "gemma-7b-it": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "OpenHermes 2",
+    input_cost_per_token: 0.0000001,
+    output_cost_per_token: 0.0000001,
+    displayName: "Gemma 7b IT",
   },
-  "openhermes-2.5-mistral-7b": {
+  "llama3-8b-8192": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "OpenHermes 2.5",
+    input_cost_per_token: 0.0000001,
+    output_cost_per_token: 0.0000001,
+    displayName: "LLaMA 3 8b 8192",
   },
-  "pplx-7b-chat": {
+  "llama3-70b-8192": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.00000007,
-    output_cost_per_token: 0.00000028,
-    displayName: "Perplexity 7b Chat",
+    input_cost_per_token: 0.00000064,
+    output_cost_per_token: 0.0000008,
+    displayName: "LLaMA 3 70b 8192",
   },
-  "pplx-70b-chat": {
+  "llama2-70b-4096": {
     format: "openai",
     flavor: "chat",
     input_cost_per_token: 0.0000007,
-    output_cost_per_token: 0.0000028,
-    displayName: "Perplexity 70b Chat",
+    output_cost_per_token: 0.0000008,
+    displayName: "LLaMA 2 70b 4096",
   },
-  "pplx-7b-online": {
+  "mixtral-8x7b-32768": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000002,
-    output_cost_per_token: 0.0000002,
-    displayName: "Perplexity 7b Online",
+    input_cost_per_token: 0.00000027,
+    output_cost_per_token: 0.00000027,
+    displayName: "Mixtral 8x7B 32768",
   },
-  "pplx-70b-online": {
-    format: "openai",
+
+  // GOOGLE MODELS
+  "gemini-1.5-pro-latest": {
+    format: "google",
     flavor: "chat",
-    input_cost_per_token: 0.000001,
-    output_cost_per_token: 0.000001,
-    displayName: "Perplexity 70b Online",
-  },
-  phi: {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_token: 0.0,
-    output_cost_per_token: 0.0,
-    displayName: "Phi",
+    input_cost_per_token: 0.000007,
+    output_cost_per_token: 0.000021,
+    displayName: "Gemini 1.5 Pro Latest",
   },
   "gemini-1.5-flash-latest": {
     format: "google",
@@ -587,13 +613,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.0000007,
     output_cost_per_token: 0.0000021,
     displayName: "Gemini 1.5 Flash Latest",
-  },
-  "gemini-1.5-pro-latest": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_token: 0.000007,
-    output_cost_per_token: 0.000021,
-    displayName: "Gemini 1.5 Pro Latest",
   },
   "gemini-1.0-pro": {
     format: "google",

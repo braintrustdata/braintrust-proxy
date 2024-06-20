@@ -12,9 +12,7 @@ export interface ModelSpec {
   output_cost_per_token?: number | null;
   displayName: string;
 }
-/**
- * NOTE: Ordering of models determines ordering in dropdown
- */
+
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
   "gpt-4o": {

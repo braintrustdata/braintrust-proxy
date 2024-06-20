@@ -4,7 +4,6 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
-import { OpenAIStream } from "ai";
 import {
   AvailableModels,
   MessageTypeToMessageType,
@@ -35,12 +34,19 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import { Message } from "@braintrust/core/typespecs";
-import { ChatCompletionCreateParams } from "openai/resources";
+import {
+  ChatCompletion,
+  ChatCompletionChunk,
+  ChatCompletionCreateParams,
+  Completion,
+  CompletionCreateParamsNonStreaming,
+  CreateEmbeddingResponse,
+  Embedding,
+} from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { parseOpenAIStream } from "./providers/openai";
-import { createEventStreamTransformer as aiCreateEventStreamTransformer } from "ai";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -166,7 +172,11 @@ export async function proxyV1({
     url === "/completions";
 
   let bodyData = null;
-  if (url === "auto" || url === "/chat/completions" || url === "/completions") {
+  if (
+    url === "/auto" ||
+    url === "/chat/completions" ||
+    url === "/completions"
+  ) {
     try {
       bodyData = JSON.parse(body);
     } catch (e) {
@@ -211,6 +221,10 @@ export async function proxyV1({
   // The data key is used as the encryption key, so unless you have the actual incoming data, you can't decrypt the cache.
   const encryptionKey = await digest(`${dataKey}:${authToken}`);
 
+  let startTime = getCurrentUnixTimestamp();
+  let spanType: SpanType | undefined = undefined;
+  const isStreaming = !!bodyData?.stream;
+
   let stream: ReadableStream<Uint8Array> | null = null;
   if (useCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
@@ -224,12 +238,11 @@ export async function proxyV1({
       }
       setHeader("x-cached", "true");
 
-      const nameGuess = guessSpanName(url, bodyData?.model);
-      if (spanLogger && nameGuess) {
-        console.log("LOGGING NAME AND METRICS");
-        spanLogger.setName(nameGuess);
+      spanType = guessSpanType(url, bodyData?.model);
+      if (spanLogger && spanType) {
+        spanLogger.setName(spanTypeToName(spanType));
+        logSpanInputs(bodyData, spanLogger, spanType);
         spanLogger.log({
-          input: "foo",
           metrics: {
             cached: 1,
           },
@@ -267,7 +280,7 @@ export async function proxyV1({
       );
     }
 
-    if (streamFormat === "vercel-ai" && !bodyData?.stream) {
+    if (streamFormat === "vercel-ai" && isStreaming) {
       throw new Error(
         "Vercel AI format requires the stream parameter to be set to true",
       );
@@ -294,6 +307,9 @@ export async function proxyV1({
           }
         },
         spanLogger,
+        (st) => {
+          spanType = st;
+        },
       );
     stream = proxyStream;
 
@@ -356,19 +372,142 @@ export async function proxyV1({
     }
   }
 
-  if (stream) {
+  if (spanLogger && stream) {
+    let first = true;
     const allChunks: Uint8Array[] = [];
-    console.log("CREATING LOGGING STREAM");
+
+    // These parameters are for the streaming case
+    let role: string | undefined = undefined;
+    let content: string | undefined = undefined;
+    let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
+      undefined;
+    let finish_reason: string | undefined = undefined;
+    const eventSourceParser: EventSourceParser | undefined = !isStreaming
+      ? undefined
+      : createParser((event: ParsedEvent | ReconnectInterval) => {
+          if (
+            ("data" in event &&
+              event.type === "event" &&
+              event.data === "[DONE]") ||
+            // Replicate doesn't send [DONE] but does send a 'done' event
+            // @see https://replicate.com/docs/streaming
+            (event as any).event === "done"
+          ) {
+            return;
+          }
+
+          if ("data" in event) {
+            const result = JSON.parse(event.data) as ChatCompletionChunk;
+            if (result) {
+              const choice = result.choices?.[0];
+              const delta = choice?.delta;
+              if (!choice || !delta) {
+                return;
+              }
+
+              if (!role && delta.role) {
+                role = delta.role;
+              }
+
+              if (choice.finish_reason) {
+                finish_reason = choice.finish_reason;
+              }
+
+              if (delta.content) {
+                content = (content || "") + delta.content;
+              }
+
+              if (delta.tool_calls) {
+                if (!tool_calls) {
+                  tool_calls = [
+                    {
+                      index: 0,
+                      id: delta.tool_calls[0].id,
+                      type: delta.tool_calls[0].type,
+                      function: delta.tool_calls[0].function,
+                    },
+                  ];
+                } else if (tool_calls[0].function?.arguments) {
+                  tool_calls[0].function.arguments +=
+                    delta.tool_calls[0].function?.arguments ?? "";
+                }
+              }
+            }
+          }
+        });
+
     const loggingStream = new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, controller) {
-        console.log("TRANSFORMING?");
-        allChunks.push(chunk);
+        if (
+          first &&
+          spanType &&
+          (["completion", "chat"] as SpanType[]).includes(spanType)
+        ) {
+          first = false;
+          spanLogger.log({
+            metrics: {
+              time_to_first_token: getCurrentUnixTimestamp() - startTime,
+            },
+          });
+        }
+        if (isStreaming) {
+          eventSourceParser?.feed(new TextDecoder().decode(chunk));
+        } else {
+          allChunks.push(chunk);
+        }
         controller.enqueue(chunk);
       },
       async flush(controller) {
-        console.log("ENDING SPAN");
-        // XXX FIX
-        // spanLogger.end();
+        if (isStreaming) {
+          spanLogger.log({
+            output: [
+              {
+                index: 0,
+                message: {
+                  role,
+                  content,
+                  tool_calls,
+                },
+                logprobs: null,
+                finish_reason,
+              },
+            ],
+          });
+        } else {
+          const dataRaw = JSON.parse(
+            new TextDecoder().decode(flattenChunksArray(allChunks)),
+          );
+
+          switch (spanType) {
+            case "chat":
+            case "completion": {
+              const data = dataRaw as ChatCompletion;
+              spanLogger.log({
+                output: data.choices,
+                metrics: {
+                  tokens: data.usage?.total_tokens,
+                  prompt_tokens: data.usage?.prompt_tokens,
+                  completion_tokens: data.usage?.completion_tokens,
+                },
+              });
+              break;
+            }
+            case "embedding":
+              {
+                const data = dataRaw as CreateEmbeddingResponse;
+                spanLogger.log({
+                  output: { embedding_length: data.data[0].embedding.length },
+                  metrics: {
+                    tokens: data.usage?.total_tokens,
+                    prompt_tokens: data.usage?.prompt_tokens,
+                  },
+                });
+              }
+              break;
+          }
+        }
+
+        spanLogger.end();
         controller.terminate();
       },
     });
@@ -451,6 +590,7 @@ async function fetchModelLoop(
   bodyData: any | null,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogging | undefined,
+  setSpanType: (spanType: SpanType) => void,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -489,7 +629,6 @@ async function fetchModelLoop(
   let delayMs = 50;
   let totalWaitedTime = 0;
 
-  const isStreaming = !!bodyData?.stream;
   for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
@@ -515,15 +654,11 @@ async function fetchModelLoop(
       }
     }
 
-    const spanName = guessSpanName(endpointUrl, bodyData?.model);
-    if (spanLogger && spanName) {
-      console.log("LOGGING NAME AND METRICS", spanName);
-      spanLogger.setName(spanName);
-      spanLogger.log({
-        input: "foo",
-      });
-    } else {
-      console.log("NO SPAN LOGGER", spanLogger, spanName);
+    const spanType = guessSpanType(endpointUrl, bodyData?.model);
+    if (spanLogger && spanType) {
+      setSpanType(spanType);
+      spanLogger.setName(spanTypeToName(spanType));
+      logSpanInputs(bodyData, spanLogger, spanType);
     }
 
     loggableInfo = {
@@ -1090,14 +1225,30 @@ function tryParseRateLimitReset(headers: Headers): number | null {
   return null;
 }
 
-export function guessSpanName(url: string, model: string | undefined) {
+export type SpanType = "chat" | "completion" | "embedding";
+
+function spanTypeToName(spanType: SpanType): string {
+  switch (spanType) {
+    case "chat":
+      return "Chat Completion";
+    case "completion":
+      return "Completion";
+    case "embedding":
+      return "Embedding";
+  }
+}
+
+export function guessSpanType(
+  url: string,
+  model: string | undefined,
+): SpanType | undefined {
   const spanName =
     url === "/chat/completions"
-      ? "Chat Completion"
+      ? "chat"
       : url === "/completions"
-        ? "Completion"
+        ? "completion"
         : url === "/embeddings"
-          ? "Embedding"
+          ? "embedding"
           : undefined;
   if (spanName) {
     return spanName;
@@ -1105,10 +1256,48 @@ export function guessSpanName(url: string, model: string | undefined) {
 
   const flavor = model && AvailableModels[model]?.flavor;
   if (flavor === "chat") {
-    return "Chat Completion";
+    return "chat";
   } else if (flavor === "completion") {
-    return "Completion";
+    return "completion";
   } else {
     return undefined;
   }
+}
+
+function logSpanInputs(
+  bodyData: any,
+  spanLogger: SpanLogging,
+  maybeSpanType: SpanType | undefined,
+) {
+  const spanType = maybeSpanType || "chat";
+  switch (spanType) {
+    case "chat": {
+      const { messages, ...rest } = bodyData;
+      spanLogger.log({
+        input: messages,
+        metadata: rest,
+      });
+      break;
+    }
+    case "completion": {
+      const { prompt, ...rest } = bodyData;
+      spanLogger.log({
+        input: prompt,
+        metadata: rest,
+      });
+      break;
+    }
+    case "embedding": {
+      const { input, ...rest } = bodyData;
+      spanLogger.log({
+        input: bodyData,
+        metadata: rest,
+      });
+      break;
+    }
+  }
+}
+
+export function getCurrentUnixTimestamp(): number {
+  return Date.now() / 1000;
 }

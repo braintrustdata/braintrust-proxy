@@ -244,6 +244,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.0000024,
     displayName: "Claude Instant 1.2",
   },
+  "claude-3-5-sonnet-20240620": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000015,
+    displayName: "Claude 3.5 Sonnet",
+  },
   "claude-3-opus-20240229": {
     format: "anthropic",
     flavor: "chat",
@@ -267,6 +275,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.00000025,
     output_cost_per_token: 0.00000125,
     displayName: "Claude 3 Haiku",
+  },
+  "anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000015,
+    displayName: "Claude 3.5 Sonnet v1.0",
   },
   "anthropic.claude-3-opus-20240229-v1:0": {
     format: "anthropic",

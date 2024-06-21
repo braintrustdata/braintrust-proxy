@@ -19,6 +19,10 @@ function apiCacheKey(key: string) {
   return `http://apikey.cache/${encodeURIComponent(key)}.jpg`;
 }
 
+export function braintrustAppUrl(env: Env) {
+  return new URL(env.BRAINTRUST_APP_URL || "https://www.braintrust.dev");
+}
+
 export function originWhitelist(env: Env) {
   return env.WHITELISTED_ORIGINS && env.WHITELISTED_ORIGINS.length > 0
     ? env.WHITELISTED_ORIGINS.split(",")
@@ -113,8 +117,7 @@ export async function handleProxyV1(
         cacheSetLatency.record(end - start);
       },
     },
-    braintrustApiUrl:
-      env.BRAINTRUST_APP_URL || "https://www.braintrustdata.com",
+    braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider,
     whitelist,
   })(request, ctx);

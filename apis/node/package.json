@@ -30,7 +30,7 @@
     "esbuild": "^0.19.9",
     "eventsource-parser": "^1.1.1",
     "express": "^4.19.2",
-    "openai": "^4.23.0",
+    "openai": "^4.42.0",
     "redis": "^4.6.8"
   },
   "devDependencies": {

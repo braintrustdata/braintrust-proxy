@@ -4,7 +4,6 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
-import { OpenAIStream } from "ai";
 import {
   AvailableModels,
   MessageTypeToMessageType,
@@ -35,9 +34,16 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import { Message } from "@braintrust/core/typespecs";
-import { ChatCompletionCreateParams } from "openai/resources";
+import {
+  ChatCompletion,
+  ChatCompletionChunk,
+  ChatCompletionCreateParams,
+  CreateEmbeddingResponse,
+} from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
+import { ExperimentLogPartialArgs } from "@braintrust/core";
+import { parseOpenAIStream } from "./providers/openai";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -51,11 +57,11 @@ type CachedData = {
     }
 );
 
-const CACHE_HEADER = "x-bt-use-cache";
-const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
-const ORG_NAME_HEADER = "x-bt-org-name";
-const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
-const FORMAT_HEADER = "x-bt-stream-fmt";
+export const CACHE_HEADER = "x-bt-use-cache";
+export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
+export const ORG_NAME_HEADER = "x-bt-org-name";
+export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
+export const FORMAT_HEADER = "x-bt-stream-fmt";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
@@ -63,6 +69,12 @@ const CACHE_MODES = ["auto", "always", "never"] as const;
 export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
   excludeOrgName?: boolean;
+}
+
+export interface SpanLogger {
+  setName: (name: string) => void;
+  log: (args: ExperimentLogPartialArgs) => void;
+  end: () => void;
 }
 
 // This is an isomorphic implementation of proxyV1, which is used by both edge functions
@@ -81,6 +93,8 @@ export async function proxyV1({
   digest,
   meterProvider = NOOP_METER_PROVIDER,
   cacheKeyOptions = {},
+  decompressFetch = false,
+  spanLogger,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -100,6 +114,8 @@ export async function proxyV1({
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
+  decompressFetch?: boolean;
+  spanLogger?: SpanLogger;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -153,7 +169,11 @@ export async function proxyV1({
     url === "/completions";
 
   let bodyData = null;
-  if (url === "auto" || url === "/chat/completions" || url === "/completions") {
+  if (
+    url === "/auto" ||
+    url === "/chat/completions" ||
+    url === "/completions"
+  ) {
     try {
       bodyData = JSON.parse(body);
     } catch (e) {
@@ -198,6 +218,10 @@ export async function proxyV1({
   // The data key is used as the encryption key, so unless you have the actual incoming data, you can't decrypt the cache.
   const encryptionKey = await digest(`${dataKey}:${authToken}`);
 
+  let startTime = getCurrentUnixTimestamp();
+  let spanType: SpanType | undefined = undefined;
+  const isStreaming = !!bodyData?.stream;
+
   let stream: ReadableStream<Uint8Array> | null = null;
   if (useCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
@@ -210,6 +234,17 @@ export async function proxyV1({
         setHeader(name, value);
       }
       setHeader("x-cached", "true");
+
+      spanType = guessSpanType(url, bodyData?.model);
+      if (spanLogger && spanType) {
+        spanLogger.setName(spanTypeToName(spanType));
+        logSpanInputs(bodyData, spanLogger, spanType);
+        spanLogger.log({
+          metrics: {
+            cached: 1,
+          },
+        });
+      }
 
       stream = new ReadableStream<Uint8Array>({
         start(controller) {
@@ -242,7 +277,7 @@ export async function proxyV1({
       );
     }
 
-    if (streamFormat === "vercel-ai" && !bodyData?.stream) {
+    if (streamFormat === "vercel-ai" && !isStreaming) {
       throw new Error(
         "Vercel AI format requires the stream parameter to be set to true",
       );
@@ -267,6 +302,10 @@ export async function proxyV1({
           } else {
             return secrets;
           }
+        },
+        spanLogger,
+        (st) => {
+          spanType = st;
         },
       );
     stream = proxyStream;
@@ -294,7 +333,8 @@ export async function proxyV1({
         lowerName === "access-control-expose-headers" ||
         lowerName === "access-control-max-age" ||
         lowerName === "access-control-allow-methods" ||
-        lowerName === "access-control-allow-headers"
+        lowerName === "access-control-allow-headers" ||
+        (decompressFetch && lowerName === "content-encoding")
       ) {
         return;
       }
@@ -321,6 +361,7 @@ export async function proxyV1({
             cacheKey,
             JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
           );
+          controller.terminate();
         },
       });
 
@@ -328,8 +369,199 @@ export async function proxyV1({
     }
   }
 
+  if (spanLogger && stream) {
+    let first = true;
+    const allChunks: Uint8Array[] = [];
+
+    // These parameters are for the streaming case
+    let role: string | undefined = undefined;
+    let content: string | undefined = undefined;
+    let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
+      undefined;
+    let finish_reason: string | undefined = undefined;
+    const eventSourceParser: EventSourceParser | undefined = !isStreaming
+      ? undefined
+      : createParser((event: ParsedEvent | ReconnectInterval) => {
+          if (
+            ("data" in event &&
+              event.type === "event" &&
+              event.data === "[DONE]") ||
+            // Replicate doesn't send [DONE] but does send a 'done' event
+            // @see https://replicate.com/docs/streaming
+            (event as any).event === "done"
+          ) {
+            return;
+          }
+
+          if ("data" in event) {
+            const result = JSON.parse(event.data) as ChatCompletionChunk;
+            if (result) {
+              if (result.usage) {
+                spanLogger.log({
+                  metrics: {
+                    tokens: result.usage.total_tokens,
+                    prompt_tokens: result.usage.prompt_tokens,
+                    completion_tokens: result.usage.completion_tokens,
+                  },
+                });
+              }
+
+              const choice = result.choices?.[0];
+              const delta = choice?.delta;
+
+              if (!choice || !delta) {
+                return;
+              }
+
+              if (!role && delta.role) {
+                role = delta.role;
+              }
+
+              if (choice.finish_reason) {
+                finish_reason = choice.finish_reason;
+              }
+
+              if (delta.content) {
+                content = (content || "") + delta.content;
+              }
+
+              if (delta.tool_calls) {
+                if (!tool_calls) {
+                  tool_calls = [
+                    {
+                      index: 0,
+                      id: delta.tool_calls[0].id,
+                      type: delta.tool_calls[0].type,
+                      function: delta.tool_calls[0].function,
+                    },
+                  ];
+                } else if (tool_calls[0].function?.arguments) {
+                  tool_calls[0].function.arguments +=
+                    delta.tool_calls[0].function?.arguments ?? "";
+                }
+              }
+            }
+          }
+        });
+
+    const loggingStream = new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        if (
+          first &&
+          spanType &&
+          (["completion", "chat"] as SpanType[]).includes(spanType)
+        ) {
+          first = false;
+          spanLogger.log({
+            metrics: {
+              time_to_first_token: getCurrentUnixTimestamp() - startTime,
+            },
+          });
+        }
+        if (isStreaming) {
+          eventSourceParser?.feed(new TextDecoder().decode(chunk));
+        } else {
+          allChunks.push(chunk);
+        }
+        controller.enqueue(chunk);
+      },
+      async flush(controller) {
+        if (isStreaming) {
+          spanLogger.log({
+            output: [
+              {
+                index: 0,
+                message: {
+                  role,
+                  content,
+                  tool_calls,
+                },
+                logprobs: null,
+                finish_reason,
+              },
+            ],
+          });
+        } else {
+          const dataRaw = JSON.parse(
+            new TextDecoder().decode(flattenChunksArray(allChunks)),
+          );
+
+          switch (spanType) {
+            case "chat":
+            case "completion": {
+              const data = dataRaw as ChatCompletion;
+              spanLogger.log({
+                output: data.choices,
+                metrics: {
+                  tokens: data.usage?.total_tokens,
+                  prompt_tokens: data.usage?.prompt_tokens,
+                  completion_tokens: data.usage?.completion_tokens,
+                },
+              });
+              break;
+            }
+            case "embedding":
+              {
+                const data = dataRaw as CreateEmbeddingResponse;
+                spanLogger.log({
+                  output: { embedding_length: data.data[0].embedding.length },
+                  metrics: {
+                    tokens: data.usage?.total_tokens,
+                    prompt_tokens: data.usage?.prompt_tokens,
+                  },
+                });
+              }
+              break;
+          }
+        }
+
+        spanLogger.end();
+        controller.terminate();
+      },
+    });
+
+    stream = stream.pipeThrough(loggingStream);
+  }
+
   if (stream && streamFormat === "vercel-ai" && !responseFailed) {
-    stream = OpenAIStream(new Response(stream));
+    const textDecoder = new TextDecoder();
+    let eventSourceParser: EventSourceParser;
+
+    const parser = parseOpenAIStream();
+    const parseStream = new TransformStream({
+      async start(controller): Promise<void> {
+        eventSourceParser = createParser(
+          (event: ParsedEvent | ReconnectInterval) => {
+            if (
+              ("data" in event &&
+                event.type === "event" &&
+                event.data === "[DONE]") ||
+              // Replicate doesn't send [DONE] but does send a 'done' event
+              // @see https://replicate.com/docs/streaming
+              (event as any).event === "done"
+            ) {
+              return;
+            }
+
+            if ("data" in event) {
+              const parsedMessage = parser(event.data);
+              if (parsedMessage) {
+                controller.enqueue(new TextEncoder().encode(parsedMessage));
+              }
+            }
+          },
+        );
+      },
+      async flush(controller): Promise<void> {
+        controller.terminate();
+      },
+
+      transform(chunk, controller) {
+        eventSourceParser.feed(textDecoder.decode(chunk));
+      },
+    });
+
+    stream = stream.pipeThrough(parseStream);
   }
 
   if (stream) {
@@ -365,6 +597,8 @@ async function fetchModelLoop(
   headers: Record<string, string>,
   bodyData: any | null,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
+  spanLogger: SpanLogger | undefined,
+  setSpanType: (spanType: SpanType) => void,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -426,6 +660,13 @@ async function fetchModelLoop(
             `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
           );
       }
+    }
+
+    const spanType = guessSpanType(endpointUrl, bodyData?.model);
+    if (spanLogger && spanType) {
+      setSpanType(spanType);
+      spanLogger.setName(spanTypeToName(spanType));
+      logSpanInputs(bodyData, spanLogger, spanType);
     }
 
     loggableInfo = {
@@ -542,6 +783,7 @@ async function fetchModelLoop(
       async flush(controller) {
         const duration = nowMs() - timingStart;
         llmLatency.record(duration, loggableInfo);
+        controller.terminate();
       },
     });
     stream = stream.pipeThrough(timingStream);
@@ -989,4 +1231,81 @@ function tryParseRateLimitReset(headers: Headers): number | null {
     }
   }
   return null;
+}
+
+export type SpanType = "chat" | "completion" | "embedding";
+
+function spanTypeToName(spanType: SpanType): string {
+  switch (spanType) {
+    case "chat":
+      return "Chat Completion";
+    case "completion":
+      return "Completion";
+    case "embedding":
+      return "Embedding";
+  }
+}
+
+export function guessSpanType(
+  url: string,
+  model: string | undefined,
+): SpanType | undefined {
+  const spanName =
+    url === "/chat/completions"
+      ? "chat"
+      : url === "/completions"
+        ? "completion"
+        : url === "/embeddings"
+          ? "embedding"
+          : undefined;
+  if (spanName) {
+    return spanName;
+  }
+
+  const flavor = model && AvailableModels[model]?.flavor;
+  if (flavor === "chat") {
+    return "chat";
+  } else if (flavor === "completion") {
+    return "completion";
+  } else {
+    return undefined;
+  }
+}
+
+function logSpanInputs(
+  bodyData: any,
+  spanLogger: SpanLogger,
+  maybeSpanType: SpanType | undefined,
+) {
+  const spanType = maybeSpanType || "chat";
+  switch (spanType) {
+    case "chat": {
+      const { messages, ...rest } = bodyData;
+      spanLogger.log({
+        input: messages,
+        metadata: rest,
+      });
+      break;
+    }
+    case "completion": {
+      const { prompt, ...rest } = bodyData;
+      spanLogger.log({
+        input: prompt,
+        metadata: rest,
+      });
+      break;
+    }
+    case "embedding": {
+      const { input, ...rest } = bodyData;
+      spanLogger.log({
+        input: bodyData,
+        metadata: rest,
+      });
+      break;
+    }
+  }
+}
+
+export function getCurrentUnixTimestamp(): number {
+  return Date.now() / 1000;
 }

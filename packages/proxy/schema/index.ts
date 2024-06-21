@@ -188,6 +188,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-3-opus-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],
+  "anthropic.claude-3-5-sonnet-20240620-v1:0": ["bedrock"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

@@ -71,7 +71,7 @@ export interface CacheKeyOptions {
   excludeOrgName?: boolean;
 }
 
-export interface SpanLogging {
+export interface SpanLogger {
   setName: (name: string) => void;
   log: (args: ExperimentLogPartialArgs) => void;
   end: () => void;
@@ -115,7 +115,7 @@ export async function proxyV1({
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
-  spanLogger?: SpanLogging;
+  spanLogger?: SpanLogger;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -597,7 +597,7 @@ async function fetchModelLoop(
   headers: Record<string, string>,
   bodyData: any | null,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
-  spanLogger: SpanLogging | undefined,
+  spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
@@ -1274,7 +1274,7 @@ export function guessSpanType(
 
 function logSpanInputs(
   bodyData: any,
-  spanLogger: SpanLogging,
+  spanLogger: SpanLogger,
   maybeSpanType: SpanType | undefined,
 ) {
   const spanType = maybeSpanType || "chat";

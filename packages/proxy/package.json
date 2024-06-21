@@ -40,7 +40,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://www.braintrustdata.com/docs/guides/proxy",
+  "homepage": "https://www.braintrust.dev/docs/guides/proxy",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/braintrustdata/braintrust-proxy.git"

@@ -234,6 +234,7 @@ export async function proxyV1({
         setHeader(name, value);
       }
       setHeader("x-cached", "true");
+      setHeader("x-bt-cached", "true");
 
       spanType = guessSpanType(url, bodyData?.model);
       if (spanLogger && spanType) {
@@ -344,7 +345,8 @@ export async function proxyV1({
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
       setHeader(name, value);
     }
-    setHeader("x-cached", "false");
+    setHeader("x-cached", "false"); // We're moving to x-bt-cached
+    setHeader("x-bt-cached", "false");
 
     if (stream && proxyResponse.ok && useCache) {
       const allChunks: Uint8Array[] = [];

@@ -64,7 +64,7 @@ export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 
 export const LEGACY_CACHED_HEADER = "x-cached";
-export const CACHED_HEADER = "x-bt-proxy-cached";
+export const CACHED_HEADER = "x-bt-cached";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 

@@ -129,7 +129,7 @@ export const modelProviderHasTools: {
   [name in ModelFormat]: boolean;
 } = {
   openai: true,
-  anthropic: false,
+  anthropic: true,
   google: false,
   js: false,
 };

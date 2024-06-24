@@ -63,6 +63,9 @@ export const ORG_NAME_HEADER = "x-bt-org-name";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 
+export const LEGACY_CACHED_HEADER = "x-cached";
+export const CACHED_HEADER = "x-bt-cached";
+
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
 // Options to control how the cache key is generated.
@@ -233,8 +236,8 @@ export async function proxyV1({
       for (const [name, value] of Object.entries(cachedData.headers)) {
         setHeader(name, value);
       }
-      setHeader("x-cached", "true");
-      setHeader("x-bt-cached", "true");
+      setHeader(LEGACY_CACHED_HEADER, "true");
+      setHeader(CACHED_HEADER, "HIT");
 
       spanType = guessSpanType(url, bodyData?.model);
       if (spanLogger && spanType) {
@@ -345,8 +348,8 @@ export async function proxyV1({
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
       setHeader(name, value);
     }
-    setHeader("x-cached", "false"); // We're moving to x-bt-cached
-    setHeader("x-bt-cached", "false");
+    setHeader(LEGACY_CACHED_HEADER, "false"); // We're moving to x-bt-cached
+    setHeader(CACHED_HEADER, "MISS");
 
     if (stream && proxyResponse.ok && useCache) {
       const allChunks: Uint8Array[] = [];

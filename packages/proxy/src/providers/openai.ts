@@ -228,7 +228,7 @@ type ExtractType<T> = T extends AsyncIterable<infer U> ? U : never;
 type OpenAIStreamReturnTypes =
   ExtractType<AsyncIterableOpenAIStreamReturnTypes>;
 
-function isChatCompletionChunk(
+export function isChatCompletionChunk(
   data: OpenAIStreamReturnTypes,
 ): data is ChatCompletionChunk {
   return (
@@ -239,7 +239,9 @@ function isChatCompletionChunk(
   );
 }
 
-function isCompletion(data: OpenAIStreamReturnTypes): data is Completion {
+export function isCompletion(
+  data: OpenAIStreamReturnTypes,
+): data is Completion {
   return (
     "choices" in data &&
     data.choices &&

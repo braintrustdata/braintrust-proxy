@@ -10,6 +10,16 @@ function base64ToArrayBuffer(base64: string) {
   return bytes.buffer;
 }
 
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  var binary = "";
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 // https://github.com/mdn/dom-examples/blob/main/web-crypto/encrypt-decrypt/aes-gcm.js
 export async function decryptMessage(
   keyString: string,
@@ -65,7 +75,7 @@ export async function encryptMessage(
   );
 
   return {
-    iv: btoa(String.fromCharCode(...new Uint8Array(iv))),
-    data: btoa(String.fromCharCode(...new Uint8Array(decoded))),
+    iv: arrayBufferToBase64(new Uint8Array(iv)),
+    data: arrayBufferToBase64(decoded),
   };
 }

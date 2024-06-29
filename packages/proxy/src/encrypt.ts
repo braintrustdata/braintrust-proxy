@@ -75,7 +75,7 @@ export async function encryptMessage(
   );
 
   return {
-    iv: arrayBufferToBase64(new Uint8Array(iv.buffer)),
+    iv: arrayBufferToBase64(new Uint8Array(iv)),
     data: arrayBufferToBase64(decoded),
   };
 }

@@ -44,25 +44,6 @@ export const MessageTypeToMessageType: {
   model: "assistant",
 };
 
-export const defaultModelParams: { [name in ModelFormat]: ModelParams } = {
-  openai: {
-    temperature: 0,
-    max_tokens: 1024,
-    use_cache: true,
-  },
-  anthropic: {
-    temperature: 0,
-    max_tokens: 1024,
-    use_cache: true,
-  },
-  google: {
-    temperature: 0,
-    maxOutputTokens: 1024,
-    use_cache: true,
-  },
-  js: {},
-};
-
 export const modelParamToModelParam: {
   [name: string]: keyof AnyModelParam | null;
 } = {
@@ -100,8 +81,8 @@ export const defaultModelParamSettings: {
   [name in ModelFormat]: ModelParams;
 } = {
   openai: {
-    temperature: 0,
-    max_tokens: 1024,
+    temperature: undefined,
+    max_tokens: undefined,
     top_p: 1,
     frequency_penalty: 0,
     presence_penalty: 0,
@@ -109,15 +90,15 @@ export const defaultModelParamSettings: {
     use_cache: true,
   },
   anthropic: {
-    temperature: 0,
-    max_tokens: 1024,
+    temperature: undefined,
+    max_tokens: undefined,
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
   },
   google: {
-    temperature: 0,
-    maxOutputTokens: 1024,
+    temperature: undefined,
+    maxOutputTokens: undefined,
     topP: 0.7,
     topK: 5,
     use_cache: true,

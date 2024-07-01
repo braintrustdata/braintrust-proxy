@@ -183,8 +183,8 @@ importers:
         specifier: ^3.561.0
         version: 3.561.0
       '@braintrust/core':
-        specifier: ^0.0.26
-        version: 0.0.26
+        specifier: ^0.0.43
+        version: 0.0.43
       '@google/generative-ai':
         specifier: ^0.11.4
         version: 0.11.4
@@ -780,10 +780,11 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@braintrust/core@0.0.26:
-    resolution: {integrity: sha512-Xtqr9MG1APkA5rGpryER90kAJrBj6OdaSoDY4G7l/4ivOX5s4kIrVnGKzwgsUFp+R3lmzX7FNBb5RLP6p3DePw==}
+  /@braintrust/core@0.0.43:
+    resolution: {integrity: sha512-q9Xs3y5jVhTUn7X89pXXI0uVtAJqJuKD2uDKegarckJ3OTftF4RNXBBcKrjVsuRbmsfApOY9eTtwlfNwml0ciw==}
     dependencies:
       '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.23.8)
+      uuid: 9.0.1
       zod: 3.23.8
     dev: false
 

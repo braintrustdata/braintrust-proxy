@@ -108,8 +108,6 @@ export const defaultModelParamSettings: {
   },
   js: {},
   window: {
-    // Once we bump the version of core the proxy depends on, we can relax this.
-    //@ts-ignore
     temperature: undefined,
     topK: 5,
   },

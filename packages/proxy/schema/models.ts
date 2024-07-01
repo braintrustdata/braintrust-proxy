@@ -1,7 +1,13 @@
 export const PromptInputs = ["completion", "chat"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
-export const ModelFormats = ["openai", "anthropic", "google", "js"] as const;
+export const ModelFormats = [
+  "openai",
+  "anthropic",
+  "google",
+  "window",
+  "js",
+] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
 export interface ModelSpec {

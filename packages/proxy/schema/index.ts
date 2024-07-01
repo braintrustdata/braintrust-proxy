@@ -30,7 +30,8 @@ export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {
   openai: ["system", "user", "assistant" /*, "function" */],
   anthropic: ["system", "user", "assistant"],
   google: ["user", "model"],
-  js: ["system"],
+  js: ["user"],
+  window: ["user"],
 };
 
 export const MessageTypeToMessageType: {
@@ -68,11 +69,13 @@ export const sliderSpecs: {
 } = {
   temperature: [0, 1, 0.01, false],
   top_p: [0, 1, 0.01, false],
+  topP: [0, 1, 0.01, false],
   max_tokens: [1, 10240, 1, false],
   maxOutputTokens: [1, 10240, 1, true],
   frequency_penalty: [0, 1, 0.01, false],
   presence_penalty: [0, 1, 0.01, false],
   top_k: [1, 100, 1, true],
+  topK: [1, 100, 1, true],
 };
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.
@@ -104,6 +107,12 @@ export const defaultModelParamSettings: {
     use_cache: true,
   },
   js: {},
+  window: {
+    // Once we bump the version of core the proxy depends on, we can relax this.
+    //@ts-ignore
+    temperature: undefined,
+    topK: 5,
+  },
 };
 
 export const modelProviderHasTools: {
@@ -113,6 +122,7 @@ export const modelProviderHasTools: {
   anthropic: true,
   google: false,
   js: false,
+  window: false,
 };
 
 export const DefaultEndpointTypes: {
@@ -122,6 +132,7 @@ export const DefaultEndpointTypes: {
   anthropic: ["anthropic"],
   google: ["google"],
   js: ["js"],
+  window: ["js"],
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {

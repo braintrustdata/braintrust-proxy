@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { CustomModelSchema } from "./secrets";
 
 export const PromptInputs = ["completion", "chat"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
@@ -13,7 +12,16 @@ export const ModelFormats = [
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
-export type ModelSpec = z.infer<typeof CustomModelSchema>;
+export const ModelSchema = z.object({
+  format: z.enum(ModelFormats),
+  flavor: z.enum(["completion", "chat"]),
+  multimodal: z.boolean().nullish(),
+  input_cost_per_token: z.number().nullish(),
+  output_cost_per_token: z.number().nullish(),
+  displayName: z.string().nullish(),
+});
+
+export type ModelSpec = z.infer<typeof ModelSchema>;
 
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS

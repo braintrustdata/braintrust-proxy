@@ -1,18 +1,10 @@
 import { z } from "zod";
-
-export const CustomModelSchema = z.object({
-  format: z.enum(["openai", "anthropic", "google", "js"]),
-  flavor: z.enum(["completion", "chat"]),
-  multimodal: z.boolean().nullish(),
-  input_cost_per_token: z.number().nullish(),
-  output_cost_per_token: z.number().nullish(),
-  displayName: z.string().nullish(),
-});
+import { ModelSchema } from "./models";
 
 export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).nullish(),
-    customModels: z.record(CustomModelSchema).nullish(),
+    customModels: z.record(ModelSchema).nullish(),
   })
   .strict();
 

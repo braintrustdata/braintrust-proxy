@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export const PromptInputs = ["completion", "chat"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
@@ -10,14 +12,16 @@ export const ModelFormats = [
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
-export interface ModelSpec {
-  format: ModelFormat;
-  flavor: PromptInputType;
-  multimodal?: boolean | null;
-  input_cost_per_token?: number | null;
-  output_cost_per_token?: number | null;
-  displayName: string;
-}
+export const ModelSchema = z.object({
+  format: z.enum(ModelFormats),
+  flavor: z.enum(PromptInputs),
+  multimodal: z.boolean().nullish(),
+  input_cost_per_token: z.number().nullish(),
+  output_cost_per_token: z.number().nullish(),
+  displayName: z.string().nullish(),
+});
+
+export type ModelSpec = z.infer<typeof ModelSchema>;
 
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS

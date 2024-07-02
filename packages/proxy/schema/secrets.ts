@@ -1,11 +1,12 @@
 import { z } from "zod";
 
 export const CustomModelSchema = z.object({
-  format: z.enum(["openai", "anthropic", "google"]),
+  format: z.enum(["openai", "anthropic", "google", "js"]),
   flavor: z.enum(["completion", "chat"]),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),
+  displayName: z.string().nullish(),
 });
 
 export const BaseMetadataSchema = z
@@ -17,7 +18,7 @@ export const BaseMetadataSchema = z
 
 export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    api_base: z.string(),
+    api_base: z.string().url(),
     api_version: z.string().default("2023-07-01-preview"),
     deployment: z.string().nullish(),
   }),
@@ -25,8 +26,8 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
 
 export const BedrockMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    region: z.string(),
-    access_key: z.string(),
+    region: z.string().min(1, "Region cannot be empty"),
+    access_key: z.string().min(1, "Access key cannot be empty"),
     session_token: z.string().nullish(),
   }),
 ).strict();
@@ -34,7 +35,7 @@ export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    api_base: z.string().nullish(),
+    api_base: z.string().url().nullish(),
     organization_id: z.string().nullish(),
   }),
 ).strict();
@@ -61,7 +62,6 @@ export const APISecretSchema = z.union([
         "mistral",
         "ollama",
         "groq",
-        "bedrock",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),

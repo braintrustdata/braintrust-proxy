@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { CustomModelSchema } from "./secrets";
+
 export const PromptInputs = ["completion", "chat"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
@@ -10,14 +13,7 @@ export const ModelFormats = [
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
-export interface ModelSpec {
-  format: ModelFormat;
-  flavor: PromptInputType;
-  multimodal?: boolean | null;
-  input_cost_per_token?: number | null;
-  output_cost_per_token?: number | null;
-  displayName: string;
-}
+export type ModelSpec = z.infer<typeof CustomModelSchema>;
 
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS

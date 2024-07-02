@@ -14,7 +14,7 @@ export type ModelFormat = (typeof ModelFormats)[number];
 
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
-  flavor: z.enum(["completion", "chat"]),
+  flavor: z.enum(PromptInputs),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),

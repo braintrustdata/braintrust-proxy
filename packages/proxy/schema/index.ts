@@ -27,7 +27,7 @@ export const ModelEndpointType = [
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
 export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {
-  openai: ["system", "user", "assistant" /*, "function" */],
+  openai: ["system", "user", "assistant", "tool"],
   anthropic: ["system", "user", "assistant"],
   google: ["user", "model"],
   js: ["user"],

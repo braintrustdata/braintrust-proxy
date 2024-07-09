@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ChatCompletion,
   ChatCompletionChunk,
+  ChatCompletionMessageToolCall,
   ChatCompletionTool,
 } from "openai/resources";
 import { getTimestampInSeconds } from "../util";
@@ -26,24 +27,114 @@ Example events:
 {"type":"content_block_stop","index":0}
 {"type":"message_delta","delta":{"stop_reason":"end_turn","stop_sequence":null},"usage":{"output_tokens":9}}
 {"type":"message_stop"}
-*/
-export interface AnthropicStreamEvent {
-  type:
-    | "message_start"
-    | "content_block_start"
-    | "content_block_delta"
-    | "content_block_stop"
-    | "message_delta"
-    | "message_stop"
-    | "ping";
-  message?: AnthropicCompletion;
-  index?: number;
-  delta?: // NOTE: At time of writing, Anthropic does not support tool use in the stream API.
-  | { type: "text_delta"; text: string }
-    | { stop_reason: string; stop_sequence: string | null };
-  usage?: { input_tokens: number; output_tokens: number };
-  model?: string;
+
+Tools:
+
+{
+  type: 'content_block_start',
+  index: 1,
+  content_block: {
+    type: 'tool_use',
+    id: 'toolu_014nvqv5sKcHB8qiNQ7R31WP',
+    name: 'add',
+    input: {}
+  }
 }
+{
+  type: 'content_block_delta',
+  index: 1,
+  delta: { type: 'input_json_delta', partial_json: '' }
+}
+{
+  type: 'content_block_delta',
+  index: 1,
+  delta: { type: 'input_json_delta', partial_json: '{"a"' }
+}
+{ type: 'content_block_stop', index: 1 }
+{
+  type: 'message_delta',
+  delta: { stop_reason: 'tool_use', stop_sequence: null },
+  usage: { output_tokens: 82 }
+}
+*/
+
+export const anthropicDeltaSchema = z.union([
+  z.object({
+    type: z.literal("text_delta"),
+    text: z.string(),
+  }),
+  z.object({
+    type: z.literal("input_json_delta"),
+    partial_json: z.string(),
+  }),
+  z.object({
+    type: z.literal("stop_reason"),
+    stop_reason: z.string(),
+    stop_sequence: z.string().nullish(),
+  }),
+]);
+
+export const anthropicUsage = z.object({
+  input_tokens: z.number().optional(),
+  output_tokens: z.number().optional(),
+});
+
+export const anthropicStreamEventSchema = z.union([
+  z.object({
+    type: z.literal("message_start"),
+    message: z.object({
+      id: z.string(),
+      type: z.literal("message"),
+      role: z.literal("assistant"),
+      content: z.array(z.unknown()),
+      stop_reason: z.string().nullish(),
+      stop_sequence: z.string().nullish(),
+      usage: anthropicUsage.optional(),
+      model: z.string(),
+    }),
+  }),
+  z.object({
+    type: z.literal("content_block_start"),
+    index: z.number(),
+    content_block: z.union([
+      z.object({
+        type: z.literal("text"),
+        text: z.string(),
+      }),
+      z.object({
+        type: z.literal("tool_use"),
+        id: z.string(),
+        name: z.string(),
+        input: z.record(z.unknown()),
+      }),
+    ]),
+  }),
+  z.object({
+    type: z.literal("content_block_delta"),
+    index: z.number(),
+    delta: z.any(),
+  }),
+  z.object({
+    type: z.literal("content_block_stop"),
+    index: z.number(),
+  }),
+  z.object({
+    type: z.literal("message_delta"),
+    delta: z.object({
+      stop_reason: z.union([z.literal("end_turn"), z.literal("tool_use")]),
+      stop_sequence: z.string().nullish(),
+    }),
+    usage: anthropicUsage.optional(),
+  }),
+  z.object({
+    type: z.literal("message_stop"),
+  }),
+  z.object({
+    type: z.literal("ping"),
+  }),
+]);
+
+export type AnthropicStreamEvent = z.infer<typeof anthropicStreamEventSchema>;
 
 /*
 Example completion:
@@ -72,8 +163,17 @@ export interface AnthropicCompletion {
 
 export function anthropicEventToOpenAIEvent(
   idx: number,
-  event: AnthropicStreamEvent,
+  eventU: unknown,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
+  const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
+  if (!parsedEvent.success) {
+    throw new Error(
+      `Unable to parse Anthropic event: ${JSON.stringify(eventU)}\n${
+        parsedEvent.error.message
+      }`,
+    );
+  }
+  const event = parsedEvent.data;
   if (event.type === "message_stop") {
     return {
       event: null,
@@ -81,11 +181,83 @@ export function anthropicEventToOpenAIEvent(
     };
   }
 
-  if (!(event.delta && "text" in event.delta)) {
+  let content: string | undefined = undefined;
+  let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
+    undefined;
+
+  if (
+    event.type === "content_block_start" &&
+    event.content_block.type === "text"
+  ) {
+    content = event.content_block.text.trimStart();
+  } else if (
+    event.type === "content_block_start" &&
+    event.content_block.type === "tool_use"
+  ) {
+    if (
+      event.content_block.input &&
+      Object.keys(event.content_block.input).length > 0
+    ) {
+      throw new Error(
+        `Unknown non-empty tool use 'input' field in Anthropic: ${JSON.stringify(
+          eventU,
+        )}`,
+      );
+    }
+    tool_calls = [
+      {
+        id: event.content_block.id,
+        index: event.index - 1,
+        type: "function",
+        function: {
+          name: event.content_block.name,
+          arguments: "",
+        },
+      },
+    ];
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "text_delta"
+  ) {
+    content = idx === 0 ? event.delta.text.trimStart() : event.delta.text;
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "input_json_delta"
+  ) {
+    tool_calls = [
+      {
+        index: event.index - 1,
+        function: {
+          arguments: event.delta.partial_json,
+        },
+      },
+    ];
+  } else if (event.type === "message_delta") {
+    return {
+      event: {
+        id: uuidv4(),
+        choices: [
+          {
+            delta: {},
+            finish_reason:
+              event.delta.stop_reason === "end_turn" ? "stop" : "tool_calls",
+            index: 0,
+          },
+        ],
+        model: "",
+        object: "chat.completion.chunk",
+        created: getTimestampInSeconds(),
+      },
+      finished: true,
+    };
+  } else {
     return {
       event: null,
       finished: false,
     };
+    console.warn(
+      `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
+    );
   }
 
   return {
@@ -94,9 +266,8 @@ export function anthropicEventToOpenAIEvent(
       choices: [
         {
           delta: {
-            content:
-              // Anthropic inserts extra whitespace at the beginning of the completion
-              idx === 0 ? event.delta.text.trimStart() : event.delta.text,
+            content,
+            tool_calls,
             role: "assistant",
           },
           finish_reason: null, // Anthropic places this in a separate stream event.
@@ -104,7 +275,7 @@ export function anthropicEventToOpenAIEvent(
         },
       ],
       created: getTimestampInSeconds(),
-      model: event.model || "",
+      model: "",
       object: "chat.completion.chunk",
     },
     finished: false,

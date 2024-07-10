@@ -4,6 +4,7 @@ import {
   ChatCompletionChunk,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
+  ChatCompletionToolMessageParam,
 } from "openai/resources";
 import { getTimestampInSeconds } from "../util";
 import {
@@ -13,6 +14,14 @@ import {
 } from "@schema";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
+import Anthropic from "@anthropic-ai/sdk";
+import {
+  ImageBlockParam,
+  MessageParam,
+  TextBlockParam,
+  ToolResultBlockParam,
+  ToolUseBlockParam,
+} from "@anthropic-ai/sdk/resources";
 
 /*
 Example events:
@@ -286,6 +295,7 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
 ): ChatCompletion {
+  console.log("COMPLETION", JSON.stringify(completion, null, 2));
   const firstText = completion.content.find((c) => c.type === "text");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
   return {
@@ -434,6 +444,62 @@ export async function openAIContentToAnthropicContent(
         : await makeAnthropicImageBlock(part.image_url.url),
     ) ?? [],
   );
+}
+
+export function openAIToolMessageToAnthropicToolCall(
+  toolCall: ChatCompletionToolMessageParam,
+): ToolResultBlockParam[] {
+  return [
+    {
+      tool_use_id: toolCall.tool_call_id,
+      type: "tool_result",
+      content: toolCall.content,
+    },
+  ];
+}
+
+export function openAIToolCallsToAnthropicToolUse(
+  toolCalls: ChatCompletionMessageToolCall[],
+): ToolUseBlockParam[] {
+  return toolCalls.map((t) => ({
+    id: t.id,
+    type: "tool_use",
+    input: JSON.parse(t.function.arguments),
+    name: t.function.name,
+  }));
+}
+
+export function upgradeAnthropicContentMessage(
+  content: MessageParam["content"],
+): Exclude<MessageParam["content"], string> {
+  if (typeof content === "string") {
+    if (content.trim() !== "") {
+      return [{ text: content, type: "text" }];
+    } else {
+      return [];
+    }
+  } else {
+    return content;
+  }
+}
+
+export function flattenAnthropicMessages(
+  messages: Array<MessageParam>,
+): Array<MessageParam> {
+  const result: Array<MessageParam> = [];
+  for (let i = 0; i < messages.length; i++) {
+    if (
+      result.length > 0 &&
+      result[result.length - 1].role === messages[i].role
+    ) {
+      result[result.length - 1].content = upgradeAnthropicContentMessage(
+        result[result.length - 1].content,
+      ).concat(upgradeAnthropicContentMessage(messages[i].content));
+    } else {
+      result.push(messages[i]);
+    }
+  }
+  return result;
 }
 
 const anthropicToolSchema = z.object({

@@ -23,8 +23,12 @@ import {
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
+  flattenAnthropicMessages,
   openAIContentToAnthropicContent,
+  openAIToolCallsToAnthropicToolUse,
+  openAIToolMessageToAnthropicToolCall,
   openAIToolsToAnthropicTools,
+  upgradeAnthropicContentMessage,
 } from "./providers/anthropic";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
@@ -33,7 +37,7 @@ import {
   googleEventToOpenAIChatEvent,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { Message } from "@braintrust/core/typespecs";
+import { Message, MessageRole } from "@braintrust/core/typespecs";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -44,6 +48,7 @@ import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { parseOpenAIStream } from "./providers/openai";
+import { MessageParam } from "@anthropic-ai/sdk/resources";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -918,12 +923,14 @@ async function fetchAnthropic(
     ...oaiParams
   } = bodyData;
 
-  const messages = [];
+  let messages: Array<MessageParam> = [];
   let system = undefined;
   for (const m of oaiMessages as Message[]) {
-    const content = await openAIContentToAnthropicContent(m.content);
+    let role: MessageRole = m.role;
+    let content: any = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
+      continue;
     } else if (
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))
@@ -931,19 +938,29 @@ async function fetchAnthropic(
       throw new Error(
         "Anthropic does not support function messages or function_calls",
       );
-    } else if (
-      m.role === "tool" ||
-      ("tool_calls" in m && !isEmpty(m.tool_calls))
-    ) {
-      throw new Error("Anthropic does not support tool messages or tool_calls");
-    } else {
-      messages.push({
-        role: MessageTypeToMessageType[m.role],
-        content,
-      });
+    } else if (m.role === "tool") {
+      role = "user";
+      content = openAIToolMessageToAnthropicToolCall(m);
+    } else if (m.role === "assistant" && m.tool_calls) {
+      content = upgradeAnthropicContentMessage(content);
+      content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
     }
+
+    const translatedRole = MessageTypeToMessageType[role];
+    if (
+      !translatedRole ||
+      !(translatedRole === "user" || translatedRole === "assistant")
+    ) {
+      throw new Error(`Unsupported Anthropic role ${role}`);
+    }
+
+    messages.push({
+      role: translatedRole,
+      content,
+    });
   }
 
+  messages = flattenAnthropicMessages(messages);
   const params: Record<string, unknown> = {
     max_tokens: 1024, // Required param
     ...translateParams("anthropic", oaiParams),
@@ -1161,7 +1178,12 @@ export function createEventStreamTransformer(
   const textDecoder = new TextDecoder();
   let eventSourceParser: EventSourceParser;
 
+  let finished = false;
   const finish = (controller: TransformStreamDefaultController<Uint8Array>) => {
+    if (finished) {
+      return;
+    }
+    finished = true;
     controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
     controller.terminate();
   };
@@ -1183,7 +1205,21 @@ export function createEventStreamTransformer(
           }
 
           if ("data" in event) {
-            const parsedMessage = customParser(event.data);
+            let parsedMessage;
+            try {
+              parsedMessage = customParser(event.data);
+            } catch (e) {
+              console.warn(
+                `Error parsing event: ${JSON.stringify(event)}\n${e}`,
+              );
+              controller.enqueue(
+                new TextEncoder().encode(
+                  "data: " + `${JSON.stringify(`${e}`)}` + "\n\n",
+                ),
+              );
+              finish(controller);
+              return;
+            }
             if (parsedMessage.data !== null) {
               controller.enqueue(
                 new TextEncoder().encode(

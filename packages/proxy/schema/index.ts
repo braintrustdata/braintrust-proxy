@@ -26,20 +26,12 @@ export const ModelEndpointType = [
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
-export const MessageTypes: { [name in ModelFormat]: MessageRole[] } = {
-  openai: ["system", "user", "assistant", "tool"],
-  anthropic: ["system", "user", "assistant"],
-  google: ["user", "model"],
-  js: ["user"],
-  window: ["user"],
-};
-
 export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
 } = {
-  system: undefined,
+  system: "system",
   function: undefined,
-  tool: undefined,
+  tool: "tool",
   user: "user",
   assistant: "assistant",
   model: "assistant",

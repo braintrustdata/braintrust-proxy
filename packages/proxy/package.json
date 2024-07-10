@@ -68,6 +68,7 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.3",
     "@aws-sdk/client-bedrock-runtime": "^3.561.0",
     "@braintrust/core": "^0.0.43",
     "@google/generative-ai": "^0.11.4",

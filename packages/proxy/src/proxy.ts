@@ -1183,7 +1183,21 @@ export function createEventStreamTransformer(
           }
 
           if ("data" in event) {
-            const parsedMessage = customParser(event.data);
+            let parsedMessage;
+            try {
+              parsedMessage = customParser(event.data);
+            } catch (e) {
+              console.warn(
+                `Error parsing event: ${JSON.stringify(event)}\n${e}`,
+              );
+              controller.enqueue(
+                new TextEncoder().encode(
+                  "data: " + `${JSON.stringify(`${e}`)}` + "\n\n",
+                ),
+              );
+              finish(controller);
+              return;
+            }
             if (parsedMessage.data !== null) {
               controller.enqueue(
                 new TextEncoder().encode(

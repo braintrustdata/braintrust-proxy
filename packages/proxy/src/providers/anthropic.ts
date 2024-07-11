@@ -191,7 +191,12 @@ export function anthropicEventToOpenAIEvent(
   let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
     undefined;
 
-  if (
+  if (event.type === "message_start") {
+    return {
+      event: null,
+      finished: false,
+    };
+  } else if (
     event.type === "content_block_start" &&
     event.content_block.type === "text"
   ) {

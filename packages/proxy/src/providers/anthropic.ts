@@ -14,11 +14,8 @@ import {
 } from "@schema";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
-import Anthropic from "@anthropic-ai/sdk";
 import {
-  ImageBlockParam,
   MessageParam,
-  TextBlockParam,
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
@@ -216,7 +213,7 @@ export function anthropicEventToOpenAIEvent(
     tool_calls = [
       {
         id: event.content_block.id,
-        index: event.index - 1,
+        index: event.index,
         type: "function",
         function: {
           name: event.content_block.name,
@@ -235,7 +232,7 @@ export function anthropicEventToOpenAIEvent(
   ) {
     tool_calls = [
       {
-        index: event.index - 1,
+        index: event.index,
         function: {
           arguments: event.delta.partial_json,
         },
@@ -260,13 +257,13 @@ export function anthropicEventToOpenAIEvent(
       finished: true,
     };
   } else {
+    console.warn(
+      `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
+    );
     return {
       event: null,
       finished: false,
     };
-    console.warn(
-      `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
-    );
   }
 
   return {

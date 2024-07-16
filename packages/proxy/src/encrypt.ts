@@ -1,6 +1,11 @@
 import { z } from "zod";
 
-// This is copied from duckdb.tsx in the app directory
+// This is copied from local/js/encrypt.ts in the main repo. Note that the
+// encryption strategy only needs to be internally-consistent within the proxy
+// code. It doesn't need to be consistent with the encryption logic used in the
+// main repo, so it's not incorrect if these fall out of perfect sync at some
+// point.
+
 function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
   var bytes = new Uint8Array(binaryString.length);

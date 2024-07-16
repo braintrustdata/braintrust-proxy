@@ -14,11 +14,8 @@ import {
 } from "@schema";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
-import Anthropic from "@anthropic-ai/sdk";
 import {
-  ImageBlockParam,
   MessageParam,
-  TextBlockParam,
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
@@ -194,7 +191,12 @@ export function anthropicEventToOpenAIEvent(
   let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
     undefined;
 
-  if (
+  if (event.type === "message_start") {
+    return {
+      event: null,
+      finished: false,
+    };
+  } else if (
     event.type === "content_block_start" &&
     event.content_block.type === "text"
   ) {
@@ -216,7 +218,7 @@ export function anthropicEventToOpenAIEvent(
     tool_calls = [
       {
         id: event.content_block.id,
-        index: event.index - 1,
+        index: event.index,
         type: "function",
         function: {
           name: event.content_block.name,
@@ -235,7 +237,7 @@ export function anthropicEventToOpenAIEvent(
   ) {
     tool_calls = [
       {
-        index: event.index - 1,
+        index: event.index,
         function: {
           arguments: event.delta.partial_json,
         },
@@ -260,13 +262,13 @@ export function anthropicEventToOpenAIEvent(
       finished: true,
     };
   } else {
+    console.warn(
+      `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
+    );
     return {
       event: null,
       finished: false,
     };
-    console.warn(
-      `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
-    );
   }
 
   return {

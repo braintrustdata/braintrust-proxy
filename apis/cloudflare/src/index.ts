@@ -1,5 +1,5 @@
 import {
-  proxyV1Prefix,
+  proxyV1Prefixes,
   handleProxyV1,
   handlePrometheusScrape,
   originWhitelist,
@@ -17,9 +17,12 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-    if (url.pathname.startsWith(proxyV1Prefix)) {
-      return handleProxyV1(request, env, ctx);
-    } else if (url.pathname === "/metrics") {
+    for (const prefix of proxyV1Prefixes) {
+      if (url.pathname.startsWith(prefix)) {
+        return handleProxyV1(request, prefix, env, ctx);
+      }
+    }
+    if (url.pathname === "/metrics") {
       return handlePrometheusScrape(request, env, ctx);
     } else if (url.pathname === "/") {
       return new Response("Hello World!", {

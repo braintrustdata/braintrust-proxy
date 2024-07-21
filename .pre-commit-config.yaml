@@ -14,8 +14,8 @@ repos:
               .*pnpm-lock.yaml
           )$
         args: ["-L rouge,coo,couldn,unsecure"]
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.3.2
     hooks:
       - id: prettier
         exclude: ^(extension/|.*\.json|.*pnpm-lock.yaml$)

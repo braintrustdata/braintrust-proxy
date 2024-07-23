@@ -467,6 +467,27 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // TOGETHER MODELS
+  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 1.8e-7,
+    output_cost_per_token: 1.8e-7,
+    displayName: "LLaMA 3.1 8B Instruct Turbo",
+  },
+  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 8.8e-7,
+    output_cost_per_token: 8.8e-7,
+    displayName: "LLaMA 3.1 70B Instruct Turbo",
+  },
+  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000005,
+    output_cost_per_token: 0.000015,
+    displayName: "LLaMA 3.1 405B Instruct Turbo",
+  },
   "meta-llama/Meta-Llama-3-70B": {
     format: "openai",
     flavor: "completion",

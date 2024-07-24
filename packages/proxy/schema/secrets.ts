@@ -27,7 +27,11 @@ export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    api_base: z.string().url().nullish(),
+    api_base: z.union([
+      z.string().url().optional(),
+      z.string().length(0),
+      z.null(),
+    ]),
     organization_id: z.string().nullish(),
   }),
 ).strict();

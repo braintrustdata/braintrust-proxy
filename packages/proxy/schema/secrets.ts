@@ -4,8 +4,8 @@ export const CustomModelSchema = z.object({
   format: z.enum(["openai", "anthropic", "google"]),
   flavor: z.enum(["completion", "chat"]),
   multimodal: z.boolean().nullish(),
-  input_cost_per_token: z.number().nullish(),
-  output_cost_per_token: z.number().nullish(),
+  input_cost_per_mil_tokens: z.number().nullish(),
+  output_cost_per_mil_tokens: z.number().nullish(),
 });
 
 export const BaseMetadataSchema = z

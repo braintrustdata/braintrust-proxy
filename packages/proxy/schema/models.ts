@@ -604,6 +604,23 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GROQ MODELS
+  "llama-3.1-8b-instant": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b Instant",
+    // NOTE: At time of writing, costs are not available
+    // for these models.
+  },
+  "llama-3.1-70b-versatile": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b Versatile",
+  },
+  "llama-3.1-405b-reasoning": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b Reasoning",
+  },
   "gemma-7b-it": {
     format: "openai",
     flavor: "chat",

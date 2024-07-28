@@ -602,6 +602,7 @@ const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   RATE_LIMIT_ERROR_CODE,
 ];
 
+let loopIndex = 0;
 async function fetchModelLoop(
   meter: Meter,
   method: "GET" | "POST",
@@ -612,6 +613,8 @@ async function fetchModelLoop(
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
 ): Promise<ModelResponse> {
+  const requestId = ++loopIndex;
+
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -736,9 +739,16 @@ async function fetchModelLoop(
           const limitReset = tryParseRateLimitReset(
             proxyResponse.response.headers,
           );
-          delayMs = limitReset ?? delayMs * (BACKOFF_EXPONENT - Math.random());
+          delayMs = Math.max(
+            Math.min(
+              limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
+              RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
+            ),
+            10,
+          );
           console.warn(
             `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`,
+            loopIndex,
           );
           await new Promise((r) => setTimeout(r, delayMs));
 

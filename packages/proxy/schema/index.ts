@@ -225,7 +225,7 @@ export const EndpointProviderToBaseURL: {
   mistral: "https://api.mistral.ai/v1",
   ollama: "http://127.0.0.1:11434/v1",
   groq: "https://api.groq.com/openai/v1",
-  lepton: "https://llama3-1-70b.lepton.run/api/v1/", // As far as I can tell, this works for all models
+  lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
   bedrock: null,
   azure: null,

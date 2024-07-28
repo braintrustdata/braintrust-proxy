@@ -740,8 +740,13 @@ async function fetchModelLoop(
             proxyResponse.response.headers,
           );
           delayMs = Math.max(
+            // Make sure we sleep at least 10ms. Sometimes the random backoff logic can get wonky.
             Math.min(
+              // If we have a rate limit reset time, use that. Otherwise, use a random backoff.
+              // Sometimes, limitReset is 0 (errantly), so fall back to the random backoff in that case too.
+              // And never sleep longer than 1 minute or the remaining budget.
               limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
+              60 * 1000,
               RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
             ),
             10,
@@ -871,6 +876,8 @@ async function fetchOpenAI(
         `Azure provider ${secret.id} must have a deployment or model specified`,
       );
     }
+  } else if (secret.type === "lepton") {
+    baseURL = baseURL.replace("<model>", bodyData.model);
   }
 
   const fullURL = new URL(baseURL + url);

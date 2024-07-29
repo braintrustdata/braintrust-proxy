@@ -602,6 +602,7 @@ const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   RATE_LIMIT_ERROR_CODE,
 ];
 
+let loopIndex = 0;
 async function fetchModelLoop(
   meter: Meter,
   method: "GET" | "POST",
@@ -612,6 +613,8 @@ async function fetchModelLoop(
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
 ): Promise<ModelResponse> {
+  const requestId = ++loopIndex;
+
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -736,9 +739,21 @@ async function fetchModelLoop(
           const limitReset = tryParseRateLimitReset(
             proxyResponse.response.headers,
           );
-          delayMs = limitReset ?? delayMs * (BACKOFF_EXPONENT - Math.random());
+          delayMs = Math.max(
+            // Make sure we sleep at least 10ms. Sometimes the random backoff logic can get wonky.
+            Math.min(
+              // If we have a rate limit reset time, use that. Otherwise, use a random backoff.
+              // Sometimes, limitReset is 0 (errantly), so fall back to the random backoff in that case too.
+              // And never sleep longer than 1 minute or the remaining budget.
+              limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
+              60 * 1000,
+              RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
+            ),
+            10,
+          );
           console.warn(
             `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`,
+            loopIndex,
           );
           await new Promise((r) => setTimeout(r, delayMs));
 
@@ -861,6 +876,8 @@ async function fetchOpenAI(
         `Azure provider ${secret.id} must have a deployment or model specified`,
       );
     }
+  } else if (secret.type === "lepton") {
+    baseURL = baseURL.replace("<model>", bodyData.model);
   }
 
   const fullURL = new URL(baseURL + url);

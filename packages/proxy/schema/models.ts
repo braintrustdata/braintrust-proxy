@@ -19,8 +19,6 @@ export interface ModelSpec {
   displayName: string;
 }
 
-const ONE_MILLION = 1000000;
-
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
   "gpt-4o": {
@@ -664,22 +662,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 8b",
-    input_cost_per_token: 0.07 / ONE_MILLION,
-    output_cost_per_token: 0.07 / ONE_MILLION,
+    input_cost_per_mil_tokens: 0.07,
+    output_cost_per_mil_tokens: 0.07,
   },
   "llama3-1-70b": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 70b",
-    input_cost_per_token: 0.8 / ONE_MILLION,
-    output_cost_per_token: 0.8 / ONE_MILLION,
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
   },
   "llama3-1-405b": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 405b",
-    input_cost_per_token: 2.8 / ONE_MILLION,
-    output_cost_per_token: 2.8 / ONE_MILLION,
+    input_cost_per_mil_tokens: 2.8,
+    output_cost_per_mil_tokens: 2.8,
   },
 
   // FIREWORKS MODELS
@@ -687,22 +685,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 8b",
-    input_cost_per_token: 0.2 / ONE_MILLION,
-    output_cost_per_token: 0.2 / ONE_MILLION,
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
   },
   "accounts/fireworks/models/llama-v3p1-70b-instruct": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 70b",
-    input_cost_per_token: 1.4 / ONE_MILLION,
-    output_cost_per_token: 1.4 / ONE_MILLION,
+    input_cost_per_mil_tokens: 1.4,
+    output_cost_per_mil_tokens: 1.4,
   },
   "accounts/fireworks/models/llama-v3p1-405b-instruct": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 405b",
-    input_cost_per_token: 3 / ONE_MILLION,
-    output_cost_per_token: 3 / ONE_MILLION,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 3,
   },
 
   // GOOGLE MODELS

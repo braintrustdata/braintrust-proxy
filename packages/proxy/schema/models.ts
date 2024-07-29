@@ -19,6 +19,8 @@ export interface ModelSpec {
   displayName: string;
 }
 
+const ONE_MILLION = 1000000;
+
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
   "gpt-4o": {
@@ -655,6 +657,52 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.00000027,
     output_cost_per_token: 0.00000027,
     displayName: "Mixtral 8x7B 32768",
+  },
+
+  // LEPTON MODELS
+  "llama3-1-8b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b",
+    input_cost_per_token: 0.07 / ONE_MILLION,
+    output_cost_per_token: 0.07 / ONE_MILLION,
+  },
+  "llama3-1-70b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b",
+    input_cost_per_token: 0.8 / ONE_MILLION,
+    output_cost_per_token: 0.8 / ONE_MILLION,
+  },
+  "llama3-1-405b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b",
+    input_cost_per_token: 2.8 / ONE_MILLION,
+    output_cost_per_token: 2.8 / ONE_MILLION,
+  },
+
+  // FIREWORKS MODELS
+  "accounts/fireworks/models/llama-v3p1-8b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b",
+    input_cost_per_token: 0.2 / ONE_MILLION,
+    output_cost_per_token: 0.2 / ONE_MILLION,
+  },
+  "accounts/fireworks/models/llama-v3p1-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b",
+    input_cost_per_token: 1.4 / ONE_MILLION,
+    output_cost_per_token: 1.4 / ONE_MILLION,
+  },
+  "accounts/fireworks/models/llama-v3p1-405b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b",
+    input_cost_per_token: 3 / ONE_MILLION,
+    output_cost_per_token: 3 / ONE_MILLION,
   },
 
   // GOOGLE MODELS

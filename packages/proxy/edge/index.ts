@@ -35,6 +35,7 @@ const defaultWhitelist: (string | RegExp)[] = [
   "https://www.braintrustdata.com",
   "https://www.braintrust.dev",
   new RegExp("https://.*-braintrustdata.vercel.app"),
+  new RegExp("https://.*.preview.braintrust.dev"),
 ];
 
 const baseCorsHeaders = {

@@ -2,7 +2,7 @@ import { EdgeProxyV1, FlushingExporter } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 
-export const proxyV1Prefix = "/v1";
+export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
 declare global {
   interface Env {
@@ -33,6 +33,7 @@ export function originWhitelist(env: Env) {
 
 export async function handleProxyV1(
   request: Request,
+  proxyV1Prefix: string,
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {

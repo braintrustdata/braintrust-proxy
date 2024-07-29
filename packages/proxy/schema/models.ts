@@ -23,6 +23,8 @@ export const ModelSchema = z.object({
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
+const ONE_MILLION = 1000000;
+
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
   "gpt-4o": {
@@ -471,6 +473,27 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // TOGETHER MODELS
+  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 1.8e-7,
+    output_cost_per_token: 1.8e-7,
+    displayName: "LLaMA 3.1 8B Instruct Turbo",
+  },
+  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 8.8e-7,
+    output_cost_per_token: 8.8e-7,
+    displayName: "LLaMA 3.1 70B Instruct Turbo",
+  },
+  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000005,
+    output_cost_per_token: 0.000015,
+    displayName: "LLaMA 3.1 405B Instruct Turbo",
+  },
   "meta-llama/Meta-Llama-3-70B": {
     format: "openai",
     flavor: "completion",
@@ -587,6 +610,23 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GROQ MODELS
+  "llama-3.1-8b-instant": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b Instant",
+    // NOTE: At time of writing, costs are not available
+    // for these models.
+  },
+  "llama-3.1-70b-versatile": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b Versatile",
+  },
+  "llama-3.1-405b-reasoning": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b Reasoning",
+  },
   "gemma-7b-it": {
     format: "openai",
     flavor: "chat",
@@ -621,6 +661,52 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_token: 0.00000027,
     output_cost_per_token: 0.00000027,
     displayName: "Mixtral 8x7B 32768",
+  },
+
+  // LEPTON MODELS
+  "llama3-1-8b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b",
+    input_cost_per_token: 0.07 / ONE_MILLION,
+    output_cost_per_token: 0.07 / ONE_MILLION,
+  },
+  "llama3-1-70b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b",
+    input_cost_per_token: 0.8 / ONE_MILLION,
+    output_cost_per_token: 0.8 / ONE_MILLION,
+  },
+  "llama3-1-405b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b",
+    input_cost_per_token: 2.8 / ONE_MILLION,
+    output_cost_per_token: 2.8 / ONE_MILLION,
+  },
+
+  // FIREWORKS MODELS
+  "accounts/fireworks/models/llama-v3p1-8b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 8b",
+    input_cost_per_token: 0.2 / ONE_MILLION,
+    output_cost_per_token: 0.2 / ONE_MILLION,
+  },
+  "accounts/fireworks/models/llama-v3p1-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 70b",
+    input_cost_per_token: 1.4 / ONE_MILLION,
+    output_cost_per_token: 1.4 / ONE_MILLION,
+  },
+  "accounts/fireworks/models/llama-v3p1-405b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.1 405b",
+    input_cost_per_token: 3 / ONE_MILLION,
+    output_cost_per_token: 3 / ONE_MILLION,
   },
 
   // GOOGLE MODELS

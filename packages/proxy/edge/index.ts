@@ -226,7 +226,10 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 
     const cacheGet = async (encryptionKey: string, key: string) => {
       if (opts.completionsCache) {
-        return await encryptedGet(opts.completionsCache, encryptionKey, key);
+        return (
+          (await encryptedGet(opts.completionsCache, encryptionKey, key)) ??
+          null
+        );
       } else {
         return null;
       }

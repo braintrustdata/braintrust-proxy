@@ -49,7 +49,7 @@ export async function decryptMessage(
 ): Promise<string | undefined> {
   if (!isCryptoAvailable()) return undefined;
 
-  const key = await crypto.subtle.importKey(
+  const key = await getSubtleCrypto().importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
@@ -57,7 +57,7 @@ export async function decryptMessage(
     ["decrypt"],
   );
 
-  const decoded = await crypto.subtle.decrypt(
+  const decoded = await getSubtleCrypto().decrypt(
     {
       name: "AES-GCM",
       iv: base64ToArrayBuffer(iv),
@@ -81,7 +81,7 @@ export async function encryptMessage(
 ): Promise<EncryptedMessage | undefined> {
   if (!isCryptoAvailable()) return undefined;
 
-  const key = await crypto.subtle.importKey(
+  const key = await getSubtleCrypto().importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
@@ -90,7 +90,7 @@ export async function encryptMessage(
   );
 
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const decoded = await crypto.subtle.encrypt(
+  const decoded = await getSubtleCrypto().encrypt(
     {
       name: "AES-GCM",
       iv,

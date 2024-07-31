@@ -1,10 +1,26 @@
 import { z } from "zod";
 
-// This is copied from local/js/encrypt.ts in the main repo. Note that the
-// encryption strategy only needs to be internally-consistent within the proxy
-// code. It doesn't need to be consistent with the encryption logic used in the
-// main repo, so it's not incorrect if these fall out of perfect sync at some
-// point.
+let _issuedCryptoSubtleWarning = false;
+function issueCryptoSubtleWarning() {
+  if (!_issuedCryptoSubtleWarning) {
+    console.warn(
+      "Crypto utils are not supported in this browser. Skipping any crypto-related functionality (such as realtime)",
+    );
+    _issuedCryptoSubtleWarning = true;
+  }
+}
+
+function getSubtleCrypto() {
+  return globalThis.crypto.subtle;
+}
+
+export function isCryptoAvailable(): boolean {
+  const ret = !!getSubtleCrypto();
+  if (!ret) {
+    issueCryptoSubtleWarning();
+  }
+  return ret;
+}
 
 function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
@@ -30,8 +46,10 @@ export async function decryptMessage(
   keyString: string,
   iv: string,
   message: string,
-): Promise<string> {
-  const key = await crypto.subtle.importKey(
+): Promise<string | undefined> {
+  if (!isCryptoAvailable()) return undefined;
+
+  const key = await getSubtleCrypto().importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
@@ -39,7 +57,7 @@ export async function decryptMessage(
     ["decrypt"],
   );
 
-  const decoded = await crypto.subtle.decrypt(
+  const decoded = await getSubtleCrypto().decrypt(
     {
       name: "AES-GCM",
       iv: base64ToArrayBuffer(iv),
@@ -60,8 +78,10 @@ export type EncryptedMessage = z.infer<typeof encryptedMessageSchema>;
 export async function encryptMessage(
   keyString: string,
   message: string,
-): Promise<EncryptedMessage> {
-  const key = await crypto.subtle.importKey(
+): Promise<EncryptedMessage | undefined> {
+  if (!isCryptoAvailable()) return undefined;
+
+  const key = await getSubtleCrypto().importKey(
     "raw",
     base64ToArrayBuffer(keyString),
     { name: "AES-GCM", length: 256 },
@@ -70,7 +90,7 @@ export async function encryptMessage(
   );
 
   const iv = crypto.getRandomValues(new Uint8Array(12));
-  const decoded = await crypto.subtle.encrypt(
+  const decoded = await getSubtleCrypto().encrypt(
     {
       name: "AES-GCM",
       iv,

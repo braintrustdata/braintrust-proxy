@@ -587,6 +587,48 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // MISTRAL MODELS
+  "mistral-large-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000003,
+    output_cost_per_token: 0.000009,
+    displayName: "Mistral Large 2",
+  },
+  "open-mistral-nemo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000003,
+    output_cost_per_token: 0.0000003,
+    displayName: "Mistral Nemo",
+  },
+  "codestral-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000001,
+    output_cost_per_token: 0.000003,
+    displayName: "Codestral",
+  },
+  // "mistral-embed": {
+  //   format: "openai",
+  //   flavor: "chat",
+  //   input_cost_per_token: 0.0000001,
+  //   output_cost_per_token: 0.0000001,
+  //   displayName: "Mistral Embed",
+  // },
+  "open-mixtral-8x22b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000002,
+    output_cost_per_token: 0.000006,
+    displayName: "Mixtral 8x22B",
+  },
+  "open-codestral-mamba": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.0000006,
+    output_cost_per_token: 0.0000006,
+    displayName: "Codestral Mamba",
+  },
   "mistral-tiny": {
     format: "openai",
     flavor: "chat",
@@ -597,14 +639,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-small": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.000002,
-    output_cost_per_token: 0.000006,
+    input_cost_per_token: 0.000001,
+    output_cost_per_token: 0.000003,
     displayName: "Mistral Small",
   },
   "mistral-medium": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_token: 0.0000027,
+    input_cost_per_token: 0.00000275,
     output_cost_per_token: 0.0000081,
     displayName: "Mistral Medium",
   },

@@ -16,6 +16,8 @@ export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(PromptInputs),
   multimodal: z.boolean().nullish(),
+  input_cost_per_token: z.number().nullish(),
+  output_cost_per_token: z.number().nullish(),
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),

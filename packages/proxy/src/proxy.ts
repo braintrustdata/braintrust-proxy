@@ -589,7 +589,7 @@ interface ModelResponse {
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
-const RATE_LIMIT_MAX_WAIT_MS = 600 * 1000; // Wait up to 10 minutes while retrying
+const RATE_LIMIT_MAX_WAIT_MS = 45 * 1000; // Wait up to 45 seconds while retrying
 const BACKOFF_EXPONENT = 2;
 
 const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
@@ -744,9 +744,9 @@ async function fetchModelLoop(
             Math.min(
               // If we have a rate limit reset time, use that. Otherwise, use a random backoff.
               // Sometimes, limitReset is 0 (errantly), so fall back to the random backoff in that case too.
-              // And never sleep longer than 1 minute or the remaining budget.
+              // And never sleep longer than 10 seconds or the remaining budget.
               limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
-              60 * 1000,
+              10 * 1000,
               RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
             ),
             10,

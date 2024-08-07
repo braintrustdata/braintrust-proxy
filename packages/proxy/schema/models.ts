@@ -43,6 +43,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_token: 0.0000006,
     displayName: "GPT 4o mini",
   },
+  "gpt-4o-2024-08-06": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_token: 0.0000025,
+    output_cost_per_token: 0.00001,
+    displayName: "GPT 4o 2024-08-06",
+  },
   "gpt-4o-2024-05-13": {
     format: "openai",
     flavor: "chat",

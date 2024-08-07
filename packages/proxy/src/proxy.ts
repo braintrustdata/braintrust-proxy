@@ -143,7 +143,12 @@ export async function proxyV1({
         !(
           h.startsWith("x-amzn") ||
           h.startsWith("x-bt") ||
-          h === "content-length"
+          h.startsWith("sec-") ||
+          h === "content-length" ||
+          h === "origin" ||
+          h === "priority" ||
+          h === "referer" ||
+          h === "user-agent"
         ),
     ),
   );

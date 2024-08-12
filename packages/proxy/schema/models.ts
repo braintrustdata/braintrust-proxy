@@ -43,6 +43,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "GPT 4o mini",
   },
+  "gpt-4o-2024-08-06": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
+    displayName: "GPT 4o 2024-08-06",
+  },
   "gpt-4o-2024-05-13": {
     format: "openai",
     flavor: "chat",
@@ -587,6 +595,48 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // MISTRAL MODELS
+  "mistral-large-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 9,
+    displayName: "Mistral Large 2",
+  },
+  "open-mistral-nemo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Mistral Nemo",
+  },
+  "codestral-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1,
+    output_cost_per_mil_tokens: 3,
+    displayName: "Codestral",
+  },
+  // "mistral-embed": {
+  //   format: "openai",
+  //   flavor: "chat",
+  //   input_cost_per_mil_tokens: 0.1,
+  //   output_cost_per_mil_tokens: 0.1,
+  //   displayName: "Mistral Embed",
+  // },
+  "open-mixtral-8x22b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+    displayName: "Mixtral 8x22B",
+  },
+  "open-codestral-mamba": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "Codestral Mamba",
+  },
   "mistral-tiny": {
     format: "openai",
     flavor: "chat",
@@ -597,14 +647,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-small": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 2,
-    output_cost_per_mil_tokens: 6,
+    input_cost_per_mil_tokens: 1,
+    output_cost_per_mil_tokens: 3,
     displayName: "Mistral Small",
   },
   "mistral-medium": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 2.7,
+    input_cost_per_mil_tokens: 2.75,
     output_cost_per_mil_tokens: 8.1,
     displayName: "Mistral Medium",
   },

@@ -42,6 +42,13 @@ export function googleEventToOpenAIChatEvent(
           created: getTimestampInSeconds(),
           model,
           object: "chat.completion.chunk",
+          usage: data.usageMetadata
+            ? {
+                prompt_tokens: data.usageMetadata.promptTokenCount,
+                completion_tokens: data.usageMetadata.candidatesTokenCount,
+                total_tokens: data.usageMetadata.totalTokenCount,
+              }
+            : undefined,
         }
       : null,
     finished:

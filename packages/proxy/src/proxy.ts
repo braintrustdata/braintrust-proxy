@@ -757,7 +757,7 @@ async function fetchModelLoop(
             10,
           );
           console.warn(
-            `Ran out of endpoints and hite rate limit errors, so sleeping for ${delayMs}ms`,
+            `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
             loopIndex,
           );
           await new Promise((r) => setTimeout(r, delayMs));

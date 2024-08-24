@@ -127,7 +127,11 @@ export const anthropicStreamEventSchema = z.union([
   z.object({
     type: z.literal("message_delta"),
     delta: z.object({
-      stop_reason: z.union([z.literal("end_turn"), z.literal("tool_use")]),
+      stop_reason: z.union([
+        z.literal("end_turn"),
+        z.literal("tool_use"),
+        z.literal("max_tokens"),
+      ]),
       stop_sequence: z.string().nullish(),
     }),
     usage: anthropicUsage.optional(),

@@ -47,8 +47,8 @@ import {
 import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
-import { parseOpenAIStream } from "./providers/openai";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
+import { parseOpenAIStream } from "utils";
 
 type CachedData = {
   headers: Record<string, string>;

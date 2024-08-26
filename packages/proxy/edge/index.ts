@@ -1,11 +1,15 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
-import { decryptMessage, encryptMessage, EncryptedMessage } from "@lib/encrypt";
 import { flushMetrics } from "@lib/metrics";
 import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
+import {
+  decryptMessage,
+  EncryptedMessage,
+  encryptMessage,
+} from "utils/encrypt";
 
 export { FlushingExporter } from "./exporter";
 

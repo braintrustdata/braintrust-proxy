@@ -29,6 +29,12 @@
       "import": "./schema/dist/index.mjs",
       "module": "./schema/dist/index.mjs",
       "require": "./schema/dist/index.js"
+    },
+    "./utils": {
+      "types": "./utils/dist/index.d.ts",
+      "import": "./utils/dist/index.mjs",
+      "module": "./utils/dist/index.mjs",
+      "require": "./utils/dist/index.js"
     }
   },
   "files": [

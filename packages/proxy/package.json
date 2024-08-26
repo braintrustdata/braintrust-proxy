@@ -31,10 +31,10 @@
       "require": "./schema/dist/index.js"
     },
     "./utils": {
-      "types": "./schema/dist/index.d.ts",
-      "import": "./schema/dist/index.mjs",
-      "module": "./schema/dist/index.mjs",
-      "require": "./schema/dist/index.js"
+      "types": "./utils/dist/index.d.ts",
+      "import": "./utils/dist/index.mjs",
+      "module": "./utils/dist/index.mjs",
+      "require": "./utils/dist/index.js"
     }
   },
   "files": [

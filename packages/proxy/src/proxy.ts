@@ -99,7 +99,7 @@ export async function proxyV1({
   cacheGet,
   cachePut,
   digest,
-  meterProvider = NOOP_METER_PROVIDER,
+  meterProvider,
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
@@ -125,7 +125,9 @@ export async function proxyV1({
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
 }): Promise<void> {
-  const meter = meterProvider.getMeter("proxy-metrics");
+  const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
+    "proxy-metrics",
+  );
 
   const totalCalls = meter.createCounter("total_calls");
   const cacheHits = meter.createCounter("results_cache_hits");

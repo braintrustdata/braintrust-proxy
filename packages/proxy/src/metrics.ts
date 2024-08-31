@@ -9,10 +9,54 @@ import {
 } from "@opentelemetry/sdk-metrics";
 import { Resource } from "@opentelemetry/resources";
 import { hrTimeToMicroseconds } from "@opentelemetry/core";
-import { HrTime } from "@opentelemetry/api";
+import { HrTime, Meter, MeterOptions } from "@opentelemetry/api";
 import { PrometheusSerializer } from "./PrometheusSerializer";
 
-export { NOOP_METER_PROVIDER } from "@opentelemetry/api/build/src/metrics/NoopMeterProvider";
+const NOOP_METER: Meter = {
+  createHistogram: () => ({
+    record: () => {},
+  }),
+  createCounter: () => ({
+    add: () => {},
+  }),
+  createUpDownCounter: () => ({
+    add: () => {},
+  }),
+  createObservableGauge: () => ({
+    addCallback: () => ({
+      unregister: () => {},
+    }),
+    removeCallback: () => {},
+  }),
+  createObservableCounter: () => ({
+    addCallback: () => ({
+      unregister: () => {},
+    }),
+    removeCallback: () => {},
+  }),
+  createObservableUpDownCounter: () => ({
+    addCallback: () => ({
+      unregister: () => {},
+    }),
+    removeCallback: () => {},
+  }),
+  createGauge: () => ({
+    set: () => {},
+    record: () => {}, // Add this line
+  }),
+  addBatchObservableCallback: () => ({
+    unregister: () => {},
+  }),
+  removeBatchObservableCallback: () => {},
+};
+
+export class NoopMeterProvider extends MeterProvider {
+  getMeter(_name: string, _version?: string, _options?: MeterOptions): Meter {
+    return NOOP_METER;
+  }
+}
+
+export const NOOP_METER_PROVIDER = new NoopMeterProvider();
 
 export function initMetrics(
   metricReader: MetricReader,

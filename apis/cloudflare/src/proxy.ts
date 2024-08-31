@@ -1,5 +1,5 @@
 import { EdgeProxyV1, FlushingExporter } from "@braintrust/proxy/edge";
-import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
+import { initMetrics, NOOP_METER_PROVIDER } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];

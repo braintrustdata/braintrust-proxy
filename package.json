@@ -1,4 +1,5 @@
 {
+  "name": "proxy-root",
   "repository": "https://github.com/vercel/examples.git",
   "license": "MIT",
   "private": true,
@@ -17,5 +18,6 @@
     "eslint": "^8.56.0",
     "eslint-config-turbo": "latest",
     "turbo": "^1.11.2"
-  }
+  },
+  "packageManager": "pnpm@9.9.0"
 }

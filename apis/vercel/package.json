@@ -10,11 +10,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@braintrust/proxy": "workspace:*",
     "@upstash/ratelimit": "^0.4.3",
     "@vercel/examples-ui": "^1.0.5",
     "@vercel/kv": "^0.2.2",
-    "@braintrust/proxy": "workspace:*",
-    "next": "14.2.3",
+    "next": "14.2.7",
     "react": "latest",
     "react-dom": "latest"
   },

@@ -175,6 +175,18 @@ export async function proxyV1({
     proxyHeaders[FORMAT_HEADER],
   );
 
+  let orgName = proxyHeaders[ORG_NAME_HEADER];
+
+  const pieces = url
+    .split("/")
+    .filter((p) => p.trim() !== "")
+    .map((d) => decodeURIComponent(d));
+
+  if (pieces.length > 2 && pieces[0].toLowerCase() === "btorg") {
+    orgName = pieces[1];
+    url = "/" + pieces.slice(2).map(encodeURIComponent).join("/");
+  }
+
   const cacheableEndpoint =
     url === "/auto" ||
     url === "/embeddings" ||
@@ -213,7 +225,6 @@ export async function proxyV1({
     useCacheMode !== "never" &&
     (useCacheMode === "always" || !temperatureNonZero);
 
-  const orgName = proxyHeaders[ORG_NAME_HEADER];
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
   // Data key is computed from the input data and used for both the cache key and as an input to the encryption key.

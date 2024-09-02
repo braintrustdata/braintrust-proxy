@@ -182,7 +182,7 @@ export async function proxyV1({
     .filter((p) => p.trim() !== "")
     .map((d) => decodeURIComponent(d));
 
-  if (pieces.length > 2 && pieces[0] === "btorg") {
+  if (pieces.length > 2 && pieces[0].toLowerCase() === "btorg") {
     orgName = pieces[1];
     url = "/" + pieces.slice(2).map(encodeURIComponent).join("/");
   }

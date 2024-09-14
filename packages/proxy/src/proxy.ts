@@ -463,9 +463,10 @@ export async function proxyV1({
                       function: delta.tool_calls[0].function,
                     },
                   ];
-                } else if (tool_calls[0].function?.arguments) {
-                  tool_calls[0].function.arguments +=
-                    delta.tool_calls[0].function?.arguments ?? "";
+                } else if (tool_calls[0].function) {
+                  tool_calls[0].function.arguments =
+                    (tool_calls[0].function.arguments ?? "") +
+                    (delta.tool_calls[0].function?.arguments ?? "");
                 }
               }
             }
@@ -495,6 +496,7 @@ export async function proxyV1({
       },
       async flush(controller) {
         if (isStreaming) {
+          console.log("LOGGING TOOL CALLS", tool_calls);
           spanLogger.log({
             output: [
               {

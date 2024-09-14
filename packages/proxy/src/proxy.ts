@@ -496,7 +496,6 @@ export async function proxyV1({
       },
       async flush(controller) {
         if (isStreaming) {
-          console.log("LOGGING TOOL CALLS", tool_calls);
           spanLogger.log({
             output: [
               {

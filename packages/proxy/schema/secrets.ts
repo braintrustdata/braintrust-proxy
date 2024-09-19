@@ -5,6 +5,7 @@ export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).nullish(),
     customModels: z.record(ModelSchema).nullish(),
+    excludeDefaultModels: z.boolean().nullish(),
   })
   .strict();
 

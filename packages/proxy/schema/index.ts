@@ -58,6 +58,7 @@ export const modelParamToModelParam: {
   n: null,
   logprobs: null,
   stream_options: null,
+  parallel_tool_calls: null,
 };
 
 export const sliderSpecs: {

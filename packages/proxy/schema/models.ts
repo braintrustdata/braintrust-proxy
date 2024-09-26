@@ -513,6 +513,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // TOGETHER MODELS
+  "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.06,
+    output_cost_per_mil_tokens: 0.06,
+    displayName: "LLaMA 3.2 3B Instruct Turbo",
+    multimodal: true,
+  },
   "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
     format: "openai",
     flavor: "chat",
@@ -520,12 +528,28 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.18,
     displayName: "LLaMA 3.1 8B Instruct Turbo",
   },
+  "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.18,
+    output_cost_per_mil_tokens: 0.18,
+    displayName: "LLaMA 3.2 11B Vision Instruct Turbo",
+    multimodal: true,
+  },
   "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.88,
     output_cost_per_mil_tokens: 0.88,
     displayName: "LLaMA 3.1 70B Instruct Turbo",
+  },
+  "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "LLaMA 3.2 90B Vision Instruct Turbo",
+    multimodal: true,
   },
   "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
     format: "openai",
@@ -633,6 +657,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 9,
     displayName: "Mistral Large 2",
+  },
+  "pixtral-12b-2409": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.15,
+    displayName: "Pixtral 12b 24096",
+    multimodal: true,
   },
   "open-mistral-nemo": {
     format: "openai",
@@ -769,6 +801,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // FIREWORKS MODELS
+  "accounts/fireworks/models/llama-v3p2-3b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.2 3B Instruct",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    multimodal: true,
+  },
   "accounts/fireworks/models/llama-v3p1-8b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -776,12 +816,28 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.2,
     output_cost_per_mil_tokens: 0.2,
   },
+  "accounts/fireworks/models/llama-v3p2-11b-vision-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.2 11B Vision Instruct",
+    input_cost_per_mil_tokens: 0.18,
+    output_cost_per_mil_tokens: 0.18,
+    multimodal: true,
+  },
   "accounts/fireworks/models/llama-v3p1-70b-instruct": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 70b",
-    input_cost_per_mil_tokens: 1.4,
-    output_cost_per_mil_tokens: 1.4,
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+  },
+  "accounts/fireworks/models/llama-v3p2-90b-vision-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.2 90B Vision Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+    multimodal: true,
   },
   "accounts/fireworks/models/llama-v3p1-405b-instruct": {
     format: "openai",

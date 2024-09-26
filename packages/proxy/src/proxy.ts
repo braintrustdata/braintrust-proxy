@@ -897,6 +897,11 @@ async function fetchOpenAI(
     baseURL = baseURL.replace("<model>", bodyData.model);
   }
 
+  if (secret.type === "mistral") {
+    delete bodyData["stream_options"];
+    delete bodyData["parallel_tool_calls"];
+  }
+
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
   headers["authorization"] = "Bearer " + secret.secret;

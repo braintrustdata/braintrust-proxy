@@ -899,6 +899,7 @@ async function fetchOpenAI(
 
   if (secret.type === "mistral") {
     delete bodyData["stream_options"];
+    delete bodyData["parallel_tool_calls"];
   }
 
   const fullURL = new URL(baseURL + url);

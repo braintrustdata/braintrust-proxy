@@ -914,6 +914,10 @@ async function fetchOpenAI(
     headers["OpenAI-Organization"] = secret.metadata.organization_id;
   }
 
+  if (secret.type === "cerebras") {
+    headers["User-Agent"] = "braintrust-proxy";
+  }
+
   // TODO: Ideally this is encapsulated as some advanced per-model config
   // or mapping, but for now, let's just map it manually.
   if (typeof bodyData.model === "string" && bodyData.model.startsWith("o1")) {

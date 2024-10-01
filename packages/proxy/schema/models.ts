@@ -847,6 +847,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 3,
   },
 
+  // CEREBRAS MODELS
+  "llama3.1-8b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 8B",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+  },
+  "llama3.1-70b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 70B",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+  },
+
   // GOOGLE MODELS
   "gemini-1.5-pro-latest": {
     format: "google",

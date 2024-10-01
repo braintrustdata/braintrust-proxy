@@ -21,6 +21,7 @@ export const ModelEndpointType = [
   "together",
   "lepton",
   "fireworks",
+  "cerebras",
   "mistral",
   "ollama",
   "groq",
@@ -191,6 +192,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama3-1-405b": ["lepton"],
   "llama3-1-70b": ["lepton"],
   "llama3-1-8b": ["lepton"],
+  "llama3.1-8b": ["cerebras"],
+  "llama3.1-70b": ["cerebras"],
   "accounts/fireworks/models/llama-v3p2-3b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p1-8b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p2-11b-vision-instruct": ["fireworks"],
@@ -224,6 +227,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   MISTRAL_API_KEY: "mistral",
   OLLAMA_API_KEY: "ollama",
   GROQ_API_KEY: "groq",
+  CEREBRAS_API_KEY: "cerebras",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -240,6 +244,7 @@ export const EndpointProviderToBaseURL: {
   groq: "https://api.groq.com/openai/v1",
   lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
+  cerebras: "https://api.cerebras.ai/v1",
   bedrock: null,
   azure: null,
   js: null,

@@ -336,6 +336,7 @@ export function anthropicCompletionToOpenAICompletion(
                   arguments: JSON.stringify(firstTool.input),
                 }
               : undefined,
+          refusal: null,
         },
       },
     ],

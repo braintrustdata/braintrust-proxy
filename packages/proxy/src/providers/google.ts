@@ -70,6 +70,7 @@ export function googleCompletionToOpenAICompletion(
         content: candidate.content.parts[0].text || "",
       },
       finish_reason: translateFinishReason(candidate.finishReason) || "stop",
+      refusal: null,
     })),
     created: getTimestampInSeconds(),
     model,

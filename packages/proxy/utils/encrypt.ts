@@ -22,7 +22,7 @@ export function isCryptoAvailable(): boolean {
   return ret;
 }
 
-function base64ToArrayBuffer(base64: string) {
+export function base64ToArrayBuffer(base64: string) {
   var binaryString = atob(base64);
   var bytes = new Uint8Array(binaryString.length);
   for (var i = 0; i < binaryString.length; i++) {
@@ -31,7 +31,7 @@ function base64ToArrayBuffer(base64: string) {
   return bytes.buffer;
 }
 
-function arrayBufferToBase64(buffer: ArrayBuffer) {
+export function arrayBufferToBase64(buffer: ArrayBuffer) {
   var binary = "";
   var bytes = new Uint8Array(buffer);
   var len = bytes.byteLength;

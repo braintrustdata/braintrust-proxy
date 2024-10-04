@@ -19,6 +19,7 @@ import {
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
+import { convertImageToBase64 } from "./util";
 
 /*
 Example events:
@@ -336,7 +337,6 @@ export function anthropicCompletionToOpenAICompletion(
                   arguments: JSON.stringify(firstTool.input),
                 }
               : undefined,
-          refusal: null,
         },
       },
     ],
@@ -362,26 +362,6 @@ function anthropicFinishReason(
       : null;
 }
 
-const base64ImagePattern =
-  /^data:(image\/(?:jpeg|png|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/;
-
-function convertBase64Image(image: string): AnthropicImageBlock {
-  const match = image.match(base64ImagePattern);
-  if (!match) {
-    throw new Error("Unable to parse base64 image: " + image);
-  }
-
-  const [, media_type, data] = match;
-  return anthropicImageBlockSchema.parse({
-    type: "image",
-    source: {
-      type: "base64",
-      media_type,
-      data,
-    },
-  });
-}
-
 const maxImageBytes = 5 * 1024 * 1024;
 const allowedImageTypes = [
   "image/jpeg",
@@ -390,52 +370,21 @@ const allowedImageTypes = [
   "image/webp",
 ];
 
-function arrayBufferToBase64(buf: ArrayBuffer): string {
-  const bytes = new Uint8Array(buf);
-  let binaryString = "";
-  bytes.forEach((b) => (binaryString += String.fromCharCode(b)));
-  return btoa(binaryString);
-}
-
-async function convertImageUrl(url: string): Promise<AnthropicImageBlock> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.statusText}`);
-  }
-
-  const contentType = response.headers.get("content-type");
-  if (!contentType) {
-    throw new Error("Failed to get content type of the image");
-  }
-  if (!allowedImageTypes.includes(contentType)) {
-    throw new Error(`Unsupported image type: ${contentType}`);
-  }
-
-  const arrayBuffer = await response.arrayBuffer();
-  if (arrayBuffer.byteLength > maxImageBytes) {
-    throw new Error("Image size exceeds the 5 MB limit for Claude");
-  }
-
-  const data = arrayBufferToBase64(arrayBuffer);
-
+export async function makeAnthropicImageBlock(
+  image: string,
+): Promise<AnthropicImageBlock> {
+  const imageBlock = await convertImageToBase64({
+    image,
+    allowedImageTypes,
+    maxImageBytes,
+  });
   return anthropicImageBlockSchema.parse({
     type: "image",
     source: {
       type: "base64",
-      media_type: contentType,
-      data,
+      ...imageBlock,
     },
   });
-}
-
-export async function makeAnthropicImageBlock(
-  image: string,
-): Promise<AnthropicImageBlock> {
-  if (base64ImagePattern.test(image)) {
-    return convertBase64Image(image);
-  }
-
-  return convertImageUrl(image);
 }
 
 export async function openAIContentToAnthropicContent(

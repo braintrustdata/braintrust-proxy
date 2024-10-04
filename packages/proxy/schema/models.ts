@@ -31,8 +31,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
     multimodal: true,
-    input_cost_per_mil_tokens: 5,
-    output_cost_per_mil_tokens: 15,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
     displayName: "GPT 4o",
   },
   "gpt-4o-mini": {
@@ -870,6 +870,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.25,
     output_cost_per_mil_tokens: 5.0,
     displayName: "Gemini 1.5 Pro Latest",
+    multimodal: true,
   },
   "gemini-1.5-flash-latest": {
     format: "google",
@@ -877,6 +878,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash Latest",
+    multimodal: true,
+  },
+  "gemini-1.5-flash-8b": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.0375,
+    output_cost_per_mil_tokens: 0.15,
+    displayName: "Gemini 1.5 Flash 8B",
+    multimodal: true,
   },
   "gemini-1.0-pro": {
     format: "google",

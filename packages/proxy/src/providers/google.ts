@@ -1,8 +1,52 @@
 import { v4 as uuidv4 } from "uuid";
-
-import { FinishReason, GenerateContentResponse } from "@google/generative-ai";
+import { Message } from "@braintrust/core/typespecs";
+import {
+  FinishReason,
+  GenerateContentResponse,
+  InlineDataPart,
+  Part,
+} from "@google/generative-ai";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "..";
+import { convertImageToBase64 } from "./util";
+
+export async function makeGoogleImageBlock(
+  image: string,
+): Promise<InlineDataPart> {
+  const imageBlock = await convertImageToBase64({
+    image,
+    allowedImageTypes: [
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "image/heic",
+      "image/heif",
+    ],
+    maxImageBytes: null,
+  });
+
+  return {
+    inlineData: {
+      mimeType: imageBlock.media_type,
+      data: imageBlock.data,
+    },
+  };
+}
+
+export async function openAIContentToGoogleContent(
+  content: Message["content"],
+): Promise<Part[]> {
+  if (typeof content === "string") {
+    return [{ text: content }];
+  }
+  return Promise.all(
+    content?.map(async (part) =>
+      part.type === "text"
+        ? { text: part.text }
+        : await makeGoogleImageBlock(part.image_url.url),
+    ) ?? [],
+  );
+}
 
 function translateFinishReason(
   reason?: FinishReason,
@@ -16,6 +60,7 @@ function translateFinishReason(
     case FinishReason.STOP:
       return "stop";
     case FinishReason.RECITATION:
+    case FinishReason.LANGUAGE:
     case FinishReason.OTHER:
     case FinishReason.FINISH_REASON_UNSPECIFIED:
     case undefined:
@@ -68,9 +113,9 @@ export function googleCompletionToOpenAICompletion(
       message: {
         role: "assistant",
         content: candidate.content.parts[0].text || "",
+        refusal: null,
       },
       finish_reason: translateFinishReason(candidate.finishReason) || "stop",
-      refusal: null,
     })),
     created: getTimestampInSeconds(),
     model,

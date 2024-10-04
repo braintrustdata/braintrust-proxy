@@ -31,8 +31,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
     multimodal: true,
-    input_cost_per_mil_tokens: 5,
-    output_cost_per_mil_tokens: 15,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
     displayName: "GPT 4o",
   },
   "gpt-4o-mini": {

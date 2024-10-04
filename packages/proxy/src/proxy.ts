@@ -1124,7 +1124,7 @@ async function fetchGoogle(
   const content = await Promise.all(
     oaiMessages.map(async (m: Message) => ({
       parts: await openAIContentToGoogleContent(m.content),
-      // TODO: We need to generalize this properly
+      // TODO: Add tool call support
       role:
         m.role === "assistant"
           ? "model"

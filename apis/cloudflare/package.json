@@ -13,14 +13,15 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240512.0",
     "itty-router": "^3.0.12",
+    "tsup": "^8.0.1",
     "typescript": "^5.0.4",
-    "wrangler": "^3.57.1",
-    "tsup": "^8.0.1"
+    "wrangler": "^3.57.1"
   },
   "dependencies": {
     "@braintrust/proxy": "workspace:*",
     "@opentelemetry/resources": "^1.18.1",
     "@opentelemetry/sdk-metrics": "^1.18.1",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "openai": "^4.67.1"
   }
 }

@@ -20,10 +20,19 @@ export async function handleRealtimeProxy(
   const webSocketPair = new WebSocketPair();
   const [client, server] = Object.values(webSocketPair);
 
+  let ws: WebSocket | null = null;
   server.accept();
 
   // Create RealtimeClient
-  const realtimeClient = new RealtimeClient({ apiKey: env.OPENAI_API_KEY });
+  // XXX Pick apart the URL from the request
+  ws = new WebSocket(
+    `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01`,
+    [
+      "realtime",
+      `openai-insecure-api-key.${env.OPENAI_API_KEY}`,
+      "openai-beta.realtime-v1",
+    ],
+  );
 
   // Relay: OpenAI Realtime API Event -> Client
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {

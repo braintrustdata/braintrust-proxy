@@ -1,3 +1,11 @@
+import { RealtimeClient } from "@openai/realtime-api-beta";
+
+declare global {
+  interface Env {
+    OPENAI_API_KEY: string;
+  }
+}
+
 export async function handleRealtimeProxy(
   request: Request,
   proxyV1Prefix: string,
@@ -13,9 +21,66 @@ export async function handleRealtimeProxy(
   const [client, server] = Object.values(webSocketPair);
 
   server.accept();
-  server.addEventListener("message", (event) => {
-    console.log(event.data);
+
+  // Create RealtimeClient
+  const realtimeClient = new RealtimeClient({ apiKey: env.OPENAI_API_KEY });
+
+  // Relay: OpenAI Realtime API Event -> Client
+  realtimeClient.realtime.on("server.*", (event: { type: string }) => {
+    console.log(`Relaying "${event.type}" to Client`);
+    server.send(JSON.stringify(event));
   });
+
+  realtimeClient.realtime.on("close", () => {
+    server.close();
+  });
+
+  // Relay: Client -> OpenAI Realtime API Event
+  const messageQueue: string[] = [];
+
+  server.addEventListener("message", (event: MessageEvent) => {
+    const messageHandler = (data: string) => {
+      try {
+        const parsedEvent = JSON.parse(data);
+        console.log(`Relaying "${parsedEvent.type}" to OpenAI`);
+        realtimeClient.realtime.send(parsedEvent.type, parsedEvent);
+      } catch (e) {
+        console.error(`Error parsing event from client: ${data}`);
+      }
+    };
+
+    const data =
+      typeof event.data === "string" ? event.data : event.data.toString();
+    if (!realtimeClient.isConnected()) {
+      messageQueue.push(data);
+    } else {
+      messageHandler(data);
+    }
+  });
+
+  server.addEventListener("close", () => {
+    realtimeClient.disconnect();
+  });
+
+  // Connect to OpenAI Realtime API
+  try {
+    console.log(`Connecting to OpenAI...`);
+    await realtimeClient.connect();
+    console.log(`Connected to OpenAI successfully!`);
+    while (messageQueue.length) {
+      const message = messageQueue.shift();
+      if (message) {
+        server.send(message);
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error) {
+      console.error(`Error connecting to OpenAI: ${e.message}`);
+    } else {
+      console.error(`Error connecting to OpenAI: ${e}`);
+    }
+    return new Response("Error connecting to OpenAI", { status: 500 });
+  }
 
   return new Response(null, {
     status: 101,
@@ -23,6 +88,7 @@ export async function handleRealtimeProxy(
   });
 }
 
+// PORT THIS!
 /*
 import { WebSocketServer } from 'ws';
 import { RealtimeClient } from '@openai/realtime-api-beta';

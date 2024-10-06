@@ -5,7 +5,6 @@ import {
   originWhitelist,
 } from "./proxy";
 import { getCorsHeaders } from "@braintrust/proxy/edge";
-import { handleRealtimeProxy } from "./realtime";
 export { PrometheusMetricAggregator } from "./metric-aggregator";
 
 // The fetch handler is invoked when this worker receives a HTTP(S) request
@@ -21,9 +20,6 @@ export default {
 
     for (const prefix of proxyV1Prefixes) {
       if (url.pathname.startsWith(prefix)) {
-        if (url.pathname === `${prefix}/realtime`) {
-          return handleRealtimeProxy(request, prefix, env, ctx);
-        }
         return handleProxyV1(request, prefix, env, ctx);
       }
     }

@@ -214,6 +214,15 @@ export async function proxyV1({
   }
 
   if (url === "/credentials") {
+    const writeToReadable = (response: string) => {
+      return new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(response));
+          controller.close();
+        },
+      });
+    };
+    let readable: ReadableStream | null = null;
     try {
       const key = await makeTempCredentials({
         authToken,
@@ -225,17 +234,20 @@ export async function proxyV1({
       });
 
       setStatusCode(200);
-      res.getWriter().write(new TextEncoder().encode(JSON.stringify({ key })));
+      readable = writeToReadable(JSON.stringify({ key }));
     } catch (e) {
       setStatusCode(400);
-      res
-        .getWriter()
-        .write(
-          new TextEncoder().encode(
-            e instanceof Error ? e.message : JSON.stringify(e),
-          ),
-        );
+      readable = writeToReadable(
+        e instanceof Error ? e.message : JSON.stringify(e),
+      );
+    } finally {
+      if (readable) {
+        readable.pipeTo(res).catch(console.error);
+      } else {
+        res.close().catch(console.error);
+      }
     }
+    return;
   }
 
   // According to https://platform.openai.com/docs/api-reference, temperature is
@@ -626,9 +638,9 @@ export async function proxyV1({
   }
 
   if (stream) {
-    stream.pipeTo(res);
+    stream.pipeTo(res).catch(console.error);
   } else {
-    res.close();
+    res.close().catch(console.error);
   }
 }
 

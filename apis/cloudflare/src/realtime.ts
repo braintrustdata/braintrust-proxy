@@ -1,17 +1,34 @@
 import { RealtimeClient } from "@openai/realtime-api-beta";
-
+import { APISecret, fetchTempCredentials } from "@braintrust/proxy/schema";
+import { ORG_NAME_HEADER } from "@braintrust/proxy";
 declare global {
   interface Env {
     OPENAI_API_KEY: string;
   }
 }
 
-export async function handleRealtimeProxy(
-  request: Request,
-  proxyV1Prefix: string,
-  env: Env,
-  ctx: ExecutionContext,
-): Promise<Response> {
+const MODEL = "gpt-4o-realtime-preview-2024-10-01";
+
+export async function handleRealtimeProxy({
+  request,
+  env,
+  ctx,
+  cacheGet,
+  digest,
+  getApiSecrets,
+}: {
+  request: Request;
+  env: Env;
+  ctx: ExecutionContext;
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
+  digest: (message: string) => Promise<string>;
+  getApiSecrets: (
+    useCache: boolean,
+    authToken: string,
+    model: string | null,
+    org_name?: string,
+  ) => Promise<APISecret[]>;
+}): Promise<Response> {
   const upgradeHeader = request.headers.get("Upgrade");
   if (!upgradeHeader || upgradeHeader !== "websocket") {
     return new Response("Expected Upgrade: websocket", { status: 426 });
@@ -27,6 +44,7 @@ export async function handleRealtimeProxy(
   // Copy protocol headers
   const responseHeaders = new Headers();
   const protocolHeader = request.headers.get("Sec-WebSocket-Protocol");
+  let apiKey: string | undefined;
   if (protocolHeader) {
     const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
     console.log(requestedProtocols);
@@ -37,19 +55,57 @@ export async function handleRealtimeProxy(
 
     for (const protocol of requestedProtocols) {
       if (protocol.startsWith("openai-insecure-api-key.")) {
-        const apiKey = protocol.slice("openai-insecure-api-key.".length).trim();
-        if (apiKey.length > 0 && apiKey !== "null") {
-          console.log(`Using API key: ${apiKey}`);
+        const parsedApiKey = protocol
+          .slice("openai-insecure-api-key.".length)
+          .trim();
+        if (parsedApiKey.length > 0 && parsedApiKey !== "null") {
+          apiKey = parsedApiKey;
         }
       }
     }
   }
 
+  const url = new URL(request.url);
+  const model = url.searchParams.get("model") ?? MODEL;
+
+  if (!apiKey) {
+    return new Response("Missing API key", { status: 401 });
+  }
+
+  let braintrust_api_key: string | undefined;
+  let project_name: string | undefined;
+  let secrets: APISecret[] = [];
+
+  // First, try to use temp credentials, because then we'll get access to the project name
+  // for logging.
+  const tempCredentials = await fetchTempCredentials({
+    key: apiKey,
+    cacheGet,
+    digest,
+  });
+  if (tempCredentials !== "invalid" && tempCredentials !== "expired") {
+    braintrust_api_key = tempCredentials.braintrust_api_key;
+    project_name = tempCredentials.project_name;
+    secrets = tempCredentials.secrets;
+  } else {
+    secrets = await getApiSecrets(
+      true,
+      apiKey,
+      model,
+      request.headers.get(ORG_NAME_HEADER) ?? undefined,
+    );
+  }
+
+  if (secrets.length === 0) {
+    return new Response("No secrets found", { status: 401 });
+  }
+  console.log("XXX USING SECRETS", secrets);
+
   // Create RealtimeClient
   try {
-    (globalThis as any).document = 1; // This tricks the OpenAI library into using new WebSocket
+    (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
     realtimeClient = new RealtimeClient({
-      apiKey: env.OPENAI_API_KEY,
+      apiKey: secrets[0].secret,
       dangerouslyAllowAPIKeyInBrowser: true,
     });
     (globalThis as any).document = undefined; // Clean up after ourselves

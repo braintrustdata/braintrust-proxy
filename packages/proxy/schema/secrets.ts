@@ -1,11 +1,8 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
-import {
-  arrayBufferToBase64,
-  generateRandomPassword,
-  getCurrentUnixTimestamp,
-} from "utils";
+import { generateRandomPassword, getCurrentUnixTimestamp } from "utils";
 import { v4 } from "uuid";
+import { isEmpty } from "@lib/util";
 
 export const BaseMetadataSchema = z
   .object({
@@ -97,11 +94,14 @@ export type APISecret = z.infer<typeof APISecretSchema>;
 
 export const credentialsRequestSchema = z.object({
   model: z.string().nullish(),
+  project_name: z.string().nullish(),
   ttl_seconds: z.number().default(60 * 10) /* 10 minutes by default */,
 });
 
 export const tempCredentialsSchema = z.object({
   secrets: z.array(APISecretSchema),
+  braintrust_api_key: z.string().optional(),
+  project_name: z.string().optional(),
   expires_at: z.number(),
 });
 export type TempCredentials = z.infer<typeof tempCredentialsSchema>;
@@ -136,12 +136,33 @@ export async function makeTempCredentials({
     throw new Error(body.error.message);
   }
 
-  const { model, ttl_seconds } = body.data;
+  const { model, ttl_seconds, project_name } = body.data;
   const expiresAt = getCurrentUnixTimestamp() + ttl_seconds;
 
-  const secrets = await getApiSecrets(false, authToken, model ?? null, orgName);
+  let secrets = await getApiSecrets(false, authToken, model ?? null, orgName);
+
+  let braintrust_api_key: string | undefined;
+  if (!isEmpty(project_name) && secrets.length > 0) {
+    // If there is a project specified, only use secrets that came from Braintrust
+    // (this effectively forces it to be a BRAINTRUST_API_KEY).
+    secrets = secrets.filter((secret) => !!secret.id);
+    if (secrets.length === 0) {
+      throw new Error(`No secrets found matching project ${project_name}`);
+    }
+
+    // Ideally we can create a temporary write-only key (that is scoped to the project),
+    // but for now, just use the auth token itself.
+    braintrust_api_key = authToken;
+  }
+
+  if (secrets.length === 0) {
+    throw new Error("No secrets found");
+  }
+
   const tempCredentials: TempCredentials = {
     secrets,
+    braintrust_api_key,
+    project_name: project_name ?? undefined,
     expires_at: expiresAt,
   };
 
@@ -172,7 +193,7 @@ export async function fetchTempCredentials({
   key: string;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
   digest: (message: string) => Promise<string>;
-}): Promise<APISecret[] | "invalid" | "expired"> {
+}): Promise<TempCredentials | "invalid" | "expired"> {
   const parts = key.split("_");
   if (parts.length !== 5) {
     console.warn(`Invalid temp key, expect 4 parts, got ${parts.length}`);
@@ -193,8 +214,11 @@ export async function fetchTempCredentials({
     return "invalid";
   }
 
-  const tempCredentials = tempCredentialsSchema.parse(
+  const tempCredentials = tempCredentialsSchema.safeParse(
     JSON.parse(cacheResponse),
   );
-  return tempCredentials.secrets;
+  if (!tempCredentials.success) {
+    return "invalid";
+  }
+  return tempCredentials.data;
 }

@@ -94,6 +94,7 @@ export class BraintrustRealtimeLogger {
     const btLogger =
       apiKey && projectName
         ? Braintrust.initLogger({
+            state: new Braintrust.BraintrustState({}),
             apiKey,
             appUrl,
             projectName,

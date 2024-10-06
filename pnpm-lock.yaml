@@ -40,7 +40,7 @@ importers:
         version: 16.3.1
       openai:
         specifier: ^4.67.1
-        version: 4.67.1(zod@3.23.8)
+        version: 4.67.1
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20240512.0
@@ -5344,7 +5344,7 @@ packages:
       - encoding
     dev: false
 
-  /openai@4.67.1(zod@3.23.8):
+  /openai@4.67.1:
     resolution: {integrity: sha512-2YbRFy6qaYRJabK2zLMn4txrB2xBy0KP5g/eoqeSPTT31mIJMnkT75toagvfE555IKa2RdrzJrZwdDsUipsAMw==}
     hasBin: true
     peerDependencies:
@@ -5360,7 +5360,6 @@ packages:
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
-      zod: 3.23.8
     transitivePeerDependencies:
       - encoding
     dev: false

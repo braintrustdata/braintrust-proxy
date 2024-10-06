@@ -111,6 +111,7 @@ export async function handleRealtimeProxy({
   // Create RealtimeClient
   try {
     (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
+    console.log("Creating RealtimeClient");
     realtimeClient = new RealtimeClient({
       apiKey: secrets[0].secret,
       dangerouslyAllowAPIKeyInBrowser: true,
@@ -124,6 +125,7 @@ export async function handleRealtimeProxy({
 
   // Relay: OpenAI Realtime API Event -> Client
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {
+    // console.log(`Relaying "${event.type}" to Client`);
     // TODO: We should deserialize the data to RealtimeMessage
     try {
       realtimeLogger.handleMessageServer(event as RealtimeMessage);
@@ -133,7 +135,20 @@ export async function handleRealtimeProxy({
     server.send(JSON.stringify(event));
   });
 
+  const pingInterval = setInterval(() => {
+    console.log("Calling ping OpenAI");
+    const websocket: WebSocket | null = realtimeClient.realtime.ws;
+    if (!websocket) {
+      console.log("No websocket to ping");
+      return;
+    }
+    console.log("Sending pong");
+    websocket.send(new Uint8Array([0xa9]));
+  }, 1000);
+
   realtimeClient.realtime.on("close", () => {
+    console.log("Closing server-side because I received a close event");
+    clearInterval(pingInterval);
     ctx.waitUntil(realtimeLogger.close());
     server.close();
   });
@@ -150,6 +165,7 @@ export async function handleRealtimeProxy({
         } catch (e) {
           console.warn(`Error logging client event: ${parsedEvent}`);
         }
+        // console.log(`Relaying "${event.type}" to OpenAI`);
         realtimeClient.realtime.send(parsedEvent.type, parsedEvent);
       } catch (e) {
         console.error(`Error parsing event from client: ${data}`);
@@ -166,6 +182,8 @@ export async function handleRealtimeProxy({
   });
 
   server.addEventListener("close", () => {
+    console.log("Closing server-side because the client closed the connection");
+    clearInterval(pingInterval);
     realtimeClient.disconnect();
     ctx.waitUntil(realtimeLogger.close());
   });

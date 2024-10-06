@@ -105,8 +105,19 @@ export async function encryptMessage(
   };
 }
 
-export function generateRandomPassword(): string {
-  return arrayBufferToBase64(crypto.getRandomValues(new Uint8Array(36)))
-    .replace("+", "0")
-    .replace("/", "1");
+export function generateRandomPassword(bytes: number = 36): string {
+  return arrayBufferToBase64(
+    crypto.getRandomValues(new Uint8Array(bytes)),
+  ).replace(/[+/=]/g, (match) => {
+    switch (match) {
+      case "+":
+        return "0";
+      case "/":
+        return "1";
+      case "=":
+        return "2";
+      default:
+        return match;
+    }
+  });
 }

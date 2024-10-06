@@ -4,7 +4,12 @@ import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { APISecret, getModelEndpointTypes } from "@schema";
+import {
+  APISecret,
+  fetchTempCredentials,
+  getModelEndpointTypes,
+  isTempCredential,
+} from "@schema";
 import {
   decryptMessage,
   EncryptedMessage,
@@ -145,12 +150,38 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       proxyHeaders[name] = value;
     });
 
+    const cacheGet = async (encryptionKey: string, key: string) => {
+      if (opts.completionsCache) {
+        return (
+          (await encryptedGet(opts.completionsCache, encryptionKey, key)) ??
+          null
+        );
+      } else {
+        return null;
+      }
+    };
+
     const fetchApiSecrets = async (
       useCache: boolean,
       authToken: string,
       model: string | null,
       org_name?: string,
     ): Promise<APISecret[]> => {
+      if (isTempCredential(authToken)) {
+        const result = await fetchTempCredentials({
+          key: authToken,
+          cacheGet,
+          digest: digestMessage,
+        });
+        if (result === "invalid") {
+          // fall through to the next case
+        } else if (result === "expired") {
+          throw new Error("Temporary credentials expired");
+        } else {
+          return result;
+        }
+      }
+
       const cacheKey = await digestMessage(
         `${model}/${org_name ? org_name + ":" : ""}${authToken}`,
       );
@@ -228,29 +259,25 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       return secrets;
     };
 
-    const cacheGet = async (encryptionKey: string, key: string) => {
-      if (opts.completionsCache) {
-        return (
-          (await encryptedGet(opts.completionsCache, encryptionKey, key)) ??
-          null
-        );
-      } else {
-        return null;
-      }
-    };
-
     const cachePut = async (
       encryptionKey: string,
       key: string,
       value: string,
-    ) => {
+      ttl_seconds?: number,
+    ): Promise<void> => {
       if (opts.completionsCache) {
-        ctx.waitUntil(
-          encryptedPut(opts.completionsCache, encryptionKey, key, value, {
-            // 1 week
-            ttl: 60 * 60 * 24 * 7,
-          }),
+        const ret = encryptedPut(
+          opts.completionsCache,
+          encryptionKey,
+          key,
+          value,
+          {
+            // 1 week if not specified
+            ttl: ttl_seconds ?? 60 * 60 * 24 * 7,
+          },
         );
+        ctx.waitUntil(ret);
+        return ret;
       }
     };
 

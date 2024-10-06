@@ -1,5 +1,11 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
+import {
+  arrayBufferToBase64,
+  generateRandomPassword,
+  getCurrentUnixTimestamp,
+} from "utils";
+import { v4 } from "uuid";
 
 export const BaseMetadataSchema = z
   .object({
@@ -91,11 +97,104 @@ export type APISecret = z.infer<typeof APISecretSchema>;
 
 export const credentialsRequestSchema = z.object({
   model: z.string().nullish(),
-  ttl_seconds: z.number().default(60),
+  ttl_seconds: z.number().default(60 * 10) /* 10 minutes by default */,
 });
 
 export const tempCredentialsSchema = z.object({
-  secret: APISecretSchema,
+  secrets: z.array(APISecretSchema),
   expires_at: z.number(),
 });
 export type TempCredentials = z.infer<typeof tempCredentialsSchema>;
+
+export async function makeTempCredentials({
+  authToken,
+  body: rawBody,
+  orgName,
+  digest,
+  getApiSecrets,
+  cachePut,
+}: {
+  authToken: string;
+  body: unknown;
+  orgName: string | undefined;
+  getApiSecrets: (
+    useCache: boolean,
+    authToken: string,
+    model: string | null,
+    org_name?: string,
+  ) => Promise<APISecret[]>;
+  digest: (message: string) => Promise<string>;
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>;
+}) {
+  const body = credentialsRequestSchema.safeParse(rawBody);
+  if (!body.success) {
+    throw new Error(body.error.message);
+  }
+
+  const { model, ttl_seconds } = body.data;
+  const expiresAt = getCurrentUnixTimestamp() + ttl_seconds;
+
+  const secrets = await getApiSecrets(false, authToken, model ?? null, orgName);
+  const tempCredentials: TempCredentials = {
+    secrets,
+    expires_at: expiresAt,
+  };
+
+  const cacheKey = v4();
+  const expiredHex = Math.floor(expiresAt).toString(36);
+  const resultKey = `bt_temp_${generateRandomPassword(60)}_${expiredHex}_${cacheKey}`;
+  const encryptionKey = await digest(resultKey);
+
+  await cachePut(
+    encryptionKey,
+    cacheKey,
+    JSON.stringify(tempCredentials),
+    ttl_seconds,
+  );
+
+  return resultKey;
+}
+
+export function isTempCredential(key: string) {
+  return key.startsWith("bt_temp_");
+}
+
+export async function fetchTempCredentials({
+  key,
+  cacheGet,
+  digest,
+}: {
+  key: string;
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
+  digest: (message: string) => Promise<string>;
+}): Promise<APISecret[] | "invalid" | "expired"> {
+  const parts = key.split("_");
+  if (parts.length !== 5) {
+    console.warn(`Invalid temp key, expect 4 parts, got ${parts.length}`);
+    return "invalid";
+  }
+  const expiredHex = parts[3];
+  const cacheKey = parts[4];
+  const encryptionKey = await digest(key);
+  const cacheResponse = await cacheGet(encryptionKey, cacheKey);
+
+  const expiresAt = parseInt(expiredHex, 36);
+  if (expiresAt < getCurrentUnixTimestamp()) {
+    console.warn(`Temp key expired at ${expiresAt}`);
+    return "expired";
+  }
+
+  if (!cacheResponse) {
+    return "invalid";
+  }
+
+  const tempCredentials = tempCredentialsSchema.parse(
+    JSON.parse(cacheResponse),
+  );
+  return tempCredentials.secrets;
+}

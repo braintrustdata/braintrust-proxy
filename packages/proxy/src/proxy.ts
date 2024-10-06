@@ -11,7 +11,7 @@ import {
   translateParams,
   ModelFormat,
   APISecret,
-  credentialsRequestSchema,
+  makeTempCredentials,
 } from "@schema";
 import {
   flattenChunks,
@@ -50,7 +50,7 @@ import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import { generateRandomPassword, parseOpenAIStream } from "utils";
+import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -120,7 +120,12 @@ export async function proxyV1({
     org_name?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
-  cachePut: (encryptionKey: string, key: string, value: string) => void;
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>;
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
@@ -199,8 +204,7 @@ export async function proxyV1({
   if (
     url === "/auto" ||
     url === "/chat/completions" ||
-    url === "/completions" ||
-    url === "/credentials"
+    url === "/completions"
   ) {
     try {
       bodyData = JSON.parse(body);
@@ -210,18 +214,28 @@ export async function proxyV1({
   }
 
   if (url === "/credentials") {
-    return await makeTempCredentials({
-      authToken,
-      body: bodyData,
-      orgName,
-      setHeader,
-      setStatusCode,
-      res,
-      getApiSecrets,
-      cacheGet,
-      cachePut,
-      digest,
-    });
+    try {
+      const key = await makeTempCredentials({
+        authToken,
+        body: JSON.parse(body),
+        orgName,
+        digest,
+        getApiSecrets,
+        cachePut,
+      });
+
+      setStatusCode(200);
+      res.getWriter().write(new TextEncoder().encode(JSON.stringify({ key })));
+    } catch (e) {
+      setStatusCode(400);
+      res
+        .getWriter()
+        .write(
+          new TextEncoder().encode(
+            e instanceof Error ? e.message : JSON.stringify(e),
+          ),
+        );
+    }
   }
 
   // According to https://platform.openai.com/docs/api-reference, temperature is
@@ -406,7 +420,7 @@ export async function proxyV1({
             encryptionKey,
             cacheKey,
             JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
-          );
+          ).catch(console.error);
           controller.terminate();
         },
       });
@@ -1427,69 +1441,4 @@ function logSpanInputs(
       break;
     }
   }
-}
-
-export function getCurrentUnixTimestamp(): number {
-  return Date.now() / 1000;
-}
-
-async function makeTempCredentials({
-  authToken,
-  body: rawBody,
-  orgName,
-  digest,
-  setHeader,
-  setStatusCode,
-  res,
-  getApiSecrets,
-  cacheGet,
-  cachePut,
-}: {
-  authToken: string;
-  body: unknown;
-  orgName: string | undefined;
-  setHeader: (name: string, value: string) => void;
-  setStatusCode: (code: number) => void;
-  res: WritableStream<Uint8Array>;
-  getApiSecrets: (
-    useCache: boolean,
-    authToken: string,
-    model: string | null,
-    org_name?: string,
-  ) => Promise<APISecret[]>;
-  digest: (message: string) => Promise<string>;
-  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
-  cachePut: (encryptionKey: string, key: string, value: string) => void;
-}) {
-  const body = credentialsRequestSchema.safeParse(rawBody);
-  if (!body.success) {
-    setStatusCode(400);
-    res
-      .getWriter()
-      .write(new TextEncoder().encode(JSON.stringify(body.error.message)));
-    return;
-  }
-
-  const { model, ttl_seconds } = body.data;
-
-  const secret = await getApiSecrets(false, authToken, model ?? null, orgName);
-  const tempCredentials = {
-    secret,
-    expires_at: getCurrentUnixTimestamp() + ttl_seconds,
-  };
-
-  const resultKey = `bt_temp_${generateRandomPassword()}`;
-  const encryptionKey = await digest(resultKey);
-
-  // XXX Next steps:
-  // - Change this cachePut interface to accept a TTL (and fix the places we call it)
-  // - Support reading this temporary secret from the cache
-  // - Add some tests, etc.
-  // - Use the temp secret in realtime.
-  cachePut(encryptionKey, resultKey, JSON.stringify(tempCredentials));
-
-  setStatusCode(200);
-  res
-    .getWriter()
-    .write(new TextEncoder().encode(JSON.stringify({ key: resultKey })));
 }

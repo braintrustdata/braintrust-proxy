@@ -20,14 +20,26 @@ export async function handleRealtimeProxy(
   const webSocketPair = new WebSocketPair();
   const [client, server] = Object.values(webSocketPair);
 
+  let realtimeClient: RealtimeClient | null = null;
+
   server.accept();
 
   // Create RealtimeClient
-  const realtimeClient = new RealtimeClient({ apiKey: env.OPENAI_API_KEY });
+  try {
+    (globalThis as any).document = 1; // This tricks the OpenAI library into using new WebSocket
+    realtimeClient = new RealtimeClient({
+      apiKey: env.OPENAI_API_KEY,
+      dangerouslyAllowAPIKeyInBrowser: true,
+    });
+    (globalThis as any).document = undefined; // Clean up after ourselves
+  } catch (e) {
+    console.error(`Error creating RealtimeClient: ${e}`);
+    server.close();
+    return new Response("Error creating RealtimeClient", { status: 500 });
+  }
 
   // Relay: OpenAI Realtime API Event -> Client
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {
-    console.log(`Relaying "${event.type}" to Client`);
     server.send(JSON.stringify(event));
   });
 
@@ -42,7 +54,6 @@ export async function handleRealtimeProxy(
     const messageHandler = (data: string) => {
       try {
         const parsedEvent = JSON.parse(data);
-        console.log(`Relaying "${parsedEvent.type}" to OpenAI`);
         realtimeClient.realtime.send(parsedEvent.type, parsedEvent);
       } catch (e) {
         console.error(`Error parsing event from client: ${data}`);
@@ -82,114 +93,20 @@ export async function handleRealtimeProxy(
     return new Response("Error connecting to OpenAI", { status: 500 });
   }
 
+  // Copy protocol headers
+  const responseHeaders = new Headers();
+  const protocolHeader = request.headers.get("Sec-WebSocket-Protocol");
+  if (protocolHeader) {
+    const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
+    if (requestedProtocols.includes("realtime")) {
+      // Not exactly sure why this protocol needs to be accepted
+      responseHeaders.set("Sec-WebSocket-Protocol", "realtime");
+    }
+  }
+
   return new Response(null, {
     status: 101,
+    headers: responseHeaders,
     webSocket: client,
   });
 }
-
-// PORT THIS!
-/*
-import { WebSocketServer } from 'ws';
-import { RealtimeClient } from '@openai/realtime-api-beta';
-import { initLogger, traced, startSpan } from "braintrust";
-import { BraintrustRealtimeLogger } from './braintrust-realtime-logger.js';
-
-const logger = initLogger({
-  projectName: "OpenAI Realtime Demo Relay",
-  apiKey: process.env.BRAINTRUST_API_KEY,
-});
-
-export class RealtimeRelay {
-  constructor(apiKey) {
-    this.apiKey = apiKey;
-    this.sockets = new WeakMap();
-    this.wss = null;
-  }
-
-  listen(port) {
-    this.wss = new WebSocketServer({ port });
-    this.wss.on('connection', this.connectionHandler.bind(this));
-    this.log(`Listening on ws://localhost:${port}`);
-  }
-
-  async connectionHandler(ws, req) {
-    const rootSpan = startSpan({name: "connectionHandler"});
-    const realtimeLogger = new BraintrustRealtimeLogger(rootSpan);
-
-    if (!req.url) {
-      this.log('No URL provided, closing connection.');
-      ws.close();
-      return;
-    }
-
-    const url = new URL(req.url, `http://${req.headers.host}`);
-    const pathname = url.pathname;
-
-    if (pathname !== '/') {
-      this.log(`Invalid pathname: "${pathname}"`);
-      ws.close();
-      return;
-    }
-
-    // Instantiate new client
-    this.log(`Connecting with key "${this.apiKey.slice(0, 3)}..."`);
-    const client = new RealtimeClient({ apiKey: this.apiKey });
-
-    // Relay: OpenAI Realtime API Event -> Browser Event
-    client.realtime.on('server.*', (event) => {
-      this.log(`Relaying "${event.type}" to Client`);
-      realtimeLogger.handleMessageServer(event);
-      ws.send(JSON.stringify(event));
-    });
-    client.realtime.on('close', () => {
-      realtimeLogger.close();
-      ws.close();
-    });
-
-    // Relay: Browser Event -> OpenAI Realtime API Event
-    // We need to queue data waiting for the OpenAI connection
-    const messageQueue = [];
-    const messageHandler = (data) => {
-      try {
-        const event = JSON.parse(data);
-        this.log(`Relaying "${event.type}" to OpenAI`);
-        realtimeLogger.handleMessageClient(event);
-        client.realtime.send(event.type, event);
-      } catch (e) {
-        console.error(e.message);
-        this.log(`Error parsing event from client: ${data}`);
-      }
-    };
-    ws.on('message', (data) => {
-      if (!client.isConnected()) {
-        messageQueue.push(data);
-      } else {
-        messageHandler(data);
-      }
-    });
-    ws.on('close', () => {
-      realtimeLogger.close();
-      client.disconnect();
-    });
-
-    // Connect to OpenAI Realtime API
-    try {
-      this.log(`Connecting to OpenAI...`);
-      await client.connect();
-    } catch (e) {
-      this.log(`Error connecting to OpenAI: ${e.message}`);
-      ws.close();
-      return;
-    }
-    this.log(`Connected to OpenAI successfully!`);
-    while (messageQueue.length) {
-      messageHandler(messageQueue.shift());
-    }
-  }
-
-  log(...args) {
-    console.log(`[RealtimeRelay]`, ...args);
-  }
-}
-*/

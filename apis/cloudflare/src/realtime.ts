@@ -1,6 +1,9 @@
 import { RealtimeClient } from "@openai/realtime-api-beta";
 import { APISecret, fetchTempCredentials } from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
+import { initLogger, NOOP_SPAN } from "braintrust";
+import { BraintrustRealtimeLogger, RealtimeMessage } from "./realtime-logger";
+
 declare global {
   interface Env {
     OPENAI_API_KEY: string;
@@ -99,6 +102,12 @@ export async function handleRealtimeProxy({
     return new Response("No secrets found", { status: 401 });
   }
 
+  const realtimeLogger = new BraintrustRealtimeLogger({
+    apiKey: braintrust_api_key,
+    appUrl: env.BRAINTRUST_APP_URL,
+    projectName: project_name,
+  });
+
   // Create RealtimeClient
   try {
     (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
@@ -115,10 +124,17 @@ export async function handleRealtimeProxy({
 
   // Relay: OpenAI Realtime API Event -> Client
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {
+    // TODO: We should deserialize the data to RealtimeMessage
+    try {
+      realtimeLogger.handleMessageServer(event as RealtimeMessage);
+    } catch (e) {
+      console.warn(`Error logging server event: ${event}`);
+    }
     server.send(JSON.stringify(event));
   });
 
   realtimeClient.realtime.on("close", () => {
+    ctx.waitUntil(realtimeLogger.close());
     server.close();
   });
 
@@ -129,6 +145,11 @@ export async function handleRealtimeProxy({
     const messageHandler = (data: string) => {
       try {
         const parsedEvent = JSON.parse(data);
+        try {
+          realtimeLogger.handleMessageClient(parsedEvent);
+        } catch (e) {
+          console.warn(`Error logging client event: ${parsedEvent}`);
+        }
         realtimeClient.realtime.send(parsedEvent.type, parsedEvent);
       } catch (e) {
         console.error(`Error parsing event from client: ${data}`);
@@ -146,6 +167,7 @@ export async function handleRealtimeProxy({
 
   server.addEventListener("close", () => {
     realtimeClient.disconnect();
+    ctx.waitUntil(realtimeLogger.close());
   });
 
   // Connect to OpenAI Realtime API

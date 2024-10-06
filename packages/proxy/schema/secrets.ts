@@ -202,7 +202,6 @@ export async function fetchTempCredentials({
   const expiredHex = parts[3];
   const cacheKey = parts[4];
   const encryptionKey = await digest(key);
-  const cacheResponse = await cacheGet(encryptionKey, cacheKey);
 
   const expiresAt = parseInt(expiredHex, 36);
   if (expiresAt < getCurrentUnixTimestamp()) {
@@ -210,7 +209,9 @@ export async function fetchTempCredentials({
     return "expired";
   }
 
+  const cacheResponse = await cacheGet(encryptionKey, cacheKey);
   if (!cacheResponse) {
+    console.warn(`Temp key not found in cache`);
     return "invalid";
   }
 

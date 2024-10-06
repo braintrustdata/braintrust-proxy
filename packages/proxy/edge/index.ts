@@ -327,7 +327,11 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 }
 
 // We rely on the fact that Upstash will automatically serialize and deserialize things for us
-async function encryptedGet(cache: Cache, encryptionKey: string, key: string) {
+export async function encryptedGet(
+  cache: Cache,
+  encryptionKey: string,
+  key: string,
+) {
   const message = await cache.get<EncryptedMessage>(key);
   if (isEmpty(message)) {
     return null;

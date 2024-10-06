@@ -47,7 +47,6 @@ export async function handleRealtimeProxy({
   let apiKey: string | undefined;
   if (protocolHeader) {
     const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
-    console.log(requestedProtocols);
     if (requestedProtocols.includes("realtime")) {
       // Not exactly sure why this protocol needs to be accepted
       responseHeaders.set("Sec-WebSocket-Protocol", "realtime");
@@ -99,7 +98,6 @@ export async function handleRealtimeProxy({
   if (secrets.length === 0) {
     return new Response("No secrets found", { status: 401 });
   }
-  console.log("XXX USING SECRETS", secrets);
 
   // Create RealtimeClient
   try {

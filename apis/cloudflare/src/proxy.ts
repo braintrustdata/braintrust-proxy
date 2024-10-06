@@ -4,6 +4,7 @@ import {
   ProxyOpts,
   makeFetchApiSecrets,
   digestMessage,
+  encryptedGet,
 } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
@@ -132,14 +133,19 @@ export async function handleProxyV1(
 
   const url = new URL(request.url);
   if (url.pathname === `${proxyV1Prefix}/realtime`) {
-    if (!opts.credentialsCache?.get) {
-      return new Response("Missing credentials cache", { status: 500 });
-    }
     return await handleRealtimeProxy({
       request,
       env,
       ctx,
-      cacheGet: opts.credentialsCache?.get,
+      cacheGet: async (encryptionKey: string, key: string) => {
+        if (!opts.completionsCache) {
+          return null;
+        }
+        return (
+          (await encryptedGet(opts.completionsCache, encryptionKey, key)) ??
+          null
+        );
+      },
       digest: digestMessage,
       getApiSecrets: makeFetchApiSecrets({ ctx, opts }),
     });

@@ -88,3 +88,14 @@ export const APISecretSchema = z.union([
 ]);
 
 export type APISecret = z.infer<typeof APISecretSchema>;
+
+export const credentialsRequestSchema = z.object({
+  model: z.string().nullish(),
+  ttl_seconds: z.number().default(60),
+});
+
+export const tempCredentialsSchema = z.object({
+  secret: APISecretSchema,
+  expires_at: z.number(),
+});
+export type TempCredentials = z.infer<typeof tempCredentialsSchema>;

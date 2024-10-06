@@ -24,6 +24,27 @@ export async function handleRealtimeProxy(
 
   server.accept();
 
+  // Copy protocol headers
+  const responseHeaders = new Headers();
+  const protocolHeader = request.headers.get("Sec-WebSocket-Protocol");
+  if (protocolHeader) {
+    const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
+    console.log(requestedProtocols);
+    if (requestedProtocols.includes("realtime")) {
+      // Not exactly sure why this protocol needs to be accepted
+      responseHeaders.set("Sec-WebSocket-Protocol", "realtime");
+    }
+
+    for (const protocol of requestedProtocols) {
+      if (protocol.startsWith("openai-insecure-api-key.")) {
+        const apiKey = protocol.slice("openai-insecure-api-key.".length).trim();
+        if (apiKey.length > 0 && apiKey !== "null") {
+          console.log(`Using API key: ${apiKey}`);
+        }
+      }
+    }
+  }
+
   // Create RealtimeClient
   try {
     (globalThis as any).document = 1; // This tricks the OpenAI library into using new WebSocket
@@ -91,17 +112,6 @@ export async function handleRealtimeProxy(
       console.error(`Error connecting to OpenAI: ${e}`);
     }
     return new Response("Error connecting to OpenAI", { status: 500 });
-  }
-
-  // Copy protocol headers
-  const responseHeaders = new Headers();
-  const protocolHeader = request.headers.get("Sec-WebSocket-Protocol");
-  if (protocolHeader) {
-    const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
-    if (requestedProtocols.includes("realtime")) {
-      // Not exactly sure why this protocol needs to be accepted
-      responseHeaders.set("Sec-WebSocket-Protocol", "realtime");
-    }
   }
 
   return new Response(null, {

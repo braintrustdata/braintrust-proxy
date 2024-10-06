@@ -11,6 +11,7 @@ import {
   translateParams,
   ModelFormat,
   APISecret,
+  credentialsRequestSchema,
 } from "@schema";
 import {
   flattenChunks,
@@ -49,7 +50,7 @@ import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import { parseOpenAIStream } from "utils";
+import { generateRandomPassword, parseOpenAIStream } from "utils";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -176,7 +177,7 @@ export async function proxyV1({
     proxyHeaders[FORMAT_HEADER],
   );
 
-  let orgName = proxyHeaders[ORG_NAME_HEADER];
+  let orgName: string | undefined = proxyHeaders[ORG_NAME_HEADER] ?? undefined;
 
   const pieces = url
     .split("/")
@@ -198,13 +199,29 @@ export async function proxyV1({
   if (
     url === "/auto" ||
     url === "/chat/completions" ||
-    url === "/completions"
+    url === "/completions" ||
+    url === "/credentials"
   ) {
     try {
       bodyData = JSON.parse(body);
     } catch (e) {
       console.warn("Failed to parse body. This doesn't really matter", e);
     }
+  }
+
+  if (url === "/credentials") {
+    return await makeTempCredentials({
+      authToken,
+      body: bodyData,
+      orgName,
+      setHeader,
+      setStatusCode,
+      res,
+      getApiSecrets,
+      cacheGet,
+      cachePut,
+      digest,
+    });
   }
 
   // According to https://platform.openai.com/docs/api-reference, temperature is
@@ -1414,4 +1431,65 @@ function logSpanInputs(
 
 export function getCurrentUnixTimestamp(): number {
   return Date.now() / 1000;
+}
+
+async function makeTempCredentials({
+  authToken,
+  body: rawBody,
+  orgName,
+  digest,
+  setHeader,
+  setStatusCode,
+  res,
+  getApiSecrets,
+  cacheGet,
+  cachePut,
+}: {
+  authToken: string;
+  body: unknown;
+  orgName: string | undefined;
+  setHeader: (name: string, value: string) => void;
+  setStatusCode: (code: number) => void;
+  res: WritableStream<Uint8Array>;
+  getApiSecrets: (
+    useCache: boolean,
+    authToken: string,
+    model: string | null,
+    org_name?: string,
+  ) => Promise<APISecret[]>;
+  digest: (message: string) => Promise<string>;
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
+  cachePut: (encryptionKey: string, key: string, value: string) => void;
+}) {
+  const body = credentialsRequestSchema.safeParse(rawBody);
+  if (!body.success) {
+    setStatusCode(400);
+    res
+      .getWriter()
+      .write(new TextEncoder().encode(JSON.stringify(body.error.message)));
+    return;
+  }
+
+  const { model, ttl_seconds } = body.data;
+
+  const secret = await getApiSecrets(false, authToken, model ?? null, orgName);
+  const tempCredentials = {
+    secret,
+    expires_at: getCurrentUnixTimestamp() + ttl_seconds,
+  };
+
+  const resultKey = `bt_temp_${generateRandomPassword()}`;
+  const encryptionKey = await digest(resultKey);
+
+  // XXX Next steps:
+  // - Change this cachePut interface to accept a TTL (and fix the places we call it)
+  // - Support reading this temporary secret from the cache
+  // - Add some tests, etc.
+  // - Use the temp secret in realtime.
+  cachePut(encryptionKey, resultKey, JSON.stringify(tempCredentials));
+
+  setStatusCode(200);
+  res
+    .getWriter()
+    .write(new TextEncoder().encode(JSON.stringify({ key: resultKey })));
 }

@@ -898,8 +898,11 @@ async function fetchOpenAI(
     baseURL = baseURL.replace("<model>", bodyData.model);
   }
 
-  if (secret.type === "mistral") {
+  if (secret.type === "mistral" || secret.type === "fireworks") {
     delete bodyData["stream_options"];
+  }
+
+  if (secret.type === "mistral") {
     delete bodyData["parallel_tool_calls"];
   }
 

@@ -263,7 +263,7 @@ ${content}<|im_end|>`,
 
 export function translateParams(
   toProvider: ModelFormat,
-  params: Record<string, string>,
+  params: Record<string, unknown>,
 ): Record<string, unknown> {
   const translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {

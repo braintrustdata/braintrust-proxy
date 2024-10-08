@@ -35,7 +35,7 @@ import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
-  openAIContentToGoogleContent,
+  openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import { Message, MessageRole } from "@braintrust/core/typespecs";
@@ -1121,18 +1121,7 @@ async function fetchGoogle(
     seed, // extract seed so that it's not sent to Google (we just use it for the cache)
     ...oaiParams
   } = bodyData;
-  const content = await Promise.all(
-    oaiMessages.map(async (m: Message) => ({
-      parts: await openAIContentToGoogleContent(m.content),
-      // TODO: Add tool call support
-      role:
-        m.role === "assistant"
-          ? "model"
-          : m.role === "system"
-            ? "user"
-            : m.role,
-    })),
-  );
+  const content = await openAIMessagesToGoogleMessages(oaiMessages);
   const params = Object.fromEntries(
     Object.entries(translateParams("google", oaiParams))
       .map(([key, value]) => {

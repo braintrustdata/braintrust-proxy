@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { Message } from "@braintrust/core/typespecs";
 import {
+  Content,
   FinishReason,
   GenerateContentResponse,
   InlineDataPart,
@@ -33,7 +34,7 @@ export async function makeGoogleImageBlock(
   };
 }
 
-export async function openAIContentToGoogleContent(
+async function openAIContentToGoogleContent(
   content: Message["content"],
 ): Promise<Part[]> {
   if (typeof content === "string") {
@@ -46,6 +47,51 @@ export async function openAIContentToGoogleContent(
         : await makeGoogleImageBlock(part.image_url.url),
     ) ?? [],
   );
+}
+
+export async function openAIMessagesToGoogleMessages(
+  messages: Message[],
+): Promise<Content[]> {
+  // First, do a basic mapping
+  const content: Content[] = await Promise.all(
+    messages.map(
+      async (m: Message): Promise<Content> => ({
+        parts: await openAIContentToGoogleContent(m.content),
+        // TODO: Add tool call support
+        role: m.role === "assistant" ? "model" : m.role,
+      }),
+    ),
+  );
+
+  // Then, flatten each content item into an individual message
+  const flattenedContent: Content[] = content.flatMap((c) =>
+    c.parts.map((p) => ({
+      role: c.role,
+      parts: [p],
+    })),
+  );
+
+  // Finally, sort the messages so that:
+  // 1. All images are up front
+  // 2. The system prompt.
+  // 3. Then all user messages' text parts
+  const sortedContent: Content[] = flattenedContent.sort((a, b) => {
+    if (a.parts[0].inlineData && !b.parts[0].inlineData) {
+      return -1;
+    } else if (b.parts[0].inlineData && !a.parts[0].inlineData) {
+      return 1;
+    }
+
+    if (a.role === "system" && b.role !== "system") {
+      return -1;
+    } else if (b.role === "system" && a.role !== "system") {
+      return 1;
+    }
+
+    return 0;
+  });
+
+  return sortedContent;
 }
 
 function translateFinishReason(

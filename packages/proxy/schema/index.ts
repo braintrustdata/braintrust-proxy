@@ -45,6 +45,7 @@ export const modelParamToModelParam: {
 } = {
   temperature: "temperature",
   top_p: "top_p",
+  top_k: "top_k",
   max_tokens: "max_tokens",
   max_tokens_to_sample: null,
   use_cache: "use_cache",

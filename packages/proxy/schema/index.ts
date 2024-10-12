@@ -45,6 +45,7 @@ export const modelParamToModelParam: {
 } = {
   temperature: "temperature",
   top_p: "top_p",
+  top_k: "top_k",
   max_tokens: "max_tokens",
   max_tokens_to_sample: null,
   use_cache: "use_cache",
@@ -263,7 +264,7 @@ ${content}<|im_end|>`,
 
 export function translateParams(
   toProvider: ModelFormat,
-  params: Record<string, string>,
+  params: Record<string, unknown>,
 ): Record<string, unknown> {
   const translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {

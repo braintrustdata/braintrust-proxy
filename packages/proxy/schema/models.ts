@@ -872,12 +872,28 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 1.5 Pro Latest",
     multimodal: true,
   },
+  "gemini-1.5-pro": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 5.0,
+    displayName: "Gemini 1.5 Pro",
+    multimodal: true,
+  },
   "gemini-1.5-flash-latest": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash Latest",
+    multimodal: true,
+  },
+  "gemini-1.5-flash": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Gemini 1.5 Flash",
     multimodal: true,
   },
   "gemini-1.5-flash-8b": {

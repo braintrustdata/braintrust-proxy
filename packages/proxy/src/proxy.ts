@@ -931,6 +931,11 @@ async function fetchOpenAI(
     }
   }
 
+  headers["X-SLAuth-Egress"] = "true";
+  headers["X-Atlassian-CloudId"] = "micros/braintrust";
+  headers["X-Atlassian-UseCaseId"] = "loom-ai-o11y";
+  headers["X-Atlassian-UserId"] = "mgranmoe";
+
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"

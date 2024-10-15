@@ -135,20 +135,8 @@ export async function handleRealtimeProxy({
     server.send(JSON.stringify(event));
   });
 
-  const pingInterval = setInterval(() => {
-    console.log("Calling ping OpenAI");
-    const websocket: WebSocket | null = realtimeClient.realtime.ws;
-    if (!websocket) {
-      console.log("No websocket to ping");
-      return;
-    }
-    console.log("Sending pong");
-    websocket.send(new Uint8Array([0xa9]));
-  }, 1000);
-
   realtimeClient.realtime.on("close", () => {
     console.log("Closing server-side because I received a close event");
-    clearInterval(pingInterval);
     ctx.waitUntil(realtimeLogger.close());
     server.close();
   });
@@ -183,16 +171,18 @@ export async function handleRealtimeProxy({
 
   server.addEventListener("close", () => {
     console.log("Closing server-side because the client closed the connection");
-    clearInterval(pingInterval);
     realtimeClient.disconnect();
     ctx.waitUntil(realtimeLogger.close());
   });
 
   // Connect to OpenAI Realtime API
   try {
+    // TODO: Remove after https://github.com/openai/openai-realtime-api-beta/pull/37 merges.
+    (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
     console.log(`Connecting to OpenAI...`);
     await realtimeClient.connect();
     console.log(`Connected to OpenAI successfully!`);
+    (globalThis as any).document = undefined; // Clean up after ourselves
     while (messageQueue.length) {
       const message = messageQueue.shift();
       if (message) {

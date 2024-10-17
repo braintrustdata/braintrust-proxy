@@ -949,6 +949,7 @@ async function fetchOpenAI(
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
+      delete bodyData.temperature;
     }
 
     return fetchOpenAIFakeStream({

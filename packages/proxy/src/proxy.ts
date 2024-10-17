@@ -1018,9 +1018,17 @@ async function fetchOpenAIFakeStream({
   let responseChunks: Uint8Array[] = [];
   const responseToStream = new TransformStream<Uint8Array, Uint8Array>({
     transform(chunk, controller) {
-      responseChunks.push(chunk);
+      if (proxyResponse.ok) {
+        responseChunks.push(chunk);
+      } else {
+        controller.enqueue(chunk);
+      }
     },
     flush(controller) {
+      if (!proxyResponse.ok) {
+        controller.terminate();
+        return;
+      }
       const decoder = new TextDecoder();
       const responseText = responseChunks
         .map((c) => decoder.decode(c))

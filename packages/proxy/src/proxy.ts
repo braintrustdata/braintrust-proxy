@@ -952,6 +952,13 @@ async function fetchOpenAI(
       delete bodyData.temperature;
     }
 
+    if (bodyData.messages) {
+      bodyData.messages = bodyData.messages.map((m: any) => ({
+        ...m,
+        role: m.role === "system" ? "user" : m.role,
+      }));
+    }
+
     return fetchOpenAIFakeStream({
       method,
       fullURL,

@@ -1003,7 +1003,9 @@ async function fetchOpenAIFakeStream({
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
 }): Promise<ModelResponse> {
+  let isStream = false;
   if (bodyData) {
+    isStream = !!bodyData["stream"];
     delete bodyData["stream"];
   }
   const proxyResponse = await fetch(
@@ -1071,8 +1073,10 @@ async function fetchOpenAIFakeStream({
 
   return {
     stream:
-      proxyResponse.body?.pipeThrough(responseToStream) ||
-      createEmptyReadableStream(),
+      isStream && proxyResponse.ok
+        ? proxyResponse.body?.pipeThrough(responseToStream) ||
+          createEmptyReadableStream()
+        : proxyResponse.body,
     response: proxyResponse,
   };
 }

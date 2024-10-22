@@ -934,6 +934,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.5,
     displayName: "Gemini Pro",
   },
+
+  // XAI MODELS
+  "grok-beta": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Grok Beta",
+  },
+
   "text-block": {
     format: "js",
     flavor: "completion",

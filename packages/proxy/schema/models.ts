@@ -280,13 +280,29 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // ANTHROPIC MODELS
+  "claude-3-5-sonnet-latest": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet Latest",
+  },
+  "claude-3-5-sonnet-20241022": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet 2024-10-22",
+  },
   "claude-3-5-sonnet-20240620": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3.5 Sonnet",
+    displayName: "Claude 3.5 Sonnet 2024-06-20",
   },
   "claude-3-haiku-20240307": {
     format: "anthropic",

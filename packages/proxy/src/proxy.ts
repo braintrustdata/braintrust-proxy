@@ -1007,6 +1007,7 @@ async function fetchOpenAIFakeStream({
   if (bodyData) {
     isStream = !!bodyData["stream"];
     delete bodyData["stream"];
+    delete bodyData["stream_options"];
   }
   const proxyResponse = await fetch(
     fullURL.toString(),

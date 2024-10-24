@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PromptInputs = ["completion", "chat"] as const;
+export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
 export const ModelFormats = [
@@ -280,13 +280,29 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // ANTHROPIC MODELS
+  "claude-3-5-sonnet-latest": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet Latest",
+  },
+  "claude-3-5-sonnet-20241022": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet 2024-10-22",
+  },
   "claude-3-5-sonnet-20240620": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3.5 Sonnet",
+    displayName: "Claude 3.5 Sonnet 2024-06-20",
   },
   "claude-3-haiku-20240307": {
     format: "anthropic",
@@ -864,14 +880,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GOOGLE MODELS
-  "gemini-1.5-pro-latest": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1.25,
-    output_cost_per_mil_tokens: 5.0,
-    displayName: "Gemini 1.5 Pro Latest",
-    multimodal: true,
-  },
   "gemini-1.5-pro": {
     format: "google",
     flavor: "chat",
@@ -880,20 +888,44 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 1.5 Pro",
     multimodal: true,
   },
-  "gemini-1.5-flash-latest": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.075,
-    output_cost_per_mil_tokens: 0.3,
-    displayName: "Gemini 1.5 Flash Latest",
-    multimodal: true,
-  },
   "gemini-1.5-flash": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash",
+    multimodal: true,
+  },
+  "gemini-1.5-pro-002": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 5.0,
+    displayName: "Gemini 1.5 Pro 002",
+    multimodal: true,
+  },
+  "gemini-1.5-flash-002": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Gemini 1.5 Flash 002",
+    multimodal: true,
+  },
+  "gemini-1.5-pro-latest": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 5.0,
+    displayName: "Gemini 1.5 Pro Latest",
+    multimodal: true,
+  },
+  "gemini-1.5-flash-latest": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Gemini 1.5 Flash Latest",
     multimodal: true,
   },
   "gemini-1.5-flash-8b": {
@@ -918,6 +950,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.5,
     displayName: "Gemini Pro",
   },
+
+  // XAI MODELS
+  "grok-beta": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Grok Beta",
+  },
+
   "text-block": {
     format: "js",
     flavor: "completion",

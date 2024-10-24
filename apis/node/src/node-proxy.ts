@@ -40,14 +40,15 @@ export async function nodeProxyV1({
     encryptionKey: string,
     key: string,
     value: string,
+    ttl_seconds?: number,
   ) => {
     const redis = await getRedis();
     if (!redis) {
-      return null;
+      return;
     }
     redis.set(key, value, {
-      // Cache it for a week
-      EX: 60 * 60 * 24 * 7,
+      // Cache it for a week if no ttl_seconds is provided
+      EX: ttl_seconds ?? 60 * 60 * 24 * 7,
     });
   };
 

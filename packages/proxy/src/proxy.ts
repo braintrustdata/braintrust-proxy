@@ -51,6 +51,7 @@ import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
 import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
+import { openAIChatCompletionToChatEvent } from "./providers/openai";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -337,6 +338,13 @@ export async function proxyV1({
   }
 
   let responseFailed = false;
+
+  let overridenHeaders: string[] = [];
+  const setOverriddenHeader = (name: string, value: string) => {
+    overridenHeaders.push(name);
+    setHeader(name, value);
+  };
+
   if (stream === null) {
     let bodyData = null;
     try {
@@ -361,6 +369,7 @@ export async function proxyV1({
         url,
         headers,
         bodyData,
+        setOverriddenHeader,
         async (model) => {
           const secrets = await getApiSecrets(
             useCredentialsCacheMode !== "never",
@@ -405,7 +414,8 @@ export async function proxyV1({
         lowerName === "access-control-max-age" ||
         lowerName === "access-control-allow-methods" ||
         lowerName === "access-control-allow-headers" ||
-        (decompressFetch && lowerName === "content-encoding")
+        (decompressFetch && lowerName === "content-encoding") ||
+        overridenHeaders.includes(lowerName)
       ) {
         return;
       }
@@ -670,6 +680,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   bodyData: any | null,
+  setHeader: (name: string, value: string) => void,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
@@ -771,6 +782,7 @@ async function fetchModelLoop(
         headers,
         secret,
         bodyData,
+        setHeader,
       );
       if (
         proxyResponse.response.ok ||
@@ -889,10 +901,18 @@ async function fetchModel(
   headers: Record<string, string>,
   secret: APISecret,
   bodyData: null | any,
+  setHeader: (name: string, value: string) => void,
 ) {
   switch (format) {
     case "openai":
-      return await fetchOpenAI(method, url, headers, bodyData, secret);
+      return await fetchOpenAI(
+        method,
+        url,
+        headers,
+        bodyData,
+        secret,
+        setHeader,
+      );
     case "anthropic":
       console.assert(method === "POST");
       return await fetchAnthropic("POST", url, headers, bodyData, secret);
@@ -910,6 +930,7 @@ async function fetchOpenAI(
   headers: Record<string, string>,
   bodyData: null | any,
   secret: APISecret,
+  setHeader: (name: string, value: string) => void,
 ): Promise<ModelResponse> {
   let baseURL =
     (secret.metadata &&
@@ -971,7 +992,23 @@ async function fetchOpenAI(
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
+      delete bodyData.temperature;
     }
+
+    if (bodyData.messages) {
+      bodyData.messages = bodyData.messages.map((m: any) => ({
+        ...m,
+        role: m.role === "system" ? "user" : m.role,
+      }));
+    }
+
+    return fetchOpenAIFakeStream({
+      method,
+      fullURL,
+      headers,
+      bodyData,
+      setHeader,
+    });
   }
 
   const proxyResponse = await fetch(
@@ -992,6 +1029,98 @@ async function fetchOpenAI(
 
   return {
     stream: proxyResponse.body,
+    response: proxyResponse,
+  };
+}
+
+async function fetchOpenAIFakeStream({
+  method,
+  fullURL,
+  headers,
+  bodyData,
+  setHeader,
+}: {
+  method: "GET" | "POST";
+  fullURL: URL;
+  headers: Record<string, string>;
+  bodyData: null | any;
+  setHeader: (name: string, value: string) => void;
+}): Promise<ModelResponse> {
+  let isStream = false;
+  if (bodyData) {
+    isStream = !!bodyData["stream"];
+    delete bodyData["stream"];
+    delete bodyData["stream_options"];
+  }
+  const proxyResponse = await fetch(
+    fullURL.toString(),
+    method === "POST"
+      ? {
+          method,
+          headers,
+          body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
+          keepalive: true,
+        }
+      : {
+          method,
+          headers,
+          keepalive: true,
+        },
+  );
+
+  let responseChunks: Uint8Array[] = [];
+  const responseToStream = new TransformStream<Uint8Array, Uint8Array>({
+    transform(chunk, controller) {
+      if (proxyResponse.ok) {
+        responseChunks.push(chunk);
+      } else {
+        controller.enqueue(chunk);
+      }
+    },
+    flush(controller) {
+      if (!proxyResponse.ok) {
+        controller.terminate();
+        return;
+      }
+      const decoder = new TextDecoder();
+      const responseText = responseChunks
+        .map((c) => decoder.decode(c))
+        .join("");
+      let responseJson: ChatCompletion = {
+        id: "invalid",
+        choices: [],
+        created: 0,
+        model: "invalid",
+        object: "chat.completion",
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
+      };
+      try {
+        responseJson = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse response as JSON", responseText);
+      }
+      controller.enqueue(
+        new TextEncoder().encode(
+          `data: ${JSON.stringify(openAIChatCompletionToChatEvent(responseJson))}\n\n`,
+        ),
+      );
+      controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
+      controller.terminate();
+    },
+  });
+
+  setHeader("content-type", "text/event-stream; charset=utf-8");
+
+  return {
+    stream:
+      isStream && proxyResponse.ok
+        ? proxyResponse.body?.pipeThrough(responseToStream) ||
+          createEmptyReadableStream()
+        : proxyResponse.body,
     response: proxyResponse,
   };
 }

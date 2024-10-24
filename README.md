@@ -20,7 +20,7 @@ deploy it on [Vercel](https://vercel.com), [Cloudflare](https://developers.cloud
 You can communicate with the proxy via the standard OpenAI drivers/API, and simply set the base url to
 `https://api.braintrust.dev/v1/proxy`. Try running the following script in your favorite language, twice.
 
-### Typescript
+### TypeScript
 
 ```javascript copy
 import { OpenAI } from "openai";

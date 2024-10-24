@@ -143,6 +143,9 @@ export const anthropicStreamEventSchema = z.union([
   z.object({
     type: z.literal("ping"),
   }),
+  z.object({
+    type: z.literal("overloaded_error"),
+  }),
 ]);
 
 export type AnthropicStreamEvent = z.infer<typeof anthropicStreamEventSchema>;
@@ -337,6 +340,7 @@ export function anthropicCompletionToOpenAICompletion(
                   arguments: JSON.stringify(firstTool.input),
                 }
               : undefined,
+          refusal: null,
         },
       },
     ],

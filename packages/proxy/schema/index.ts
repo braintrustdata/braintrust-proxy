@@ -25,6 +25,7 @@ export const ModelEndpointType = [
   "mistral",
   "ollama",
   "groq",
+  "xAI",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
@@ -205,6 +206,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-5-sonnet-20240620-v1:0": ["bedrock"],
+  "grok-beta": ["xAI"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -229,6 +231,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   OLLAMA_API_KEY: "ollama",
   GROQ_API_KEY: "groq",
   CEREBRAS_API_KEY: "cerebras",
+  XAI_API_KEY: "xAI",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -246,6 +249,7 @@ export const EndpointProviderToBaseURL: {
   lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
   cerebras: "https://api.cerebras.ai/v1",
+  xAI: "https://api.x.ai/v1",
   bedrock: null,
   azure: null,
   js: null,

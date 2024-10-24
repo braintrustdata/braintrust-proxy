@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const PromptInputs = ["completion", "chat"] as const;
+export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
 export const ModelFormats = [

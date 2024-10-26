@@ -29,15 +29,24 @@ importers:
       '@braintrust/proxy':
         specifier: workspace:*
         version: link:../../packages/proxy
+      '@openai/realtime-api-beta':
+        specifier: github:openai/openai-realtime-api-beta
+        version: github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f
       '@opentelemetry/resources':
         specifier: ^1.18.1
         version: 1.19.0(@opentelemetry/api@1.7.0)
       '@opentelemetry/sdk-metrics':
         specifier: ^1.18.1
         version: 1.19.0(@opentelemetry/api@1.7.0)
+      braintrust:
+        specifier: link:../../../sdk/js
+        version: link:../../../sdk/js
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      openai:
+        specifier: ^4.67.1
+        version: 4.68.4
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20241022.0
@@ -5844,6 +5853,26 @@ packages:
       - encoding
     dev: false
 
+  /openai@4.68.4:
+    resolution: {integrity: sha512-LRinV8iU9VQplkr25oZlyrsYGPGasIwYN8KFMAAFTHHLHjHhejtJ5BALuLFrkGzY4wfbKhOhuT+7lcHZ+F3iEA==}
+    hasBin: true
+    peerDependencies:
+      zod: ^3.23.8
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      '@types/node': 18.18.12
+      '@types/node-fetch': 2.6.9
+      abort-controller: 3.0.0
+      agentkeepalive: 4.5.0
+      form-data-encoder: 1.7.2
+      formdata-node: 4.4.1
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /openapi3-ts@4.2.2:
     resolution: {integrity: sha512-+9g4actZKeb3czfi9gVQ4Br2Ju3KwhCAQJBNaKgye5KggqcBLIhFHH+nIkcm0BUX00TrAJl6dH4JWgM4G4JWrw==}
     dependencies:
@@ -7708,7 +7737,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-    dev: true
 
   /xml2js@0.5.0:
     resolution: {integrity: sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==}
@@ -7769,3 +7797,14 @@ packages:
 
   /zod@3.23.8:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
+
+  github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f:
+    resolution: {tarball: https://codeload.github.com/openai/openai-realtime-api-beta/tar.gz/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f}
+    name: '@openai/realtime-api-beta'
+    version: 0.0.0
+    dependencies:
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+    dev: false

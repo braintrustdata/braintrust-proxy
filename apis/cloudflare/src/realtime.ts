@@ -1,6 +1,7 @@
 import { RealtimeClient } from "@openai/realtime-api-beta";
-import { APISecret, fetchTempCredentials } from "@braintrust/proxy/schema";
+import { APISecret } from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
+import { verifyTempCredentials } from "@braintrust/proxy/utils";
 import { initLogger, NOOP_SPAN } from "braintrust";
 import { BraintrustRealtimeLogger, RealtimeMessage } from "./realtime-logger";
 
@@ -17,14 +18,12 @@ export async function handleRealtimeProxy({
   env,
   ctx,
   cacheGet,
-  digest,
   getApiSecrets,
 }: {
   request: Request;
   env: Env;
   ctx: ExecutionContext;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
-  digest: (message: string) => Promise<string>;
   getApiSecrets: (
     useCache: boolean,
     authToken: string,
@@ -68,42 +67,40 @@ export async function handleRealtimeProxy({
   }
 
   const url = new URL(request.url);
-  const model = url.searchParams.get("model") ?? MODEL;
+  let model = url.searchParams.get("model") ?? MODEL;
 
   if (!apiKey) {
     return new Response("Missing API key", { status: 401 });
   }
 
-  let braintrust_api_key: string | undefined;
   let project_name: string | undefined;
   let secrets: APISecret[] = [];
 
   // First, try to use temp credentials, because then we'll get access to the project name
   // for logging.
-  const tempCredentials = await fetchTempCredentials({
-    key: apiKey,
+  const tempCredentials = await verifyTempCredentials({
+    jwt: apiKey,
     cacheGet,
-    digest,
   });
-  if (tempCredentials !== "invalid" && tempCredentials !== "expired") {
-    braintrust_api_key = tempCredentials.braintrust_api_key;
-    project_name = tempCredentials.project_name;
-    secrets = tempCredentials.secrets;
-  } else {
-    secrets = await getApiSecrets(
-      true,
-      apiKey,
-      model,
-      request.headers.get(ORG_NAME_HEADER) ?? undefined,
-    );
+  if (tempCredentials) {
+    apiKey = tempCredentials.credentialCacheValue.authToken;
+    project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
+    model = tempCredentials.jwtPayload.bt.model ?? MODEL;
   }
+
+  secrets = await getApiSecrets(
+    true,
+    apiKey,
+    model,
+    request.headers.get(ORG_NAME_HEADER) ?? undefined,
+  );
 
   if (secrets.length === 0) {
     return new Response("No secrets found", { status: 401 });
   }
 
   const realtimeLogger = new BraintrustRealtimeLogger({
-    apiKey: braintrust_api_key,
+    apiKey,
     appUrl: env.BRAINTRUST_APP_URL,
     projectName: project_name,
   });

@@ -9,7 +9,8 @@
     "paths": {
       "@lib/*": ["src/*"],
       "@schema": ["schema/index"]
-    }
+    },
+    "esModuleInterop": true
   },
   "include": ["."],
   "exclude": ["node_modules/**", "**/dist/**"]

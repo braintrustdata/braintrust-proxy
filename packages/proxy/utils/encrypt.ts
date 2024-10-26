@@ -10,7 +10,7 @@ function issueCryptoSubtleWarning() {
   }
 }
 
-function getSubtleCrypto() {
+export function getSubtleCrypto() {
   return globalThis.crypto.subtle;
 }
 

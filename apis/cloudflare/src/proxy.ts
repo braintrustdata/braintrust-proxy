@@ -146,7 +146,6 @@ export async function handleProxyV1(
           null
         );
       },
-      digest: digestMessage,
       getApiSecrets: makeFetchApiSecrets({ ctx, opts }),
     });
   }

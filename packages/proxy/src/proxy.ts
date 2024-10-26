@@ -11,7 +11,6 @@ import {
   translateParams,
   ModelFormat,
   APISecret,
-  makeTempCredentials,
 } from "@schema";
 import {
   flattenChunks,
@@ -52,6 +51,7 @@ import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
 import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
+import { makeTempCredentials } from "utils/tempCredentials";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -229,8 +229,6 @@ export async function proxyV1({
         authToken,
         body: JSON.parse(body),
         orgName,
-        digest,
-        getApiSecrets,
         cachePut,
       });
 

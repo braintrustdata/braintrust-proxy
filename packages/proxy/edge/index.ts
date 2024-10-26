@@ -4,12 +4,8 @@ import { proxyV1 } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import {
-  APISecret,
-  fetchTempCredentials,
-  getModelEndpointTypes,
-  isTempCredential,
-} from "@schema";
+import { APISecret, getModelEndpointTypes } from "@schema";
+import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
   EncryptedMessage,
@@ -126,18 +122,24 @@ export function makeFetchApiSecrets({
     model: string | null,
     org_name?: string,
   ): Promise<APISecret[]> => {
-    if (isTempCredential(authToken) && opts.credentialsCache) {
-      const result = await fetchTempCredentials({
-        key: authToken,
-        cacheGet: opts.credentialsCache.get,
-        digest: digestMessage,
-      });
-      if (result === "invalid") {
-        // fall through to the next case
-      } else if (result === "expired") {
-        throw new Error("Temporary credentials expired");
-      } else {
-        return result.secrets;
+    // First try to decode & verify as JWT. We gate this on Braintrust JWT format, not just any JWT, in case a future model provider uses JWT as the auth token.
+    if (opts.credentialsCache && isTempCredential(authToken)) {
+      try {
+        const { jwtPayload, credentialCacheValue } =
+          await verifyTempCredentials({
+            jwt: authToken,
+            cacheGet: opts.credentialsCache.get,
+          });
+
+        // Overwrite parameters with those from JWT.
+        authToken = credentialCacheValue.authToken;
+        model = jwtPayload.bt.model || null;
+        org_name = jwtPayload.bt.org_name || undefined;
+        // Fall through to normal secrets lookup.
+      } catch (error) {
+        // Re-throw to filter out everything except `message`.
+        console.error(error);
+        throw new Error(error instanceof Error ? error.message : undefined);
       }
     }
 

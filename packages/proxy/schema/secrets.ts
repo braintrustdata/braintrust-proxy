@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
-import { generateRandomPassword, getCurrentUnixTimestamp } from "utils";
+import {
+  generateRandomPassword,
+  getCurrentUnixTimestamp,
+  encryptedMessageSchema,
+} from "utils";
 import { v4 } from "uuid";
 import { isEmpty } from "@lib/util";
 
@@ -96,131 +100,39 @@ export type APISecret = z.infer<typeof APISecretSchema>;
 export const credentialsRequestSchema = z.object({
   model: z.string().nullish(),
   project_name: z.string().nullish(),
-  ttl_seconds: z.number().default(60 * 10) /* 10 minutes by default */,
+  ttl_seconds: z
+    .number()
+    .max(60 * 60 * 24)
+    .default(60 * 10) /* 10 minutes by default */,
 });
+export type CredentialsRequest = z.infer<typeof credentialsRequestSchema>;
 
-export const tempCredentialsSchema = z.object({
-  secrets: z.array(APISecretSchema),
-  braintrust_api_key: z.string().optional(),
-  project_name: z.string().optional(),
-  expires_at: z.number(),
+export const tempCredentialsCacheValueSchema = z.object({
+  authToken: z.string().describe("Braintrust API key."),
 });
-export type TempCredentials = z.infer<typeof tempCredentialsSchema>;
+export type TempCredentialsCacheValue = z.infer<
+  typeof tempCredentialsCacheValueSchema
+>;
 
-export async function makeTempCredentials({
-  authToken,
-  body: rawBody,
-  orgName,
-  digest,
-  getApiSecrets,
-  cachePut,
-}: {
-  authToken: string;
-  body: unknown;
-  orgName: string | undefined;
-  getApiSecrets: (
-    useCache: boolean,
-    authToken: string,
-    model: string | null,
-    org_name?: string,
-  ) => Promise<APISecret[]>;
-  digest: (message: string) => Promise<string>;
-  cachePut: (
-    encryptionKey: string,
-    key: string,
-    value: string,
-    ttl_seconds?: number,
-  ) => Promise<void>;
-}) {
-  const body = credentialsRequestSchema.safeParse(rawBody);
-  if (!body.success) {
-    throw new Error(body.error.message);
-  }
+export const tempCredentialJwtPayloadSchema = z
+  .object({
+    iss: z.literal("braintrust_proxy"),
+    aud: z.literal("braintrust_proxy"),
+    jti: z
+      .string()
+      .min(1)
+      .describe("JWT ID, a unique identifier for this token."),
+    exp: z.number(),
+    iat: z.number(),
 
-  const { model, ttl_seconds, project_name } = body.data;
-  const expiresAt = getCurrentUnixTimestamp() + ttl_seconds;
-
-  let secrets = await getApiSecrets(false, authToken, model ?? null, orgName);
-
-  let braintrust_api_key: string | undefined;
-  if (!isEmpty(project_name) && secrets.length > 0) {
-    // If there is a project specified, only use secrets that came from Braintrust
-    // (this effectively forces it to be a BRAINTRUST_API_KEY).
-    secrets = secrets.filter((secret) => !!secret.id);
-    if (secrets.length === 0) {
-      throw new Error(`No secrets found matching project ${project_name}`);
-    }
-
-    // Ideally we can create a temporary write-only key (that is scoped to the project),
-    // but for now, just use the auth token itself.
-    braintrust_api_key = authToken;
-  }
-
-  if (secrets.length === 0) {
-    throw new Error("No secrets found");
-  }
-
-  const tempCredentials: TempCredentials = {
-    secrets,
-    braintrust_api_key,
-    project_name: project_name ?? undefined,
-    expires_at: expiresAt,
-  };
-
-  const cacheKey = v4();
-  const expiredHex = Math.floor(expiresAt).toString(36);
-  const resultKey = `bt_temp_${generateRandomPassword(60)}_${expiredHex}_${cacheKey}`;
-  const encryptionKey = await digest(resultKey);
-
-  await cachePut(
-    encryptionKey,
-    cacheKey,
-    JSON.stringify(tempCredentials),
-    ttl_seconds,
-  );
-
-  return resultKey;
-}
-
-export function isTempCredential(key: string) {
-  return key.startsWith("bt_temp_");
-}
-
-export async function fetchTempCredentials({
-  key,
-  cacheGet,
-  digest,
-}: {
-  key: string;
-  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
-  digest: (message: string) => Promise<string>;
-}): Promise<TempCredentials | "invalid" | "expired"> {
-  const parts = key.split("_");
-  if (parts.length !== 5) {
-    console.warn(`Invalid temp key, expect 4 parts, got ${parts.length}`);
-    return "invalid";
-  }
-  const expiredHex = parts[3];
-  const cacheKey = parts[4];
-  const encryptionKey = await digest(key);
-
-  const expiresAt = parseInt(expiredHex, 36);
-  if (expiresAt < getCurrentUnixTimestamp()) {
-    console.warn(`Temp key expired at ${expiresAt}`);
-    return "expired";
-  }
-
-  const cacheResponse = await cacheGet(encryptionKey, cacheKey);
-  if (!cacheResponse) {
-    console.warn(`Temp key not found in cache`);
-    return "invalid";
-  }
-
-  const tempCredentials = tempCredentialsSchema.safeParse(
-    JSON.parse(cacheResponse),
-  );
-  if (!tempCredentials.success) {
-    return "invalid";
-  }
-  return tempCredentials.data;
-}
+    bt: z.object({
+      org_name: z.string().nullish(),
+      model: z.string().nullish(),
+      proj_name: z.string().nullish(),
+      secret: z.string().min(1),
+    }),
+  })
+  .describe("Braintrust Proxy JWT payload.");
+export type TempCredentialJwtPayload = z.infer<
+  typeof tempCredentialJwtPayloadSchema
+>;

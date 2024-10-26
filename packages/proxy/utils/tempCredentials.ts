@@ -14,7 +14,7 @@ import {
   decode as jwtDecode,
   JwtPayload,
 } from "jsonwebtoken";
-import { isEmpty } from "../src/util"; // TODO: Why does "@lib/util" not work?
+import { isEmpty } from "@lib/util";
 
 const JWT_ALGORITHM = "HS256";
 
@@ -112,8 +112,19 @@ export async function makeTempCredentials({
   return jwt;
 }
 
+/**
+ * Check whether the JWT appears to be a Braintrust temporary credential. This
+ * function only checks for a syntactically valid JWT with a Braintrust `iss`
+ * and `aud` field.
+ *
+ * @param jwt The encoded JWT to check.
+ * @returns True if the `jwt` satisfies the checks.
+ */
 export function isTempCredential(jwt: string): boolean {
-  return tempCredentialJwtPayloadSchema.safeParse(
+  const looseJwtPayloadSchema = tempCredentialJwtPayloadSchema
+    .pick({ iss: true })
+    .or(tempCredentialJwtPayloadSchema.pick({ aud: true }));
+  return looseJwtPayloadSchema.safeParse(
     jwtDecode(jwt, { complete: false, json: true }),
   ).success;
 }

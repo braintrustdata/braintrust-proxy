@@ -440,7 +440,7 @@ export async function proxyV1({
             encryptionKey,
             cacheKey,
             JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
-          ).catch(console.error);
+          );
           controller.terminate();
         },
       });
@@ -646,9 +646,9 @@ export async function proxyV1({
   }
 
   if (stream) {
-    stream.pipeTo(res).catch(console.error);
+    stream.pipeTo(res);
   } else {
-    res.close().catch(console.error);
+    res.close();
   }
 }
 

@@ -17,7 +17,6 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-
     for (const prefix of proxyV1Prefixes) {
       if (url.pathname.startsWith(prefix)) {
         return handleProxyV1(request, prefix, env, ctx);

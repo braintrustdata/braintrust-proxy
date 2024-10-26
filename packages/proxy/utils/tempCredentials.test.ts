@@ -3,7 +3,7 @@ import { makeTempCredentialsJwt } from "./tempCredentials";
 
 test("makeTempCredentialsJwt basic", () => {
   const result = makeTempCredentialsJwt({
-    request: { model: "model", project_name: "project name", ttl_seconds: 600 },
+    request: { model: "model", project_name: "project name", ttl_seconds: 100 },
     authToken: "auth token",
     orgName: "my org name",
   });

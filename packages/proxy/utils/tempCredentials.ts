@@ -36,7 +36,7 @@ export function makeTempCredentialsJwt({
   authToken: string;
   orgName?: string;
 }): MakeTempCredentialResult {
-  const credentialId = `bt_tmp_${uuidv4()}`;
+  const credentialId = `bt_tmp:${uuidv4()}`;
 
   // Generate 256-bit key since our cache uses AES-256.
   const keyLengthBytes = 256 / 8;
@@ -57,8 +57,7 @@ export function makeTempCredentialsJwt({
       secret: cacheEncryptionKey,
     },
   };
-  // const signedJwt = jwtSign(jwtPayload, authToken, { expiresIn: request.ttl_seconds, mutatePayload: true, algorithm: JWT_ALGORITHM });
-  const signedJwt = jwtSign(jwtPayload, authToken, {
+  const jwt = jwtSign(jwtPayload, authToken, {
     expiresIn: request.ttl_seconds,
     mutatePayload: true,
     algorithm: JWT_ALGORITHM,
@@ -73,7 +72,7 @@ export function makeTempCredentialsJwt({
     credentialId,
     cachePayloadPlaintext: { authToken },
     cacheEncryptionKey,
-    jwt: signedJwt,
+    jwt,
   };
 }
 

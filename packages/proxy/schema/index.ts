@@ -202,6 +202,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/llama-v3p1-70b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p2-90b-vision-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p1-405b-instruct": ["fireworks"],
+  "anthropic.claude-3-5-sonnet-20241022-v2:0": ["bedrock"],
   "anthropic.claude-3-opus-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],

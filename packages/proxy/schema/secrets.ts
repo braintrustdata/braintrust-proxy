@@ -1,12 +1,5 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
-import {
-  generateRandomPassword,
-  getCurrentUnixTimestamp,
-  encryptedMessageSchema,
-} from "utils";
-import { v4 } from "uuid";
-import { isEmpty } from "@lib/util";
 
 export const BaseMetadataSchema = z
   .object({

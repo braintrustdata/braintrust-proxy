@@ -90,19 +90,28 @@ export const APISecretSchema = z.union([
 
 export type APISecret = z.infer<typeof APISecretSchema>;
 
-export const credentialsRequestSchema = z.object({
-  model: z.string().nullish(),
-  project_name: z.string().nullish(),
-  ttl_seconds: z
-    .number()
-    .max(60 * 60 * 24)
-    .default(60 * 10) /* 10 minutes by default */,
-});
+export const credentialsRequestSchema = z
+  .object({
+    model: z
+      .string()
+      .nullish()
+      .describe(
+        "Granted model name. Null/undefined to grant usage of all models.",
+      ),
+    ttl_seconds: z
+      .number()
+      .max(60 * 60 * 24)
+      .default(60 * 10)
+      .describe("TTL of the temporary credential. 10 minutes by default."),
+  })
+  .describe("Payload for requesting temporary credentials.");
 export type CredentialsRequest = z.infer<typeof credentialsRequestSchema>;
 
-export const tempCredentialsCacheValueSchema = z.object({
-  authToken: z.string().describe("Braintrust API key."),
-});
+export const tempCredentialsCacheValueSchema = z
+  .object({
+    authToken: z.string().describe("Braintrust API key."),
+  })
+  .describe("Schema for the proxy's internal credential cache.");
 export type TempCredentialsCacheValue = z.infer<
   typeof tempCredentialsCacheValueSchema
 >;
@@ -115,15 +124,16 @@ export const tempCredentialJwtPayloadSchema = z
       .string()
       .min(1)
       .describe("JWT ID, a unique identifier for this token."),
-    exp: z.number(),
-    iat: z.number(),
+    exp: z.number().describe("Standard JWT expiration field."),
+    iat: z.number().describe("Standard jwt issued-at field"),
 
-    bt: z.object({
-      org_name: z.string().nullish(),
-      model: z.string().nullish(),
-      proj_name: z.string().nullish(),
-      secret: z.string().min(1),
-    }),
+    bt: z
+      .object({
+        org_name: z.string().nullish(),
+        model: z.string().nullish(),
+        secret: z.string().min(1),
+      })
+      .describe("Braintrust-specific grants."),
   })
   .describe("Braintrust Proxy JWT payload.");
 export type TempCredentialJwtPayload = z.infer<

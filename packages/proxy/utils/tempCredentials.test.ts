@@ -41,7 +41,7 @@ test("isTempCredential", () => {
 
 test("makeTempCredentialsJwt signing", () => {
   const result = makeTempCredentialsJwt({
-    request: { model: "model", project_name: "project name", ttl_seconds: 100 },
+    request: { model: "model", ttl_seconds: 100 },
     authToken: "auth token",
     orgName: "my org name",
   });
@@ -61,7 +61,6 @@ test("makeTempCredentialsJwt signing", () => {
   //   "bt": {
   //     "model": "model",
   //     "org_name": "my org name",
-  //     "proj_name": "project name",
   //     "secret": "nCCxgkBoyy/zyOJlikuHILBMoK78bHFosEzy03SjJF0=",
   //   },
   //   "exp": 1729928077,
@@ -73,7 +72,6 @@ test("makeTempCredentialsJwt signing", () => {
 
   expect(payload.bt.model).toStrictEqual("model");
   expect(payload.bt.org_name).toStrictEqual("my org name");
-  expect(payload.bt.proj_name).toStrictEqual("project name");
 
   expect(payload.bt.secret).not.toHaveLength(0);
   expect(payload.bt.secret).toStrictEqual(result.cacheEncryptionKey);
@@ -95,7 +93,7 @@ test("makeTempCredentialsJwt signing", () => {
 
 test("makeTempCredentialsJwt no secret reuse", () => {
   const args = {
-    request: { model: "model", project_name: "project name", ttl_seconds: 100 },
+    request: { model: "model", ttl_seconds: 100 },
     authToken: "auth token",
     orgName: "my org name",
   };
@@ -138,7 +136,7 @@ test("verifyTempCredentials signature verification", async () => {
     credentialId,
     cachePayloadPlaintext: credentialCacheValue,
   } = makeTempCredentialsJwt({
-    request: { model: "model", project_name: "project name", ttl_seconds: 100 },
+    request: { model: "model", ttl_seconds: 100 },
     authToken: "auth token",
     orgName: "my org name",
   });

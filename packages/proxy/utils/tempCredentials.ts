@@ -53,7 +53,6 @@ export function makeTempCredentialsJwt({
     bt: {
       org_name: orgName,
       model: request.model,
-      proj_name: request.project_name,
       secret: cacheEncryptionKey,
     },
   };

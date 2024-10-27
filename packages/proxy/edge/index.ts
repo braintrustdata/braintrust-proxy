@@ -122,7 +122,9 @@ export function makeFetchApiSecrets({
     model: string | null,
     org_name?: string,
   ): Promise<APISecret[]> => {
-    // First try to decode & verify as JWT. We gate this on Braintrust JWT format, not just any JWT, in case a future model provider uses JWT as the auth token.
+    // First try to decode & verify as JWT. We gate this on Braintrust JWT
+    // format, not just any JWT, in case a future model provider uses JWT as
+    // the auth token.
     if (opts.credentialsCache && isTempCredential(authToken)) {
       try {
         const { jwtPayload, credentialCacheValue } =

@@ -131,7 +131,6 @@ export function isTempCredential(jwt: string): boolean {
 
 /**
  * Throws if the jwt had an invalid signature or was expired.
- * @param param0
  */
 export function verifyTempCredentialsJwt({
   jwt,

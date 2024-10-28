@@ -114,7 +114,12 @@ export async function makeTempCredentials({
 /**
  * Check whether the JWT appears to be a Braintrust temporary credential. This
  * function only checks for a syntactically valid JWT with a Braintrust `iss`
- * and `aud` field.
+ * or `aud` field.
+ *
+ * In case this function returns some false positives when sniffing whether a
+ * token is a Braintrust temp credential, this does not affect confidentiality
+ * or integrity. However, we still want to be precise so we can show the proper
+ * error message in case there are multiple token types using JWT.
  *
  * @param jwt The encoded JWT to check.
  * @returns True if the `jwt` satisfies the checks.
@@ -129,9 +134,10 @@ export function isTempCredential(jwt: string): boolean {
 }
 
 /**
- * Throws if the jwt had an invalid signature or was expired.
+ * Throws if the jwt has an invalid signature or is expired. Does not verify
+ * Braintrust payload.
  */
-export function verifyTempCredentialsJwt({
+export function verifyJwtOnly({
   jwt,
   credentialCacheValue,
 }: {
@@ -160,7 +166,8 @@ export async function verifyTempCredentials({
     throw new Error("Could not parse JWT format");
   }
 
-  // Safe to show exception message to the client because they already know the request contents.
+  // Safe to show exception message to the client because they already know the
+  // request contents.
   const jwtPayload = tempCredentialJwtPayloadSchema.parse(jwtPayloadRaw);
 
   let credentialCacheValue: TempCredentialsCacheValue | undefined;
@@ -170,20 +177,26 @@ export async function verifyTempCredentials({
       jwtPayload.jti,
     );
     if (!cacheValueString) {
-      throw new Error();
+      throw new Error("expired");
     }
     credentialCacheValue = tempCredentialsCacheValueSchema.parse(
       JSON.parse(cacheValueString),
     );
   } catch (error) {
     // Hide error detail to avoid accidentally disclosing Braintrust auth token.
-    console.error(error);
+    if (error instanceof Error && error.message !== "expired") {
+      console.error(
+        "Credential cache error:",
+        error.stack || "stack trace not available",
+      );
+    }
     throw new Error("Could not access credential cache");
   }
 
   // Safe to show exception message to the client.
   // https://www.npmjs.com/package/jsonwebtoken?activeTab=readme#errors--codes
-  verifyTempCredentialsJwt({ jwt, credentialCacheValue });
+  verifyJwtOnly({ jwt, credentialCacheValue });
+
   // At this point, the JWT signature has been verified. We can safely return
   // the previously decoded result.
   return { jwtPayload, credentialCacheValue };

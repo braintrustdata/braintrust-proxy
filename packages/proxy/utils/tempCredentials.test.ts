@@ -3,10 +3,13 @@ import {
   isTempCredential,
   makeTempCredentialsJwt,
   verifyTempCredentials,
-  verifyTempCredentialsJwt,
-  VerifyTempCredentialsResult,
+  verifyJwtOnly,
 } from "./tempCredentials";
-import { verify as jwtVerify, decode as jwtDecode } from "jsonwebtoken";
+import {
+  sign as jwtSign,
+  verify as jwtVerify,
+  decode as jwtDecode,
+} from "jsonwebtoken";
 import { base64ToArrayBuffer } from "./encrypt";
 import {
   tempCredentialJwtPayloadSchema,
@@ -115,18 +118,38 @@ test("makeTempCredentialsJwt no secret reuse", () => {
   expect(payload1.jti).not.toStrictEqual(payload2.jti);
 });
 
-test("verifyTempCredentialsJwt basic", () => {
+test("verifyJwtOnly basic", () => {
   const credentialCacheValue: TempCredentialsCacheValue = {
     authToken: "auth token",
   };
 
   expect(() =>
-    verifyTempCredentialsJwt({ jwt: "not a jwt", credentialCacheValue }),
+    verifyJwtOnly({ jwt: "not a jwt", credentialCacheValue }),
   ).toThrow("jwt malformed");
 
-  expect(() =>
-    verifyTempCredentialsJwt({ jwt: "a.b.c", credentialCacheValue }),
-  ).toThrow("invalid token");
+  expect(() => verifyJwtOnly({ jwt: "a.b.c", credentialCacheValue })).toThrow(
+    "invalid token",
+  );
+});
+
+test("verifyTempCredentials wrong payload type", async () => {
+  const cacheGet = async () => `{ "authToken": "auth token" }`;
+
+  // Object that does not conform to schema.
+  const jwtWrongSchema = jwtSign({ wrong: "schema" }, "auth token", {
+    algorithm: "HS256",
+  });
+  await expect(
+    verifyTempCredentials({ jwt: jwtWrongSchema, cacheGet }),
+  ).rejects.toThrow("invalid_literal");
+
+  // Non object.
+  const jwtWrongType = jwtSign("not an object", "auth token", {
+    algorithm: "HS256",
+  });
+  await expect(
+    verifyTempCredentials({ jwt: jwtWrongType, cacheGet }),
+  ).rejects.toThrow("not valid JSON");
 });
 
 test("verifyTempCredentials signature verification", async () => {
@@ -142,9 +165,7 @@ test("verifyTempCredentials signature verification", async () => {
   });
 
   // Valid JWT.
-  expect(() =>
-    verifyTempCredentialsJwt({ jwt, credentialCacheValue }),
-  ).not.toThrow();
+  expect(() => verifyJwtOnly({ jwt, credentialCacheValue })).not.toThrow();
 
   // Valid JWT, valid cache.
   const cacheGet = async (
@@ -166,11 +187,23 @@ test("verifyTempCredentials signature verification", async () => {
     verifyTempCredentials({ jwt, cacheGet: badCacheGet }),
   ).rejects.toThrow();
 
-  // Modified JWT, valid cache.
+  // Incorrect signature, nonnull cache response.
   const wrongSecretCacheGet = async () => `{ "authToken": "wrong auth token" }`;
   await expect(
     verifyTempCredentials({ jwt, cacheGet: wrongSecretCacheGet }),
   ).rejects.toThrow("invalid signature");
+
+  // Correct signature, incorrect scheme.
+  const jwtPayloadRaw = jwtDecode(jwt, { complete: false, json: true });
+  if (!jwtPayloadRaw) {
+    throw new Error("This should not happen");
+  }
+  const jwtWrongAlgorithm = jwtSign(jwtPayloadRaw, "auth token", {
+    algorithm: "HS512",
+  });
+  await expect(
+    verifyTempCredentials({ jwt: jwtWrongAlgorithm, cacheGet }),
+  ).rejects.toThrow("invalid algorithm");
 });
 
 test("verifyTempCredentials expiration", async () => {

@@ -125,7 +125,7 @@ export const tempCredentialJwtPayloadSchema = z
       .min(1)
       .describe("JWT ID, a unique identifier for this token."),
     exp: z.number().describe("Standard JWT expiration field."),
-    iat: z.number().describe("Standard jwt issued-at field"),
+    iat: z.number().describe("Standard JWT issued-at field"),
 
     bt: z
       .object({
@@ -133,7 +133,7 @@ export const tempCredentialJwtPayloadSchema = z
         model: z.string().nullish(),
         secret: z.string().min(1),
       })
-      .describe("Braintrust-specific grants."),
+      .describe("Braintrust-specific grants. See credentialsRequestSchema."),
   })
   .describe("Braintrust Proxy JWT payload.");
 export type TempCredentialJwtPayload = z.infer<

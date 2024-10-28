@@ -43,6 +43,7 @@ import {
   ChatCompletion,
   ChatCompletionChunk,
   ChatCompletionCreateParams,
+  CompletionUsage,
   CreateEmbeddingResponse,
 } from "openai/resources";
 import { fetchBedrockAnthropic } from "./providers/bedrock";
@@ -1194,9 +1195,10 @@ async function fetchAnthropic(
   if (proxyResponse.ok) {
     if (params.stream) {
       let idx = 0;
+      let usage: Partial<CompletionUsage> = {};
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
-          const ret = anthropicEventToOpenAIEvent(idx, JSON.parse(data));
+          const ret = anthropicEventToOpenAIEvent(idx, usage, JSON.parse(data));
           idx += 1;
           return {
             data: ret.event && JSON.stringify(ret.event),

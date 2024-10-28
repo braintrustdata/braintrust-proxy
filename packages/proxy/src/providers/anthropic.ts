@@ -5,8 +5,9 @@ import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
+  CompletionUsage,
 } from "openai/resources";
-import { getTimestampInSeconds } from "../util";
+import { getTimestampInSeconds, isEmpty } from "../util";
 import {
   AnthropicContent,
   AnthropicImageBlock,
@@ -175,8 +176,21 @@ export interface AnthropicCompletion {
   usage: { input_tokens: number; output_tokens: number };
 }
 
+function updateUsage(
+  anthropic: z.infer<typeof anthropicUsage>,
+  openai: Partial<CompletionUsage>,
+) {
+  if (!isEmpty(anthropic.input_tokens)) {
+    openai.prompt_tokens = anthropic.input_tokens;
+  }
+  if (!isEmpty(anthropic.output_tokens)) {
+    openai.completion_tokens = anthropic.output_tokens;
+  }
+}
+
 export function anthropicEventToOpenAIEvent(
   idx: number,
+  usage: Partial<CompletionUsage>,
   eventU: unknown,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
@@ -200,6 +214,9 @@ export function anthropicEventToOpenAIEvent(
     undefined;
 
   if (event.type === "message_start") {
+    if (event.message.usage) {
+      updateUsage(event.message.usage, usage);
+    }
     return {
       event: null,
       finished: false,
@@ -252,6 +269,9 @@ export function anthropicEventToOpenAIEvent(
       },
     ];
   } else if (event.type === "message_delta") {
+    if (event.usage) {
+      updateUsage(event.usage, usage);
+    }
     return {
       event: {
         id: uuidv4(),
@@ -266,6 +286,14 @@ export function anthropicEventToOpenAIEvent(
         model: "",
         object: "chat.completion.chunk",
         created: getTimestampInSeconds(),
+        usage:
+          !isEmpty(usage.completion_tokens) && !isEmpty(usage.prompt_tokens)
+            ? {
+                prompt_tokens: usage.prompt_tokens,
+                completion_tokens: usage.completion_tokens,
+                total_tokens: usage.completion_tokens + usage.prompt_tokens,
+              }
+            : undefined,
       },
       finished: true,
     };

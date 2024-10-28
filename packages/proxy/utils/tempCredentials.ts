@@ -12,21 +12,45 @@ import {
   sign as jwtSign,
   verify as jwtVerify,
   decode as jwtDecode,
-  JwtPayload,
 } from "jsonwebtoken";
 import { isEmpty } from "@lib/util";
 
 const JWT_ALGORITHM = "HS256";
 
 export interface MakeTempCredentialResult {
-  // The key for the cache.
+  /**
+   * A generated ID to identify the temporary credential request. The caller
+   * uses this key for the credential cache.
+   */
   credentialId: string;
-  // The caller is expected to encrypt the cache payload with the cacheEncryptionKey.
+  /**
+   * The plaintext payload for the credential cache. The caller is expected to
+   * encrypt this value and insert it into the credential cache.
+   */
   cachePayloadPlaintext: TempCredentialsCacheValue;
+  /**
+   * The encryption key to be used for the credential cache. The caller should
+   * not retain this value after it is used for insertion into the credential
+   * cache.
+   */
   cacheEncryptionKey: string;
-  // The JWT to return to the caller.
+  /**
+   * The new temporary credential encoded as a JWT.
+   */
   jwt: string;
 }
+
+/**
+ * Generate a new temporary credential in the JWT format.
+ *
+ * @param param0
+ * @param param0.request The temporary credential request to sign.
+ * @param param0.authToken The user's Braintrust API key.
+ * @param param0.orgName (Optional) The oranization name associated with the
+ * Braintrust API key, to be used by the proxy at request time for looking up AI
+ * provider keys.
+ * @returns See {@link MakeTempCredentialResult}.
+ */
 export function makeTempCredentialsJwt({
   request,
   authToken,
@@ -75,6 +99,19 @@ export function makeTempCredentialsJwt({
   };
 }
 
+/**
+ * Generate a new temporary credential and insert it into the credential cache.
+ *
+ * @param param0
+ * @param param0.authToken The user's Braintrust API key.
+ * @param param0.body The credential request body after JSON decoding.
+ * @param param0.orgName (Optional) The oranization name associated with the
+ * Braintrust API key, to be used by the proxy at request time for looking up AI
+ * provider keys.
+ * @param param0.cachePut: Function to encrypt and insert into the credential
+ * cache.
+ * @returns
+ */
 export async function makeTempCredentials({
   authToken,
   body: rawBody,
@@ -83,7 +120,7 @@ export async function makeTempCredentials({
 }: {
   authToken: string;
   body: unknown;
-  orgName: string | undefined;
+  orgName?: string;
   cachePut: (
     encryptionKey: string,
     key: string,
@@ -136,6 +173,9 @@ export function isTempCredential(jwt: string): boolean {
 /**
  * Throws if the jwt has an invalid signature or is expired. Does not verify
  * Braintrust payload.
+ *
+ * @throws uncaught exceptions from the `jsonwebtoken` library:
+ * https://www.npmjs.com/package/jsonwebtoken?activeTab=readme#errors--codes
  */
 export function verifyJwtOnly({
   jwt,
@@ -153,6 +193,19 @@ export interface VerifyTempCredentialsResult {
   jwtPayload: TempCredentialJwtPayload;
   credentialCacheValue: TempCredentialsCacheValue;
 }
+/**
+ * Check whether the JWT has a valid signature and expiration, then use the
+ * payload to retrieve and decrypt the cached user credential.
+ *
+ * @throws an exception if the credential is invalid for any reason. The
+ * `message` does not contain sensitive information and can be safely returned
+ * to the user.
+ *
+ * @param param0
+ * @param param0.jwt The encoded JWT to check.
+ * @param param0.cacheGet Function to get and decrypt from the credential cache.
+ * @returns See {@link VerifyTempCredentialsResult}.
+ */
 export async function verifyTempCredentials({
   jwt,
   cacheGet,
@@ -194,7 +247,6 @@ export async function verifyTempCredentials({
   }
 
   // Safe to show exception message to the client.
-  // https://www.npmjs.com/package/jsonwebtoken?activeTab=readme#errors--codes
   verifyJwtOnly({ jwt, credentialCacheValue });
 
   // At this point, the JWT signature has been verified. We can safely return

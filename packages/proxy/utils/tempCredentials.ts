@@ -78,6 +78,7 @@ export function makeTempCredentialsJwt({
       org_name: orgName,
       model: request.model,
       secret: cacheEncryptionKey,
+      proj_name: request.logging?.project_name || undefined,
     },
   };
   const jwt = jwtSign(jwtPayload, authToken, {

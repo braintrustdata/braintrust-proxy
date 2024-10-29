@@ -9,6 +9,7 @@ import { AvailableModels, ModelFormat } from "./models";
 
 export * from "./secrets";
 export * from "./models";
+export { audioCodecSchema, type AudioCodec } from "./audio";
 
 export const ModelEndpointType = [
   "openai",

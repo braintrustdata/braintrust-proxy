@@ -103,6 +103,14 @@ export const credentialsRequestSchema = z
       .max(60 * 60 * 24)
       .default(60 * 10)
       .describe("TTL of the temporary credential. 10 minutes by default."),
+    logging: z
+      .object({
+        project_name: z.string(),
+      })
+      .nullish()
+      .describe(
+        "If present, proxy will log requests to the given Braintrust project name.",
+      ),
   })
   .describe("Payload for requesting temporary credentials.");
 export type CredentialsRequest = z.infer<typeof credentialsRequestSchema>;
@@ -132,6 +140,7 @@ export const tempCredentialJwtPayloadSchema = z
         org_name: z.string().nullish(),
         model: z.string().nullish(),
         secret: z.string().min(1),
+        proj_name: z.string().nullish(),
       })
       .describe("Braintrust-specific grants. See credentialsRequestSchema."),
   })

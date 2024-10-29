@@ -1,8 +1,11 @@
 import { RealtimeClient } from "@openai/realtime-api-beta";
 import { APISecret } from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
-import { verifyTempCredentials } from "@braintrust/proxy/utils";
-import { BraintrustRealtimeLogger } from "./realtime-logger";
+import {
+  isTempCredential,
+  verifyTempCredentials,
+} from "@braintrust/proxy/utils";
+import { OpenAiRealtimeLogger } from "./realtime-logger";
 
 declare global {
   interface Env {
@@ -77,14 +80,16 @@ export async function handleRealtimeProxy({
 
   // First, try to use temp credentials, because then we'll get access to the project name
   // for logging.
-  const tempCredentials = await verifyTempCredentials({
-    jwt: apiKey,
-    cacheGet,
-  });
-  if (tempCredentials) {
+  if (isTempCredential(apiKey)) {
+    const tempCredentials = await verifyTempCredentials({
+      jwt: apiKey,
+      cacheGet,
+    });
+    // Unwrap the API key here to avoid a duplicate call to
+    // `verifyTempCredentials` inside `getApiSecrets`. That call will use Redis
+    // which is not available in Cloudflare.
     apiKey = tempCredentials.credentialCacheValue.authToken;
-    // TODO(kevin):
-    // project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
+    project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
     model = tempCredentials.jwtPayload.bt.model ?? MODEL;
   }
 
@@ -99,7 +104,7 @@ export async function handleRealtimeProxy({
     return new Response("No secrets found", { status: 401 });
   }
 
-  const realtimeLogger = new BraintrustRealtimeLogger({
+  const realtimeLogger = new OpenAiRealtimeLogger({
     apiKey,
     appUrl: env.BRAINTRUST_APP_URL,
     projectName: project_name,

@@ -1,77 +1,180 @@
-import {
-  FailedResponseStatusType,
-  IncompleteResponseStatusType,
-  SessionResourceType,
-  UsageType,
-} from "@openai/realtime-api-beta/dist/lib/client";
 import * as Braintrust from "braintrust/browser";
+import { z } from "zod";
 
-interface BaseMessage {
-  event_id: string;
-}
+// Type definitions copied from:
+// https://github.com/openai/openai-realtime-api-beta/blob/0126e4bfc19901598c3f20d0a4b32bb3e0bea376/lib/client.js
+const baseMessageSchema = z.object({
+  event_id: z.string(),
+});
 
-interface SessionMessage extends BaseMessage {
-  type: "session.created" | "session.updated";
-  session: SessionResourceType;
-}
+export const audioFormatTypeSchema = z.enum([
+  "pcm16",
+  "g711_ulaw",
+  "g711_alaw",
+]);
 
-interface ResponseMessage extends BaseMessage {
-  type: "response.created";
+export const turnDetectionServerVadTypeSchema = z.object({
+  type: z.literal("server_vad"),
+  threshold: z.number().optional(),
+  prefix_padding_ms: z.number().optional(),
+  silence_duration_ms: z.number().optional(),
+});
 
-  // Annoyingly similar to ResponseResourceType
-  response: {
-    object: "realtime.response";
-    id: string;
-    status: "in_progress" | "completed" | "incomplete" | "cancelled" | "failed";
-    status_details:
-      | IncompleteResponseStatusType
-      | FailedResponseStatusType
-      | null;
-    output: string[];
-    usage: UsageType | null;
-  };
-}
+export const toolDefinitionTypeSchema = z.object({
+  // TODO(kevin): Why does OpenAI mark this as optional?
+  type: z.literal("function").optional(),
+  name: z.string(),
+  description: z.string(),
+  parameters: z.record(z.any()),
+});
 
-interface AudioBaseMessage extends BaseMessage {
-  response_id: string;
-  item_id: string;
-  output_index: number;
-  content_index: number;
-}
+export const sessionResourceTypeSchema = z.object({
+  model: z.string().optional(),
+  modalities: z.array(z.string()).optional(),
+  instructions: z.string().optional(),
+  voice: z.enum(["alloy", "shimmer", "echo"]).optional(),
+  input_audio_format: audioFormatTypeSchema.optional(),
+  output_audio_format: audioFormatTypeSchema.optional(),
+  input_audio_transcription: z
+    .object({
+      model: z.enum(["whisper-1"]),
+    })
+    .nullish(),
+  turn_detection: turnDetectionServerVadTypeSchema.nullish(),
+  tools: z.array(toolDefinitionTypeSchema).optional(),
+  tool_choice: z
+    .union([
+      z.object({ type: z.literal("function"), name: z.string() }),
+      z.enum(["auto", "none", "required"]),
+    ])
+    .optional(),
+  temperature: z.number().optional(),
+  max_response_output_tokens: z
+    .union([z.number(), z.literal("inf")])
+    .optional(),
+});
 
-interface AudioDoneMessage extends AudioBaseMessage {
-  type: "response.audio.done";
-}
+export const incompleteResponseStatusTypeSchema = z.object({
+  type: z.literal("incomplete"),
+  reason: z.enum(["interruption", "max_output_tokens", "content_filter"]),
+});
 
-interface AudioTranscriptDoneMessage extends AudioBaseMessage {
-  type:
-    | "response.audio_transcript.done"
-    | "conversation.item.input_audio_transcription.completed";
-  transcript: string;
-}
+export const failedResponseStatusTypeSchema = z.object({
+  type: z.literal("failed"),
+  error: z
+    .object({
+      code: z.string(),
+      message: z.string(),
+    })
+    .nullable(),
+});
 
-interface AudioDeltaMessage extends AudioBaseMessage {
-  type: "response.audio.delta" | "response.audio_transcript.delta";
-  delta: string;
-}
+export const usageTypeSchema = z.object({
+  total_tokens: z.number(),
+  input_tokens: z.number(),
+  output_tokens: z.number(),
+  input_token_details: z.object({
+    cached_tokens: z.number(),
+    text_tokens: z.number(),
+    audio_tokens: z.number(),
+  }),
+  output_token_details: z.object({
+    text_tokens: z.number(),
+    audio_tokens: z.number(),
+  }),
+});
 
-interface ClientAudioAppendMessage extends BaseMessage {
-  type: "input_audio_buffer.append";
-  audio: string;
-}
+export const sessionMessageSchema = baseMessageSchema.extend({
+  type: z.enum(["session.created", "session.updated"]),
+  session: sessionResourceTypeSchema,
+});
 
-interface ClientAudioCommitMessage extends BaseMessage {
-  type: "input_audio_buffer.commit";
-}
+export const responseMessageSchema = baseMessageSchema.extend({
+  type: z.enum(["response.created", "response.done"]),
+  // Annoyingly similar to ResponseResourceType.
+  response: z.object({
+    // This member is not present in ResponseResourceType,
+    object: z.literal("realtime.response"),
+    id: z.string(),
+    status: z.enum([
+      "in_progress",
+      "completed",
+      "incomplete",
+      "cancelled",
+      "failed",
+    ]),
+    status_details: z
+      .union([
+        incompleteResponseStatusTypeSchema,
+        failedResponseStatusTypeSchema,
+      ])
+      .nullable(),
+    // TODO(kevin): Add proper schema.
+    output: z.array(z.record(z.any())),
+    usage: usageTypeSchema.nullable(),
+  }),
+});
 
-export type RealtimeMessage =
-  | SessionMessage
-  | ResponseMessage
-  | ClientAudioAppendMessage
-  | ClientAudioCommitMessage
-  | AudioDeltaMessage
-  | AudioDoneMessage
-  | AudioTranscriptDoneMessage;
+export const audioBaseMessageSchema = baseMessageSchema.extend({
+  response_id: z.string(),
+  item_id: z.string(),
+  output_index: z.number(),
+  content_index: z.number(),
+});
+
+export const audioDoneMessageSchema = audioBaseMessageSchema.extend({
+  type: z.literal("response.audio.done"),
+});
+
+export const audioTranscriptDoneMessageSchema = audioBaseMessageSchema.extend({
+  type: z.enum([
+    "response.audio_transcript.done",
+    "conversation.item.input_audio_transcription.completed",
+  ]),
+  transcript: z.string(),
+});
+
+export const audioDeltaMessageSchema = audioBaseMessageSchema.extend({
+  type: z.enum(["response.audio.delta", "response.audio_transcript.delta"]),
+  delta: z.string(),
+});
+
+export const clientAudioAppendMessageSchema = baseMessageSchema.extend({
+  type: z.literal("input_audio_buffer.append"),
+  audio: z.string(),
+});
+
+export const clientAudioCommitMessageSchema = baseMessageSchema.extend({
+  type: z.literal("input_audio_buffer.commit"),
+});
+
+// Message types we know about, but do not wish to handle at this time.
+export const unhandledMessageSchema = baseMessageSchema.extend({
+  type: z.enum([
+    "session.update",
+    "rate_limits.updated",
+    "response.create",
+    "response.output_item.added",
+    "response.output_item.done",
+    "response.content_part.done",
+    "response.content_part.added",
+    "conversation.item.create",
+    "conversation.item.created",
+  ]),
+});
+
+export const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
+  sessionMessageSchema,
+  responseMessageSchema,
+  clientAudioAppendMessageSchema,
+  clientAudioCommitMessageSchema,
+  audioDeltaMessageSchema,
+  audioDoneMessageSchema,
+  audioTranscriptDoneMessageSchema,
+  unhandledMessageSchema,
+]);
+
+export type OpenAiRealtimeMessage = z.infer<typeof openAiRealtimeMessageSchema>;
 
 export class BraintrustRealtimeLogger {
   rootSpan: Braintrust.Span;
@@ -112,7 +215,13 @@ export class BraintrustRealtimeLogger {
     this.serverSpans = new Map();
   }
 
-  public handleMessageClient(message: RealtimeMessage) {
+  public handleMessageClient(rawMessage: unknown) {
+    // TODO(kevin): Error handling.
+    const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
+    if (!parsed.success) {
+      return;
+    }
+    const message = parsed.data;
     if (message.type === "input_audio_buffer.append") {
       // Lazy create span.
       if (!this.clientSpan) {
@@ -136,7 +245,12 @@ export class BraintrustRealtimeLogger {
     return;
   }
 
-  public handleMessageServer(message: RealtimeMessage) {
+  public handleMessageServer(rawMessage: unknown) {
+    const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
+    if (!parsed.success) {
+      return;
+    }
+    const message = parsed.data;
     if (message.type === "session.created") {
       this.rootSpan.log({
         metadata: {

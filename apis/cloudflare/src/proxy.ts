@@ -3,7 +3,6 @@ import {
   FlushingExporter,
   ProxyOpts,
   makeFetchApiSecrets,
-  digestMessage,
   encryptedGet,
 } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";

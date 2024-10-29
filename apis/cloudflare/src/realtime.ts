@@ -2,8 +2,7 @@ import { RealtimeClient } from "@openai/realtime-api-beta";
 import { APISecret } from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
 import { verifyTempCredentials } from "@braintrust/proxy/utils";
-import { initLogger, NOOP_SPAN } from "braintrust";
-import { BraintrustRealtimeLogger, RealtimeMessage } from "./realtime-logger";
+import { BraintrustRealtimeLogger } from "./realtime-logger";
 
 declare global {
   interface Env {
@@ -84,7 +83,8 @@ export async function handleRealtimeProxy({
   });
   if (tempCredentials) {
     apiKey = tempCredentials.credentialCacheValue.authToken;
-    project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
+    // TODO(kevin):
+    // project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
     model = tempCredentials.jwtPayload.bt.model ?? MODEL;
   }
 
@@ -123,11 +123,12 @@ export async function handleRealtimeProxy({
   // Relay: OpenAI Realtime API Event -> Client
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {
     // console.log(`Relaying "${event.type}" to Client`);
-    // TODO: We should deserialize the data to RealtimeMessage
     try {
-      realtimeLogger.handleMessageServer(event as RealtimeMessage);
+      realtimeLogger.handleMessageServer(event);
     } catch (e) {
-      console.warn(`Error logging server event: ${event}`);
+      console.warn(
+        `Error logging server event: ${e} ${JSON.stringify(event, null, 2)}`,
+      );
     }
     server.send(JSON.stringify(event));
   });
@@ -148,7 +149,9 @@ export async function handleRealtimeProxy({
         try {
           realtimeLogger.handleMessageClient(parsedEvent);
         } catch (e) {
-          console.warn(`Error logging client event: ${parsedEvent}`);
+          console.warn(
+            `Error logging client event: ${e} ${JSON.stringify(parsedEvent, null, 2)}`,
+          );
         }
         // console.log(`Relaying "${event.type}" to OpenAI`);
         realtimeClient.realtime.send(parsedEvent.type, parsedEvent);

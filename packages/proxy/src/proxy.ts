@@ -50,8 +50,9 @@ import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import { parseOpenAIStream } from "utils";
+import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
+import { makeTempCredentials } from "utils/tempCredentials";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -121,7 +122,12 @@ export async function proxyV1({
     org_name?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
-  cachePut: (encryptionKey: string, key: string, value: string) => void;
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>;
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
@@ -178,7 +184,7 @@ export async function proxyV1({
     proxyHeaders[FORMAT_HEADER],
   );
 
-  let orgName = proxyHeaders[ORG_NAME_HEADER];
+  let orgName: string | undefined = proxyHeaders[ORG_NAME_HEADER] ?? undefined;
 
   const pieces = url
     .split("/")
@@ -207,6 +213,41 @@ export async function proxyV1({
     } catch (e) {
       console.warn("Failed to parse body. This doesn't really matter", e);
     }
+  }
+
+  if (url === "/credentials") {
+    const writeToReadable = (response: string) => {
+      return new ReadableStream({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(response));
+          controller.close();
+        },
+      });
+    };
+    let readable: ReadableStream | null = null;
+    try {
+      const key = await makeTempCredentials({
+        authToken,
+        body: JSON.parse(body),
+        orgName,
+        cachePut,
+      });
+
+      setStatusCode(200);
+      readable = writeToReadable(JSON.stringify({ key }));
+    } catch (e) {
+      setStatusCode(400);
+      readable = writeToReadable(
+        e instanceof Error ? e.message : JSON.stringify(e),
+      );
+    } finally {
+      if (readable) {
+        readable.pipeTo(res).catch(console.error);
+      } else {
+        res.close().catch(console.error);
+      }
+    }
+    return;
   }
 
   // According to https://platform.openai.com/docs/api-reference, temperature is
@@ -1533,8 +1574,4 @@ function logSpanInputs(
       break;
     }
   }
-}
-
-export function getCurrentUnixTimestamp(): number {
-  return Date.now() / 1000;
 }

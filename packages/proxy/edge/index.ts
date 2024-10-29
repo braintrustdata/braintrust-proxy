@@ -5,6 +5,7 @@ import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
+import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
   EncryptedMessage,
@@ -101,6 +102,122 @@ async function handleOptions(
   }
 }
 
+export async function digestMessage(message: string) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return btoa(String.fromCharCode(...new Uint8Array(hash)));
+}
+
+export function makeFetchApiSecrets({
+  ctx,
+  opts,
+}: {
+  ctx: EdgeContext;
+  opts: ProxyOpts;
+}) {
+  return async (
+    useCache: boolean,
+    authToken: string,
+    model: string | null,
+    org_name?: string,
+  ): Promise<APISecret[]> => {
+    // First try to decode & verify as JWT. We gate this on Braintrust JWT
+    // format, not just any JWT, in case a future model provider uses JWT as
+    // the auth token.
+    if (opts.credentialsCache && isTempCredential(authToken)) {
+      try {
+        const { jwtPayload, credentialCacheValue } =
+          await verifyTempCredentials({
+            jwt: authToken,
+            cacheGet: opts.credentialsCache.get,
+          });
+
+        // Overwrite parameters with those from JWT.
+        authToken = credentialCacheValue.authToken;
+        model = jwtPayload.bt.model || null;
+        org_name = jwtPayload.bt.org_name || undefined;
+        // Fall through to normal secrets lookup.
+      } catch (error) {
+        // Re-throw to filter out everything except `message`.
+        console.error(error);
+        throw new Error(error instanceof Error ? error.message : undefined);
+      }
+    }
+
+    const cacheKey = await digestMessage(
+      `${model}/${org_name ? org_name + ":" : ""}${authToken}`,
+    );
+
+    const response =
+      useCache &&
+      opts.credentialsCache &&
+      (await encryptedGet(opts.credentialsCache, cacheKey, cacheKey));
+    if (response) {
+      console.log("API KEY CACHE HIT");
+      return JSON.parse(response);
+    } else {
+      console.log("API KEY CACHE MISS");
+    }
+
+    let secrets: APISecret[] = [];
+    let lookupFailed = false;
+    // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
+    // that changes roll out quickly enough too.
+    let ttl = 60;
+    try {
+      const response = await fetch(
+        `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            org_name,
+            mode: "full",
+          }),
+        },
+      );
+      if (response.ok) {
+        secrets = await response.json();
+      } else {
+        lookupFailed = true;
+        console.warn("Failed to lookup api key", await response.text());
+      }
+    } catch (e) {
+      lookupFailed = true;
+      console.warn("Failed to lookup api key. Falling back to provided key", e);
+    }
+
+    if (lookupFailed) {
+      const endpointTypes = !isEmpty(model) ? getModelEndpointTypes(model) : [];
+      secrets.push({
+        secret: authToken,
+        type: endpointTypes[0] ?? "openai",
+      });
+    }
+
+    if (opts.credentialsCache) {
+      ctx.waitUntil(
+        encryptedPut(
+          opts.credentialsCache,
+          cacheKey,
+          cacheKey,
+          JSON.stringify(secrets),
+          {
+            ttl,
+          },
+        ),
+      );
+    }
+
+    return secrets;
+  };
+}
+
 export function EdgeProxyV1(opts: ProxyOpts) {
   const meterProvider = opts.meterProvider;
   return async (request: Request, ctx: EdgeContext) => {
@@ -145,89 +262,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       proxyHeaders[name] = value;
     });
 
-    const fetchApiSecrets = async (
-      useCache: boolean,
-      authToken: string,
-      model: string | null,
-      org_name?: string,
-    ): Promise<APISecret[]> => {
-      const cacheKey = await digestMessage(
-        `${model}/${org_name ? org_name + ":" : ""}${authToken}`,
-      );
-
-      const response =
-        useCache &&
-        opts.credentialsCache &&
-        (await encryptedGet(opts.credentialsCache, cacheKey, cacheKey));
-      if (response) {
-        console.log("API KEY CACHE HIT");
-        return JSON.parse(response);
-      } else {
-        console.log("API KEY CACHE MISS");
-      }
-
-      let secrets: APISecret[] = [];
-      let lookupFailed = false;
-      // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
-      // that changes roll out quickly enough too.
-      let ttl = 60;
-      try {
-        const response = await fetch(
-          `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model,
-              org_name,
-              mode: "full",
-            }),
-          },
-        );
-        if (response.ok) {
-          secrets = await response.json();
-        } else {
-          lookupFailed = true;
-          console.warn("Failed to lookup api key", await response.text());
-        }
-      } catch (e) {
-        lookupFailed = true;
-        console.warn(
-          "Failed to lookup api key. Falling back to provided key",
-          e,
-        );
-      }
-
-      if (lookupFailed) {
-        const endpointTypes = !isEmpty(model)
-          ? getModelEndpointTypes(model)
-          : [];
-        secrets.push({
-          secret: authToken,
-          type: endpointTypes[0] ?? "openai",
-        });
-      }
-
-      if (opts.credentialsCache) {
-        ctx.waitUntil(
-          encryptedPut(
-            opts.credentialsCache,
-            cacheKey,
-            cacheKey,
-            JSON.stringify(secrets),
-            {
-              ttl,
-            },
-          ),
-        );
-      }
-
-      return secrets;
-    };
-
     const cacheGet = async (encryptionKey: string, key: string) => {
       if (opts.completionsCache) {
         return (
@@ -239,26 +273,28 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
     };
 
+    const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+
     const cachePut = async (
       encryptionKey: string,
       key: string,
       value: string,
-    ) => {
+      ttl_seconds?: number,
+    ): Promise<void> => {
       if (opts.completionsCache) {
-        ctx.waitUntil(
-          encryptedPut(opts.completionsCache, encryptionKey, key, value, {
-            // 1 week
-            ttl: 60 * 60 * 24 * 7,
-          }),
+        const ret = encryptedPut(
+          opts.completionsCache,
+          encryptionKey,
+          key,
+          value,
+          {
+            // 1 week if not specified
+            ttl: ttl_seconds ?? 60 * 60 * 24 * 7,
+          },
         );
+        ctx.waitUntil(ret);
+        return ret;
       }
-    };
-
-    const digestMessage = async (message: string) => {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(message);
-      const hash = await crypto.subtle.digest("SHA-256", data);
-      return btoa(String.fromCharCode(...new Uint8Array(hash)));
     };
 
     try {
@@ -295,7 +331,11 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 }
 
 // We rely on the fact that Upstash will automatically serialize and deserialize things for us
-async function encryptedGet(cache: Cache, encryptionKey: string, key: string) {
+export async function encryptedGet(
+  cache: Cache,
+  encryptionKey: string,
+  key: string,
+) {
   const message = await cache.get<EncryptedMessage>(key);
   if (isEmpty(message)) {
     return null;

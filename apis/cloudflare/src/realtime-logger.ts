@@ -1,7 +1,7 @@
 import * as Braintrust from "braintrust/browser";
 import { z } from "zod";
-import { makeWavFile } from "@braintrust/proxy/utils";
-import { AudioCodec } from "@braintrust/proxy/schema/dist";
+import { makeWavFile, makeMp3File } from "@braintrust/proxy/utils";
+import { PcmAudioFormat, ProxyLoggingParam } from "@braintrust/proxy/schema";
 
 // Type definitions adapted from:
 // https://github.com/openai/openai-realtime-api-beta/blob/0126e4bfc19901598c3f20d0a4b32bb3e0bea376/lib/client.js
@@ -156,6 +156,10 @@ const clientAudioCommitMessageSchema = baseMessageSchema.extend({
   type: z.literal("input_audio_buffer.commit"),
 });
 
+const cancelResponseMessageSchema = baseMessageSchema.extend({
+  type: z.literal("response.cancel"),
+});
+
 const errorMessageSchema = baseMessageSchema.extend({
   type: z.literal("error"),
   error: z.any(),
@@ -190,6 +194,7 @@ const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
   audioDoneMessageSchema,
   audioResponseTranscriptDoneMessageSchema,
   audioInputTranscriptDoneMessageSchema,
+  cancelResponseMessageSchema,
   errorMessageSchema,
   unhandledMessageSchema,
 ]);
@@ -199,10 +204,10 @@ const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
  * be logged to Braintrust.
  */
 class AudioBuffer {
-  private inputCodec: AudioCodec;
+  private inputCodec: PcmAudioFormat;
   private audioBuffers: string[];
 
-  constructor({ inputCodec }: { inputCodec: AudioCodec }) {
+  constructor({ inputCodec }: { inputCodec: PcmAudioFormat }) {
     this.inputCodec = inputCodec;
     this.audioBuffers = [];
   }
@@ -211,14 +216,16 @@ class AudioBuffer {
     this.audioBuffers.push(audioBufferBase64);
   }
 
-  encode(): Blob {
-    return makeWavFile(this.inputCodec, this.audioBuffers);
+  encode(compress: boolean): [Blob, string] {
+    if (compress && this.inputCodec.name !== "g711") {
+      return [makeMp3File(this.inputCodec, 48, this.audioBuffers), "mp3"];
+    } else {
+      return [makeWavFile(this.inputCodec, this.audioBuffers), "wav"];
+    }
   }
 }
 
-function openAiAudioFormatToAudioCodec(
-  audioFormat: AudioFormatType,
-): AudioCodec {
+function openAiToPcmAudioFormat(audioFormat: AudioFormatType): PcmAudioFormat {
   const common = {
     byte_order: "little",
     number_encoding: "int",
@@ -238,7 +245,6 @@ function openAiAudioFormatToAudioCodec(
         ...common,
         name: "g711",
         algorithm: "mu",
-        bits_per_sample: 8,
         sample_rate: 8000,
       };
     case "g711_alaw":
@@ -246,7 +252,6 @@ function openAiAudioFormatToAudioCodec(
         ...common,
         name: "g711",
         algorithm: "a",
-        bits_per_sample: 8,
         sample_rate: 8000,
       };
     default:
@@ -265,29 +270,27 @@ export class OpenAiRealtimeLogger {
   private clientSpan?: Braintrust.Span;
   private serverAudioBuffer: Map<string, AudioBuffer>;
   private serverSpans: Map<string, Braintrust.Span>;
-  private inputAudioFormat?: AudioCodec;
-  private outputAudioFormat?: AudioCodec;
+  private inputAudioFormat?: PcmAudioFormat;
+  private outputAudioFormat?: PcmAudioFormat;
+  private compressAudio: boolean;
 
   constructor({
     apiKey,
     appUrl,
-    projectName,
+    loggingParams,
   }: {
-    apiKey?: string;
+    apiKey: string;
     appUrl?: string;
-    projectName?: string;
+    loggingParams: ProxyLoggingParam;
   }) {
-    const btLogger =
-      apiKey && projectName
-        ? Braintrust.initLogger({
-            state: new Braintrust.BraintrustState({}),
-            apiKey,
-            appUrl,
-            projectName,
-            asyncFlush: true,
-            setCurrent: false,
-          })
-        : Braintrust.NOOP_SPAN;
+    const btLogger = Braintrust.initLogger({
+      state: new Braintrust.BraintrustState({}),
+      apiKey,
+      appUrl,
+      projectName: loggingParams.project_name,
+      asyncFlush: true,
+      setCurrent: false,
+    });
 
     this.rootSpan = btLogger.startSpan({
       name: "Realtime session",
@@ -295,9 +298,10 @@ export class OpenAiRealtimeLogger {
     });
     this.serverAudioBuffer = new Map();
     this.serverSpans = new Map();
+    this.compressAudio = loggingParams.compress_audio;
   }
 
-  public handleMessageClient(rawMessage: unknown) {
+  handleMessageClient(rawMessage: unknown) {
     const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
     if (!parsed.success) {
       console.warn("Unknown message:", rawMessage);
@@ -321,25 +325,15 @@ export class OpenAiRealtimeLogger {
       }
       this.clientAudioBuffer.push(message.audio);
     } else if (message.type === "input_audio_buffer.commit") {
-      if (!this.clientAudioBuffer) {
+      if (!this.clientAudioBuffer || !this.clientSpan) {
         throw new Error();
       }
-      const audioFile = this.clientAudioBuffer.encode();
+      this.closeAudio(this.clientAudioBuffer, this.clientSpan, "input");
       this.clientAudioBuffer = undefined;
-      this.clientSpan?.log({
-        input: {
-          audio: new Braintrust.Attachment({
-            data: audioFile,
-            filename: "audio.wav",
-            contentType: audioFile.type,
-            state: this.rootSpan.state,
-          }),
-        },
-      });
     }
   }
 
-  public handleMessageServer(rawMessage: unknown) {
+  handleMessageServer(rawMessage: unknown) {
     const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
     if (!parsed.success) {
       console.warn("Unknown message:", rawMessage);
@@ -353,12 +347,12 @@ export class OpenAiRealtimeLogger {
         },
       });
       if (!this.inputAudioFormat && message.session.input_audio_format) {
-        this.inputAudioFormat = openAiAudioFormatToAudioCodec(
+        this.inputAudioFormat = openAiToPcmAudioFormat(
           message.session.input_audio_format,
         );
       }
       if (!this.outputAudioFormat && message.session.output_audio_format) {
-        this.outputAudioFormat = openAiAudioFormatToAudioCodec(
+        this.outputAudioFormat = openAiToPcmAudioFormat(
           message.session.output_audio_format,
         );
       }
@@ -366,9 +360,8 @@ export class OpenAiRealtimeLogger {
       if (!this.outputAudioFormat) {
         throw new Error("Messages may have been received out of order.");
       }
-      // This might be excessively paranoid.
-      // In practice we seem to only get one response_id streaming at a time
-      // even though the schema allows multiple.
+      // This might be excessively paranoid. In practice we seem to only get one
+      // response_id streaming at a time even though the schema allows multiple.
       this.serverAudioBuffer.set(
         message.response.id,
         new AudioBuffer({ inputCodec: this.outputAudioFormat }),
@@ -390,18 +383,7 @@ export class OpenAiRealtimeLogger {
       if (!buf || !span) {
         throw new Error("Invalid response_id");
       }
-      const audioFile = buf.encode();
-      span.log({
-        // TODO: join input/output to the same span.
-        output: {
-          audio: new Braintrust.Attachment({
-            data: audioFile,
-            filename: "audio.wav",
-            contentType: audioFile.type,
-            state: this.rootSpan.state,
-          }),
-        },
-      });
+      this.closeAudio(buf, span, "output");
       this.serverAudioBuffer.delete(message.response_id);
     } else if (message.type === "response.audio_transcript.done") {
       const span = this.serverSpans.get(message.response_id);
@@ -425,20 +407,41 @@ export class OpenAiRealtimeLogger {
     }
   }
 
+  private closeAudio(
+    buffer: AudioBuffer,
+    span: Braintrust.Span,
+    fieldName: "input" | "output",
+  ) {
+    const [audioFile, fileExt] = buffer.encode(this.compressAudio);
+    span.log({
+      // TODO: join input/output to the same span.
+      [fieldName]: {
+        audio: new Braintrust.Attachment({
+          data: audioFile,
+          filename: `audio.${fileExt}`,
+          contentType: audioFile.type,
+          state: this.rootSpan.state,
+        }),
+      },
+    });
+  }
+
   /**
    * Close all pending spans.
    */
   public async close() {
-    // TODO check if there is a pending audio buffer.
-    // for (const [responseId, audioBuffer] of this.serverAudioBuffer) {
-    //   const span = this.serverSpans.get(responseId);
-    //   if (!span) {
-    //     continue;
-    //   }
-    //   span.log({
+    // Check if there is a pending audio buffer.
+    if (this.clientAudioBuffer && this.clientSpan) {
+      this.closeAudio(this.clientAudioBuffer, this.clientSpan, "input");
+    }
+    for (const [responseId, audioBuffer] of this.serverAudioBuffer) {
+      const span = this.serverSpans.get(responseId);
+      if (!span) {
+        continue;
+      }
+      this.closeAudio(audioBuffer, span, "output");
+    }
 
-    //   })
-    // }
     if (this.serverAudioBuffer.size || this.clientAudioBuffer) {
       console.warn(
         `Closing with ${this.serverAudioBuffer.size} pending server + ${this.clientAudioBuffer ? 1 : 0} pending client audio buffers`,

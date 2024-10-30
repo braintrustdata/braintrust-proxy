@@ -1,5 +1,5 @@
 import { RealtimeClient } from "@openai/realtime-api-beta";
-import { APISecret } from "@braintrust/proxy/schema";
+import { APISecret, ProxyLoggingParam } from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
 import {
   isTempCredential,
@@ -75,40 +75,39 @@ export async function handleRealtimeProxy({
     return new Response("Missing API key", { status: 401 });
   }
 
-  let project_name: string | undefined;
+  let loggingParams: ProxyLoggingParam | undefined;
   let secrets: APISecret[] = [];
 
   // First, try to use temp credentials, because then we'll get access to the project name
   // for logging.
   if (isTempCredential(apiKey)) {
-    const tempCredentials = await verifyTempCredentials({
+    const { credentialCacheValue, jwtPayload } = await verifyTempCredentials({
       jwt: apiKey,
       cacheGet,
     });
     // Unwrap the API key here to avoid a duplicate call to
     // `verifyTempCredentials` inside `getApiSecrets`. That call will use Redis
     // which is not available in Cloudflare.
-    apiKey = tempCredentials.credentialCacheValue.authToken;
-    project_name = tempCredentials.jwtPayload.bt.proj_name ?? undefined;
-    model = tempCredentials.jwtPayload.bt.model ?? MODEL;
+    apiKey = credentialCacheValue.authToken;
+    loggingParams = jwtPayload.bt.logging ?? undefined;
+    model = jwtPayload.bt.model ?? MODEL;
   }
 
-  secrets = await getApiSecrets(
-    true,
-    apiKey,
-    model,
-    request.headers.get(ORG_NAME_HEADER) ?? undefined,
-  );
+  const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
+
+  secrets = await getApiSecrets(true, apiKey, model, orgName);
 
   if (secrets.length === 0) {
     return new Response("No secrets found", { status: 401 });
   }
 
-  const realtimeLogger = new OpenAiRealtimeLogger({
-    apiKey,
-    appUrl: env.BRAINTRUST_APP_URL,
-    projectName: project_name,
-  });
+  const realtimeLogger: OpenAiRealtimeLogger | undefined =
+    loggingParams &&
+    new OpenAiRealtimeLogger({
+      apiKey,
+      appUrl: env.BRAINTRUST_APP_URL || undefined,
+      loggingParams,
+    });
 
   // Create RealtimeClient
   try {
@@ -129,7 +128,7 @@ export async function handleRealtimeProxy({
   realtimeClient.realtime.on("server.*", (event: { type: string }) => {
     // console.log(`Relaying "${event.type}" to Client`);
     try {
-      realtimeLogger.handleMessageServer(event);
+      realtimeLogger?.handleMessageServer(event);
     } catch (e) {
       console.warn(
         `Error logging server event: ${e} ${JSON.stringify(event, null, 2)}`,
@@ -140,7 +139,9 @@ export async function handleRealtimeProxy({
 
   realtimeClient.realtime.on("close", () => {
     console.log("Closing server-side because I received a close event");
-    ctx.waitUntil(realtimeLogger.close());
+    if (realtimeLogger) {
+      ctx.waitUntil(realtimeLogger.close());
+    }
     server.close();
   });
 
@@ -152,7 +153,7 @@ export async function handleRealtimeProxy({
       try {
         const parsedEvent = JSON.parse(data);
         try {
-          realtimeLogger.handleMessageClient(parsedEvent);
+          realtimeLogger?.handleMessageClient(parsedEvent);
         } catch (e) {
           console.warn(
             `Error logging client event: ${e} ${JSON.stringify(parsedEvent, null, 2)}`,
@@ -177,7 +178,9 @@ export async function handleRealtimeProxy({
   server.addEventListener("close", () => {
     console.log("Closing server-side because the client closed the connection");
     realtimeClient.disconnect();
-    ctx.waitUntil(realtimeLogger.close());
+    if (realtimeLogger) {
+      ctx.waitUntil(realtimeLogger.close());
+    }
   });
 
   // Connect to OpenAI Realtime API

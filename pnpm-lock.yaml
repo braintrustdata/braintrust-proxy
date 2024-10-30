@@ -203,6 +203,9 @@ importers:
       '@braintrust/core':
         specifier: ^0.0.43
         version: 0.0.43
+      '@breezystack/lamejs':
+        specifier: ^1.2.7
+        version: 1.2.7
       '@google/generative-ai':
         specifier: ^0.21.0
         version: 0.21.0
@@ -831,6 +834,10 @@ packages:
       '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.23.8)
       uuid: 9.0.1
       zod: 3.23.8
+    dev: false
+
+  /@breezystack/lamejs@1.2.7:
+    resolution: {integrity: sha512-6wc7ck65ctA75Hq7FYHTtTvGnYs6msgdxiSUICQ+A01nVOWg6rqouZB8IdyteRlfpYYiFovkf67dIeOgWIUzTA==}
     dev: false
 
   /@cloudflare/kv-asset-handler@0.3.4:

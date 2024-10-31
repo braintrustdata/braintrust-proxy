@@ -426,7 +426,7 @@ export class OpenAiRealtimeLogger {
     loggingParams,
   }: {
     apiKey: string;
-    appUrl?: string;
+    appUrl: string;
     loggingParams: ProxyLoggingParam;
   }) {
     const btLogger = Braintrust.initLogger({

@@ -130,9 +130,7 @@ export async function handleRealtimeProxy({
     try {
       realtimeLogger?.handleMessageServer(event);
     } catch (e) {
-      console.warn(
-        `Error logging server event: ${e} ${JSON.stringify(event, null, 2)}`,
-      );
+      console.warn(`Error logging server event: ${e} ${event.type}`);
     }
     server.send(JSON.stringify(event));
   });
@@ -155,9 +153,7 @@ export async function handleRealtimeProxy({
         try {
           realtimeLogger?.handleMessageClient(parsedEvent);
         } catch (e) {
-          console.warn(
-            `Error logging client event: ${e} ${JSON.stringify(parsedEvent, null, 2)}`,
-          );
+          console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
         }
         // console.log(`Relaying "${event.type}" to OpenAI`);
         realtimeClient.realtime.send(parsedEvent.type, parsedEvent);

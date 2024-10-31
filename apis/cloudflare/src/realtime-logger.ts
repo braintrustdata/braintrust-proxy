@@ -325,7 +325,7 @@ const targetAudioBufferBytes = 40 * 1024 * 1024; // 40 MB = about 10 minutes in 
  */
 class AudioBuffer {
   private inputCodec: PcmAudioFormat;
-  private audioBuffers: string[];
+  private audioBuffers: ArrayBufferLike[];
   private totalByteLength: number;
 
   constructor({ inputCodec }: { inputCodec: PcmAudioFormat }) {
@@ -334,9 +334,10 @@ class AudioBuffer {
     this.totalByteLength = 0;
   }
 
-  push(audioBuffer: string): void {
-    this.audioBuffers.push(audioBuffer);
-    this.totalByteLength += audioBuffer.length;
+  push(base64AudioBuffer: string): void {
+    const binaryAudioBuffer = Buffer.from(base64AudioBuffer, "base64").buffer;
+    this.audioBuffers.push(binaryAudioBuffer);
+    this.totalByteLength += binaryAudioBuffer.byteLength;
 
     // May run out of memory on Cloudflare Workers.
     if (this.totalByteLength > maxAudioBufferBytes) {
@@ -350,7 +351,7 @@ class AudioBuffer {
         this.totalByteLength > targetAudioBufferBytes;
         i++
       ) {
-        this.totalByteLength -= this.audioBuffers[i].length;
+        this.totalByteLength -= this.audioBuffers[i].byteLength;
       }
       this.audioBuffers = this.audioBuffers.slice(i + 1);
       console.warn(`Trimmed audio buffer to ${this.totalByteLength} bytes`);

@@ -1,7 +1,10 @@
 import { Mp3Bitrate, PcmAudioFormat } from "@schema";
 import { Mp3Encoder } from "@breezystack/lamejs";
 
-export function makeWavFile(format: PcmAudioFormat, buffers: string[]): Blob {
+export function makeWavFile(
+  format: PcmAudioFormat,
+  buffers: ArrayBufferLike[],
+): Blob {
   if (
     format.name === "pcm" &&
     (format.byte_order !== "little" || format.bits_per_sample % 8 !== 0)
@@ -9,34 +12,26 @@ export function makeWavFile(format: PcmAudioFormat, buffers: string[]): Blob {
     throw new Error(`Unsupported PCM format: ${JSON.stringify(format)}`);
   }
 
+  if (format.name === "pcm" && format.number_encoding === "float") {
+    // TODO(kevin): This path is untested.
+    // TODO(kevin): This should probably just result in a float WAV file.
+    format = {
+      ...format,
+      number_encoding: "int",
+      byte_order: "little",
+      bits_per_sample: 16,
+    };
+    buffers = buffers.map((buffer) =>
+      floatTo16BitPCM(new Float32Array(buffer)),
+    );
+  }
+
+  const dataLength = buffers.reduce((sum, b) => sum + b.byteLength, 0);
+
   const bitsPerSample = format.name === "pcm" ? format.bits_per_sample : 8;
 
-  const data = (() => {
-    const binary = base64ToArrayBuffer(buffers);
-    if (
-      (format.name === "pcm" && format.number_encoding === "int") ||
-      format.name === "g711"
-    ) {
-      return binary;
-    } else if (format.number_encoding === "float") {
-      // TODO(kevin): This path is untested.
-      // TODO(kevin): This should probably just result in a float WAV file.
-      format = {
-        ...format,
-        number_encoding: "int",
-        byte_order: "little",
-        bits_per_sample: 16,
-      };
-      return floatTo16BitPCM(new Float32Array(binary));
-    } else {
-      throw new Error(
-        `Unsupported input audio format ${JSON.stringify(format)}`,
-      );
-    }
-  })();
-
   // http://soundfile.sapp.org/doc/WaveFormat/
-  const output = [
+  const blobParts = [
     // Header.
     "RIFF",
     // Length.
@@ -44,7 +39,7 @@ export function makeWavFile(format: PcmAudioFormat, buffers: string[]): Blob {
       1,
       4 + // "WAVE" length.
         (8 + 16) + // Chunk 1 length.
-        (8 + data.byteLength), // Chunk 2 length.
+        (8 + dataLength), // Chunk 2 length.
     ),
     "WAVE",
     // Chunk 1.
@@ -58,11 +53,11 @@ export function makeWavFile(format: PcmAudioFormat, buffers: string[]): Blob {
     pack(0, bitsPerSample),
     // Chunk 2.
     "data",
-    pack(1, data.byteLength), // Chunk length.
-    data,
+    pack(1, dataLength), // Chunk length.
+    ...buffers,
   ];
 
-  return new Blob(output, { type: "audio/wav" });
+  return new Blob(blobParts, { type: "audio/wav" });
 }
 
 function wavFormatCode(format: PcmAudioFormat) {
@@ -85,20 +80,6 @@ function wavFormatCode(format: PcmAudioFormat) {
       const x: never = name;
       throw new Error(x);
   }
-}
-
-function base64ToArrayBuffer(base64Strings: string[]) {
-  // Compute the total length upfront so we allocate `bytes` once.
-  const binaryStrings = base64Strings.map(atob);
-  const len = binaryStrings.reduce((sum, s) => sum + s.length, 0);
-  const bytes = new Uint8Array(len);
-  let i = 0;
-  binaryStrings.forEach((s) => {
-    for (let j = 0; j < s.length; i++, j++) {
-      bytes[i] = s.charCodeAt(j);
-    }
-  });
-  return bytes;
 }
 
 /**
@@ -128,7 +109,7 @@ function floatTo16BitPCM(float32Array: Float32Array) {
 export function makeMp3File(
   inputCodec: PcmAudioFormat,
   bitrate: Mp3Bitrate,
-  buffers: string[],
+  buffers: ArrayBufferLike[],
 ): Blob {
   if (inputCodec.name !== "pcm") {
     throw new Error("Unsupported input codec");
@@ -155,12 +136,11 @@ export function makeMp3File(
 
   const blobParts: ArrayBuffer[] = [];
 
-  for (const base64Buffer of buffers) {
-    const binary = base64ToArrayBuffer([base64Buffer]);
+  for (const buffer of buffers) {
     const int16Buffer =
       inputCodec.number_encoding === "int"
-        ? new Int16Array(binary.buffer)
-        : floatTo16BitPCM(new Float32Array(binary));
+        ? new Int16Array(buffer)
+        : floatTo16BitPCM(new Float32Array(buffer));
     const encoded = encoder.encodeBuffer(int16Buffer);
     if (encoded.length) {
       blobParts.push(encoded);

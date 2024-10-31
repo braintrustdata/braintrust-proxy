@@ -27,7 +27,7 @@ export const pcmAudioFormatSchema = z
       name: z.literal("pcm"),
       byte_order: z.enum(["little", "big"]).default("little"),
       number_encoding: z.enum(["int", "float"]).default("int"),
-      bits_per_sample: z.number().nonnegative().int(),
+      bits_per_sample: z.union([z.literal(8), z.literal(16)]),
     }),
     z.object({
       name: z.literal("g711"),

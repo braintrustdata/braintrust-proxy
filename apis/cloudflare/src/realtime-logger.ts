@@ -327,11 +327,16 @@ class AudioBuffer {
   private inputCodec: PcmAudioFormat;
   private audioBuffers: ArrayBufferLike[];
   private totalByteLength: number;
+  private baseTimeMs: number;
+  private readonly bytesPerSample: number;
 
   constructor({ inputCodec }: { inputCodec: PcmAudioFormat }) {
     this.inputCodec = inputCodec;
     this.audioBuffers = [];
     this.totalByteLength = 0;
+    this.baseTimeMs = 0;
+    this.bytesPerSample =
+      this.inputCodec.name === "pcm" ? this.inputCodec.bits_per_sample / 8 : 1;
   }
 
   push(base64AudioBuffer: string): void {
@@ -341,33 +346,83 @@ class AudioBuffer {
 
     // May run out of memory on Cloudflare Workers.
     if (this.totalByteLength > maxAudioBufferBytes) {
-      console.warn(
-        `Audio buffer reached trimming threshold at ${this.totalByteLength} bytes`,
-      );
       let i = 0;
-      for (
-        ;
+      let trimmedBytes = 0;
+      while (
         i < this.audioBuffers.length &&
-        this.totalByteLength > targetAudioBufferBytes;
-        i++
+        this.totalByteLength > targetAudioBufferBytes
       ) {
         this.totalByteLength -= this.audioBuffers[i].byteLength;
+        trimmedBytes += this.audioBuffers[i].byteLength;
+        i++;
       }
       this.audioBuffers = this.audioBuffers.slice(i + 1);
-      console.warn(`Trimmed audio buffer to ${this.totalByteLength} bytes`);
+      this.baseTimeMs +=
+        (trimmedBytes / (this.bytesPerSample * this.inputCodec.sample_rate)) *
+        1000;
+      console.warn(
+        `Trimmed ${trimmedBytes} bytes from audio buffer; now ${this.totalByteLength} bytes total`,
+      );
     }
+  }
+
+  trimStart(startTimeMs: number) {
+    let startByteIndex = this.timestampToByteIndex(startTimeMs);
+
+    let i = 0;
+    while (
+      i < this.audioBuffers.length &&
+      startByteIndex > this.audioBuffers[i].byteLength
+    ) {
+      startByteIndex -= this.audioBuffers[i].byteLength;
+      i++;
+    }
+    this.audioBuffers = this.audioBuffers.slice(i + 1);
+
+    if (this.audioBuffers.length) {
+      this.audioBuffers[0] = this.audioBuffers[0]?.slice(startByteIndex);
+    }
+
+    this.baseTimeMs = startTimeMs;
   }
 
   get byteLength(): number {
     return this.totalByteLength;
   }
 
-  encode(compress: boolean): [Blob, string] {
-    if (compress && this.inputCodec.name !== "g711") {
-      return [makeMp3File(this.inputCodec, 40, this.audioBuffers), "mp3"];
-    } else {
-      return [makeWavFile(this.inputCodec, this.audioBuffers), "wav"];
+  encode(compress: boolean, endTimeMs?: number): [Blob, string] {
+    let slicedBuffers = this.audioBuffers;
+    let totalByteLength = this.totalByteLength;
+    if (endTimeMs) {
+      let endByteIndex = this.timestampToByteIndex(endTimeMs);
+      let i = this.audioBuffers.length - 1;
+      while (i >= 0 && endByteIndex > totalByteLength) {
+        totalByteLength -= this.audioBuffers[i].byteLength;
+        i--;
+      }
+      slicedBuffers = this.audioBuffers.slice(0, i + 1);
+      if (slicedBuffers.length) {
+        const end = slicedBuffers.length - 1;
+        slicedBuffers[end] = slicedBuffers[end].slice(
+          0,
+          totalByteLength - endByteIndex + 1,
+        );
+      }
     }
+
+    if (compress && this.inputCodec.name !== "g711") {
+      return [makeMp3File(this.inputCodec, 40, slicedBuffers), "mp3"];
+    } else {
+      return [makeWavFile(this.inputCodec, slicedBuffers), "wav"];
+    }
+  }
+
+  private timestampToByteIndex(timestampMs: number): number {
+    return (
+      Math.round(
+        ((timestampMs - this.baseTimeMs) / 1000) * this.inputCodec.sample_rate,
+      ) * this.bytesPerSample
+    );
   }
 }
 
@@ -420,6 +475,7 @@ export class OpenAiRealtimeLogger {
   private inputAudioFormat?: PcmAudioFormat;
   private outputAudioFormat?: PcmAudioFormat;
   private compressAudio: boolean;
+  private turnDetectionEnabled: boolean = false;
 
   constructor({
     apiKey,
@@ -534,6 +590,7 @@ export class OpenAiRealtimeLogger {
           message.session.output_audio_format,
         );
       }
+      this.turnDetectionEnabled = !!message.session.turn_detection;
     } else if (message.type === "response.output_item.added") {
       const itemId = message.item.id;
       if (
@@ -572,6 +629,22 @@ export class OpenAiRealtimeLogger {
       }
       this.closeAudio(audioBuffer, span, "output");
       this.serverAudioBuffer.delete(itemId);
+    } else if (message.type === "input_audio_buffer.speech_started") {
+      if (!this.clientAudioBuffer) {
+        throw new Error();
+      }
+      this.clientAudioBuffer.trimStart(message.audio_start_ms);
+    } else if (message.type === "input_audio_buffer.speech_stopped") {
+      if (!this.clientAudioBuffer || !this.clientSpan) {
+        throw new Error();
+      }
+      this.closeAudio(
+        this.clientAudioBuffer,
+        this.clientSpan,
+        "input",
+        message.audio_end_ms,
+      );
+      // Do not reset the audio buffer in VAD mode so that we can keep the start time.
     } else if (
       message.type === "conversation.item.input_audio_transcription.completed"
     ) {
@@ -632,8 +705,9 @@ export class OpenAiRealtimeLogger {
     buffer: AudioBuffer,
     span: Braintrust.Span,
     fieldName: "input" | "output",
+    endTimeMs?: number,
   ) {
-    const [audioFile, fileExt] = buffer.encode(this.compressAudio);
+    const [audioFile, fileExt] = buffer.encode(this.compressAudio, endTimeMs);
     span.log({
       // TODO: join input/output to the same span.
       [fieldName]: {
@@ -651,6 +725,11 @@ export class OpenAiRealtimeLogger {
    * Close all pending spans.
    */
   public async close() {
+    // Pending client audio buffer is allowed in VAD mode.
+    if (this.turnDetectionEnabled) {
+      this.clientAudioBuffer = undefined;
+    }
+
     // Check if there is a pending audio buffers.
     if (this.serverAudioBuffer.size || this.clientAudioBuffer) {
       console.warn(

@@ -140,6 +140,12 @@ export function makeMp3File(
   ) {
     throw new Error("Unsupported input encoding");
   }
+  const minBitrate: Mp3Bitrate = 40;
+  if (bitrate < minBitrate) {
+    // Possible bug in lamejs that results in a silent file when bitrate <= 32.
+    console.warn(`Adjusting bitrate ${bitrate} -> ${minBitrate}`);
+    bitrate = minBitrate;
+  }
 
   const encoder = new Mp3Encoder(
     inputCodec.channels,

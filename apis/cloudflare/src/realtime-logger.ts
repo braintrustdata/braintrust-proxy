@@ -172,6 +172,9 @@ const baseResponseSchema = z.object({
 const responseCreatedMessageSchema = baseMessageSchema.extend({
   type: z.literal("response.created"),
   response: baseResponseSchema.extend({
+    // This array is empty when sent to from the server. Then the SDK mutates it
+    // after the event is delivered:
+    // https://github.com/openai/openai-realtime-api-beta/blob/0126e4bfc19901598c3f20d0a4b32bb3e0bea376/lib/conversation.js#L142-L159
     output: z.array(z.string().describe("Item IDs")),
   }),
 });
@@ -360,7 +363,7 @@ class AudioBuffer {
 
   encode(compress: boolean): [Blob, string] {
     if (compress && this.inputCodec.name !== "g711") {
-      return [makeMp3File(this.inputCodec, 48, this.audioBuffers), "mp3"];
+      return [makeMp3File(this.inputCodec, 40, this.audioBuffers), "mp3"];
     } else {
       return [makeWavFile(this.inputCodec, this.audioBuffers), "wav"];
     }
@@ -519,6 +522,7 @@ export class OpenAiRealtimeLogger {
           openai_realtime_session: message.session,
         },
       });
+      // Assume the audio codec cannot change during the session.
       if (!this.inputAudioFormat && message.session.input_audio_format) {
         this.inputAudioFormat = openAiToPcmAudioFormat(
           message.session.input_audio_format,
@@ -529,17 +533,8 @@ export class OpenAiRealtimeLogger {
           message.session.output_audio_format,
         );
       }
-    } else if (message.type === "response.created") {
-      const id = message.response.id;
-      if (this.serverSpans.has(id)) {
-        throw new Error(`Duplicate response ID ${id}`);
-      }
-      this.serverSpans.set(id, this.rootSpan.startSpan({ name: "item" }));
     } else if (message.type === "response.output_item.added") {
-      // Create a new span for each item since the response can contain
-      // multiple. For example, the model could generate audio and a
-      // function call in a single turn of the conversation.
-      const id = message.item.id;
+      const itemId = message.item.id;
       if (
         message.item.type === "message" &&
         message.item.role === "assistant"
@@ -548,27 +543,14 @@ export class OpenAiRealtimeLogger {
           throw new Error("Messages may have been received out of order.");
         }
         this.serverAudioBuffer.set(
-          id,
+          itemId,
           new AudioBuffer({ inputCodec: this.outputAudioFormat }),
         );
       }
-
-      if (!this.serverSpans.has(id)) {
-        let parentSpan = this.serverSpans.get(message.response_id);
-        if (!parentSpan) {
-          console.warn(`No parent span for response ID ${message.response_id}`);
-          parentSpan = this.rootSpan;
-        }
-        this.serverSpans.set(
-          id,
-          parentSpan.startSpan({
-            name:
-              message.item.type === "message" ? message.item.role : "function",
-            type: message.item.type === "message" ? "llm" : "function",
-            event: { id },
-          }),
-        );
-      }
+      this.serverSpans.set(
+        itemId,
+        this.rootSpan.startSpan({ event: { id: itemId } }),
+      );
     } else if (message.type === "response.audio.delta") {
       const id = message.item_id;
       const audioBuffer = this.serverAudioBuffer.get(id);
@@ -579,16 +561,16 @@ export class OpenAiRealtimeLogger {
       }
       audioBuffer.push(message.delta);
     } else if (message.type === "response.audio.done") {
-      const id = message.item_id;
-      const audioBuffer = this.serverAudioBuffer.get(id);
-      const span = this.serverSpans.get(id);
+      const itemId = message.item_id;
+      const audioBuffer = this.serverAudioBuffer.get(itemId);
+      const span = this.serverSpans.get(itemId);
       if (!audioBuffer || !span) {
         throw new Error(
-          `Invalid response ID: ${message.response_id}, item ID: ${id}`,
+          `Invalid response ID: ${message.response_id}, item ID: ${itemId}`,
         );
       }
       this.closeAudio(audioBuffer, span, "output");
-      this.serverAudioBuffer.delete(id);
+      this.serverAudioBuffer.delete(itemId);
     } else if (
       message.type === "conversation.item.input_audio_transcription.completed"
     ) {
@@ -602,46 +584,45 @@ export class OpenAiRealtimeLogger {
       if (message.response.output.length === 0) {
         console.warn(`Response ID ${message.response.id} had no items`);
       }
+
       for (const item of message.response.output) {
-        const id = item.id;
-        const span = this.serverSpans.get(id);
+        const itemId = item.id;
+        const span = this.serverSpans.get(itemId);
         if (!span) {
           throw new Error(
-            `Invalid response ID: ${message.response.id}, item ID: ${id}`,
+            `Invalid response ID: ${message.response.id}, item ID: ${itemId}`,
           );
         }
-        if (item.type === "message") {
-          span.log({
-            output: { content: item.content },
-          });
+
+        if (message.response.usage) {
+          span.log({ metadata: { usage: message.response.usage } });
+        }
+
+        const itemType = item.type; // Defined for TypeScript narrowing.
+        if (itemType === "message") {
+          span.log({ output: { content: item.content } });
+          span.setAttributes({ name: item.role, type: "llm" });
+
           span.close();
-        } else if (item.type === "function_call") {
+        } else if (itemType === "function_call") {
           let args: unknown = item.arguments;
           try {
             args = JSON.parse(item.arguments);
           } catch {}
-          span.log({
-            input: {
-              name: item.name,
-              arguments: args,
-            },
-          });
+
+          span.log({ input: { name: item.name, arguments: args } });
+          span.setAttributes({ name: "function", type: "function" });
+
           // Wait for function call output before closing the span.
           this.toolSpans.set(item.call_id, span);
+        } else if (itemType === "function_call_output") {
+        } else if (itemType === "audio") {
+        } else {
+          const x: never = itemType;
+          console.error(`Unhandled item type ${x}`);
         }
 
-        this.serverSpans.delete(id);
-
-        const parentSpan = this.serverSpans.get(message.response.id);
-        if (!parentSpan) {
-          throw new Error(`Unknown response ID ${id}`);
-        }
-        parentSpan.log({
-          metadata: {
-            usage: message.response.usage ?? undefined,
-          },
-        });
-        parentSpan.close();
+        this.serverSpans.delete(itemId);
       }
     }
   }
@@ -686,8 +667,8 @@ export class OpenAiRealtimeLogger {
         continue;
       }
       this.closeAudio(audioBuffer, span, "output");
-      this.serverAudioBuffer.clear();
     }
+    this.serverAudioBuffer.clear();
 
     this.clientSpan?.close();
     this.clientSpan = undefined;

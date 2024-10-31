@@ -5,6 +5,7 @@ import { PcmAudioFormat, ProxyLoggingParam } from "@braintrust/proxy/schema";
 
 // Type definitions adapted from:
 // https://github.com/openai/openai-realtime-api-beta/blob/0126e4bfc19901598c3f20d0a4b32bb3e0bea376/lib/client.js
+// https://platform.openai.com/docs/api-reference/realtime-client-events
 // Includes some modifications
 // - Where the OpenAI implementation differs from their type spec.
 // - Replace the fields we don't use with `z.any()` for more permissive parsing.
@@ -56,21 +57,6 @@ const sessionResourceTypeSchema = z.object({
     .optional(),
 });
 
-const incompleteResponseStatusTypeSchema = z.object({
-  type: z.literal("incomplete"),
-  reason: z.enum(["interruption", "max_output_tokens", "content_filter"]),
-});
-
-const failedResponseStatusTypeSchema = z.object({
-  type: z.literal("failed"),
-  error: z
-    .object({
-      code: z.string(),
-      message: z.string(),
-    })
-    .nullable(),
-});
-
 const usageTypeSchema = z.object({
   total_tokens: z.number(),
   input_tokens: z.number(),
@@ -91,30 +77,109 @@ const sessionMessageSchema = baseMessageSchema.extend({
   session: sessionResourceTypeSchema,
 });
 
-const responseMessageSchema = baseMessageSchema.extend({
-  type: z.enum(["response.created", "response.done"]),
-  // Annoyingly similar to ResponseResourceType.
-  response: z.object({
-    // This member is not present in ResponseResourceType,
-    object: z.literal("realtime.response"),
-    id: z.string(),
-    status: z.enum([
-      "in_progress",
-      "completed",
-      "incomplete",
-      "cancelled",
-      "failed",
-    ]),
-    status_details: z
-      .union([
-        incompleteResponseStatusTypeSchema,
-        failedResponseStatusTypeSchema,
-      ])
-      .nullable(),
-    // Not used by this class.
-    output: z.array(z.record(z.any())),
-    usage: usageTypeSchema.nullable(),
+// Added in_progress since it is seen from the service in practice and SDK.
+const responseStatusSchema = z.enum([
+  "completed",
+  "cancelled",
+  "failed",
+  "incomplete",
+  "in_progress",
+]);
+
+const inputTextContentSchema = z.object({
+  type: z.literal("input_text"),
+  text: z.string(),
+});
+
+const inputAudioContentSchema = z.object({
+  type: z.literal("input_audio"),
+  transcript: z.string().nullable(),
+});
+
+const textContentSchema = z.object({
+  type: z.literal("text"),
+  text: z.string(),
+});
+
+// Add the `audio` case.
+const audioContentSchema = z.object({
+  type: z.literal("audio"),
+  transcript: z.string(),
+});
+
+const messageContentSchema = z.discriminatedUnion("role", [
+  z.object({
+    role: z.literal("system"),
+    content: z.array(inputTextContentSchema),
   }),
+  z.object({
+    role: z.literal("user"),
+    content: z.array(
+      z.discriminatedUnion("type", [
+        inputTextContentSchema,
+        inputAudioContentSchema,
+      ]),
+    ),
+  }),
+  z.object({
+    role: z.literal("assistant"),
+    content: z.array(
+      z.discriminatedUnion("type", [textContentSchema, audioContentSchema]),
+    ),
+  }),
+]);
+
+const outputItemSchema = z.union([
+  z.object({
+    type: z.literal("function_call"),
+    call_id: z.string(),
+    name: z.string(),
+    arguments: z.string(),
+  }),
+  z.object({
+    type: z.literal("function_call_output"),
+    call_id: z.string(),
+    output: z.string().describe("JSON string"),
+  }),
+  z
+    .object({
+      type: z.literal("message"),
+    })
+    .and(messageContentSchema),
+  z.object({
+    type: z.literal("audio"),
+    transcript: z.string(),
+  }),
+]);
+
+const baseResponseSchema = z.object({
+  object: z.literal("realtime.response"),
+  id: z.string(),
+  status: responseStatusSchema,
+  // Not used by this class.
+  status_details: z.any(),
+  usage: usageTypeSchema.nullable(),
+});
+
+const responseCreatedMessageSchema = baseMessageSchema.extend({
+  type: z.literal("response.created"),
+  response: baseResponseSchema.extend({
+    output: z.array(z.string().describe("Item IDs")),
+  }),
+});
+
+const responseDoneMssageSchema = baseMessageSchema.extend({
+  type: z.literal("response.done"),
+  response: baseResponseSchema.extend({
+    output: z.array(outputItemSchema),
+  }),
+});
+
+const responseOutputItemAddedSchema = baseMessageSchema.extend({
+  type: z.literal("response.output_item.added"),
+  response_id: z.string(),
+  output_index: z.number(),
+  item: outputItemSchema,
 });
 
 const audioBaseMessageSchema = baseMessageSchema.extend({
@@ -160,6 +225,30 @@ const cancelResponseMessageSchema = baseMessageSchema.extend({
   type: z.literal("response.cancel"),
 });
 
+const functionCallBaseMessageSchema = baseMessageSchema.extend({
+  output_index: z.number(),
+  response_id: z.string(),
+  item_id: z.string(),
+  call_id: z.string(),
+});
+
+const functionCallDeltaMessageSchema = functionCallBaseMessageSchema.extend({
+  type: z.literal("response.function_call_arguments.delta"),
+  delta: z.string().describe("JSON fragment"),
+});
+
+const functionCallDoneMessageSchema = functionCallBaseMessageSchema.extend({
+  type: z.literal("response.function_call_arguments.done"),
+  name: z.string(),
+  arguments: z.string().describe("JSON string"),
+});
+
+const conversationItemCreateMessageSchema = baseMessageSchema.extend({
+  type: z.literal("conversation.item.create"),
+  previous_item_id: z.string().nullish(),
+  item: outputItemSchema,
+});
+
 const errorMessageSchema = baseMessageSchema.extend({
   type: z.literal("error"),
   error: z.any(),
@@ -171,15 +260,11 @@ const unhandledMessageSchema = baseMessageSchema.extend({
     "session.update",
     "rate_limits.updated",
     "response.create",
-    "response.output_item.added",
     "response.output_item.done",
     "response.content_part.done",
     "response.content_part.added",
-    "conversation.item.create",
     "conversation.item.created",
     "input_audio_buffer.committed",
-    "response.function_call_arguments.delta",
-    "response.function_call_arguments.done",
     "conversation.item.truncate",
     "conversation.item.truncated",
   ]),
@@ -187,7 +272,9 @@ const unhandledMessageSchema = baseMessageSchema.extend({
 
 const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
   sessionMessageSchema,
-  responseMessageSchema,
+  responseCreatedMessageSchema,
+  responseDoneMssageSchema,
+  responseOutputItemAddedSchema,
   clientAudioAppendMessageSchema,
   clientAudioCommitMessageSchema,
   audioDeltaMessageSchema,
@@ -195,6 +282,9 @@ const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
   audioResponseTranscriptDoneMessageSchema,
   audioInputTranscriptDoneMessageSchema,
   cancelResponseMessageSchema,
+  functionCallDeltaMessageSchema,
+  functionCallDoneMessageSchema,
+  conversationItemCreateMessageSchema,
   errorMessageSchema,
   unhandledMessageSchema,
 ]);
@@ -206,14 +296,21 @@ const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
 class AudioBuffer {
   private inputCodec: PcmAudioFormat;
   private audioBuffers: string[];
+  private totalLength: number;
 
   constructor({ inputCodec }: { inputCodec: PcmAudioFormat }) {
     this.inputCodec = inputCodec;
     this.audioBuffers = [];
+    this.totalLength = 0;
   }
 
   push(audioBufferBase64: string): void {
     this.audioBuffers.push(audioBufferBase64);
+    this.totalLength += audioBufferBase64.length;
+  }
+
+  get length(): number {
+    return this.totalLength;
   }
 
   encode(compress: boolean): [Blob, string] {
@@ -270,6 +367,7 @@ export class OpenAiRealtimeLogger {
   private clientSpan?: Braintrust.Span;
   private serverAudioBuffer: Map<string, AudioBuffer>;
   private serverSpans: Map<string, Braintrust.Span>;
+  private toolSpans: Map<string, Braintrust.Span>;
   private inputAudioFormat?: PcmAudioFormat;
   private outputAudioFormat?: PcmAudioFormat;
   private compressAudio: boolean;
@@ -298,13 +396,19 @@ export class OpenAiRealtimeLogger {
     });
     this.serverAudioBuffer = new Map();
     this.serverSpans = new Map();
+    this.toolSpans = new Map();
     this.compressAudio = loggingParams.compress_audio;
   }
 
   handleMessageClient(rawMessage: unknown) {
     const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
     if (!parsed.success) {
-      console.warn("Unknown message:", rawMessage);
+      console.warn(
+        "Unknown message:\n",
+        JSON.stringify(rawMessage, null, 2),
+        "\nSchema errors:\n",
+        parsed.error.message,
+      );
       return;
     }
     const message = parsed.data;
@@ -312,7 +416,8 @@ export class OpenAiRealtimeLogger {
       // Lazy create span.
       if (!this.clientSpan) {
         this.clientSpan = this.rootSpan.startSpan({
-          name: "user", // Assume client to server direction is always user.
+          name: "user",
+          type: "llm",
         });
       }
       if (!this.clientAudioBuffer) {
@@ -330,17 +435,39 @@ export class OpenAiRealtimeLogger {
       }
       this.closeAudio(this.clientAudioBuffer, this.clientSpan, "input");
       this.clientAudioBuffer = undefined;
+    } else if (message.type === "conversation.item.create") {
+      if (message.item.type === "function_call_output") {
+        const span = this.toolSpans.get(message.item.call_id);
+        if (!span) {
+          throw new Error(`Invalid function call ID: ${message.item.call_id}`);
+        }
+        let parsedOutput: unknown = message.item.output;
+        try {
+          parsedOutput = JSON.parse(message.item.output);
+        } catch {}
+        span.log({ output: parsedOutput });
+        span.close();
+        this.toolSpans.delete(message.item.call_id);
+      }
     }
   }
 
   handleMessageServer(rawMessage: unknown) {
     const parsed = openAiRealtimeMessageSchema.safeParse(rawMessage);
     if (!parsed.success) {
-      console.warn("Unknown message:", rawMessage);
+      console.warn(
+        "Unknown message:\n",
+        JSON.stringify(rawMessage, null, 2),
+        "\nSchema errors:\n",
+        parsed.error.message,
+      );
       return;
     }
     const message = parsed.data;
-    if (message.type === "session.created") {
+    if (
+      message.type === "session.created" ||
+      message.type === "session.updated"
+    ) {
       this.rootSpan.log({
         metadata: {
           openai_realtime_session: message.session,
@@ -356,43 +483,53 @@ export class OpenAiRealtimeLogger {
           message.session.output_audio_format,
         );
       }
-    } else if (message.type === "response.created") {
-      if (!this.outputAudioFormat) {
-        throw new Error("Messages may have been received out of order.");
+    } else if (message.type === "response.output_item.added") {
+      if (
+        message.item.type === "message" &&
+        message.item.role === "assistant"
+      ) {
+        if (!this.outputAudioFormat) {
+          throw new Error("Messages may have been received out of order.");
+        }
+        this.serverAudioBuffer.set(
+          message.response_id,
+          new AudioBuffer({ inputCodec: this.outputAudioFormat }),
+        );
       }
-      // This might be excessively paranoid. In practice we seem to only get one
-      // response_id streaming at a time even though the schema allows multiple.
-      this.serverAudioBuffer.set(
-        message.response.id,
-        new AudioBuffer({ inputCodec: this.outputAudioFormat }),
-      );
-      this.serverSpans.set(
-        message.response.id,
-        this.rootSpan.startSpan({
-          name: "assistant",
-          event: {
-            id: message.response.id,
-          },
-        }),
-      );
+
+      if (!this.serverSpans.has(message.response_id)) {
+        this.serverSpans.set(
+          message.response_id,
+          this.rootSpan.startSpan({
+            name:
+              message.item.type === "message" ? message.item.role : "function",
+            type: message.item.type === "message" ? "llm" : "function",
+            event: {
+              id: message.response_id,
+            },
+          }),
+        );
+      }
     } else if (message.type === "response.audio.delta") {
-      this.serverAudioBuffer.get(message.response_id)!.push(message.delta);
+      const audioBuffer = this.serverAudioBuffer.get(message.response_id);
+      if (!audioBuffer) {
+        throw new Error(`Invalid response ID: ${message.response_id}`);
+      }
+      audioBuffer.push(message.delta);
     } else if (message.type === "response.audio.done") {
-      const buf = this.serverAudioBuffer.get(message.response_id);
+      const audioBuffer = this.serverAudioBuffer.get(message.response_id);
       const span = this.serverSpans.get(message.response_id);
-      if (!buf || !span) {
-        throw new Error("Invalid response_id");
+      if (!audioBuffer || !span) {
+        throw new Error(`Invalid response ID: ${message.response_id}`);
       }
-      this.closeAudio(buf, span, "output");
+      // May run out of memory on Cloudflare Workers.
+      if (audioBuffer.length > 5 * 1024 * 1024) {
+        console.warn(
+          `Writing a large audio buffer (${audioBuffer.length} bytes in base64)`,
+        );
+      }
+      this.closeAudio(audioBuffer, span, "output");
       this.serverAudioBuffer.delete(message.response_id);
-    } else if (message.type === "response.audio_transcript.done") {
-      const span = this.serverSpans.get(message.response_id);
-      if (span) {
-        span.log({ output: { transcript: message.transcript } });
-        // Assume the transcript always comes after the audio.
-        span.close();
-      }
-      this.serverSpans.delete(message.response_id);
     } else if (
       message.type === "conversation.item.input_audio_transcription.completed"
     ) {
@@ -404,6 +541,51 @@ export class OpenAiRealtimeLogger {
       // The transcript can never come before we finish logging audio.
       this.clientSpan?.close();
       this.clientSpan = undefined;
+    } else if (message.type === "response.done") {
+      const span = this.serverSpans.get(message.response.id);
+      if (!span) {
+        throw new Error(`Invalid response ID: ${message.response.id}`);
+      }
+      if (message.response.output.length > 1) {
+        // TODO:
+        console.warn(
+          `Response had ${message.response.output.length} items. The first one will be used.`,
+        );
+      }
+      if (message.response.output.length === 0) {
+        throw new Error(`Response ID ${message.response.id} had no items`);
+      }
+      const item = message.response.output[0];
+
+      if (item.type === "message") {
+        span.log({
+          output: {
+            content: item.content,
+          },
+          metadata: {
+            usage: message.response.usage ?? undefined,
+          },
+        });
+        span.close();
+      } else if (item.type === "function_call") {
+        let args: unknown = item.arguments;
+        try {
+          args = JSON.parse(item.arguments);
+        } catch {}
+        span.log({
+          input: {
+            name: item.name,
+            arguments: args,
+          },
+          metadata: {
+            usage: message.response.usage ?? undefined,
+          },
+        });
+        // Wait for function call output before closing the span.
+        this.toolSpans.set(item.call_id, span);
+      }
+
+      this.serverSpans.delete(message.response.id);
     }
   }
 
@@ -448,6 +630,9 @@ export class OpenAiRealtimeLogger {
       );
     }
     for (const span of this.serverSpans.values()) {
+      span.close();
+    }
+    for (const span of this.toolSpans.values()) {
       span.close();
     }
     this.clientSpan?.close();

@@ -105,13 +105,8 @@ export async function handleRealtimeProxy({
 
   // Create RealtimeClient
   try {
-    (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
-    console.log("Creating RealtimeClient");
-    realtimeApi = new RealtimeAPI({
-      apiKey: secrets[0].secret,
-      dangerouslyAllowAPIKeyInBrowser: true,
-    });
-    (globalThis as any).document = undefined; // Clean up after ourselves
+    console.log("Creating RealtimeApi");
+    realtimeApi = new RealtimeAPI({ apiKey: secrets[0].secret });
   } catch (e) {
     console.error(`Error connecting to OpenAI: ${e}`);
     server.close();
@@ -171,14 +166,11 @@ export async function handleRealtimeProxy({
     }
   });
 
-  // Connect to OpenAI Realtime API
+  // Connect to OpenAI Realtime API.
   try {
-    // TODO: Remove after https://github.com/openai/openai-realtime-api-beta/pull/37 merges.
-    (globalThis as any).document = 1; // This tricks the OpenAI library into using `new WebSocket`
     console.log(`Connecting to OpenAI...`);
     await realtimeApi.connect();
     console.log(`Connected to OpenAI successfully!`);
-    (globalThis as any).document = undefined; // Clean up after ourselves
     while (messageQueue.length) {
       const message = messageQueue.shift();
       if (message) {
@@ -191,7 +183,7 @@ export async function handleRealtimeProxy({
     } else {
       console.error(`Error connecting to OpenAI: ${e}`);
     }
-    return new Response("Error connecting to OpenAI", { status: 500 });
+    return new Response("Error connecting to OpenAI", { status: 502 });
   }
 
   return new Response(null, {

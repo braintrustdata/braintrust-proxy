@@ -17,20 +17,21 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-    for (const prefix of proxyV1Prefixes) {
-      if (url.pathname.startsWith(prefix)) {
-        return handleProxyV1(request, prefix, env, ctx);
-      }
-    }
-    if (url.pathname === "/metrics") {
-      return handlePrometheusScrape(request, env, ctx);
-    } else if (url.pathname === "/") {
+    console.log("URL =", url.pathname);
+    if (["/", "/v1/proxy", "/v1/proxy/"].includes(url.pathname)) {
       return new Response("Hello World!", {
         status: 200,
         headers: getCorsHeaders(request, originWhitelist(env)),
       });
     }
-
+    if (url.pathname === "/metrics") {
+      return handlePrometheusScrape(request, env, ctx);
+    }
+    for (const prefix of proxyV1Prefixes) {
+      if (url.pathname.startsWith(prefix)) {
+        return handleProxyV1(request, prefix, env, ctx);
+      }
+    }
     return new Response("Not found", {
       status: 404,
       headers: { "Content-Type": "text/plain" },

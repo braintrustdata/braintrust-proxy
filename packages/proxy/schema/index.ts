@@ -15,6 +15,7 @@ export {
   mp3BitrateSchema,
   type Mp3Bitrate,
 } from "./audio";
+export * from "./openai-realtime";
 
 export const ModelEndpointType = [
   "openai",

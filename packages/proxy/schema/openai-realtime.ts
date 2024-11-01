@@ -6,21 +6,25 @@ import { z } from "zod";
 // Includes some modifications
 // - Where the OpenAI implementation differs from their type spec.
 // - Replace the fields we don't use with `z.unknown()` for more permissive parsing.
-const baseMessageSchema = z.object({
+export const baseMessageSchema = z.object({
   event_id: z.string(),
 });
 
-const audioFormatTypeSchema = z.enum(["pcm16", "g711_ulaw", "g711_alaw"]);
-type AudioFormatType = z.infer<typeof audioFormatTypeSchema>;
+export const audioFormatTypeSchema = z.enum([
+  "pcm16",
+  "g711_ulaw",
+  "g711_alaw",
+]);
+export type AudioFormatType = z.infer<typeof audioFormatTypeSchema>;
 
-const turnDetectionServerVadTypeSchema = z.object({
+export const turnDetectionServerVadTypeSchema = z.object({
   type: z.literal("server_vad"),
   threshold: z.number().optional(),
   prefix_padding_ms: z.number().optional(),
   silence_duration_ms: z.number().optional(),
 });
 
-const toolDefinitionTypeSchema = z.object({
+export const toolDefinitionTypeSchema = z.object({
   // TODO(kevin): Why does OpenAI mark this as optional?
   type: z.literal("function").optional(),
   name: z.string(),
@@ -28,7 +32,7 @@ const toolDefinitionTypeSchema = z.object({
   parameters: z.record(z.unknown()),
 });
 
-const sessionResourceTypeSchema = z.object({
+export const sessionResourceTypeSchema = z.object({
   model: z.string().optional(),
   modalities: z.array(z.string()).optional(),
   instructions: z.string().optional(),
@@ -52,7 +56,7 @@ const sessionResourceTypeSchema = z.object({
   max_response_output_tokens: z.number().or(z.literal("inf")).optional(),
 });
 
-const usageTypeSchema = z.object({
+export const usageTypeSchema = z.object({
   total_tokens: z.number(),
   input_tokens: z.number(),
   output_tokens: z.number(),
@@ -67,13 +71,13 @@ const usageTypeSchema = z.object({
   }),
 });
 
-const sessionMessageSchema = baseMessageSchema.extend({
+export const sessionMessageSchema = baseMessageSchema.extend({
   type: z.enum(["session.created", "session.updated"]),
   session: sessionResourceTypeSchema,
 });
 
 // Added in_progress since it is seen from the service in practice and SDK.
-const responseStatusSchema = z.enum([
+export const responseStatusSchema = z.enum([
   "completed",
   "cancelled",
   "failed",
@@ -81,28 +85,28 @@ const responseStatusSchema = z.enum([
   "in_progress",
 ]);
 
-const inputTextContentSchema = z.object({
+export const inputTextContentSchema = z.object({
   type: z.literal("input_text"),
   text: z.string(),
 });
 
-const inputAudioContentSchema = z.object({
+export const inputAudioContentSchema = z.object({
   type: z.literal("input_audio"),
   transcript: z.string().nullable(),
 });
 
-const textContentSchema = z.object({
+export const textContentSchema = z.object({
   type: z.literal("text"),
   text: z.string(),
 });
 
 // Add the `audio` case.
-const audioContentSchema = z.object({
+export const audioContentSchema = z.object({
   type: z.literal("audio"),
   transcript: z.string(),
 });
 
-const messageContentSchema = z.discriminatedUnion("role", [
+export const messageContentSchema = z.discriminatedUnion("role", [
   z.object({
     role: z.literal("system"),
     content: z.array(inputTextContentSchema),
@@ -124,7 +128,7 @@ const messageContentSchema = z.discriminatedUnion("role", [
   }),
 ]);
 
-const inputItemSchema = z.union([
+export const inputItemSchema = z.union([
   z.object({
     type: z.literal("function_call"),
     call_id: z.string(),
@@ -143,7 +147,7 @@ const inputItemSchema = z.union([
   }),
 ]);
 
-const outputItemSchema = inputItemSchema.and(
+export const outputItemSchema = inputItemSchema.and(
   z.object({
     id: z.string(),
     object: z.literal("realtime.item"),
@@ -151,7 +155,7 @@ const outputItemSchema = inputItemSchema.and(
   }),
 );
 
-const baseResponseSchema = z.object({
+export const baseResponseSchema = z.object({
   object: z.literal("realtime.response"),
   id: z.string(),
   status: responseStatusSchema,
@@ -160,7 +164,7 @@ const baseResponseSchema = z.object({
   usage: usageTypeSchema.nullable(),
 });
 
-const responseCreatedMessageSchema = baseMessageSchema.extend({
+export const responseCreatedMessageSchema = baseMessageSchema.extend({
   type: z.literal("response.created"),
   response: baseResponseSchema.extend({
     // This array is always empty when sent to from the server. The SDK mutates it
@@ -173,106 +177,110 @@ const responseCreatedMessageSchema = baseMessageSchema.extend({
   }),
 });
 
-const responseDoneMssageSchema = baseMessageSchema.extend({
+export const responseDoneMssageSchema = baseMessageSchema.extend({
   type: z.literal("response.done"),
   response: baseResponseSchema.extend({
     output: z.array(outputItemSchema),
   }),
 });
 
-const responseOutputItemAddedSchema = baseMessageSchema.extend({
+export const responseOutputItemAddedSchema = baseMessageSchema.extend({
   type: z.literal("response.output_item.added"),
   response_id: z.string(),
   output_index: z.number(),
   item: outputItemSchema,
 });
 
-const audioBaseMessageSchema = baseMessageSchema.extend({
+export const audioBaseMessageSchema = baseMessageSchema.extend({
   item_id: z.string(),
   content_index: z.number(),
 });
 
-const audioDoneMessageSchema = audioBaseMessageSchema.extend({
+export const audioDoneMessageSchema = audioBaseMessageSchema.extend({
   type: z.literal("response.audio.done"),
   output_index: z.number(),
   response_id: z.string(),
 });
 
-const audioResponseTranscriptDoneMessageSchema = audioBaseMessageSchema.extend({
-  type: z.literal("response.audio_transcript.done"),
-  output_index: z.number(),
-  response_id: z.string(),
-  transcript: z.string(),
-});
+export const audioResponseTranscriptDoneMessageSchema =
+  audioBaseMessageSchema.extend({
+    type: z.literal("response.audio_transcript.done"),
+    output_index: z.number(),
+    response_id: z.string(),
+    transcript: z.string(),
+  });
 
-const audioInputTranscriptDoneMessageSchema = audioBaseMessageSchema.extend({
-  type: z.literal("conversation.item.input_audio_transcription.completed"),
-  transcript: z.string(),
-});
+export const audioInputTranscriptDoneMessageSchema =
+  audioBaseMessageSchema.extend({
+    type: z.literal("conversation.item.input_audio_transcription.completed"),
+    transcript: z.string(),
+  });
 
-const audioDeltaMessageSchema = audioBaseMessageSchema.extend({
+export const audioDeltaMessageSchema = audioBaseMessageSchema.extend({
   type: z.enum(["response.audio.delta", "response.audio_transcript.delta"]),
   output_index: z.number(),
   response_id: z.string(),
   delta: z.string(),
 });
 
-const clientAudioAppendMessageSchema = baseMessageSchema.extend({
+export const clientAudioAppendMessageSchema = baseMessageSchema.extend({
   type: z.literal("input_audio_buffer.append"),
   audio: z.string(),
 });
 
-const clientAudioCommitMessageSchema = baseMessageSchema.extend({
+export const clientAudioCommitMessageSchema = baseMessageSchema.extend({
   type: z.literal("input_audio_buffer.commit"),
 });
 
-const cancelResponseMessageSchema = baseMessageSchema.extend({
+export const cancelResponseMessageSchema = baseMessageSchema.extend({
   type: z.literal("response.cancel"),
 });
 
-const functionCallBaseMessageSchema = baseMessageSchema.extend({
+export const functionCallBaseMessageSchema = baseMessageSchema.extend({
   output_index: z.number(),
   response_id: z.string(),
   item_id: z.string(),
   call_id: z.string(),
 });
 
-const functionCallDeltaMessageSchema = functionCallBaseMessageSchema.extend({
-  type: z.literal("response.function_call_arguments.delta"),
-  delta: z.string().describe("JSON fragment"),
-});
+export const functionCallDeltaMessageSchema =
+  functionCallBaseMessageSchema.extend({
+    type: z.literal("response.function_call_arguments.delta"),
+    delta: z.string().describe("JSON fragment"),
+  });
 
-const functionCallDoneMessageSchema = functionCallBaseMessageSchema.extend({
-  type: z.literal("response.function_call_arguments.done"),
-  name: z.string(),
-  arguments: z.string().describe("JSON string"),
-});
+export const functionCallDoneMessageSchema =
+  functionCallBaseMessageSchema.extend({
+    type: z.literal("response.function_call_arguments.done"),
+    name: z.string(),
+    arguments: z.string().describe("JSON string"),
+  });
 
-const conversationItemCreateMessageSchema = baseMessageSchema.extend({
+export const conversationItemCreateMessageSchema = baseMessageSchema.extend({
   type: z.literal("conversation.item.create"),
   previous_item_id: z.string().nullish(),
   item: inputItemSchema,
 });
 
-const speechStartedMessageSchema = baseMessageSchema.extend({
+export const speechStartedMessageSchema = baseMessageSchema.extend({
   type: z.literal("input_audio_buffer.speech_started"),
   audio_start_ms: z.number(),
   item_id: z.string(),
 });
 
-const speechEndedMessageSchema = baseMessageSchema.extend({
+export const speechEndedMessageSchema = baseMessageSchema.extend({
   type: z.literal("input_audio_buffer.speech_stopped"),
   audio_end_ms: z.number(),
   item_id: z.string(),
 });
 
-const errorMessageSchema = baseMessageSchema.extend({
+export const errorMessageSchema = baseMessageSchema.extend({
   type: z.literal("error"),
   error: z.unknown(),
 });
 
-// Message types we know about, but do not wish to handle at this time.
-const unhandledMessageSchema = baseMessageSchema.extend({
+/** Message types we know about, but do not wish to handle at this time. */
+export const unhandledMessageSchema = baseMessageSchema.extend({
   type: z.enum([
     "session.update",
     "rate_limits.updated",
@@ -287,7 +295,7 @@ const unhandledMessageSchema = baseMessageSchema.extend({
   ]),
 });
 
-const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
+export const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
   sessionMessageSchema,
   responseCreatedMessageSchema,
   responseDoneMssageSchema,

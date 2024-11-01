@@ -1,26 +1,19 @@
-import { EdgeProxyV1, FlushingExporter } from "@braintrust/proxy/edge";
+import {
+  EdgeProxyV1,
+  FlushingExporter,
+  ProxyOpts,
+  makeFetchApiSecrets,
+  encryptedGet,
+} from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
+import { handleRealtimeProxy } from "./realtime";
+import { braintrustAppUrl } from "./env";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
-declare global {
-  interface Env {
-    ai_proxy: KVNamespace;
-    BRAINTRUST_APP_URL: string;
-    DISABLE_METRICS?: boolean;
-    PROMETHEUS_SCRAPE_USER?: string;
-    PROMETHEUS_SCRAPE_PASSWORD?: string;
-    WHITELISTED_ORIGINS?: string;
-  }
-}
-
 function apiCacheKey(key: string) {
   return `http://apikey.cache/${encodeURIComponent(key)}.jpg`;
-}
-
-export function braintrustAppUrl(env: Env) {
-  return new URL(env.BRAINTRUST_APP_URL || "https://www.braintrust.dev");
 }
 
 export function originWhitelist(env: Env) {
@@ -72,7 +65,7 @@ export async function handleProxyV1(
 
   const cache = await caches.open("apikey:cache");
 
-  return EdgeProxyV1({
+  const opts: ProxyOpts = {
     getRelativeURL(request: Request): string {
       return new URL(request.url).pathname.slice(proxyV1Prefix.length);
     },
@@ -121,7 +114,28 @@ export async function handleProxyV1(
     braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider,
     whitelist,
-  })(request, ctx);
+  };
+
+  const url = new URL(request.url);
+  if (url.pathname === `${proxyV1Prefix}/realtime`) {
+    return await handleRealtimeProxy({
+      request,
+      env,
+      ctx,
+      cacheGet: async (encryptionKey: string, key: string) => {
+        if (!opts.completionsCache) {
+          return null;
+        }
+        return (
+          (await encryptedGet(opts.completionsCache, encryptionKey, key)) ??
+          null
+        );
+      },
+      getApiSecrets: makeFetchApiSecrets({ ctx, opts }),
+    });
+  }
+
+  return EdgeProxyV1(opts)(request, ctx);
 }
 
 export async function handlePrometheusScrape(

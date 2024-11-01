@@ -90,6 +90,17 @@ export const APISecretSchema = z.union([
 
 export type APISecret = z.infer<typeof APISecretSchema>;
 
+export const proxyLoggingParamSchema = z
+  .object({
+    project_name: z.string(),
+    compress_audio: z.boolean().default(true),
+  })
+  .describe(
+    "If present, proxy will log requests to the given Braintrust project name.",
+  );
+
+export type ProxyLoggingParam = z.infer<typeof proxyLoggingParamSchema>;
+
 export const credentialsRequestSchema = z
   .object({
     model: z
@@ -103,6 +114,7 @@ export const credentialsRequestSchema = z
       .max(60 * 60 * 24)
       .default(60 * 10)
       .describe("TTL of the temporary credential. 10 minutes by default."),
+    logging: proxyLoggingParamSchema.nullish(),
   })
   .describe("Payload for requesting temporary credentials.");
 export type CredentialsRequest = z.infer<typeof credentialsRequestSchema>;
@@ -126,12 +138,12 @@ export const tempCredentialJwtPayloadSchema = z
       .describe("JWT ID, a unique identifier for this token."),
     exp: z.number().describe("Standard JWT expiration field."),
     iat: z.number().describe("Standard JWT issued-at field"),
-
     bt: z
       .object({
         org_name: z.string().nullish(),
         model: z.string().nullish(),
         secret: z.string().min(1),
+        logging: proxyLoggingParamSchema.nullish(),
       })
       .describe("Braintrust-specific grants. See credentialsRequestSchema."),
   })

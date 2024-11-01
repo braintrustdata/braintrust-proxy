@@ -8,7 +8,7 @@ import { PcmAudioFormat, ProxyLoggingParam } from "@braintrust/proxy/schema";
 // https://platform.openai.com/docs/api-reference/realtime-client-events
 // Includes some modifications
 // - Where the OpenAI implementation differs from their type spec.
-// - Replace the fields we don't use with `z.any()` for more permissive parsing.
+// - Replace the fields we don't use with `z.unknown()` for more permissive parsing.
 const baseMessageSchema = z.object({
   event_id: z.string(),
 });
@@ -28,19 +28,19 @@ const toolDefinitionTypeSchema = z.object({
   type: z.literal("function").optional(),
   name: z.string(),
   description: z.string(),
-  parameters: z.record(z.any()),
+  parameters: z.record(z.unknown()),
 });
 
 const sessionResourceTypeSchema = z.object({
   model: z.string().optional(),
   modalities: z.array(z.string()).optional(),
   instructions: z.string().optional(),
-  voice: z.enum(["alloy", "shimmer", "echo"]).optional(),
+  voice: z.string().optional(),
   input_audio_format: audioFormatTypeSchema.optional(),
   output_audio_format: audioFormatTypeSchema.optional(),
   input_audio_transcription: z
     .object({
-      model: z.enum(["whisper-1"]),
+      model: z.string(),
     })
     .nullish(),
   turn_detection: turnDetectionServerVadTypeSchema.nullish(),
@@ -52,9 +52,7 @@ const sessionResourceTypeSchema = z.object({
     ])
     .optional(),
   temperature: z.number().optional(),
-  max_response_output_tokens: z
-    .union([z.number(), z.literal("inf")])
-    .optional(),
+  max_response_output_tokens: z.number().or(z.literal("inf")).optional(),
 });
 
 const usageTypeSchema = z.object({
@@ -141,11 +139,7 @@ const inputItemSchema = z.union([
     call_id: z.string(),
     output: z.string().describe("JSON string"),
   }),
-  z
-    .object({
-      type: z.literal("message"),
-    })
-    .and(messageContentSchema),
+  z.object({ type: z.literal("message") }).and(messageContentSchema),
   z.object({
     type: z.literal("audio"),
     transcript: z.string(),
@@ -165,17 +159,20 @@ const baseResponseSchema = z.object({
   id: z.string(),
   status: responseStatusSchema,
   // Not used by this class.
-  status_details: z.any(),
+  status_details: z.unknown(),
   usage: usageTypeSchema.nullable(),
 });
 
 const responseCreatedMessageSchema = baseMessageSchema.extend({
   type: z.literal("response.created"),
   response: baseResponseSchema.extend({
-    // This array is empty when sent to from the server. Then the SDK mutates it
+    // This array is always empty when sent to from the server. The SDK mutates it
     // after the event is delivered:
     // https://github.com/openai/openai-realtime-api-beta/blob/0126e4bfc19901598c3f20d0a4b32bb3e0bea376/lib/conversation.js#L142-L159
-    output: z.array(z.string().describe("Item IDs")),
+    // This is why the console app shows the array as populated with item IDs.
+    // Set this to unknown[] in case this is a bug, to avoid future breakages.
+    // output: z.array(z.string().describe("Item IDs")),
+    output: z.array(z.unknown()),
   }),
 });
 
@@ -274,7 +271,7 @@ const speechEndedMessageSchema = baseMessageSchema.extend({
 
 const errorMessageSchema = baseMessageSchema.extend({
   type: z.literal("error"),
-  error: z.any(),
+  error: z.unknown(),
 });
 
 // Message types we know about, but do not wish to handle at this time.

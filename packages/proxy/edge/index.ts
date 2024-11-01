@@ -41,6 +41,7 @@ const defaultWhitelist: (string | RegExp)[] = [
   "https://www.braintrust.dev",
   new RegExp("https://.*-braintrustdata.vercel.app"),
   new RegExp("https://.*.preview.braintrust.dev"),
+  "http://localhost",
 ];
 
 const baseCorsHeaders = {

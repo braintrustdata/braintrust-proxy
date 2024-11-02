@@ -52,7 +52,11 @@ import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
 import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import { makeTempCredentials } from "utils/tempCredentials";
+import {
+  isTempCredential,
+  makeTempCredentials,
+  verifyTempCredentials,
+} from "utils/tempCredentials";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -370,9 +374,38 @@ export async function proxyV1({
         bodyData,
         setOverriddenHeader,
         async (model) => {
+          // First, try to use temp credentials, because then we'll get access
+          // to the model.
+          let cachedAuthToken: string | undefined;
+          if (
+            useCredentialsCacheMode !== "never" &&
+            isTempCredential(authToken)
+          ) {
+            const { credentialCacheValue, jwtPayload } =
+              await verifyTempCredentials({
+                jwt: authToken,
+                cacheGet,
+              });
+            // Unwrap the API key here to avoid a duplicate call to
+            // `verifyTempCredentials` inside `getApiSecrets`. That call will
+            // use Redis which is not available in Cloudflare.
+            cachedAuthToken = credentialCacheValue.authToken;
+            if (jwtPayload.bt.logging) {
+              console.warn(
+                `Logging was requested, but not supported on ${method} ${url}`,
+              );
+            }
+            if (jwtPayload.bt.model && jwtPayload.bt.model !== model) {
+              console.warn(
+                `Temp credential allows model "${jwtPayload.bt.model}", but "${model}" was requested`,
+              );
+              return [];
+            }
+          }
+
           const secrets = await getApiSecrets(
             useCredentialsCacheMode !== "never",
-            authToken,
+            cachedAuthToken || authToken,
             model,
             orgName,
           );

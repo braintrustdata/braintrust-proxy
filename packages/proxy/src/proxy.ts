@@ -50,13 +50,14 @@ import { fetchBedrockAnthropic } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
-import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import {
+  getCurrentUnixTimestamp,
+  parseOpenAIStream,
   isTempCredential,
   makeTempCredentials,
   verifyTempCredentials,
-} from "utils/tempCredentials";
+} from "utils";
+import { openAIChatCompletionToChatEvent } from "./providers/openai";
 
 type CachedData = {
   headers: Record<string, string>;

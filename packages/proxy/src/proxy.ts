@@ -721,7 +721,6 @@ async function fetchModelLoop(
 
   if (isNotDiamond) {
     const secrets = await getApiSecrets('notdiamond');
-    console.log(secrets[0].secret);
     const notDiamond = new NotDiamond({
       apiKey: secrets[0].secret,
     });

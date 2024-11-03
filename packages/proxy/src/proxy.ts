@@ -53,6 +53,8 @@ import { MessageParam } from "@anthropic-ai/sdk/resources";
 import { getCurrentUnixTimestamp, parseOpenAIStream } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { makeTempCredentials } from "utils/tempCredentials";
+import { NotDiamond } from "notdiamond";
+import { ProviderModelMap } from "./providers/notdiamond";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -712,6 +714,44 @@ async function fetchModelLoop(
     model = bodyData.model;
   }
 
+
+
+  const modelParts = model?.split(",") ?? [];
+  const isNotDiamond = modelParts.length > 1 && modelParts.includes("notdiamond");
+
+  if (isNotDiamond) {
+    const secrets = await getApiSecrets('notdiamond');
+    console.log(secrets[0].secret);
+    const notDiamond = new NotDiamond({
+      apiKey: secrets[0].secret,
+    });
+
+    const providers = modelParts.filter(m => m !== "notdiamond").map((model) => {
+      const provider = Object.entries(ProviderModelMap).find(([_, models]) => 
+        models.includes(model)
+      )?.[0];
+      
+      if (!provider) {
+        throw new Error(`Could not find provider for model: ${model}`);
+      }
+
+      return { 
+        provider, 
+        model 
+      };
+    });
+
+    const modelSelect = await notDiamond.modelSelect({
+      messages: bodyData.messages,
+      llmProviders: providers as any,
+      tradeoff: 'cost'
+    });
+
+    if ('providers' in modelSelect) {
+      model = modelSelect.providers[0].model;
+    }
+  }
+
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
@@ -780,7 +820,7 @@ async function fetchModelLoop(
         endpointUrl,
         headers,
         secret,
-        bodyData,
+        { ...bodyData, model },
         setHeader,
       );
       if (

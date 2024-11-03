@@ -87,7 +87,7 @@ export const anthropicUsage = z.object({
   output_tokens: z.number().optional(),
 });
 
-export const anthropicStreamEventSchema = z.union([
+export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("message_start"),
     message: z.object({

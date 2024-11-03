@@ -4,6 +4,7 @@ import {
   makeTempCredentialsJwt,
   verifyTempCredentials,
   verifyJwtOnly,
+  makeTempCredentials,
 } from "./tempCredentials";
 import {
   sign as jwtSign,
@@ -116,6 +117,26 @@ test("makeTempCredentialsJwt no secret reuse", () => {
 
   expect(payload1.bt.secret).not.toStrictEqual(payload2.bt.secret);
   expect(payload1.jti).not.toStrictEqual(payload2.jti);
+});
+
+test("makeTempCredentials no wrapping other temp credential", async () => {
+  const result = makeTempCredentialsJwt({
+    request: { model: "model", ttl_seconds: 100 },
+    authToken: "auth token",
+    orgName: "my org name",
+  });
+
+  // Use the previous temp credential JWT to issue another one.
+  await expect(
+    makeTempCredentials({
+      authToken: result.jwt,
+      body: {
+        model: null,
+        ttl_seconds: 200,
+      },
+      cachePut: async () => undefined,
+    }),
+  ).rejects.toThrow();
 });
 
 test("verifyJwtOnly basic", () => {

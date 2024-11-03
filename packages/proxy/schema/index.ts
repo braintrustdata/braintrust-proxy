@@ -9,6 +9,13 @@ import { AvailableModels, ModelFormat } from "./models";
 
 export * from "./secrets";
 export * from "./models";
+export {
+  pcmAudioFormatSchema,
+  type PcmAudioFormat,
+  mp3BitrateSchema,
+  type Mp3Bitrate,
+} from "./audio";
+export * from "./openai-realtime";
 
 export const ModelEndpointType = [
   "openai",

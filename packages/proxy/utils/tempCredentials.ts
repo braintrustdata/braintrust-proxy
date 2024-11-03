@@ -76,8 +76,9 @@ export function makeTempCredentialsJwt({
     jti: credentialId,
     bt: {
       org_name: orgName,
-      model: request.model,
+      model: request.model ?? undefined,
       secret: cacheEncryptionKey,
+      logging: request.logging ?? undefined,
     },
   };
   const jwt = jwtSign(jwtPayload, authToken, {
@@ -128,6 +129,16 @@ export async function makeTempCredentials({
     ttl_seconds?: number,
   ) => Promise<void>;
 }) {
+  if (isTempCredential(authToken)) {
+    // Disallow issuing a temp credential that wraps another temp credential.
+    // This is fine from a security standpoint because such a credential will
+    // fail later while fetching API secrets. However, allowing this is a
+    // confusing and perhaps hard to debug behavior, so we prefer to fail fast.
+    throw new Error(
+      "Temporary credential cannot be used to issue another temp credential.",
+    );
+  }
+
   const body = credentialsRequestSchema.safeParse(rawBody);
   if (!body.success) {
     throw new Error(body.error.message);

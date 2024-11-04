@@ -63,7 +63,6 @@ export const modelParamToModelParam: {
   presence_penalty: null,
   frequency_penalty: null,
   user: null,
-  tool_choice: null,
   function_call: null,
   n: null,
   logprobs: null,

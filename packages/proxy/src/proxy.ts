@@ -23,6 +23,7 @@ import {
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
+  anthropicToolChoiceToOpenAIToolChoice,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -58,6 +59,7 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
+import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1241,6 +1243,13 @@ async function fetchAnthropic(
     );
 
     delete params.functions;
+  }
+
+  if (params.tool_choice) {
+    params.tool_choice = anthropicToolChoiceToOpenAIToolChoice(
+      params.tool_choice as ChatCompletionCreateParamsBase["tool_choice"],
+    );
+    console.log("tool_choice", params.tool_choice);
   }
 
   if (secret.type === "bedrock") {

@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ChatCompletion,
   ChatCompletionChunk,
+  ChatCompletionCreateParams,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
@@ -21,6 +22,8 @@ import {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
 import { convertImageToBase64 } from "./util";
+import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
+import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 /*
 Example events:
@@ -515,4 +518,22 @@ export function openAIToolsToAnthropicTools(
       input_schema: tool.function.parameters,
     });
   });
+}
+
+export function anthropicToolChoiceToOpenAIToolChoice(
+  toolChoice: ChatCompletionCreateParamsBase["tool_choice"],
+): MessageCreateParamsBase["tool_choice"] {
+  if (!toolChoice) {
+    return undefined;
+  }
+  switch (toolChoice) {
+    case "none":
+      return undefined;
+    case "auto":
+      return { type: "auto" };
+    case "required":
+      return { type: "any" };
+    default:
+      return { type: "tool", name: toolChoice.function.name };
+  }
 }

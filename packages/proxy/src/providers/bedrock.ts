@@ -8,6 +8,7 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
 } from "./anthropic";
+import { CompletionUsage } from "openai/resources";
 
 const brt = new BedrockRuntimeClient({});
 export async function fetchBedrockAnthropic({
@@ -56,6 +57,7 @@ export async function fetchBedrockAnthropic({
     status: 200,
   });
 
+  let usage: Partial<CompletionUsage> = {};
   let responseStream;
   if (stream) {
     const command = new InvokeModelWithResponseStreamCommand(input);
@@ -80,7 +82,7 @@ export async function fetchBedrockAnthropic({
               new TextDecoder().decode(value.chunk.bytes),
             );
             idx += 1;
-            const parsed = anthropicEventToOpenAIEvent(idx, valueData);
+            const parsed = anthropicEventToOpenAIEvent(idx, usage, valueData);
             if (parsed.event) {
               controller.enqueue(
                 new TextEncoder().encode(

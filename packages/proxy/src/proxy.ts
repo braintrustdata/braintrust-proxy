@@ -47,7 +47,7 @@ import {
   CompletionUsage,
   CreateEmbeddingResponse,
 } from "openai/resources";
-import { fetchBedrockAnthropic } from "./providers/bedrock";
+import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
@@ -967,6 +967,13 @@ async function fetchOpenAI(
   secret: APISecret,
   setHeader: (name: string, value: string) => void,
 ): Promise<ModelResponse> {
+  if (secret.type === "bedrock") {
+    return await fetchBedrockOpenAI({
+      secret,
+      body: bodyData,
+    });
+  }
+
   let baseURL =
     (secret.metadata &&
       "api_base" in secret.metadata &&

@@ -336,6 +336,43 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 75,
     displayName: "Claude 3 Opus",
   },
+  "claude-instant-1.2": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 2.4,
+    displayName: "Claude Instant 1.2",
+  },
+  "claude-instant-1": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 2.4,
+    displayName: "Claude Instant 1",
+  },
+  "claude-2.1": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 8,
+    output_cost_per_mil_tokens: 24,
+    displayName: "Claude 2.1",
+  },
+  "claude-2.0": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 8,
+    output_cost_per_mil_tokens: 24,
+    displayName: "Claude 2.0",
+  },
+  "claude-2": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 8,
+    output_cost_per_mil_tokens: 24,
+    displayName: "Claude 2",
+  },
+
+  // BEDROCK MODELS
   "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     format: "anthropic",
     flavor: "chat",
@@ -376,40 +413,37 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 75,
     displayName: "Claude 3 Opus v1.0",
   },
-  "claude-instant-1.2": {
-    format: "anthropic",
+
+  "us.meta.llama3-2-1b-instruct-v1:0": {
+    format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 2.4,
-    displayName: "Claude Instant 1.2",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "LLaMA 3.2 1B Instruct v1.0",
   },
-  "claude-instant-1": {
-    format: "anthropic",
+
+  "us.meta.llama3-2-3b-instruct-v1:0": {
+    format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 2.4,
-    displayName: "Claude Instant 1",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.15,
+    displayName: "LLaMA 3.2 3B Instruct v1.0",
   },
-  "claude-2.1": {
-    format: "anthropic",
+
+  "us.meta.llama3-2-11b-instruct-v1:0": {
+    format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 8,
-    output_cost_per_mil_tokens: 24,
-    displayName: "Claude 2.1",
+    input_cost_per_mil_tokens: 0.35,
+    output_cost_per_mil_tokens: 0.35,
+    displayName: "LLaMA 3.2 11B Instruct v1.0",
   },
-  "claude-2.0": {
-    format: "anthropic",
+
+  "us.meta.llama3-2-90b-instruct-v1:0": {
+    format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 8,
-    output_cost_per_mil_tokens: 24,
-    displayName: "Claude 2.0",
-  },
-  "claude-2": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 8,
-    output_cost_per_mil_tokens: 24,
-    displayName: "Claude 2",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 2,
+    displayName: "LLaMA 3.2 90B Instruct v1.0",
   },
 
   // REPLICATE MODELS

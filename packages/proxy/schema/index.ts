@@ -213,6 +213,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-5-sonnet-20240620-v1:0": ["bedrock"],
+  "us.meta.llama3-2-1b-instruct-v1:0": ["bedrock"],
+  "us.meta.llama3-2-3b-instruct-v1:0": ["bedrock"],
+  "us.meta.llama3-2-11b-instruct-v1:0": ["bedrock"],
+  "us.meta.llama3-2-90b-instruct-v1:0": ["bedrock"],
   "grok-beta": ["xAI"],
 };
 

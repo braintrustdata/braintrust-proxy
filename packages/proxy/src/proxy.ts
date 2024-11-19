@@ -1037,6 +1037,8 @@ async function fetchOpenAI(
       }));
     }
 
+    // O1 now supports streaming! Leaving this in in case we hit unexpected issues.
+    /*
     return fetchOpenAIFakeStream({
       method,
       fullURL,
@@ -1044,6 +1046,7 @@ async function fetchOpenAI(
       bodyData,
       setHeader,
     });
+    */
   }
 
   const proxyResponse = await fetch(

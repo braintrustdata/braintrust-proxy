@@ -43,6 +43,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "GPT 4o mini",
   },
+  "gpt-4o-2024-11-20": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
+    displayName: "GPT 4o 2024-11-20",
+  },
   "gpt-4o-2024-08-06": {
     format: "openai",
     flavor: "chat",
@@ -910,6 +918,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash",
+    multimodal: true,
+  },
+  "gemini-exp-1114": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    displayName: "Gemini Exp 1114",
+    multimodal: true,
+  },
+  "gemini-exp-1121": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    displayName: "Gemini Exp 1121",
     multimodal: true,
   },
   "gemini-1.5-pro-002": {

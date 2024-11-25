@@ -177,7 +177,6 @@ export function makeFetchApiSecrets({
 
       if (responseND.ok) {
         secrets = (await responseND.json())["secrets"];
-        console.log("secrets new", JSON.stringify(secrets, null, 2));
       } else {
         lookupFailed = true;
         console.warn("Failed to lookup api key", await responseND.text());

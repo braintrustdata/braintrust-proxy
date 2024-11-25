@@ -757,7 +757,6 @@ async function fetchModelLoop(
     });
 
     const providers = bodyData['models'].map((model: string) => {
-      console.log('modelWithProvider', model)
       let provider = Object.entries(ProviderModelMap).find(([_, models]) => 
         models.includes(model)
       )?.[0];
@@ -772,19 +771,12 @@ async function fetchModelLoop(
       };
     });
 
-    console.log("providers to be sent to notdiamond", providers);
-
     const modelSelect = await notDiamond.modelSelect({
       messages: bodyData.messages,
       llmProviders: providers,
       tradeoff: 'cost'
     });
 
-    console.log("payload", {
-      messages: bodyData.messages,
-      llmProviders: providers,
-      tradeoff: 'cost'
-    })
     if ('providers' in modelSelect) {
       const provider = modelSelect?.providers[0].provider
       if(provider === 'togetherai') {
@@ -801,8 +793,6 @@ async function fetchModelLoop(
         model = modelSelect.providers[0].model;
       }
     }
-    // @ts-ignore
-    console.log("model on line 753", model, modelSelect.providers)
     bodyData['model'] = model;
   }
 
@@ -818,7 +808,6 @@ async function fetchModelLoop(
   let totalWaitedTime = 0;
 
   for (; i < secrets.length; i++) {
-    console.log('current model!!!', model)
     let providerFromModel = Object.entries(ProviderModelMap).find(([_, models]) => {
       return models.includes(model ?? '')
     })?.[0];
@@ -826,13 +815,10 @@ async function fetchModelLoop(
 
     if(!providerFromModel) {
 
-    console.log('model', model)
-    console.log('providerFromModel', providerFromModel)
     let secret = secrets.find((secret) => {
       return secret.type === providerFromModel
     }) ?? secrets[initialIdx]
 
-    console.log('secret', secret)
     const modelSpec =
       (model !== null
         ? secret?.metadata?.customModels?.[model] ?? AvailableModels[model]
@@ -1009,7 +995,6 @@ async function fetchModel(
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
 ) {
-  console.log("format", format, bodyData);
   switch (format) {
     case "openai":
       return await fetchOpenAI(
@@ -1440,8 +1425,6 @@ async function fetchGoogle(
   if (streamingMode) {
     fullURL.searchParams.set("alt", "sse");
   }
-
-  console.log('secret', secret)
 
   delete headers["authorization"];
   headers["content-type"] = "application/json";

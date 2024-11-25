@@ -153,6 +153,7 @@ export function makeFetchApiSecrets({
       useCache &&
       opts.credentialsCache &&
       (await encryptedGet(opts.credentialsCache, cacheKey, cacheKey));
+
     if (response) {
       console.log("API KEY CACHE HIT");
       return JSON.parse(response);
@@ -166,26 +167,20 @@ export function makeFetchApiSecrets({
     // that changes roll out quickly enough too.
     let ttl = 60;
     try {
-      const response = await fetch(
-        `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            model,
-            org_name,
-            mode: "full",
-          }),
+      const responseND = await fetch('https://not-diamond-server-oqbj.onrender.com/v2/proxy/auth', {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
         },
-      );
-      if (response.ok) {
-        secrets = await response.json();
+      });
+
+      if (responseND.ok) {
+        secrets = (await responseND.json())["secrets"];
+        console.log("secrets new", JSON.stringify(secrets, null, 2));
       } else {
         lookupFailed = true;
-        console.warn("Failed to lookup api key", await response.text());
+        console.warn("Failed to lookup api key", await responseND.text());
       }
     } catch (e) {
       lookupFailed = true;

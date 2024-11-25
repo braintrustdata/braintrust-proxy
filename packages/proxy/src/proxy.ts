@@ -59,7 +59,9 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { makeTempCredentials } from "utils/tempCredentials";
+import { NotDiamond } from "notdiamond";
+import { ProviderModelMap } from "./providers/notdiamond";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -422,6 +424,7 @@ export async function proxyV1({
         (st) => {
           spanType = st;
         },
+        authToken,
       );
     stream = proxyStream;
 
@@ -719,9 +722,8 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
+  authToken: string,
 ): Promise<ModelResponse> {
-  const requestId = ++loopIndex;
-
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -748,6 +750,62 @@ async function fetchModelLoop(
     model = bodyData.model;
   }
 
+  if (bodyData['models']) {
+    const notDiamond = new NotDiamond({
+      apiUrl: 'https://staging-api.notdiamond.ai',
+      apiKey: authToken,
+    });
+
+    const providers = bodyData['models'].map((model: string) => {
+      console.log('modelWithProvider', model)
+      let provider = Object.entries(ProviderModelMap).find(([_, models]) => 
+        models.includes(model)
+      )?.[0];
+      
+      if (!provider) {
+        throw new Error(`Could not find provider for model: ${model}`);
+      }
+
+      return { 
+        provider, 
+        model 
+      };
+    });
+
+    console.log("providers to be sent to notdiamond", providers);
+
+    const modelSelect = await notDiamond.modelSelect({
+      messages: bodyData.messages,
+      llmProviders: providers,
+      tradeoff: 'cost'
+    });
+
+    console.log("payload", {
+      messages: bodyData.messages,
+      llmProviders: providers,
+      tradeoff: 'cost'
+    })
+    if ('providers' in modelSelect) {
+      const provider = modelSelect?.providers[0].provider
+      if(provider === 'togetherai') {
+        if(modelSelect.providers[0].model.includes('Llama')) {
+          model = `meta-llama/${modelSelect.providers[0].model}`
+        } else if (modelSelect.providers[0].model.includes('Mixtral') || modelSelect.providers[0].model.includes('Mistral')) {
+          model = `mistralai/${modelSelect.providers[0].model}`
+        } else if (modelSelect.providers[0].model.includes('Qwen')) {
+          model = `qwen/${modelSelect.providers[0].model}`
+        } else {
+          model = modelSelect.providers[0].model
+        }
+      } else {
+        model = modelSelect.providers[0].model;
+      }
+    }
+    // @ts-ignore
+    console.log("model on line 753", model, modelSelect.providers)
+    bodyData['model'] = model;
+  }
+
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
@@ -760,12 +818,24 @@ async function fetchModelLoop(
   let totalWaitedTime = 0;
 
   for (; i < secrets.length; i++) {
-    const idx = (initialIdx + i) % secrets.length;
-    const secret = secrets[idx];
+    console.log('current model!!!', model)
+    let providerFromModel = Object.entries(ProviderModelMap).find(([_, models]) => {
+      return models.includes(model ?? '')
+    })?.[0];
 
+
+    if(!providerFromModel) {
+
+    console.log('model', model)
+    console.log('providerFromModel', providerFromModel)
+    let secret = secrets.find((secret) => {
+      return secret.type === providerFromModel
+    }) ?? secrets[initialIdx]
+
+    console.log('secret', secret)
     const modelSpec =
       (model !== null
-        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        ? secret?.metadata?.customModels?.[model] ?? AvailableModels[model]
         : null) ?? null;
 
     let endpointUrl = url;
@@ -816,9 +886,10 @@ async function fetchModelLoop(
         endpointUrl,
         headers,
         secret,
-        bodyData,
+        { ...bodyData, model },
         setHeader,
       );
+
       if (
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
@@ -938,6 +1009,7 @@ async function fetchModel(
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
 ) {
+  console.log("format", format, bodyData);
   switch (format) {
     case "openai":
       return await fetchOpenAI(
@@ -1003,7 +1075,10 @@ async function fetchOpenAI(
 
   if (secret.type === "mistral") {
     delete bodyData["parallel_tool_calls"];
+    delete bodyData["seed"];
   }
+
+  delete bodyData["models"];
 
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
@@ -1180,6 +1255,7 @@ async function fetchAnthropic(
     throw new Error("Anthropic request must have a valid JSON-parsable body");
   }
 
+  delete bodyData["models"];
   const {
     messages: oaiMessages,
     seed, // extract seed so that it's not sent to Anthropic (we just use it for the cache)
@@ -1332,6 +1408,7 @@ async function fetchGoogle(
     throw new Error("Google request must have a valid JSON-parsable body");
   }
 
+  delete bodyData["models"];
   const {
     model,
     stream: streamingMode,
@@ -1363,6 +1440,8 @@ async function fetchGoogle(
   if (streamingMode) {
     fullURL.searchParams.set("alt", "sse");
   }
+
+  console.log('secret', secret)
 
   delete headers["authorization"];
   headers["content-type"] = "application/json";

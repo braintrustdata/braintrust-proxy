@@ -43,6 +43,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "GPT 4o mini",
   },
+  "chatgpt-4o-latest": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "GPT 4o latest",
+  },
   "gpt-4o-2024-08-06": {
     format: "openai",
     flavor: "chat",
@@ -296,6 +304,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.5 Sonnet 2024-10-22",
   },
+  "claude-3-5-haiku-20241022": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Haiku 2024-10-22",
+  },
   "claude-3-5-sonnet-20240620": {
     format: "anthropic",
     flavor: "chat",
@@ -451,6 +467,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.2,
     output_cost_per_mil_tokens: 0.2,
     displayName: "Perplexity 7b Online",
+  },
+  "llama-3.1-sonar-large-128k-online": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1,
+    output_cost_per_mil_tokens: 1,
+    displayName: "LLama 3.1 Sonar Large 128k Online",
   },
   "pplx-70b-chat": {
     format: "openai",
@@ -667,6 +690,27 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 1.2,
     displayName: "Mixtral 8x22B Instruct",
   },
+  "togetherai/Mixtral-8x22B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "Mixtral 8x22B Instruct",
+  },
+  "togetherai/Qwen2-72B-Instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "Qwen2 72B Instruct",
+  },
+  "togetherai/Mistral-7B-Instruct-v0.2": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "Mixtral 8x22B Instruct",
+  },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
     format: "openai",
     flavor: "chat",
@@ -719,6 +763,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   //   output_cost_per_mil_tokens: 0.1,
   //   displayName: "Mistral Embed",
   // },
+  "open-mixtral-8x7b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "Mixtral 8x7B",
+  },
   "open-mixtral-8x22b": {
     format: "openai",
     flavor: "chat",
@@ -910,6 +961,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash",
+    multimodal: true,
+  },
+  "gemini-1.0-pro-latest": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 1.5,
+    displayName: "Gemini 1.0 Pro Latest",
     multimodal: true,
   },
   "gemini-1.5-pro-002": {

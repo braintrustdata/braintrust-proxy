@@ -106,13 +106,3 @@ To build the proxy, install [pnpm](https://pnpm.io/installation) and run:
 pnpm install
 pnpm build
 ```
-
-## Pricing
-
-- **Free Tier**: Unlimited access to free models, limited access to pro models, 30 image generations/month
-- **Pro Tier** ($20/month): 
-  - Unlimited access to all models
-  - 150 image generations/month
-  - Disable GPT-4-mini option
-  - Toggle "smart tradeoffs" feature
-  - Coming soon: "Bring Your Own Keys" support

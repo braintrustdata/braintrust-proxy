@@ -320,14 +320,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.5 Sonnet 2024-06-20",
   },
-  "claude-3-5-haiku-20241022": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 1,
-    output_cost_per_mil_tokens: 5,
-    displayName: "Claude 3.5 Haiku 2024-10-22",
-  },
   "claude-3-haiku-20240307": {
     format: "anthropic",
     flavor: "chat",

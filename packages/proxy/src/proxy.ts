@@ -55,13 +55,13 @@ import {
   getCurrentUnixTimestamp,
   parseOpenAIStream,
   isTempCredential,
-  makeTempCredentials,
   verifyTempCredentials,
+  makeTempCredentials,
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import { makeTempCredentials } from "utils/tempCredentials";
 import { NotDiamond } from "notdiamond";
 import { ProviderModelMap } from "./providers/notdiamond";
+import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -752,7 +752,7 @@ async function fetchModelLoop(
 
   if (bodyData['models']) {
     const notDiamond = new NotDiamond({
-      apiUrl: 'https://staging-api.notdiamond.ai',
+      apiUrl: bodyData['apiUrl'] || 'https://api.notdiamond.ai',
       apiKey: authToken,
     });
 
@@ -771,11 +771,14 @@ async function fetchModelLoop(
       };
     });
 
+    console.log({providers: JSON.stringify(providers, null, 2)});
+    console.log({messages: JSON.stringify(bodyData.messages, null, 2)});
     const modelSelect = await notDiamond.modelSelect({
       messages: bodyData.messages,
       llmProviders: providers,
-      tradeoff: 'cost'
     });
+
+    console.log({modelSelect: JSON.stringify(modelSelect, null, 2)});
 
     if ('providers' in modelSelect) {
       const provider = modelSelect?.providers[0].provider
@@ -812,12 +815,19 @@ async function fetchModelLoop(
       return models.includes(model ?? '')
     })?.[0];
 
-
-    if(!providerFromModel) {
-
-    let secret = secrets.find((secret) => {
-      return secret.type === providerFromModel
-    }) ?? secrets[initialIdx]
+    console.log({model});
+    console.log({providerFromModel});
+    let secret = secrets[initialIdx];
+    if (providerFromModel) {
+      const foundSecret = secrets.find((secret) => {
+        return secret.type === providerFromModel
+      });
+      if (foundSecret) {
+        console.log({foundSecret});
+        secret = foundSecret;
+      }
+    }
+    console.log({secret});
 
     const modelSpec =
       (model !== null
@@ -1064,6 +1074,7 @@ async function fetchOpenAI(
   }
 
   delete bodyData["models"];
+  delete bodyData["apiUrl"];
 
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
@@ -1241,6 +1252,8 @@ async function fetchAnthropic(
   }
 
   delete bodyData["models"];
+  delete bodyData["apiUrl"];
+
   const {
     messages: oaiMessages,
     seed, // extract seed so that it's not sent to Anthropic (we just use it for the cache)
@@ -1394,6 +1407,8 @@ async function fetchGoogle(
   }
 
   delete bodyData["models"];
+  delete bodyData["apiUrl"];
+
   const {
     model,
     stream: streamingMode,

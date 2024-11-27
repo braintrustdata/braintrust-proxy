@@ -1,5 +1,5 @@
 {
-  "name": "@braintrust/ai-proxy-wrangler",
+  "name": "@notdiamond/ai-proxy-wrangler",
   "version": "0.0.0",
   "private": true,
   "main": "./dist/lib.mjs",

@@ -34,6 +34,7 @@ const client = new OpenAI({
 async function main() {
   const start = performance.now();
   const response = await client.chat.completions.create({
+    model: 'gpt-3.5-turbo',
     models: ["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
     messages: [{ role: "user", content: "What is a proxy?" }],
     seed: 1, // A seed activates the proxy's cache
@@ -59,6 +60,7 @@ client = OpenAI(
 
 start = time.time()
 response = client.chat.completions.create(
+  model="gpt-3.5-turbo",
 	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"], // Can use claude-2, llama-2-13b-chat here too
 	messages=[{"role": "user", "content": "What is a proxy?"}],
 	seed=1, // A seed activates the proxy's cache
@@ -73,6 +75,7 @@ print(f"Took {time.time()-start}s")
 time curl -i https://api.notdiamond.ai/v1/proxy/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
+    "model": "gpt-3.5-turbo",
     "models": ["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
     "messages": [
       {

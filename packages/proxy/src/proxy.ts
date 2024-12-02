@@ -751,10 +751,8 @@ async function fetchModelLoop(
   }
 
   if (bodyData['models']) {
-    const notDiamond = new NotDiamond({
-      apiUrl: bodyData['apiUrl'] || 'https://api.notdiamond.ai',
-      apiKey: authToken,
-    });
+    const baseUrl = bodyData['apiUrl'] || 'https://api.notdiamond.ai';
+    const modelSelectUrl = `${baseUrl}/v2/${bodyData['modelSelectUrl'] || 'modelRouter/modelSelect'}`;
 
     const providers = bodyData['models'].map((model: string) => {
       let provider = Object.entries(ProviderModelMap).find(([_, models]) => 
@@ -771,15 +769,22 @@ async function fetchModelLoop(
       };
     });
 
-    console.log({providers: JSON.stringify(providers, null, 2)});
-    console.log({messages: JSON.stringify(bodyData.messages, null, 2)});
-    const modelSelect = await notDiamond.modelSelect({
-      messages: bodyData.messages,
-      llmProviders: providers,
+    const modelSelectResponse = await fetch(modelSelectUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        messages: bodyData.messages,
+        llm_providers: providers,
+        ...(bodyData.tradeoff ? { tradeoff: bodyData.tradeoff } : {}),
+      }),
     });
 
-    console.log({modelSelect: JSON.stringify(modelSelect, null, 2)});
+    const modelSelect = await modelSelectResponse.json();
 
+    console.log({modelSelect: JSON.stringify(modelSelect, null, 2)});
     if ('providers' in modelSelect) {
       const provider = modelSelect?.providers[0].provider
       if(provider === 'togetherai') {
@@ -796,8 +801,14 @@ async function fetchModelLoop(
         model = modelSelect.providers[0].model;
       }
     }
+  }
+  console.log(bodyData['models'])
+
+  if(!bodyData['models']) {
     bodyData['model'] = model;
   }
+
+  console.log(model);
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
@@ -815,19 +826,15 @@ async function fetchModelLoop(
       return models.includes(model ?? '')
     })?.[0];
 
-    console.log({model});
-    console.log({providerFromModel});
     let secret = secrets[initialIdx];
     if (providerFromModel) {
       const foundSecret = secrets.find((secret) => {
         return secret.type === providerFromModel
       });
       if (foundSecret) {
-        console.log({foundSecret});
         secret = foundSecret;
       }
     }
-    console.log({secret});
 
     const modelSpec =
       (model !== null
@@ -1075,6 +1082,8 @@ async function fetchOpenAI(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
+  delete bodyData["modelSelectUrl"];
+  delete bodyData["tradeoff"];
 
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
@@ -1253,6 +1262,8 @@ async function fetchAnthropic(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
+  delete bodyData["modelSelectUrl"];
+  delete bodyData["tradeoff"];
 
   const {
     messages: oaiMessages,
@@ -1408,6 +1419,8 @@ async function fetchGoogle(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
+  delete bodyData["modelSelectUrl"];
+  delete bodyData["tradeoff"];
 
   const {
     model,

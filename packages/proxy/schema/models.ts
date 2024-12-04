@@ -1000,6 +1000,29 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Grok Beta",
   },
 
+  // BEDROCK MODELS
+  "amazon.nova-pro-v1:0": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 3.2,
+    displayName: "Amazon Nova Pro",
+  },
+  "amazon.nova-lite-v1:0": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.06,
+    output_cost_per_mil_tokens: 0.24,
+    displayName: "Amazon Nova Lite",
+  },
+  "amazon.nova-micro-v1:0": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.035,
+    output_cost_per_mil_tokens: 0.14,
+    displayName: "Amazon Nova Micro",
+  },
+
   "text-block": {
     format: "js",
     flavor: "completion",

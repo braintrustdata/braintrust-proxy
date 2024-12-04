@@ -47,7 +47,7 @@ import {
   CompletionUsage,
   CreateEmbeddingResponse,
 } from "openai/resources";
-import { fetchBedrockAnthropic } from "./providers/bedrock";
+import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
@@ -223,14 +223,6 @@ export async function proxyV1({
   }
 
   if (url === "/credentials") {
-    const writeToReadable = (response: string) => {
-      return new ReadableStream({
-        start(controller) {
-          controller.enqueue(new TextEncoder().encode(response));
-          controller.close();
-        },
-      });
-    };
     let readable: ReadableStream | null = null;
     try {
       const key = await makeTempCredentials({
@@ -940,6 +932,12 @@ async function fetchModel(
 ) {
   switch (format) {
     case "openai":
+      if (secret.type === "bedrock") {
+        return fetchBedrockOpenAI({
+          secret,
+          body: bodyData,
+        });
+      }
       return await fetchOpenAI(
         method,
         url,
@@ -1621,3 +1619,12 @@ function logSpanInputs(
     }
   }
 }
+
+export const writeToReadable = (response: string) => {
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(response));
+      controller.close();
+    },
+  });
+};

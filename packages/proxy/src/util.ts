@@ -52,3 +52,9 @@ export function isEmpty(a: any): a is null | undefined {
 export function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
+
+export class ProxyBadRequestError extends Error {
+  constructor(public message: string) {
+    super(message);
+  }
+}

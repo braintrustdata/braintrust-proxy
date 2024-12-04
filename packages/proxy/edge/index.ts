@@ -121,6 +121,7 @@ export function makeFetchApiSecrets({
     authToken: string,
     model: string | null,
     org_name?: string,
+    baseUrl?: string,
   ): Promise<APISecret[]> => {
     // First try to decode & verify as JWT. We gate this on Braintrust JWT
     // format, not just any JWT, in case a future model provider uses JWT as
@@ -166,8 +167,9 @@ export function makeFetchApiSecrets({
     // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
     // that changes roll out quickly enough too.
     let ttl = 60;
+
     try {
-      const responseND = await fetch('https://not-diamond-server-oqbj.onrender.com/v2/proxy/auth', {
+      const responseND = await fetch(`https://api.notdiamond.ai/v2/proxy/auth`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -305,6 +307,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cachePut,
         digest: digestMessage,
         meterProvider,
+        baseUrl: request.url
       });
     } catch (e) {
       return new Response(`${e}`, {

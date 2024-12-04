@@ -59,21 +59,20 @@ import {
   makeTempCredentials,
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import { NotDiamond } from "notdiamond";
 import { ProviderModelMap } from "./providers/notdiamond";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 type CachedData = {
   headers: Record<string, string>;
 } & (
-  | {
+    | {
       // DEPRECATION_NOTICE: This can be removed in a couple weeks since writing (e.g. June 9 2024 onwards)
       body: string;
     }
-  | {
+    | {
       data: string;
     }
-);
+  );
 
 export const CACHE_HEADER = "x-bt-use-cache";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
@@ -116,6 +115,7 @@ export async function proxyV1({
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
+  baseUrl,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -142,6 +142,7 @@ export async function proxyV1({
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
+  baseUrl?: string;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -502,68 +503,68 @@ export async function proxyV1({
     const eventSourceParser: EventSourceParser | undefined = !isStreaming
       ? undefined
       : createParser((event: ParsedEvent | ReconnectInterval) => {
-          if (
-            ("data" in event &&
-              event.type === "event" &&
-              event.data === "[DONE]") ||
-            // Replicate doesn't send [DONE] but does send a 'done' event
-            // @see https://replicate.com/docs/streaming
-            (event as any).event === "done"
-          ) {
-            return;
-          }
+        if (
+          ("data" in event &&
+            event.type === "event" &&
+            event.data === "[DONE]") ||
+          // Replicate doesn't send [DONE] but does send a 'done' event
+          // @see https://replicate.com/docs/streaming
+          (event as any).event === "done"
+        ) {
+          return;
+        }
 
-          if ("data" in event) {
-            const result = JSON.parse(event.data) as ChatCompletionChunk;
-            if (result) {
-              if (result.usage) {
-                spanLogger.log({
-                  metrics: {
-                    tokens: result.usage.total_tokens,
-                    prompt_tokens: result.usage.prompt_tokens,
-                    completion_tokens: result.usage.completion_tokens,
+        if ("data" in event) {
+          const result = JSON.parse(event.data) as ChatCompletionChunk;
+          if (result) {
+            if (result.usage) {
+              spanLogger.log({
+                metrics: {
+                  tokens: result.usage.total_tokens,
+                  prompt_tokens: result.usage.prompt_tokens,
+                  completion_tokens: result.usage.completion_tokens,
+                },
+              });
+            }
+
+            const choice = result.choices?.[0];
+            const delta = choice?.delta;
+
+            if (!choice || !delta) {
+              return;
+            }
+
+            if (!role && delta.role) {
+              role = delta.role;
+            }
+
+            if (choice.finish_reason) {
+              finish_reason = choice.finish_reason;
+            }
+
+            if (delta.content) {
+              content = (content || "") + delta.content;
+            }
+
+            if (delta.tool_calls) {
+              if (!tool_calls) {
+                tool_calls = [
+                  {
+                    index: 0,
+                    id: delta.tool_calls[0].id,
+                    type: delta.tool_calls[0].type,
+                    function: delta.tool_calls[0].function,
                   },
-                });
-              }
-
-              const choice = result.choices?.[0];
-              const delta = choice?.delta;
-
-              if (!choice || !delta) {
-                return;
-              }
-
-              if (!role && delta.role) {
-                role = delta.role;
-              }
-
-              if (choice.finish_reason) {
-                finish_reason = choice.finish_reason;
-              }
-
-              if (delta.content) {
-                content = (content || "") + delta.content;
-              }
-
-              if (delta.tool_calls) {
-                if (!tool_calls) {
-                  tool_calls = [
-                    {
-                      index: 0,
-                      id: delta.tool_calls[0].id,
-                      type: delta.tool_calls[0].type,
-                      function: delta.tool_calls[0].function,
-                    },
-                  ];
-                } else if (tool_calls[0].function) {
-                  tool_calls[0].function.arguments =
-                    (tool_calls[0].function.arguments ?? "") +
-                    (delta.tool_calls[0].function?.arguments ?? "");
-                }
+                ];
+              } else if (tool_calls[0].function) {
+                tool_calls[0].function.arguments =
+                  (tool_calls[0].function.arguments ?? "") +
+                  (delta.tool_calls[0].function?.arguments ?? "");
               }
             }
           }
-        });
+        }
+      });
 
     const loggingStream = new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, controller) {
@@ -750,22 +751,34 @@ async function fetchModelLoop(
     model = bodyData.model;
   }
 
-  if (bodyData['models']) {
-    const baseUrl = bodyData['apiUrl'] || 'https://api.notdiamond.ai';
-    const modelSelectUrl = `${baseUrl}/v2/${bodyData['modelSelectUrl'] || 'modelRouter/modelSelect'}`;
+  let models = bodyData['models'] || bodyData['extra_body']?.['models'];
 
-    const providers = bodyData['models'].map((model: string) => {
-      let provider = Object.entries(ProviderModelMap).find(([_, models]) => 
+  if(models && models.includes(',')) {
+    models = models?.split(',');
+  }
+
+  if (models) {
+    let baseUrl = bodyData['apiUrl'] || 'https://api.notdiamond.ai';
+    let modelSelectPath = `/v2/modelRouter/modelSelect`;
+
+    let modelSelectUrl = `${baseUrl}${modelSelectPath}`;
+
+    if(baseUrl.includes('allhands')) {
+      modelSelectPath = '/v2/modelRouter/openHandsRouter';
+    }
+    
+    const providers = models.map((model: string) => {
+      let provider = Object.entries(ProviderModelMap).find(([_, models]) =>
         models.includes(model)
       )?.[0];
-      
+
       if (!provider) {
         throw new Error(`Could not find provider for model: ${model}`);
       }
 
-      return { 
-        provider, 
-        model 
+      return {
+        provider,
+        model
       };
     });
 
@@ -784,11 +797,10 @@ async function fetchModelLoop(
 
     const modelSelect = await modelSelectResponse.json();
 
-    console.log({modelSelect: JSON.stringify(modelSelect, null, 2)});
     if ('providers' in modelSelect) {
       const provider = modelSelect?.providers[0].provider
-      if(provider === 'togetherai') {
-        if(modelSelect.providers[0].model.includes('Llama')) {
+      if (provider === 'togetherai') {
+        if (modelSelect.providers[0].model.includes('Llama')) {
           model = `meta-llama/${modelSelect.providers[0].model}`
         } else if (modelSelect.providers[0].model.includes('Mixtral') || modelSelect.providers[0].model.includes('Mistral')) {
           model = `mistralai/${modelSelect.providers[0].model}`
@@ -802,13 +814,10 @@ async function fetchModelLoop(
       }
     }
   }
-  console.log(bodyData['models'])
 
-  if(!bodyData['models']) {
+  if (!models) {
     bodyData['model'] = model;
   }
-
-  console.log(model);
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
@@ -1084,6 +1093,7 @@ async function fetchOpenAI(
   delete bodyData["apiUrl"];
   delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
+  delete bodyData["extra_body"];
 
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
@@ -1130,16 +1140,16 @@ async function fetchOpenAI(
     fullURL.toString(),
     method === "POST"
       ? {
-          method,
-          headers,
-          body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
-          keepalive: true,
-        }
+        method,
+        headers,
+        body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
+        keepalive: true,
+      }
       : {
-          method,
-          headers,
-          keepalive: true,
-        },
+        method,
+        headers,
+        keepalive: true,
+      },
   );
 
   return {
@@ -1171,16 +1181,16 @@ async function fetchOpenAIFakeStream({
     fullURL.toString(),
     method === "POST"
       ? {
-          method,
-          headers,
-          body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
-          keepalive: true,
-        }
+        method,
+        headers,
+        body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
+        keepalive: true,
+      }
       : {
-          method,
-          headers,
-          keepalive: true,
-        },
+        method,
+        headers,
+        keepalive: true,
+      },
   );
 
   let responseChunks: Uint8Array[] = [];
@@ -1234,7 +1244,7 @@ async function fetchOpenAIFakeStream({
     stream:
       isStream && proxyResponse.ok
         ? proxyResponse.body?.pipeThrough(responseToStream) ||
-          createEmptyReadableStream()
+        createEmptyReadableStream()
         : proxyResponse.body,
     response: proxyResponse,
   };
@@ -1264,6 +1274,7 @@ async function fetchAnthropic(
   delete bodyData["apiUrl"];
   delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
+  delete bodyData["extra_body"];
 
   const {
     messages: oaiMessages,
@@ -1319,12 +1330,12 @@ async function fetchAnthropic(
     headers["anthropic-beta"] = "tools-2024-05-16";
     params.tools = openAIToolsToAnthropicTools(
       params.tools ||
-        (params.functions as Array<ChatCompletionCreateParams.Function>).map(
-          (f: any) => ({
-            type: "function",
-            function: f,
-          }),
-        ),
+      (params.functions as Array<ChatCompletionCreateParams.Function>).map(
+        (f: any) => ({
+          type: "function",
+          function: f,
+        }),
+      ),
     );
 
     delete params.functions;
@@ -1421,6 +1432,7 @@ async function fetchGoogle(
   delete bodyData["apiUrl"];
   delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
+  delete bodyData["extra_body"];
 
   const {
     model,
@@ -1445,9 +1457,8 @@ async function fetchGoogle(
 
   const fullURL = new URL(
     EndpointProviderToBaseURL.google! +
-      `/models/${encodeURIComponent(model)}:${
-        streamingMode ? "streamGenerateContent" : "generateContent"
-      }`,
+    `/models/${encodeURIComponent(model)}:${streamingMode ? "streamGenerateContent" : "generateContent"
+    }`,
   );
   fullURL.searchParams.set("key", secret.secret);
   if (streamingMode) {

@@ -169,18 +169,21 @@ export async function fetchBedrockOpenAI({
     messages as ChatCompletionMessageParam[],
   );
 
+  // https://docs.aws.amazon.com/nova/latest/userguide/getting-started-schema.html
   const params = Object.fromEntries(
-    Object.entries(rest).map(([k, v]) => [
-      k === "max_tokens" ? "max_new_tokens" : k,
-      v,
-    ]),
+    Object.entries(rest)
+      .map(([k, v]) => [k === "max_tokens" ? "max_new_tokens" : k, v])
+      .filter(([k, _]) =>
+        ["max_new_tokens", "temperature", "top_p", "top_k"].includes(
+          k as string,
+        ),
+      ),
   );
 
   const bodyData = {
     messages: messagesTransformed,
     inferenceConfig: Object.keys(rest).length > 0 ? params : undefined,
   };
-  console.log(JSON.stringify(bodyData, null, 2));
 
   const input = {
     body: new TextEncoder().encode(JSON.stringify(bodyData)),

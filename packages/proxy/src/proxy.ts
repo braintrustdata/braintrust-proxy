@@ -426,6 +426,7 @@ export async function proxyV1({
           spanType = st;
         },
         authToken,
+        baseUrl,
       );
     stream = proxyStream;
 
@@ -724,6 +725,7 @@ async function fetchModelLoop(
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
   authToken: string,
+  baseUrl?: string,
 ): Promise<ModelResponse> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -758,15 +760,18 @@ async function fetchModelLoop(
   }
 
   if (models) {
-    let baseUrl = bodyData['apiUrl'] || 'https://api.notdiamond.ai';
+    let apiUrl = bodyData['apiUrl'] || 'https://api.notdiamond.ai';
     let modelSelectPath = `/v2/modelRouter/modelSelect`;
 
-    let modelSelectUrl = `${baseUrl}${modelSelectPath}`;
+    let modelSelectUrl = `${apiUrl}${modelSelectPath}`;
 
-    if(baseUrl.includes('allhands')) {
+    console.log(apiUrl)
+    if(baseUrl?.includes('allhands')) {
       modelSelectPath = '/v2/modelRouter/openHandsRouter';
     }
-    
+
+    console.log('is allhands', baseUrl?.includes('allhands'));
+    console.log('final path', modelSelectPath);
     const providers = models.map((model: string) => {
       let provider = Object.entries(ProviderModelMap).find(([_, models]) =>
         models.includes(model)

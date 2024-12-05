@@ -10,7 +10,7 @@ models from [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https
 - **Smart Model Routing**: Automatically recommends the best AI model for each query
 - **Real-time Learning**: Improves recommendations based on user feedback
 
-See the full list of supported models at [notdiamond.readme.io](https://docs.notdiamond.ai).
+See the full list of supported models at [docs.notdiamond.ai](https://docs.notdiamond.ai).
 Try out our interactive chat interface at [chat.notdiamond.ai](https://chat.notdiamond.ai).
 
 This repository contains the code for the proxy — both the underlying implementation and wrappers that allow you to

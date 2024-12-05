@@ -20,15 +20,15 @@ deploy it on [Vercel](https://vercel.com), [Cloudflare](https://developers.cloud
 ## Just let me try it!
 
 You can communicate with the proxy via the standard OpenAI drivers/API, and simply set the base url to
-`https://proxy.notdiamond.ai/v1/proxy`. Try running the following script in your favorite language, twice.
+`https://proxy.notdiamond.ai/v1/proxy` and add your provider API keys at `https://app.notdiamond.ai/ai-providers`. Try running the following script in your favorite language.
 
 ### TypeScript
 
 ```javascript copy
 import { OpenAI } from "openai";
 const client = new OpenAI({
-  baseURL: "https://api.notdiamond.ai/v1/proxy",
-  apiKey: process.env.OPENAI_API_KEY, // Can use Not Diamond, OpenAI, Anthropic, etc. keys
+  baseURL: "https://proxy.notdiamond.ai/v1/proxy",
+  apiKey: process.env.NOTDIAMOND_API_KEY, // Can use also use OpenAI, Anthropic, etc. keys directly if only using 1 provider
 });
 
 async function main() {
@@ -54,14 +54,14 @@ import os
 import time
 
 client = OpenAI(
-  base_url="https://api.notdiamond.ai/v1/proxy",
-  api_key=os.environ["OPENAI_API_KEY"], // Can use Not Diamond, OpenAI, Anthropic, etc. keys
+  base_url="https://proxy.notdiamond.ai/v1/proxy",
+  api_key=os.environ["NOTDIAMOND_API_KEY"], # Can use also use OpenAI, Anthropic, etc. keys directly if only using 1 provider
 )
 
 start = time.time()
 response = client.chat.completions.create(
   model="gpt-3.5-turbo",
-	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"], // Can use claude-2, llama-2-13b-chat here too
+	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
 	messages=[{"role": "user", "content": "What is a proxy?"}],
 	seed=1, // A seed activates the proxy's cache
 )
@@ -72,7 +72,7 @@ print(f"Took {time.time()-start}s")
 ### cURL
 
 ```bash copy
-time curl -i https://api.notdiamond.ai/v1/proxy/chat/completions \
+time curl -i https://proxy.notdiamond.ai/v1/proxy/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "gpt-3.5-turbo",
@@ -85,13 +85,13 @@ time curl -i https://api.notdiamond.ai/v1/proxy/chat/completions \
     ],
     "seed": 1
   }' \
-  -H "Authorization: Bearer $OPENAI_API_KEY" // Can use Not Diamond, OpenAI, Anthropic, etc. keys
+  -H "Authorization: Bearer $NOTDIAMOND_API_KEY" // Can use Not Diamond, OpenAI, Anthropic, etc. keys
 ```
 
 ## Deploying
 
 You can find the full documentation for using the proxy [here](https://docs.notdiamond.ai/docs/proxy).
-The proxy is hosted for you, with end-to-end encryption, at `https://api.notdiamond.ai/v1/proxy`. However, you
+The proxy is hosted for you, with end-to-end encryption, at `https://proxy.notdiamond.ai/v1/proxy`. However, you
 can also deploy it yourself and customize its behavior.
 
 To see docs for how to deploy on various platforms, see the READMEs in the corresponding folders:

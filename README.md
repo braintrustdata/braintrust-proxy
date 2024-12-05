@@ -63,7 +63,7 @@ response = client.chat.completions.create(
   model="gpt-3.5-turbo",
 	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
 	messages=[{"role": "user", "content": "What is a proxy?"}],
-	seed=1, // A seed activates the proxy's cache
+	seed=1, # A seed activates the proxy's cache
 )
 print(response.choices[0].message.content)
 print(f"Took {time.time()-start}s")
@@ -90,7 +90,6 @@ time curl -i https://proxy.notdiamond.ai/v1/proxy/chat/completions \
 
 ## Deploying
 
-You can find the full documentation for using the proxy [here](https://docs.notdiamond.ai/docs/proxy).
 The proxy is hosted for you, with end-to-end encryption, at `https://proxy.notdiamond.ai/v1/proxy`. However, you
 can also deploy it yourself and customize its behavior.
 

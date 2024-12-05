@@ -85,7 +85,7 @@ time curl -i https://proxy.notdiamond.ai/v1/proxy/chat/completions \
     ],
     "seed": 1
   }' \
-  -H "Authorization: Bearer $NOTDIAMOND_API_KEY" // Can use Not Diamond, OpenAI, Anthropic, etc. keys
+  -H "Authorization: Bearer $NOTDIAMOND_API_KEY" # Can use also use OpenAI, Anthropic, etc. keys directly if only using 1 provider
 ```
 
 ## Deploying

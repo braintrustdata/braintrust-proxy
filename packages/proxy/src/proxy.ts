@@ -13,6 +13,7 @@ import {
   APISecret,
 } from "@schema";
 import {
+  ProxyBadRequestError,
   flattenChunks,
   flattenChunksArray,
   getRandomInt,
@@ -171,7 +172,7 @@ export async function proxyV1({
 
   const authToken = parseAuthHeader(proxyHeaders);
   if (!authToken) {
-    throw new Error("Missing Authentication header");
+    throw new ProxyBadRequestError("Missing Authentication header");
   }
 
   // Caching is enabled by default, but let the user disable it
@@ -355,7 +356,7 @@ export async function proxyV1({
     }
 
     if (streamFormat === "vercel-ai" && !isStreaming) {
-      throw new Error(
+      throw new ProxyBadRequestError(
         "Vercel AI format requires the stream parameter to be set to true",
       );
     }
@@ -770,7 +771,7 @@ async function fetchModelLoop(
           endpointUrl = "/completions";
           break;
         default:
-          throw new Error(
+          throw new ProxyBadRequestError(
             `Unsupported model ${model} (must be chat or completion for /auto endpoint)`,
           );
       }
@@ -887,7 +888,7 @@ async function fetchModelLoop(
     if (lastException) {
       throw lastException;
     } else {
-      throw new Error(
+      throw new ProxyBadRequestError(
         `No API keys found (for ${model}). You can configure API secrets at https://www.braintrust.dev/app/settings?subroute=secrets`,
       );
     }
@@ -953,7 +954,7 @@ async function fetchModel(
       console.assert(method === "POST");
       return await fetchGoogle("POST", url, headers, bodyData, secret);
     default:
-      throw new Error(`Unsupported model provider ${format}`);
+      throw new ProxyBadRequestError(`Unsupported model provider ${format}`);
   }
 }
 
@@ -971,7 +972,7 @@ async function fetchOpenAI(
       secret.metadata.api_base) ||
     EndpointProviderToBaseURL[secret.type];
   if (baseURL === null) {
-    throw new Error(
+    throw new ProxyBadRequestError(
       `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
     );
   }
@@ -987,7 +988,7 @@ async function fetchOpenAI(
         model.replace("gpt-3.5", "gpt-35"),
       )}`;
     } else {
-      throw new Error(
+      throw new ProxyBadRequestError(
         `Azure provider ${secret.id} must have a deployment or model specified`,
       );
     }
@@ -1178,7 +1179,9 @@ async function fetchAnthropic(
   headers["x-api-key"] = secret.secret;
 
   if (isEmpty(bodyData)) {
-    throw new Error("Anthropic request must have a valid JSON-parsable body");
+    throw new ProxyBadRequestError(
+      "Anthropic request must have a valid JSON-parsable body",
+    );
   }
 
   const {
@@ -1199,7 +1202,7 @@ async function fetchAnthropic(
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))
     ) {
-      throw new Error(
+      throw new ProxyBadRequestError(
         "Anthropic does not support function messages or function_calls",
       );
     } else if (m.role === "tool") {
@@ -1215,7 +1218,7 @@ async function fetchAnthropic(
       !translatedRole ||
       !(translatedRole === "user" || translatedRole === "assistant")
     ) {
-      throw new Error(`Unsupported Anthropic role ${role}`);
+      throw new ProxyBadRequestError(`Unsupported Anthropic role ${role}`);
     }
 
     messages.push({
@@ -1330,7 +1333,9 @@ async function fetchGoogle(
   console.assert(url === "/chat/completions");
 
   if (isEmpty(bodyData)) {
-    throw new Error("Google request must have a valid JSON-parsable body");
+    throw new ProxyBadRequestError(
+      "Google request must have a valid JSON-parsable body",
+    );
   }
 
   const {
@@ -1520,7 +1525,7 @@ function parseEnumHeader<T>(
 ): (typeof headerTypes)[number] {
   const header = value && value.toLowerCase();
   if (header && !headerTypes.includes(header as T)) {
-    throw new Error(
+    throw new ProxyBadRequestError(
       `Invalid ${headerName} header '${header}'. Must be one of ${headerTypes.join(
         ", ",
       )}`,

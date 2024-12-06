@@ -230,10 +230,10 @@ export async function fetchBedrockOpenAI({
           const { value, done } = next;
           next = null;
           if (done) {
-            isDone = true;
             // Close the stream when no more data is available
             controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
             controller.close();
+            isDone = true;
           } else {
             // Enqueue the next piece of data into the stream
             if (value.chunk?.bytes) {
@@ -427,6 +427,8 @@ export function bedrockMessageToOpenAIMessage(
       },
       finished: true,
     };
+  } else if ("messageStop" in event) {
+    return { event: null, finished: true };
   }
   return { event: null, finished: false };
 }

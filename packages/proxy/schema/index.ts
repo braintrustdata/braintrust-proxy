@@ -179,6 +179,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": ["together"],
   "NousResearch/Nous-Hermes-2-Yi-34B": ["together"],
   "deepseek-ai/deepseek-coder-33b-instruct": ["together"],
+  "meta-llama/Llama-3.3-70B-Instruct-Turbo": ["together"],
   "mistral-large-latest": ["mistral"],
   "open-mistral-nemo": ["mistral"],
   "codestral-latest": ["mistral"],
@@ -214,6 +215,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-5-sonnet-20240620-v1:0": ["bedrock"],
+  "amazon.nova-pro-v1:0": ["bedrock"],
+  "amazon.nova-lite-v1:0": ["bedrock"],
+  "amazon.nova-micro-v1:0": ["bedrock"],
   "grok-beta": ["xAI"],
 };
 

@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
 import {
   BedrockRuntimeClient,
   InvokeModelCommand,
@@ -11,11 +13,12 @@ import {
 } from "./anthropic";
 import {
   ChatCompletion,
+  ChatCompletionChunk,
   ChatCompletionCreateParams,
   ChatCompletionMessageParam,
   CompletionUsage,
 } from "openai/resources";
-import { writeToReadable } from "..";
+import { getTimestampInSeconds, writeToReadable } from "..";
 
 const brt = new BedrockRuntimeClient({});
 export async function fetchBedrockAnthropic({
@@ -197,24 +200,20 @@ export async function fetchBedrockOpenAI({
 
   let responseStream;
   try {
-    console.log("HI 1");
     if (stream) {
       const command = new InvokeModelWithResponseStreamCommand(input);
       const response = await brt.send(command);
-      console.log("HI 3");
       if (!response.body) {
         throw new Error("Bedrock: empty response body");
       }
-      console.log("HI 2");
       const bodyStream = response.body;
       const iterator = bodyStream[Symbol.asyncIterator]();
-      console.log("HI 4");
       let next: IteratorResult<ResponseStream, any> | null =
         await iterator.next(); // So that we can throw a nice error message
-      console.log("HERE?");
+      let state: BedrockMessageState = { role: "assistant" };
+      let isDone = false;
       responseStream = new ReadableStream<Uint8Array>({
         async pull(controller) {
-          console.log("PULL?");
           if (!next) {
             try {
               next = await iterator.next();
@@ -223,11 +222,15 @@ export async function fetchBedrockOpenAI({
               return;
             }
           }
+
+          if (isDone) {
+            return;
+          }
+
           const { value, done } = next;
-          console.log("VALUE", value);
-          console.log("DONE", done);
           next = null;
           if (done) {
+            isDone = true;
             // Close the stream when no more data is available
             controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
             controller.close();
@@ -235,10 +238,27 @@ export async function fetchBedrockOpenAI({
             // Enqueue the next piece of data into the stream
             if (value.chunk?.bytes) {
               const valueData = new TextDecoder().decode(value.chunk.bytes);
-              console.log("DATA", valueData);
-              controller.enqueue(
-                new TextEncoder().encode("data: " + valueData + "\n\n"),
-              );
+              try {
+                const { event, finished } = bedrockMessageToOpenAIMessage(
+                  state,
+                  JSON.parse(valueData),
+                );
+                if (event) {
+                  controller.enqueue(
+                    new TextEncoder().encode(
+                      "data: " + JSON.stringify(event) + "\n\n",
+                    ),
+                  );
+                } else if (finished) {
+                  controller.enqueue(
+                    new TextEncoder().encode("data: [DONE]\n\n"),
+                  );
+                  controller.close();
+                  isDone = true;
+                }
+              } catch (e) {
+                console.warn("Bedrock: invalid message", e);
+              }
             }
           }
         },
@@ -288,4 +308,125 @@ function normalizeBedrockMessages(messages: ChatCompletionMessageParam[]) {
 function stripType<T>(v: { type?: string } & T): T {
   const { type, ...rest } = v;
   return rest as T;
+}
+
+const bedrockMessageStartSchema = z.object({
+  messageStart: z.object({
+    role: z.enum(["assistant"]),
+  }),
+});
+
+const bedrockContentBlockDeltaSchema = z.object({
+  contentBlockDelta: z.object({
+    delta: z.object({
+      text: z.string(),
+    }),
+    contentBlockIndex: z.number(),
+  }),
+});
+
+const bedrockContentBlockStopSchema = z.object({
+  contentBlockStop: z.object({
+    contentBlockIndex: z.number(),
+  }),
+});
+
+const bedrockMessageStopSchema = z.object({
+  messageStop: z.object({
+    stopReason: z.string(),
+  }),
+});
+
+// {"metadata":{"usage":{"inputTokens":1,"outputTokens":54},"metrics":{},"trace":{}},"amazon-bedrock-invocationMetrics":{"inputTokenCount":1,"outputTokenCount":54,"invocationLatency":884,"firstByteLatency":99}}
+const bedrockMetadataSchema = z.object({
+  metadata: z.object({
+    usage: z.object({
+      inputTokens: z.number(),
+      outputTokens: z.number(),
+    }),
+    metrics: z.record(z.unknown()),
+    trace: z.record(z.unknown()),
+  }),
+  "amazon-bedrock-invocationMetrics": z.object({
+    inputTokenCount: z.number(),
+    outputTokenCount: z.number(),
+    invocationLatency: z.number(),
+    firstByteLatency: z.number(),
+  }),
+});
+
+const bedrockMessageSchema = z.union([
+  bedrockMessageStartSchema,
+  bedrockContentBlockDeltaSchema,
+  bedrockContentBlockStopSchema,
+  bedrockMessageStopSchema,
+  bedrockMetadataSchema,
+]);
+
+interface BedrockMessageState {
+  role: ChatCompletionChunk["choices"][0]["delta"]["role"];
+}
+
+export function bedrockMessageToOpenAIMessage(
+  state: BedrockMessageState,
+  message: unknown,
+): {
+  event: ChatCompletionChunk | null;
+  finished: boolean;
+} {
+  const event = bedrockMessageSchema.parse(message);
+  if ("messageStart" in event) {
+    state.role = event.messageStart.role;
+    return { event: null, finished: false };
+  } else if ("contentBlockDelta" in event) {
+    return {
+      event: {
+        id: uuidv4(),
+        choices: [
+          {
+            delta: {
+              role: state.role,
+              content: event.contentBlockDelta.delta.text,
+              // TODO: tool_calls
+            },
+            finish_reason: null,
+            index: 0,
+          },
+        ],
+        created: getTimestampInSeconds(),
+        model: "",
+        object: "chat.completion.chunk",
+      },
+      finished: false,
+    };
+  } else if ("amazon-bedrock-invocationMetrics" in event) {
+    return {
+      event: {
+        id: uuidv4(),
+        choices: [
+          {
+            delta: {
+              role: state.role,
+              content: "",
+              // TODO: tool_calls
+            },
+            finish_reason: null,
+            index: 0,
+          },
+        ],
+        usage: {
+          prompt_tokens: event.metadata.usage.inputTokens,
+          completion_tokens: event.metadata.usage.outputTokens,
+          total_tokens:
+            event.metadata.usage.inputTokens +
+            event.metadata.usage.outputTokens,
+        },
+        created: getTimestampInSeconds(),
+        model: "",
+        object: "chat.completion.chunk",
+      },
+      finished: true,
+    };
+  }
+  return { event: null, finished: false };
 }

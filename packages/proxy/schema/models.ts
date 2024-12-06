@@ -553,6 +553,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // TOGETHER MODELS
+  "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.88,
+    output_cost_per_mil_tokens: 0.88,
+    displayName: "LLaMA 3.3 70B Instruct Turbo",
+  },
   "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
     format: "openai",
     flavor: "chat",
@@ -841,6 +848,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // FIREWORKS MODELS
+  "accounts/fireworks/models/llama-v3p3-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "LLaMA 3.3 70B Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
   "accounts/fireworks/models/llama-v3p2-3b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -918,6 +932,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 1.5 Flash",
+    multimodal: true,
+  },
+  "gemini-exp-1206": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    displayName: "Gemini Exp 1206",
     multimodal: true,
   },
   "gemini-exp-1114": {

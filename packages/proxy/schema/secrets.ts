@@ -6,6 +6,7 @@ export const BaseMetadataSchema = z
     models: z.array(z.string()).nullish(),
     customModels: z.record(ModelSchema).nullish(),
     excludeDefaultModels: z.boolean().nullish(),
+    additionalHeaders: z.record(z.string(), z.string()).nullish(),
   })
   .strict();
 

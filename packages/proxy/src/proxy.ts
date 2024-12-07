@@ -800,6 +800,8 @@ async function fetchModelLoop(
       continue;
     }
 
+    const additionalHeaders = secret.metadata?.additionalHeaders || {};
+
     let httpCode = undefined;
     endpointCalls.add(1, loggableInfo);
     try {
@@ -807,7 +809,7 @@ async function fetchModelLoop(
         modelSpec?.format ?? "openai",
         method,
         endpointUrl,
-        headers,
+        { ...headers, ...additionalHeaders },
         secret,
         bodyData,
         setHeader,

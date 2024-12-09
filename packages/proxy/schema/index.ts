@@ -191,6 +191,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pixtral-12b-2409": ["mistral"],
   mistral: ["ollama"],
   phi: ["ollama"],
+  "llama-3.3-70b-versatile": ["groq"],
   "llama-3.1-8b-instant": ["groq"],
   "llama-3.1-70b-versatile": ["groq"],
   "llama-3.1-405b-reasoning": ["groq"],

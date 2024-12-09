@@ -771,6 +771,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GROQ MODELS
+  "llama-3.3-70b-versatile": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.59,
+    output_cost_per_mil_tokens: 0.79,
+    displayName: "LLaMA 3.3 70b Versatile",
+  },
   "llama-3.1-8b-instant": {
     format: "openai",
     flavor: "chat",

@@ -941,6 +941,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 1.5 Flash",
     multimodal: true,
   },
+  "gemini-2.0-flash-exp": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    displayName: "Gemini 2.0 Flash Exp",
+    multimodal: true,
+  },
   "gemini-exp-1206": {
     format: "google",
     flavor: "chat",

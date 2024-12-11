@@ -1050,6 +1050,17 @@ async function fetchOpenAI(
     */
   }
 
+  if (secret.metadata?.supportsStreaming === false) {
+    return fetchOpenAIFakeStream({
+      method,
+      fullURL,
+      headers,
+      bodyData,
+      setHeader,
+      fakeStream: true,
+    });
+  }
+
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1078,16 +1089,18 @@ async function fetchOpenAIFakeStream({
   headers,
   bodyData,
   setHeader,
+  fakeStream = false,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
   headers: Record<string, string>;
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
+  fakeStream?: boolean;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
-    isStream = !!bodyData["stream"];
+    isStream = !!bodyData["stream"] || fakeStream;
     delete bodyData["stream"];
     delete bodyData["stream_options"];
   }

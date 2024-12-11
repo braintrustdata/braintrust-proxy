@@ -7,6 +7,7 @@ export const BaseMetadataSchema = z
     customModels: z.record(ModelSchema).nullish(),
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
+    supportsStreaming: z.boolean().default(true),
   })
   .strict();
 

@@ -765,13 +765,10 @@ async function fetchModelLoop(
 
     let modelSelectUrl = `${apiUrl}${modelSelectPath}`;
 
-    console.log(apiUrl)
     if(baseUrl?.includes('allhands')) {
       modelSelectPath = '/v2/modelRouter/openHandsRouter';
     }
 
-    console.log('is allhands', baseUrl?.includes('allhands'));
-    console.log('final path', modelSelectPath);
     const providers = models.map((model: string) => {
       let provider = Object.entries(ProviderModelMap).find(([_, models]) =>
         models.includes(model)
@@ -796,7 +793,8 @@ async function fetchModelLoop(
       body: JSON.stringify({
         messages: bodyData.messages,
         llm_providers: providers,
-        ...(bodyData.tradeoff ? { tradeoff: bodyData.tradeoff } : {}),
+        ...(bodyData.tradeoff || bodyData.extra_body?.tradeoff ? { tradeoff: bodyData.tradeoff || bodyData.extra_body?.tradeoff } : {}),
+        ...(bodyData.preference_id || bodyData.extra_body?.preference_id ? { preference_id: bodyData.preference_id || bodyData.extra_body?.preference_id } : {}),
       }),
     });
 
@@ -1096,9 +1094,9 @@ async function fetchOpenAI(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
-  delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
   delete bodyData["extra_body"];
+  delete bodyData["preference_id"];
 
   const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
@@ -1277,9 +1275,9 @@ async function fetchAnthropic(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
-  delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
   delete bodyData["extra_body"];
+  delete bodyData["preference_id"];
 
   const {
     messages: oaiMessages,
@@ -1435,9 +1433,9 @@ async function fetchGoogle(
 
   delete bodyData["models"];
   delete bodyData["apiUrl"];
-  delete bodyData["modelSelectUrl"];
   delete bodyData["tradeoff"];
   delete bodyData["extra_body"];
+  delete bodyData["preference_id"];
 
   const {
     model,

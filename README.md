@@ -38,6 +38,8 @@ async function main() {
     models: ["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
     messages: [{ role: "user", content: "What is a proxy?" }],
     seed: 1, // A seed activates the proxy's cache
+    tradeoff: "cost",
+    preference_id: "your_preference_id",
   });
   console.log(response.choices[0].message.content);
   console.log(`Took ${(performance.now() - start) / 1000}s`);
@@ -63,7 +65,9 @@ response = client.chat.completions.create(
   model="gpt-3.5-turbo",
 	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
 	messages=[{"role": "user", "content": "What is a proxy?"}],
-	seed=1, # A seed activates the proxy's cache
+	seed=1, // A seed activates the proxy's cache
+  tradeoff="cost",
+  preference_id="your_preference_id",
 )
 print(response.choices[0].message.content)
 print(f"Took {time.time()-start}s")
@@ -83,7 +87,9 @@ time curl -i https://proxy.notdiamond.ai/v1/proxy/chat/completions \
         "content": "What is a proxy?"
       }
     ],
-    "seed": 1
+    "seed": 1,
+    "tradeoff": "cost",
+    "preference_id": "your_preference_id"
   }' \
   -H "Authorization: Bearer $NOTDIAMOND_API_KEY" # Can use also use OpenAI, Anthropic, etc. keys directly if only using 1 provider
 ```

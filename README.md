@@ -38,6 +38,8 @@ async function main() {
     models: ["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"],
     messages: [{ role: "user", content: "What is a proxy?" }],
     seed: 1, // A seed activates the proxy's cache
+    tradeoff: "cost",
+    preference_id: "your_preference_id",
   });
   console.log(response.choices[0].message.content);
   console.log(`Took ${(performance.now() - start) / 1000}s`);
@@ -64,6 +66,8 @@ response = client.chat.completions.create(
 	models=["gpt-3.5-turbo", "claude-3-5-sonnet-20240620"], // Can use claude-2, llama-2-13b-chat here too
 	messages=[{"role": "user", "content": "What is a proxy?"}],
 	seed=1, // A seed activates the proxy's cache
+  tradeoff="cost",
+  preference_id="your_preference_id",
 )
 print(response.choices[0].message.content)
 print(f"Took {time.time()-start}s")
@@ -83,7 +87,9 @@ time curl -i https://api.notdiamond.ai/v1/proxy/chat/completions \
         "content": "What is a proxy?"
       }
     ],
-    "seed": 1
+    "seed": 1,
+    "tradeoff": "cost",
+    "preference_id": "your_preference_id"
   }' \
   -H "Authorization: Bearer $OPENAI_API_KEY" // Can use Not Diamond, OpenAI, Anthropic, etc. keys
 ```

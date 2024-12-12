@@ -793,8 +793,8 @@ async function fetchModelLoop(
       body: JSON.stringify({
         messages: bodyData.messages,
         llm_providers: providers,
-        ...(bodyData.tradeoff ? { tradeoff: bodyData.tradeoff } : {}),
-        ...(bodyData.preference_id ? { preference_id: bodyData.preference_id } : {}),
+        ...(bodyData.tradeoff || bodyData.extra_body?.tradeoff ? { tradeoff: bodyData.tradeoff || bodyData.extra_body?.tradeoff } : {}),
+        ...(bodyData.preference_id || bodyData.extra_body?.preference_id ? { preference_id: bodyData.preference_id || bodyData.extra_body?.preference_id } : {}),
       }),
     });
 

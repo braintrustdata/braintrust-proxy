@@ -1031,23 +1031,18 @@ async function fetchOpenAI(
       delete bodyData.temperature;
     }
 
-    if (bodyData.messages) {
+    // Only remove system messages for old O1 models.
+    if (
+      bodyData.messages &&
+      ["o1-preview", "o1-mini", "o1-preview-2024-09-12"].includes(
+        bodyData.model,
+      )
+    ) {
       bodyData.messages = bodyData.messages.map((m: any) => ({
         ...m,
         role: m.role === "system" ? "user" : m.role,
       }));
     }
-
-    // O1 now supports streaming! Leaving this in in case we hit unexpected issues.
-    /*
-    return fetchOpenAIFakeStream({
-      method,
-      fullURL,
-      headers,
-      bodyData,
-      setHeader,
-    });
-    */
   }
 
   if (secret.metadata?.supportsStreaming === false) {

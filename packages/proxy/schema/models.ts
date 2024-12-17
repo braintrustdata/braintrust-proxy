@@ -75,6 +75,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "GPT 4o mini 2024-07-18",
   },
+  o1: {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    displayName: "O1",
+    input_cost_per_mil_tokens: 15.0,
+    output_cost_per_mil_tokens: 60,
+  },
   "o1-preview": {
     format: "openai",
     flavor: "chat",
@@ -90,6 +98,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 mini",
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
+  },
+  "o1-2024-12-17": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    displayName: "O1 2024-12-17",
+    input_cost_per_mil_tokens: 15.0,
+    output_cost_per_mil_tokens: 60,
   },
   "o1-preview-2024-09-12": {
     format: "openai",

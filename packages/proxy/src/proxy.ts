@@ -814,7 +814,7 @@ async function fetchModelLoop(
     let httpCode = undefined;
     endpointCalls.add(1, loggableInfo);
     try {
-      const { response, provider: modelProvider } = await fetchModel(
+      proxyResponse = await fetchModel(
         modelSpec?.format ?? "openai",
         method,
         endpointUrl,
@@ -823,8 +823,7 @@ async function fetchModelLoop(
         bodyData,
         setHeader,
       );
-      proxyResponse = response;
-      provider = modelProvider;
+      provider = secret.name;
       if (
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
@@ -946,17 +945,16 @@ async function fetchModel(
   secret: APISecret,
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
-): Promise<{ response: ModelResponse; provider?: string | null }> {
+): Promise<ModelResponse> {
   switch (format) {
     case "openai":
       if (secret.type === "bedrock") {
-        const bedrockResp = await fetchBedrockOpenAI({
+        return fetchBedrockOpenAI({
           secret,
           body: bodyData,
         });
-        return { response: bedrockResp, provider: secret.name };
       }
-      const openAiResp = await fetchOpenAI(
+      return await fetchOpenAI(
         method,
         url,
         headers,
@@ -964,27 +962,12 @@ async function fetchModel(
         secret,
         setHeader,
       );
-      return { response: openAiResp, provider: secret.name };
     case "anthropic":
       console.assert(method === "POST");
-      const anthropicResp = await fetchAnthropic(
-        "POST",
-        url,
-        headers,
-        bodyData,
-        secret,
-      );
-      return { response: anthropicResp, provider: secret.name };
+      return await fetchAnthropic("POST", url, headers, bodyData, secret);
     case "google":
       console.assert(method === "POST");
-      const googleResp = await fetchGoogle(
-        "POST",
-        url,
-        headers,
-        bodyData,
-        secret,
-      );
-      return { response: googleResp, provider: secret.name };
+      return await fetchGoogle("POST", url, headers, bodyData, secret);
     default:
       throw new ProxyBadRequestError(`Unsupported model provider ${format}`);
   }

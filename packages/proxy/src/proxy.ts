@@ -364,8 +364,7 @@ export async function proxyV1({
     }
 
     const {
-      response: proxyResponse,
-      stream: proxyStream,
+      modelResponse: { response: proxyResponse, stream: proxyStream },
       provider,
     } = await fetchModelLoop(
       meter,
@@ -694,7 +693,6 @@ export async function proxyV1({
 interface ModelResponse {
   stream: ReadableStream<Uint8Array> | null;
   response: Response;
-  provider?: string | null;
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
@@ -722,7 +720,7 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
-): Promise<ModelResponse> {
+): Promise<{ modelResponse: ModelResponse; provider?: string | null }> {
   const requestId = ++loopIndex;
 
   const endpointCalls = meter.createCounter("endpoint_calls");
@@ -755,6 +753,7 @@ async function fetchModelLoop(
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse: ModelResponse | null = null;
+  let provider: string | null | undefined = null;
   let lastException = null;
   let loggableInfo: Record<string, any> = {};
 
@@ -815,7 +814,7 @@ async function fetchModelLoop(
     let httpCode = undefined;
     endpointCalls.add(1, loggableInfo);
     try {
-      proxyResponse = await fetchModel(
+      const { response, provider: modelProvider } = await fetchModel(
         modelSpec?.format ?? "openai",
         method,
         endpointUrl,
@@ -824,6 +823,8 @@ async function fetchModelLoop(
         bodyData,
         setHeader,
       );
+      proxyResponse = response;
+      provider = modelProvider;
       if (
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
@@ -929,9 +930,11 @@ async function fetchModelLoop(
     stream = stream.pipeThrough(timingStream);
   }
   return {
-    stream,
-    response: proxyResponse.response,
-    provider: proxyResponse.provider,
+    modelResponse: {
+      stream,
+      response: proxyResponse.response,
+    },
+    provider,
   };
 }
 
@@ -943,16 +946,17 @@ async function fetchModel(
   secret: APISecret,
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
-): Promise<ModelResponse> {
+): Promise<{ response: ModelResponse; provider?: string | null }> {
   switch (format) {
     case "openai":
       if (secret.type === "bedrock") {
-        return fetchBedrockOpenAI({
+        const bedrockResp = await fetchBedrockOpenAI({
           secret,
           body: bodyData,
         });
+        return { response: bedrockResp, provider: secret.name };
       }
-      return await fetchOpenAI(
+      const openAiResp = await fetchOpenAI(
         method,
         url,
         headers,
@@ -960,12 +964,27 @@ async function fetchModel(
         secret,
         setHeader,
       );
+      return { response: openAiResp, provider: secret.name };
     case "anthropic":
       console.assert(method === "POST");
-      return await fetchAnthropic("POST", url, headers, bodyData, secret);
+      const anthropicResp = await fetchAnthropic(
+        "POST",
+        url,
+        headers,
+        bodyData,
+        secret,
+      );
+      return { response: anthropicResp, provider: secret.name };
     case "google":
       console.assert(method === "POST");
-      return await fetchGoogle("POST", url, headers, bodyData, secret);
+      const googleResp = await fetchGoogle(
+        "POST",
+        url,
+        headers,
+        bodyData,
+        secret,
+      );
+      return { response: googleResp, provider: secret.name };
     default:
       throw new ProxyBadRequestError(`Unsupported model provider ${format}`);
   }
@@ -1061,7 +1080,6 @@ async function fetchOpenAI(
         headers,
         bodyData,
         setHeader,
-        secret,
       });
     }
   }
@@ -1073,7 +1091,6 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
-      secret,
     });
   }
 
@@ -1096,7 +1113,6 @@ async function fetchOpenAI(
   return {
     stream: proxyResponse.body,
     response: proxyResponse,
-    provider: secret.name,
   };
 }
 
@@ -1106,18 +1122,18 @@ async function fetchOpenAIFakeStream({
   headers,
   bodyData,
   setHeader,
-  secret,
+  fakeStream = false,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
   headers: Record<string, string>;
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
-  secret: APISecret;
+  fakeStream?: boolean;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
-    isStream = !!bodyData["stream"];
+    isStream = !!bodyData["stream"] || fakeStream;
     delete bodyData["stream"];
     delete bodyData["stream_options"];
   }
@@ -1191,7 +1207,6 @@ async function fetchOpenAIFakeStream({
           createEmptyReadableStream()
         : proxyResponse.body,
     response: proxyResponse,
-    provider: secret.name,
   };
 }
 
@@ -1353,7 +1368,6 @@ async function fetchAnthropic(
   return {
     stream,
     response: proxyResponse,
-    provider: secret.name,
   };
 }
 
@@ -1455,7 +1469,6 @@ async function fetchGoogle(
   return {
     stream,
     response: proxyResponse,
-    provider: secret.name,
   };
 }
 

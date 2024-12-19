@@ -83,6 +83,8 @@ export const FORMAT_HEADER = "x-bt-stream-fmt";
 export const LEGACY_CACHED_HEADER = "x-cached";
 export const CACHED_HEADER = "x-bt-cached";
 
+export const PROVIDER_HEADER = "x-bt-provider";
+
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
 // Options to control how the cache key is generated.
@@ -361,61 +363,64 @@ export async function proxyV1({
       );
     }
 
-    const { response: proxyResponse, stream: proxyStream } =
-      await fetchModelLoop(
-        meter,
-        method,
-        url,
-        headers,
-        bodyData,
-        setOverriddenHeader,
-        async (model) => {
-          // First, try to use temp credentials, because then we'll get access
-          // to the model.
-          let cachedAuthToken: string | undefined;
-          if (
-            useCredentialsCacheMode !== "never" &&
-            isTempCredential(authToken)
-          ) {
-            const { credentialCacheValue, jwtPayload } =
-              await verifyTempCredentials({
-                jwt: authToken,
-                cacheGet,
-              });
-            // Unwrap the API key here to avoid a duplicate call to
-            // `verifyTempCredentials` inside `getApiSecrets`. That call will
-            // use Redis which is not available in Cloudflare.
-            cachedAuthToken = credentialCacheValue.authToken;
-            if (jwtPayload.bt.logging) {
-              console.warn(
-                `Logging was requested, but not supported on ${method} ${url}`,
-              );
-            }
-            if (jwtPayload.bt.model && jwtPayload.bt.model !== model) {
-              console.warn(
-                `Temp credential allows model "${jwtPayload.bt.model}", but "${model}" was requested`,
-              );
-              return [];
-            }
+    const {
+      response: proxyResponse,
+      stream: proxyStream,
+      provider,
+    } = await fetchModelLoop(
+      meter,
+      method,
+      url,
+      headers,
+      bodyData,
+      setOverriddenHeader,
+      async (model) => {
+        // First, try to use temp credentials, because then we'll get access
+        // to the model.
+        let cachedAuthToken: string | undefined;
+        if (
+          useCredentialsCacheMode !== "never" &&
+          isTempCredential(authToken)
+        ) {
+          const { credentialCacheValue, jwtPayload } =
+            await verifyTempCredentials({
+              jwt: authToken,
+              cacheGet,
+            });
+          // Unwrap the API key here to avoid a duplicate call to
+          // `verifyTempCredentials` inside `getApiSecrets`. That call will
+          // use Redis which is not available in Cloudflare.
+          cachedAuthToken = credentialCacheValue.authToken;
+          if (jwtPayload.bt.logging) {
+            console.warn(
+              `Logging was requested, but not supported on ${method} ${url}`,
+            );
           }
+          if (jwtPayload.bt.model && jwtPayload.bt.model !== model) {
+            console.warn(
+              `Temp credential allows model "${jwtPayload.bt.model}", but "${model}" was requested`,
+            );
+            return [];
+          }
+        }
 
-          const secrets = await getApiSecrets(
-            useCredentialsCacheMode !== "never",
-            cachedAuthToken || authToken,
-            model,
-            orgName,
-          );
-          if (endpointName) {
-            return secrets.filter((s) => s.name === endpointName);
-          } else {
-            return secrets;
-          }
-        },
-        spanLogger,
-        (st) => {
-          spanType = st;
-        },
-      );
+        const secrets = await getApiSecrets(
+          useCredentialsCacheMode !== "never",
+          cachedAuthToken || authToken,
+          model,
+          orgName,
+        );
+        if (endpointName) {
+          return secrets.filter((s) => s.name === endpointName);
+        } else {
+          return secrets;
+        }
+      },
+      spanLogger,
+      (st) => {
+        spanType = st;
+      },
+    );
     stream = proxyStream;
 
     if (!proxyResponse.ok) {
@@ -449,6 +454,10 @@ export async function proxyV1({
       }
       proxyResponseHeaders[name] = value;
     });
+    if (provider) {
+      setHeader(PROVIDER_HEADER, provider);
+      proxyResponseHeaders[PROVIDER_HEADER] = provider;
+    }
 
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
       setHeader(name, value);
@@ -685,6 +694,7 @@ export async function proxyV1({
 interface ModelResponse {
   stream: ReadableStream<Uint8Array> | null;
   response: Response;
+  provider?: string | null;
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
@@ -744,7 +754,7 @@ async function fetchModelLoop(
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
-  let proxyResponse = null;
+  let proxyResponse: ModelResponse | null = null;
   let lastException = null;
   let loggableInfo: Record<string, any> = {};
 
@@ -921,6 +931,7 @@ async function fetchModelLoop(
   return {
     stream,
     response: proxyResponse.response,
+    provider: proxyResponse.provider,
   };
 }
 
@@ -932,7 +943,7 @@ async function fetchModel(
   secret: APISecret,
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
-) {
+): Promise<ModelResponse> {
   switch (format) {
     case "openai":
       if (secret.type === "bedrock") {
@@ -1050,6 +1061,7 @@ async function fetchOpenAI(
         headers,
         bodyData,
         setHeader,
+        secret,
       });
     }
   }
@@ -1061,7 +1073,7 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
-      fakeStream: true,
+      secret,
     });
   }
 
@@ -1084,6 +1096,7 @@ async function fetchOpenAI(
   return {
     stream: proxyResponse.body,
     response: proxyResponse,
+    provider: secret.name,
   };
 }
 
@@ -1093,18 +1106,18 @@ async function fetchOpenAIFakeStream({
   headers,
   bodyData,
   setHeader,
-  fakeStream = false,
+  secret,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
   headers: Record<string, string>;
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
-  fakeStream?: boolean;
+  secret: APISecret;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
-    isStream = !!bodyData["stream"] || fakeStream;
+    isStream = !!bodyData["stream"];
     delete bodyData["stream"];
     delete bodyData["stream_options"];
   }
@@ -1178,6 +1191,7 @@ async function fetchOpenAIFakeStream({
           createEmptyReadableStream()
         : proxyResponse.body,
     response: proxyResponse,
+    provider: secret.name,
   };
 }
 
@@ -1339,6 +1353,7 @@ async function fetchAnthropic(
   return {
     stream,
     response: proxyResponse,
+    provider: secret.name,
   };
 }
 
@@ -1440,6 +1455,7 @@ async function fetchGoogle(
   return {
     stream,
     response: proxyResponse,
+    provider: secret.name,
   };
 }
 

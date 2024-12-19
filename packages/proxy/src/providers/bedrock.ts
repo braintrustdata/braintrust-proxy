@@ -135,6 +135,7 @@ export async function fetchBedrockAnthropic({
   return {
     stream: responseStream,
     response: httpResponse,
+    provider: secret.name,
   };
 }
 
@@ -292,6 +293,7 @@ export async function fetchBedrockOpenAI({
   return {
     stream: responseStream,
     response: httpResponse,
+    provider: secret.name,
   };
 }
 

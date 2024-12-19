@@ -1054,7 +1054,7 @@ async function fetchOpenAI(
     }
   }
 
-  if (secret.metadata?.supportsStreaming === false) {
+  if (true || secret.metadata?.supportsStreaming === false) {
     return fetchOpenAIFakeStream({
       method,
       fullURL,

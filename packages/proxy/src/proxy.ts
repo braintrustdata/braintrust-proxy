@@ -1074,6 +1074,7 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
+      fakeStream: true,
     });
   }
 

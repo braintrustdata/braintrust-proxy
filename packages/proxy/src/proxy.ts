@@ -1042,6 +1042,15 @@ async function fetchOpenAI(
         ...m,
         role: m.role === "system" ? "user" : m.role,
       }));
+    } else if (["o1", "o1-2024-12-17"].includes(bodyData.model)) {
+      // o1 itself does not support streaming yet
+      return fetchOpenAIFakeStream({
+        method,
+        fullURL,
+        headers,
+        bodyData,
+        setHeader,
+      });
     }
   }
 

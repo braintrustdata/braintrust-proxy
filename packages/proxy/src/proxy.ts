@@ -511,55 +511,61 @@ export async function proxyV1({
             return;
           }
 
-          if ("data" in event) {
-            const result = JSON.parse(event.data) as ChatCompletionChunk;
-            if (result) {
-              if (result.usage) {
-                spanLogger.log({
-                  metrics: {
-                    tokens: result.usage.total_tokens,
-                    prompt_tokens: result.usage.prompt_tokens,
-                    completion_tokens: result.usage.completion_tokens,
-                  },
-                });
-              }
-
-              const choice = result.choices?.[0];
-              const delta = choice?.delta;
-
-              if (!choice || !delta) {
-                return;
-              }
-
-              if (!role && delta.role) {
-                role = delta.role;
-              }
-
-              if (choice.finish_reason) {
-                finish_reason = choice.finish_reason;
-              }
-
-              if (delta.content) {
-                content = (content || "") + delta.content;
-              }
-
-              if (delta.tool_calls) {
-                if (!tool_calls) {
-                  tool_calls = [
-                    {
-                      index: 0,
-                      id: delta.tool_calls[0].id,
-                      type: delta.tool_calls[0].type,
-                      function: delta.tool_calls[0].function,
+          try {
+            if ("data" in event) {
+              const result = JSON.parse(event.data) as ChatCompletionChunk;
+              if (result) {
+                if (result.usage) {
+                  spanLogger.log({
+                    metrics: {
+                      tokens: result.usage.total_tokens,
+                      prompt_tokens: result.usage.prompt_tokens,
+                      completion_tokens: result.usage.completion_tokens,
                     },
-                  ];
-                } else if (tool_calls[0].function) {
-                  tool_calls[0].function.arguments =
-                    (tool_calls[0].function.arguments ?? "") +
-                    (delta.tool_calls[0].function?.arguments ?? "");
+                  });
+                }
+
+                const choice = result.choices?.[0];
+                const delta = choice?.delta;
+
+                if (!choice || !delta) {
+                  return;
+                }
+
+                if (!role && delta.role) {
+                  role = delta.role;
+                }
+
+                if (choice.finish_reason) {
+                  finish_reason = choice.finish_reason;
+                }
+
+                if (delta.content) {
+                  content = (content || "") + delta.content;
+                }
+
+                if (delta.tool_calls) {
+                  if (!tool_calls) {
+                    tool_calls = [
+                      {
+                        index: 0,
+                        id: delta.tool_calls[0].id,
+                        type: delta.tool_calls[0].type,
+                        function: delta.tool_calls[0].function,
+                      },
+                    ];
+                  } else if (tool_calls[0].function) {
+                    tool_calls[0].function.arguments =
+                      (tool_calls[0].function.arguments ?? "") +
+                      (delta.tool_calls[0].function?.arguments ?? "");
+                  }
                 }
               }
             }
+          } catch (e) {
+            spanLogger.log({
+              error: e,
+            });
           }
         });
 
@@ -1284,7 +1290,6 @@ async function fetchAnthropic(
     params.tool_choice = anthropicToolChoiceToOpenAIToolChoice(
       params.tool_choice as ChatCompletionCreateParamsBase["tool_choice"],
     );
-    console.log("tool_choice", params.tool_choice);
   }
 
   if (secret.type === "bedrock") {

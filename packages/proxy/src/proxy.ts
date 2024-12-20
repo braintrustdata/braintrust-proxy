@@ -365,7 +365,7 @@ export async function proxyV1({
 
     const {
       modelResponse: { response: proxyResponse, stream: proxyStream },
-      provider,
+      secretName,
     } = await fetchModelLoop(
       meter,
       method,
@@ -453,9 +453,9 @@ export async function proxyV1({
       }
       proxyResponseHeaders[name] = value;
     });
-    if (provider) {
-      setHeader(PROVIDER_HEADER, provider);
-      proxyResponseHeaders[PROVIDER_HEADER] = provider;
+    if (secretName) {
+      setHeader(PROVIDER_HEADER, secretName);
+      proxyResponseHeaders[PROVIDER_HEADER] = secretName;
     }
 
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
@@ -720,7 +720,7 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
-): Promise<{ modelResponse: ModelResponse; provider?: string | null }> {
+): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const requestId = ++loopIndex;
 
   const endpointCalls = meter.createCounter("endpoint_calls");
@@ -753,7 +753,7 @@ async function fetchModelLoop(
   const secrets = await getApiSecrets(model);
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse: ModelResponse | null = null;
-  let provider: string | null | undefined = null;
+  let secretName: string | null | undefined = null;
   let lastException = null;
   let loggableInfo: Record<string, any> = {};
 
@@ -823,7 +823,7 @@ async function fetchModelLoop(
         bodyData,
         setHeader,
       );
-      provider = secret.name;
+      secretName = secret.name;
       if (
         proxyResponse.response.ok ||
         (proxyResponse.response.status >= 400 &&
@@ -933,7 +933,7 @@ async function fetchModelLoop(
       stream,
       response: proxyResponse.response,
     },
-    provider,
+    secretName,
   };
 }
 

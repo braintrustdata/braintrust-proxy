@@ -21,6 +21,7 @@ export const ModelSchema = z.object({
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
+  o1_like: z.boolean().nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
@@ -82,6 +83,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1",
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
+    o1_like: true,
   },
   "o1-preview": {
     format: "openai",
@@ -90,6 +92,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 preview",
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
+    o1_like: true,
   },
   "o1-mini": {
     format: "openai",
@@ -98,6 +101,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 mini",
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
+    o1_like: true,
   },
   "o1-2024-12-17": {
     format: "openai",
@@ -106,6 +110,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 2024-12-17",
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
+    o1_like: true,
   },
   "o1-preview-2024-09-12": {
     format: "openai",
@@ -114,6 +119,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 preview 2024-09-12",
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60.0,
+    o1_like: true,
   },
   "o1-mini-2024-09-12": {
     format: "openai",
@@ -122,6 +128,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "O1 mini 2024-09-12",
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
+    o1_like: true,
   },
   "gpt-4-turbo": {
     format: "openai",

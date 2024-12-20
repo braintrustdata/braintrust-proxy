@@ -1024,6 +1024,7 @@ async function fetchOpenAI(
 
   // TODO: Ideally this is encapsulated as some advanced per-model config
   // or mapping, but for now, let's just map it manually.
+  console.log("bodyData", bodyData);
   if (typeof bodyData.model === "string" && bodyData.model.startsWith("o1")) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
@@ -1272,7 +1273,6 @@ async function fetchAnthropic(
     params.tool_choice = anthropicToolChoiceToOpenAIToolChoice(
       params.tool_choice as ChatCompletionCreateParamsBase["tool_choice"],
     );
-    console.log("tool_choice", params.tool_choice);
   }
 
   if (secret.type === "bedrock") {

@@ -201,8 +201,8 @@ importers:
         specifier: ^3.561.0
         version: 3.561.0
       '@braintrust/core':
-        specifier: ^0.0.43
-        version: 0.0.43
+        specifier: ^0.0.71
+        version: 0.0.71
       '@breezystack/lamejs':
         specifier: ^1.2.7
         version: 1.2.7
@@ -420,15 +420,6 @@ packages:
     dependencies:
       openapi3-ts: 4.2.2
       zod: 3.22.4
-    dev: false
-
-  /@asteasolutions/zod-to-openapi@6.4.0(zod@3.23.8):
-    resolution: {integrity: sha512-8cxfF7AHHx2PqnN4Cd8/O8CBu/nVYJP9DpnfVLW3BFb66VJDnqI/CczZnkqMc3SNh6J9GiX7JbJ5T4BSP4HZ2Q==}
-    peerDependencies:
-      zod: ^3.20.2
-    dependencies:
-      openapi3-ts: 4.2.2
-      zod: 3.23.8
     dev: false
 
   /@aws-crypto/crc32@3.0.0:
@@ -952,16 +943,16 @@ packages:
       to-fast-properties: 2.0.0
     dev: false
 
-  /@braintrust/core@0.0.43:
-    resolution: {integrity: sha512-q9Xs3y5jVhTUn7X89pXXI0uVtAJqJuKD2uDKegarckJ3OTftF4RNXBBcKrjVsuRbmsfApOY9eTtwlfNwml0ciw==}
-    dependencies:
-      '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.23.8)
-      uuid: 9.0.1
-      zod: 3.23.8
-    dev: false
-
   /@braintrust/core@0.0.63:
     resolution: {integrity: sha512-0b9hfso5Fy/ijta7lam41GTR1YYoQ5c+WZmRFnfHjw3FILbWVRZ7JxE+eo15X416T+UwtfhUaDu0k13JPe7RRA==}
+    dependencies:
+      '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.22.4)
+      uuid: 9.0.1
+      zod: 3.22.4
+    dev: false
+
+  /@braintrust/core@0.0.71:
+    resolution: {integrity: sha512-NMe2/nBOyChvQHWfBvImJ1EL0b9qzuxVjRH2+BZCpugxfyMSmDr1CITBUoOHe4TfbUK/cby6zNxUzaEM3CCEOA==}
     dependencies:
       '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.22.4)
       uuid: 9.0.1

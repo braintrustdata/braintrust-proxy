@@ -1061,7 +1061,6 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
-      fakeStream: true,
     });
   }
 
@@ -1093,18 +1092,16 @@ async function fetchOpenAIFakeStream({
   headers,
   bodyData,
   setHeader,
-  fakeStream = false,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
   headers: Record<string, string>;
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
-  fakeStream?: boolean;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
-    isStream = !!bodyData["stream"] || fakeStream;
+    isStream = !!bodyData["stream"];
     delete bodyData["stream"];
     delete bodyData["stream_options"];
   }
@@ -1169,7 +1166,9 @@ async function fetchOpenAIFakeStream({
     },
   });
 
-  setHeader("content-type", "text/event-stream; charset=utf-8");
+  if (isStream) {
+    setHeader("content-type", "text/event-stream; charset=utf-8");
+  }
 
   return {
     stream:

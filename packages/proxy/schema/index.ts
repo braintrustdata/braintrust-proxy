@@ -69,6 +69,7 @@ export const modelParamToModelParam: {
   stream_options: null,
   parallel_tool_calls: null,
   response_format: null,
+  reasoning_effort: null,
 };
 
 export const sliderSpecs: {
@@ -78,8 +79,8 @@ export const sliderSpecs: {
   temperature: [0, 1, 0.01, false],
   top_p: [0, 1, 0.01, false],
   topP: [0, 1, 0.01, false],
-  max_tokens: [1, 10240, 1, false],
-  maxOutputTokens: [1, 10240, 1, true],
+  max_tokens: [1, 32768, 1, false],
+  maxOutputTokens: [1, 32768, 1, true],
   frequency_penalty: [0, 1, 0.01, false],
   presence_penalty: [0, 1, 0.01, false],
   top_k: [1, 100, 1, true],

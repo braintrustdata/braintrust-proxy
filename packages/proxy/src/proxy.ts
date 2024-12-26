@@ -1,26 +1,39 @@
+import { MessageParam } from "@anthropic-ai/sdk/resources";
+import { ExperimentLogPartialArgs } from "@braintrust/core";
+import { Message, MessageRole } from "@braintrust/core/typespecs";
+import { Meter, MeterProvider } from "@opentelemetry/api";
+import {
+  APISecret,
+  AvailableModels,
+  EndpointProviderToBaseURL,
+  MessageTypeToMessageType,
+  ModelFormat,
+  translateParams,
+} from "@schema";
 import {
   createParser,
   type EventSourceParser,
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
+import stringify from "json-stringify-deterministic";
+import { Buffer } from "node:buffer";
 import {
-  AvailableModels,
-  MessageTypeToMessageType,
-  EndpointProviderToBaseURL,
-  translateParams,
-  ModelFormat,
-  APISecret,
-} from "@schema";
+  ChatCompletion,
+  ChatCompletionChunk,
+  ChatCompletionCreateParams,
+  CompletionUsage,
+  CreateEmbeddingResponse,
+} from "openai/resources";
+import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import {
-  ProxyBadRequestError,
-  flattenChunks,
-  flattenChunksArray,
-  getRandomInt,
-  isEmpty,
-  isObject,
-  parseAuthHeader,
-} from "./util";
+  getCurrentUnixTimestamp,
+  isTempCredential,
+  makeTempCredentials,
+  parseOpenAIStream,
+  verifyTempCredentials,
+} from "utils";
+import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
@@ -32,35 +45,23 @@ import {
   openAIToolsToAnthropicTools,
   upgradeAnthropicContentMessage,
 } from "./providers/anthropic";
-import { Meter, MeterProvider } from "@opentelemetry/api";
-import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { Message, MessageRole } from "@braintrust/core/typespecs";
-import {
-  ChatCompletion,
-  ChatCompletionChunk,
-  ChatCompletionCreateParams,
-  CompletionUsage,
-  CreateEmbeddingResponse,
-} from "openai/resources";
-import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
-import { Buffer } from "node:buffer";
-import { ExperimentLogPartialArgs } from "@braintrust/core";
-import { MessageParam } from "@anthropic-ai/sdk/resources";
-import {
-  getCurrentUnixTimestamp,
-  parseOpenAIStream,
-  isTempCredential,
-  makeTempCredentials,
-  verifyTempCredentials,
-} from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import {
+  flattenChunks,
+  flattenChunksArray,
+  getRandomInt,
+  isEmpty,
+  isObject,
+  parseAuthHeader,
+  ProxyBadRequestError,
+} from "./util";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -275,7 +276,8 @@ export async function proxyV1({
   const dataKey = await digest(
     JSON.stringify({
       url,
-      body,
+      // make the body more deterministic, if a json object
+      body: bodyData ? stringify(bodyData) : body,
       authToken: cacheKeyOptions.excludeAuthToken || authToken,
       orgName: cacheKeyOptions.excludeOrgName || orgName,
       endpointName,

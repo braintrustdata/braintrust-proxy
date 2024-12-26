@@ -766,7 +766,7 @@ async function fetchModelLoop(
 
     const modelSpec =
       (model !== null
-        ? (secret.metadata?.customModels?.[model] ?? AvailableModels[model])
+        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
         : null) ?? null;
 
     let endpointUrl = url;

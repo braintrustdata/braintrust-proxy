@@ -847,7 +847,7 @@ async function fetchModelLoop(
             httpCode = e.cause.statusCode;
           }
           if ("headers" in e.cause) {
-            httpHeaders = e.cause.headers;
+            httpHeaders = new Headers(e.cause.headers);
           }
         }
         if (!httpCode) {

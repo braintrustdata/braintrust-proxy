@@ -809,6 +809,7 @@ async function fetchModelLoop(
     const additionalHeaders = secret.metadata?.additionalHeaders || {};
 
     let httpCode = undefined;
+    let httpHeaders = new Headers();
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
@@ -836,52 +837,61 @@ async function fetchModelLoop(
           proxyResponse.response.statusText,
         );
         httpCode = proxyResponse.response.status;
-
-        // If we hit a rate-limit error, and we're at the end of the
-        // loop, and we haven't waited the maximum allotted time, then
-        // sleep for a bit, and reset the loop.
-        if (
-          httpCode === RATE_LIMIT_ERROR_CODE &&
-          i === secrets.length - 1 &&
-          totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
-        ) {
-          const limitReset = tryParseRateLimitReset(
-            proxyResponse.response.headers,
-          );
-          delayMs = Math.max(
-            // Make sure we sleep at least 10ms. Sometimes the random backoff logic can get wonky.
-            Math.min(
-              // If we have a rate limit reset time, use that. Otherwise, use a random backoff.
-              // Sometimes, limitReset is 0 (errantly), so fall back to the random backoff in that case too.
-              // And never sleep longer than 10 seconds or the remaining budget.
-              limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
-              10 * 1000,
-              RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
-            ),
-            10,
-          );
-          console.warn(
-            `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
-            loopIndex,
-          );
-          await new Promise((r) => setTimeout(r, delayMs));
-
-          totalWaitedTime += delayMs;
-          i = -1; // Reset the loop variable
-        }
+        httpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
       lastException = e;
       if (e instanceof TypeError) {
-        console.log(
-          "Failed to fetch (most likely an invalid URL",
-          secret.id,
-          e,
-        );
+        if ("cause" in e && e.cause && isObject(e.cause)) {
+          if ("statusCode" in e.cause) {
+            httpCode = e.cause.statusCode;
+          }
+          if ("headers" in e.cause) {
+            httpHeaders = e.cause.headers;
+          }
+        }
+        if (!httpCode) {
+          console.log(
+            "Failed to fetch with a generic error (could be an invalid URL or an unhandled network error)",
+            secret.id,
+            e,
+          );
+        }
       } else {
         endpointFailures.add(1, loggableInfo);
         throw e;
       }
+    }
+
+    // If we hit a rate-limit error, and we're at the end of the
+    // loop, and we haven't waited the maximum allotted time, then
+    // sleep for a bit, and reset the loop.
+    if (
+      httpCode === RATE_LIMIT_ERROR_CODE &&
+      i === secrets.length - 1 &&
+      totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
+    ) {
+      const limitReset = tryParseRateLimitReset(httpHeaders);
+      delayMs = Math.max(
+        // Make sure we sleep at least 10ms. Sometimes the random backoff logic can get wonky.
+        Math.min(
+          // If we have a rate limit reset time, use that. Otherwise, use a random backoff.
+          // Sometimes, limitReset is 0 (errantly), so fall back to the random backoff in that case too.
+          // And never sleep longer than 10 seconds or the remaining budget.
+          limitReset || delayMs * (BACKOFF_EXPONENT - Math.random()),
+          10 * 1000,
+          RATE_LIMIT_MAX_WAIT_MS - totalWaitedTime,
+        ),
+        10,
+      );
+      console.warn(
+        `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
+        loopIndex,
+      );
+      await new Promise((r) => setTimeout(r, delayMs));
+
+      totalWaitedTime += delayMs;
+      i = -1; // Reset the loop variable
     }
 
     endpointRetryableErrors.add(1, {

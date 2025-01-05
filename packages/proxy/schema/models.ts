@@ -712,6 +712,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.8,
     displayName: "Nous Hermes 2 Yi 34B",
   },
+  "deepseek-ai/DeepSeek-V3": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 2.5,
+    displayName: "DeepSeek V3",
+  },
   "deepseek-ai/deepseek-coder-33b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -929,6 +936,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "LLaMA 3.1 405b",
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 3,
+  },
+  "accounts/fireworks/models/deepseek-v3": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "DeepSeek v3",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
   },
 
   // CEREBRAS MODELS

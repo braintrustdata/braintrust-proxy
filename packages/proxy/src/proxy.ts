@@ -83,7 +83,7 @@ export const FORMAT_HEADER = "x-bt-stream-fmt";
 export const LEGACY_CACHED_HEADER = "x-cached";
 export const CACHED_HEADER = "x-bt-cached";
 
-export const PROVIDER_HEADER = "x-bt-used-provider";
+export const PROVIDER_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 

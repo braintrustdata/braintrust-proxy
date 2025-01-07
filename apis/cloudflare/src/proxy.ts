@@ -4,12 +4,12 @@ import {
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
+  getApiSecret,
 } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
-import { isFireworksModel, isGoogleModel, isGroqModel, isMistralModel, isPerplexityModel, isXAIModel, isAnthropicModel, isBedrockModel, isOpenAIModel } from "@braintrust/proxy/schema";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -120,62 +120,8 @@ export async function handleProxyV1(
     ...opts,
     authConfig: {
       type: "cloudflare",
-      authToken: env.AUTH_TOKEN,
-      getSecret: async (model: string) => {
-        if (isOpenAIModel(model)) {
-          return {
-            secret: env.OPENAI_API_KEY,
-            type: "openai",
-          };
-        } else if (isAnthropicModel(model)) {
-          return {
-            secret: env.ANTHROPIC_API_KEY,
-            type: "anthropic",
-          };
-        } else if (isBedrockModel(model)) {
-          return {
-            secret: env.BEDROCK_SECRET_KEY,
-            type: "bedrock",
-            metadata: {
-              "region": env.BEDROCK_REGION,
-              "access_key": env.BEDROCK_ACCESS_KEY,
-              supportsStreaming: true,
-            },
-          };
-        } else if (isGroqModel(model)) {
-          return {
-            secret: env.GROQ_API_KEY,
-            type: "groq",
-          };
-        } else if (isFireworksModel(model)) {
-          return {
-            secret: env.FIREWORKS_API_KEY,
-            type: "fireworks",
-          };
-        } else if (isGoogleModel(model)) {
-          return {
-            secret: env.GOOGLE_API_KEY,
-            type: "google",
-          };
-        } else if (isXAIModel(model)) {
-          return {
-            secret: env.XAI_API_KEY,
-            type: "xAI",
-          };
-        } else if (isMistralModel(model)) {
-          return {
-            secret: env.MISTRAL_API_KEY,
-            type: "mistral",
-          };
-        } else if (isPerplexityModel(model)) {
-          return {
-            secret: env.PERPLEXITY_API_KEY,
-            type: "perplexity",
-          };
-        }
-
-        throw new Error(`could not find secret for model ${model}`);
-      }
+      apiKey: env.API_KEY,
+      getSecret: (model: string) => getApiSecret(model, env),
     },
   };
 

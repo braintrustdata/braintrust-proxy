@@ -1,4 +1,23 @@
 interface Env {
+  OPENAI_API_KEY: string;
+  ANTHROPIC_API_KEY: string;
+  PERPLEXITY_API_KEY: string;
+  REPLICATE_API_KEY: string;
+  FIREWORKS_API_KEY: string;
+  GOOGLE_API_KEY: string;
+  XAI_API_KEY: string;
+
+  TOGETHER_API_KEY: string;
+  LEPTON_API_KEY: string;
+  MISTRAL_API_KEY: string;
+  OLLAMA_API_KEY: string;
+  GROQ_API_KEY: string;
+  CEREBRAS_API_KEY: string;
+
+  BEDROCK_SECRET_KEY: string;
+  BEDROCK_ACCESS_KEY: string;
+  BEDROCK_REGION: string;
+
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   // MY_KV_NAMESPACE: KVNamespace;
   //

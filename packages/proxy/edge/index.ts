@@ -31,7 +31,13 @@ export interface ProxyOpts {
   cors?: boolean;
   credentialsCache?: Cache;
   completionsCache?: Cache;
-  braintrustApiUrl?: string;
+  authConfig?: {
+    type: "cloudflare";
+    getSecret?: (model: string) => Promise<APISecret>;
+  } | {
+    type: "braintrust";
+    braintrustApiUrl?: string;
+  }
   meterProvider?: MeterProvider;
   whitelist?: (string | RegExp)[];
 }
@@ -122,6 +128,19 @@ export function makeFetchApiSecrets({
     model: string | null,
     org_name?: string,
   ): Promise<APISecret[]> => {
+    if (opts.authConfig?.type === "cloudflare") {
+      if (!opts.authConfig.getSecret) {
+        throw new Error("cloudflare auth config requires getSecret");
+      }
+
+      if (!model) {
+        throw new Error("cloudflare auth config requires model");
+      }
+
+      const secret = await opts.authConfig.getSecret(model);
+      return [secret];
+    }
+
     // First try to decode & verify as JWT. We gate this on Braintrust JWT
     // format, not just any JWT, in case a future model provider uses JWT as
     // the auth token.
@@ -167,7 +186,7 @@ export function makeFetchApiSecrets({
     let ttl = 60;
     try {
       const response = await fetch(
-        `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
+        `${opts.authConfig?.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
         {
           method: "POST",
           headers: {

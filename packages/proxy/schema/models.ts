@@ -26,6 +26,130 @@ export const ModelSchema = z.object({
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
+// OpenAI/Azure Models
+export const OpenAIModelSchema = z.enum([
+  'gpt-4o', 'gpt-4o-mini', 'gpt-4o-2024-11-20', 'gpt-4o-2024-08-06', 'gpt-4o-2024-05-13',
+  'gpt-4o-mini-2024-07-18', 'o1', 'o1-preview', 'o1-mini', 'o1-2024-12-17',
+  'o1-preview-2024-09-12', 'o1-mini-2024-09-12', 'gpt-4-turbo', 'gpt-4-turbo-2024-04-09',
+  'gpt-4-turbo-preview', 'gpt-4-0125-preview', 'gpt-4-1106-preview', 'gpt-4', 'gpt-4-0613',
+  'gpt-4-0314', 'gpt-3.5-turbo-0125', 'gpt-3.5-turbo', 'gpt-35-turbo', 'gpt-3.5-turbo-1106',
+  'gpt-3.5-turbo-instruct', 'gpt-3.5-turbo-instruct-0914', 'gpt-4-32k', 'gpt-4-32k-0613',
+  'gpt-4-32k-0314', 'gpt-4-vision-preview', 'gpt-4-1106-vision-preview', 'gpt-3.5-turbo-16k',
+  'gpt-35-turbo-16k', 'gpt-3.5-turbo-16k-0613', 'gpt-3.5-turbo-0613', 'gpt-3.5-turbo-0301',
+  'text-embedding-3-large', 'text-embedding-3-small', 'text-embedding-ada-002',
+]);
+
+export const AnthropicModelSchema = z.enum([
+  'claude-3-5-sonnet-latest', 'claude-3-5-sonnet-20241022', 'claude-3-5-sonnet-20240620',
+  'claude-3-5-haiku-20241022', 'claude-3-haiku-20240307', 'claude-3-sonnet-20240229',
+  'claude-3-opus-20240229', 'claude-instant-1.2', 'claude-instant-1', 'claude-2.1',
+  'claude-2.0', 'claude-2',
+]);
+
+export const BedrockModelSchema = z.enum([
+  'anthropic.claude-3-5-sonnet-20241022-v2:0', 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+  'anthropic.claude-3-haiku-20240307-v1:0', 'anthropic.claude-3-sonnet-20240229-v1:0',
+  'anthropic.claude-3-opus-20240229-v1:0', 'amazon.nova-pro-v1:0', 'amazon.nova-lite-v1:0',
+  'amazon.nova-micro-v1:0', 'amazon.titan-embed-text-v2:0',
+]);
+
+export const PerplexityModelSchema = z.enum([
+  'pplx-7b-chat', 'pplx-7b-online', 'pplx-70b-chat', 'pplx-70b-online',
+  'codellama-34b-instruct', 'codellama-70b-instruct', 'llama-3-8b-instruct',
+  'llama-3-70b-instruct', 'llama-2-13b-chat', 'llama-2-70b-chat', 'mistral-7b-instruct',
+  'mixtral-8x7b-instruct', 'mixtral-8x22b-instruct', 'openhermes-2-mistral-7b',
+  'openhermes-2.5-mistral-7b',
+]);
+
+export const TogetherModelSchema = z.enum([
+  'meta-llama/Llama-3.3-70B-Instruct-Turbo', 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
+  'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo', 'meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo',
+  'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo', 'meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo',
+  'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo', 'meta-llama/Meta-Llama-3-70B',
+  'meta-llama/Llama-3-8b-hf', 'meta-llama/Llama-3-8b-chat-hf', 'meta-llama/Llama-3-70b-chat-hf',
+  'mistralai/Mistral-7B-Instruct-v0.1', 'mistralai/mixtral-8x7b-32kseqlen', 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+  'mistralai/Mixtral-8x7B-Instruct-v0.1-json', 'mistralai/Mixtral-8x22B', 'mistralai/Mixtral-8x22B-Instruct-v0.1',
+  'NousResearch/Nous-Hermes-2-Yi-34B', 'deepseek-ai/DeepSeek-V3', 'deepseek-ai/deepseek-coder-33b-instruct',
+]);
+
+export const MistralModelSchema = z.enum([
+  'mistral-large-latest', 'pixtral-12b-2409', 'open-mistral-nemo', 'codestral-latest',
+  'open-mixtral-8x22b', 'open-codestral-mamba', 'mistral-tiny', 'mistral-small',
+  'mistral-medium',
+]);
+
+export const GroqModelSchema = z.enum([
+  'llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'llama-3.1-70b-versatile',
+  'llama-3.1-405b-reasoning', 'gemma-7b-it', 'llama3-8b-8192', 'llama3-70b-8192',
+  'llama2-70b-4096', 'mixtral-8x7b-32768',
+]);
+
+export const FireworksModelSchema = z.enum([
+  'accounts/fireworks/models/llama-v3p3-70b-instruct',
+  'accounts/fireworks/models/llama-v3p2-3b-instruct',
+  'accounts/fireworks/models/llama-v3p1-8b-instruct',
+  'accounts/fireworks/models/llama-v3p2-11b-vision-instruct',
+  'accounts/fireworks/models/llama-v3p1-70b-instruct',
+  'accounts/fireworks/models/llama-v3p2-90b-vision-instruct',
+  'accounts/fireworks/models/llama-v3p1-405b-instruct',
+  'accounts/fireworks/models/deepseek-v3',
+]);
+
+export const GoogleModelSchema = z.enum([
+  'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash-exp', 'gemini-exp-1206',
+  'gemini-exp-1114', 'gemini-exp-1121', 'gemini-1.5-pro-002', 'gemini-1.5-flash-002',
+  'gemini-1.5-pro-latest', 'gemini-1.5-flash-latest', 'gemini-1.5-flash-8b',
+  'gemini-1.0-pro', 'gemini-pro',
+]);
+
+export const XAIModelSchema = z.enum([
+  'grok-beta',
+]);
+
+export const ModelNameSchema = z.union([OpenAIModelSchema, AnthropicModelSchema, BedrockModelSchema, PerplexityModelSchema, TogetherModelSchema, MistralModelSchema, GroqModelSchema, FireworksModelSchema, GoogleModelSchema, XAIModelSchema]);
+
+export type ModelName = z.infer<typeof ModelNameSchema>;
+
+export function isOpenAIModel(model: string) {
+  return OpenAIModelSchema.safeParse(model).success;
+}
+
+export function isAnthropicModel(model: string) {
+  return AnthropicModelSchema.safeParse(model).success;
+}
+
+export function isBedrockModel(model: string) {
+  return BedrockModelSchema.safeParse(model).success;
+}
+
+export function isPerplexityModel(model: string) {
+  return PerplexityModelSchema.safeParse(model).success;
+}
+
+export function isTogetherModel(model: string) {
+  return TogetherModelSchema.safeParse(model).success;
+}
+
+export function isMistralModel(model: string) {
+  return MistralModelSchema.safeParse(model).success;
+}
+
+export function isGroqModel(model: string) {
+  return GroqModelSchema.safeParse(model).success;
+}
+
+export function isFireworksModel(model: string) {
+  return FireworksModelSchema.safeParse(model).success;
+}
+
+export function isGoogleModel(model: string) {
+  return GoogleModelSchema.safeParse(model).success;
+}
+
+export function isXAIModel(model: string) {
+  return XAIModelSchema.safeParse(model).success;
+}
+
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
   "gpt-4o": {

@@ -9,8 +9,7 @@ import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
-import { isFireworksModel, isGoogleModel, isGroqModel, isMistralModel, isPerplexityModel, isXAIModel } from "@braintrust/proxy/schema";
-import { isAnthropicModel, isBedrockModel, isOpenAIModel } from "@braintrust/proxy/schema";
+import { isFireworksModel, isGoogleModel, isGroqModel, isMistralModel, isPerplexityModel, isXAIModel, isAnthropicModel, isBedrockModel, isOpenAIModel } from "@braintrust/proxy/schema";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -68,6 +67,57 @@ export async function handleProxyV1(
   const cache = await caches.open("apikey:cache");
 
   const opts: ProxyOpts = {
+    getRelativeURL(request: Request): string {
+      return new URL(request.url).pathname.slice(proxyV1Prefix.length);
+    },
+    cors: true,
+    credentialsCache: {
+      async get<T>(key: string): Promise<T | null> {
+        const response = await cache.match(apiCacheKey(key));
+        if (response) {
+          return (await response.json()) as T;
+        } else {
+          return null;
+        }
+      },
+      async set<T>(key: string, value: T, { ttl }: { ttl?: number }) {
+        await cache.put(
+          apiCacheKey(key),
+          new Response(JSON.stringify(value), {
+            headers: {
+              "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
+            },
+          }),
+        );
+      },
+    },
+    completionsCache: {
+      get: async (key) => {
+        const start = performance.now();
+        const ret = await env.ai_proxy.get(key);
+        const end = performance.now();
+        cacheGetLatency.record(end - start);
+        if (ret) {
+          return JSON.parse(ret);
+        } else {
+          return null;
+        }
+      },
+      set: async (key, value, { ttl }: { ttl?: number }) => {
+        const start = performance.now();
+        await env.ai_proxy.put(key, JSON.stringify(value), {
+          expirationTtl: ttl,
+        });
+        const end = performance.now();
+        cacheSetLatency.record(end - start);
+      },
+    },
+    meterProvider,
+    whitelist,
+  };
+
+  const optsWithCloudflareAuth: ProxyOpts = {
+    ...opts,
     authConfig: {
       type: "cloudflare",
       authToken: env.AUTH_TOKEN,
@@ -127,57 +177,14 @@ export async function handleProxyV1(
         throw new Error(`could not find secret for model ${model}`);
       }
     },
-    // authConfig: {
-    //   type: "braintrust",
-    //   braintrustApiUrl: braintrustAppUrl(env).toString(),
-    // },
-    getRelativeURL(request: Request): string {
-      return new URL(request.url).pathname.slice(proxyV1Prefix.length);
+  };
+
+  const optsWithBraintrustAuth: ProxyOpts = {
+    ...opts,
+    authConfig: {
+      type: "braintrust",
+      braintrustApiUrl: braintrustAppUrl(env).toString(),
     },
-    cors: true,
-    credentialsCache: {
-      async get<T>(key: string): Promise<T | null> {
-        const response = await cache.match(apiCacheKey(key));
-        if (response) {
-          return (await response.json()) as T;
-        } else {
-          return null;
-        }
-      },
-      async set<T>(key: string, value: T, { ttl }: { ttl?: number }) {
-        await cache.put(
-          apiCacheKey(key),
-          new Response(JSON.stringify(value), {
-            headers: {
-              "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
-            },
-          }),
-        );
-      },
-    },
-    completionsCache: {
-      get: async (key) => {
-        const start = performance.now();
-        const ret = await env.ai_proxy.get(key);
-        const end = performance.now();
-        cacheGetLatency.record(end - start);
-        if (ret) {
-          return JSON.parse(ret);
-        } else {
-          return null;
-        }
-      },
-      set: async (key, value, { ttl }: { ttl?: number }) => {
-        const start = performance.now();
-        await env.ai_proxy.put(key, JSON.stringify(value), {
-          expirationTtl: ttl,
-        });
-        const end = performance.now();
-        cacheSetLatency.record(end - start);
-      },
-    },
-    meterProvider,
-    whitelist,
   };
 
   const url = new URL(request.url);
@@ -199,7 +206,9 @@ export async function handleProxyV1(
     });
   }
 
-  return EdgeProxyV1(opts)(request, ctx);
+  // decide if you want to use braintrust or cloudflare auth
+  return EdgeProxyV1(optsWithCloudflareAuth)(request, ctx);
+  // return EdgeProxyV1(optsWithBraintrustAuth)(request, ctx);
 }
 
 export async function handlePrometheusScrape(

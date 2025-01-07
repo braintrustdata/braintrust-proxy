@@ -83,7 +83,7 @@ export const FORMAT_HEADER = "x-bt-stream-fmt";
 export const LEGACY_CACHED_HEADER = "x-cached";
 export const CACHED_HEADER = "x-bt-cached";
 
-export const PROVIDER_HEADER = "x-bt-used-endpoint";
+export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
@@ -454,8 +454,8 @@ export async function proxyV1({
       proxyResponseHeaders[name] = value;
     });
     if (secretName) {
-      setHeader(PROVIDER_HEADER, secretName);
-      proxyResponseHeaders[PROVIDER_HEADER] = secretName;
+      setHeader(USED_ENDPOINT_HEADER, secretName);
+      proxyResponseHeaders[USED_ENDPOINT_HEADER] = secretName;
     }
 
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {

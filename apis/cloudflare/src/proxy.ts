@@ -70,6 +70,7 @@ export async function handleProxyV1(
   const opts: ProxyOpts = {
     authConfig: {
       type: "cloudflare",
+      authToken: env.AUTH_TOKEN,
       getSecret: async (model: string) => {
         if (isOpenAIModel(model)) {
           return {

@@ -33,6 +33,7 @@ export interface ProxyOpts {
   completionsCache?: Cache;
   authConfig?: {
     type: "cloudflare";
+    authToken: string;
     getSecret?: (model: string) => Promise<APISecret>;
   } | {
     type: "braintrust";
@@ -129,6 +130,10 @@ export function makeFetchApiSecrets({
     org_name?: string,
   ): Promise<APISecret[]> => {
     if (opts.authConfig?.type === "cloudflare") {
+      if (authToken !== opts.authConfig.authToken) {
+        throw new Error("Forbidden");
+      }
+
       if (!opts.authConfig.getSecret) {
         throw new Error("cloudflare auth config requires getSecret");
       }

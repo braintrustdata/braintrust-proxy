@@ -1,4 +1,6 @@
 interface Env {
+  AUTH_TOKEN: string;
+
   OPENAI_API_KEY: string;
   ANTHROPIC_API_KEY: string;
   PERPLEXITY_API_KEY: string;

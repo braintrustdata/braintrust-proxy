@@ -1024,6 +1024,14 @@ async function fetchModel(
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
 ) {
+
+  if(bodyData.extra_body[secret.type]) {
+    bodyData = {
+      ...bodyData,
+      ...bodyData.extra_body[secret.type],
+    }
+  }
+
   switch (format) {
     case "openai":
       return await fetchOpenAI(

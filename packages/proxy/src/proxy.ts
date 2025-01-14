@@ -47,6 +47,7 @@ import {
   ChatCompletionCreateParams,
   CompletionUsage,
   CreateEmbeddingResponse,
+  ModerationCreateResponse,
 } from "openai/resources";
 import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
@@ -210,7 +211,8 @@ export async function proxyV1({
     url === "/auto" ||
     url === "/embeddings" ||
     url === "/chat/completions" ||
-    url === "/completions";
+    url === "/completions" ||
+    url === "/moderations";
 
   let bodyData = null;
   if (
@@ -474,7 +476,7 @@ export async function proxyV1({
         async flush(controller) {
           const data = flattenChunksArray(allChunks);
           const dataB64 = Buffer.from(data).toString("base64");
-          cachePut(
+          await cachePut(
             encryptionKey,
             cacheKey,
             JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
@@ -634,6 +636,14 @@ export async function proxyV1({
                     tokens: data.usage?.total_tokens,
                     prompt_tokens: data.usage?.prompt_tokens,
                   },
+                });
+              }
+              break;
+            case "moderation":
+              {
+                const data = dataRaw as ModerationCreateResponse;
+                spanLogger.log({
+                  output: data.results,
                 });
               }
               break;
@@ -1598,7 +1608,7 @@ function tryParseRateLimitReset(headers: Headers): number | null {
   return null;
 }
 
-export type SpanType = "chat" | "completion" | "embedding";
+export type SpanType = "chat" | "completion" | "embedding" | "moderation";
 
 function spanTypeToName(spanType: SpanType): string {
   switch (spanType) {
@@ -1608,6 +1618,8 @@ function spanTypeToName(spanType: SpanType): string {
       return "Completion";
     case "embedding":
       return "Embedding";
+    case "moderation":
+      return "Moderation";
   }
 }
 
@@ -1622,7 +1634,9 @@ export function guessSpanType(
         ? "completion"
         : url === "/embeddings"
           ? "embedding"
-          : undefined;
+          : url === "/moderations"
+            ? "moderation"
+            : undefined;
   if (spanName) {
     return spanName;
   }
@@ -1632,6 +1646,8 @@ export function guessSpanType(
     return "chat";
   } else if (flavor === "completion") {
     return "completion";
+  } else if (url === "/moderations") {
+    return "moderation";
   } else {
     return undefined;
   }
@@ -1660,7 +1676,8 @@ function logSpanInputs(
       });
       break;
     }
-    case "embedding": {
+    case "embedding":
+    case "moderation": {
       const { input, ...rest } = bodyData;
       spanLogger.log({
         input: bodyData,

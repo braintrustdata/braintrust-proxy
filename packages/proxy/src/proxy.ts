@@ -1070,6 +1070,9 @@ async function fetchOpenAI(
       delete bodyData.temperature;
     }
 
+    // o1, even if it supports tool calls, doesn't support parallel tool calls.
+    delete bodyData.parallel_tool_calls;
+
     // Only remove system messages for old O1 models.
     if (
       bodyData.messages &&

@@ -2,7 +2,7 @@
 
 The Braintrust AI proxy offers a unified way to access the world's leading AI models through a single API, including
 models from [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https://docs.anthropic.com/claude/reference/getting-started-with-the-api), [LLaMa 2](https://ai.meta.com/llama/),
-[Mistral](https://mistral.ai/), and more. The benefits of using the proxy include:
+[Mistral](https://mistral.ai/), [Novita AI](https://novita.ai/llm-api?utm_source=github_braintrustdata&utm_medium=github_readme&utm_campaign=github_link) and more. The benefits of using the proxy include:
 
 - **Code Simplification**: Use a consistent API across different AI providers.
 - **Cost Reduction**: The proxy automatically caches results, reusing them when possible.

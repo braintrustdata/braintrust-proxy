@@ -59,6 +59,7 @@ export const APISecretSchema = z.union([
         "replicate",
         "together",
         "mistral",
+        "novita",
         "ollama",
         "groq",
         "lepton",

@@ -719,6 +719,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 2.5,
     displayName: "DeepSeek V3",
   },
+  "deepseek-ai/DeepSeek-R1": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 8,
+    output_cost_per_mil_tokens: 8,
+    displayName: "DeepSeek R1",
+  },
   "deepseek-ai/deepseek-coder-33b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -943,6 +950,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "DeepSeek v3",
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
+  },
+  "accounts/fireworks/models/deepseek-r1": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "DeepSeek R1",
+    input_cost_per_mil_tokens: 8,
+    output_cost_per_mil_tokens: 8,
   },
 
   // CEREBRAS MODELS

@@ -700,9 +700,13 @@ export async function proxyV1({
   }
 
   if (stream) {
-    stream.pipeTo(res);
+    stream.pipeTo(res).catch((e) => {
+      console.error("Error piping stream to response", e);
+    });
   } else {
-    res.close();
+    res.close().catch((e) => {
+      console.error("Error closing response", e);
+    });
   }
 }
 
@@ -1535,7 +1539,9 @@ export function createEventStreamTransformer(
             // @see https://replicate.com/docs/streaming
             (event as any).event === "done"
           ) {
-            finish(controller);
+            finish(controller).catch((e) => {
+              console.error("Error finishing stream", e);
+            });
             return;
           }
 
@@ -1552,7 +1558,9 @@ export function createEventStreamTransformer(
                   "data: " + `${JSON.stringify(`${e}`)}` + "\n\n",
                 ),
               );
-              finish(controller);
+              finish(controller).catch((e) => {
+                console.error("Error finishing stream", e);
+              });
               return;
             }
             if (parsedMessage.data !== null) {
@@ -1563,7 +1571,9 @@ export function createEventStreamTransformer(
               );
             }
             if (parsedMessage.finished) {
-              finish(controller);
+              finish(controller).catch((e) => {
+                console.error("Error finishing stream", e);
+              });
             }
           }
         },

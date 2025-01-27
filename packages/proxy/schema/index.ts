@@ -223,6 +223,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "amazon.nova-micro-v1:0": ["bedrock"],
   "grok-beta": ["xAI"],
 
+  "deepseek/deepseek-r1": ["novita"],
+  "deepseek/deepseek_v3": ["novita"],
   "meta-llama/llama-3.3-70b-instruct": ["novita"],
   "meta-llama/llama-3.1-8b-instruct": ["novita"],
   "meta-llama/llama-3.1-8b-instruct-max": ["novita"],

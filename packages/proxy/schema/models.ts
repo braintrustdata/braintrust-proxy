@@ -867,6 +867,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.27,
     displayName: "Mixtral 8x7B 32768",
   },
+  "deepseek-r1-distill-llama-70b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.23,
+    output_cost_per_mil_tokens: 0.69,
+    displayName: "DeepSeek R1 Distill Llama 70b",
+  },
 
   // LEPTON MODELS
   "llama3-1-8b": {

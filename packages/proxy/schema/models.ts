@@ -1088,6 +1088,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Grok Beta",
   },
 
+  "grok-2-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    displayName: "Grok 2 Latest",
+  },
+
   // BEDROCK MODELS
   "amazon.nova-pro-v1:0": {
     format: "openai",

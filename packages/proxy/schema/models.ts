@@ -705,6 +705,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 1.2,
     displayName: "Mixtral 8x22B Instruct",
   },
+  "mistralai/Mistral-Small-24B-Instruct-2501": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Mistral Small 3",
+  },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
     format: "openai",
     flavor: "chat",

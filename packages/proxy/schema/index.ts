@@ -167,6 +167,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1-json": ["together"],
+  "mistralai/Mistral-Small-24B-Instruct-2501": ["together"],
   "meta-llama/Llama-2-70b-chat-hf": ["together"],
   "meta-llama/Meta-Llama-3-70B": ["together"],
   "meta-llama/Llama-3-70b-chat-hf": ["together"],

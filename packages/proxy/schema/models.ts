@@ -9,6 +9,7 @@ export const ModelFormats = [
   "google",
   "window",
   "js",
+  "converse",
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 

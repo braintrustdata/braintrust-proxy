@@ -175,6 +175,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistralai/mixtral-8x7b-32kseqlen": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1": ["together"],
   "mistralai/Mixtral-8x7B-Instruct-v0.1-json": ["together"],
+  "mistralai/Mistral-Small-24B-Instruct-2501": ["together"],
   "meta-llama/Llama-2-70b-chat-hf": ["together"],
   "meta-llama/Meta-Llama-3-70B": ["together"],
   "meta-llama/Llama-3-70b-chat-hf": ["together"],
@@ -234,6 +235,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "amazon.nova-lite-v1:0": ["bedrock"],
   "amazon.nova-micro-v1:0": ["bedrock"],
   "grok-beta": ["xAI"],
+  "grok-2-latest": ["xAI"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

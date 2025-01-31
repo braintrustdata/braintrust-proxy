@@ -77,6 +77,24 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "GPT 4o mini 2024-07-18",
   },
+  "o3-mini": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    displayName: "O3 mini",
+    input_cost_per_mil_tokens: 1.1,
+    output_cost_per_mil_tokens: 4.4,
+    o1_like: true,
+  },
+  "o3-mini-2025-01-31": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    displayName: "O3 mini 2025-01-31",
+    input_cost_per_mil_tokens: 1.1,
+    output_cost_per_mil_tokens: 4.4,
+    o1_like: true,
+  },
   o1: {
     format: "openai",
     flavor: "chat",
@@ -706,6 +724,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 1.2,
     displayName: "Mixtral 8x22B Instruct",
   },
+  "mistralai/Mistral-Small-24B-Instruct-2501": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Mistral Small 3",
+  },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
     format: "openai",
     flavor: "chat",
@@ -1094,6 +1119,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 5,
     output_cost_per_mil_tokens: 15,
     displayName: "Grok Beta",
+  },
+
+  "grok-2-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    displayName: "Grok 2 Latest",
   },
 
   // BEDROCK MODELS

@@ -2,18 +2,12 @@ import { v4 as uuidv4 } from "uuid";
 import {
   ChatCompletion,
   ChatCompletionChunk,
-  ChatCompletionCreateParams,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
   CompletionUsage,
 } from "openai/resources";
 import { getTimestampInSeconds, isEmpty } from "../util";
-import {
-  AnthropicContent,
-  AnthropicImageBlock,
-  anthropicImageBlockSchema,
-} from "@schema";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {
@@ -22,7 +16,10 @@ import {
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
 import { convertImageToBase64 } from "./util";
-import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
+import {
+  ImageBlockParam,
+  MessageCreateParamsBase,
+} from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 /*
@@ -407,24 +404,24 @@ const allowedImageTypes = [
 
 export async function makeAnthropicImageBlock(
   image: string,
-): Promise<AnthropicImageBlock> {
+): Promise<ImageBlockParam> {
   const imageBlock = await convertImageToBase64({
     image,
     allowedImageTypes,
     maxImageBytes,
   });
-  return anthropicImageBlockSchema.parse({
+  return {
     type: "image",
     source: {
       type: "base64",
       ...imageBlock,
     },
-  });
+  };
 }
 
 export async function openAIContentToAnthropicContent(
   content: Message["content"],
-): Promise<AnthropicContent> {
+): Promise<MessageParam["content"]> {
   if (typeof content === "string") {
     return content;
   }

@@ -4,7 +4,7 @@ const base64ImagePattern =
   /^data:(image\/(?:jpeg|png|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/;
 
 export interface ImageBlock {
-  media_type: string;
+  media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp";
   data: string;
 }
 
@@ -16,7 +16,7 @@ export function convertBase64Image(image: string): ImageBlock | null {
 
   const [, media_type, data] = match;
   return {
-    media_type,
+    media_type: media_type as ImageBlock["media_type"],
     data,
   };
 }
@@ -53,7 +53,7 @@ async function convertImageUrl({
   const data = arrayBufferToBase64(arrayBuffer);
 
   return {
-    media_type: contentType,
+    media_type: contentType as ImageBlock["media_type"],
     data,
   };
 }

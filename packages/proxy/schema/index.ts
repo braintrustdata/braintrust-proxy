@@ -120,6 +120,12 @@ export const defaultModelParamSettings: {
     temperature: undefined,
     topK: 5,
   },
+  converse: {
+    temperature: undefined,
+    max_tokens: undefined,
+    top_p: 0.9,
+    use_cache: true,
+  },
 };
 
 export const modelProviderHasTools: {
@@ -130,6 +136,7 @@ export const modelProviderHasTools: {
   google: false,
   js: false,
   window: false,
+  converse: true,
 };
 
 export const DefaultEndpointTypes: {
@@ -140,6 +147,7 @@ export const DefaultEndpointTypes: {
   google: ["google"],
   js: ["js"],
   window: ["js"],
+  converse: ["bedrock"],
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {

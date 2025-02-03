@@ -49,7 +49,7 @@ import {
   CreateEmbeddingResponse,
   ModerationCreateResponse,
 } from "openai/resources";
-import { fetchBedrockAnthropic, fetchBedrockOpenAI } from "./providers/bedrock";
+import { fetchBedrockAnthropic, fetchConverse } from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
@@ -978,12 +978,6 @@ async function fetchModel(
 ): Promise<ModelResponse> {
   switch (format) {
     case "openai":
-      if (secret.type === "bedrock") {
-        return fetchBedrockOpenAI({
-          secret,
-          body: bodyData,
-        });
-      }
       return await fetchOpenAI(
         method,
         url,
@@ -998,6 +992,12 @@ async function fetchModel(
     case "google":
       console.assert(method === "POST");
       return await fetchGoogle("POST", url, headers, bodyData, secret);
+    case "converse":
+      console.assert(method === "POST");
+      return await fetchConverse({
+        secret,
+        body: bodyData,
+      });
     default:
       throw new ProxyBadRequestError(`Unsupported model provider ${format}`);
   }
@@ -1011,6 +1011,10 @@ async function fetchOpenAI(
   secret: APISecret,
   setHeader: (name: string, value: string) => void,
 ): Promise<ModelResponse> {
+  if (secret.type === "bedrock") {
+    throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
+  }
+
   let baseURL =
     (secret.metadata &&
       "api_base" in secret.metadata &&
@@ -1399,6 +1403,11 @@ async function fetchGoogle(
   secret: APISecret,
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
+  if (secret.type !== "google") {
+    throw new ProxyBadRequestError(
+      `Unsupported credentials for Google: ${secret.type}`,
+    );
+  }
 
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(

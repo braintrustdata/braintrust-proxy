@@ -288,7 +288,11 @@ export function anthropicEventToOpenAIEvent(
           {
             delta: {},
             finish_reason:
-              event.delta.stop_reason === "end_turn" ? "stop" : "tool_calls",
+              isStructuredOutput && event.delta.stop_reason === "tool_use"
+                ? "stop"
+                : event.delta.stop_reason === "end_turn"
+                  ? "stop"
+                  : "tool_calls",
             index: 0,
           },
         ],
@@ -343,7 +347,6 @@ export function anthropicCompletionToOpenAICompletion(
   isFunction: boolean,
   isStructuredOutput: boolean,
 ): ChatCompletion {
-  console.log("COMPLETION", JSON.stringify(completion, null, 2));
   const firstText = completion.content.find((c) => c.type === "text");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
   return {
@@ -351,7 +354,10 @@ export function anthropicCompletionToOpenAICompletion(
     choices: [
       {
         logprobs: null,
-        finish_reason: anthropicFinishReason(completion.stop_reason) || "stop",
+        finish_reason:
+          isStructuredOutput && firstTool
+            ? "stop"
+            : anthropicFinishReason(completion.stop_reason) || "stop",
         index: 0,
         message: {
           role: "assistant",

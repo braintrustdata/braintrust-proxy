@@ -40,7 +40,11 @@ import {
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { Message, MessageRole } from "@braintrust/core/typespecs";
+import {
+  Message,
+  MessageRole,
+  responseFormatJsonSchemaSchema,
+} from "@braintrust/core/typespecs";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -62,6 +66,7 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { z } from "zod";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1119,6 +1124,40 @@ async function fetchOpenAI(
     });
   }
 
+  const supportsStructuredOutput =
+    bodyData.model.startsWith("gpt") ||
+    bodyData.model.startsWith("o1") ||
+    bodyData.model.startsWith("o3");
+  let isStructuredOutput = false;
+  if (!supportsStructuredOutput) {
+    const parsed = z
+      .object({
+        type: z.literal("json_schema"),
+        json_schema: responseFormatJsonSchemaSchema,
+      })
+      .safeParse(bodyData.response_format);
+    if (parsed.success) {
+      if (bodyData.tools || bodyData.function_call || bodyData.tool_choice) {
+        throw new ProxyBadRequestError(
+          "Tools are not supported with structured output",
+        );
+      }
+      isStructuredOutput = true;
+      bodyData.tools = [
+        {
+          type: "function",
+          function: {
+            name: "json",
+            description: "Output the result in JSON format",
+            parameters: parsed.data.json_schema.schema,
+            strict: parsed.data.json_schema.strict,
+          },
+        },
+      ];
+      bodyData.tool_choice = { type: "function", function: { name: "json" } };
+      delete bodyData.response_format;
+    }
+  }
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1135,8 +1174,57 @@ async function fetchOpenAI(
         },
   );
 
+  let stream = proxyResponse.body;
+  if (isStructuredOutput && stream) {
+    if (bodyData.stream) {
+      stream = stream.pipeThrough(
+        createEventStreamTransformer((data) => {
+          const chunk: ChatCompletionChunk = JSON.parse(data);
+          const choice = chunk.choices[0];
+          if (choice.delta.tool_calls) {
+            if (
+              choice.delta.tool_calls[0].function &&
+              choice.delta.tool_calls[0].function.arguments
+            ) {
+              choice.delta.content =
+                choice.delta.tool_calls[0].function.arguments;
+            }
+            delete choice.delta.tool_calls;
+          }
+
+          if (choice.finish_reason === "tool_calls") {
+            choice.finish_reason = "stop";
+          }
+          return {
+            data: JSON.stringify(chunk),
+            finished: false,
+          };
+        }),
+      );
+    } else {
+      const chunks: Uint8Array[] = [];
+      stream = stream.pipeThrough(
+        new TransformStream({
+          transform(chunk, _controller) {
+            chunks.push(chunk);
+          },
+          flush(controller) {
+            const data: ChatCompletion = JSON.parse(flattenChunks(chunks));
+            const choice = data.choices[0];
+            choice.message.content =
+              choice.message.tool_calls![0].function.arguments;
+            choice.finish_reason = "stop";
+            delete choice.message.tool_calls;
+            controller.enqueue(new TextEncoder().encode(JSON.stringify(data)));
+            controller.terminate();
+          },
+        }),
+      );
+    }
+  }
+
   return {
-    stream: proxyResponse.body,
+    stream,
     response: proxyResponse,
   };
 }
@@ -1329,7 +1417,13 @@ async function fetchAnthropic(
   }
 
   let isStructuredOutput = false;
-  if (oaiParams.response_format?.type === "json_schema") {
+  const parsed = z
+    .object({
+      type: z.literal("json_schema"),
+      json_schema: responseFormatJsonSchemaSchema,
+    })
+    .safeParse(oaiParams.response_format);
+  if (parsed.success) {
     isStructuredOutput = true;
     if (params.tools || params.tool_choice) {
       throw new ProxyBadRequestError(
@@ -1340,7 +1434,7 @@ async function fetchAnthropic(
       {
         name: "json",
         description: "Output the result in JSON format",
-        input_schema: oaiParams.response_format.json_schema.schema,
+        input_schema: parsed.data.json_schema.schema,
       },
     ];
     params.tool_choice = { type: "tool", name: "json" };

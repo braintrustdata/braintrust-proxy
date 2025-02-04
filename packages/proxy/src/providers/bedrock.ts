@@ -33,6 +33,7 @@ import {
   Message as OaiMessage,
   MessageRole,
   toolsSchema,
+  responseFormatJsonSchemaSchema,
 } from "@braintrust/core/typespecs";
 import {
   ChatCompletion,
@@ -258,11 +259,11 @@ function translateTools(tools: ChatCompletionTool[]): ToolConfiguration {
         name: tool.function.name,
         description: tool.function.description,
         inputSchema: {
-          json: tool.function.parameters,
+          json: tool.function.parameters as any,
         },
       },
     })),
-  } as ToolConfiguration;
+  };
 }
 
 export async function fetchConverse({
@@ -276,7 +277,7 @@ export async function fetchConverse({
     throw new Error("Bedrock: expected secret");
   }
 
-  const { model, stream, messages: oaiMessages, ...rest } = body;
+  const { model, stream, messages: oaiMessages, ...oaiParams } = body;
   if (!model || typeof model !== "string") {
     throw new Error("Bedrock: expected model");
   }
@@ -336,10 +337,10 @@ export async function fetchConverse({
   }
 
   let toolConfig: ToolConfiguration | undefined = undefined;
-  if (rest.tools || rest.functions) {
+  if (oaiParams.tools || oaiParams.functions) {
     const tools =
-      rest.tools ||
-      (rest.functions as Array<any>).map((f: any) => ({
+      oaiParams.tools ||
+      (oaiParams.functions as Array<any>).map((f: any) => ({
         type: "function",
         function: f,
       }));
@@ -349,14 +350,48 @@ export async function fetchConverse({
     } else {
       toolConfig = translateTools(parsed.data);
     }
-    delete rest.functions;
+    delete oaiParams.functions;
+  }
+
+  let isStructuredOutput = false;
+  const parsed = z
+    .object({
+      type: z.literal("json_schema"),
+      json_schema: responseFormatJsonSchemaSchema,
+    })
+    .safeParse(oaiParams.response_format);
+  if (parsed.success) {
+    isStructuredOutput = true;
+    if (toolConfig) {
+      throw new ProxyBadRequestError(
+        "Structured output is not supported with tools",
+      );
+    }
+    toolConfig = {
+      tools: [
+        {
+          toolSpec: {
+            name: "json",
+            description: "Output the result in JSON format",
+            inputSchema: {
+              json: parsed.data.json_schema.schema as any,
+            },
+          },
+        },
+      ],
+      toolChoice: {
+        tool: {
+          name: "json",
+        },
+      },
+    };
   }
 
   const input = {
     modelId: model,
     system,
     messages: messages ? flattenMessages(messages) : undefined,
-    inferenceConfig: translateInferenceConfig(rest),
+    inferenceConfig: translateInferenceConfig(oaiParams),
     toolConfig,
   };
 
@@ -409,6 +444,7 @@ export async function fetchConverse({
               const { event, finished } = bedrockMessageToOpenAIMessage(
                 state,
                 value,
+                isStructuredOutput,
               );
               if (event) {
                 controller.enqueue(
@@ -442,7 +478,9 @@ export async function fetchConverse({
         start(controller) {
           controller.enqueue(
             new TextEncoder().encode(
-              JSON.stringify(openAIResponse(model, response)),
+              JSON.stringify(
+                openAIResponse(model, response, isStructuredOutput),
+              ),
             ),
           );
           controller.close();
@@ -484,11 +522,18 @@ function openAIFinishReason(s: StopReason) {
       return "stop";
   }
 }
-
 function openAIResponse(
   model: string,
   response: ConverseCommandOutput,
+  isStructuredOutput: boolean,
 ): ChatCompletion {
+  const firstText = response.output?.message?.content?.find(
+    (c) => c.text !== undefined,
+  );
+  const firstTool = response.output?.message?.content?.find(
+    (c) => c.toolUse !== undefined,
+  );
+
   return {
     id: uuidv4(),
     object: "chat.completion",
@@ -500,21 +545,28 @@ function openAIResponse(
         message: {
           role: "assistant",
           content:
-            response.output?.message?.content?.find((c) => c.text !== undefined)
-              ?.text ?? "",
-          tool_calls: response.output?.message?.content
-            ?.filter((c) => c.toolUse !== undefined)
-            .map((c) => ({
-              id: c.toolUse.toolUseId ?? "",
-              type: "function",
-              function: {
-                name: c.toolUse.name ?? "",
-                arguments: JSON.stringify(c.toolUse.input),
-              },
-            })),
+            isStructuredOutput && firstTool
+              ? JSON.stringify(firstTool.toolUse.input)
+              : firstText?.text ?? "",
+          tool_calls:
+            !isStructuredOutput && firstTool
+              ? [
+                  {
+                    id: firstTool.toolUse.toolUseId ?? "",
+                    type: "function",
+                    function: {
+                      name: firstTool.toolUse.name ?? "",
+                      arguments: JSON.stringify(firstTool.toolUse.input),
+                    },
+                  },
+                ]
+              : undefined,
           refusal: null,
         },
-        finish_reason: openAIFinishReason(response.stopReason ?? "end_turn"),
+        finish_reason:
+          isStructuredOutput && firstTool
+            ? "stop"
+            : openAIFinishReason(response.stopReason ?? "end_turn"),
         logprobs: null,
       },
     ],
@@ -557,6 +609,7 @@ interface BedrockMessageState {
 export function bedrockMessageToOpenAIMessage(
   state: BedrockMessageState,
   output: ConverseStreamOutput,
+  isStructuredOutput: boolean,
 ): {
   event: ChatCompletionChunk | null;
   finished: boolean;
@@ -576,17 +629,23 @@ export function bedrockMessageToOpenAIMessage(
           {
             delta: {
               role: state.role,
-              content: value.delta?.text,
-              tool_calls: value.delta?.toolUse
-                ? [
-                    {
-                      index: value.contentBlockIndex ?? 0,
-                      function: {
-                        arguments: value.delta?.toolUse?.input,
+              content: isStructuredOutput
+                ? value.delta?.toolUse
+                  ? value.delta.toolUse.input
+                  : ""
+                : value.delta?.text,
+              tool_calls: isStructuredOutput
+                ? undefined
+                : value.delta?.toolUse
+                  ? [
+                      {
+                        index: value.contentBlockIndex ?? 0,
+                        function: {
+                          arguments: value.delta?.toolUse?.input,
+                        },
                       },
-                    },
-                  ]
-                : undefined,
+                    ]
+                  : undefined,
             },
             finish_reason: null,
             index: 0,
@@ -630,7 +689,10 @@ export function bedrockMessageToOpenAIMessage(
             delta: {
               role: state.role,
             },
-            finish_reason: openAIFinishReason(value.stopReason ?? "end_turn"),
+            finish_reason:
+              isStructuredOutput && value.stopReason === "tool_use"
+                ? "stop"
+                : openAIFinishReason(value.stopReason ?? "end_turn"),
             index: 0,
           },
         ],
@@ -647,15 +709,18 @@ export function bedrockMessageToOpenAIMessage(
           {
             delta: {
               role: state.role,
-              tool_calls: [
-                {
-                  index: value.contentBlockIndex ?? 0,
-                  id: value.start?.toolUse?.toolUseId,
-                  function: {
-                    name: value.start?.toolUse?.name,
-                  },
-                },
-              ],
+              content: isStructuredOutput ? "" : undefined,
+              tool_calls: isStructuredOutput
+                ? undefined
+                : [
+                    {
+                      index: value.contentBlockIndex ?? 0,
+                      id: value.start?.toolUse?.toolUseId,
+                      function: {
+                        name: value.start?.toolUse?.name,
+                      },
+                    },
+                  ],
             },
             finish_reason: null,
             index: 0,

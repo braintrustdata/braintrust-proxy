@@ -1328,6 +1328,24 @@ async function fetchAnthropic(
     );
   }
 
+  let isStructuredOutput = false;
+  if (oaiParams.response_format?.type === "json_schema") {
+    isStructuredOutput = true;
+    if (params.tools || params.tool_choice) {
+      throw new ProxyBadRequestError(
+        "Structured output is not supported with tools",
+      );
+    }
+    params.tools = [
+      {
+        name: "json",
+        description: "Output the result in JSON format",
+        input_schema: oaiParams.response_format.json_schema.schema,
+      },
+    ];
+    params.tool_choice = { type: "tool", name: "json" };
+  }
+
   if (secret.type === "bedrock") {
     return fetchBedrockAnthropic({
       secret,
@@ -1337,6 +1355,7 @@ async function fetchAnthropic(
         system,
       },
       isFunction,
+      isStructuredOutput,
     });
   }
 
@@ -1358,7 +1377,12 @@ async function fetchAnthropic(
       let usage: Partial<CompletionUsage> = {};
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
-          const ret = anthropicEventToOpenAIEvent(idx, usage, JSON.parse(data));
+          const ret = anthropicEventToOpenAIEvent(
+            idx,
+            usage,
+            JSON.parse(data),
+            isStructuredOutput,
+          );
           idx += 1;
           return {
             data: ret.event && JSON.stringify(ret.event),
@@ -1379,7 +1403,11 @@ async function fetchAnthropic(
             controller.enqueue(
               new TextEncoder().encode(
                 JSON.stringify(
-                  anthropicCompletionToOpenAICompletion(data, isFunction),
+                  anthropicCompletionToOpenAICompletion(
+                    data,
+                    isFunction,
+                    isStructuredOutput,
+                  ),
                 ),
               ),
             );

@@ -47,10 +47,12 @@ export async function fetchBedrockAnthropic({
   secret,
   body,
   isFunction,
+  isStructuredOutput,
 }: {
   secret: APISecret;
   body: Record<string, unknown>;
   isFunction: boolean;
+  isStructuredOutput: boolean;
 }) {
   if (secret.type !== "bedrock") {
     throw new Error("Bedrock: expected secret");
@@ -114,7 +116,12 @@ export async function fetchBedrockAnthropic({
               new TextDecoder().decode(value.chunk.bytes),
             );
             idx += 1;
-            const parsed = anthropicEventToOpenAIEvent(idx, usage, valueData);
+            const parsed = anthropicEventToOpenAIEvent(
+              idx,
+              usage,
+              valueData,
+              isStructuredOutput,
+            );
             if (parsed.event) {
               controller.enqueue(
                 new TextEncoder().encode(
@@ -144,6 +151,7 @@ export async function fetchBedrockAnthropic({
         const anthropicValue = anthropicCompletionToOpenAICompletion(
           valueData,
           isFunction,
+          isStructuredOutput,
         );
         controller.enqueue(
           new TextEncoder().encode(JSON.stringify(anthropicValue)),

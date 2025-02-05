@@ -218,6 +218,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama3-1-8b": ["lepton"],
   "llama3.1-8b": ["cerebras"],
   "llama3.1-70b": ["cerebras"],
+  "accounts/fireworks/models/llama-v3p3-70b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p2-3b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p1-8b-instruct": ["fireworks"],
   "accounts/fireworks/models/llama-v3p2-11b-vision-instruct": ["fireworks"],

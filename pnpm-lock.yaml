@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  zod: 3.22.4
+
 importers:
 
   .:
@@ -237,8 +240,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       zod:
-        specifier: ^3.22.4
-        version: 3.23.8
+        specifier: 3.22.4
+        version: 3.22.4
     devDependencies:
       '@types/jsonwebtoken':
         specifier: ^9.0.7
@@ -282,7 +285,7 @@ packages:
     resolution: {integrity: sha512-YHK2rpj++wnLVc9vPGzGFP3Pjeld2MwhKinetA0zKXOoHAT/Jit5O8kZsxcSlJPu9wvcGT1UGZEjZrtO7PfFOQ==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: ^3.0.0
+      zod: 3.22.4
     peerDependenciesMeta:
       zod:
         optional: true
@@ -313,7 +316,7 @@ packages:
     engines: {node: '>=18'}
     peerDependencies:
       react: ^18 || ^19 || ^19.0.0-rc
-      zod: ^3.0.0
+      zod: 3.22.4
     peerDependenciesMeta:
       react:
         optional: true
@@ -363,7 +366,7 @@ packages:
     resolution: {integrity: sha512-Z5QYJVW+5XpSaJ4jYCCAVG7zIAuKOOdikhgpksneNmKvx61ACFaf98pmOd+xnjahl0pIlc/QIe6O4yVaJ1sEaw==}
     engines: {node: '>=18'}
     peerDependencies:
-      zod: ^3.0.0
+      zod: 3.22.4
     peerDependenciesMeta:
       zod:
         optional: true
@@ -419,7 +422,7 @@ packages:
   /@asteasolutions/zod-to-openapi@6.4.0(zod@3.22.4):
     resolution: {integrity: sha512-8cxfF7AHHx2PqnN4Cd8/O8CBu/nVYJP9DpnfVLW3BFb66VJDnqI/CczZnkqMc3SNh6J9GiX7JbJ5T4BSP4HZ2Q==}
     peerDependencies:
-      zod: ^3.20.2
+      zod: 3.22.4
     dependencies:
       openapi3-ts: 4.2.2
       zod: 3.22.4
@@ -3590,7 +3593,7 @@ packages:
       react: ^18 || ^19 || ^19.0.0-rc
       sswr: ^2.1.0
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
-      zod: ^3.0.0
+      zod: 3.22.4
     peerDependenciesMeta:
       openai:
         optional: true
@@ -3939,7 +3942,7 @@ packages:
     resolution: {integrity: sha512-1MWD4va6QIxdwDDHRPXeCaIBYQjwMwl/914PHMuwWJNovRbrUOmnZ9pggvYw8hHUg++y1SBSmdrVtLZn1ZB55g==}
     hasBin: true
     peerDependencies:
-      zod: ^3.0.0
+      zod: 3.22.4
     dependencies:
       '@ai-sdk/provider': 0.0.11
       '@braintrust/core': 0.0.63
@@ -6185,7 +6188,7 @@ packages:
       workerd: 1.20241022.0
       ws: 8.18.0
       youch: 3.3.3
-      zod: 3.23.8
+      zod: 3.22.4
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -8566,16 +8569,13 @@ packages:
   /zod-to-json-schema@3.23.5(zod@3.22.4):
     resolution: {integrity: sha512-5wlSS0bXfF/BrL4jPAbz9da5hDlDptdEppYfe+x4eIJ7jioqKG9uUxOwPzqof09u/XeVdrgFu29lZi+8XNDJtA==}
     peerDependencies:
-      zod: ^3.23.3
+      zod: 3.22.4
     dependencies:
       zod: 3.22.4
     dev: false
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-
-  /zod@3.23.8:
-    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f:
     resolution: {tarball: https://codeload.github.com/openai/openai-realtime-api-beta/tar.gz/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f}

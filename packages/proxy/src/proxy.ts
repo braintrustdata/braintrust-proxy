@@ -43,7 +43,7 @@ import {
 import {
   Message,
   MessageRole,
-  responseFormatJsonSchemaSchema,
+  responseFormatSchema,
 } from "@braintrust/core/typespecs";
 import {
   ChatCompletion,
@@ -1124,40 +1124,50 @@ async function fetchOpenAI(
     });
   }
 
-  const supportsStructuredOutput =
-    bodyData.model.startsWith("gpt") ||
-    bodyData.model.startsWith("o1") ||
-    bodyData.model.startsWith("o3");
-  let isStructuredOutput = false;
-  if (!supportsStructuredOutput) {
-    const parsed = z
-      .object({
-        type: z.literal("json_schema"),
-        json_schema: responseFormatJsonSchemaSchema,
-      })
-      .safeParse(bodyData.response_format);
-    if (parsed.success) {
-      if (bodyData.tools || bodyData.function_call || bodyData.tool_choice) {
-        throw new ProxyBadRequestError(
-          "Tools are not supported with structured output",
-        );
-      }
-      isStructuredOutput = true;
-      bodyData.tools = [
-        {
-          type: "function",
-          function: {
-            name: "json",
-            description: "Output the result in JSON format",
-            parameters: parsed.data.json_schema.schema,
-            strict: parsed.data.json_schema.strict,
+  let isManagedStructuredOutput = false;
+  const responseFormatParsed = responseFormatSchema.safeParse(
+    bodyData.response_format,
+  );
+  if (responseFormatParsed.success) {
+    switch (responseFormatParsed.data.type) {
+      case "text":
+        // Together does not like response_format to be explicitly set to text.
+        // We delete it everywhere, since text is the default.
+        delete bodyData.response_format;
+        break;
+      case "json_schema":
+        if (
+          bodyData.model.startsWith("gpt") ||
+          bodyData.model.startsWith("o1") ||
+          bodyData.model.startsWith("o3") ||
+          secret.type === "fireworks"
+        ) {
+          // Supports structured output, so we do not need to manage it.
+          break;
+        }
+        if (bodyData.tools || bodyData.function_call || bodyData.tool_choice) {
+          throw new ProxyBadRequestError(
+            "Tools are not supported with structured output",
+          );
+        }
+        isManagedStructuredOutput = true;
+        bodyData.tools = [
+          {
+            type: "function",
+            function: {
+              name: "json",
+              description: "Output the result in JSON format",
+              parameters: responseFormatParsed.data.json_schema.schema,
+              strict: responseFormatParsed.data.json_schema.strict,
+            },
           },
-        },
-      ];
-      bodyData.tool_choice = { type: "function", function: { name: "json" } };
-      delete bodyData.response_format;
+        ];
+        bodyData.tool_choice = { type: "function", function: { name: "json" } };
+        delete bodyData.response_format;
+        break;
     }
   }
+
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1175,7 +1185,7 @@ async function fetchOpenAI(
   );
 
   let stream = proxyResponse.body;
-  if (isStructuredOutput && stream) {
+  if (isManagedStructuredOutput && stream) {
     if (bodyData.stream) {
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
@@ -1417,13 +1427,8 @@ async function fetchAnthropic(
   }
 
   let isStructuredOutput = false;
-  const parsed = z
-    .object({
-      type: z.literal("json_schema"),
-      json_schema: responseFormatJsonSchemaSchema,
-    })
-    .safeParse(oaiParams.response_format);
-  if (parsed.success) {
+  const parsed = responseFormatSchema.safeParse(oaiParams.response_format);
+  if (parsed.success && parsed.data.type === "json_schema") {
     isStructuredOutput = true;
     if (params.tools || params.tool_choice) {
       throw new ProxyBadRequestError(

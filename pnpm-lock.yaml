@@ -62,7 +62,7 @@ importers:
         version: 5.3.3
       wrangler:
         specifier: ^3.107.3
-        version: 3.107.3(@cloudflare/workers-types@4.20241022.0)
+        version: 3.107.3
 
   apis/node:
     dependencies:
@@ -8761,7 +8761,7 @@ packages:
       '@cloudflare/workerd-windows-64': 1.20250129.0
     dev: true
 
-  /wrangler@3.107.3(@cloudflare/workers-types@4.20241022.0):
+  /wrangler@3.107.3:
     resolution: {integrity: sha512-N9ZMDHZ+DI5/B0yclr3bG57U/Zw7wSzGdpO2l7j6+3q8yUf+4Fk0Rvneo2t8rjLewKlvqgt9D9siFuo8MXJ55Q==}
     engines: {node: '>=16.17.0'}
     hasBin: true
@@ -8772,7 +8772,6 @@ packages:
         optional: true
     dependencies:
       '@cloudflare/kv-asset-handler': 0.3.4
-      '@cloudflare/workers-types': 4.20241022.0
       '@esbuild-plugins/node-globals-polyfill': 0.2.3(esbuild@0.17.19)
       '@esbuild-plugins/node-modules-polyfill': 0.2.2(esbuild@0.17.19)
       blake3-wasm: 2.1.5

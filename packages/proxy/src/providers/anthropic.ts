@@ -333,7 +333,6 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
 ): ChatCompletion {
-  console.log("COMPLETION", JSON.stringify(completion, null, 2));
   const firstText = completion.content.find((c) => c.type === "text");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
   return {

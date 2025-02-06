@@ -259,6 +259,7 @@ function translateTools(tools: ChatCompletionTool[]): ToolConfiguration {
         name: tool.function.name,
         description: tool.function.description,
         inputSchema: {
+          // OpenAI and Converse differ in their JSON schema type.
           json: tool.function.parameters as any,
         },
       },

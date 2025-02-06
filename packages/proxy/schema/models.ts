@@ -402,6 +402,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.5 Sonnet v1.0",
   },
+  "anthropic.claude-3-5-haiku-20241022-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 4,
+    displayName: "Claude 3.5 Haiku v1.0",
+  },
   "anthropic.claude-3-haiku-20240307-v1:0": {
     format: "anthropic",
     flavor: "chat",

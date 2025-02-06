@@ -1065,22 +1065,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini Exp 1206",
     multimodal: true,
   },
-  "gemini-exp-1114": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    displayName: "Gemini Exp 1114",
-    multimodal: true,
-  },
-  "gemini-exp-1121": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    displayName: "Gemini Exp 1121",
-    multimodal: true,
-  },
   "gemini-1.5-pro-002": {
     format: "google",
     flavor: "chat",

@@ -999,18 +999,18 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 1.5 Flash",
     multimodal: true,
   },
-  "gemini-2.0-flash-exp": {
+  "gemini-2.0-flash-latest": {
     format: "google",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.1, // TODO: Appears to be free for now?
+    input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.4,
-    displayName: "Gemini 2.0 Flash Exp",
+    displayName: "Gemini 2.0 Flash",
     multimodal: true,
   },
   "gemini-2.0-flash-lite-preview-02-05": {
     format: "google",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.075, // TODO: Appears to be free for now?
+    input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     displayName: "Gemini 2.0 Flash Lite",
     multimodal: true,

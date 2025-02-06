@@ -228,6 +228,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/deepseek-v3": ["fireworks"],
   "accounts/fireworks/models/deepseek-r1": ["fireworks"],
   "anthropic.claude-3-5-sonnet-20241022-v2:0": ["bedrock"],
+  "anthropic.claude-3-5-haiku-20241022-v1:0": ["bedrock"],
   "anthropic.claude-3-opus-20240229-v1:0": ["bedrock"],
   "anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "anthropic.claude-3-sonnet-20240229-v1:0": ["bedrock"],

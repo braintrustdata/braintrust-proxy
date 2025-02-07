@@ -1033,7 +1033,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 1.5 Flash",
     multimodal: true,
   },
-  "gemini-2.0-flash-latest": {
+  "gemini-2.0-flash-001": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
@@ -1063,22 +1063,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
     displayName: "Gemini Exp 1206",
-    multimodal: true,
-  },
-  "gemini-exp-1114": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    displayName: "Gemini Exp 1114",
-    multimodal: true,
-  },
-  "gemini-exp-1121": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    displayName: "Gemini Exp 1121",
     multimodal: true,
   },
   "gemini-1.5-pro-002": {

@@ -40,7 +40,11 @@ import {
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { Message, MessageRole } from "@braintrust/core/typespecs";
+import {
+  Message,
+  MessageRole,
+  responseFormatSchema,
+} from "@braintrust/core/typespecs";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -62,6 +66,7 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { z } from "zod";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1119,6 +1124,50 @@ async function fetchOpenAI(
     });
   }
 
+  let isManagedStructuredOutput = false;
+  const responseFormatParsed = responseFormatSchema.safeParse(
+    bodyData.response_format,
+  );
+  if (responseFormatParsed.success) {
+    switch (responseFormatParsed.data.type) {
+      case "text":
+        // Together does not like response_format to be explicitly set to text.
+        // We delete it everywhere, since text is the default.
+        delete bodyData.response_format;
+        break;
+      case "json_schema":
+        if (
+          bodyData.model.startsWith("gpt") ||
+          bodyData.model.startsWith("o1") ||
+          bodyData.model.startsWith("o3") ||
+          secret.type === "fireworks"
+        ) {
+          // Supports structured output, so we do not need to manage it.
+          break;
+        }
+        if (bodyData.tools || bodyData.function_call || bodyData.tool_choice) {
+          throw new ProxyBadRequestError(
+            "Tools are not supported with structured output",
+          );
+        }
+        isManagedStructuredOutput = true;
+        bodyData.tools = [
+          {
+            type: "function",
+            function: {
+              name: "json",
+              description: "Output the result in JSON format",
+              parameters: responseFormatParsed.data.json_schema.schema,
+              strict: responseFormatParsed.data.json_schema.strict,
+            },
+          },
+        ];
+        bodyData.tool_choice = { type: "function", function: { name: "json" } };
+        delete bodyData.response_format;
+        break;
+    }
+  }
+
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1135,8 +1184,57 @@ async function fetchOpenAI(
         },
   );
 
+  let stream = proxyResponse.body;
+  if (isManagedStructuredOutput && stream) {
+    if (bodyData.stream) {
+      stream = stream.pipeThrough(
+        createEventStreamTransformer((data) => {
+          const chunk: ChatCompletionChunk = JSON.parse(data);
+          const choice = chunk.choices[0];
+          if (choice.delta.tool_calls) {
+            if (
+              choice.delta.tool_calls[0].function &&
+              choice.delta.tool_calls[0].function.arguments
+            ) {
+              choice.delta.content =
+                choice.delta.tool_calls[0].function.arguments;
+            }
+            delete choice.delta.tool_calls;
+          }
+
+          if (choice.finish_reason === "tool_calls") {
+            choice.finish_reason = "stop";
+          }
+          return {
+            data: JSON.stringify(chunk),
+            finished: false,
+          };
+        }),
+      );
+    } else {
+      const chunks: Uint8Array[] = [];
+      stream = stream.pipeThrough(
+        new TransformStream({
+          transform(chunk, _controller) {
+            chunks.push(chunk);
+          },
+          flush(controller) {
+            const data: ChatCompletion = JSON.parse(flattenChunks(chunks));
+            const choice = data.choices[0];
+            choice.message.content =
+              choice.message.tool_calls![0].function.arguments;
+            choice.finish_reason = "stop";
+            delete choice.message.tool_calls;
+            controller.enqueue(new TextEncoder().encode(JSON.stringify(data)));
+            controller.terminate();
+          },
+        }),
+      );
+    }
+  }
+
   return {
-    stream: proxyResponse.body,
+    stream,
     response: proxyResponse,
   };
 }
@@ -1328,6 +1426,25 @@ async function fetchAnthropic(
     );
   }
 
+  let isStructuredOutput = false;
+  const parsed = responseFormatSchema.safeParse(oaiParams.response_format);
+  if (parsed.success && parsed.data.type === "json_schema") {
+    isStructuredOutput = true;
+    if (params.tools || params.tool_choice) {
+      throw new ProxyBadRequestError(
+        "Structured output is not supported with tools",
+      );
+    }
+    params.tools = [
+      {
+        name: "json",
+        description: "Output the result in JSON format",
+        input_schema: parsed.data.json_schema.schema,
+      },
+    ];
+    params.tool_choice = { type: "tool", name: "json" };
+  }
+
   if (secret.type === "bedrock") {
     return fetchBedrockAnthropic({
       secret,
@@ -1337,6 +1454,7 @@ async function fetchAnthropic(
         system,
       },
       isFunction,
+      isStructuredOutput,
     });
   }
 
@@ -1358,7 +1476,12 @@ async function fetchAnthropic(
       let usage: Partial<CompletionUsage> = {};
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
-          const ret = anthropicEventToOpenAIEvent(idx, usage, JSON.parse(data));
+          const ret = anthropicEventToOpenAIEvent(
+            idx,
+            usage,
+            JSON.parse(data),
+            isStructuredOutput,
+          );
           idx += 1;
           return {
             data: ret.event && JSON.stringify(ret.event),
@@ -1379,7 +1502,11 @@ async function fetchAnthropic(
             controller.enqueue(
               new TextEncoder().encode(
                 JSON.stringify(
-                  anthropicCompletionToOpenAICompletion(data, isFunction),
+                  anthropicCompletionToOpenAICompletion(
+                    data,
+                    isFunction,
+                    isStructuredOutput,
+                  ),
                 ),
               ),
             );

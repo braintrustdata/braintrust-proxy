@@ -192,6 +192,7 @@ export function anthropicEventToOpenAIEvent(
   idx: number,
   usage: Partial<CompletionUsage>,
   eventU: unknown,
+  isStructuredOutput: boolean,
 ): { event: ChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
@@ -240,17 +241,21 @@ export function anthropicEventToOpenAIEvent(
         )}`,
       );
     }
-    tool_calls = [
-      {
-        id: event.content_block.id,
-        index: event.index,
-        type: "function",
-        function: {
-          name: event.content_block.name,
-          arguments: "",
+    if (isStructuredOutput) {
+      content = "";
+    } else {
+      tool_calls = [
+        {
+          id: event.content_block.id,
+          index: event.index,
+          type: "function",
+          function: {
+            name: event.content_block.name,
+            arguments: "",
+          },
         },
-      },
-    ];
+      ];
+    }
   } else if (
     event.type === "content_block_delta" &&
     event.delta.type === "text_delta"
@@ -260,14 +265,18 @@ export function anthropicEventToOpenAIEvent(
     event.type === "content_block_delta" &&
     event.delta.type === "input_json_delta"
   ) {
-    tool_calls = [
-      {
-        index: event.index,
-        function: {
-          arguments: event.delta.partial_json,
+    if (isStructuredOutput) {
+      content = event.delta.partial_json;
+    } else {
+      tool_calls = [
+        {
+          index: event.index,
+          function: {
+            arguments: event.delta.partial_json,
+          },
         },
-      },
-    ];
+      ];
+    }
   } else if (event.type === "message_delta") {
     if (event.usage) {
       updateUsage(event.usage, usage);
@@ -279,7 +288,11 @@ export function anthropicEventToOpenAIEvent(
           {
             delta: {},
             finish_reason:
-              event.delta.stop_reason === "end_turn" ? "stop" : "tool_calls",
+              isStructuredOutput && event.delta.stop_reason === "tool_use"
+                ? "stop"
+                : event.delta.stop_reason === "end_turn"
+                  ? "stop"
+                  : "tool_calls",
             index: 0,
           },
         ],
@@ -314,7 +327,7 @@ export function anthropicEventToOpenAIEvent(
         {
           delta: {
             content,
-            tool_calls,
+            tool_calls: isStructuredOutput ? undefined : tool_calls,
             role: "assistant",
           },
           finish_reason: null, // Anthropic places this in a separate stream event.
@@ -332,6 +345,7 @@ export function anthropicEventToOpenAIEvent(
 export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
+  isStructuredOutput: boolean,
 ): ChatCompletion {
   const firstText = completion.content.find((c) => c.type === "text");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
@@ -340,15 +354,19 @@ export function anthropicCompletionToOpenAICompletion(
     choices: [
       {
         logprobs: null,
-        finish_reason: anthropicFinishReason(completion.stop_reason) || "stop",
+        finish_reason:
+          isStructuredOutput && firstTool
+            ? "stop"
+            : anthropicFinishReason(completion.stop_reason) || "stop",
         index: 0,
         message: {
           role: "assistant",
-          // Anthropic inserts extra whitespace at the beginning of the completion
-          content: firstText ? firstText.text.trimStart() : null,
-          tool_calls: isFunction
-            ? undefined
-            : firstTool
+          content:
+            isStructuredOutput && firstTool
+              ? JSON.stringify(firstTool.input)
+              : firstText?.text.trimStart() ?? null,
+          tool_calls:
+            !isStructuredOutput && !isFunction && firstTool
               ? [
                   {
                     id: firstTool.id,

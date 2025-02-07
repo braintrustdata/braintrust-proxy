@@ -122,14 +122,35 @@ export function googleEventToOpenAIChatEvent(
     event: data.candidates
       ? {
           id: uuidv4(),
-          choices: (data.candidates || []).map((candidate) => ({
-            index: candidate.index,
-            delta: {
-              role: "assistant",
-              content: candidate.content.parts[0].text || "",
-            },
-            finish_reason: translateFinishReason(candidate.finishReason),
-          })),
+          choices: (data.candidates || []).map((candidate) => {
+            console.log("candidate", candidate);
+            const firstText = candidate.content.parts.find(
+              (p) => p.text !== undefined,
+            );
+            const toolCalls = candidate.content.parts
+              .filter((p) => p.functionCall !== undefined)
+              .map((p, i) => ({
+                id: uuidv4(),
+                type: "function" as const,
+                function: {
+                  name: p.functionCall.name,
+                  arguments: JSON.stringify(p.functionCall.args),
+                },
+                index: i,
+              }));
+            return {
+              index: 0,
+              delta: {
+                role: "assistant",
+                content: firstText?.text ?? "",
+                tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+              },
+              finish_reason:
+                toolCalls.length > 0
+                  ? "tool_calls"
+                  : translateFinishReason(candidate.finishReason),
+            };
+          }),
           created: getTimestampInSeconds(),
           model,
           object: "chat.completion.chunk",
@@ -143,7 +164,9 @@ export function googleEventToOpenAIChatEvent(
         }
       : null,
     finished:
-      false /* all of the events seem to have STOP as the finish reason */,
+      data.candidates?.every(
+        (candidate) => candidate.finishReason !== undefined,
+      ) ?? false,
   };
 }
 
@@ -153,16 +176,35 @@ export function googleCompletionToOpenAICompletion(
 ): ChatCompletion {
   return {
     id: uuidv4(),
-    choices: (data.candidates || []).map((candidate) => ({
-      logprobs: null,
-      index: candidate.index,
-      message: {
-        role: "assistant",
-        content: candidate.content.parts[0].text || "",
-        refusal: null,
-      },
-      finish_reason: translateFinishReason(candidate.finishReason) || "stop",
-    })),
+    choices: (data.candidates || []).map((candidate) => {
+      const firstText = candidate.content.parts.find(
+        (p) => p.text !== undefined,
+      );
+      const toolCalls = candidate.content.parts
+        .filter((p) => p.functionCall !== undefined)
+        .map((p) => ({
+          id: uuidv4(),
+          type: "function" as const,
+          function: {
+            name: p.functionCall.name,
+            arguments: JSON.stringify(p.functionCall.args),
+          },
+        }));
+      return {
+        logprobs: null,
+        index: candidate.index,
+        message: {
+          role: "assistant",
+          content: firstText?.text ?? "",
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+          refusal: null,
+        },
+        finish_reason:
+          toolCalls.length > 0
+            ? "tool_calls"
+            : translateFinishReason(candidate.finishReason) || "stop",
+      };
+    }),
     created: getTimestampInSeconds(),
     model,
     object: "chat.completion",

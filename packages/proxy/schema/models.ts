@@ -1531,6 +1531,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // BEDROCK MODELS
+  "amazon.nova-pro-v1:0": {
+    format: "converse",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 3.2,
+    displayName: "Nova Pro",
+  },
+  "amazon.nova-lite-v1:0": {
+    format: "converse",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.06,
+    output_cost_per_mil_tokens: 0.24,
+    displayName: "Nova Lite",
+  },
   "amazon.nova-micro-v1:0": {
     format: "converse",
     flavor: "chat",
@@ -1606,22 +1622,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.25,
     output_cost_per_mil_tokens: 1.25,
     displayName: "Claude 3 Haiku",
-  },
-  "amazon.nova-pro-v1:0": {
-    format: "converse",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 3.2,
-    displayName: "Nova Pro",
-  },
-  "amazon.nova-lite-v1:0": {
-    format: "converse",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.06,
-    output_cost_per_mil_tokens: 0.24,
-    displayName: "Nova Lite",
   },
   "us.meta.llama3-3-70b-instruct-v1:0": {
     format: "converse",

@@ -65,12 +65,7 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
-import {
-  ChatCompletionCreateParamsBase,
-  ChatCompletionTool,
-  ChatCompletionToolChoiceOption,
-} from "openai/resources/chat/completions";
-import { z } from "zod";
+import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
 type CachedData = {
   headers: Record<string, string>;

@@ -461,6 +461,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // PERPLEXITY MODELS
+  sonar: {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Sonar",
+  },
   "pplx-7b-chat": {
     format: "openai",
     flavor: "chat",
@@ -678,6 +685,29 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Llama 3 8B Instruct Lite",
   },
 
+  // Together Gemma.
+  "google/gemma-2-27b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Gemma-2 Instruct (27B)",
+  },
+  "google/gemma-2-9b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Gemma-2 Instruct (9B)",
+  },
+  "google/gemma-2b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Gemma Instruct (2B)",
+  },
+
   // Together DeepSeek.
   "deepseek-ai/DeepSeek-V3": {
     format: "openai",
@@ -879,32 +909,112 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "mistral-large-latest": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 9,
-    displayName: "Mistral Large 2",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+    displayName: "Mistral Large",
+  },
+  "mistral-large-2411": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+  },
+  "pixtral-large-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+    displayName: "Pixtral Large",
+    multimodal: true,
+  },
+  "pixtral-large-2411": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+    multimodal: true,
+  },
+  "mistral-small-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "Mistral Small",
+  },
+  "mistral-small-2501": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.3,
+  },
+  "codestral-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.9,
+    displayName: "Codestral",
+  },
+  "codestral-2501": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  "ministral-8b-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Ministral 8B",
+  },
+  "ministral-8b-2410": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+  },
+  "ministral-3b-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.04,
+    output_cost_per_mil_tokens: 0.04,
+    displayName: "Ministral 3B",
+  },
+  "ministral-3b-2410": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.04,
+    output_cost_per_mil_tokens: 0.04,
   },
   "pixtral-12b-2409": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.15,
     output_cost_per_mil_tokens: 0.15,
-    displayName: "Pixtral 12b 24096",
+    displayName: "Pixtral 12B",
     multimodal: true,
   },
   "open-mistral-nemo": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.3,
-    output_cost_per_mil_tokens: 0.3,
-    displayName: "Mistral Nemo",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.15,
+    displayName: "Mistral NeMo",
   },
-  "codestral-latest": {
+  "open-mistral-nemo-2407": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 1,
-    output_cost_per_mil_tokens: 3,
-    displayName: "Codestral",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.15,
   },
+  "open-codestral-mamba": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "Codestral Mamba",
+  },
+  // Mistral deprecated.
   // "mistral-embed": {
   //   format: "openai",
   //   flavor: "chat",
@@ -918,13 +1028,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 6,
     displayName: "Mixtral 8x22B",
-  },
-  "open-codestral-mamba": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.6,
-    output_cost_per_mil_tokens: 0.6,
-    displayName: "Codestral Mamba",
   },
   "mistral-tiny": {
     format: "openai",
@@ -949,19 +1052,98 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GROQ MODELS
+  "gemma2-9b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Gemma 2 9B",
+  },
   "llama-3.3-70b-versatile": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.59,
     output_cost_per_mil_tokens: 0.79,
-    displayName: "LLaMA 3.3 70b Versatile",
+    displayName: "Llama 3.3 70B Versatile 128k",
   },
   "llama-3.1-8b-instant": {
     format: "openai",
     flavor: "chat",
-    displayName: "LLaMA 3.1 8b Instant",
-    // NOTE: At time of writing, costs are not available
-    // for these models.
+    input_cost_per_mil_tokens: 0.05,
+    output_cost_per_mil_tokens: 0.08,
+    displayName: "Llama 3.1 8B Instant 128k",
+  },
+  "llama3-70b-8192": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.64,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Llama 3 70B 8k",
+  },
+  "llama3-8b-8192": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Llama 3 8B 8k",
+  },
+  "mixtral-8x7b-32768": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.27,
+    output_cost_per_mil_tokens: 0.27,
+    displayName: "Mixtral 8x7B 32k",
+  },
+  // Groq experimental.
+  "deepseek-r1-distill-llama-70b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.23,
+    output_cost_per_mil_tokens: 0.69,
+    displayName: "DeepSeek R1 Distill Llama 70b",
+  },
+  "llama-3.3-70b-specdec": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.59,
+    output_cost_per_mil_tokens: 0.99,
+    displayName: "Llama 3.3 70B SpecDec 8k",
+  },
+  "llama-3.2-90b-vision-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+    displayName: "Llama 3.2 90B Vision 8k (Preview)",
+  },
+  "llama-3.2-11b-vision-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.18,
+    output_cost_per_mil_tokens: 0.18,
+    displayName: "Llama 3.2 11B Vision 8k (Preview)",
+  },
+  "llama-3.2-3b-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.06,
+    output_cost_per_mil_tokens: 0.06,
+    displayName: "Llama 3.2 3B (Preview) 8k",
+  },
+  "llama-3.2-1b-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.04,
+    output_cost_per_mil_tokens: 0.04,
+    displayName: "Llama 3.2 1B (Preview) 8k",
+  },
+  // Groq deprecated.
+  "gemma-7b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Gemma 7b IT",
   },
   "llama-3.1-70b-versatile": {
     format: "openai",
@@ -973,47 +1155,12 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     displayName: "LLaMA 3.1 405b Reasoning",
   },
-  "gemma-7b-it": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.1,
-    output_cost_per_mil_tokens: 0.1,
-    displayName: "Gemma 7b IT",
-  },
-  "llama3-8b-8192": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.1,
-    output_cost_per_mil_tokens: 0.1,
-    displayName: "LLaMA 3 8b 8192",
-  },
-  "llama3-70b-8192": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.64,
-    output_cost_per_mil_tokens: 0.8,
-    displayName: "LLaMA 3 70b 8192",
-  },
   "llama2-70b-4096": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.7,
     output_cost_per_mil_tokens: 0.8,
     displayName: "LLaMA 2 70b 4096",
-  },
-  "mixtral-8x7b-32768": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.27,
-    output_cost_per_mil_tokens: 0.27,
-    displayName: "Mixtral 8x7B 32768",
-  },
-  "deepseek-r1-distill-llama-70b": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.23,
-    output_cost_per_mil_tokens: 0.69,
-    displayName: "DeepSeek R1 Distill Llama 70b",
   },
 
   // LEPTON MODELS
@@ -1121,19 +1268,19 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // CEREBRAS MODELS
+  "llama3.3-70b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.3 70B",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+  },
   "llama3.1-8b": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.1 8B",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.1,
-  },
-  "llama3.1-70b": {
-    format: "openai",
-    flavor: "chat",
-    displayName: "Llama 3.1 70B",
-    input_cost_per_mil_tokens: 0.6,
-    output_cost_per_mil_tokens: 0.6,
   },
 
   // GOOGLE MODELS
@@ -1279,20 +1426,59 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // XAI MODELS
-  "grok-beta": {
+  "grok-2-vision": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 5,
-    output_cost_per_mil_tokens: 15,
-    displayName: "Grok Beta",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    displayName: "Grok 2 Vision",
   },
-
+  "grok-2-vision-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+  },
+  "grok-2-vision-1212": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+  },
+  "grok-2": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    displayName: "Grok 2",
+  },
   "grok-2-latest": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 10,
-    displayName: "Grok 2 Latest",
+  },
+  "grok-2-1212": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+  },
+  "grok-vision-beta": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 15,
+    multimodal: true,
+  },
+  "grok-beta": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 15,
   },
 
   // BEDROCK MODELS
@@ -1374,19 +1560,19 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 1.5,
     displayName: "Titan Text Premier",
   },
-  "amazon.titan-text-lite-v1": {
-    format: "converse",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.15,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Titan Text Lite",
-  },
   "amazon.titan-text-express-v1": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.2,
     output_cost_per_mil_tokens: 0.6,
     displayName: "Titan Text Express",
+  },
+  "amazon.titan-text-lite-v1": {
+    format: "converse",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Titan Text Lite",
   },
   "us.meta.llama3-3-70b-instruct-v1:0": {
     format: "converse",

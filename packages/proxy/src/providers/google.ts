@@ -53,28 +53,67 @@ export async function openAIMessagesToGoogleMessages(
   messages: Message[],
 ): Promise<Content[]> {
   // First, do a basic mapping
+  console.log("messages", JSON.stringify(messages, null, 2));
   const content: Content[] = await Promise.all(
-    messages.map(
-      async (m: Message): Promise<Content> => ({
-        parts: await openAIContentToGoogleContent(m.content),
-        // TODO: Add tool call support
-        role: m.role === "assistant" ? "model" : m.role,
-      }),
-    ),
+    messages.map(async (m) => {
+      const contentParts =
+        m.role === "tool" ? [] : await openAIContentToGoogleContent(m.content);
+      const toolCallParts: Part[] =
+        m.role === "assistant"
+          ? m.tool_calls?.map((t) => ({
+              functionCall: {
+                name: t.id,
+                args: JSON.parse(t.function.arguments),
+              },
+            })) ?? []
+          : [];
+      const toolResponseParts: Part[] =
+        m.role === "tool"
+          ? [
+              {
+                functionResponse: {
+                  name: m.tool_call_id,
+                  response: {
+                    name: m.tool_call_id,
+                    content: JSON.parse(m.content),
+                  },
+                },
+              },
+            ]
+          : [];
+      return {
+        parts: [...contentParts, ...toolCallParts, ...toolResponseParts],
+        role:
+          m.role === "assistant"
+            ? "model"
+            : m.role === "tool"
+              ? "user"
+              : m.role,
+      };
+    }),
   );
+  console.log("content", JSON.stringify(content, null, 2));
 
-  // Then, flatten each content item into an individual message
-  const flattenedContent: Content[] = content.flatMap((c) =>
-    c.parts.map((p) => ({
-      role: c.role,
-      parts: [p],
-    })),
-  );
+  const flattenedContent: Content[] = [];
+  for (let i = 0; i < content.length; i++) {
+    if (
+      flattenedContent.length > 0 &&
+      flattenedContent[flattenedContent.length - 1].role === content[i].role
+    ) {
+      flattenedContent[flattenedContent.length - 1].parts = flattenedContent[
+        flattenedContent.length - 1
+      ].parts.concat(content[i].parts);
+    } else {
+      flattenedContent.push(content[i]);
+    }
+  }
+  console.log("flattenedContent", JSON.stringify(flattenedContent, null, 2));
 
   // Finally, sort the messages so that:
   // 1. All images are up front
   // 2. The system prompt.
   // 3. Then all user messages' text parts
+  // The EcmaScript spec requires the sort to be stable, so this is safe.
   const sortedContent: Content[] = flattenedContent.sort((a, b) => {
     if (a.parts[0].inlineData && !b.parts[0].inlineData) {
       return -1;
@@ -90,6 +129,7 @@ export async function openAIMessagesToGoogleMessages(
 
     return 0;
   });
+  console.log("sortedContent", JSON.stringify(sortedContent, null, 2));
 
   return sortedContent;
 }

@@ -1685,16 +1685,23 @@ async function fetchGoogle(
   delete headers["authorization"];
   headers["content-type"] = "application/json";
 
+  if (
+    oaiParams.response_format?.type === "json_object" ||
+    oaiParams.response_format?.type === "json_schema"
+  ) {
+    params.response_mime_type = "application/json";
+  }
+  if (oaiParams.response_format?.type === "json_schema") {
+    params.response_schema = pruneSchema(
+      oaiParams.response_format.json_schema.schema,
+    );
+  }
   const body = JSON.stringify({
-    contents: [content],
+    contents: content,
     generationConfig: params,
     ...googleTools(params),
   });
-  console.log("fetching google:", {
-    fullURL: fullURL.toString(),
-    headers,
-    body,
-  });
+  console.log("fetching google body:", body);
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,

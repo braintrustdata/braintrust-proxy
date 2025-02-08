@@ -24,6 +24,7 @@ export const ModelSchema = z.object({
   displayName: z.string().nullish(),
   o1_like: z.boolean().nullish(),
   experimental: z.boolean().nullish(),
+  deprecated: z.boolean().nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
@@ -197,12 +198,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 30,
     output_cost_per_mil_tokens: 60,
   },
+  // OpenAI deprecated.
   "gpt-3.5-turbo-0125": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 1.5,
     displayName: "GPT 3.5T 0125",
+    deprecated: true,
   },
   "gpt-3.5-turbo": {
     format: "openai",
@@ -210,6 +213,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 1.5,
     displayName: "GPT 3.5T",
+    deprecated: true,
   },
   "gpt-35-turbo": {
     format: "openai",
@@ -217,6 +221,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 1.5,
     displayName: "GPT 3.5T",
+    deprecated: true,
   },
   "gpt-3.5-turbo-1106": {
     format: "openai",
@@ -224,6 +229,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1,
     output_cost_per_mil_tokens: 2,
     displayName: "GPT 3.5T 1106",
+    deprecated: true,
   },
   "gpt-3.5-turbo-instruct": {
     format: "openai",
@@ -231,6 +237,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.5,
     output_cost_per_mil_tokens: 2,
     displayName: "GPT 3.5T Instruct",
+    deprecated: true,
   },
   "gpt-3.5-turbo-instruct-0914": {
     format: "openai",
@@ -238,6 +245,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.5,
     output_cost_per_mil_tokens: 2,
     displayName: "GPT 3.5T Instruct 0914",
+    deprecated: true,
   },
   "gpt-4-32k": {
     format: "openai",
@@ -245,6 +253,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 60,
     output_cost_per_mil_tokens: 120,
     displayName: "GPT 4 32k",
+    deprecated: true,
   },
   "gpt-4-32k-0613": {
     format: "openai",
@@ -252,6 +261,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 60,
     output_cost_per_mil_tokens: 120,
     displayName: "GPT 4 32k 0613",
+    deprecated: true,
   },
   "gpt-4-32k-0314": {
     format: "openai",
@@ -259,6 +269,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 60,
     output_cost_per_mil_tokens: 120,
     displayName: "GPT 4 32k 0314",
+    deprecated: true,
   },
   "gpt-4-vision-preview": {
     format: "openai",
@@ -267,6 +278,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
     displayName: "GPT 4 Vision-Preview",
+    deprecated: true,
   },
   "gpt-4-1106-vision-preview": {
     format: "openai",
@@ -275,6 +287,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
     displayName: "GPT 4 1106 Vision-Preview",
+    deprecated: true,
   },
   "gpt-3.5-turbo-16k": {
     format: "openai",
@@ -282,6 +295,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 4,
     displayName: "GPT 3.5T 16k",
+    deprecated: true,
   },
   "gpt-35-turbo-16k": {
     format: "openai",
@@ -289,6 +303,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 4,
     displayName: "GPT 3.5T 16k",
+    deprecated: true,
   },
   "gpt-3.5-turbo-16k-0613": {
     format: "openai",
@@ -296,6 +311,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 4,
     displayName: "GPT 3.5T 16k 0613",
+    deprecated: true,
   },
   "gpt-3.5-turbo-0613": {
     format: "openai",
@@ -303,6 +319,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.5,
     output_cost_per_mil_tokens: 2,
     displayName: "GPT 3.5T 0613",
+    deprecated: true,
   },
   "gpt-3.5-turbo-0301": {
     format: "openai",
@@ -310,6 +327,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.5,
     output_cost_per_mil_tokens: 2,
     displayName: "GPT 3.5T 0301",
+    deprecated: true,
   },
   "text-davinci-003": {
     format: "openai",
@@ -317,6 +335,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 2,
     displayName: "Text Davinci 003",
+    deprecated: true,
   },
 
   // ANTHROPIC MODELS
@@ -400,12 +419,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.25,
     output_cost_per_mil_tokens: 1.25,
   },
+  // Anthropic deprecated.
   "claude-instant-1.2": {
     format: "anthropic",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 2.4,
     displayName: "Claude Instant 1.2",
+    deprecated: true,
   },
   "claude-instant-1": {
     format: "anthropic",
@@ -413,6 +434,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 2.4,
     displayName: "Claude Instant 1",
+    deprecated: true,
   },
   "claude-2.1": {
     format: "anthropic",
@@ -420,6 +442,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 8,
     output_cost_per_mil_tokens: 24,
     displayName: "Claude 2.1",
+    deprecated: true,
   },
   "claude-2.0": {
     format: "anthropic",
@@ -427,6 +450,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 8,
     output_cost_per_mil_tokens: 24,
     displayName: "Claude 2.0",
+    deprecated: true,
   },
   "claude-2": {
     format: "anthropic",
@@ -434,6 +458,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 8,
     output_cost_per_mil_tokens: 24,
     displayName: "Claude 2",
+    deprecated: true,
   },
 
   // REPLICATE MODELS
@@ -848,6 +873,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
     displayName: "Llama 3 70b",
+    deprecated: true,
   },
   "meta-llama/Llama-3-8b-hf": {
     format: "openai",
@@ -855,6 +881,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.2,
     output_cost_per_mil_tokens: 0.2,
     displayName: "Llama 3 8b HF",
+    deprecated: true,
   },
   "meta-llama/Llama-2-70b-chat-hf": {
     format: "openai",
@@ -862,6 +889,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
     displayName: "Llama 2 70b Chat HF",
+    deprecated: true,
   },
   "deepseek-ai/deepseek-coder-33b-instruct": {
     format: "openai",
@@ -869,6 +897,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 0.8,
     displayName: "Deepseek Coder 33b Instruct",
+    deprecated: true,
   },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
     format: "openai",
@@ -876,6 +905,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 0.8,
     displayName: "Nous Hermes 2 Yi 34B",
+    deprecated: true,
   },
   "mistralai/mixtral-8x7b-32kseqlen": {
     format: "openai",
@@ -883,6 +913,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.06,
     output_cost_per_mil_tokens: 0.06,
     displayName: "Mixtral 8x7B 32k",
+    deprecated: true,
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1-json": {
     format: "openai",
@@ -890,6 +921,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.6,
     output_cost_per_mil_tokens: 0.6,
     displayName: "Mixtral 8x7B Instruct v0.1 JSON",
+    deprecated: true,
   },
   "mistralai/Mixtral-8x22B": {
     format: "openai",
@@ -897,6 +929,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.08,
     output_cost_per_mil_tokens: 1.08,
     displayName: "Mixtral 8x22B",
+    deprecated: true,
   },
 
   // MISTRAL MODELS
@@ -1022,6 +1055,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 6,
     displayName: "Mixtral 8x22B",
+    deprecated: true,
   },
   "mistral-tiny": {
     format: "openai",
@@ -1029,6 +1063,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.15,
     output_cost_per_mil_tokens: 0.46,
     displayName: "Mistral Tiny",
+    deprecated: true,
   },
   "mistral-small": {
     format: "openai",
@@ -1036,6 +1071,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1,
     output_cost_per_mil_tokens: 3,
     displayName: "Mistral Small",
+    deprecated: true,
   },
   "mistral-medium": {
     format: "openai",
@@ -1043,6 +1079,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2.75,
     output_cost_per_mil_tokens: 8.1,
     displayName: "Mistral Medium",
+    deprecated: true,
   },
 
   // GROQ MODELS
@@ -1146,16 +1183,19 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.1,
     displayName: "Gemma 7b IT",
+    deprecated: true,
   },
   "llama-3.1-70b-versatile": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 70b Versatile",
+    deprecated: true,
   },
   "llama-3.1-405b-reasoning": {
     format: "openai",
     flavor: "chat",
     displayName: "LLaMA 3.1 405b Reasoning",
+    deprecated: true,
   },
   "llama2-70b-4096": {
     format: "openai",
@@ -1163,6 +1203,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.7,
     output_cost_per_mil_tokens: 0.8,
     displayName: "LLaMA 2 70b 4096",
+    deprecated: true,
   },
 
   // LEPTON MODELS
@@ -1465,6 +1506,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 1.5,
     displayName: "Gemini 1.0 Pro",
+    deprecated: true,
   },
   "gemini-pro": {
     format: "google",
@@ -1472,6 +1514,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.25,
     output_cost_per_mil_tokens: 0.5,
     displayName: "Gemini Pro",
+    deprecated: true,
   },
 
   // XAI MODELS

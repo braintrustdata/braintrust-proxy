@@ -461,13 +461,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // PERPLEXITY MODELS
-  sonar: {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.1,
-    output_cost_per_mil_tokens: 0.1,
-    displayName: "Sonar",
-  },
   "pplx-7b-chat": {
     format: "openai",
     flavor: "chat",
@@ -1226,6 +1219,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 3,
   },
+  "accounts/fireworks/models/llama-v3p1-405b-instruct-long": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 405B Instruct Long",
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 3,
+  },
   "accounts/fireworks/models/llama-v3p1-70b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -1254,10 +1254,38 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 8,
     output_cost_per_mil_tokens: 8,
   },
+  "accounts/fireworks/models/qwen2p5-72b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Qwen2.5 72B Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
   "accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
     format: "openai",
     flavor: "chat",
-    displayName: "Qwen2.5-Coder-32B-Instruct",
+    displayName: "Qwen2.5 Coder 32B Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Qwen QwQ 32B Preview",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  "accounts/fireworks/models/qwen2-vl-72b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Qwen2 VL 72B Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  "accounts/fireworks/models/mistral-small-24b-instruct-2501": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mistral Small 3 Instruct",
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
   },
@@ -1267,6 +1295,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Mixtral MoE 8x22B Instruct",
     input_cost_per_mil_tokens: 1.2,
     output_cost_per_mil_tokens: 1.2,
+  },
+  "accounts/fireworks/models/mixtral-8x7b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mixtral MoE 8x7B Instruct",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 0.5,
   },
 
   // CEREBRAS MODELS

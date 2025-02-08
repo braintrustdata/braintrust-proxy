@@ -23,6 +23,7 @@ export const ModelSchema = z.object({
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
   o1_like: z.boolean().nullish(),
+  experimental: z.boolean().nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
@@ -701,6 +702,50 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemma Instruct (2B)",
   },
 
+  // Together Mistral.
+  "mistralai/Mistral-Small-24B-Instruct-2501": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Mistral Small (24B) Instruct 25.01",
+  },
+  "mistralai/Mistral-7B-Instruct-v0.3": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Mistral (7B) Instruct v0.3",
+  },
+  "mistralai/Mistral-7B-Instruct-v0.2": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Mistral (7B) Instruct v0.2",
+  },
+  "mistralai/Mistral-7B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Mistral (7B) Instruct",
+  },
+  "mistralai/Mixtral-8x22B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "Mixtral 8x22B Instruct v0.1",
+  },
+  "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "Mixtral 8x7B Instruct v0.1",
+  },
+
   // Together DeepSeek.
   "deepseek-ai/DeepSeek-V3": {
     format: "openai",
@@ -794,50 +839,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
     displayName: "Qwen 2 Instruct (72B)",
-  },
-
-  // Together Mistral.
-  "mistralai/Mistral-Small-24B-Instruct-2501": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 0.8,
-    displayName: "Mistral Small (24B) Instruct 25.01",
-  },
-  "mistralai/Mistral-7B-Instruct-v0.3": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Mistral (7B) Instruct v0.3",
-  },
-  "mistralai/Mistral-7B-Instruct-v0.2": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Mistral (7B) Instruct v0.2",
-  },
-  "mistralai/Mistral-7B-Instruct-v0.1": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Mistral (7B) Instruct",
-  },
-  "mistralai/Mixtral-8x22B-Instruct-v0.1": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1.2,
-    output_cost_per_mil_tokens: 1.2,
-    displayName: "Mixtral 8x22B Instruct v0.1",
-  },
-  "mistralai/Mixtral-8x7B-Instruct-v0.1": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.6,
-    output_cost_per_mil_tokens: 0.6,
-    displayName: "Mixtral 8x7B Instruct v0.1",
   },
 
   // Together deprecated.
@@ -1045,13 +1046,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GROQ MODELS
-  "gemma2-9b-it": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Gemma 2 9B",
-  },
   "llama-3.3-70b-versatile": {
     format: "openai",
     flavor: "chat",
@@ -1080,6 +1074,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.1,
     displayName: "Llama 3 8B 8k",
   },
+  "gemma2-9b-it": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    displayName: "Gemma 2 9B",
+  },
   "mixtral-8x7b-32768": {
     format: "openai",
     flavor: "chat",
@@ -1094,6 +1095,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.23,
     output_cost_per_mil_tokens: 0.69,
     displayName: "DeepSeek R1 Distill Llama 70b",
+    experimental: true,
   },
   "llama-3.3-70b-specdec": {
     format: "openai",
@@ -1101,6 +1103,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.59,
     output_cost_per_mil_tokens: 0.99,
     displayName: "Llama 3.3 70B SpecDec 8k",
+    experimental: true,
   },
   "llama-3.2-90b-vision-preview": {
     format: "openai",
@@ -1109,6 +1112,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.9,
     displayName: "Llama 3.2 90B Vision 8k (Preview)",
     multimodal: true,
+    experimental: true,
   },
   "llama-3.2-11b-vision-preview": {
     format: "openai",
@@ -1117,6 +1121,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.18,
     displayName: "Llama 3.2 11B Vision 8k (Preview)",
     multimodal: true,
+    experimental: true,
   },
   "llama-3.2-3b-preview": {
     format: "openai",
@@ -1124,6 +1129,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.06,
     output_cost_per_mil_tokens: 0.06,
     displayName: "Llama 3.2 3B (Preview) 8k",
+    experimental: true,
   },
   "llama-3.2-1b-preview": {
     format: "openai",
@@ -1131,6 +1137,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.04,
     output_cost_per_mil_tokens: 0.04,
     displayName: "Llama 3.2 1B (Preview) 8k",
+    experimental: true,
   },
   // Groq deprecated.
   "gemma-7b-it": {
@@ -1240,6 +1247,27 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.2,
     output_cost_per_mil_tokens: 0.2,
   },
+  "accounts/fireworks/models/mistral-small-24b-instruct-2501": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mistral Small 3 Instruct",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  "accounts/fireworks/models/mixtral-8x22b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mixtral MoE 8x22B Instruct",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+  },
+  "accounts/fireworks/models/mixtral-8x7b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mixtral MoE 8x7B Instruct",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 0.5,
+  },
   "accounts/fireworks/models/deepseek-v3": {
     format: "openai",
     flavor: "chat",
@@ -1282,27 +1310,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
   },
-  "accounts/fireworks/models/mistral-small-24b-instruct-2501": {
-    format: "openai",
-    flavor: "chat",
-    displayName: "Mistral Small 3 Instruct",
-    input_cost_per_mil_tokens: 0.9,
-    output_cost_per_mil_tokens: 0.9,
-  },
-  "accounts/fireworks/models/mixtral-8x22b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    displayName: "Mixtral MoE 8x22B Instruct",
-    input_cost_per_mil_tokens: 1.2,
-    output_cost_per_mil_tokens: 1.2,
-  },
-  "accounts/fireworks/models/mixtral-8x7b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    displayName: "Mixtral MoE 8x7B Instruct",
-    input_cost_per_mil_tokens: 0.5,
-    output_cost_per_mil_tokens: 0.5,
-  },
 
   // CEREBRAS MODELS
   "llama3.3-70b": {
@@ -1320,7 +1327,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.1,
   },
 
-  // GOOGLE MODELS
+  // GEMINI MODELS
   "gemini-2.0-flash-001": {
     format: "google",
     flavor: "chat",
@@ -1425,6 +1432,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Gemini 2.0 Pro",
     multimodal: true,
   },
+  // Gemini experimental.
   "gemini-2.0-flash-thinking-exp-01-21": {
     format: "google",
     flavor: "chat",
@@ -1432,6 +1440,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0,
     displayName: "Gemini 2.0 Flash Thinking",
     multimodal: true,
+    experimental: true,
   },
   "gemini-2.0-flash-exp": {
     format: "google",
@@ -1439,6 +1448,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
     multimodal: true,
+    experimental: true,
   },
   "gemini-exp-1206": {
     format: "google",
@@ -1446,7 +1456,9 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
     multimodal: true,
+    experimental: true,
   },
+  // Gemini deprecated.
   "gemini-1.0-pro": {
     format: "google",
     flavor: "chat",
@@ -1519,70 +1531,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // BEDROCK MODELS
-  "anthropic.claude-3-5-sonnet-20241022-v2:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3.5 Sonnet v2",
-  },
-  "anthropic.claude-3-5-sonnet-20240620-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3.5 Sonnet",
-  },
-  "anthropic.claude-3-5-haiku-20241022-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 4,
-    displayName: "Claude 3.5 Haiku",
-  },
-  "anthropic.claude-3-haiku-20240307-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.25,
-    output_cost_per_mil_tokens: 1.25,
-    displayName: "Claude 3 Haiku",
-  },
-  "anthropic.claude-3-sonnet-20240229-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3 Sonnet",
-  },
-  "anthropic.claude-3-opus-20240229-v1:0": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 15,
-    output_cost_per_mil_tokens: 75,
-    displayName: "Claude 3 Opus",
-  },
-  "amazon.nova-pro-v1:0": {
-    format: "converse",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.8,
-    output_cost_per_mil_tokens: 3.2,
-    displayName: "Nova Pro",
-  },
-  "amazon.nova-lite-v1:0": {
-    format: "converse",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.06,
-    output_cost_per_mil_tokens: 0.24,
-    displayName: "Nova Lite",
-  },
   "amazon.nova-micro-v1:0": {
     format: "converse",
     flavor: "chat",
@@ -1611,12 +1559,76 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.2,
     displayName: "Titan Text Lite",
   },
+  "anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet v2",
+  },
+  "anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.5 Sonnet",
+  },
+  "anthropic.claude-3-5-haiku-20241022-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 4,
+    displayName: "Claude 3.5 Haiku",
+  },
+  "anthropic.claude-3-opus-20240229-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 15,
+    output_cost_per_mil_tokens: 75,
+    displayName: "Claude 3 Opus",
+  },
+  "anthropic.claude-3-sonnet-20240229-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3 Sonnet",
+  },
+  "anthropic.claude-3-haiku-20240307-v1:0": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.25,
+    output_cost_per_mil_tokens: 1.25,
+    displayName: "Claude 3 Haiku",
+  },
+  "amazon.nova-pro-v1:0": {
+    format: "converse",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 3.2,
+    displayName: "Nova Pro",
+  },
+  "amazon.nova-lite-v1:0": {
+    format: "converse",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.06,
+    output_cost_per_mil_tokens: 0.24,
+    displayName: "Nova Lite",
+  },
   "us.meta.llama3-3-70b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.72,
     output_cost_per_mil_tokens: 0.72,
-    displayName: "Llama 3.3 (70B)",
+    displayName: "Llama 3.3 70B Instruct",
   },
   "us.meta.llama3-2-90b-instruct-v1:0": {
     format: "converse",
@@ -1624,7 +1636,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 0.72,
     output_cost_per_mil_tokens: 0.72,
-    displayName: "Llama 3.2 (90B)",
+    displayName: "Llama 3.2 90B Vision Instruct",
   },
   "us.meta.llama3-2-11b-instruct-v1:0": {
     format: "converse",
@@ -1632,49 +1644,49 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 0.16,
     output_cost_per_mil_tokens: 0.16,
-    displayName: "Llama 3.2 (11B)",
+    displayName: "Llama 3.2 11B Vision Instruct",
   },
   "us.meta.llama3-2-3b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.15,
     output_cost_per_mil_tokens: 0.15,
-    displayName: "Llama 3.2 (3B)",
+    displayName: "Llama 3.2 3B Instruct",
   },
   "us.meta.llama3-2-1b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.1,
-    displayName: "Llama 3.2 (1B)",
+    displayName: "Llama 3.2 1B Instruct",
   },
   "us.meta.llama3-1-70b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.72,
     output_cost_per_mil_tokens: 0.72,
-    displayName: "Llama 3.1 (70B)",
+    displayName: "Llama 3.1 70B Instruct",
   },
   "us.meta.llama3-1-8b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.22,
     output_cost_per_mil_tokens: 0.22,
-    displayName: "Llama 3.1 (8B)",
+    displayName: "Llama 3.1 8B Instruct",
   },
   "meta.llama3-70b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 2.65,
     output_cost_per_mil_tokens: 3.5,
-    displayName: "Llama 3 (70B)",
+    displayName: "Llama 3 70B Instruct",
   },
   "meta.llama3-8b-instruct-v1:0": {
     format: "converse",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.3,
     output_cost_per_mil_tokens: 0.6,
-    displayName: "Llama 3 (8B)",
+    displayName: "Llama 3 8B Instruct",
   },
   "mistral.mistral-large-2402-v1:0": {
     format: "converse",

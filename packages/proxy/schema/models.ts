@@ -612,6 +612,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.0,
     output_cost_per_mil_tokens: 0.0,
     displayName: "Llama Vision Free",
+    multimodal: true,
   },
   "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
     format: "openai",
@@ -619,7 +620,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.06,
     output_cost_per_mil_tokens: 0.06,
     displayName: "Llama 3.2 3B Instruct Turbo",
-    multimodal: true,
   },
   "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
     format: "openai",
@@ -1115,6 +1115,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
     displayName: "Llama 3.2 90B Vision 8k (Preview)",
+    multimodal: true,
   },
   "llama-3.2-11b-vision-preview": {
     format: "openai",
@@ -1122,6 +1123,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.18,
     output_cost_per_mil_tokens: 0.18,
     displayName: "Llama 3.2 11B Vision 8k (Preview)",
+    multimodal: true,
   },
   "llama-3.2-3b-preview": {
     format: "openai",

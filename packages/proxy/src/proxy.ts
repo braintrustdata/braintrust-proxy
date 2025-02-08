@@ -1359,8 +1359,6 @@ async function fetchAnthropic(
     seed, // extract seed so that it's not sent to Anthropic (we just use it for the cache)
     ...oaiParams
   } = bodyData;
-  console.log("oaiParams", JSON.stringify(oaiParams, null, 2));
-  console.log("oaiMessages", JSON.stringify(oaiMessages, null, 2));
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
@@ -1655,8 +1653,6 @@ async function fetchGoogle(
     seed, // extract seed so that it's not sent to Google (we just use it for the cache)
     ...oaiParams
   } = bodyData;
-  console.log("oaiParams", JSON.stringify(oaiParams, null, 2));
-  console.log("oaiMessages", JSON.stringify(oaiMessages, null, 2));
   const content = await openAIMessagesToGoogleMessages(oaiMessages);
   const params = Object.fromEntries(
     Object.entries(translateParams("google", oaiParams))
@@ -1701,7 +1697,6 @@ async function fetchGoogle(
     generationConfig: params,
     ...googleTools(params),
   });
-  console.log("fetching google body:", body);
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method,
@@ -1709,7 +1704,6 @@ async function fetchGoogle(
     body,
     keepalive: true,
   });
-  // console.log("proxyResponse", JSON.stringify(await proxyResponse.json(), null, 2));
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {
@@ -1782,11 +1776,9 @@ export function createEventStreamTransformer(
   const finish = async (
     controller: TransformStreamDefaultController<Uint8Array>,
   ) => {
-    console.log("finish");
     if (finished) {
       return;
     }
-    console.log("finishing");
     finished = true;
     controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
     // This ensures that controller.terminate is not in the same stack frame as start()/transform()
@@ -1798,7 +1790,6 @@ export function createEventStreamTransformer(
     async start(controller): Promise<void> {
       eventSourceParser = createParser(
         (event: ParsedEvent | ReconnectInterval) => {
-          console.log("event", event);
           if (
             ("data" in event &&
               event.type === "event" &&
@@ -1807,7 +1798,6 @@ export function createEventStreamTransformer(
             // @see https://replicate.com/docs/streaming
             (event as any).event === "done"
           ) {
-            console.log("finishing due to", event);
             finish(controller).catch((e) => {
               console.error("Error finishing stream", e);
             });
@@ -1815,7 +1805,6 @@ export function createEventStreamTransformer(
           }
 
           if ("data" in event) {
-            console.log("data in event");
             let parsedMessage;
             try {
               parsedMessage = customParser(event.data);
@@ -1833,7 +1822,6 @@ export function createEventStreamTransformer(
               });
               return;
             }
-            console.log("parsedMessage", parsedMessage);
             if (parsedMessage.data !== null) {
               controller.enqueue(
                 new TextEncoder().encode(

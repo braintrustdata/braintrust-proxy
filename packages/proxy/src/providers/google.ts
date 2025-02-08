@@ -53,7 +53,6 @@ export async function openAIMessagesToGoogleMessages(
   messages: Message[],
 ): Promise<Content[]> {
   // First, do a basic mapping
-  console.log("messages", JSON.stringify(messages, null, 2));
   const content: Content[] = await Promise.all(
     messages.map(async (m) => {
       const contentParts =
@@ -92,7 +91,6 @@ export async function openAIMessagesToGoogleMessages(
       };
     }),
   );
-  console.log("content", JSON.stringify(content, null, 2));
 
   const flattenedContent: Content[] = [];
   for (let i = 0; i < content.length; i++) {
@@ -107,7 +105,6 @@ export async function openAIMessagesToGoogleMessages(
       flattenedContent.push(content[i]);
     }
   }
-  console.log("flattenedContent", JSON.stringify(flattenedContent, null, 2));
 
   // Finally, sort the messages so that:
   // 1. All images are up front
@@ -129,7 +126,6 @@ export async function openAIMessagesToGoogleMessages(
 
     return 0;
   });
-  console.log("sortedContent", JSON.stringify(sortedContent, null, 2));
 
   return sortedContent;
 }
@@ -163,7 +159,6 @@ export function googleEventToOpenAIChatEvent(
       ? {
           id: uuidv4(),
           choices: (data.candidates || []).map((candidate) => {
-            console.log("candidate", candidate);
             const firstText = candidate.content.parts.find(
               (p) => p.text !== undefined,
             );

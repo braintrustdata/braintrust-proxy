@@ -25,6 +25,7 @@ export const ModelSchema = z.object({
   o1_like: z.boolean().nullish(),
   experimental: z.boolean().nullish(),
   deprecated: z.boolean().nullish(),
+  parent: z.string().nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
@@ -45,6 +46,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 2.5,
     output_cost_per_mil_tokens: 10,
+    parent: "gpt-4o",
   },
   "gpt-4o-2024-08-06": {
     format: "openai",
@@ -52,6 +54,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 2.5,
     output_cost_per_mil_tokens: 10,
+    parent: "gpt-4o",
   },
   "gpt-4o-2024-05-13": {
     format: "openai",
@@ -59,6 +62,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 5,
     output_cost_per_mil_tokens: 15,
+    parent: "gpt-4o",
   },
   "chatgpt-4o-latest": {
     format: "openai",
@@ -66,6 +70,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 2.5,
     output_cost_per_mil_tokens: 10,
+    parent: "gpt-4o",
   },
   "gpt-4o-mini": {
     format: "openai",
@@ -81,6 +86,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 0.15,
     output_cost_per_mil_tokens: 0.6,
+    parent: "gpt-4o-mini",
   },
   o1: {
     format: "openai",
@@ -97,6 +103,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
     o1_like: true,
+    parent: "o1",
   },
   "o1-mini": {
     format: "openai",
@@ -113,6 +120,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
     o1_like: true,
+    parent: "o1-mini",
   },
   "o1-preview": {
     format: "openai",
@@ -121,6 +129,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
     o1_like: true,
+    parent: "o1",
   },
   "o1-preview-2024-09-12": {
     format: "openai",
@@ -129,6 +138,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60.0,
     o1_like: true,
+    parent: "o1",
   },
   "o3-mini": {
     format: "openai",
@@ -145,6 +155,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
     o1_like: true,
+    parent: "o3-mini",
   },
   "gpt-4-turbo": {
     format: "openai",
@@ -160,24 +171,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
+    parent: "gpt-4-turbo",
   },
   "gpt-4-turbo-preview": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
-  },
-  "gpt-4-0125-preview": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 10,
-    output_cost_per_mil_tokens: 30,
-  },
-  "gpt-4-1106-preview": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 10,
-    output_cost_per_mil_tokens: 30,
+    parent: "gpt-4-turbo",
   },
   "gpt-4": {
     format: "openai",
@@ -186,17 +187,33 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 60,
     displayName: "GPT-4",
   },
+  "gpt-4-0125-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 10,
+    output_cost_per_mil_tokens: 30,
+    parent: "gpt-4",
+  },
+  "gpt-4-1106-preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 10,
+    output_cost_per_mil_tokens: 30,
+    parent: "gpt-4",
+  },
   "gpt-4-0613": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 30,
     output_cost_per_mil_tokens: 60,
+    parent: "gpt-4",
   },
   "gpt-4-0314": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 30,
     output_cost_per_mil_tokens: 60,
+    parent: "gpt-4",
   },
   // OpenAI deprecated.
   "gpt-3.5-turbo-0125": {
@@ -353,6 +370,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
+    parent: "claude-3-5-sonnet-latest",
   },
   "claude-3-5-sonnet-20240620": {
     format: "anthropic",
@@ -360,6 +378,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
+    parent: "claude-3-5-sonnet-latest",
   },
   "claude-3-5-haiku-latest": {
     format: "anthropic",
@@ -373,6 +392,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 1,
     output_cost_per_mil_tokens: 5,
+    parent: "claude-3-5-haiku-latest",
   },
   "claude-3-opus-latest": {
     format: "anthropic",
@@ -388,6 +408,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 15,
     output_cost_per_mil_tokens: 75,
+    parent: "claude-3-opus-latest",
   },
   "claude-3-sonnet-latest": {
     format: "anthropic",
@@ -403,6 +424,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
+    parent: "claude-3-sonnet-latest",
   },
   "claude-3-haiku-latest": {
     format: "anthropic",
@@ -418,6 +440,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 0.25,
     output_cost_per_mil_tokens: 1.25,
+    parent: "claude-3-haiku-latest",
   },
   // Anthropic deprecated.
   "claude-instant-1.2": {
@@ -906,6 +929,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 6,
+    parent: "mistral-large-latest",
   },
   "pixtral-large-latest": {
     format: "openai",
@@ -921,6 +945,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 6,
     multimodal: true,
+    parent: "pixtral-large-latest",
   },
   "mistral-small-latest": {
     format: "openai",
@@ -934,6 +959,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.3,
+    parent: "mistral-small-latest",
   },
   "codestral-latest": {
     format: "openai",
@@ -947,6 +973,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.3,
     output_cost_per_mil_tokens: 0.9,
+    parent: "codestral-latest",
   },
   "ministral-8b-latest": {
     format: "openai",
@@ -960,6 +987,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.1,
+    parent: "ministral-8b-latest",
   },
   "ministral-3b-latest": {
     format: "openai",
@@ -973,6 +1001,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.04,
     output_cost_per_mil_tokens: 0.04,
+    parent: "ministral-3b-latest",
   },
   "pixtral-12b-2409": {
     format: "openai",
@@ -1408,6 +1437,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GEMINI MODELS
+  "gemini-2.0-flash": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.4,
+    multimodal: true,
+  },
   "gemini-2.0-flash-001": {
     format: "google",
     flavor: "chat",
@@ -1415,13 +1451,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.4,
     displayName: "Gemini 2.0 Flash",
     multimodal: true,
+    parent: "gemini-2.0-flash",
   },
   "gemini-2.0-flash-lite-preview-02-05": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
-    displayName: "Gemini 2.0 Flash Lite",
+    displayName: "Gemini 2.0 Flash-Lite Preview",
     multimodal: true,
   },
   "gemini-1.5-flash": {
@@ -1438,6 +1475,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     multimodal: true,
+    parent: "gemini-1.5-flash",
   },
   "gemini-1.5-flash-001": {
     format: "google",
@@ -1445,6 +1483,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     multimodal: true,
+    parent: "gemini-1.5-flash",
   },
   "gemini-1.5-flash-002": {
     format: "google",
@@ -1452,6 +1491,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     multimodal: true,
+    parent: "gemini-1.5-flash",
   },
   "gemini-1.5-flash-8b": {
     format: "google",
@@ -1467,6 +1507,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.0375,
     output_cost_per_mil_tokens: 0.15,
     multimodal: true,
+    parent: "gemini-1.5-flash-8b",
   },
   "gemini-1.5-flash-8b-001": {
     format: "google",
@@ -1474,6 +1515,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.0375,
     output_cost_per_mil_tokens: 0.15,
     multimodal: true,
+    parent: "gemini-1.5-flash-8b",
   },
   "gemini-1.5-pro": {
     format: "google",
@@ -1489,6 +1531,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.25,
     output_cost_per_mil_tokens: 5.0,
     multimodal: true,
+    parent: "gemini-1.5-pro",
   },
   "gemini-1.5-pro-001": {
     format: "google",
@@ -1496,6 +1539,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.25,
     output_cost_per_mil_tokens: 5.0,
     multimodal: true,
+    parent: "gemini-1.5-pro",
   },
   "gemini-1.5-pro-002": {
     format: "google",
@@ -1503,6 +1547,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 1.25,
     output_cost_per_mil_tokens: 5.0,
     multimodal: true,
+    parent: "gemini-1.5-pro",
   },
   // Gemini experimental.
   "gemini-2.0-pro-exp-02-05": {
@@ -1510,7 +1555,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
-    displayName: "Gemini 2.0 Pro",
     multimodal: true,
     experimental: true,
   },
@@ -1519,7 +1563,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
-    displayName: "Gemini 2.0 Flash Thinking",
     multimodal: true,
     experimental: true,
   },
@@ -1530,6 +1573,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0,
     multimodal: true,
     experimental: true,
+    parent: "gemini-2.0-flash",
   },
   "gemini-exp-1206": {
     format: "google",
@@ -1572,6 +1616,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 10,
     multimodal: true,
+    parent: "grok-2-vision",
   },
   "grok-2-vision-1212": {
     format: "openai",
@@ -1579,6 +1624,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 10,
     multimodal: true,
+    parent: "grok-2-vision",
   },
   "grok-2": {
     format: "openai",
@@ -1592,12 +1638,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 10,
+    parent: "grok-2",
   },
   "grok-2-1212": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 2,
     output_cost_per_mil_tokens: 10,
+    parent: "grok-2",
   },
   "grok-vision-beta": {
     format: "openai",

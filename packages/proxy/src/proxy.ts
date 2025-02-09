@@ -66,7 +66,6 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
-import { z } from "zod";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1522,6 +1521,111 @@ async function fetchAnthropic(
   };
 }
 
+function pruneJsonSchemaToGoogle(schema: any): any {
+  if (!schema || typeof schema !== "object") {
+    return schema;
+  }
+
+  const allowedFields = [
+    "type",
+    "format",
+    "description",
+    "nullable",
+    "items",
+    "enum",
+    "properties",
+    "required",
+    "example",
+  ];
+
+  const result: any = {};
+
+  for (const [key, value] of Object.entries(schema)) {
+    if (!allowedFields.includes(key)) {
+      continue;
+    }
+
+    if (key === "properties") {
+      result[key] = Object.fromEntries(
+        Object.entries(value as Record<string, any>).map(([k, v]) => [
+          k,
+          pruneJsonSchemaToGoogle(v),
+        ]),
+      );
+    } else if (key === "items") {
+      result[key] = pruneJsonSchemaToGoogle(value);
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
+  if (params.tools || params.functions) {
+    params.tools =
+      params.tools ||
+      (params.functions as Array<ChatCompletionCreateParams.Function>).map(
+        (f: any) => ({
+          type: "function",
+          function: f,
+        }),
+      );
+  }
+  let tool_config: any = undefined;
+  if (params.tool_choice) {
+    switch (params.tool_choice) {
+      case "required":
+        tool_config = {
+          function_calling_config: {
+            mode: "ANY",
+          },
+        };
+        break;
+      case "none":
+        tool_config = {
+          function_calling_config: {
+            mode: "NONE",
+          },
+        };
+        break;
+      case "auto":
+        tool_config = {
+          function_calling_config: {
+            mode: "AUTO",
+          },
+        };
+        break;
+      default:
+        tool_config = {
+          function_calling_config: {
+            mode: "ANY",
+            allowed_function_names: [params.tool_choice.function.name],
+          },
+        };
+        break;
+    }
+  }
+  let out = {
+    tools: params.tools
+      ? [
+          {
+            function_declarations: params.tools.map((t) => ({
+              name: t.function.name,
+              description: t.function.description,
+              parameters: pruneJsonSchemaToGoogle(t.function.parameters),
+            })),
+          },
+        ]
+      : undefined,
+    tool_config,
+  };
+  delete params.tools;
+  delete params.tool_choice;
+  return out;
+}
+
 async function fetchGoogle(
   method: "POST",
   url: string,
@@ -1577,13 +1681,27 @@ async function fetchGoogle(
   delete headers["authorization"];
   headers["content-type"] = "application/json";
 
+  if (
+    oaiParams.response_format?.type === "json_object" ||
+    oaiParams.response_format?.type === "json_schema"
+  ) {
+    params.response_mime_type = "application/json";
+  }
+  if (oaiParams.response_format?.type === "json_schema") {
+    params.response_schema = pruneJsonSchemaToGoogle(
+      oaiParams.response_format.json_schema.schema,
+    );
+  }
+  const body = JSON.stringify({
+    contents: content,
+    generationConfig: params,
+    ...openAIToolsToGoogleTools(params),
+  });
+
   const proxyResponse = await fetch(fullURL.toString(), {
     method,
     headers,
-    body: JSON.stringify({
-      contents: [content],
-      generationConfig: params,
-    }),
+    body,
     keepalive: true,
   });
 

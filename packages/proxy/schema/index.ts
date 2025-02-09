@@ -133,7 +133,7 @@ export const modelProviderHasTools: {
 } = {
   openai: true,
   anthropic: true,
-  google: false,
+  google: true,
   js: false,
   window: false,
   converse: true,

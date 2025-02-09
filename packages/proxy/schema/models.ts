@@ -476,121 +476,44 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.0,
     output_cost_per_mil_tokens: 0.0,
-    displayName: "Mistral",
   },
+  // Ollama deprecated.
   phi: {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.0,
     output_cost_per_mil_tokens: 0.0,
-    displayName: "Phi",
+    deprecated: true,
   },
 
   // PERPLEXITY MODELS
-  "pplx-7b-chat": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.07,
-    output_cost_per_mil_tokens: 0.28,
-    displayName: "Perplexity 7b Chat",
-  },
-  "pplx-7b-online": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "Perplexity 7b Online",
-  },
-  "pplx-70b-chat": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.7,
-    output_cost_per_mil_tokens: 2.8,
-    displayName: "Perplexity 70b Chat",
-  },
-  "pplx-70b-online": {
+  sonar: {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 1,
     output_cost_per_mil_tokens: 1,
-    displayName: "Perplexity 70b Online",
+    displayName: "Sonar",
   },
-  "codellama-34b-instruct": {
+  "sonar-pro": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.35,
-    output_cost_per_mil_tokens: 1.4,
-    displayName: "Code Llama 34b Instruct",
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Sonar Pro",
   },
-  "codellama-70b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.7,
-    output_cost_per_mil_tokens: 2.8,
-    displayName: "Code Llama 70b Instruct",
-  },
-  "llama-3-8b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "LLaMA 3 8b Instruct",
-  },
-  "llama-3-70b-instruct": {
+  "sonar-reasoning": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 1,
-    output_cost_per_mil_tokens: 1,
-    displayName: "LLaMA 3 70b Instruct",
+    output_cost_per_mil_tokens: 5,
+    displayName: "Sonar Reasoning",
   },
-  "llama-2-13b-chat": {
+  "sonar-reasoning-pro": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.14,
-    output_cost_per_mil_tokens: 0.56,
-    displayName: "LLaMA 2 13b Chat",
-  },
-  "llama-2-70b-chat": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1,
-    output_cost_per_mil_tokens: 1,
-    displayName: "LLaMA 2 70b Chat",
-  },
-  "mistral-7b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.07,
-    output_cost_per_mil_tokens: 0.28,
-    displayName: "Mistral 7b Instruct",
-  },
-  "mixtral-8x7b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.07,
-    output_cost_per_mil_tokens: 0.28,
-    displayName: "Mixtral 8x7B Instruct",
-  },
-  "mixtral-8x22b-instruct": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1,
-    output_cost_per_mil_tokens: 1,
-    displayName: "Mixtral 8x22B Instruct",
-  },
-  "openhermes-2-mistral-7b": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "OpenHermes 2",
-  },
-  "openhermes-2.5-mistral-7b": {
-    format: "openai",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.2,
-    output_cost_per_mil_tokens: 0.2,
-    displayName: "OpenHermes 2.5",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 8,
+    displayName: "Sonar Reasoning Pro",
   },
 
   // TOGETHER MODELS
@@ -703,7 +626,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.1,
     displayName: "Llama 3 8B Instruct Lite",
   },
-
   // Together Gemma.
   "google/gemma-2-27b-it": {
     format: "openai",
@@ -726,7 +648,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.1,
     displayName: "Gemma Instruct (2B)",
   },
-
   // Together Mistral.
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     format: "openai",
@@ -770,7 +691,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     displayName: "Mixtral 8x7B Instruct v0.1",
   },
-
   // Together DeepSeek.
   "deepseek-ai/DeepSeek-V3": {
     format: "openai",
@@ -821,7 +741,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.9,
     displayName: "DeepSeek LLM Chat (67B)",
   },
-
   // Together Qwen.
   "Qwen/Qwen2.5-72B-Instruct-Turbo": {
     format: "openai",
@@ -865,7 +784,49 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.9,
     displayName: "Qwen 2 Instruct (72B)",
   },
-
+  // Together other.
+  "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.88,
+    output_cost_per_mil_tokens: 0.88,
+    displayName: "Llama 3.1 Nemotron 70B Instruct HF",
+  },
+  "microsoft/WizardLM-2-8x22B": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "WizardLM-2 (8x22B)",
+  },
+  "databricks/dbrx-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.2,
+    output_cost_per_mil_tokens: 1.2,
+    displayName: "DBRX Instruct",
+  },
+  "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.6,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "Nous Hermes 2 - Mixtral 8x7B-DPO",
+  },
+  "Gryphe/MythoMax-L2-13b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.3,
+    displayName: "MythoMax-L2 (13B)",
+  },
+  "Gryphe/MythoMax-L2-13b-Lite": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.1,
+    displayName: "Gryphe MythoMax L2 Lite (13B)",
+  },
   // Together deprecated.
   "meta-llama/Meta-Llama-3-70B": {
     format: "openai",
@@ -1207,26 +1168,96 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // LEPTON MODELS
-  "llama3-1-8b": {
+  "llama3-3-70b": {
     format: "openai",
     flavor: "chat",
-    displayName: "LLaMA 3.1 8b",
-    input_cost_per_mil_tokens: 0.07,
-    output_cost_per_mil_tokens: 0.07,
+    displayName: "Llama 3.3 70B",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+  },
+  "llama3-2-3b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.2 3B",
+    input_cost_per_mil_tokens: 0.03,
+    output_cost_per_mil_tokens: 0.03,
+  },
+  "llama3-2-1b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.2 1B",
+    input_cost_per_mil_tokens: 0.01,
+    output_cost_per_mil_tokens: 0.01,
   },
   "llama3-1-70b": {
     format: "openai",
     flavor: "chat",
-    displayName: "LLaMA 3.1 70b",
+    displayName: "Llama 3.1 70B",
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 0.8,
   },
-  "llama3-1-405b": {
+  "llama3-1-8b": {
     format: "openai",
     flavor: "chat",
-    displayName: "LLaMA 3.1 405b",
-    input_cost_per_mil_tokens: 2.8,
-    output_cost_per_mil_tokens: 2.8,
+    displayName: "Llama 3.1 8B",
+    input_cost_per_mil_tokens: 0.07,
+    output_cost_per_mil_tokens: 0.07,
+  },
+  "llama3-70b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3 70B",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+  },
+  "llama3-8b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3 8B",
+    input_cost_per_mil_tokens: 0.07,
+    output_cost_per_mil_tokens: 0.07,
+  },
+  "mistral-7b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mistral 7B",
+    input_cost_per_mil_tokens: 0.07,
+    output_cost_per_mil_tokens: 0.07,
+  },
+  "mixtral-8x7b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mixtral 8x7b",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 0.5,
+  },
+  "wizardlm-2-7b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "WizardLM-2 7B",
+    input_cost_per_mil_tokens: 0.07,
+    output_cost_per_mil_tokens: 0.07,
+  },
+  "wizardlm-2-8x22b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "WizardLM-2 8x22B",
+    input_cost_per_mil_tokens: 1,
+    output_cost_per_mil_tokens: 1,
+  },
+  "nous-hermes-llama2-13b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Nous: Hermes 13B",
+    input_cost_per_mil_tokens: 0.18,
+    output_cost_per_mil_tokens: 0.18,
+  },
+  "dolphin-mixtral-8x7b": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Dolphin Mixtral 8x7b",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 0.5,
   },
 
   // FIREWORKS MODELS
@@ -1308,6 +1339,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Mixtral MoE 8x7B Instruct",
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 0.5,
+  },
+  "accounts/fireworks/models/phi-3-vision-128k-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Phi 3.5 Vision Instruct",
+    input_cost_per_mil_tokens: 0.2,
+    output_cost_per_mil_tokens: 0.2,
+    multimodal: true,
   },
   "accounts/fireworks/models/deepseek-v3": {
     format: "openai",
@@ -1465,6 +1504,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 5.0,
     multimodal: true,
   },
+  // Gemini experimental.
   "gemini-2.0-pro-exp-02-05": {
     format: "google",
     flavor: "chat",
@@ -1472,8 +1512,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0,
     displayName: "Gemini 2.0 Pro",
     multimodal: true,
+    experimental: true,
   },
-  // Gemini experimental.
   "gemini-2.0-flash-thinking-exp-01-21": {
     format: "google",
     flavor: "chat",

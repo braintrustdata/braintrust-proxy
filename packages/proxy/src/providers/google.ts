@@ -54,27 +54,63 @@ export async function openAIMessagesToGoogleMessages(
 ): Promise<Content[]> {
   // First, do a basic mapping
   const content: Content[] = await Promise.all(
-    messages.map(
-      async (m: Message): Promise<Content> => ({
-        parts: await openAIContentToGoogleContent(m.content),
-        // TODO: Add tool call support
-        role: m.role === "assistant" ? "model" : m.role,
-      }),
-    ),
+    messages.map(async (m) => {
+      const contentParts =
+        m.role === "tool" ? [] : await openAIContentToGoogleContent(m.content);
+      const toolCallParts: Part[] =
+        m.role === "assistant"
+          ? m.tool_calls?.map((t) => ({
+              functionCall: {
+                name: t.id,
+                args: JSON.parse(t.function.arguments),
+              },
+            })) ?? []
+          : [];
+      const toolResponseParts: Part[] =
+        m.role === "tool"
+          ? [
+              {
+                functionResponse: {
+                  name: m.tool_call_id,
+                  response: {
+                    name: m.tool_call_id,
+                    content: JSON.parse(m.content),
+                  },
+                },
+              },
+            ]
+          : [];
+      return {
+        parts: [...contentParts, ...toolCallParts, ...toolResponseParts],
+        role:
+          m.role === "assistant"
+            ? "model"
+            : m.role === "tool"
+              ? "user"
+              : m.role,
+      };
+    }),
   );
 
-  // Then, flatten each content item into an individual message
-  const flattenedContent: Content[] = content.flatMap((c) =>
-    c.parts.map((p) => ({
-      role: c.role,
-      parts: [p],
-    })),
-  );
+  const flattenedContent: Content[] = [];
+  for (let i = 0; i < content.length; i++) {
+    if (
+      flattenedContent.length > 0 &&
+      flattenedContent[flattenedContent.length - 1].role === content[i].role
+    ) {
+      flattenedContent[flattenedContent.length - 1].parts = flattenedContent[
+        flattenedContent.length - 1
+      ].parts.concat(content[i].parts);
+    } else {
+      flattenedContent.push(content[i]);
+    }
+  }
 
   // Finally, sort the messages so that:
   // 1. All images are up front
   // 2. The system prompt.
   // 3. Then all user messages' text parts
+  // The EcmaScript spec requires the sort to be stable, so this is safe.
   const sortedContent: Content[] = flattenedContent.sort((a, b) => {
     if (a.parts[0].inlineData && !b.parts[0].inlineData) {
       return -1;
@@ -122,14 +158,34 @@ export function googleEventToOpenAIChatEvent(
     event: data.candidates
       ? {
           id: uuidv4(),
-          choices: (data.candidates || []).map((candidate) => ({
-            index: candidate.index,
-            delta: {
-              role: "assistant",
-              content: candidate.content.parts[0].text || "",
-            },
-            finish_reason: translateFinishReason(candidate.finishReason),
-          })),
+          choices: (data.candidates || []).map((candidate) => {
+            const firstText = candidate.content.parts.find(
+              (p) => p.text !== undefined,
+            );
+            const toolCalls = candidate.content.parts
+              .filter((p) => p.functionCall !== undefined)
+              .map((p, i) => ({
+                id: uuidv4(),
+                type: "function" as const,
+                function: {
+                  name: p.functionCall.name,
+                  arguments: JSON.stringify(p.functionCall.args),
+                },
+                index: i,
+              }));
+            return {
+              index: 0,
+              delta: {
+                role: "assistant",
+                content: firstText?.text ?? "",
+                tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+              },
+              finish_reason:
+                toolCalls.length > 0
+                  ? "tool_calls"
+                  : translateFinishReason(candidate.finishReason),
+            };
+          }),
           created: getTimestampInSeconds(),
           model,
           object: "chat.completion.chunk",
@@ -143,7 +199,9 @@ export function googleEventToOpenAIChatEvent(
         }
       : null,
     finished:
-      false /* all of the events seem to have STOP as the finish reason */,
+      data.candidates?.every(
+        (candidate) => candidate.finishReason !== undefined,
+      ) ?? false,
   };
 }
 
@@ -153,16 +211,35 @@ export function googleCompletionToOpenAICompletion(
 ): ChatCompletion {
   return {
     id: uuidv4(),
-    choices: (data.candidates || []).map((candidate) => ({
-      logprobs: null,
-      index: candidate.index,
-      message: {
-        role: "assistant",
-        content: candidate.content.parts[0].text || "",
-        refusal: null,
-      },
-      finish_reason: translateFinishReason(candidate.finishReason) || "stop",
-    })),
+    choices: (data.candidates || []).map((candidate) => {
+      const firstText = candidate.content.parts.find(
+        (p) => p.text !== undefined,
+      );
+      const toolCalls = candidate.content.parts
+        .filter((p) => p.functionCall !== undefined)
+        .map((p) => ({
+          id: uuidv4(),
+          type: "function" as const,
+          function: {
+            name: p.functionCall.name,
+            arguments: JSON.stringify(p.functionCall.args),
+          },
+        }));
+      return {
+        logprobs: null,
+        index: candidate.index,
+        message: {
+          role: "assistant",
+          content: firstText?.text ?? "",
+          tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+          refusal: null,
+        },
+        finish_reason:
+          toolCalls.length > 0
+            ? "tool_calls"
+            : translateFinishReason(candidate.finishReason) || "stop",
+      };
+    }),
     created: getTimestampInSeconds(),
     model,
     object: "chat.completion",

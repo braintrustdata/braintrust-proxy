@@ -1521,7 +1521,7 @@ async function fetchAnthropic(
   };
 }
 
-function pruneSchema(schema: any): any {
+function pruneJsonSchemaToGoogle(schema: any): any {
   if (!schema || typeof schema !== "object") {
     return schema;
   }
@@ -1549,11 +1549,11 @@ function pruneSchema(schema: any): any {
       result[key] = Object.fromEntries(
         Object.entries(value as Record<string, any>).map(([k, v]) => [
           k,
-          pruneSchema(v),
+          pruneJsonSchemaToGoogle(v),
         ]),
       );
     } else if (key === "items") {
-      result[key] = pruneSchema(value);
+      result[key] = pruneJsonSchemaToGoogle(value);
     } else {
       result[key] = value;
     }
@@ -1562,7 +1562,7 @@ function pruneSchema(schema: any): any {
   return result;
 }
 
-function googleTools(params: ChatCompletionCreateParams) {
+function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
   if (params.tools || params.functions) {
     params.tools =
       params.tools ||
@@ -1614,7 +1614,7 @@ function googleTools(params: ChatCompletionCreateParams) {
             function_declarations: params.tools.map((t) => ({
               name: t.function.name,
               description: t.function.description,
-              parameters: pruneSchema(t.function.parameters),
+              parameters: pruneJsonSchemaToGoogle(t.function.parameters),
             })),
           },
         ]
@@ -1688,14 +1688,14 @@ async function fetchGoogle(
     params.response_mime_type = "application/json";
   }
   if (oaiParams.response_format?.type === "json_schema") {
-    params.response_schema = pruneSchema(
+    params.response_schema = pruneJsonSchemaToGoogle(
       oaiParams.response_format.json_schema.schema,
     );
   }
   const body = JSON.stringify({
     contents: content,
     generationConfig: params,
-    ...googleTools(params),
+    ...openAIToolsToGoogleTools(params),
   });
 
   const proxyResponse = await fetch(fullURL.toString(), {

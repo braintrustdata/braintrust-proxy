@@ -312,16 +312,15 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   OPENAI_API_KEY: "openai",
   ANTHROPIC_API_KEY: "anthropic",
   GEMINI_API_KEY: "google",
-  TOGETHER_API_KEY: "together",
   MISTRAL_API_KEY: "mistral",
+  TOGETHER_API_KEY: "together",
   FIREWORKS_API_KEY: "fireworks",
-  GROQ_API_KEY: "groq",
-  XAI_API_KEY: "xAI",
   PERPLEXITY_API_KEY: "perplexity",
+  XAI_API_KEY: "xAI",
+  GROQ_API_KEY: "groq",
+  LEPTON_API_KEY: "lepton",
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
-  LEPTON_API_KEY: "lepton",
-  OLLAMA_API_KEY: "ollama",
 };
 
 export const EndpointProviderToBaseURL: {

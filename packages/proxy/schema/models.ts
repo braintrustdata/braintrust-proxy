@@ -48,6 +48,7 @@ export const ModelSchema = z.object({
   deprecated: z.boolean().nullish(),
   parent: z.string().nullish(),
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
+  locations: z.array(z.string()).nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;

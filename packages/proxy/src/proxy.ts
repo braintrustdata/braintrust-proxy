@@ -1086,11 +1086,7 @@ async function fetchOpenAI(
       delete bodyData.max_tokens;
       delete bodyData.temperature;
     }
-
-    // o1, even if it supports tool calls, doesn't support parallel tool calls. But o3 does.
-    if (!bodyData.model.startsWith("o3-mini")) {
-      delete bodyData.parallel_tool_calls;
-    }
+    delete bodyData.parallel_tool_calls;
 
     // Only remove system messages for old O1 models.
     if (

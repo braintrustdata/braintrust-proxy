@@ -13,6 +13,27 @@ export const ModelFormats = [
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
+export const ModelEndpointType = [
+  "openai",
+  "anthropic",
+  "google",
+  "mistral",
+  "bedrock",
+  "vertex",
+  "together",
+  "fireworks",
+  "perplexity",
+  "xAI",
+  "groq",
+  "azure",
+  "lepton",
+  "cerebras",
+  "ollama",
+  "replicate",
+  "js",
+] as const;
+export type ModelEndpointType = (typeof ModelEndpointType)[number];
+
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(PromptInputs),
@@ -26,6 +47,7 @@ export const ModelSchema = z.object({
   experimental: z.boolean().nullish(),
   deprecated: z.boolean().nullish(),
   parent: z.string().nullish(),
+  endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
@@ -1442,6 +1464,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.4,
+    displayName: "Gemini 2.0 Flash",
     multimodal: true,
   },
   "gemini-2.0-flash-001": {
@@ -1449,7 +1472,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.4,
-    displayName: "Gemini 2.0 Flash",
     multimodal: true,
     parent: "gemini-2.0-flash",
   },

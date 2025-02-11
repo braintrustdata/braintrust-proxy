@@ -11,6 +11,7 @@ import {
   translateParams,
   ModelFormat,
   APISecret,
+  VertexMetadataSchema,
 } from "@schema";
 import {
   ProxyBadRequestError,
@@ -66,6 +67,7 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { JWT } from "google-auth-library";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1634,7 +1636,7 @@ async function fetchGoogle(
   secret: APISecret,
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
-  if (secret.type !== "google") {
+  if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
       `Unsupported credentials for Google: ${secret.type}`,
     );
@@ -1667,18 +1669,43 @@ async function fetchGoogle(
       .filter(([k, _]) => k !== null),
   );
 
-  const fullURL = new URL(
-    EndpointProviderToBaseURL.google! +
-      `/models/${encodeURIComponent(model)}:${
-        streamingMode ? "streamGenerateContent" : "generateContent"
-      }`,
-  );
-  fullURL.searchParams.set("key", secret.secret);
+  let fullURL: URL;
+  if (secret.type === "google") {
+    fullURL = new URL(
+      EndpointProviderToBaseURL.google! +
+        `/models/${encodeURIComponent(model)}:${
+          streamingMode ? "streamGenerateContent" : "generateContent"
+        }`,
+    );
+    fullURL.searchParams.set("key", secret.secret);
+    delete headers["authorization"];
+  } else {
+    // secret.type === "vertex"
+    const { location, project, authType } = VertexMetadataSchema.parse(
+      secret.metadata,
+    );
+    fullURL = new URL(
+      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+    );
+    let accessToken: string | null | undefined = undefined;
+    if (authType === "access_token") {
+      accessToken = secret.secret;
+    } else {
+      // authType === "service_account_key"
+      const jwt = new JWT();
+      jwt.fromJSON(JSON.parse(secret.secret));
+      jwt.scopes = ["https://www.googleapis.com/auth/cloud-platform"];
+      accessToken = await jwt.getAccessToken().then((res) => res.token);
+    }
+    if (!accessToken) {
+      throw new Error("Failed to get service account access token");
+    }
+    headers["authorization"] = `Bearer ${accessToken}`;
+  }
   if (streamingMode) {
     fullURL.searchParams.set("alt", "sse");
   }
 
-  delete headers["authorization"];
   headers["content-type"] = "application/json";
 
   if (

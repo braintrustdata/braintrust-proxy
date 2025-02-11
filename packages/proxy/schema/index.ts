@@ -5,7 +5,7 @@ import type {
   MessageRole,
   ModelParams,
 } from "@braintrust/core/typespecs";
-import { AvailableModels, ModelFormat } from "./models";
+import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
 
 export * from "./secrets";
 export * from "./models";
@@ -16,26 +16,6 @@ export {
   type Mp3Bitrate,
 } from "./audio";
 export * from "./openai-realtime";
-
-export const ModelEndpointType = [
-  "openai",
-  "anthropic",
-  "google",
-  "mistral",
-  "bedrock",
-  "together",
-  "fireworks",
-  "perplexity",
-  "xAI",
-  "groq",
-  "azure",
-  "lepton",
-  "cerebras",
-  "ollama",
-  "replicate",
-  "js",
-] as const;
-export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
 export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
@@ -144,7 +124,7 @@ export const DefaultEndpointTypes: {
 } = {
   openai: ["openai", "azure"],
   anthropic: ["anthropic"],
-  google: ["google"],
+  google: ["google", "vertex"],
   js: ["js"],
   window: ["js"],
   converse: ["bedrock"],
@@ -323,6 +303,12 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   REPLICATE_API_KEY: "replicate",
 };
 
+export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
+  AWS_DEFAULT_CREDENTIALS: "bedrock",
+  GOOGLE_DEFAULT_CREDENTIALS: "vertex",
+  AZURE_DEFAULT_CREDENTIALS: "azure",
+};
+
 export const EndpointProviderToBaseURL: {
   [name in ModelEndpointType]: string | null;
 } = {
@@ -340,6 +326,7 @@ export const EndpointProviderToBaseURL: {
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
   bedrock: null,
+  vertex: null,
   azure: null,
   js: null,
 };

@@ -520,15 +520,15 @@ export async function proxyV1({
             if ("data" in event) {
               const result = JSON.parse(event.data) as ChatCompletionChunk;
               if (result) {
-                // if (result.usage) {
-                //   spanLogger.log({
-                //     metrics: {
-                //       tokens: result.usage.total_tokens,
-                //       prompt_tokens: result.usage.prompt_tokens,
-                //       completion_tokens: result.usage.completion_tokens,
-                //     },
-                //   });
-                // }
+                if (result.usage) {
+                  spanLogger.log({
+                    metrics: {
+                      tokens: result.usage.total_tokens,
+                      prompt_tokens: result.usage.prompt_tokens,
+                      completion_tokens: result.usage.completion_tokens,
+                    },
+                  });
+                }
 
                 const choice = result.choices?.[0];
                 const delta = choice?.delta;
@@ -568,105 +568,102 @@ export async function proxyV1({
               }
             }
           } catch (e) {
-            // spanLogger.log({
-            //   error: e,
-            // });
+            spanLogger.log({
+              error: e,
+            });
           }
         });
 
-    const loggingStream = new TransformStream<Uint8Array, Uint8Array>(
-      {
-        transform(chunk, controller) {
-          if (
-            first &&
-            spanType &&
-            (["completion", "chat"] as SpanType[]).includes(spanType)
-          ) {
-            first = false;
-            spanLogger.log({
-              metrics: {
-                time_to_first_token: getCurrentUnixTimestamp() - startTime,
+    const loggingStream = new TransformStream<Uint8Array, Uint8Array>({
+      transform(chunk, controller) {
+        if (
+          first &&
+          spanType &&
+          (["completion", "chat"] as SpanType[]).includes(spanType)
+        ) {
+          first = false;
+          spanLogger.log({
+            metrics: {
+              time_to_first_token: getCurrentUnixTimestamp() - startTime,
+            },
+          });
+        }
+        if (isStreaming) {
+          const start = Date.now();
+          let textChunks = new TextDecoder().decode(chunk);
+          // Split it into lines, so the event parser is more efficient
+          for (const line of textChunks.split("\n")) {
+            eventSourceParser?.feed(line);
+          }
+          const end = Date.now();
+          console.log(`time to feed ${chunk.length} bytes: ${end - start}ms`);
+        } else {
+          allChunks.push(chunk);
+        }
+        controller.enqueue(chunk);
+      },
+      async flush(controller) {
+        if (isStreaming) {
+          spanLogger.log({
+            output: [
+              {
+                index: 0,
+                message: {
+                  role,
+                  content,
+                  tool_calls,
+                },
+                logprobs: null,
+                finish_reason,
               },
-            });
-          }
-          if (isStreaming) {
-            const start = Date.now();
-            let textChunks = new TextDecoder().decode(chunk);
-            // Split it into lines, so the event parser is more efficient
-            for (const line of textChunks.split("\n")) {
-              eventSourceParser?.feed(line);
+            ],
+          });
+        } else {
+          const dataRaw = JSON.parse(
+            new TextDecoder().decode(flattenChunksArray(allChunks)),
+          );
+
+          switch (spanType) {
+            case "chat":
+            case "completion": {
+              const data = dataRaw as ChatCompletion;
+              spanLogger.log({
+                output: data.choices,
+                metrics: {
+                  tokens: data.usage?.total_tokens,
+                  prompt_tokens: data.usage?.prompt_tokens,
+                  completion_tokens: data.usage?.completion_tokens,
+                },
+              });
+              break;
             }
-            const end = Date.now();
-            console.log(`time to feed ${chunk.length} bytes: ${end - start}ms`);
-          } else {
-            allChunks.push(chunk);
+            case "embedding":
+              {
+                const data = dataRaw as CreateEmbeddingResponse;
+                spanLogger.log({
+                  output: { embedding_length: data.data[0].embedding.length },
+                  metrics: {
+                    tokens: data.usage?.total_tokens,
+                    prompt_tokens: data.usage?.prompt_tokens,
+                  },
+                });
+              }
+              break;
+            case "moderation":
+              {
+                const data = dataRaw as ModerationCreateResponse;
+                spanLogger.log({
+                  output: data.results,
+                });
+              }
+              break;
           }
-          controller.enqueue(chunk);
-        },
-        async flush(controller) {
-          // if (isStreaming) {
-          // spanLogger.log({
-          //   output: [
-          //     {
-          //       index: 0,
-          //       message: {
-          //         role,
-          //         content,
-          //         tool_calls,
-          //       },
-          //       logprobs: null,
-          //       finish_reason,
-          //     },
-          //   ],
-          // });
-          // } else {
-          //   const dataRaw = JSON.parse(
-          //     new TextDecoder().decode(flattenChunksArray(allChunks)),
-          //   );
-          //   switch (spanType) {
-          //     case "chat":
-          //     case "completion": {
-          //       const data = dataRaw as ChatCompletion;
-          //       spanLogger.log({
-          //         output: data.choices,
-          //         metrics: {
-          //           tokens: data.usage?.total_tokens,
-          //           prompt_tokens: data.usage?.prompt_tokens,
-          //           completion_tokens: data.usage?.completion_tokens,
-          //         },
-          //       });
-          //       break;
-          //     }
-          //     case "embedding":
-          //       {
-          //         const data = dataRaw as CreateEmbeddingResponse;
-          //         spanLogger.log({
-          //           output: { embedding_length: data.data[0].embedding.length },
-          //           metrics: {
-          //             tokens: data.usage?.total_tokens,
-          //             prompt_tokens: data.usage?.prompt_tokens,
-          //           },
-          //         });
-          //       }
-          //       break;
-          //     case "moderation":
-          //       {
-          //         const data = dataRaw as ModerationCreateResponse;
-          //         spanLogger.log({
-          //           output: data.results,
-          //         });
-          //       }
-          //       break;
-          //   }
-          // }
-          // spanLogger.end();
-        },
+        }
+
+        spanLogger.end();
+        controller.terminate();
       },
-      {
-        highWaterMark: 1024,
-        size: () => 1,
-      },
-    );
+    });
 
     stream = stream.pipeThrough(loggingStream);
   }

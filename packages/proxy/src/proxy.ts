@@ -332,8 +332,13 @@ export async function proxyV1({
           } else if ("data" in cachedData && cachedData.data) {
             const data = Buffer.from(cachedData.data, "base64");
             const uint8Array = new Uint8Array(data);
-            controller.enqueue(uint8Array);
+            const asText = new TextDecoder().decode(uint8Array);
+            const lines = asText.split("\n");
+            for (const line of lines) {
+              controller.enqueue(new TextEncoder().encode(line));
+            }
           }
+
           controller.close();
         },
       });

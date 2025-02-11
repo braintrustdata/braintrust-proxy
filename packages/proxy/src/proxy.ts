@@ -328,14 +328,21 @@ export async function proxyV1({
       stream = new ReadableStream<Uint8Array>({
         start(controller) {
           if ("body" in cachedData && cachedData.body) {
-            controller.enqueue(new TextEncoder().encode(cachedData.body));
+            for (const line of cachedData.body.split("\n")) {
+              controller.enqueue(new TextEncoder().encode(line));
+            }
           } else if ("data" in cachedData && cachedData.data) {
             const data = Buffer.from(cachedData.data, "base64");
-            const uint8Array = new Uint8Array(data);
-            const asText = new TextDecoder().decode(uint8Array);
-            const lines = asText.split("\n");
-            for (const line of lines) {
-              controller.enqueue(new TextEncoder().encode(line));
+            let start = 0;
+            for (let i = 0; i < data.length; i++) {
+              if (data[i] === 10) {
+                // 10 is ASCII/UTF-8 code for \n
+                controller.enqueue(data.subarray(start, i + 1));
+                start = i + 1;
+              }
+            }
+            if (start < data.length) {
+              controller.enqueue(data.subarray(start));
             }
           }
 
@@ -596,10 +603,7 @@ export async function proxyV1({
         if (isStreaming) {
           const start = Date.now();
           let textChunks = new TextDecoder().decode(chunk);
-          // Split it into lines, so the event parser is more efficient
-          for (const line of textChunks.split("\n")) {
-            eventSourceParser?.feed(line);
-          }
+          eventSourceParser?.feed(textChunks);
           const end = Date.now();
           console.log(`time to feed ${chunk.length} bytes: ${end - start}ms`);
         } else {

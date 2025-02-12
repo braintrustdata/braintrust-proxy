@@ -28,6 +28,13 @@ export const BedrockMetadataSchema = BaseMetadataSchema.merge(
 ).strict();
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
+export const VertexMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    project: z.string().min(1, "Project cannot be empty"),
+    authType: z.enum(["access_token", "service_account_key"]),
+  }),
+).strict();
+
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([
@@ -86,6 +93,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("bedrock"),
       metadata: BedrockMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("vertex"),
+      metadata: VertexMetadataSchema.nullish(),
     }),
   ),
 ]);

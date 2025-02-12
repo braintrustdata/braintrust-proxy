@@ -1900,33 +1900,149 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // VERTEX MODELS
-  "meta/llama-3.3-70b-instruct-maas": {
+  "publishers/google/models/gemini-2.0-flash": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.0 Flash",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  },
+  "publishers/google/models/gemini-2.0-flash-001": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    parent: "publishers/google/models/gemini-2.0-flash",
+  },
+  "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.0 Flash Lite",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+  },
+  "publishers/google/models/gemini-1.5-pro": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 1.5 Pro",
+    multimodal: true,
+  },
+  "publishers/google/models/gemini-1.5-pro-002": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    parent: "publishers/google/models/gemini-1.5-pro",
+  },
+  "publishers/google/models/gemini-1.5-pro-001": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    parent: "publishers/google/models/gemini-1.5-pro",
+  },
+  "publishers/google/models/gemini-1.5-flash": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 1.5 Flash",
+    multimodal: true,
+  },
+  "publishers/google/models/gemini-1.5-flash-002": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    parent: "publishers/google/models/gemini-1.5-flash",
+  },
+  "publishers/google/models/gemini-1.5-flash-001": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    parent: "publishers/google/models/gemini-1.5-flash",
+  },
+  "publishers/google/models/gemini-1.0-pro-vision": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 1.0 Pro Vision",
+    multimodal: true,
+  },
+  "publishers/google/models/gemini-1.0-pro-vision-001": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    parent: "publishers/google/models/gemini-1.0-pro-vision",
+  },
+  "publishers/google/models/gemini-1.0-pro": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 1.0 Pro",
+  },
+  "publishers/google/models/gemini-1.0-pro-002": {
+    format: "google",
+    flavor: "chat",
+    parent: "publishers/google/models/gemini-1.0-pro",
+  },
+  "publishers/google/models/gemini-1.0-pro-001": {
+    format: "google",
+    flavor: "chat",
+    parent: "publishers/google/models/gemini-1.0-pro",
+  },
+  "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.3 70B Instruct",
   },
-  "meta/llama-3.2-90b-vision-instruct-maas": {
+  "publishers/meta/models/llama-3.2-90b-vision-instruct-maas": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.2 90B Vision Instruct",
     multimodal: true,
   },
-  "meta/llama-3.1-401b-instruct-maas": {
+  "publishers/meta/models/llama-3.1-401b-instruct-maas": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.1 401B Instruct",
     input_cost_per_mil_tokens: 5,
     output_cost_per_mil_tokens: 16,
   },
-  "meta/llama-3.1-70b-instruct-maas": {
+  "publishers/meta/models/llama-3.1-70b-instruct-maas": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.1 70B Instruct",
   },
-  "meta/llama-3.1-8b-instruct-maas": {
+  "publishers/meta/models/llama-3.1-8b-instruct-maas": {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 3.1 8B Instruct",
+  },
+  "publishers/mistralai/models/mistral-large-2411": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mistral Large (24.11)",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 6,
+  },
+  "publishers/mistralai/models/mistral-nemo": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Mistral Nemo",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.15,
+  },
+  "publishers/mistralai/models/codestral-2501": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Codestral (25.01)",
+    input_cost_per_mil_tokens: 0.3,
+    output_cost_per_mil_tokens: 0.9,
+  },
+  // Vertex experimental models.
+  "publishers/google/models/gemini-2.0-pro-exp-02-05": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.0 Pro",
+    multimodal: true,
+    experimental: true,
   },
 
   "text-block": {

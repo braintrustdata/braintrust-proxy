@@ -1034,27 +1034,40 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
-  let baseURL;
+  let fullURL: URL | null | undefined = undefined;
+  let bearerToken: string | null | undefined = undefined;
+
   if (secret.type === "vertex") {
+    console.assert(url === "/chat/completions");
     const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
     const locations = modelSpec?.locations?.length
       ? modelSpec.locations
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
-    baseURL = `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/endpoints/openapi`;
-    let accessToken: string | null | undefined = undefined;
+    if (bodyData.model.startsWith("publishers/meta")) {
+      // Use the OpenAPI endpoint.
+      fullURL = new URL(
+        `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
+      );
+      bodyData.model = bodyData.model.replace(
+        /^publishers\/(\w+)\/models\//,
+        "$1/",
+      );
+    } else {
+      // Use standard endpoint with RawPredict/StreamRawPredict.
+      fullURL = new URL(
+        `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+      );
+      bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
+    }
     if (authType === "access_token") {
-      accessToken = secret.secret;
+      bearerToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      accessToken = await getGoogleAccessToken(secret.secret);
+      bearerToken = await getGoogleAccessToken(secret.secret);
     }
-    if (!accessToken) {
-      throw new Error("Failed to get service account access token");
-    }
-    headers["authorization"] = `Bearer ${accessToken}`;
   } else {
-    baseURL =
+    let baseURL =
       (secret.metadata &&
         "api_base" in secret.metadata &&
         secret.metadata.api_base) ||
@@ -1064,25 +1077,28 @@ async function fetchOpenAI(
         `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
       );
     }
-  }
 
-  if (secret.type === "azure") {
-    if (secret.metadata?.deployment) {
-      baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        secret.metadata.deployment,
-      )}`;
-    } else if (bodyData?.model || bodyData?.engine) {
-      const model = bodyData.model || bodyData.engine;
-      baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        model.replace("gpt-3.5", "gpt-35"),
-      )}`;
-    } else {
-      throw new ProxyBadRequestError(
-        `Azure provider ${secret.id} must have a deployment or model specified`,
-      );
+    if (secret.type === "azure") {
+      if (secret.metadata?.deployment) {
+        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
+          secret.metadata.deployment,
+        )}`;
+      } else if (bodyData?.model || bodyData?.engine) {
+        const model = bodyData.model || bodyData.engine;
+        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
+          model.replace("gpt-3.5", "gpt-35"),
+        )}`;
+      } else {
+        throw new ProxyBadRequestError(
+          `Azure provider ${secret.id} must have a deployment or model specified`,
+        );
+      }
+    } else if (secret.type === "lepton") {
+      baseURL = baseURL.replace("<model>", bodyData.model);
     }
-  } else if (secret.type === "lepton") {
-    baseURL = baseURL.replace("<model>", bodyData.model);
+
+    fullURL = new URL(baseURL + url);
+    bearerToken = secret.secret;
   }
 
   if (secret.type === "mistral" || secret.type === "fireworks") {
@@ -1093,11 +1109,8 @@ async function fetchOpenAI(
     delete bodyData["parallel_tool_calls"];
   }
 
-  const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
-  if (secret.type !== "vertex") {
-    headers["authorization"] = "Bearer " + secret.secret;
-  }
+  headers["authorization"] = "Bearer " + bearerToken;
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
@@ -1759,7 +1772,7 @@ async function fetchGoogle(
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
     fullURL = new URL(
-      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/publishers/google/models/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
     );
     let accessToken: string | null | undefined = undefined;
     if (authType === "access_token") {

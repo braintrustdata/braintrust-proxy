@@ -1899,6 +1899,36 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Command Light",
   },
 
+  // VERTEX MODELS
+  "meta/llama-3.3-70b-instruct-maas": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.3 70B Instruct",
+  },
+  "meta/llama-3.2-90b-vision-instruct-maas": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.2 90B Vision Instruct",
+    multimodal: true,
+  },
+  "meta/llama-3.1-401b-instruct-maas": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 401B Instruct",
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 16,
+  },
+  "meta/llama-3.1-70b-instruct-maas": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 70B Instruct",
+  },
+  "meta/llama-3.1-8b-instruct-maas": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 8B Instruct",
+  },
+
   "text-block": {
     format: "js",
     flavor: "completion",

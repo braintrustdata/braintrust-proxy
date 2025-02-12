@@ -277,6 +277,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "meta/llama-3.3-70b-instruct-maas": ["vertex"],
+  "meta/llama-3.2-90b-vision-instruct-maas": ["vertex"],
+  "meta/llama-3.1-401b-instruct-maas": ["vertex"],
+  "meta/llama-3.1-70b-instruct-maas": ["vertex"],
+  "meta/llama-3.1-8b-instruct-maas": ["vertex"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

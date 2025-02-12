@@ -68,7 +68,8 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
-import { JWT } from "google-auth-library";
+import { importPKCS8, SignJWT } from "jose";
+import { z } from "zod";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1046,10 +1047,7 @@ async function fetchOpenAI(
       accessToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      const jwt = new JWT();
-      jwt.fromJSON(JSON.parse(secret.secret));
-      jwt.scopes = ["https://www.googleapis.com/auth/cloud-platform"];
-      accessToken = await jwt.getAccessToken().then((res) => res.token);
+      accessToken = await getGoogleAccessToken(secret.secret);
     }
     if (!accessToken) {
       throw new Error("Failed to get service account access token");
@@ -1203,12 +1201,6 @@ async function fetchOpenAI(
     }
   }
 
-  console.log("fetch:", {
-    fullURL: fullURL.toString(),
-    method,
-    headers,
-    body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
-  });
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1668,6 +1660,45 @@ function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
   return out;
 }
 
+async function getGoogleAccessToken(secret: string): Promise<string> {
+  const {
+    private_key_id: kid,
+    private_key: pk,
+    client_email: email,
+    token_uri: tokenUri,
+  } = z
+    .object({
+      type: z.literal("service_account"),
+      private_key_id: z.string(),
+      private_key: z.string(),
+      client_email: z.string(),
+      token_uri: z.string(),
+    })
+    .parse(JSON.parse(secret));
+  const jwt = await new SignJWT({
+    scope: "https://www.googleapis.com/auth/cloud-platform",
+  })
+    .setProtectedHeader({ alg: "RS256", typ: "JWT", kid })
+    .setIssuer(email)
+    .setAudience(tokenUri)
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(await importPKCS8(pk, "RS256"));
+  const res = await fetch(tokenUri, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
+  return z
+    .object({
+      access_token: z.string(),
+      token_type: z.literal("Bearer"),
+    })
+    .parse(await res.json()).access_token;
+}
+
 async function fetchGoogle(
   modelSpec: ModelSpec | null,
   method: "POST",
@@ -1735,13 +1766,10 @@ async function fetchGoogle(
       accessToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      const jwt = new JWT();
-      jwt.fromJSON(JSON.parse(secret.secret));
-      jwt.scopes = ["https://www.googleapis.com/auth/cloud-platform"];
-      accessToken = await jwt.getAccessToken().then((res) => res.token);
+      accessToken = await getGoogleAccessToken(secret.secret);
     }
     if (!accessToken) {
-      throw new Error("Failed to get service account access token");
+      throw new Error("Failed to get Google access token");
     }
     headers["authorization"] = `Bearer ${accessToken}`;
   }

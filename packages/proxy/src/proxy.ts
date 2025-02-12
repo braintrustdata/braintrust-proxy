@@ -328,8 +328,13 @@ export async function proxyV1({
       stream = new ReadableStream<Uint8Array>({
         start(controller) {
           if ("body" in cachedData && cachedData.body) {
-            for (const line of cachedData.body.split("\n")) {
-              controller.enqueue(new TextEncoder().encode(line));
+            let splits = cachedData.body.split("\n");
+            for (let i = 0; i < splits.length; i++) {
+              controller.enqueue(
+                new TextEncoder().encode(
+                  splits[i] + (i < splits.length - 1 ? "\n" : ""),
+                ),
+              );
             }
           } else if ("data" in cachedData && cachedData.data) {
             const data = Buffer.from(cachedData.data, "base64");
@@ -601,11 +606,7 @@ export async function proxyV1({
           });
         }
         if (isStreaming) {
-          const start = Date.now();
-          let textChunks = new TextDecoder().decode(chunk);
-          eventSourceParser?.feed(textChunks);
-          const end = Date.now();
-          console.log(`time to feed ${chunk.length} bytes: ${end - start}ms`);
+          eventSourceParser?.feed(new TextDecoder().decode(chunk));
         } else {
           allChunks.push(chunk);
         }

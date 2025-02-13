@@ -11,6 +11,8 @@ import {
   translateParams,
   ModelFormat,
   APISecret,
+  VertexMetadataSchema,
+  ModelSpec,
 } from "@schema";
 import {
   ProxyBadRequestError,
@@ -66,6 +68,8 @@ import {
 } from "utils";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { importPKCS8, SignJWT } from "jose";
+import { z } from "zod";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -856,7 +860,8 @@ async function fetchModelLoop(
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
-        modelSpec?.format ?? "openai",
+        // modelSpec?.format ?? "openai",
+        modelSpec,
         method,
         endpointUrl,
         { ...headers, ...additionalHeaders },
@@ -988,7 +993,7 @@ async function fetchModelLoop(
 }
 
 async function fetchModel(
-  format: ModelFormat,
+  modelSpec: ModelSpec | null,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
@@ -996,9 +1001,11 @@ async function fetchModel(
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
 ): Promise<ModelResponse> {
+  const format = modelSpec?.format ?? "openai";
   switch (format) {
     case "openai":
       return await fetchOpenAI(
+        modelSpec,
         method,
         url,
         headers,
@@ -1011,7 +1018,14 @@ async function fetchModel(
       return await fetchAnthropic("POST", url, headers, bodyData, secret);
     case "google":
       console.assert(method === "POST");
-      return await fetchGoogle("POST", url, headers, bodyData, secret);
+      return await fetchGoogle(
+        modelSpec,
+        "POST",
+        url,
+        headers,
+        bodyData,
+        secret,
+      );
     case "converse":
       console.assert(method === "POST");
       return await fetchConverse({
@@ -1024,6 +1038,7 @@ async function fetchModel(
 }
 
 async function fetchOpenAI(
+  modelSpec: ModelSpec | null,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
@@ -1035,34 +1050,71 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
-  let baseURL =
-    (secret.metadata &&
-      "api_base" in secret.metadata &&
-      secret.metadata.api_base) ||
-    EndpointProviderToBaseURL[secret.type];
-  if (baseURL === null) {
-    throw new ProxyBadRequestError(
-      `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
-    );
-  }
+  let fullURL: URL | null | undefined = undefined;
+  let bearerToken: string | null | undefined = undefined;
 
-  if (secret.type === "azure") {
-    if (secret.metadata?.deployment) {
-      baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        secret.metadata.deployment,
-      )}`;
-    } else if (bodyData?.model || bodyData?.engine) {
-      const model = bodyData.model || bodyData.engine;
-      baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-        model.replace("gpt-3.5", "gpt-35"),
-      )}`;
+  if (secret.type === "vertex") {
+    console.assert(url === "/chat/completions");
+    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const locations = modelSpec?.locations?.length
+      ? modelSpec.locations
+      : ["us-central1"];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    if (bodyData.model.startsWith("publishers/meta")) {
+      // Use the OpenAPI endpoint.
+      fullURL = new URL(
+        `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
+      );
+      bodyData.model = bodyData.model.replace(
+        /^publishers\/(\w+)\/models\//,
+        "$1/",
+      );
     } else {
+      // Use standard endpoint with RawPredict/StreamRawPredict.
+      fullURL = new URL(
+        `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+      );
+      bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
+    }
+    if (authType === "access_token") {
+      bearerToken = secret.secret;
+    } else {
+      // authType === "service_account_key"
+      bearerToken = await getGoogleAccessToken(secret.secret);
+    }
+  } else {
+    let baseURL =
+      (secret.metadata &&
+        "api_base" in secret.metadata &&
+        secret.metadata.api_base) ||
+      EndpointProviderToBaseURL[secret.type];
+    if (baseURL === null) {
       throw new ProxyBadRequestError(
-        `Azure provider ${secret.id} must have a deployment or model specified`,
+        `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
       );
     }
-  } else if (secret.type === "lepton") {
-    baseURL = baseURL.replace("<model>", bodyData.model);
+
+    if (secret.type === "azure") {
+      if (secret.metadata?.deployment) {
+        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
+          secret.metadata.deployment,
+        )}`;
+      } else if (bodyData?.model || bodyData?.engine) {
+        const model = bodyData.model || bodyData.engine;
+        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
+          model.replace("gpt-3.5", "gpt-35"),
+        )}`;
+      } else {
+        throw new ProxyBadRequestError(
+          `Azure provider ${secret.id} must have a deployment or model specified`,
+        );
+      }
+    } else if (secret.type === "lepton") {
+      baseURL = baseURL.replace("<model>", bodyData.model);
+    }
+
+    fullURL = new URL(baseURL + url);
+    bearerToken = secret.secret;
   }
 
   if (secret.type === "mistral" || secret.type === "fireworks") {
@@ -1073,9 +1125,8 @@ async function fetchOpenAI(
     delete bodyData["parallel_tool_calls"];
   }
 
-  const fullURL = new URL(baseURL + url);
   headers["host"] = fullURL.host;
-  headers["authorization"] = "Bearer " + secret.secret;
+  headers["authorization"] = "Bearer " + bearerToken;
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
@@ -1638,7 +1689,47 @@ function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
   return out;
 }
 
+async function getGoogleAccessToken(secret: string): Promise<string> {
+  const {
+    private_key_id: kid,
+    private_key: pk,
+    client_email: email,
+    token_uri: tokenUri,
+  } = z
+    .object({
+      type: z.literal("service_account"),
+      private_key_id: z.string(),
+      private_key: z.string(),
+      client_email: z.string(),
+      token_uri: z.string(),
+    })
+    .parse(JSON.parse(secret));
+  const jwt = await new SignJWT({
+    scope: "https://www.googleapis.com/auth/cloud-platform",
+  })
+    .setProtectedHeader({ alg: "RS256", typ: "JWT", kid })
+    .setIssuer(email)
+    .setAudience(tokenUri)
+    .setIssuedAt()
+    .setExpirationTime("5m")
+    .sign(await importPKCS8(pk, "RS256"));
+  const res = await fetch(tokenUri, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
+  });
+  return z
+    .object({
+      access_token: z.string(),
+      token_type: z.literal("Bearer"),
+    })
+    .parse(await res.json()).access_token;
+}
+
 async function fetchGoogle(
+  modelSpec: ModelSpec | null,
   method: "POST",
   url: string,
   headers: Record<string, string>,
@@ -1646,7 +1737,7 @@ async function fetchGoogle(
   secret: APISecret,
 ): Promise<ModelResponse> {
   console.assert(url === "/chat/completions");
-  if (secret.type !== "google") {
+  if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
       `Unsupported credentials for Google: ${secret.type}`,
     );
@@ -1679,18 +1770,42 @@ async function fetchGoogle(
       .filter(([k, _]) => k !== null),
   );
 
-  const fullURL = new URL(
-    EndpointProviderToBaseURL.google! +
-      `/models/${encodeURIComponent(model)}:${
-        streamingMode ? "streamGenerateContent" : "generateContent"
-      }`,
-  );
-  fullURL.searchParams.set("key", secret.secret);
+  let fullURL: URL;
+  if (secret.type === "google") {
+    fullURL = new URL(
+      EndpointProviderToBaseURL.google! +
+        `/models/${encodeURIComponent(model)}:${
+          streamingMode ? "streamGenerateContent" : "generateContent"
+        }`,
+    );
+    fullURL.searchParams.set("key", secret.secret);
+    delete headers["authorization"];
+  } else {
+    // secret.type === "vertex"
+    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const locations = modelSpec?.locations?.length
+      ? modelSpec.locations
+      : ["us-central1"];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    fullURL = new URL(
+      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+    );
+    let accessToken: string | null | undefined = undefined;
+    if (authType === "access_token") {
+      accessToken = secret.secret;
+    } else {
+      // authType === "service_account_key"
+      accessToken = await getGoogleAccessToken(secret.secret);
+    }
+    if (!accessToken) {
+      throw new Error("Failed to get Google access token");
+    }
+    headers["authorization"] = `Bearer ${accessToken}`;
+  }
   if (streamingMode) {
     fullURL.searchParams.set("alt", "sse");
   }
 
-  delete headers["authorization"];
   headers["content-type"] = "application/json";
 
   if (

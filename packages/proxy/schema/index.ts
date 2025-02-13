@@ -5,7 +5,7 @@ import type {
   MessageRole,
   ModelParams,
 } from "@braintrust/core/typespecs";
-import { AvailableModels, ModelFormat } from "./models";
+import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
 
 export * from "./secrets";
 export * from "./models";
@@ -16,26 +16,6 @@ export {
   type Mp3Bitrate,
 } from "./audio";
 export * from "./openai-realtime";
-
-export const ModelEndpointType = [
-  "openai",
-  "anthropic",
-  "google",
-  "mistral",
-  "bedrock",
-  "together",
-  "fireworks",
-  "perplexity",
-  "xAI",
-  "groq",
-  "azure",
-  "lepton",
-  "cerebras",
-  "ollama",
-  "replicate",
-  "js",
-] as const;
-export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
 export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
@@ -220,7 +200,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pixtral-12b-2409": ["mistral"],
   "mistral-large-2411": ["mistral"],
   "pixtral-large-latest": ["mistral"],
-  "pixtral-large-2411": ["mistral"],
+  "pixtral-large-2411": ["mistral", "vertex"],
   "mistral-small-latest": ["mistral"],
   "mistral-small-2501": ["mistral"],
   "codestral-2501": ["mistral"],
@@ -297,6 +277,29 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "publishers/google/models/gemini-2.0-flash": ["vertex"],
+  "publishers/google/models/gemini-2.0-flash-001": ["vertex"],
+  "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": ["vertex"],
+  "publishers/google/models/gemini-1.5-pro": ["vertex"],
+  "publishers/google/models/gemini-1.5-pro-002": ["vertex"],
+  "publishers/google/models/gemini-1.5-pro-001": ["vertex"],
+  "publishers/google/models/gemini-1.5-flash": ["vertex"],
+  "publishers/google/models/gemini-1.5-flash-002": ["vertex"],
+  "publishers/google/models/gemini-1.5-flash-001": ["vertex"],
+  "publishers/google/models/gemini-1.0-pro-vision": ["vertex"],
+  "publishers/google/models/gemini-1.0-pro-vision-001": ["vertex"],
+  "publishers/google/models/gemini-1.0-pro": ["vertex"],
+  "publishers/google/models/gemini-1.0-pro-002": ["vertex"],
+  "publishers/google/models/gemini-1.0-pro-001": ["vertex"],
+  "publishers/meta/models/llama-3.3-70b-instruct-maas": ["vertex"],
+  "publishers/meta/models/llama-3.2-90b-vision-instruct-maas": ["vertex"],
+  "publishers/meta/models/llama-3.1-401b-instruct-maas": ["vertex"],
+  "publishers/meta/models/llama-3.1-70b-instruct-maas": ["vertex"],
+  "publishers/meta/models/llama-3.1-8b-instruct-maas": ["vertex"],
+  "publishers/mistralai/models/mistral-large-2411": ["vertex"],
+  "publishers/mistralai/models/mistral-nemo": ["vertex"],
+  "publishers/mistralai/models/codestral-2501": ["vertex"],
+  "publishers/google/models/gemini-2.0-pro-exp-02-05": ["vertex"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -323,6 +326,12 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   REPLICATE_API_KEY: "replicate",
 };
 
+export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
+  AWS_DEFAULT_CREDENTIALS: "bedrock",
+  GOOGLE_DEFAULT_CREDENTIALS: "vertex",
+  AZURE_DEFAULT_CREDENTIALS: "azure",
+};
+
 export const EndpointProviderToBaseURL: {
   [name in ModelEndpointType]: string | null;
 } = {
@@ -340,6 +349,7 @@ export const EndpointProviderToBaseURL: {
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
   bedrock: null,
+  vertex: null,
   azure: null,
   js: null,
 };

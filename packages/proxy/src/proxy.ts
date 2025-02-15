@@ -879,7 +879,7 @@ async function fetchModelLoop(
           ))
       ) {
         break;
-      } else {
+      } else if (i < secrets.length - 1) {
         console.warn(
           "Received retryable error. Will try the next endpoint",
           proxyResponse.response.status,
@@ -941,6 +941,29 @@ async function fetchModelLoop(
 
       totalWaitedTime += delayMs;
       i = -1; // Reset the loop variable
+    } else if (
+      httpCode !== undefined &&
+      i === secrets.length - 1 &&
+      !proxyResponse
+    ) {
+      // Convert the HTTP code into a more reasonable error that is easier to parse
+      // and display to the user.
+      const headersString: string[] = [];
+      httpHeaders.forEach((value, key) => {
+        headersString.push(`${key}: ${value}`);
+      });
+      const errorText =
+        `AI provider returned ${httpCode} error.\n\nHeaders:\n` +
+        headersString.join("\n");
+      proxyResponse = {
+        response: new Response(null, { status: httpCode }),
+        stream: new ReadableStream({
+          start(controller) {
+            controller.enqueue(new TextEncoder().encode(errorText));
+            controller.close();
+          },
+        }),
+      };
     }
 
     endpointRetryableErrors.add(1, {

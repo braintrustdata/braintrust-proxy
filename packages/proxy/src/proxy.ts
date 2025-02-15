@@ -956,7 +956,7 @@ async function fetchModelLoop(
         `AI provider returned ${httpCode} error.\n\nHeaders:\n` +
         headersString.join("\n");
       proxyResponse = {
-        response: new Response(null, { status: 400 }),
+        response: new Response(null, { status: httpCode }),
         stream: new ReadableStream({
           start(controller) {
             controller.enqueue(new TextEncoder().encode(errorText));

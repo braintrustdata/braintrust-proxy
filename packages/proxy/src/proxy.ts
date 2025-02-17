@@ -4,6 +4,7 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
+import { parse as cacheControlParse } from "cache-control-parser";
 import {
   AvailableModels,
   MessageTypeToMessageType,
@@ -70,9 +71,12 @@ import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
+import { CANCELLED } from "node:dns";
 
 type CachedData = {
   headers: Record<string, string>;
+  // XXX make this a required field once deployed and cache data is cycled for 1 week (previous max cache TTL)
+  timestamp?: number;
 } & (
   | {
       // DEPRECATION_NOTICE: This can be removed in a couple weeks since writing (e.g. June 9 2024 onwards)
@@ -83,6 +87,12 @@ type CachedData = {
     }
 );
 
+export const CACHE_CONTROL_HEADER = "cache-control";
+export const AGE_HEADER = "age";
+// XXX determine appropriate max cache TTL
+export const MAX_CACHE_TTL = 90 * 24 * 60 * 60; // 90 days
+export const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
+// XXX maybe rename this if standard cache control becomes default behavior
 export const CACHE_HEADER = "x-bt-use-cache";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 export const ORG_NAME_HEADER = "x-bt-org-name";
@@ -176,7 +186,8 @@ export async function proxyV1({
           h === "origin" ||
           h === "priority" ||
           h === "referer" ||
-          h === "user-agent"
+          h === "user-agent" ||
+          h === CACHE_CONTROL_HEADER
         ),
     ),
   );
@@ -187,11 +198,29 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  const useCacheMode = parseEnumHeader(
+  // XXX is there a clean way to specify "auto" caching behavior using only cache-control directives?
+  const legacyCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
+
+  let useCacheMode = legacyCacheMode;
+  const cacheControlDirectives = cacheControlParse(
+    proxyHeaders[CACHE_CONTROL_HEADER] || "",
+  );
+  // XXX does it make sense to have separate cache control for read and write?
+  if (
+    cacheControlDirectives?.["no-cache"] ||
+    cacheControlDirectives?.["no-store"]
+  ) {
+    useCacheMode = "never";
+  }
+  const cacheTTL = Math.min(
+    Math.max(1, cacheControlDirectives?.["max-age"] ?? DEFAULT_CACHE_TTL),
+    DEFAULT_CACHE_TTL,
+  );
+
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
@@ -317,6 +346,14 @@ export async function proxyV1({
       }
       setHeader(LEGACY_CACHED_HEADER, "true");
       setHeader(CACHED_HEADER, "HIT");
+      setHeader(CACHE_CONTROL_HEADER, `max-age=${cacheTTL}`);
+      // XXX simplify once all cached data has timestamp
+      if (cachedData.timestamp) {
+        setHeader(
+          AGE_HEADER,
+          `${Math.floor(getCurrentUnixTimestamp() - cachedData.timestamp)}`,
+        );
+      }
 
       spanType = guessSpanType(url, bodyData?.model);
       if (spanLogger && spanType) {
@@ -490,6 +527,10 @@ export async function proxyV1({
     }
     setHeader(LEGACY_CACHED_HEADER, "false"); // We're moving to x-bt-cached
     setHeader(CACHED_HEADER, "MISS");
+    if (useCache) {
+      setHeader(CACHE_CONTROL_HEADER, `max-age=${cacheTTL}`);
+      setHeader(AGE_HEADER, "0");
+    }
 
     if (stream && proxyResponse.ok && useCache) {
       const allChunks: Uint8Array[] = [];
@@ -504,7 +545,12 @@ export async function proxyV1({
           await cachePut(
             encryptionKey,
             cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
+            JSON.stringify({
+              headers: proxyResponseHeaders,
+              timestamp: getCurrentUnixTimestamp(),
+              data: dataB64,
+            }),
+            cacheTTL,
           );
         },
       });

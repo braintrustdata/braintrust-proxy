@@ -89,6 +89,7 @@
     "@opentelemetry/resources": "^1.19.0",
     "@opentelemetry/sdk-metrics": "^1.19.0",
     "ai": "2.2.37",
+    "cache-control-parser": "^2.0.6",
     "eventsource-parser": "^1.1.1",
     "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",

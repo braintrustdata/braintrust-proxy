@@ -50,6 +50,7 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: null,
+  stop: null,
 };
 
 export const sliderSpecs: {
@@ -79,6 +80,7 @@ export const defaultModelParamSettings: {
     frequency_penalty: 0,
     presence_penalty: 0,
     response_format: null,
+    stop: undefined,
     use_cache: true,
   },
   anthropic: {

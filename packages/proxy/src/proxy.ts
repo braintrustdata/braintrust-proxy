@@ -1480,6 +1480,16 @@ async function fetchAnthropic(
     ...translateParams("anthropic", oaiParams),
   };
 
+  const stop = z
+    .union([z.string(), z.array(z.string())])
+    .nullish()
+    .parse(oaiParams.stop);
+  params.stop_sequences = stop
+    ? Array.isArray(stop)
+      ? stop
+      : [stop]
+    : undefined;
+
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
     headers["anthropic-beta"] = "tools-2024-05-16";
@@ -1833,6 +1843,16 @@ async function fetchGoogle(
       oaiParams.response_format.json_schema.schema,
     );
   }
+  const stop = z
+    .union([z.string(), z.array(z.string())])
+    .nullish()
+    .parse(oaiParams.stop);
+  params.stopSequences = stop
+    ? Array.isArray(stop)
+      ? stop
+      : [stop]
+    : undefined;
+
   const body = JSON.stringify({
     contents: content,
     generationConfig: params,

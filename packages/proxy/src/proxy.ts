@@ -1598,9 +1598,21 @@ async function fetchAnthropic(
   };
 }
 
-function pruneJsonSchemaToGoogle(schema: any): any {
+function pruneJsonSchemaToGoogleInternal(root: any, schema: any): any {
   if (!schema || typeof schema !== "object") {
     return schema;
+  }
+
+  function resolveRef(root: any, ref: string): any {
+    const parts = ref.replace(/^#\//, "").split("/");
+    for (const part of parts) {
+      root = root[part];
+    }
+    return root;
+  }
+
+  if ("$ref" in schema) {
+    schema = resolveRef(root, schema["$ref"]);
   }
 
   const allowedFields = [
@@ -1626,17 +1638,21 @@ function pruneJsonSchemaToGoogle(schema: any): any {
       result[key] = Object.fromEntries(
         Object.entries(value as Record<string, any>).map(([k, v]) => [
           k,
-          pruneJsonSchemaToGoogle(v),
+          pruneJsonSchemaToGoogleInternal(root, v),
         ]),
       );
     } else if (key === "items") {
-      result[key] = pruneJsonSchemaToGoogle(value);
+      result[key] = pruneJsonSchemaToGoogleInternal(root, value);
     } else {
       result[key] = value;
     }
   }
 
   return result;
+}
+
+function pruneJsonSchemaToGoogle(schema: any): any {
+  return pruneJsonSchemaToGoogleInternal(schema, schema);
 }
 
 function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {

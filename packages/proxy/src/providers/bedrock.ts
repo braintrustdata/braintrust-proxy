@@ -593,11 +593,15 @@ function translateInferenceConfig(
             ? "topP"
             : k === "top_k"
               ? "topK"
-              : k,
-        v,
+              : k === "stop"
+                ? "stopSequences"
+                : k,
+        k === "stop" ? (Array.isArray(v) ? v : [v]) : v,
       ])
       .filter(([k, _]) =>
-        ["maxTokens", "temperature", "topP", "topK"].includes(k as string),
+        ["maxTokens", "temperature", "topP", "topK", "stopSequences"].includes(
+          k as string,
+        ),
       ),
   );
 }

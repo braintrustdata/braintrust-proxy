@@ -133,6 +133,7 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
         z.literal("end_turn"),
         z.literal("tool_use"),
         z.literal("max_tokens"),
+        z.literal("stop_sequence"),
       ]),
       stop_sequence: z.string().nullish(),
     }),
@@ -290,7 +291,8 @@ export function anthropicEventToOpenAIEvent(
             finish_reason:
               isStructuredOutput && event.delta.stop_reason === "tool_use"
                 ? "stop"
-                : event.delta.stop_reason === "end_turn"
+                : event.delta.stop_reason === "end_turn" ||
+                    event.delta.stop_reason === "stop_sequence"
                   ? "stop"
                   : "tool_calls",
             index: 0,

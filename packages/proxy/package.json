@@ -80,6 +80,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.3",
+    "@apidevtools/json-schema-ref-parser": "^11.9.1",
     "@aws-sdk/client-bedrock-runtime": "^3.738.0",
     "@braintrust/core": "^0.0.79",
     "@breezystack/lamejs": "^1.2.7",

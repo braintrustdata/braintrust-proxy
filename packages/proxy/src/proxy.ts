@@ -9,7 +9,6 @@ import {
   MessageTypeToMessageType,
   EndpointProviderToBaseURL,
   translateParams,
-  ModelFormat,
   APISecret,
   VertexMetadataSchema,
   ModelSpec,
@@ -70,6 +69,7 @@ import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -1608,10 +1608,14 @@ async function fetchAnthropic(
   };
 }
 
-function pruneJsonSchemaToGoogle(schema: any): any {
+async function googleSchemaFromJsonSchemaInternal(
+  root: any,
+  schema: any,
+): Promise<any> {
   if (!schema || typeof schema !== "object") {
     return schema;
   }
+  await $RefParser.dereference(schema);
 
   const allowedFields = [
     "type",
@@ -1634,13 +1638,15 @@ function pruneJsonSchemaToGoogle(schema: any): any {
 
     if (key === "properties") {
       result[key] = Object.fromEntries(
-        Object.entries(value as Record<string, any>).map(([k, v]) => [
-          k,
-          pruneJsonSchemaToGoogle(v),
-        ]),
+        await Promise.all(
+          Object.entries(value as Record<string, any>).map(async ([k, v]) => [
+            k,
+            await googleSchemaFromJsonSchemaInternal(root, v),
+          ]),
+        ),
       );
     } else if (key === "items") {
-      result[key] = pruneJsonSchemaToGoogle(value);
+      result[key] = await googleSchemaFromJsonSchemaInternal(root, value);
     } else {
       result[key] = value;
     }
@@ -1649,7 +1655,11 @@ function pruneJsonSchemaToGoogle(schema: any): any {
   return result;
 }
 
-function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
+async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
+  return await googleSchemaFromJsonSchemaInternal(schema, schema);
+}
+
+async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
   if (params.tools || params.functions) {
     params.tools =
       params.tools ||
@@ -1698,11 +1708,15 @@ function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
     tools: params.tools
       ? [
           {
-            function_declarations: params.tools.map((t) => ({
-              name: t.function.name,
-              description: t.function.description,
-              parameters: pruneJsonSchemaToGoogle(t.function.parameters),
-            })),
+            function_declarations: await Promise.all(
+              params.tools.map(async (t) => ({
+                name: t.function.name,
+                description: t.function.description,
+                parameters: await googleSchemaFromJsonSchema(
+                  t.function.parameters,
+                ),
+              })),
+            ),
           },
         ]
       : undefined,
@@ -1839,7 +1853,7 @@ async function fetchGoogle(
     params.response_mime_type = "application/json";
   }
   if (oaiParams.response_format?.type === "json_schema") {
-    params.response_schema = pruneJsonSchemaToGoogle(
+    params.response_schema = await googleSchemaFromJsonSchema(
       oaiParams.response_format.json_schema.schema,
     );
   }
@@ -1856,7 +1870,7 @@ async function fetchGoogle(
   const body = JSON.stringify({
     contents: content,
     generationConfig: params,
-    ...openAIToolsToGoogleTools(params),
+    ...(await openAIToolsToGoogleTools(params)),
   });
 
   const proxyResponse = await fetch(fullURL.toString(), {

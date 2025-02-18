@@ -87,7 +87,6 @@ type CachedData = {
     }
 );
 
-// XXX determine appropriate max cache TTL
 const MAX_CACHE_TTL = 90 * 24 * 60 * 60; // 90 days
 const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
 export const CACHE_HEADER = "x-bt-use-cache";
@@ -97,7 +96,6 @@ export const ORG_NAME_HEADER = "x-bt-org-name";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 
-export const LEGACY_CACHED_HEADER = "x-cached";
 export const CACHED_HEADER = "x-bt-cached";
 
 export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
@@ -196,14 +194,11 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  // XXX is there a clean way to specify "auto" caching behavior using only cache-control directives?
-  const legacyCacheMode = parseEnumHeader(
+  let useCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
-
-  let useCacheMode = legacyCacheMode;
   const cacheControlDirectives = cacheControlParse(
     proxyHeaders["cache-control"] || "",
   );
@@ -342,7 +337,6 @@ export async function proxyV1({
       for (const [name, value] of Object.entries(cachedData.headers)) {
         setHeader(name, value);
       }
-      setHeader(LEGACY_CACHED_HEADER, "true");
       setHeader(CACHED_HEADER, "HIT");
       setHeader("cache-control", `max-age=${cacheTTL}`);
       // XXX simplify once all cached data has timestamp
@@ -523,7 +517,6 @@ export async function proxyV1({
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
       setHeader(name, value);
     }
-    setHeader(LEGACY_CACHED_HEADER, "false"); // We're moving to x-bt-cached
     setHeader(CACHED_HEADER, "MISS");
     if (useCache) {
       setHeader("cache-control", `max-age=${cacheTTL}`);

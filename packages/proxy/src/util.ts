@@ -22,6 +22,24 @@ export function parseAuthHeader(
   return parts[1];
 }
 
+export function parseNumericHeader(
+  headers: Record<string, string | string[] | undefined>,
+  headerKey: string,
+): number | null {
+  let value = headers[headerKey];
+  if (Array.isArray(value)) {
+    value = value[value.length - 1];
+  }
+
+  if (value !== undefined) {
+    try {
+      return parseInt(value, 10);
+    } catch (e) {}
+  }
+
+  return null;
+}
+
 // This is duplicated from app/utils/object.ts
 export function isObject(value: any): value is { [key: string]: any } {
   return value instanceof Object && !(value instanceof Array);

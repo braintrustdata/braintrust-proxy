@@ -23,6 +23,7 @@ import {
   isEmpty,
   isObject,
   parseAuthHeader,
+  parseNumericHeader,
 } from "./util";
 import {
   anthropicCompletionToOpenAICompletion,
@@ -71,7 +72,6 @@ import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
-import { CANCELLED } from "node:dns";
 
 type CachedData = {
   headers: Record<string, string>;
@@ -87,13 +87,11 @@ type CachedData = {
     }
 );
 
-export const CACHE_CONTROL_HEADER = "cache-control";
-export const AGE_HEADER = "age";
 // XXX determine appropriate max cache TTL
-export const MAX_CACHE_TTL = 90 * 24 * 60 * 60; // 90 days
-export const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
-// XXX maybe rename this if standard cache control becomes default behavior
+const MAX_CACHE_TTL = 90 * 24 * 60 * 60; // 90 days
+const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
 export const CACHE_HEADER = "x-bt-use-cache";
+export const CACHE_TTL_HEADER = "x-bt-cache-ttl";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 export const ORG_NAME_HEADER = "x-bt-org-name";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
@@ -187,7 +185,7 @@ export async function proxyV1({
           h === "priority" ||
           h === "referer" ||
           h === "user-agent" ||
-          h === CACHE_CONTROL_HEADER
+          h === "cache-control"
         ),
     ),
   );
@@ -207,19 +205,19 @@ export async function proxyV1({
 
   let useCacheMode = legacyCacheMode;
   const cacheControlDirectives = cacheControlParse(
-    proxyHeaders[CACHE_CONTROL_HEADER] || "",
+    proxyHeaders["cache-control"] || "",
   );
   // XXX does it make sense to have separate cache control for read and write?
   if (
     cacheControlDirectives?.["no-cache"] ||
-    cacheControlDirectives?.["no-store"]
+    cacheControlDirectives?.["no-store"] ||
+    cacheControlDirectives?.["max-age"] === 0
   ) {
     useCacheMode = "never";
   }
-  const cacheTTL = Math.min(
-    Math.max(1, cacheControlDirectives?.["max-age"] ?? DEFAULT_CACHE_TTL),
-    DEFAULT_CACHE_TTL,
-  );
+  const requestedTTL =
+    parseNumericHeader(proxyHeaders, CACHE_TTL_HEADER) ?? DEFAULT_CACHE_TTL;
+  const cacheTTL = Math.min(Math.max(1, requestedTTL), MAX_CACHE_TTL);
 
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
@@ -346,11 +344,11 @@ export async function proxyV1({
       }
       setHeader(LEGACY_CACHED_HEADER, "true");
       setHeader(CACHED_HEADER, "HIT");
-      setHeader(CACHE_CONTROL_HEADER, `max-age=${cacheTTL}`);
+      setHeader("cache-control", `max-age=${cacheTTL}`);
       // XXX simplify once all cached data has timestamp
       if (cachedData.timestamp) {
         setHeader(
-          AGE_HEADER,
+          "age",
           `${Math.floor(getCurrentUnixTimestamp() - cachedData.timestamp)}`,
         );
       }
@@ -528,8 +526,8 @@ export async function proxyV1({
     setHeader(LEGACY_CACHED_HEADER, "false"); // We're moving to x-bt-cached
     setHeader(CACHED_HEADER, "MISS");
     if (useCache) {
-      setHeader(CACHE_CONTROL_HEADER, `max-age=${cacheTTL}`);
-      setHeader(AGE_HEADER, "0");
+      setHeader("cache-control", `max-age=${cacheTTL}`);
+      setHeader("age", "0");
     }
 
     if (stream && proxyResponse.ok && useCache) {

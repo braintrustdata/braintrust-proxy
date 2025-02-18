@@ -1644,6 +1644,7 @@ function convertToNullable(obj: any) {
 function stripFields(obj: any) {
   delete obj.title;
   delete obj.additionalProperties;
+  delete obj.default;
 
   if (obj.properties) {
     for (const value of Object.values(obj.properties)) {

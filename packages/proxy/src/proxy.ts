@@ -1608,55 +1608,64 @@ async function fetchAnthropic(
   };
 }
 
-async function googleSchemaFromJsonSchemaInternal(
-  root: any,
-  schema: any,
-): Promise<any> {
+function convertToNullable(obj: any) {
+  const anyOf = obj.anyOf;
+  if (anyOf) {
+    if (anyOf.length !== 2) {
+      throw new ProxyBadRequestError(
+        "Google only supports Optional types for unions",
+      );
+    }
+    const [a, b] = anyOf;
+    if (a.type === "null") {
+      Object.assign(obj, b);
+    } else if (b.type === "null") {
+      Object.assign(obj, a);
+    } else {
+      throw new ProxyBadRequestError(
+        "Google only supports Optional types for unions",
+      );
+    }
+    delete obj.anyOf;
+    obj.nullable = true;
+  }
+
+  if (obj.properties) {
+    for (const value of Object.values(obj.properties)) {
+      convertToNullable(value);
+    }
+  }
+
+  if (obj.items) {
+    convertToNullable(obj.items);
+  }
+}
+
+function stripFields(obj: any) {
+  delete obj.title;
+  delete obj.additionalProperties;
+  delete obj.default;
+
+  if (obj.properties) {
+    for (const value of Object.values(obj.properties)) {
+      stripFields(value);
+    }
+  }
+
+  if (obj.items) {
+    stripFields(obj.items);
+  }
+}
+
+async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   if (!schema || typeof schema !== "object") {
     return schema;
   }
   await $RefParser.dereference(schema);
-
-  const allowedFields = [
-    "type",
-    "format",
-    "description",
-    "nullable",
-    "items",
-    "enum",
-    "properties",
-    "required",
-    "example",
-  ];
-
-  const result: any = {};
-
-  for (const [key, value] of Object.entries(schema)) {
-    if (!allowedFields.includes(key)) {
-      continue;
-    }
-
-    if (key === "properties") {
-      result[key] = Object.fromEntries(
-        await Promise.all(
-          Object.entries(value as Record<string, any>).map(async ([k, v]) => [
-            k,
-            await googleSchemaFromJsonSchemaInternal(root, v),
-          ]),
-        ),
-      );
-    } else if (key === "items") {
-      result[key] = await googleSchemaFromJsonSchemaInternal(root, value);
-    } else {
-      result[key] = value;
-    }
-  }
-
-  return result;
-}
-
-async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
-  return await googleSchemaFromJsonSchemaInternal(schema, schema);
+  delete schema.$defs;
+  convertToNullable(schema);
+  stripFields(schema);
+  return schema;
 }
 
 async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {

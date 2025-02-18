@@ -215,9 +215,6 @@ export async function proxyV1({
   const noCache = !!cacheControl?.["no-cache"];
   const noStore = !!cacheControl?.["no-store"];
   const cacheMaxAge = cacheControl?.["max-age"];
-  if (noCache || noStore || cacheMaxAge === 0) {
-    useCacheMode = "never";
-  }
 
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
@@ -303,10 +300,17 @@ export async function proxyV1({
     bodyData.temperature !== 0 &&
     (bodyData.seed === undefined || bodyData.seed === null);
 
-  const useCache =
+  const readFromCache =
     cacheableEndpoint &&
     useCacheMode !== "never" &&
-    (useCacheMode === "always" || !temperatureNonZero);
+    (useCacheMode === "always" || !temperatureNonZero) &&
+    !noCache;
+
+  const writeToCache =
+    cacheableEndpoint &&
+    useCacheMode !== "never" &&
+    (useCacheMode === "always" || !temperatureNonZero) &&
+    !noStore;
 
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
@@ -332,7 +336,7 @@ export async function proxyV1({
   const isStreaming = !!bodyData?.stream;
 
   let stream: ReadableStream<Uint8Array> | null = null;
-  if (useCache) {
+  if (readFromCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
 
     if (cached !== null) {
@@ -529,12 +533,12 @@ export async function proxyV1({
       setHeader(name, value);
     }
     setHeader(CACHED_HEADER, "MISS");
-    if (useCache) {
+    if (writeToCache) {
       setHeader("cache-control", `max-age=${cacheTTL}`);
       setHeader("age", "0");
     }
 
-    if (stream && proxyResponse.ok && useCache) {
+    if (stream && proxyResponse.ok && writeToCache) {
       const allChunks: Uint8Array[] = [];
       const cacheStream = new TransformStream<Uint8Array, Uint8Array>({
         transform(chunk, controller) {

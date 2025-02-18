@@ -199,20 +199,20 @@ export async function proxyV1({
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
-  const cacheControlDirectives = cacheControlParse(
-    proxyHeaders["cache-control"] || "",
+  const cacheTTL = Math.min(
+    Math.max(
+      1,
+      parseNumericHeader(proxyHeaders, CACHE_TTL_HEADER) ?? DEFAULT_CACHE_TTL,
+    ),
+    MAX_CACHE_TTL,
   );
-  // XXX does it make sense to have separate cache control for read and write?
-  if (
-    cacheControlDirectives?.["no-cache"] ||
-    cacheControlDirectives?.["no-store"] ||
-    cacheControlDirectives?.["max-age"] === 0
-  ) {
+  const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
+  const noCache = !!cacheControl?.["no-cache"];
+  const noStore = !!cacheControl?.["no-store"];
+  const cacheMaxAge = cacheControl?.["max-age"];
+  if (noCache || noStore || cacheMaxAge === 0) {
     useCacheMode = "never";
   }
-  const requestedTTL =
-    parseNumericHeader(proxyHeaders, CACHE_TTL_HEADER) ?? DEFAULT_CACHE_TTL;
-  const cacheTTL = Math.min(Math.max(1, requestedTTL), MAX_CACHE_TTL);
 
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
@@ -331,62 +331,64 @@ export async function proxyV1({
     const cached = await cacheGet(encryptionKey, cacheKey);
 
     if (cached !== null) {
-      cacheHits.add(1);
       const cachedData: CachedData = JSON.parse(cached);
+      // XXX simplify once all cached data has a timestamp - assume existing data has age of 7 days
+      const age = cachedData.timestamp
+        ? Math.floor(getCurrentUnixTimestamp() - cachedData.timestamp)
+        : DEFAULT_CACHE_TTL;
 
-      for (const [name, value] of Object.entries(cachedData.headers)) {
-        setHeader(name, value);
-      }
-      setHeader(CACHED_HEADER, "HIT");
-      setHeader("cache-control", `max-age=${cacheTTL}`);
-      // XXX simplify once all cached data has timestamp
-      if (cachedData.timestamp) {
-        setHeader(
-          "age",
-          `${Math.floor(getCurrentUnixTimestamp() - cachedData.timestamp)}`,
-        );
-      }
+      if (!cacheMaxAge || age <= cacheMaxAge) {
+        cacheHits.add(1);
+        for (const [name, value] of Object.entries(cachedData.headers)) {
+          setHeader(name, value);
+        }
+        setHeader(CACHED_HEADER, "HIT");
+        setHeader("cache-control", `max-age=${cacheTTL}`);
+        setHeader("age", `${age}`);
 
-      spanType = guessSpanType(url, bodyData?.model);
-      if (spanLogger && spanType) {
-        spanLogger.setName(spanTypeToName(spanType));
-        logSpanInputs(bodyData, spanLogger, spanType);
-        spanLogger.log({
-          metrics: {
-            cached: 1,
-          },
-        });
-      }
+        spanType = guessSpanType(url, bodyData?.model);
+        if (spanLogger && spanType) {
+          spanLogger.setName(spanTypeToName(spanType));
+          logSpanInputs(bodyData, spanLogger, spanType);
+          spanLogger.log({
+            metrics: {
+              cached: 1,
+            },
+          });
+        }
 
-      stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          if ("body" in cachedData && cachedData.body) {
-            let splits = cachedData.body.split("\n");
-            for (let i = 0; i < splits.length; i++) {
-              controller.enqueue(
-                new TextEncoder().encode(
-                  splits[i] + (i < splits.length - 1 ? "\n" : ""),
-                ),
-              );
-            }
-          } else if ("data" in cachedData && cachedData.data) {
-            const data = Buffer.from(cachedData.data, "base64");
-            let start = 0;
-            for (let i = 0; i < data.length; i++) {
-              if (data[i] === 10) {
-                // 10 is ASCII/UTF-8 code for \n
-                controller.enqueue(data.subarray(start, i + 1));
-                start = i + 1;
+        stream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            if ("body" in cachedData && cachedData.body) {
+              let splits = cachedData.body.split("\n");
+              for (let i = 0; i < splits.length; i++) {
+                controller.enqueue(
+                  new TextEncoder().encode(
+                    splits[i] + (i < splits.length - 1 ? "\n" : ""),
+                  ),
+                );
+              }
+            } else if ("data" in cachedData && cachedData.data) {
+              const data = Buffer.from(cachedData.data, "base64");
+              let start = 0;
+              for (let i = 0; i < data.length; i++) {
+                if (data[i] === 10) {
+                  // 10 is ASCII/UTF-8 code for \n
+                  controller.enqueue(data.subarray(start, i + 1));
+                  start = i + 1;
+                }
+              }
+              if (start < data.length) {
+                controller.enqueue(data.subarray(start));
               }
             }
-            if (start < data.length) {
-              controller.enqueue(data.subarray(start));
-            }
-          }
 
-          controller.close();
-        },
-      });
+            controller.close();
+          },
+        });
+      } else {
+        cacheMisses.add(1);
+      }
     } else {
       cacheMisses.add(1);
     }

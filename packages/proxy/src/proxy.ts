@@ -68,15 +68,15 @@ import {
   makeTempCredentials,
   verifyTempCredentials,
 } from "utils";
-import { differenceInSeconds, formatISO, parseISO } from "date-fns";
+import { differenceInSeconds, addSeconds } from "date-fns";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 
 type CachedMetadata = {
-  cached_at: string;
-  ttl: number;
+  cached_at: Date;
+  expires_at: Date;
 };
 type CachedData = {
   headers: Record<string, string>;
@@ -212,9 +212,9 @@ export async function proxyV1({
     MAX_CACHE_TTL,
   );
   const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
-  const noCache = !!cacheControl?.["no-cache"];
-  const noStore = !!cacheControl?.["no-store"];
   const cacheMaxAge = cacheControl?.["max-age"];
+  const noCache = !!cacheControl?.["no-cache"] || cacheMaxAge === 0;
+  const noStore = !!cacheControl?.["no-store"];
 
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
@@ -342,12 +342,14 @@ export async function proxyV1({
     if (cached !== null) {
       const cachedData: CachedData = JSON.parse(cached);
       // XXX simplify once all cached data has a timestamp - assume existing data has age of 7 days
-      const ttl = cachedData.metadata?.ttl ?? DEFAULT_CACHE_TTL;
-      const age = cachedData.metadata
+      const responseMaxAge = cachedData.metadata
         ? differenceInSeconds(
-            new Date(),
-            parseISO(cachedData.metadata.cached_at),
+            cachedData.metadata.expires_at,
+            cachedData.metadata.cached_at,
           )
+        : DEFAULT_CACHE_TTL;
+      const age = cachedData.metadata
+        ? differenceInSeconds(new Date(), cachedData.metadata.cached_at)
         : DEFAULT_CACHE_TTL;
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
@@ -356,7 +358,7 @@ export async function proxyV1({
           setHeader(name, value);
         }
         setHeader(CACHED_HEADER, "HIT");
-        setHeader("cache-control", `max-age=${ttl}`);
+        setHeader("cache-control", `max-age=${responseMaxAge}`);
         setHeader("age", `${age}`);
 
         spanType = guessSpanType(url, bodyData?.model);
@@ -548,16 +550,16 @@ export async function proxyV1({
         async flush(controller) {
           const data = flattenChunksArray(allChunks);
           const dataB64 = Buffer.from(data).toString("base64");
+
+          const now = new Date();
           await cachePut(
             encryptionKey,
             cacheKey,
             JSON.stringify({
               headers: proxyResponseHeaders,
               metadata: {
-                cached_at: formatISO(new Date(), {
-                  representation: "complete",
-                }),
-                ttl: cacheTTL,
+                cached_at: now,
+                expires_at: addSeconds(now, cacheTTL),
               },
               data: dataB64,
             }),

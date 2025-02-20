@@ -92,7 +92,7 @@ type CachedData = {
     }
 );
 
-const MAX_CACHE_TTL = 90 * 24 * 60 * 60; // 90 days
+const MAX_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
 const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
 export const CACHE_HEADER = "x-bt-use-cache";
 export const CACHE_TTL_HEADER = "x-bt-cache-ttl";

@@ -1625,6 +1625,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // XAI MODELS
+  "grok-3": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    displayName: "Grok 3",
+  },
   "grok-2-vision": {
     format: "openai",
     flavor: "chat",

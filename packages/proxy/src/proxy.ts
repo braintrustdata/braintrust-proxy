@@ -4,6 +4,7 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
+import { parse as cacheControlParse } from "cache-control-parser";
 import {
   AvailableModels,
   MessageTypeToMessageType,
@@ -21,6 +22,7 @@ import {
   isEmpty,
   isObject,
   parseAuthHeader,
+  parseNumericHeader,
 } from "./util";
 import {
   anthropicCompletionToOpenAICompletion,
@@ -65,14 +67,21 @@ import {
   makeTempCredentials,
   verifyTempCredentials,
 } from "utils";
+import { differenceInSeconds } from "date-fns";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 
+type CachedMetadata = {
+  cached_at: Date;
+  ttl: number;
+};
 type CachedData = {
   headers: Record<string, string>;
+  // XXX make this a required field once deployed and cache data is cycled for 1 week (previous max cache TTL)
+  metadata?: CachedMetadata;
 } & (
   | {
       // DEPRECATION_NOTICE: This can be removed in a couple weeks since writing (e.g. June 9 2024 onwards)
@@ -83,13 +92,15 @@ type CachedData = {
     }
 );
 
+const MAX_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
+const DEFAULT_CACHE_TTL = 7 * 24 * 60 * 60; // 7 days
 export const CACHE_HEADER = "x-bt-use-cache";
+export const CACHE_TTL_HEADER = "x-bt-cache-ttl";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 export const ORG_NAME_HEADER = "x-bt-org-name";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 
-export const LEGACY_CACHED_HEADER = "x-cached";
 export const CACHED_HEADER = "x-bt-cached";
 
 export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
@@ -176,7 +187,8 @@ export async function proxyV1({
           h === "origin" ||
           h === "priority" ||
           h === "referer" ||
-          h === "user-agent"
+          h === "user-agent" ||
+          h === "cache-control"
         ),
     ),
   );
@@ -187,11 +199,23 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  const useCacheMode = parseEnumHeader(
+  let useCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
   );
+  const cacheTTL = Math.min(
+    Math.max(
+      1,
+      parseNumericHeader(proxyHeaders, CACHE_TTL_HEADER) ?? DEFAULT_CACHE_TTL,
+    ),
+    MAX_CACHE_TTL,
+  );
+  const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
+  const cacheMaxAge = cacheControl?.["max-age"];
+  const noCache = !!cacheControl?.["no-cache"] || cacheMaxAge === 0;
+  const noStore = !!cacheControl?.["no-store"];
+
   const useCredentialsCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
@@ -276,10 +300,17 @@ export async function proxyV1({
     bodyData.temperature !== 0 &&
     (bodyData.seed === undefined || bodyData.seed === null);
 
-  const useCache =
+  const readFromCache =
     cacheableEndpoint &&
     useCacheMode !== "never" &&
-    (useCacheMode === "always" || !temperatureNonZero);
+    (useCacheMode === "always" || !temperatureNonZero) &&
+    !noCache;
+
+  const writeToCache =
+    cacheableEndpoint &&
+    useCacheMode !== "never" &&
+    (useCacheMode === "always" || !temperatureNonZero) &&
+    !noStore;
 
   const endpointName = proxyHeaders[ENDPOINT_NAME_HEADER];
 
@@ -305,59 +336,69 @@ export async function proxyV1({
   const isStreaming = !!bodyData?.stream;
 
   let stream: ReadableStream<Uint8Array> | null = null;
-  if (useCache) {
+  if (readFromCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
 
     if (cached !== null) {
-      cacheHits.add(1);
       const cachedData: CachedData = JSON.parse(cached);
+      // XXX simplify once all cached data has a timestamp - assume existing data has age of 7 days
+      const responseMaxAge = cachedData.metadata?.ttl ?? DEFAULT_CACHE_TTL;
+      const age = cachedData.metadata
+        ? differenceInSeconds(new Date(), cachedData.metadata.cached_at)
+        : DEFAULT_CACHE_TTL;
 
-      for (const [name, value] of Object.entries(cachedData.headers)) {
-        setHeader(name, value);
-      }
-      setHeader(LEGACY_CACHED_HEADER, "true");
-      setHeader(CACHED_HEADER, "HIT");
+      if (!cacheMaxAge || age <= cacheMaxAge) {
+        cacheHits.add(1);
+        for (const [name, value] of Object.entries(cachedData.headers)) {
+          setHeader(name, value);
+        }
+        setHeader(CACHED_HEADER, "HIT");
+        setHeader("cache-control", `max-age=${responseMaxAge}`);
+        setHeader("age", `${age}`);
 
-      spanType = guessSpanType(url, bodyData?.model);
-      if (spanLogger && spanType) {
-        spanLogger.setName(spanTypeToName(spanType));
-        logSpanInputs(bodyData, spanLogger, spanType);
-        spanLogger.log({
-          metrics: {
-            cached: 1,
-          },
-        });
-      }
+        spanType = guessSpanType(url, bodyData?.model);
+        if (spanLogger && spanType) {
+          spanLogger.setName(spanTypeToName(spanType));
+          logSpanInputs(bodyData, spanLogger, spanType);
+          spanLogger.log({
+            metrics: {
+              cached: 1,
+            },
+          });
+        }
 
-      stream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          if ("body" in cachedData && cachedData.body) {
-            let splits = cachedData.body.split("\n");
-            for (let i = 0; i < splits.length; i++) {
-              controller.enqueue(
-                new TextEncoder().encode(
-                  splits[i] + (i < splits.length - 1 ? "\n" : ""),
-                ),
-              );
-            }
-          } else if ("data" in cachedData && cachedData.data) {
-            const data = Buffer.from(cachedData.data, "base64");
-            let start = 0;
-            for (let i = 0; i < data.length; i++) {
-              if (data[i] === 10) {
-                // 10 is ASCII/UTF-8 code for \n
-                controller.enqueue(data.subarray(start, i + 1));
-                start = i + 1;
+        stream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            if ("body" in cachedData && cachedData.body) {
+              let splits = cachedData.body.split("\n");
+              for (let i = 0; i < splits.length; i++) {
+                controller.enqueue(
+                  new TextEncoder().encode(
+                    splits[i] + (i < splits.length - 1 ? "\n" : ""),
+                  ),
+                );
+              }
+            } else if ("data" in cachedData && cachedData.data) {
+              const data = Buffer.from(cachedData.data, "base64");
+              let start = 0;
+              for (let i = 0; i < data.length; i++) {
+                if (data[i] === 10) {
+                  // 10 is ASCII/UTF-8 code for \n
+                  controller.enqueue(data.subarray(start, i + 1));
+                  start = i + 1;
+                }
+              }
+              if (start < data.length) {
+                controller.enqueue(data.subarray(start));
               }
             }
-            if (start < data.length) {
-              controller.enqueue(data.subarray(start));
-            }
-          }
 
-          controller.close();
-        },
-      });
+            controller.close();
+          },
+        });
+      } else {
+        cacheMisses.add(1);
+      }
     } else {
       cacheMisses.add(1);
     }
@@ -488,10 +529,13 @@ export async function proxyV1({
     for (const [name, value] of Object.entries(proxyResponseHeaders)) {
       setHeader(name, value);
     }
-    setHeader(LEGACY_CACHED_HEADER, "false"); // We're moving to x-bt-cached
     setHeader(CACHED_HEADER, "MISS");
+    if (writeToCache) {
+      setHeader("cache-control", `max-age=${cacheTTL}`);
+      setHeader("age", "0");
+    }
 
-    if (stream && proxyResponse.ok && useCache) {
+    if (stream && proxyResponse.ok && writeToCache) {
       const allChunks: Uint8Array[] = [];
       const cacheStream = new TransformStream<Uint8Array, Uint8Array>({
         transform(chunk, controller) {
@@ -501,10 +545,19 @@ export async function proxyV1({
         async flush(controller) {
           const data = flattenChunksArray(allChunks);
           const dataB64 = Buffer.from(data).toString("base64");
+
           await cachePut(
             encryptionKey,
             cacheKey,
-            JSON.stringify({ headers: proxyResponseHeaders, data: dataB64 }),
+            JSON.stringify({
+              headers: proxyResponseHeaders,
+              metadata: {
+                cached_at: new Date(),
+                ttl: cacheTTL,
+              },
+              data: dataB64,
+            }),
+            cacheTTL,
           );
         },
       });

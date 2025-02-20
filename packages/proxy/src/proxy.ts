@@ -68,7 +68,7 @@ import {
   makeTempCredentials,
   verifyTempCredentials,
 } from "utils";
-import { differenceInSeconds, addSeconds } from "date-fns";
+import { differenceInSeconds } from "date-fns";
 import { openAIChatCompletionToChatEvent } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
@@ -76,7 +76,7 @@ import { z } from "zod";
 
 type CachedMetadata = {
   cached_at: Date;
-  expires_at: Date;
+  ttl: number;
 };
 type CachedData = {
   headers: Record<string, string>;
@@ -342,12 +342,7 @@ export async function proxyV1({
     if (cached !== null) {
       const cachedData: CachedData = JSON.parse(cached);
       // XXX simplify once all cached data has a timestamp - assume existing data has age of 7 days
-      const responseMaxAge = cachedData.metadata
-        ? differenceInSeconds(
-            cachedData.metadata.expires_at,
-            cachedData.metadata.cached_at,
-          )
-        : DEFAULT_CACHE_TTL;
+      const responseMaxAge = cachedData.metadata?.ttl ?? DEFAULT_CACHE_TTL;
       const age = cachedData.metadata
         ? differenceInSeconds(new Date(), cachedData.metadata.cached_at)
         : DEFAULT_CACHE_TTL;
@@ -551,15 +546,14 @@ export async function proxyV1({
           const data = flattenChunksArray(allChunks);
           const dataB64 = Buffer.from(data).toString("base64");
 
-          const now = new Date();
           await cachePut(
             encryptionKey,
             cacheKey,
             JSON.stringify({
               headers: proxyResponseHeaders,
               metadata: {
-                cached_at: now,
-                expires_at: addSeconds(now, cacheTTL),
+                cached_at: new Date(),
+                ttl: cacheTTL,
               },
               data: dataB64,
             }),

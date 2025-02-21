@@ -68,7 +68,7 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { differenceInSeconds } from "date-fns";
-import { openAIChatCompletionToChatEvent } from "./providers/openai";
+import { makeFakeOpenAIStreamTransformer } from "./providers/openai";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
@@ -1403,59 +1403,13 @@ async function fetchOpenAIFakeStream({
         },
   );
 
-  let responseChunks: Uint8Array[] = [];
-  const responseToStream = new TransformStream<Uint8Array, Uint8Array>({
-    transform(chunk, controller) {
-      if (proxyResponse.ok) {
-        responseChunks.push(chunk);
-      } else {
-        controller.enqueue(chunk);
-      }
-    },
-    flush(controller) {
-      if (!proxyResponse.ok) {
-        controller.terminate();
-        return;
-      }
-      const decoder = new TextDecoder();
-      const responseText = responseChunks
-        .map((c) => decoder.decode(c))
-        .join("");
-      let responseJson: ChatCompletion = {
-        id: "invalid",
-        choices: [],
-        created: 0,
-        model: "invalid",
-        object: "chat.completion",
-        usage: {
-          prompt_tokens: 0,
-          completion_tokens: 0,
-          total_tokens: 0,
-        },
-      };
-      try {
-        responseJson = JSON.parse(responseText);
-      } catch (e) {
-        console.error("Failed to parse response as JSON", responseText);
-      }
-      controller.enqueue(
-        new TextEncoder().encode(
-          `data: ${JSON.stringify(openAIChatCompletionToChatEvent(responseJson))}\n\n`,
-        ),
-      );
-      controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
-      controller.terminate();
-    },
-  });
-
   if (isStream) {
     setHeader("content-type", "text/event-stream; charset=utf-8");
   }
-
   return {
     stream:
       isStream && proxyResponse.ok
-        ? proxyResponse.body?.pipeThrough(responseToStream) ||
+        ? proxyResponse.body?.pipeThrough(makeFakeOpenAIStreamTransformer()) ||
           createEmptyReadableStream()
         : proxyResponse.body,
     response: proxyResponse,

@@ -7,7 +7,7 @@ import type * as streamWeb from "node:stream/web";
 import { proxyV1 } from "@braintrust/proxy";
 
 import { getRedis } from "./cache";
-import { lookupApiSecret } from "./login";
+import { lookupApiSecret, sdkLogin } from "./login";
 
 export async function nodeProxyV1({
   method,
@@ -71,6 +71,7 @@ export async function nodeProxyV1({
     digest: async (message: string) => {
       return crypto.createHash("md5").update(message).digest("hex");
     },
+    sdkLogin,
   });
 
   const res = getRes();

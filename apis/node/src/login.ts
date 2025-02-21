@@ -1,6 +1,7 @@
 import bsearch from "binary-search";
 import { Env } from "./env";
 import { APISecret } from "@braintrust/proxy/schema";
+import { loginToState } from "braintrust";
 
 export async function lookupApiSecret(
   useCache: boolean,
@@ -51,6 +52,14 @@ export async function lookupApiSecret(
   );
 
   return secrets;
+}
+
+export function sdkLogin(authToken: string, orgName: string | undefined) {
+  return loginToState({
+    appUrl: Env.braintrustApiUrl,
+    apiKey: authToken,
+    orgName: orgName ?? Env.orgName,
+  });
 }
 
 function fixIndex(i: number) {

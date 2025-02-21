@@ -11,6 +11,7 @@ import {
   EncryptedMessage,
   encryptMessage,
 } from "utils/encrypt";
+import { loginToState } from "braintrust";
 
 export { FlushingExporter } from "./exporter";
 
@@ -310,6 +311,13 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cacheGet,
         cachePut,
         digest: digestMessage,
+        sdkLogin: async (authToken: string, orgName: string | undefined) => {
+          return loginToState({
+            appUrl: opts.braintrustApiUrl ?? DEFAULT_BRAINTRUST_APP_URL,
+            apiKey: authToken,
+            orgName,
+          });
+        },
         meterProvider,
       });
     } catch (e) {

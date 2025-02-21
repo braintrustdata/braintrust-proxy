@@ -44,6 +44,7 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import {
+  chatCompletionMessageParamSchema,
   Message,
   MessageRole,
   responseFormatSchema,
@@ -73,6 +74,7 @@ import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completion
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { Attachment, BraintrustState, ReadonlyAttachment } from "braintrust";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -137,6 +139,7 @@ export async function proxyV1({
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
+  sdkLogin,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -159,6 +162,10 @@ export async function proxyV1({
     ttl_seconds?: number,
   ) => Promise<void>;
   digest: (message: string) => Promise<string>;
+  sdkLogin: (
+    authToken: string,
+    orgName: string | undefined,
+  ) => Promise<BraintrustState>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
@@ -431,6 +438,8 @@ export async function proxyV1({
       );
     }
 
+    let sdkState: BraintrustState | undefined;
+
     const {
       modelResponse: { response: proxyResponse, stream: proxyStream },
       secretName,
@@ -486,6 +495,12 @@ export async function proxyV1({
       spanLogger,
       (st) => {
         spanType = st;
+      },
+      async () => {
+        if (!sdkState) {
+          sdkState = await sdkLogin(authToken, orgName);
+        }
+        return sdkState;
       },
     );
     stream = proxyStream;
@@ -806,6 +821,75 @@ const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   RATE_LIMIT_ERROR_CODE,
 ];
 
+async function attachRawImages(
+  getSdkState: () => Promise<BraintrustState>,
+  bodyData: any,
+) {
+  const parsed = z
+    .array(chatCompletionMessageParamSchema)
+    .safeParse(bodyData.messages);
+  if (!parsed.success) {
+    return bodyData;
+  }
+
+  const messages = await Promise.all(
+    parsed.data.map(async (msg) => {
+      if (msg.role !== "user" || !Array.isArray(msg.content)) {
+        return msg;
+      }
+
+      const content = await Promise.all(
+        msg.content.map(async (item) => {
+          if (item.type !== "image_url") {
+            return item;
+          }
+
+          const match = item.image_url.url.match(
+            /^data:image\/([a-zA-Z]+);base64,([a-zA-Z0-9+/=]+)$/,
+          );
+          if (!match) {
+            return item;
+          }
+
+          const [, type, b64] = match;
+          const buf = Buffer.from(b64, "base64");
+          if (!buf.length) {
+            console.warn("Empty image buffer after base64 decode");
+            return item;
+          }
+
+          try {
+            const state = await getSdkState();
+            const att = new Attachment({
+              data: buf,
+              contentType: `image/${type}`,
+              filename: "(embedded)",
+              state,
+            });
+
+            await att.upload();
+            return {
+              ...item,
+              image_url: {
+                url: (
+                  await new ReadonlyAttachment(att.reference, state).metadata()
+                ).downloadUrl,
+              },
+            };
+          } catch (err) {
+            console.warn("Failed to process base64 image:", err);
+            return item;
+          }
+        }),
+      );
+
+      return { ...msg, content };
+    }),
+  );
+
+  return { ...bodyData, messages };
+}
+
 let loopIndex = 0;
 async function fetchModelLoop(
   meter: Meter,
@@ -817,6 +901,7 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
+  getSdkState: () => Promise<BraintrustState>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const requestId = ++loopIndex;
 
@@ -845,6 +930,8 @@ async function fetchModelLoop(
   ) {
     model = bodyData.model;
   }
+
+  bodyData = await attachRawImages(getSdkState, bodyData);
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);

@@ -379,6 +379,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // ANTHROPIC MODELS
+  "claude-3-7-sonnet-latest": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3.7 Sonnet",
+  },
+  "claude-3-7-sonnet-20250219": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    parent: "claude-3-7-sonnet-latest",
+  },
   "claude-3-5-sonnet-latest": {
     format: "anthropic",
     flavor: "chat",

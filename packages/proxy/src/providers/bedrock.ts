@@ -42,6 +42,7 @@ import {
   ChatCompletionToolMessageParam,
 } from "openai/resources/chat/completions";
 import { convertImageToBase64 } from "./util";
+import { makeFakeOpenAIStreamTransformer } from "./openai";
 
 const brt = new BedrockRuntimeClient({});
 export async function fetchBedrockAnthropic({
@@ -396,13 +397,17 @@ export async function fetchConverse({
     toolConfig,
   };
 
+  const supportsStreaming = !!secret.metadata?.supportsStreaming;
+  const doStream = !!stream && supportsStreaming;
+  const fakeStream = !!stream && !supportsStreaming;
+
   const httpResponse = new Response(null, {
     status: 200,
   });
 
   let responseStream;
   try {
-    if (stream) {
+    if (doStream) {
       const command = new ConverseStreamCommand(input);
       const response = await brt.send(command);
       if (!response.stream) {
@@ -499,7 +504,9 @@ export async function fetchConverse({
   }
 
   return {
-    stream: responseStream,
+    stream: fakeStream
+      ? responseStream.pipeThrough(makeFakeOpenAIStreamTransformer())
+      : responseStream,
     response: httpResponse,
   };
 }

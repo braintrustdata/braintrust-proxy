@@ -1,6 +1,6 @@
 import { ChatCompletionChunk, ChatCompletion } from "openai/resources";
 
-export function openAIChatCompletionToChatEvent(
+function openAIChatCompletionToChatEvent(
   completion: ChatCompletion,
 ): ChatCompletionChunk {
   return {
@@ -26,4 +26,43 @@ export function openAIChatCompletionToChatEvent(
     object: "chat.completion.chunk",
     usage: completion.usage,
   };
+}
+
+export function makeFakeOpenAIStreamTransformer() {
+  let responseChunks: Uint8Array[] = [];
+  return new TransformStream<Uint8Array, Uint8Array>({
+    transform(chunk, controller) {
+      responseChunks.push(chunk);
+    },
+    flush(controller) {
+      const decoder = new TextDecoder();
+      const responseText = responseChunks
+        .map((c) => decoder.decode(c))
+        .join("");
+      let responseJson: ChatCompletion = {
+        id: "invalid",
+        choices: [],
+        created: 0,
+        model: "invalid",
+        object: "chat.completion",
+        usage: {
+          prompt_tokens: 0,
+          completion_tokens: 0,
+          total_tokens: 0,
+        },
+      };
+      try {
+        responseJson = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse response as JSON", responseText);
+      }
+      controller.enqueue(
+        new TextEncoder().encode(
+          `data: ${JSON.stringify(openAIChatCompletionToChatEvent(responseJson))}\n\n`,
+        ),
+      );
+      controller.enqueue(new TextEncoder().encode(`data: [DONE]\n\n`));
+      controller.terminate();
+    },
+  });
 }

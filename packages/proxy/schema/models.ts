@@ -1823,7 +1823,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.7 Sonnet",
   },
-  "us.anthropic.claude-3-5-haiku-20241022-v1:0": {
+  "anthropic.claude-3-5-haiku-20241022-v1:0": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
@@ -1831,7 +1831,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 4,
     displayName: "Claude 3.5 Haiku",
   },
-  "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
+  "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
@@ -1847,7 +1847,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.5 Sonnet",
   },
-  "us.anthropic.claude-3-opus-20240229-v1:0": {
+  "anthropic.claude-3-opus-20240229-v1:0": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,

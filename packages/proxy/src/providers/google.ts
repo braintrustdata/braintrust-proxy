@@ -34,7 +34,7 @@ export async function makeGoogleImageBlock(
   };
 }
 
-async function openAIContentToGoogleContent(
+export async function openAIContentToGoogleContent(
   content: Message["content"],
 ): Promise<Part[]> {
   if (typeof content === "string") {

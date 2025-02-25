@@ -40,6 +40,7 @@ import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
+  openAIContentToGoogleContent,
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
@@ -1853,7 +1854,10 @@ async function fetchGoogle(
     seed, // extract seed so that it's not sent to Google (we just use it for the cache)
     ...oaiParams
   } = bodyData;
-  const content = await openAIMessagesToGoogleMessages(oaiMessages);
+  const systemMessage = oaiMessages.find((m: any) => m.role === "system");
+  const content = await openAIMessagesToGoogleMessages(
+    oaiMessages.filter((m: any) => m.role !== "system"),
+  );
   const params = Object.fromEntries(
     Object.entries(translateParams("google", oaiParams))
       .map(([key, value]) => {
@@ -1928,6 +1932,11 @@ async function fetchGoogle(
 
   const body = JSON.stringify({
     contents: content,
+    systemInstruction: systemMessage
+      ? {
+          parts: await openAIContentToGoogleContent(systemMessage.content),
+        }
+      : undefined,
     generationConfig: params,
     ...(await openAIToolsToGoogleTools(params)),
   });

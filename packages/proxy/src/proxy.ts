@@ -793,6 +793,7 @@ interface ModelResponse {
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
+const OVERLOADED_ERROR_CODE = 503;
 const RATE_LIMIT_MAX_WAIT_MS = 45 * 1000; // Wait up to 45 seconds while retrying
 const BACKOFF_EXPONENT = 2;
 
@@ -804,6 +805,15 @@ const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   // 429 is rate limiting. We may want to track stats about this and potentially handle more
   // intelligently, eg if all APIs are rate limited, back off and try something else.
   RATE_LIMIT_ERROR_CODE,
+
+  // 503 is overloaded. We may want to track stats about this and potentially handle more
+  // intelligently, eg if all APIs are overloaded, back off and try something else.
+  OVERLOADED_ERROR_CODE,
+];
+
+const RATE_LIMITING_ERROR_CODES = [
+  RATE_LIMIT_ERROR_CODE,
+  OVERLOADED_ERROR_CODE,
 ];
 
 let loopIndex = 0;
@@ -969,7 +979,8 @@ async function fetchModelLoop(
     // loop, and we haven't waited the maximum allotted time, then
     // sleep for a bit, and reset the loop.
     if (
-      httpCode === RATE_LIMIT_ERROR_CODE &&
+      httpCode !== undefined &&
+      RATE_LIMITING_ERROR_CODES.includes(httpCode) &&
       i === secrets.length - 1 &&
       totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
     ) {

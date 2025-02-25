@@ -2000,6 +2000,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 4,
     displayName: "Claude 3.5 Haiku",
+    deprecated: true,
   },
   "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     format: "anthropic",
@@ -2008,6 +2009,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.5 Sonnet v2",
+    deprecated: true,
   },
   "anthropic.claude-3-opus-20240229-v1:0": {
     format: "anthropic",
@@ -2016,6 +2018,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15,
     output_cost_per_mil_tokens: 75,
     displayName: "Claude 3 Opus",
+    deprecated: true,
   },
 
   // VERTEX MODELS

@@ -1102,7 +1102,14 @@ async function fetchModel(
       );
     case "anthropic":
       console.assert(method === "POST");
-      return await fetchAnthropic("POST", url, headers, bodyData, secret);
+      return await fetchAnthropic(
+        "POST",
+        url,
+        modelSpec,
+        headers,
+        bodyData,
+        secret,
+      );
     case "google":
       console.assert(method === "POST");
       return await fetchGoogle(
@@ -1430,6 +1437,7 @@ async function fetchOpenAIFakeStream({
 async function fetchAnthropic(
   method: "POST",
   url: string,
+  modelSpec: ModelSpec | null,
   headers: Record<string, string>,
   bodyData: null | any,
   secret: APISecret,
@@ -1437,11 +1445,13 @@ async function fetchAnthropic(
   console.assert(url === "/chat/completions");
 
   // https://docs.anthropic.com/claude/reference/complete_post
-  headers["accept"] = "application/json";
-  headers["anthropic-version"] = "2023-06-01";
-  const fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
-  headers["host"] = fullURL.host;
-  headers["x-api-key"] = secret.secret;
+  let fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
+  if (secret.type !== "vertex") {
+    headers["accept"] = "application/json";
+    headers["anthropic-version"] = "2023-06-01";
+    headers["host"] = fullURL.host;
+    headers["x-api-key"] = secret.secret;
+  }
 
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
@@ -1560,6 +1570,28 @@ async function fetchAnthropic(
       isFunction,
       isStructuredOutput,
     });
+  } else if (secret.type === "vertex") {
+    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const locations = modelSpec?.locations?.length
+      ? modelSpec.locations
+      : ["us-east5"];
+    const location = locations[Math.floor(Math.random() * locations.length)];
+    fullURL = new URL(
+      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+    );
+    let accessToken: string | null | undefined = undefined;
+    if (authType === "access_token") {
+      accessToken = secret.secret;
+    } else {
+      // authType === "service_account_key"
+      accessToken = await getGoogleAccessToken(secret.secret);
+    }
+    if (!accessToken) {
+      throw new Error("Failed to get Google access token");
+    }
+    headers["authorization"] = `Bearer ${accessToken}`;
+    params["anthropic_version"] = "vertex-2023-10-16";
+    delete params.model;
   }
 
   const proxyResponse = await fetch(fullURL.toString(), {

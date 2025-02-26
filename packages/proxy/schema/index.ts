@@ -293,6 +293,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-beta": ["xAI"],
   "publishers/google/models/gemini-2.0-flash": ["vertex"],
   "publishers/google/models/gemini-2.0-flash-001": ["vertex"],
+  "publishers/google/models/gemini-2.0-flash-lite": ["vertex"],
+  "publishers/google/models/gemini-2.0-flash-lite-001": ["vertex"],
   "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": ["vertex"],
   "publishers/google/models/gemini-1.5-pro": ["vertex"],
   "publishers/google/models/gemini-1.5-pro-002": ["vertex"],

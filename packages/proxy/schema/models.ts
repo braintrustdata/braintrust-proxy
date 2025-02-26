@@ -1554,13 +1554,21 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     parent: "gemini-2.0-flash",
   },
-  "gemini-2.0-flash-lite-preview-02-05": {
+  "gemini-2.0-flash-lite": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
-    displayName: "Gemini 2.0 Flash-Lite Preview",
+    displayName: "Gemini 2.0 Flash-Lite",
     multimodal: true,
+  },
+  "gemini-2.0-flash-lite-001": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    multimodal: true,
+    parent: "gemini-2.0-flash-lite",
   },
   "gemini-1.5-flash": {
     format: "google",
@@ -2038,13 +2046,21 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     parent: "publishers/google/models/gemini-2.0-flash",
   },
-  "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": {
+  "publishers/google/models/gemini-2.0-flash-lite": {
     format: "google",
     flavor: "chat",
-    displayName: "Gemini 2.0 Flash Lite",
     multimodal: true,
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
+    displayName: "Gemini 2.0 Flash-Lite",
+  },
+  "publishers/google/models/gemini-2.0-flash-lite-001": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    parent: "publishers/google/models/gemini-2.0-flash-lite",
   },
   "publishers/google/models/gemini-1.5-pro": {
     format: "google",
@@ -2267,6 +2283,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     displayName: "Llama 3.1 8B Instruct",
     experimental: true,
+  },
+  // Vertex deprecated models.
+  "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.0 Flash-Lite",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+    deprecated: true,
   },
 
   "text-block": {

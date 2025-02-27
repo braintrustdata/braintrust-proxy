@@ -152,6 +152,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
     o1_like: true,
+    experimental: true,
     parent: "o1",
   },
   "o1-preview-2024-09-12": {
@@ -161,6 +162,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60.0,
     o1_like: true,
+    experimental: true,
     parent: "o1",
   },
   "o3-mini": {
@@ -215,6 +217,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
+    experimental: true,
     parent: "gpt-4",
   },
   "gpt-4-1106-preview": {
@@ -222,6 +225,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     input_cost_per_mil_tokens: 10,
     output_cost_per_mil_tokens: 30,
+    experimental: true,
     parent: "gpt-4",
   },
   "gpt-4-0613": {

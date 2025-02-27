@@ -238,6 +238,25 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 60,
     parent: "gpt-4",
   },
+  // OpenAI experimental.
+  "gpt-4.5-preview": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 75,
+    output_cost_per_mil_tokens: 150,
+    displayName: "GPT-4.5",
+    experimental: true,
+  },
+  "gpt-4.5-preview-2025-02-27": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 75,
+    output_cost_per_mil_tokens: 150,
+    experimental: true,
+    parent: "gpt-4.5-preview",
+  },
   // OpenAI deprecated.
   "gpt-3.5-turbo-0125": {
     format: "openai",

@@ -124,7 +124,7 @@ export const modelProviderHasTools: {
 export const DefaultEndpointTypes: {
   [name in ModelFormat]: ModelEndpointType[];
 } = {
-  openai: ["openai", "azure"],
+  openai: ["openai", "azure", "azure_entra"],
   anthropic: ["anthropic"],
   google: ["google"],
   js: ["js"],
@@ -133,8 +133,8 @@ export const DefaultEndpointTypes: {
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
-  "gpt-35-turbo": ["azure"],
-  "gpt-35-turbo-16k": ["azure"],
+  "gpt-35-turbo": ["azure", "azure_entra"],
+  "gpt-35-turbo-16k": ["azure", "azure_entra"],
   sonar: ["perplexity"],
   "sonar-pro": ["perplexity"],
   "sonar-reasoning": ["perplexity"],
@@ -390,6 +390,7 @@ export const EndpointProviderToBaseURL: {
   bedrock: null,
   vertex: null,
   azure: null,
+  azure_entra: null,
   js: null,
 };
 

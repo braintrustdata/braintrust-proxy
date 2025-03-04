@@ -49,6 +49,7 @@ import {
   MessageRole,
   responseFormatSchema,
 } from "@braintrust/core/typespecs";
+import { _urljoin } from "@braintrust/core";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -74,6 +75,7 @@ import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completion
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { getAzureEntraAccessToken } from "./providers/azure";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -1148,6 +1150,8 @@ async function fetchOpenAI(
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;
 
+  const isAzure = secret.type === "azure" || secret.type === "azure_entra";
+
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
     const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
@@ -1189,16 +1193,21 @@ async function fetchOpenAI(
       );
     }
 
-    if (secret.type === "azure") {
+    console.log("secret.metadata", secret.metadata);
+    if (isAzure && !secret.metadata?.no_named_deployment) {
       if (secret.metadata?.deployment) {
-        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-          secret.metadata.deployment,
-        )}`;
+        baseURL = _urljoin(
+          baseURL,
+          "openai/deployments",
+          encodeURIComponent(secret.metadata.deployment),
+        );
       } else if (bodyData?.model || bodyData?.engine) {
         const model = bodyData.model || bodyData.engine;
-        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-          model.replace("gpt-3.5", "gpt-35"),
-        )}`;
+        baseURL = _urljoin(
+          baseURL,
+          "openai/deployments",
+          encodeURIComponent(model.replace("gpt-3.5", "gpt-35")),
+        );
       } else {
         throw new ProxyBadRequestError(
           `Azure provider ${secret.id} must have a deployment or model specified`,
@@ -1209,7 +1218,12 @@ async function fetchOpenAI(
     }
 
     fullURL = new URL(baseURL + url);
-    bearerToken = secret.secret;
+
+    if (secret.type === "azure_entra") {
+      bearerToken = await getAzureEntraAccessToken(secret);
+    } else {
+      bearerToken = secret.secret;
+    }
   }
 
   if (secret.type === "mistral" || secret.type === "fireworks") {
@@ -1223,7 +1237,7 @@ async function fetchOpenAI(
   headers["host"] = fullURL.host;
   headers["authorization"] = "Bearer " + bearerToken;
 
-  if (secret.type === "azure" && secret.metadata?.api_version) {
+  if (isAzure && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
     headers["api-key"] = secret.secret;
     delete bodyData["seed"];

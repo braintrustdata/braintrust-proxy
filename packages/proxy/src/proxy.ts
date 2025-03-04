@@ -1193,7 +1193,6 @@ async function fetchOpenAI(
       );
     }
 
-    console.log("secret.metadata", secret.metadata);
     if (isAzure && !secret.metadata?.no_named_deployment) {
       if (secret.metadata?.deployment) {
         baseURL = _urljoin(

@@ -13,6 +13,7 @@ import {
   SystemContentBlock,
   Message as BedrockMessage,
   ImageBlock,
+  DocumentBlock,
   ToolConfiguration,
   InferenceConfiguration,
   ImageFormat,
@@ -41,7 +42,7 @@ import {
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources/chat/completions";
-import { convertImageToBase64 } from "./util";
+import { convertMediaToBase64 } from "./util";
 import { makeFakeOpenAIStreamTransformer } from "./openai";
 
 const brt = new BedrockRuntimeClient({});
@@ -170,18 +171,38 @@ export async function fetchBedrockAnthropic({
   };
 }
 
-async function imageBlock(url: string): Promise<ImageBlock> {
-  const imageBlock = await convertImageToBase64({
-    image: url,
-    allowedImageTypes: ["image/jpeg", "image/png", "image/gif", "image/webp"],
-    maxImageBytes: 5 * 1024 * 1024,
+async function mediaBlock(media: string): Promise<ContentBlock> {
+  const { media_type, data } = await convertMediaToBase64({
+    media,
+    allowedMediaTypes: [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "application/pdf",
+    ],
+    maxMediaBytes: 5 * 1024 * 1024,
   });
-  return {
-    format: imageBlock.media_type.replace("image/", "") as ImageFormat,
-    source: {
-      bytes: new Uint8Array(Buffer.from(imageBlock.data, "base64")),
-    },
-  };
+  if (media_type === "application/pdf") {
+    return {
+      document: {
+        format: "pdf",
+        name: "document",
+        source: {
+          bytes: new Uint8Array(Buffer.from(data, "base64")),
+        },
+      },
+    };
+  } else {
+    return {
+      image: {
+        format: media_type.replace("image/", "") as ImageFormat,
+        source: {
+          bytes: new Uint8Array(Buffer.from(data, "base64")),
+        },
+      },
+    };
+  }
 }
 
 export async function translateContent(
@@ -192,9 +213,7 @@ export async function translateContent(
   }
   return await Promise.all(
     content?.map(async (part) =>
-      part.type === "text"
-        ? part
-        : { image: await imageBlock(part.image_url.url) },
+      part.type === "text" ? part : await mediaBlock(part.image_url.url),
     ) ?? [],
   );
 }

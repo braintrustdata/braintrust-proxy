@@ -9,27 +9,26 @@ import {
 } from "@google/generative-ai";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "..";
-import { convertImageToBase64 } from "./util";
+import { convertMediaToBase64 } from "./util";
 
-export async function makeGoogleImageBlock(
-  image: string,
-): Promise<InlineDataPart> {
-  const imageBlock = await convertImageToBase64({
-    image,
-    allowedImageTypes: [
+async function makeGoogleMediaBlock(media: string): Promise<InlineDataPart> {
+  const { media_type: mimeType, data } = await convertMediaToBase64({
+    media,
+    allowedMediaTypes: [
       "image/png",
       "image/jpeg",
       "image/webp",
       "image/heic",
       "image/heif",
+      "application/pdf",
     ],
-    maxImageBytes: null,
+    maxMediaBytes: null,
   });
 
   return {
     inlineData: {
-      mimeType: imageBlock.media_type,
-      data: imageBlock.data,
+      mimeType,
+      data,
     },
   };
 }
@@ -44,7 +43,7 @@ export async function openAIContentToGoogleContent(
     content?.map(async (part) =>
       part.type === "text"
         ? { text: part.text }
-        : await makeGoogleImageBlock(part.image_url.url),
+        : await makeGoogleMediaBlock(part.image_url.url),
     ) ?? [],
   );
 }

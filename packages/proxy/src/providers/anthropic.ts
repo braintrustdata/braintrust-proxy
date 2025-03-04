@@ -15,10 +15,12 @@ import {
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
-import { convertImageToBase64 } from "./util";
+import { convertMediaToBase64 } from "./util";
 import {
   ImageBlockParam,
+  DocumentBlockParam,
   MessageCreateParamsBase,
+  Base64ImageSource,
 } from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
@@ -413,29 +415,39 @@ function anthropicFinishReason(
       : null;
 }
 
-const maxImageBytes = 5 * 1024 * 1024;
-const allowedImageTypes = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-];
-
-export async function makeAnthropicImageBlock(
-  image: string,
-): Promise<ImageBlockParam> {
-  const imageBlock = await convertImageToBase64({
-    image,
-    allowedImageTypes,
-    maxImageBytes,
+export async function makeAnthropicMediaBlock(
+  media: string,
+): Promise<ImageBlockParam | DocumentBlockParam> {
+  const { media_type, data } = await convertMediaToBase64({
+    media,
+    allowedMediaTypes: [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "application/pdf",
+    ],
+    maxMediaBytes: 5 * 1024 * 1024,
   });
-  return {
-    type: "image",
-    source: {
-      type: "base64",
-      ...imageBlock,
-    },
-  };
+  if (media_type === "application/pdf") {
+    return {
+      type: "document",
+      source: {
+        type: "base64",
+        media_type,
+        data,
+      },
+    };
+  } else {
+    return {
+      type: "image",
+      source: {
+        type: "base64",
+        media_type: media_type as Base64ImageSource["media_type"],
+        data,
+      },
+    };
+  }
 }
 
 export async function openAIContentToAnthropicContent(
@@ -448,7 +460,7 @@ export async function openAIContentToAnthropicContent(
     content?.map(async (part) =>
       part.type === "text"
         ? part
-        : await makeAnthropicImageBlock(part.image_url.url),
+        : await makeAnthropicMediaBlock(part.image_url.url),
     ) ?? [],
   );
 }

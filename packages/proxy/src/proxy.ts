@@ -1150,15 +1150,18 @@ async function fetchOpenAI(
 
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
-    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const { project, authType, api_base } = VertexMetadataSchema.parse(
+      secret.metadata,
+    );
     const locations = modelSpec?.locations?.length
       ? modelSpec.locations
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
+    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
     if (bodyData.model.startsWith("publishers/meta")) {
       // Use the OpenAPI endpoint.
       fullURL = new URL(
-        `https://${location}-aiplatform.googleapis.com/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
+        `${baseURL}/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
       );
       bodyData.model = bodyData.model.replace(
         /^publishers\/(\w+)\/models\//,
@@ -1167,7 +1170,7 @@ async function fetchOpenAI(
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
-        `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+        `${baseURL}/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
     }
@@ -1572,13 +1575,16 @@ async function fetchAnthropic(
       isStructuredOutput,
     });
   } else if (secret.type === "vertex") {
-    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const { project, authType, api_base } = VertexMetadataSchema.parse(
+      secret.metadata,
+    );
     const locations = modelSpec?.locations?.length
       ? modelSpec.locations
       : ["us-east5"];
     const location = locations[Math.floor(Math.random() * locations.length)];
+    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
     fullURL = new URL(
-      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+      `${baseURL}/v1/projects/${project}/locations/${location}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
     );
     let accessToken: string | null | undefined = undefined;
     if (authType === "access_token") {
@@ -1883,13 +1889,16 @@ async function fetchGoogle(
     delete headers["authorization"];
   } else {
     // secret.type === "vertex"
-    const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
+    const { project, authType, api_base } = VertexMetadataSchema.parse(
+      secret.metadata,
+    );
     const locations = modelSpec?.locations?.length
       ? modelSpec.locations
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
+    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
     fullURL = new URL(
-      `https://${location}-aiplatform.googleapis.com/v1/projects/${project}/locations/${location}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `${baseURL}/v1/projects/${project}/locations/${location}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
     );
     let accessToken: string | null | undefined = undefined;
     if (authType === "access_token") {

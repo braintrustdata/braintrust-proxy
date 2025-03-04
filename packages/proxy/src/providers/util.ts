@@ -1,80 +1,80 @@
 import { arrayBufferToBase64 } from "utils";
 
-const base64ImagePattern =
-  /^data:(image\/(?:jpeg|png|gif|webp));base64,([A-Za-z0-9+/]+={0,2})$/;
+const base64MediaPattern = /^data:([\w\/\-\.]+);base64,([A-Za-z0-9+/]+={0,2})$/;
 
-export interface ImageBlock {
-  media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+interface MediaBlock {
+  media_type: string;
   data: string;
 }
 
-export function convertBase64Image(image: string): ImageBlock | null {
-  const match = image.match(base64ImagePattern);
+function convertBase64Media(media: string): MediaBlock | null {
+  const match = media.match(base64MediaPattern);
   if (!match) {
     return null;
   }
 
   const [, media_type, data] = match;
   return {
-    media_type: media_type as ImageBlock["media_type"],
+    media_type,
     data,
   };
 }
 
-async function convertImageUrl({
+async function convertMediaUrl({
   url,
-  allowedImageTypes,
-  maxImageBytes,
+  allowedMediaTypes,
+  maxMediaBytes,
 }: {
   url: string;
-  allowedImageTypes: string[];
-  maxImageBytes: number | null;
-}): Promise<ImageBlock> {
+  allowedMediaTypes: string[];
+  maxMediaBytes: number | null;
+}): Promise<MediaBlock> {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`Failed to fetch image: ${response.statusText}`);
+    throw new Error(`Failed to fetch media: ${response.statusText}`);
   }
 
   const contentType = response.headers.get("content-type");
   if (!contentType) {
-    throw new Error("Failed to get content type of the image");
+    throw new Error("Failed to get content type of the media");
   }
-  if (!allowedImageTypes.includes(contentType)) {
-    throw new Error(`Unsupported image type: ${contentType}`);
+  const baseContentType = contentType.split(";")[0].trim();
+  if (!allowedMediaTypes.includes(baseContentType)) {
+    throw new Error(`Unsupported media type: ${baseContentType}`);
   }
 
   const arrayBuffer = await response.arrayBuffer();
-  if (maxImageBytes !== null && arrayBuffer.byteLength > maxImageBytes) {
+  if (maxMediaBytes !== null && arrayBuffer.byteLength > maxMediaBytes) {
     throw new Error(
-      `Image size exceeds the ${maxImageBytes / 1024 / 1024} MB limit`,
+      `Media size exceeds the ${maxMediaBytes / 1024 / 1024} MB limit`,
     );
   }
 
   const data = arrayBufferToBase64(arrayBuffer);
 
   return {
-    media_type: contentType as ImageBlock["media_type"],
+    media_type: baseContentType,
     data,
   };
 }
 
-export async function convertImageToBase64({
-  image,
-  allowedImageTypes,
-  maxImageBytes,
+export async function convertMediaToBase64({
+  media,
+  allowedMediaTypes,
+  maxMediaBytes,
 }: {
-  image: string;
-  allowedImageTypes: string[];
-  maxImageBytes: number | null;
-}): Promise<ImageBlock> {
-  const imageBlock = convertBase64Image(image);
-  if (imageBlock) {
-    return imageBlock;
+  media: string;
+  allowedMediaTypes: string[];
+  maxMediaBytes: number | null;
+}): Promise<MediaBlock> {
+  const mediaBlock = convertBase64Media(media);
+  if (mediaBlock) {
+    return mediaBlock;
   } else {
-    return await convertImageUrl({
-      url: image,
-      allowedImageTypes,
-      maxImageBytes,
+    return await convertMediaUrl({
+      url: media,
+      allowedMediaTypes,
+      maxMediaBytes,
     });
   }
 }

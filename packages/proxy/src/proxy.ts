@@ -491,6 +491,9 @@ export async function proxyV1({
       (st) => {
         spanType = st;
       },
+      digest,
+      cacheGet,
+      cachePut,
     );
     stream = proxyStream;
 
@@ -831,6 +834,14 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const requestId = ++loopIndex;
 
@@ -935,6 +946,9 @@ async function fetchModelLoop(
         secret,
         bodyData,
         setHeader,
+        digest,
+        cacheGet,
+        cachePut,
       );
       secretName = secret.name;
       if (
@@ -1091,6 +1105,14 @@ async function fetchModel(
   secret: APISecret,
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<ModelResponse> {
   const format = modelSpec?.format ?? "openai";
   switch (format) {
@@ -1103,6 +1125,9 @@ async function fetchModel(
         bodyData,
         secret,
         setHeader,
+        digest,
+        cacheGet,
+        cachePut,
       );
     case "anthropic":
       console.assert(method === "POST");
@@ -1143,6 +1168,14 @@ async function fetchOpenAI(
   bodyData: null | any,
   secret: APISecret,
   setHeader: (name: string, value: string) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
@@ -1221,7 +1254,12 @@ async function fetchOpenAI(
       const azureEntrySecret = AzureEntraSecretSchema.parse(
         JSON.parse(secret.secret),
       );
-      bearerToken = await getAzureEntraAccessToken(azureEntrySecret);
+      bearerToken = await getAzureEntraAccessToken({
+        secret: azureEntrySecret,
+        digest,
+        cacheGet,
+        cachePut,
+      });
     } else {
       bearerToken = secret.secret;
     }

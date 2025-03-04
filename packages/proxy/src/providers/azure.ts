@@ -12,9 +12,22 @@ const azureEntraResponseSchema = z.union([
   }),
 ]);
 
-export async function getAzureEntraAccessToken(
-  secret: z.infer<typeof AzureEntraSecretSchema>,
-): Promise<string> {
+export async function getAzureEntraAccessToken({
+  secret,
+  digest,
+  cacheGet,
+  cachePut,
+}: {
+  secret: z.infer<typeof AzureEntraSecretSchema>;
+  digest: (message: string) => Promise<string>;
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>;
+}): Promise<string> {
   const { client_id, tenant_id, scope, client_secret } = secret;
   const tokenUrl = `https://login.microsoftonline.com/${tenant_id}/oauth2/v2.0/token`;
   const body = new URLSearchParams({
@@ -24,6 +37,18 @@ export async function getAzureEntraAccessToken(
     grant_type: "client_credentials",
     client_secret,
   });
+
+  const cachePath = await digest(
+    `${client_id}:${tenant_id}:${scope}:${client_secret}`,
+  );
+  const cacheKey = `aiproxy/proxy/entra/${cachePath}`;
+  const encryptionKey = await digest(`${cachePath}:${client_secret}`);
+
+  const cached = await cacheGet(encryptionKey, cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const res = await fetch(tokenUrl, {
     method: "POST",
     headers: {
@@ -40,6 +65,12 @@ export async function getAzureEntraAccessToken(
   const parsed = azureEntraResponseSchema.parse(data);
   if ("error" in parsed) {
     throw new Error(`Azure Entra error: ${parsed.error}`);
+  }
+
+  // Give it a 1 minute buffer.
+  const cacheTtl = Math.max(parsed.expires_in - 60, 0);
+  if (cacheTtl > 0) {
+    await cachePut(encryptionKey, cacheKey, parsed.access_token, cacheTtl);
   }
   return parsed.access_token;
 }

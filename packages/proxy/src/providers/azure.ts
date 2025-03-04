@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FullAzureEntraMetadataSchema } from "@braintrust/proxy/schema";
+import { AzureEntraSecretSchema } from "@braintrust/proxy/schema";
 
 const azureEntraResponseSchema = z.union([
   z.object({
@@ -13,19 +13,16 @@ const azureEntraResponseSchema = z.union([
 ]);
 
 export async function getAzureEntraAccessToken(
-  secret: z.infer<typeof FullAzureEntraMetadataSchema>,
+  secret: z.infer<typeof AzureEntraSecretSchema>,
 ): Promise<string> {
-  if (!secret.metadata) {
-    throw new Error("Azure Entra secret must have metadata");
-  }
-  const { client_id, tenant_id, scope } = secret.metadata;
+  const { client_id, tenant_id, scope, client_secret } = secret;
   const tokenUrl = `https://login.microsoftonline.com/${tenant_id}/oauth2/v2.0/token`;
   const body = new URLSearchParams({
     client_id,
     tenant: tenant_id,
     scope,
     grant_type: "client_credentials",
-    client_secret: secret.secret,
+    client_secret,
   });
   const res = await fetch(tokenUrl, {
     method: "POST",
@@ -44,6 +41,5 @@ export async function getAzureEntraAccessToken(
   if ("error" in parsed) {
     throw new Error(`Azure Entra error: ${parsed.error}`);
   }
-  console.log("parsed", parsed.access_token);
   return parsed.access_token;
 }

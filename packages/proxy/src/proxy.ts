@@ -13,6 +13,7 @@ import {
   APISecret,
   VertexMetadataSchema,
   ModelSpec,
+  AzureEntraSecretSchema,
 } from "@schema";
 import {
   ProxyBadRequestError,
@@ -1150,8 +1151,6 @@ async function fetchOpenAI(
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;
 
-  const isAzure = secret.type === "azure" || secret.type === "azure_entra";
-
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
     const { project, authType } = VertexMetadataSchema.parse(secret.metadata);
@@ -1193,7 +1192,7 @@ async function fetchOpenAI(
       );
     }
 
-    if (isAzure && !secret.metadata?.no_named_deployment) {
+    if (secret.type === "azure" && !secret.metadata?.no_named_deployment) {
       if (secret.metadata?.deployment) {
         baseURL = _urljoin(
           baseURL,
@@ -1218,8 +1217,11 @@ async function fetchOpenAI(
 
     fullURL = new URL(baseURL + url);
 
-    if (secret.type === "azure_entra") {
-      bearerToken = await getAzureEntraAccessToken(secret);
+    if (secret.type === "azure" && secret.metadata?.auth_type === "entra_api") {
+      const azureEntrySecret = AzureEntraSecretSchema.parse(
+        JSON.parse(secret.secret),
+      );
+      bearerToken = await getAzureEntraAccessToken(azureEntrySecret);
     } else {
       bearerToken = secret.secret;
     }
@@ -1236,7 +1238,7 @@ async function fetchOpenAI(
   headers["host"] = fullURL.host;
   headers["authorization"] = "Bearer " + bearerToken;
 
-  if (isAzure && secret.metadata?.api_version) {
+  if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
     headers["api-key"] = secret.secret;
     delete bodyData["seed"];

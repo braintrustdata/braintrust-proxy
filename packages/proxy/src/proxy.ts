@@ -13,6 +13,7 @@ import {
   APISecret,
   VertexMetadataSchema,
   ModelSpec,
+  AzureEntraSecretSchema,
 } from "@schema";
 import {
   ProxyBadRequestError,
@@ -49,6 +50,7 @@ import {
   MessageRole,
   responseFormatSchema,
 } from "@braintrust/core/typespecs";
+import { _urljoin } from "@braintrust/core";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -74,6 +76,7 @@ import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completion
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { getAzureEntraAccessToken } from "./providers/azure";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -488,6 +491,9 @@ export async function proxyV1({
       (st) => {
         spanType = st;
       },
+      digest,
+      cacheGet,
+      cachePut,
     );
     stream = proxyStream;
 
@@ -828,6 +834,14 @@ async function fetchModelLoop(
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
   setSpanType: (spanType: SpanType) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const requestId = ++loopIndex;
 
@@ -932,6 +946,9 @@ async function fetchModelLoop(
         secret,
         bodyData,
         setHeader,
+        digest,
+        cacheGet,
+        cachePut,
       );
       secretName = secret.name;
       if (
@@ -1088,6 +1105,14 @@ async function fetchModel(
   secret: APISecret,
   bodyData: null | any,
   setHeader: (name: string, value: string) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<ModelResponse> {
   const format = modelSpec?.format ?? "openai";
   switch (format) {
@@ -1100,6 +1125,9 @@ async function fetchModel(
         bodyData,
         secret,
         setHeader,
+        digest,
+        cacheGet,
+        cachePut,
       );
     case "anthropic":
       console.assert(method === "POST");
@@ -1140,6 +1168,14 @@ async function fetchOpenAI(
   bodyData: null | any,
   secret: APISecret,
   setHeader: (name: string, value: string) => void,
+  digest: (message: string) => Promise<string>,
+  cacheGet: (encryptionKey: string, key: string) => Promise<string | null>,
+  cachePut: (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttl_seconds?: number,
+  ) => Promise<void>,
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
@@ -1192,16 +1228,20 @@ async function fetchOpenAI(
       );
     }
 
-    if (secret.type === "azure") {
+    if (secret.type === "azure" && !secret.metadata?.no_named_deployment) {
       if (secret.metadata?.deployment) {
-        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-          secret.metadata.deployment,
-        )}`;
+        baseURL = _urljoin(
+          baseURL,
+          "openai/deployments",
+          encodeURIComponent(secret.metadata.deployment),
+        );
       } else if (bodyData?.model || bodyData?.engine) {
         const model = bodyData.model || bodyData.engine;
-        baseURL = `${baseURL}openai/deployments/${encodeURIComponent(
-          model.replace("gpt-3.5", "gpt-35"),
-        )}`;
+        baseURL = _urljoin(
+          baseURL,
+          "openai/deployments",
+          encodeURIComponent(model.replace("gpt-3.5", "gpt-35")),
+        );
       } else {
         throw new ProxyBadRequestError(
           `Azure provider ${secret.id} must have a deployment or model specified`,
@@ -1212,7 +1252,20 @@ async function fetchOpenAI(
     }
 
     fullURL = new URL(baseURL + url);
-    bearerToken = secret.secret;
+
+    if (secret.type === "azure" && secret.metadata?.auth_type === "entra_api") {
+      const azureEntrySecret = AzureEntraSecretSchema.parse(
+        JSON.parse(secret.secret),
+      );
+      bearerToken = await getAzureEntraAccessToken({
+        secret: azureEntrySecret,
+        digest,
+        cacheGet,
+        cachePut,
+      });
+    } else {
+      bearerToken = secret.secret;
+    }
   }
 
   if (secret.type === "mistral" || secret.type === "fireworks") {

@@ -47,6 +47,7 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     project: z.string().min(1, "Project cannot be empty"),
     authType: z.enum(["access_token", "service_account_key"]),
+    api_base: z.string().url().optional(),
   }),
 ).strict();
 

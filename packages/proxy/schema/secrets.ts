@@ -16,8 +16,23 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
     api_base: z.string().url(),
     api_version: z.string().default("2023-07-01-preview"),
     deployment: z.string().nullish(),
+    auth_type: z.enum(["api_key", "entra_api"]).default("api_key"),
+    no_named_deployment: z
+      .boolean()
+      .default(false)
+      .describe(
+        "If true, the deployment name will not be used in the request path.",
+      ),
   }),
 ).strict();
+
+export const AzureEntraSecretSchema = z.object({
+  client_id: z.string().min(1, "Client ID cannot be empty"),
+  client_secret: z.string().min(1, "Client secret cannot be empty"),
+  tenant_id: z.string().min(1, "Tenant ID cannot be empty"),
+  scope: z.string().min(1, "Scope cannot be empty"),
+});
+export type AzureEntraSecret = z.infer<typeof AzureEntraSecretSchema>;
 
 export const BedrockMetadataSchema = BaseMetadataSchema.merge(
   z.object({

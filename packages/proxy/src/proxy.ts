@@ -388,12 +388,14 @@ export async function proxyV1({
               for (let i = 0; i < data.length; i++) {
                 if (data[i] === 10) {
                   // 10 is ASCII/UTF-8 code for \n
-                  controller.enqueue(data.subarray(start, i + 1));
+                  controller.enqueue(
+                    new Uint8Array(data.subarray(start, i + 1)),
+                  );
                   start = i + 1;
                 }
               }
               if (start < data.length) {
-                controller.enqueue(data.subarray(start));
+                controller.enqueue(new Uint8Array(data.subarray(start)));
               }
             }
 

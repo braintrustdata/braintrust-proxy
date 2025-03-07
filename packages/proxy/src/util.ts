@@ -1,4 +1,7 @@
-import { ModelEndpointType } from "../schema";
+export interface ModelResponse {
+  stream: ReadableStream<Uint8Array> | null;
+  response: Response;
+}
 
 export function parseAuthHeader(
   headers: Record<string, string | string[] | undefined>,

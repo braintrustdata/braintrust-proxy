@@ -7,7 +7,7 @@ import {
   ChatCompletionToolMessageParam,
   CompletionUsage,
 } from "openai/resources";
-import { getTimestampInSeconds, isEmpty } from "../util";
+import { getTimestampInSeconds, isEmpty, ModelResponse } from "../util";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {

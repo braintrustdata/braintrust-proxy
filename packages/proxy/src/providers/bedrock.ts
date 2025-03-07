@@ -17,8 +17,14 @@ import {
   ToolConfiguration,
   InferenceConfiguration,
   ImageFormat,
+  ResponseStream,
 } from "@aws-sdk/client-bedrock-runtime";
-import { APISecret, BedrockMetadata, MessageTypeToMessageType } from "@schema";
+import {
+  APISecret,
+  BedrockMetadata,
+  BedrockMetadataSchema,
+  MessageTypeToMessageType,
+} from "@schema";
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
@@ -44,8 +50,131 @@ import {
 } from "openai/resources/chat/completions";
 import { convertMediaToBase64 } from "./util";
 import { makeFakeOpenAIStreamTransformer } from "./openai";
+import { ModelResponse } from "../util";
 
-const brt = new BedrockRuntimeClient({});
+function streamResponse(
+  body: AsyncIterable<ResponseStream>,
+): ReadableStream<Uint8Array> {
+  const it = body[Symbol.asyncIterator]();
+  return new ReadableStream({
+    async pull(controller) {
+      const { value, done } = await it.next();
+      if (done) {
+        controller.close();
+      } else {
+        ResponseStream.visit(value, {
+          chunk: ({ bytes }) => {
+            const data = new TextDecoder().decode(bytes);
+            const { type } = JSON.parse(data);
+            const event = `event: ${type}\ndata: ${data}\n\n`;
+            controller.enqueue(new TextEncoder().encode(event));
+          },
+          internalServerException: (value) => {
+            console.error("Bedrock stream internal server error:", value);
+            controller.close();
+          },
+          modelStreamErrorException: (value) => {
+            console.error("Bedrock stream model stream error:", value);
+            controller.close();
+          },
+          validationException: (value) => {
+            console.error("Bedrock stream validation error:", value);
+            controller.close();
+          },
+          throttlingException: (value) => {
+            console.error("Bedrock stream throttling error:", value);
+            controller.close();
+          },
+          modelTimeoutException: (value) => {
+            console.error("Bedrock stream model timeout error:", value);
+            controller.close();
+          },
+          serviceUnavailableException: (value) => {
+            console.error("Bedrock stream service unavailable error:", value);
+            controller.close();
+          },
+          _: (value) => {
+            console.error("Bedrock stream unhandled value:", value);
+            controller.close();
+          },
+        });
+      }
+    },
+    async cancel() {
+      if (it.return) {
+        await it.return();
+      }
+    },
+  });
+}
+
+export async function fetchBedrockAnthropicMessages({
+  secret: { secret, metadata },
+  body,
+}: {
+  secret: APISecret;
+  body: unknown;
+}): Promise<ModelResponse> {
+  const {
+    region,
+    access_key: accessKeyId,
+    session_token: sessionToken,
+  } = BedrockMetadataSchema.parse(metadata);
+  const { model, stream, ...rest } = z
+    .object({
+      model: z.string(),
+      stream: z.boolean().default(false),
+    })
+    .passthrough()
+    .parse(body);
+  const brc = new BedrockRuntimeClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey: secret,
+      ...(sessionToken ? { sessionToken } : {}),
+    },
+  });
+  const input = {
+    contentType: "application/json",
+    modelId: model,
+    body: JSON.stringify({
+      ...rest,
+      anthropic_version: "bedrock-2023-05-31",
+    }),
+  };
+  if (stream) {
+    const { body: respBody } = await brc.send(
+      new InvokeModelWithResponseStreamCommand(input),
+    );
+    return {
+      stream: respBody ? streamResponse(respBody) : null,
+      response: new Response(null, {
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+        },
+      }),
+    };
+  } else {
+    const { body: respBody, contentType } = await brc.send(
+      new InvokeModelCommand(input),
+    );
+    return {
+      stream: new ReadableStream({
+        start(controller) {
+          controller.enqueue(respBody);
+          controller.close();
+        },
+      }),
+      response: new Response(null, {
+        headers: {
+          "content-type": contentType ?? "application/json",
+        },
+      }),
+    };
+  }
+}
+
 export async function fetchBedrockAnthropic({
   secret,
   body,

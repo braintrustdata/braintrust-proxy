@@ -16,6 +16,7 @@ import {
   AzureEntraSecretSchema,
 } from "@schema";
 import {
+  ModelResponse,
   ProxyBadRequestError,
   flattenChunks,
   flattenChunksArray,
@@ -59,7 +60,11 @@ import {
   CreateEmbeddingResponse,
   ModerationCreateResponse,
 } from "openai/resources";
-import { fetchBedrockAnthropic, fetchConverse } from "./providers/bedrock";
+import {
+  fetchBedrockAnthropic,
+  fetchBedrockAnthropicMessages,
+  fetchConverse,
+} from "./providers/bedrock";
 import { Buffer } from "node:buffer";
 import { ExperimentLogPartialArgs } from "@braintrust/core";
 import { MessageParam } from "@anthropic-ai/sdk/resources";
@@ -243,18 +248,24 @@ export async function proxyV1({
     url = "/" + pieces.slice(2).map(encodeURIComponent).join("/");
   }
 
+  const isGoogleUrl = GOOGLE_URL_REGEX.test(url);
+
   const cacheableEndpoint =
     url === "/auto" ||
     url === "/embeddings" ||
     url === "/chat/completions" ||
     url === "/completions" ||
-    url === "/moderations";
+    url === "/moderations" ||
+    url === "/anthropic/messages" ||
+    isGoogleUrl;
 
   let bodyData = null;
   if (
     url === "/auto" ||
     url === "/chat/completions" ||
-    url === "/completions"
+    url === "/completions" ||
+    url === "/anthropic/messages" ||
+    isGoogleUrl
   ) {
     try {
       bodyData = JSON.parse(body);
@@ -296,10 +307,13 @@ export async function proxyV1({
   //
   // OpenAI now allows you to set a seed, and if that is set, we should cache even
   // if temperature is non-zero.
+  // TODO(sachin): Support caching for Google models.
   const temperatureNonZero =
     (url === "/chat/completions" ||
       url === "/completions" ||
-      url === "/auto") &&
+      url === "/auto" ||
+      url === "/anthropic/messages" ||
+      isGoogleUrl) &&
     bodyData &&
     bodyData.temperature !== 0 &&
     (bodyData.seed === undefined || bodyData.seed === null);
@@ -796,11 +810,6 @@ export async function proxyV1({
   }
 }
 
-interface ModelResponse {
-  stream: ReadableStream<Uint8Array> | null;
-  response: Response;
-}
-
 const RATE_LIMIT_ERROR_CODE = 429;
 const OVERLOADED_ERROR_CODE = 503;
 const RATE_LIMIT_MAX_WAIT_MS = 45 * 1000; // Wait up to 45 seconds while retrying
@@ -824,6 +833,9 @@ const RATE_LIMITING_ERROR_CODES = [
   RATE_LIMIT_ERROR_CODE,
   OVERLOADED_ERROR_CODE,
 ];
+
+const GOOGLE_URL_REGEX =
+  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
 
 let loopIndex = 0;
 async function fetchModelLoop(
@@ -866,11 +878,19 @@ async function fetchModelLoop(
     method === "POST" &&
     (url === "/auto" ||
       url === "/chat/completions" ||
-      url === "/completions") &&
+      url === "/completions" ||
+      url === "/anthropic/messages") &&
     isObject(bodyData) &&
     bodyData.model
   ) {
     model = bodyData.model;
+  } else if (method === "POST") {
+    const m = url.match(GOOGLE_URL_REGEX);
+    if (m) {
+      model = m[1];
+      // Hack since Gemini models are not registered with the models/ prefix.
+      model = model.replace(/^models\//, "");
+    }
   }
 
   // TODO: Make this smarter. For now, just pick a random one.
@@ -940,7 +960,6 @@ async function fetchModelLoop(
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
-        // modelSpec?.format ?? "openai",
         modelSpec,
         method,
         endpointUrl,
@@ -1133,24 +1152,22 @@ async function fetchModel(
       );
     case "anthropic":
       console.assert(method === "POST");
-      return await fetchAnthropic(
-        "POST",
+      return await fetchAnthropic({
         url,
         modelSpec,
         headers,
         bodyData,
         secret,
-      );
+      });
     case "google":
       console.assert(method === "POST");
-      return await fetchGoogle(
+      return await fetchGoogle({
+        secret,
         modelSpec,
-        "POST",
         url,
         headers,
         bodyData,
-        secret,
-      );
+      });
     case "converse":
       console.assert(method === "POST");
       return await fetchConverse({
@@ -1493,16 +1510,157 @@ async function fetchOpenAIFakeStream({
   };
 }
 
-async function fetchAnthropic(
-  method: "POST",
-  url: string,
-  modelSpec: ModelSpec | null,
-  headers: Record<string, string>,
-  bodyData: null | any,
-  secret: APISecret,
-): Promise<ModelResponse> {
-  console.assert(url === "/chat/completions");
+interface VertexEndpointInfo {
+  baseUrl: string;
+  accessToken: string;
+}
 
+async function vertexEndpointInfo({
+  secret: { secret, metadata },
+  modelSpec,
+  defaultLocation,
+}: {
+  secret: APISecret;
+  modelSpec: ModelSpec | null;
+  defaultLocation: string;
+}): Promise<VertexEndpointInfo> {
+  const { project, authType, api_base } = VertexMetadataSchema.parse(metadata);
+  const locations = modelSpec?.locations?.length
+    ? modelSpec.locations
+    : [defaultLocation];
+  const location = locations[Math.floor(Math.random() * locations.length)];
+  const apiBase = api_base || `https://${location}-aiplatform.googleapis.com`;
+  const accessToken =
+    authType === "access_token" ? secret : await getGoogleAccessToken(secret);
+  if (!accessToken) {
+    throw new Error("Failed to get Google access token");
+  }
+  return {
+    baseUrl: `${apiBase}/v1/projects/${project}/locations/${location}`,
+    accessToken,
+  };
+}
+
+async function fetchVertexAnthropicMessages({
+  secret,
+  modelSpec,
+  body,
+}: {
+  secret: APISecret;
+  modelSpec: ModelSpec | null;
+  body: unknown;
+}): Promise<ModelResponse> {
+  const { baseUrl, accessToken } = await vertexEndpointInfo({
+    secret,
+    modelSpec,
+    defaultLocation: "us-east5",
+  });
+  const { model, ...rest } = z
+    .object({
+      model: z.string(),
+    })
+    .passthrough()
+    .parse(body);
+  return await fetch(`${baseUrl}/${model}:streamRawPredict`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${accessToken}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      ...rest,
+      anthropic_version: "vertex-2023-10-16",
+    }),
+  }).then((resp) => ({
+    stream: resp.body,
+    response: resp,
+  }));
+}
+
+async function fetchAnthropicMessages({
+  secret,
+  modelSpec,
+  body,
+}: {
+  secret: APISecret;
+  modelSpec: ModelSpec | null;
+  body: unknown;
+}): Promise<ModelResponse> {
+  switch (secret.type) {
+    case "anthropic":
+      return await fetch(`${EndpointProviderToBaseURL.anthropic}/messages`, {
+        method: "POST",
+        headers: {
+          "x-api-key": secret.secret,
+          "content-type": "application/json",
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify(body),
+      }).then((resp) => ({
+        stream: resp.body,
+        response: resp,
+      }));
+    case "bedrock":
+      return fetchBedrockAnthropicMessages({
+        secret,
+        body,
+      });
+    case "vertex":
+      return fetchVertexAnthropicMessages({
+        secret,
+        modelSpec,
+        body,
+      });
+    default:
+      throw new ProxyBadRequestError(
+        `Unsupported Anthropic secret type: ${secret.type}`,
+      );
+  }
+}
+
+async function fetchAnthropic({
+  url,
+  modelSpec,
+  headers,
+  bodyData,
+  secret,
+}: {
+  url: string;
+  modelSpec: ModelSpec | null;
+  headers: Record<string, string>;
+  bodyData: null | any;
+  secret: APISecret;
+}): Promise<ModelResponse> {
+  switch (url) {
+    case "/anthropic/messages":
+      return fetchAnthropicMessages({
+        secret,
+        modelSpec,
+        body: bodyData,
+      });
+    case "/chat/completions":
+      return fetchAnthropicChatCompletions({
+        modelSpec,
+        headers,
+        bodyData,
+        secret,
+      });
+    default:
+      throw new ProxyBadRequestError(`Unsupported Anthropic URL: ${url}`);
+  }
+}
+
+async function fetchAnthropicChatCompletions({
+  modelSpec,
+  headers,
+  bodyData,
+  secret,
+}: {
+  modelSpec: ModelSpec | null;
+  headers: Record<string, string>;
+  bodyData: null | any;
+  secret: APISecret;
+}): Promise<ModelResponse> {
   // https://docs.anthropic.com/claude/reference/complete_post
   let fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
   if (secret.type !== "vertex") {
@@ -1630,34 +1788,21 @@ async function fetchAnthropic(
       isStructuredOutput,
     });
   } else if (secret.type === "vertex") {
-    const { project, authType, api_base } = VertexMetadataSchema.parse(
-      secret.metadata,
-    );
-    const locations = modelSpec?.locations?.length
-      ? modelSpec.locations
-      : ["us-east5"];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
+    const { baseUrl, accessToken } = await vertexEndpointInfo({
+      secret,
+      modelSpec,
+      defaultLocation: "us-east5",
+    });
     fullURL = new URL(
-      `${baseURL}/v1/projects/${project}/locations/${location}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+      `${baseUrl}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
     );
-    let accessToken: string | null | undefined = undefined;
-    if (authType === "access_token") {
-      accessToken = secret.secret;
-    } else {
-      // authType === "service_account_key"
-      accessToken = await getGoogleAccessToken(secret.secret);
-    }
-    if (!accessToken) {
-      throw new Error("Failed to get Google access token");
-    }
     headers["authorization"] = `Bearer ${accessToken}`;
     params["anthropic_version"] = "vertex-2023-10-16";
     delete params.model;
   }
 
   const proxyResponse = await fetch(fullURL.toString(), {
-    method,
+    method: "POST",
     headers,
     body: JSON.stringify({
       messages,
@@ -1887,21 +2032,118 @@ async function getGoogleAccessToken(secret: string): Promise<string> {
     .parse(await res.json()).access_token;
 }
 
-async function fetchGoogle(
-  modelSpec: ModelSpec | null,
-  method: "POST",
-  url: string,
-  headers: Record<string, string>,
-  bodyData: null | any,
-  secret: APISecret,
-): Promise<ModelResponse> {
-  console.assert(url === "/chat/completions");
+async function fetchGoogleGenerateContent({
+  secret,
+  model,
+  modelSpec,
+  method,
+  body,
+}: {
+  secret: APISecret;
+  model: string;
+  modelSpec: ModelSpec | null;
+  method: string;
+  body: unknown;
+}): Promise<ModelResponse> {
+  // Hack since Gemini models are not registered with the models/ prefix.
+  model = model.replace(/^models\//, "");
+  switch (secret.type) {
+    case "google": {
+      const url = new URL(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:${method}`,
+      );
+      if (method === "streamGenerateContent") {
+        url.searchParams.set("alt", "sse");
+      }
+      url.searchParams.set("key", secret.secret);
+      return await fetch(url, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }).then((resp) => ({
+        stream: resp.body,
+        response: resp,
+      }));
+    }
+    case "vertex": {
+      const { baseUrl, accessToken } = await vertexEndpointInfo({
+        secret,
+        modelSpec,
+        defaultLocation: "us-central1",
+      });
+      const url = new URL(`${baseUrl}/${model}:${method}`);
+      if (method === "streamGenerateContent") {
+        url.searchParams.set("alt", "sse");
+      }
+      return await fetch(url, {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(body),
+      }).then((resp) => ({
+        stream: resp.body,
+        response: resp,
+      }));
+    }
+    default:
+      throw new ProxyBadRequestError(
+        `Unsupported credentials for Google: ${secret.type}`,
+      );
+  }
+}
+
+async function fetchGoogle({
+  secret,
+  modelSpec,
+  url,
+  headers,
+  bodyData,
+}: {
+  secret: APISecret;
+  modelSpec: ModelSpec | null;
+  url: string;
+  headers: Record<string, string>;
+  bodyData: null | any;
+}): Promise<ModelResponse> {
   if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
       `Unsupported credentials for Google: ${secret.type}`,
     );
   }
+  const m = url.match(GOOGLE_URL_REGEX);
+  if (m) {
+    return await fetchGoogleGenerateContent({
+      secret,
+      model: m[1],
+      modelSpec,
+      method: m[2],
+      body: bodyData,
+    });
+  } else {
+    return await fetchGoogleChatCompletions({
+      secret,
+      modelSpec,
+      headers,
+      bodyData,
+    });
+  }
+}
 
+async function fetchGoogleChatCompletions({
+  secret,
+  modelSpec,
+  headers,
+  bodyData,
+}: {
+  secret: APISecret;
+  modelSpec: ModelSpec | null;
+  headers: Record<string, string>;
+  bodyData: null | any;
+}): Promise<ModelResponse> {
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
       "Google request must have a valid JSON-parsable body",
@@ -1944,27 +2186,14 @@ async function fetchGoogle(
     delete headers["authorization"];
   } else {
     // secret.type === "vertex"
-    const { project, authType, api_base } = VertexMetadataSchema.parse(
-      secret.metadata,
-    );
-    const locations = modelSpec?.locations?.length
-      ? modelSpec.locations
-      : ["us-central1"];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
+    const { baseUrl, accessToken } = await vertexEndpointInfo({
+      secret,
+      modelSpec,
+      defaultLocation: "us-central1",
+    });
     fullURL = new URL(
-      `${baseURL}/v1/projects/${project}/locations/${location}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `${baseUrl}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
     );
-    let accessToken: string | null | undefined = undefined;
-    if (authType === "access_token") {
-      accessToken = secret.secret;
-    } else {
-      // authType === "service_account_key"
-      accessToken = await getGoogleAccessToken(secret.secret);
-    }
-    if (!accessToken) {
-      throw new Error("Failed to get Google access token");
-    }
     headers["authorization"] = `Bearer ${accessToken}`;
   }
   if (streamingMode) {
@@ -2006,7 +2235,7 @@ async function fetchGoogle(
   });
 
   const proxyResponse = await fetch(fullURL.toString(), {
-    method,
+    method: "POST",
     headers,
     body,
     keepalive: true,
@@ -2207,7 +2436,9 @@ export function guessSpanType(
   model: string | undefined,
 ): SpanType | undefined {
   const spanName =
-    url === "/chat/completions"
+    url === "/chat/completions" ||
+    url === "/anthropic/messages" ||
+    GOOGLE_URL_REGEX.test(url)
       ? "chat"
       : url === "/completions"
         ? "completion"

@@ -256,7 +256,7 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/completions" ||
     url === "/moderations" ||
-    url === "/messages" ||
+    url === "/anthropic/messages" ||
     isGoogleUrl;
 
   let bodyData = null;
@@ -264,7 +264,7 @@ export async function proxyV1({
     url === "/auto" ||
     url === "/chat/completions" ||
     url === "/completions" ||
-    url === "/messages" ||
+    url === "/anthropic/messages" ||
     isGoogleUrl
   ) {
     try {
@@ -307,11 +307,12 @@ export async function proxyV1({
   //
   // OpenAI now allows you to set a seed, and if that is set, we should cache even
   // if temperature is non-zero.
+  // TODO(sachin): Support caching for Google models.
   const temperatureNonZero =
     (url === "/chat/completions" ||
       url === "/completions" ||
       url === "/auto" ||
-      url === "/messages" ||
+      url === "/anthropic/messages" ||
       isGoogleUrl) &&
     bodyData &&
     bodyData.temperature !== 0 &&
@@ -834,7 +835,7 @@ const RATE_LIMITING_ERROR_CODES = [
 ];
 
 const GOOGLE_URL_REGEX =
-  /\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
+  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
 
 let loopIndex = 0;
 async function fetchModelLoop(
@@ -878,7 +879,7 @@ async function fetchModelLoop(
     (url === "/auto" ||
       url === "/chat/completions" ||
       url === "/completions" ||
-      url === "/messages") &&
+      url === "/anthropic/messages") &&
     isObject(bodyData) &&
     bodyData.model
   ) {
@@ -1631,7 +1632,7 @@ async function fetchAnthropic({
   secret: APISecret;
 }): Promise<ModelResponse> {
   switch (url) {
-    case "/messages":
+    case "/anthropic/messages":
       return fetchAnthropicMessages({
         secret,
         modelSpec,
@@ -2436,7 +2437,7 @@ export function guessSpanType(
 ): SpanType | undefined {
   const spanName =
     url === "/chat/completions" ||
-    url === "/messages" ||
+    url === "/anthropic/messages" ||
     GOOGLE_URL_REGEX.test(url)
       ? "chat"
       : url === "/completions"

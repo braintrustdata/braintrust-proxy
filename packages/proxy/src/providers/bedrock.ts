@@ -242,6 +242,19 @@ export async function fetchBedrockAnthropic({
           controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
           controller.close();
         } else {
+          if (value.internalServerException) {
+            throw new Error("Bedrock: internal server error");
+          } else if (value.modelStreamErrorException) {
+            throw new Error("Bedrock: model stream error");
+          } else if (value.modelTimeoutException) {
+            throw new Error("Bedrock: model timeout error");
+          } else if (value.serviceUnavailableException) {
+            throw new Error("Bedrock: service unavailable error");
+          } else if (value.throttlingException) {
+            throw new Error("Bedrock: throttling error");
+          } else if (value.validationException) {
+            throw new Error("Bedrock: validation error");
+          }
           // Enqueue the next piece of data into the stream
           if (value.chunk?.bytes) {
             const valueData = JSON.parse(

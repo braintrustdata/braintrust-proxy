@@ -4,6 +4,7 @@ import {
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
+  getApiSecret,
 } from "@braintrust/proxy/edge";
 import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
@@ -111,9 +112,25 @@ export async function handleProxyV1(
         cacheSetLatency.record(end - start);
       },
     },
-    braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider,
     whitelist,
+  };
+
+  const optsWithCloudflareAuth: ProxyOpts = {
+    ...opts,
+    authConfig: {
+      type: "cloudflare",
+      apiKey: env.API_KEY,
+      getSecret: (model: string) => getApiSecret(model, env),
+    },
+  };
+
+  const optsWithBraintrustAuth: ProxyOpts = {
+    ...opts,
+    authConfig: {
+      type: "braintrust",
+      braintrustApiUrl: braintrustAppUrl(env).toString(),
+    },
   };
 
   const url = new URL(request.url);
@@ -135,7 +152,9 @@ export async function handleProxyV1(
     });
   }
 
-  return EdgeProxyV1(opts)(request, ctx);
+  // decide if you want to use braintrust or cloudflare auth
+  return EdgeProxyV1(optsWithCloudflareAuth)(request, ctx);
+  // return EdgeProxyV1(optsWithBraintrustAuth)(request, ctx);
 }
 
 export async function handlePrometheusScrape(

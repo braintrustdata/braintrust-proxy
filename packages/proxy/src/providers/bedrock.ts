@@ -242,8 +242,62 @@ export async function fetchBedrockAnthropic({
           controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
           controller.close();
         } else {
-          // Enqueue the next piece of data into the stream
-          if (value.chunk?.bytes) {
+          if (value.internalServerException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: internal server error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.modelStreamErrorException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: model stream error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.modelTimeoutException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: model timeout error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.serviceUnavailableException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: service unavailable error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.throttlingException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: throttling error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.validationException) {
+            controller.enqueue(
+              new TextEncoder().encode(
+                `event: event\ndata: ${JSON.stringify({
+                  error: "Bedrock: validation error",
+                })}\n\n`,
+              ),
+            );
+            controller.close();
+          } else if (value.chunk?.bytes) {
+            // Enqueue the next piece of data into the stream
             const valueData = JSON.parse(
               new TextDecoder().decode(value.chunk.bytes),
             );
@@ -274,6 +328,7 @@ export async function fetchBedrockAnthropic({
         }
       },
     });
+    httpResponse.headers.set("Content-Type", "text/event-stream");
   } else {
     const command = new InvokeModelCommand(input);
     const response = await brt.send(command);

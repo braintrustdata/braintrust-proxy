@@ -225,7 +225,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama2-70b-4096": ["groq"],
   "mixtral-8x7b-32768": ["groq"],
   "gemma-7b-it": ["groq"],
-  "deepseek-r1-distill-llama-70b": ["groq"],
+  "deepseek-r1-distill-llama-70b": ["groq", "cerebras"],
   "gemma2-9b-it": ["groq"],
   "llama-3.3-70b-specdec": ["groq"],
   "llama-3.2-90b-vision-preview": ["groq"],

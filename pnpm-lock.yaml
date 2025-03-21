@@ -243,8 +243,8 @@ importers:
         specifier: ^9.0.2
         version: 9.0.2
       openai:
-        specifier: 4.86.1
-        version: 4.86.1(zod@3.22.4)
+        specifier: 4.89.0
+        version: 4.89.0(zod@3.22.4)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -6956,8 +6956,8 @@ packages:
       - encoding
     dev: false
 
-  /openai@4.86.1(zod@3.22.4):
-    resolution: {integrity: sha512-x3iCLyaC3yegFVZaxOmrYJjitKxZ9hpVbLi+ZlT5UHuHTMlEQEbKXkGOM78z9qm2T5GF+XRUZCP2/aV4UPFPJQ==}
+  /openai@4.89.0(zod@3.22.4):
+    resolution: {integrity: sha512-XNI0q2l8/Os6jmojxaID5EhyQjxZgzR2gWcpEjYWK5hGKwE7AcifxEY7UNwFDDHJQXqeiosQ0CJwQN+rvnwdjA==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0

@@ -437,7 +437,7 @@ export async function proxyV1({
   if (stream === null) {
     let bodyData = null;
     try {
-      bodyData = JSON.parse(body);
+      bodyData = typeof body === "string" ? JSON.parse(body) : body;
     } catch (e) {
       console.warn(
         "Failed to parse body. Will fall back to default (OpenAI)",

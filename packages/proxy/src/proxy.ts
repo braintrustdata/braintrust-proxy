@@ -1317,31 +1317,11 @@ function chatCompletionMessageFromResponseOutput(
   };
 }
 
-function chatCompletionUsageFromResponseUsage(
-  usage: ResponseUsage,
-): CompletionUsage {
-  return {
-    completion_tokens: usage.output_tokens,
-    prompt_tokens: usage.input_tokens,
-    total_tokens: usage.total_tokens,
-    completion_tokens_details: {
-      reasoning_tokens: usage.output_tokens_details.reasoning_tokens,
-    },
-    prompt_tokens_details: {
-      cached_tokens: usage.input_tokens_details.cached_tokens,
-    },
-  };
-}
-
-function hasFunctionCalls(output: Array<ResponseOutputItem>): boolean {
-  return output.some((i) => i.type === "function_call");
-}
-
 function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
   return {
     choices: [
       {
-        finish_reason: hasFunctionCalls(response.output)
+        finish_reason: response.output.some((i) => i.type === "function_call")
           ? "tool_calls"
           : "stop",
         index: 0,
@@ -1354,60 +1334,20 @@ function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
     model: response.model,
     object: "chat.completion",
     usage: response.usage
-      ? chatCompletionUsageFromResponseUsage(response.usage)
+      ? {
+          completion_tokens: response.usage.output_tokens,
+          prompt_tokens: response.usage.input_tokens,
+          total_tokens: response.usage.total_tokens,
+          completion_tokens_details: {
+            reasoning_tokens:
+              response.usage.output_tokens_details.reasoning_tokens,
+          },
+          prompt_tokens_details: {
+            cached_tokens: response.usage.input_tokens_details.cached_tokens,
+          },
+        }
       : undefined,
   };
-}
-
-function responseToolFromChatCompletionTool(tool: ChatCompletionTool): Tool {
-  return {
-    name: tool.function.name,
-    parameters: tool.function.parameters ?? {},
-    strict: true,
-    type: "function",
-    description: tool.function.description,
-  };
-}
-
-function responseToolChoiceFromChatCompletionToolChoice(
-  tool_choice: ChatCompletionToolChoiceOption,
-): ToolChoiceOptions | ToolChoiceTypes | ToolChoiceFunction {
-  switch (tool_choice) {
-    case "none":
-    case "auto":
-    case "required":
-      return tool_choice;
-    default:
-      return {
-        name: tool_choice.function.name,
-        type: "function",
-      };
-  }
-}
-
-function responseTextConfigFromChatCompletionsResponseFormat(
-  response_format:
-    | ResponseFormatText
-    | ResponseFormatJSONSchema
-    | ResponseFormatJSONObject,
-): ResponseTextConfig {
-  switch (response_format.type) {
-    case "text":
-    case "json_object":
-      return {
-        format: response_format,
-      };
-    case "json_schema":
-      return {
-        format: {
-          schema: response_format.json_schema.schema ?? {},
-          type: "json_schema",
-          description: response_format.json_schema.description,
-          name: response_format.json_schema.name,
-          strict: response_format.json_schema.strict,
-        },
-      };
-  }
 }
 
 function responsesRequestFromChatCompletionsRequest(
@@ -1427,14 +1367,50 @@ function responsesRequestFromChatCompletionsRequest(
       : undefined,
     temperature: request.temperature,
     text: request.response_format
-      ? responseTextConfigFromChatCompletionsResponseFormat(
-          request.response_format,
-        )
+      ? (() => {
+          const response_format = request.response_format;
+          switch (response_format.type) {
+            case "text":
+            case "json_object":
+              return {
+                format: response_format,
+              };
+            case "json_schema":
+              return {
+                format: {
+                  schema: response_format.json_schema.schema ?? {},
+                  type: "json_schema",
+                  description: response_format.json_schema.description,
+                  name: response_format.json_schema.name,
+                  strict: response_format.json_schema.strict,
+                },
+              };
+          }
+        })()
       : undefined,
     tool_choice: request.tool_choice
-      ? responseToolChoiceFromChatCompletionToolChoice(request.tool_choice)
+      ? (() => {
+          const tool_choice = request.tool_choice;
+          switch (tool_choice) {
+            case "none":
+            case "auto":
+            case "required":
+              return tool_choice;
+            default:
+              return {
+                name: tool_choice.function.name,
+                type: "function",
+              };
+          }
+        })()
       : undefined,
-    tools: request.tools?.map(responseToolFromChatCompletionTool),
+    tools: request.tools?.map((tool) => ({
+      name: tool.function.name,
+      parameters: tool.function.parameters ?? {},
+      strict: false,
+      type: "function",
+      description: tool.function.description,
+    })),
     top_p: request.top_p,
   };
 }
@@ -1457,15 +1433,6 @@ async function collectStream(stream: ReadableStream<Uint8Array>): Promise<any> {
   return JSON.parse(combinedData);
 }
 
-function streamFrom(j: any): ReadableStream<Uint8Array> {
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(new TextEncoder().encode(JSON.stringify(j)));
-      controller.close();
-    },
-  });
-}
-
 async function fetchOpenAIResponsesTranslate({
   headers,
   body,
@@ -1484,7 +1451,16 @@ async function fetchOpenAIResponsesTranslate({
     if (oaiResponse.error) {
       throw new Error(oaiResponse.error.message);
     }
-    stream = streamFrom(chatCompletionFromResponse(oaiResponse));
+    stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode(
+            JSON.stringify(chatCompletionFromResponse(oaiResponse)),
+          ),
+        );
+        controller.close();
+      },
+    });
     if (body.stream) {
       stream = stream.pipeThrough(makeFakeOpenAIStreamTransformer());
     }

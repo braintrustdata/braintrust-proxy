@@ -26,6 +26,7 @@ export const ModelEndpointType = [
   "xAI",
   "groq",
   "azure",
+  "databricks",
   "lepton",
   "cerebras",
   "ollama",

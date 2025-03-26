@@ -390,6 +390,7 @@ export const EndpointProviderToBaseURL: {
   bedrock: null,
   vertex: null,
   azure: null,
+  databricks: null,
   js: null,
 };
 

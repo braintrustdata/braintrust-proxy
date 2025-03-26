@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  poweredByHeader: false,
   transpilePackages: ["ai-proxy"],
   typescript: {
     ignoreBuildErrors: true,

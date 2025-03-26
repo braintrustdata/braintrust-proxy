@@ -1462,6 +1462,8 @@ async function fetchOpenAIResponsesTranslate({
       },
     });
     if (body.stream) {
+      // Fake stream for now, since it looks like the entire text output is sent in one chunk,
+      // so we don't see any UX improvement.
       stream = stream.pipeThrough(makeFakeOpenAIStreamTransformer());
     }
   }

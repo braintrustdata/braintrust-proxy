@@ -1718,21 +1718,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     parent: "gemini-1.5-pro",
   },
   // Gemini experimental.
-  "gemini-2.0-pro-exp-02-05": {
+  "gemini-2.5-pro-exp-03-25": {
     format: "google",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    input_cost_per_mil_tokens: 0,
     output_cost_per_mil_tokens: 0,
     multimodal: true,
     experimental: true,
-  },
-  "gemini-2.0-flash-thinking-exp-01-21": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
+    displayName: "Gemini 2.5 Pro Experimental",
   },
   "gemini-2.0-flash-exp": {
     format: "google",
@@ -1743,13 +1736,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     experimental: true,
     parent: "gemini-2.0-flash",
   },
-  "gemini-exp-1206": {
+  "gemini-2.0-flash-thinking-exp-01-21": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
     output_cost_per_mil_tokens: 0,
     multimodal: true,
     experimental: true,
+    parent: "gemini-2.0-flash",
   },
   "learnlm-1.5-pro-experimental": {
     format: "google",
@@ -1760,6 +1754,24 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     experimental: true,
   },
   // Gemini deprecated.
+  "gemini-2.0-pro-exp-02-05": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
+  },
+  "gemini-exp-1206": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
+  },
   "gemini-1.0-pro": {
     format: "google",
     flavor: "chat",

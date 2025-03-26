@@ -51,7 +51,7 @@ import {
   MessageRole,
   responseFormatSchema,
 } from "@braintrust/core/typespecs";
-import { _urljoin } from "@braintrust/core";
+import { _urljoin, isArray } from "@braintrust/core";
 import {
   ChatCompletion,
   ChatCompletionChunk,
@@ -59,7 +59,24 @@ import {
   CompletionUsage,
   CreateEmbeddingResponse,
   ModerationCreateResponse,
+  ResponseFormatJSONObject,
+  ResponseFormatJSONSchema,
+  ResponseFormatText,
 } from "openai/resources";
+import {
+  ResponseCreateParams,
+  ResponseInputContent,
+  ResponseInputItem,
+  Response as OpenAIResponse,
+  ResponseOutputItem,
+  ResponseUsage,
+  Tool,
+  ToolChoiceOptions,
+  ToolChoiceFunction,
+  ToolChoiceTypes,
+  ResponseTextConfig,
+  ResponseTextDeltaEvent,
+} from "openai/resources/responses/responses";
 import {
   fetchBedrockAnthropic,
   fetchBedrockAnthropicMessages,
@@ -77,7 +94,14 @@ import {
 } from "utils";
 import { differenceInSeconds } from "date-fns";
 import { makeFakeOpenAIStreamTransformer } from "./providers/openai";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import {
+  ChatCompletionContentPart,
+  ChatCompletionCreateParamsBase,
+  ChatCompletionMessage,
+  ChatCompletionMessageParam,
+  ChatCompletionTool,
+  ChatCompletionToolChoiceOption,
+} from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
@@ -255,6 +279,7 @@ export async function proxyV1({
     url === "/auto" ||
     url === "/embeddings" ||
     url === "/chat/completions" ||
+    url === "/responses" ||
     url === "/completions" ||
     url === "/moderations" ||
     url === "/anthropic/messages" ||
@@ -264,6 +289,7 @@ export async function proxyV1({
   if (
     url === "/auto" ||
     url === "/chat/completions" ||
+    url === "/responses" ||
     url === "/completions" ||
     url === "/anthropic/messages" ||
     isGoogleUrl
@@ -313,6 +339,7 @@ export async function proxyV1({
     (url === "/chat/completions" ||
       url === "/completions" ||
       url === "/auto" ||
+      url === "/responses" ||
       url === "/anthropic/messages" ||
       isGoogleUrl) &&
     bodyData &&
@@ -880,6 +907,7 @@ async function fetchModelLoop(
     (url === "/auto" ||
       url === "/chat/completions" ||
       url === "/completions" ||
+      url === "/responses" ||
       url === "/anthropic/messages") &&
     isObject(bodyData) &&
     bodyData.model
@@ -1187,6 +1215,290 @@ async function fetchModel(
   }
 }
 
+function responseContentFromChatCompletionContent(
+  content: ChatCompletionContentPart,
+): ResponseInputContent {
+  switch (content.type) {
+    case "text":
+      return {
+        text: content.text,
+        type: "input_text",
+      };
+    case "image_url":
+      return {
+        detail: content.image_url.detail ?? "auto",
+        image_url: content.image_url.url,
+        type: "input_image",
+      };
+    case "file":
+      return {
+        type: "input_file",
+        file_data: content.file.file_data,
+        file_id: content.file.file_id,
+        filename: content.file.filename,
+      };
+    default:
+      throw new ProxyBadRequestError(
+        `Unsupported content type ${content.type}`,
+      );
+  }
+}
+function responseInputItemsFromChatCompletionMessage(
+  message: ChatCompletionMessageParam,
+): ResponseInputItem[] {
+  switch (message.role) {
+    case "developer":
+    case "system":
+    case "user":
+      return [
+        {
+          content: isArray(message.content)
+            ? message.content.map(responseContentFromChatCompletionContent)
+            : message.content,
+          role: message.role,
+          type: "message",
+        },
+      ];
+    case "assistant":
+      return message.tool_calls
+        ? message.tool_calls.map((t) => ({
+            arguments: t.function.arguments,
+            call_id: t.id,
+            name: t.function.name,
+            type: "function_call",
+          }))
+        : [
+            {
+              content: isArray(message.content)
+                ? message.content
+                    .filter((p) => p.type !== "refusal")
+                    .map(responseContentFromChatCompletionContent)
+                : message.content ?? "",
+              role: "assistant",
+              type: "message",
+            },
+          ];
+    case "tool":
+      return [
+        {
+          call_id: message.tool_call_id,
+          output: isArray(message.content)
+            ? message.content.map((c) => c.text).join("")
+            : message.content,
+          type: "function_call_output",
+        },
+      ];
+    default:
+      throw new ProxyBadRequestError(
+        `Unsupported message role ${message.role}`,
+      );
+  }
+}
+
+function chatCompletionMessageFromResponseOutput(
+  output: Array<ResponseOutputItem>,
+): ChatCompletionMessage {
+  const messages = output.filter((i) => i.type === "message");
+  const text = messages
+    .map((m) => m.content.filter((x) => x.type === "output_text"))
+    .flat();
+  const refusals = messages
+    .map((m) => m.content.filter((x) => x.type === "refusal"))
+    .flat();
+  const toolCalls = output.filter((i) => i.type === "function_call");
+  return {
+    content: text.length > 0 ? text.map((t) => t.text).join("") : null,
+    refusal:
+      refusals.length > 0 ? refusals.map((r) => r.refusal).join("") : null,
+    role: "assistant",
+    tool_calls:
+      toolCalls.length > 0
+        ? toolCalls.map((t) => ({
+            id: t.id ?? "",
+            function: {
+              arguments: t.arguments,
+              name: t.name,
+            },
+            type: "function",
+          }))
+        : undefined,
+  };
+}
+
+function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
+  return {
+    choices: [
+      {
+        finish_reason: response.output.some((i) => i.type === "function_call")
+          ? "tool_calls"
+          : "stop",
+        index: 0,
+        logprobs: null,
+        message: chatCompletionMessageFromResponseOutput(response.output),
+      },
+    ],
+    created: response.created_at,
+    id: response.id,
+    model: response.model,
+    object: "chat.completion",
+    usage: response.usage
+      ? {
+          completion_tokens: response.usage.output_tokens,
+          prompt_tokens: response.usage.input_tokens,
+          total_tokens: response.usage.total_tokens,
+          completion_tokens_details: {
+            reasoning_tokens:
+              response.usage.output_tokens_details.reasoning_tokens,
+          },
+          prompt_tokens_details: {
+            cached_tokens: response.usage.input_tokens_details.cached_tokens,
+          },
+        }
+      : undefined,
+  };
+}
+
+function responsesRequestFromChatCompletionsRequest(
+  request: ChatCompletionCreateParams,
+): ResponseCreateParams {
+  return {
+    input: request.messages.flatMap(
+      responseInputItemsFromChatCompletionMessage,
+    ),
+    model: request.model,
+    max_output_tokens: request.max_tokens,
+    parallel_tool_calls: request.parallel_tool_calls,
+    reasoning: request.reasoning_effort
+      ? {
+          effort: request.reasoning_effort,
+        }
+      : undefined,
+    temperature: request.temperature,
+    text: request.response_format
+      ? (() => {
+          const response_format = request.response_format;
+          switch (response_format.type) {
+            case "text":
+            case "json_object":
+              return {
+                format: response_format,
+              };
+            case "json_schema":
+              return {
+                format: {
+                  schema: response_format.json_schema.schema ?? {},
+                  type: "json_schema",
+                  description: response_format.json_schema.description,
+                  name: response_format.json_schema.name,
+                  strict: response_format.json_schema.strict,
+                },
+              };
+          }
+        })()
+      : undefined,
+    tool_choice: request.tool_choice
+      ? (() => {
+          const tool_choice = request.tool_choice;
+          switch (tool_choice) {
+            case "none":
+            case "auto":
+            case "required":
+              return tool_choice;
+            default:
+              return {
+                name: tool_choice.function.name,
+                type: "function",
+              };
+          }
+        })()
+      : undefined,
+    tools: request.tools?.map((tool) => ({
+      name: tool.function.name,
+      parameters: tool.function.parameters ?? {},
+      strict: false,
+      type: "function",
+      description: tool.function.description,
+    })),
+    top_p: request.top_p,
+  };
+}
+
+async function collectStream(stream: ReadableStream<Uint8Array>): Promise<any> {
+  const chunks: Uint8Array[] = [];
+  const reader = stream.getReader();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        break;
+      }
+      chunks.push(value);
+    }
+  } finally {
+    reader.releaseLock();
+  }
+  const combinedData = flattenChunks(chunks);
+  return JSON.parse(combinedData);
+}
+
+async function fetchOpenAIResponsesTranslate({
+  headers,
+  body,
+}: {
+  headers: Record<string, string>;
+  body: ChatCompletionCreateParams;
+}): Promise<ModelResponse> {
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(responsesRequestFromChatCompletionsRequest(body)),
+  });
+  let stream = response.body;
+  if (response.ok && stream) {
+    const oaiResponse: OpenAIResponse = await collectStream(stream);
+    if (oaiResponse.error) {
+      throw new Error(oaiResponse.error.message);
+    }
+    stream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(
+          new TextEncoder().encode(
+            JSON.stringify(chatCompletionFromResponse(oaiResponse)),
+          ),
+        );
+        controller.close();
+      },
+    });
+    if (body.stream) {
+      // Fake stream for now, since it looks like the entire text output is sent in one chunk,
+      // so we don't see any UX improvement.
+      stream = stream.pipeThrough(makeFakeOpenAIStreamTransformer());
+    }
+  }
+  return {
+    stream,
+    response,
+  };
+}
+
+async function fetchOpenAIResponses({
+  headers,
+  body,
+}: {
+  headers: Record<string, string>;
+  body: ResponseCreateParams;
+}): Promise<ModelResponse> {
+  const response = await fetch("https://api.openai.com/v1/responses", {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+  });
+  return {
+    stream: response.body,
+    response,
+  };
+}
+
 async function fetchOpenAI(
   modelSpec: ModelSpec | null,
   method: "GET" | "POST",
@@ -1318,6 +1630,13 @@ async function fetchOpenAI(
     headers["User-Agent"] = "braintrust-proxy";
   }
 
+  if (url === "/responses") {
+    return fetchOpenAIResponses({
+      headers,
+      body: bodyData,
+    });
+  }
+
   // TODO: Ideally this is encapsulated as some advanced per-model config
   // or mapping, but for now, let's just map it manually.
   const isO1Like =
@@ -1352,6 +1671,13 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
+    });
+  }
+
+  if (bodyData.model.startsWith("o1-pro")) {
+    return fetchOpenAIResponsesTranslate({
+      headers,
+      body: bodyData,
     });
   }
 
@@ -2445,6 +2771,7 @@ export function guessSpanType(
 ): SpanType | undefined {
   const spanName =
     url === "/chat/completions" ||
+    url === "/responses" ||
     url === "/anthropic/messages" ||
     GOOGLE_URL_REGEX.test(url)
       ? "chat"

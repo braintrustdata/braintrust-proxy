@@ -2597,6 +2597,28 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     deprecated: true,
   },
 
+  // Databricks models.
+  "databricks-claude-3-7-sonnet": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Claude 3.7 Sonnet",
+  },
+  "databricks-meta-llama-3-3-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.3 70B Instruct",
+  },
+  "databricks-meta-llama-3-1-405b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 405B Instruct",
+  },
+  "databricks-meta-llama-3-1-8b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 8B Instruct",
+  },
+
   "text-block": {
     format: "js",
     flavor: "completion",

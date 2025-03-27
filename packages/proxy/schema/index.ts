@@ -339,6 +339,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/anthropic/models/claude-3-opus@20240229": ["vertex"],
   "publishers/anthropic/models/claude-3-haiku": ["vertex"],
   "publishers/anthropic/models/claude-3-haiku@20240307": ["vertex"],
+  "databricks-claude-3-7-sonnet": ["databricks"],
+  "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
+  "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
+  "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -369,6 +373,7 @@ export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
   AWS_DEFAULT_CREDENTIALS: "bedrock",
   GOOGLE_DEFAULT_CREDENTIALS: "vertex",
   AZURE_DEFAULT_CREDENTIALS: "azure",
+  DATABRICKS_DEFAULT_CREDENTIALS: "databricks",
 };
 
 export const EndpointProviderToBaseURL: {

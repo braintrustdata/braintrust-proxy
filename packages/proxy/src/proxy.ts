@@ -14,6 +14,7 @@ import {
   VertexMetadataSchema,
   ModelSpec,
   AzureEntraSecretSchema,
+  DatabricksOAuthSecretSchema,
 } from "@schema";
 import {
   ModelResponse,
@@ -59,9 +60,6 @@ import {
   CompletionUsage,
   CreateEmbeddingResponse,
   ModerationCreateResponse,
-  ResponseFormatJSONObject,
-  ResponseFormatJSONSchema,
-  ResponseFormatText,
 } from "openai/resources";
 import {
   ResponseCreateParams,
@@ -69,13 +67,6 @@ import {
   ResponseInputItem,
   Response as OpenAIResponse,
   ResponseOutputItem,
-  ResponseUsage,
-  Tool,
-  ToolChoiceOptions,
-  ToolChoiceFunction,
-  ToolChoiceTypes,
-  ResponseTextConfig,
-  ResponseTextDeltaEvent,
 } from "openai/resources/responses/responses";
 import {
   fetchBedrockAnthropic,
@@ -99,13 +90,12 @@ import {
   ChatCompletionCreateParamsBase,
   ChatCompletionMessage,
   ChatCompletionMessageParam,
-  ChatCompletionTool,
-  ChatCompletionToolChoiceOption,
 } from "openai/resources/chat/completions";
 import { importPKCS8, SignJWT } from "jose";
 import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
+import { getDatabricksOAuthAccessToken } from "./providers/databricks";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -1582,8 +1572,6 @@ async function fetchOpenAI(
       baseURL = baseURL.replace("<model>", bodyData.model);
     }
 
-    fullURL = new URL(baseURL + url);
-
     if (secret.type === "azure" && secret.metadata?.auth_type === "entra_api") {
       const azureEntrySecret = AzureEntraSecretSchema.parse(
         JSON.parse(secret.secret),
@@ -1594,16 +1582,40 @@ async function fetchOpenAI(
         cacheGet,
         cachePut,
       });
+    } else if (
+      secret.type === "databricks" &&
+      secret.metadata?.auth_type === "service_principal_oauth"
+    ) {
+      bearerToken = await getDatabricksOAuthAccessToken({
+        secret: DatabricksOAuthSecretSchema.parse(JSON.parse(secret.secret)),
+        apiBase: baseURL,
+        digest,
+        cacheGet,
+        cachePut,
+      });
     } else {
       bearerToken = secret.secret;
     }
+
+    if (secret.type === "databricks") {
+      console.assert(url === "/chat/completions");
+      fullURL = new URL(
+        `${baseURL}/serving-endpoints/${bodyData.model}/invocations`,
+      );
+    } else {
+      fullURL = new URL(baseURL + url);
+    }
   }
 
-  if (secret.type === "mistral" || secret.type === "fireworks") {
+  if (
+    secret.type === "mistral" ||
+    secret.type === "fireworks" ||
+    secret.type === "databricks"
+  ) {
     delete bodyData["stream_options"];
   }
 
-  if (secret.type === "mistral") {
+  if (secret.type === "mistral" || secret.type === "databricks") {
     delete bodyData["parallel_tool_calls"];
   }
 

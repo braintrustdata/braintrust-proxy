@@ -51,6 +51,19 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).strict();
 
+export const DatabricksMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.string().url(),
+    auth_type: z.enum(["pat", "service_principal_oauth"]),
+  }),
+).strict();
+
+export const DatabricksOAuthSecretSchema = z.object({
+  client_id: z.string().min(1, "Client ID cannot be empty"),
+  client_secret: z.string().min(1, "Client secret cannot be empty"),
+});
+export type DatabricksOAuthSecret = z.infer<typeof DatabricksOAuthSecretSchema>;
+
 export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([
@@ -59,6 +72,12 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
       z.null(),
     ]),
     organization_id: z.string().nullish(),
+  }),
+).strict();
+
+export const MistralMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).strict();
 
@@ -81,7 +100,6 @@ export const APISecretSchema = z.union([
         "google",
         "replicate",
         "together",
-        "mistral",
         "ollama",
         "groq",
         "lepton",
@@ -115,6 +133,18 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("vertex"),
       metadata: VertexMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("databricks"),
+      metadata: DatabricksMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("mistral"),
+      metadata: MistralMetadataSchema.nullish(),
     }),
   ),
 ]);

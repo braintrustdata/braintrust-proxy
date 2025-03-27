@@ -26,6 +26,7 @@ export const ModelEndpointType = [
   "xAI",
   "groq",
   "azure",
+  "databricks",
   "lepton",
   "cerebras",
   "ollama",
@@ -2594,6 +2595,28 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.075,
     output_cost_per_mil_tokens: 0.3,
     deprecated: true,
+  },
+
+  // Databricks models.
+  "databricks-claude-3-7-sonnet": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Claude 3.7 Sonnet",
+  },
+  "databricks-meta-llama-3-3-70b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.3 70B Instruct",
+  },
+  "databricks-meta-llama-3-1-405b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 405B Instruct",
+  },
+  "databricks-meta-llama-3-1-8b-instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 3.1 8B Instruct",
   },
 
   "text-block": {

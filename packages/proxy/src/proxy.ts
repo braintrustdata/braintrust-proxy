@@ -1068,6 +1068,10 @@ async function fetchModelLoop(
         `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
         loopIndex,
       );
+
+      spanLogger?.reportProgress(
+        `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
+      );
       await new Promise((r) => setTimeout(r, delayMs));
 
       totalWaitedTime += delayMs;

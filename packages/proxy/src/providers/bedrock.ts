@@ -236,7 +236,22 @@ export async function fetchBedrockAnthropic({
     let idx = 0;
     responseStream = new ReadableStream<Uint8Array>({
       async pull(controller) {
-        const { value, done } = await iterator.next();
+        let value, done;
+        try {
+          ({ value, done } = await iterator.next());
+        } catch (e) {
+          console.warn("Error from iterator.next():", e);
+          controller.enqueue(
+            new TextEncoder().encode(
+              `event: event\ndata: ${JSON.stringify({
+                error: "Bedrock stream error: " + e,
+              })}\n\n`,
+            ),
+          );
+          controller.close();
+          return;
+        }
+
         if (done) {
           // Close the stream when no more data is available
           controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));

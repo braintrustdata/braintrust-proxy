@@ -240,7 +240,7 @@ export async function fetchBedrockAnthropic({
         try {
           ({ value, done } = await iterator.next());
         } catch (e) {
-          console.warn("Error from iterator.next():", e);
+          console.warn("Error from fetchBedrockAnthropic: iterator.next():", e);
           controller.enqueue(
             new TextEncoder().encode(
               `event: event\ndata: ${JSON.stringify({

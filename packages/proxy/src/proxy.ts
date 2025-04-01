@@ -924,11 +924,14 @@ async function fetchModelLoop(
   let delayMs = 50;
   let totalWaitedTime = 0;
 
+  let endpointsTried = 0;
+  let retries = 0;
   console.log(`FOUND ${secrets.length} SECRETS`);
   for (; i < secrets.length; i++) {
     console.log(`TRYING ${i} of ${secrets.length}`);
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
+    endpointsTried = Math.max(endpointsTried + 1, secrets.length);
 
     const modelSpec =
       (model !== null
@@ -1062,6 +1065,7 @@ async function fetchModelLoop(
       spanLogger?.reportProgress(
         `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
       );
+      retries += 1;
       await new Promise((r) => setTimeout(r, delayMs));
 
       totalWaitedTime += delayMs;
@@ -1097,6 +1101,7 @@ async function fetchModelLoop(
       spanLogger?.reportProgress(
         `Received retryable error. Will try the next endpoint: ${httpCode}`,
       );
+      retries += 1;
     }
 
     endpointRetryableErrors.add(1, {
@@ -1106,6 +1111,12 @@ async function fetchModelLoop(
   }
 
   retriesPerCall.record(i, loggableInfo);
+  spanLogger?.log({
+    metrics: {
+      retries,
+      endpoint_count: endpointsTried,
+    },
+  });
 
   if (!proxyResponse) {
     if (lastException) {

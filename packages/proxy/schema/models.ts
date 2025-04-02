@@ -56,6 +56,57 @@ export type ModelSpec = z.infer<typeof ModelSchema>;
 
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
+
+  "gpt-4o": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
+    displayName: "GPT-4o",
+  },
+  "gpt-4o-2024-11-20": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
+    parent: "gpt-4o",
+  },
+  "gpt-4o-2024-08-06": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2.5,
+    output_cost_per_mil_tokens: 10,
+    parent: "gpt-4o",
+  },
+  "gpt-4o-2024-05-13": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 15,
+    parent: "gpt-4o",
+  },
+
+  "gpt-4o-mini": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    displayName: "GPT-4o mini",
+  },
+  "gpt-4o-mini-2024-07-18": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    parent: "gpt-4o-mini",
+  },
+
   "o3-mini": {
     format: "openai",
     flavor: "chat",
@@ -124,38 +175,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     o1_like: true,
     parent: "o1-pro",
   },
-  "gpt-4o": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 2.5,
-    output_cost_per_mil_tokens: 10,
-    displayName: "GPT-4o",
-  },
-  "gpt-4o-2024-11-20": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 2.5,
-    output_cost_per_mil_tokens: 10,
-    parent: "gpt-4o",
-  },
-  "gpt-4o-2024-08-06": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 2.5,
-    output_cost_per_mil_tokens: 10,
-    parent: "gpt-4o",
-  },
-  "gpt-4o-2024-05-13": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 5,
-    output_cost_per_mil_tokens: 15,
-    parent: "gpt-4o",
-  },
   "chatgpt-4o-latest": {
     format: "openai",
     flavor: "chat",
@@ -164,22 +183,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 10,
     displayName: "ChatGPT-4o",
   },
-  "gpt-4o-mini": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.15,
-    output_cost_per_mil_tokens: 0.6,
-    displayName: "GPT-4o mini",
-  },
-  "gpt-4o-mini-2024-07-18": {
-    format: "openai",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.15,
-    output_cost_per_mil_tokens: 0.6,
-    parent: "gpt-4o-mini",
-  },
+
   "gpt-4-turbo": {
     format: "openai",
     flavor: "chat",

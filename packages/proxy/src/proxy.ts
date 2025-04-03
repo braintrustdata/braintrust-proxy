@@ -1062,9 +1062,7 @@ async function fetchModelLoop(
         loopIndex,
       );
 
-      spanLogger?.reportProgress(
-        `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
-      );
+      spanLogger?.reportProgress(`Sleeping for ${delayMs}ms`);
       retries += 1;
       await new Promise((r) => setTimeout(r, delayMs));
 
@@ -1098,9 +1096,7 @@ async function fetchModelLoop(
         "Received retryable error. Will try the next endpoint",
         httpCode,
       );
-      spanLogger?.reportProgress(
-        `Received retryable error. Will try the next endpoint: ${httpCode}`,
-      );
+      spanLogger?.reportProgress("Retrying...");
       retries += 1;
     }
 

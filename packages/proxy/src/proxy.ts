@@ -924,14 +924,12 @@ async function fetchModelLoop(
   let delayMs = 50;
   let totalWaitedTime = 0;
 
-  let endpointsTried = 0;
   let retries = 0;
   console.log(`FOUND ${secrets.length} SECRETS`);
   for (; i < secrets.length; i++) {
     console.log(`TRYING ${i} of ${secrets.length}`);
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
-    endpointsTried = Math.max(endpointsTried + 1, secrets.length);
 
     const modelSpec =
       (model !== null
@@ -1062,7 +1060,13 @@ async function fetchModelLoop(
         loopIndex,
       );
 
-      spanLogger?.reportProgress(`Sleeping for ${delayMs}ms`);
+      const sleepTime =
+        delayMs > 1000
+          ? Math.round(delayMs / 1000)
+          : Number((delayMs / 1000).toFixed(1));
+      spanLogger?.reportProgress(
+        `Retrying in ${sleepTime}s due to rate limit...`,
+      );
       retries += 1;
       await new Promise((r) => setTimeout(r, delayMs));
 
@@ -1096,7 +1100,9 @@ async function fetchModelLoop(
         "Received retryable error. Will try the next endpoint",
         httpCode,
       );
-      spanLogger?.reportProgress("Retrying...");
+      spanLogger?.reportProgress(
+        `Retrying${secrets.length === 1 ? "" : " with next endpoint"}...`,
+      );
       retries += 1;
     }
 
@@ -1108,10 +1114,7 @@ async function fetchModelLoop(
 
   retriesPerCall.record(i, loggableInfo);
   spanLogger?.log({
-    metrics: {
-      retries,
-      endpoint_count: endpointsTried,
-    },
+    metrics: { retries },
   });
 
   if (!proxyResponse) {

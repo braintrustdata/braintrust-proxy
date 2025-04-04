@@ -54,7 +54,7 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
 export const DatabricksMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string().url(),
-    auth_type: z.enum(["pat", "service_principal_oauth"]),
+    auth_type: z.enum(["pat", "service_principal_oauth"]).default("pat"),
   }),
 ).strict();
 

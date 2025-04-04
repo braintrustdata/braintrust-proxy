@@ -915,12 +915,12 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.8,
     displayName: "Qwen 2.5 Coder 32B Instruct",
   },
-  "Qwen/QwQ-32B-Preview": {
+  "Qwen/QwQ-32B": {
     format: "openai",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 0.8,
-    displayName: "Qwen QwQ 32B Preview",
+    displayName: "Qwen QwQ 32B",
   },
   "Qwen/Qwen2-VL-72B-Instruct": {
     format: "openai",
@@ -1010,6 +1010,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.8,
     output_cost_per_mil_tokens: 0.8,
     displayName: "Deepseek Coder 33b Instruct",
+    deprecated: true,
+  },
+  "Qwen/QwQ-32B-Preview": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.8,
+    output_cost_per_mil_tokens: 0.8,
+    displayName: "Qwen QwQ 32B Preview",
     deprecated: true,
   },
   "NousResearch/Nous-Hermes-2-Yi-34B": {
@@ -1566,12 +1574,26 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
   },
+  "accounts/fireworks/models/deepseek-v3-0324": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "DeepSeek V3 03-24",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+  },
   "accounts/fireworks/models/deepseek-r1": {
     format: "openai",
     flavor: "chat",
-    displayName: "DeepSeek R1",
-    input_cost_per_mil_tokens: 8,
+    displayName: "DeepSeek R1 (Fast)",
+    input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 8,
+  },
+  "accounts/fireworks/models/deepseek-r1-basic": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "DeepSeek R1 Basic",
+    input_cost_per_mil_tokens: 0.55,
+    output_cost_per_mil_tokens: 2.19,
   },
   "accounts/fireworks/models/qwen2p5-72b-instruct": {
     format: "openai",
@@ -1587,10 +1609,10 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
   },
-  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+  "accounts/fireworks/models/qwq-32b": {
     format: "openai",
     flavor: "chat",
-    displayName: "Qwen QwQ 32B Preview",
+    displayName: "Qwen QwQ 32B",
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
   },
@@ -1600,6 +1622,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Qwen2 VL 72B Instruct",
     input_cost_per_mil_tokens: 0.9,
     output_cost_per_mil_tokens: 0.9,
+  },
+  // Fireworks deprecated.
+  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Qwen QwQ 32B Preview",
+    input_cost_per_mil_tokens: 0.9,
+    output_cost_per_mil_tokens: 0.9,
+    deprecated: true,
   },
 
   // CEREBRAS MODELS

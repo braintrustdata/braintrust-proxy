@@ -674,6 +674,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "openai",
     flavor: "chat",
     displayName: "Llama 4 Maverick Instruct (17Bx128E)",
+    multimodal: true,
   },
   "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
     format: "openai",
@@ -1283,6 +1284,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.5,
     output_cost_per_mil_tokens: 0.77,
     displayName: "Llama 4 Maverick (17Bx128E)",
+    multimodal: true,
     experimental: true,
   },
   "meta-llama/llama-4-scout-17b-16e-instruct": {
@@ -1529,6 +1531,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Llama 4 Maverick Instruct (Basic)",
     input_cost_per_mil_tokens: 0.22,
     output_cost_per_mil_tokens: 0.88,
+    multimodal: true,
   },
   "accounts/fireworks/models/llama4-scout-instruct-basic": {
     format: "openai",

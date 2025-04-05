@@ -670,6 +670,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
 
   // TOGETHER MODELS
   // Together Meta.
+  "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 4 Maverick Instruct (17Bx128E)",
+  },
+  "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 4 Scout Instruct (17Bx16E)",
+  },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
     format: "openai",
     flavor: "chat",
@@ -1266,14 +1276,23 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.2,
     displayName: "Gemma 2 9B",
   },
-  "mixtral-8x7b-32768": {
+  // Groq experimental.
+  "meta-llama/llama-4-maverick-17b-128e-instruct": {
     format: "openai",
     flavor: "chat",
-    input_cost_per_mil_tokens: 0.27,
-    output_cost_per_mil_tokens: 0.27,
-    displayName: "Mixtral 8x7B 32k",
+    input_cost_per_mil_tokens: 0.5,
+    output_cost_per_mil_tokens: 0.77,
+    displayName: "Llama 4 Maverick (17Bx128E)",
+    experimental: true,
   },
-  // Groq experimental.
+  "meta-llama/llama-4-scout-17b-16e-instruct": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.11,
+    output_cost_per_mil_tokens: 0.34,
+    displayName: "Llama 4 Scout (17Bx16E)",
+    experimental: true,
+  },
   "llama-3.3-70b-specdec": {
     format: "openai",
     flavor: "chat",
@@ -1316,6 +1335,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Llama 3.2 1B (Preview) 8k",
     experimental: true,
   },
+  "mistral-saba-24b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.79,
+    output_cost_per_mil_tokens: 0.79,
+    displayName: "Mistral Saba 24B",
+    experimental: true,
+  },
   "deepseek-r1-distill-llama-70b": {
     format: "openai",
     flavor: "chat",
@@ -1356,6 +1383,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Qwen 2.5 Coder 32B Instruct 128k",
     experimental: true,
   },
+  "qwen-qwq-32b": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.29,
+    output_cost_per_mil_tokens: 0.39,
+    displayName: "Qwen QwQ 32B (Preview) 128k",
+    experimental: true,
+  },
   // Groq deprecated.
   "gemma-7b-it": {
     format: "openai",
@@ -1383,6 +1418,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.7,
     output_cost_per_mil_tokens: 0.8,
     displayName: "LLaMA 2 70b 4096",
+    deprecated: true,
+  },
+  "mixtral-8x7b-32768": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.27,
+    output_cost_per_mil_tokens: 0.27,
+    displayName: "Mixtral 8x7B 32k",
     deprecated: true,
   },
 
@@ -1480,6 +1523,20 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // FIREWORKS MODELS
+  "accounts/fireworks/models/llama4-maverick-instruct-basic": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 4 Maverick Instruct (Basic)",
+    input_cost_per_mil_tokens: 0.22,
+    output_cost_per_mil_tokens: 0.88,
+  },
+  "accounts/fireworks/models/llama4-scout-instruct-basic": {
+    format: "openai",
+    flavor: "chat",
+    displayName: "Llama 4 Scout Instruct (Basic)",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  },
   "accounts/fireworks/models/llama-v3p3-70b-instruct": {
     format: "openai",
     flavor: "chat",
@@ -2462,6 +2519,23 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     parent: "publishers/google/models/gemini-1.0-pro",
   },
+  "publishers/anthropic/models/claude-3-7-sonnet": {
+    format: "anthropic",
+    flavor: "chat",
+    displayName: "Claude 3.7 Sonnet",
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    multimodal: true,
+  },
+  "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
+    format: "anthropic",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    multimodal: true,
+    experimental: true,
+    parent: "publishers/anthropic/models/claude-3-7-sonnet",
+  },
   "publishers/anthropic/models/claude-3-5-haiku": {
     format: "anthropic",
     flavor: "chat",
@@ -2571,30 +2645,20 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.9,
   },
   // Vertex experimental models.
-  "publishers/google/models/gemini-2.0-pro-exp-02-05": {
+  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     format: "google",
     flavor: "chat",
-    displayName: "Gemini 2.0 Pro",
+    displayName: "Gemini 2.5 Pro Experimental",
     multimodal: true,
     experimental: true,
   },
-  "publishers/anthropic/models/claude-3-7-sonnet": {
-    format: "anthropic",
+  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
+    format: "google",
     flavor: "chat",
-    displayName: "Claude 3.7 Sonnet (Preview)",
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
+    displayName: "Gemini 2.0 Flash Thinking Mode",
     multimodal: true,
     experimental: true,
-  },
-  "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
-    format: "anthropic",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    multimodal: true,
-    experimental: true,
-    parent: "publishers/anthropic/models/claude-3-7-sonnet",
+    parent: "publishers/google/models/gemini-2.0-flash",
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     format: "openai",

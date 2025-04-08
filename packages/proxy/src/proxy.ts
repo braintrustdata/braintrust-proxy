@@ -140,6 +140,7 @@ export interface SpanLogger {
   setName: (name: string) => void;
   log: (args: ExperimentLogPartialArgs) => void;
   end: () => void;
+  reportProgress: (progress: string) => void;
 }
 
 // This is an isomorphic implementation of proxyV1, which is used by both edge functions
@@ -923,7 +924,10 @@ async function fetchModelLoop(
   let delayMs = 50;
   let totalWaitedTime = 0;
 
+  let retries = 0;
+  console.log(`FOUND ${secrets.length} SECRETS`);
   for (; i < secrets.length; i++) {
+    console.log(`TRYING ${i} of ${secrets.length}`);
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
 
@@ -998,17 +1002,14 @@ async function fetchModelLoop(
             proxyResponse.response.status,
           ))
       ) {
+        console.log("BREAKING");
         break;
       } else if (i < secrets.length - 1) {
-        console.warn(
-          "Received retryable error. Will try the next endpoint",
-          proxyResponse.response.status,
-          proxyResponse.response.statusText,
-        );
         httpCode = proxyResponse.response.status;
         httpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
+      console.log("ERROR", e);
       lastException = e;
       if (e instanceof TypeError) {
         if ("cause" in e && e.cause && isObject(e.cause)) {
@@ -1058,6 +1059,12 @@ async function fetchModelLoop(
         `Ran out of endpoints and hit rate limit errors, so sleeping for ${delayMs}ms`,
         loopIndex,
       );
+
+      const sleepTime =
+        delayMs > 1000
+          ? Math.round(delayMs / 1000)
+          : Number((delayMs / 1000).toFixed(1));
+      spanLogger?.reportProgress(`Retrying (${++retries})...`);
       await new Promise((r) => setTimeout(r, delayMs));
 
       totalWaitedTime += delayMs;
@@ -1085,6 +1092,12 @@ async function fetchModelLoop(
           },
         }),
       };
+    } else {
+      console.warn(
+        "Received retryable error. Will try the next endpoint",
+        httpCode,
+      );
+      spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
     endpointRetryableErrors.add(1, {
@@ -1094,6 +1107,9 @@ async function fetchModelLoop(
   }
 
   retriesPerCall.record(i, loggableInfo);
+  spanLogger?.log({
+    metrics: { retries },
+  });
 
   if (!proxyResponse) {
     if (lastException) {

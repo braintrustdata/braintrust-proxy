@@ -1064,10 +1064,7 @@ async function fetchModelLoop(
         delayMs > 1000
           ? Math.round(delayMs / 1000)
           : Number((delayMs / 1000).toFixed(1));
-      spanLogger?.reportProgress(
-        `Retrying in ${sleepTime}s due to rate limit...`,
-      );
-      retries += 1;
+      spanLogger?.reportProgress(`Retrying (${++retries})...`);
       await new Promise((r) => setTimeout(r, delayMs));
 
       totalWaitedTime += delayMs;
@@ -1100,10 +1097,7 @@ async function fetchModelLoop(
         "Received retryable error. Will try the next endpoint",
         httpCode,
       );
-      spanLogger?.reportProgress(
-        `Retrying${secrets.length === 1 ? "" : " with next endpoint"}...`,
-      );
-      retries += 1;
+      spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
     endpointRetryableErrors.add(1, {

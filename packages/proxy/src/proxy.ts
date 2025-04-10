@@ -925,9 +925,7 @@ async function fetchModelLoop(
   let totalWaitedTime = 0;
 
   let retries = 0;
-  console.log(`FOUND ${secrets.length} SECRETS`);
   for (; i < secrets.length; i++) {
-    console.log(`TRYING ${i} of ${secrets.length}`);
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
 
@@ -1002,7 +1000,6 @@ async function fetchModelLoop(
             proxyResponse.response.status,
           ))
       ) {
-        console.log("BREAKING");
         break;
       } else if (i < secrets.length - 1) {
         httpCode = proxyResponse.response.status;

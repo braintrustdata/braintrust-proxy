@@ -1840,6 +1840,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     experimental: true,
     displayName: "Gemini 2.5 Pro Experimental",
   },
+  "gemini-2.5-pro-preview-03-25": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    experimental: false,
+    displayName: "Gemini 2.5 Pro Preview",
+  },
   "gemini-2.0-flash-exp": {
     format: "google",
     flavor: "chat",

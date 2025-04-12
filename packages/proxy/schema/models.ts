@@ -1830,16 +1830,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     parent: "gemini-1.5-pro",
   },
-  // Gemini experimental.
-  "gemini-2.5-pro-exp-03-25": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0,
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    displayName: "Gemini 2.5 Pro Experimental",
-  },
   "gemini-2.5-pro-preview-03-25": {
     format: "google",
     flavor: "chat",
@@ -1848,6 +1838,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     experimental: false,
     displayName: "Gemini 2.5 Pro Preview",
+  },
+  "gemini-2.5-pro-exp-03-25": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0,
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    displayName: "Gemini 2.5 Pro Experimental",
   },
   "gemini-2.0-flash-exp": {
     format: "google",

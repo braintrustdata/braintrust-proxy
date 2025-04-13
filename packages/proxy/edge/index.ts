@@ -346,7 +346,7 @@ export async function encryptedGet(
   return await decryptMessage(encryptionKey, message.iv, message.data);
 }
 
-async function encryptedPut(
+export async function encryptedPut(
   cache: Cache,
   encryptionKey: string,
   key: string,

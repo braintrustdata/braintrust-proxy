@@ -89,7 +89,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     parent: "gpt-4o",
   },
-
+  "gpt-4.1": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 8,
+    displayName: "GPT-4.1",
+  },
+  "gpt-4.1-2025-04-14": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 8,
+    parent: "gpt-4.1",
+  },
   "gpt-4o-mini": {
     format: "openai",
     flavor: "chat",
@@ -106,7 +121,38 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     parent: "gpt-4o-mini",
   },
-
+  "gpt-4.1-mini": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.4,
+    output_cost_per_mil_tokens: 1.6,
+    displayName: "GPT-4.1 mini",
+  },
+  "gpt-4.1-mini-2025-04-14": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.4,
+    output_cost_per_mil_tokens: 1.6,
+    parent: "gpt-4.1-mini",
+  },
+  "gpt-4.1-nano": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.4,
+    displayName: "GPT-4.1 nano",
+  },
+  "gpt-4.1-nano-2025-04-14": {
+    format: "openai",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.1,
+    output_cost_per_mil_tokens: 0.4,
+    parent: "gpt-4.1-nano",
+  },
   "o3-mini": {
     format: "openai",
     flavor: "chat",

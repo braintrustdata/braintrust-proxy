@@ -979,6 +979,7 @@ async function fetchModelLoop(
     let httpHeaders = new Headers();
     endpointCalls.add(1, loggableInfo);
     try {
+      console.log("modelSpec", modelSpec);
       proxyResponse = await fetchModel(
         modelSpec,
         method,
@@ -1744,6 +1745,8 @@ async function fetchOpenAI(
         break;
     }
   }
+  console.log("bodyData", bodyData.messages[0].content[1]);
+  bodyData.messages[0].content[1].type = "video_url";
 
   const proxyResponse = await fetch(
     fullURL.toString(),
@@ -2498,6 +2501,7 @@ async function fetchGoogleChatCompletions({
   headers: Record<string, string>;
   bodyData: null | any;
 }): Promise<ModelResponse> {
+  console.log("bodyData", bodyData);
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
       "Google request must have a valid JSON-parsable body",

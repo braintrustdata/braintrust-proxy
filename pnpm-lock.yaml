@@ -210,8 +210,8 @@ importers:
         specifier: ^1.2.7
         version: 1.2.7
       '@google/generative-ai':
-        specifier: ^0.21.0
-        version: 0.21.0
+        specifier: ^0.24.0
+        version: 0.24.0
       '@opentelemetry/api':
         specifier: ^1.7.0
         version: 1.7.0
@@ -2097,8 +2097,8 @@ packages:
     engines: {node: '>=14'}
     dev: true
 
-  /@google/generative-ai@0.21.0:
-    resolution: {integrity: sha512-7XhUbtnlkSEZK15kN3t+tzIMxsbKm/dSkKBFalj+20NvPKe1kBY7mR2P7vuijEn+f06z5+A8bVGKO0v39cr6Wg==}
+  /@google/generative-ai@0.24.0:
+    resolution: {integrity: sha512-fnEITCGEB7NdX0BhoYZ/cq/7WPZ1QS5IzJJfC3Tg/OwkvBetMiVJciyaan297OvE4B9Jg1xvo0zIazX/9sGu1Q==}
     engines: {node: '>=18.0.0'}
     dev: false
 

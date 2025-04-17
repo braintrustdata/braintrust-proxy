@@ -39,7 +39,6 @@ async function convertMediaUrl({
     throw new Error("Failed to get content type of the media");
   }
   const baseContentType = contentType.split(";")[0].trim();
-  console.log("baseContentType", baseContentType);
   if (!allowedMediaTypes.includes(baseContentType)) {
     throw new Error(`Unsupported media type: ${baseContentType}`);
   }

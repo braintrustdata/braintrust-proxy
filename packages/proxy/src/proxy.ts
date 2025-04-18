@@ -84,7 +84,10 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { differenceInSeconds } from "date-fns";
-import { makeFakeOpenAIStreamTransformer } from "./providers/openai";
+import {
+  makeFakeOpenAIStreamTransformer,
+  normalizeOpenAIMessages,
+} from "./providers/openai";
 import {
   ChatCompletionContentPart,
   ChatCompletionCreateParamsBase,
@@ -1682,6 +1685,10 @@ async function fetchOpenAI(
         role: m.role === "system" ? "user" : m.role,
       }));
     }
+  }
+
+  if (bodyData.messages) {
+    bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
   if (secret.metadata?.supportsStreaming === false) {

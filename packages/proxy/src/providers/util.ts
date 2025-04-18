@@ -26,7 +26,7 @@ async function convertMediaUrl({
   maxMediaBytes,
 }: {
   url: string;
-  allowedMediaTypes: string[];
+  allowedMediaTypes: string[] | null;
   maxMediaBytes: number | null;
 }): Promise<MediaBlock> {
   const response = await fetch(url);
@@ -39,7 +39,10 @@ async function convertMediaUrl({
     throw new Error("Failed to get content type of the media");
   }
   const baseContentType = contentType.split(";")[0].trim();
-  if (!allowedMediaTypes.includes(baseContentType)) {
+  if (
+    allowedMediaTypes !== null &&
+    !allowedMediaTypes.includes(baseContentType)
+  ) {
     throw new Error(`Unsupported media type: ${baseContentType}`);
   }
 
@@ -64,7 +67,7 @@ export async function convertMediaToBase64({
   maxMediaBytes,
 }: {
   media: string;
-  allowedMediaTypes: string[];
+  allowedMediaTypes: string[] | null;
   maxMediaBytes: number | null;
 }): Promise<MediaBlock> {
   const mediaBlock = convertBase64Media(media);

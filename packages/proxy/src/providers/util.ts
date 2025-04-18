@@ -7,7 +7,7 @@ interface MediaBlock {
   data: string;
 }
 
-function convertBase64Media(media: string): MediaBlock | null {
+export function convertBase64Media(media: string): MediaBlock | null {
   const match = media.match(base64MediaPattern);
   if (!match) {
     return null;
@@ -77,4 +77,8 @@ export async function convertMediaToBase64({
       maxMediaBytes,
     });
   }
+}
+
+export function base64ToUrl(base64: MediaBlock): string {
+  return `data:${base64.media_type};base64,${base64.data}`;
 }

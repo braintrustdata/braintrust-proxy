@@ -1,4 +1,12 @@
-import { ChatCompletionChunk, ChatCompletion } from "openai/resources";
+import {
+  ChatCompletionChunk,
+  ChatCompletion,
+  ChatCompletionMessageParam,
+  ChatCompletionContentPart,
+  ChatCompletionContentPartRefusal,
+} from "openai/resources";
+import { base64ToUrl, convertBase64Media, convertMediaToBase64 } from "./util";
+import { parseFilenameFromUrl } from "..";
 
 function openAIChatCompletionToChatEvent(
   completion: ChatCompletion,
@@ -65,4 +73,58 @@ export function makeFakeOpenAIStreamTransformer() {
       controller.terminate();
     },
   });
+}
+
+export async function normalizeOpenAIMessages(
+  messages: ChatCompletionMessageParam[],
+): Promise<ChatCompletionMessageParam[]> {
+  return Promise.all(
+    messages.map(async (message) => {
+      if (
+        message.role === "user" &&
+        message.content &&
+        typeof message.content !== "string"
+      ) {
+        message.content = await Promise.all(
+          message.content.map(
+            async (c): Promise<ChatCompletionContentPart> =>
+              await normalizeOpenAIContent(c),
+          ),
+        );
+      }
+      return message;
+    }),
+  );
+}
+
+// https://platform.openai.com/docs/guides/pdf-files?api-mode=chat
+async function normalizeOpenAIContent(
+  content: ChatCompletionContentPart,
+): Promise<ChatCompletionContentPart> {
+  if (typeof content === "string") {
+    return content;
+  }
+  switch (content.type) {
+    case "image_url":
+      if (convertBase64Media(content.image_url.url)) {
+        return content;
+      } else if (content.image_url.url.endsWith(".pdf")) {
+        const base64 = await convertMediaToBase64({
+          media: content.image_url.url,
+          allowedMediaTypes: ["application/pdf"],
+          maxMediaBytes: 20 * 1024 * 1024,
+        });
+        return {
+          type: "file",
+          file: {
+            filename:
+              parseFilenameFromUrl(content.image_url.url) ?? "image.pdf",
+            file_data: base64ToUrl(base64),
+          },
+        };
+      }
+      return content;
+    default:
+      return content;
+  }
 }

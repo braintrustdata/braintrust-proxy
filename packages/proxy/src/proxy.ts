@@ -84,7 +84,10 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { differenceInSeconds } from "date-fns";
-import { makeFakeOpenAIStreamTransformer } from "./providers/openai";
+import {
+  makeFakeOpenAIStreamTransformer,
+  normalizeOpenAIMessages,
+} from "./providers/openai";
 import {
   ChatCompletionContentPart,
   ChatCompletionCreateParamsBase,
@@ -1657,8 +1660,11 @@ async function fetchOpenAI(
   // TODO: Ideally this is encapsulated as some advanced per-model config
   // or mapping, but for now, let's just map it manually.
   const isO1Like =
-    typeof bodyData.model === "string" &&
-    (bodyData.model.startsWith("o1") || bodyData.model.startsWith("o3-mini"));
+    bodyData.o1_like ||
+    (typeof bodyData.model === "string" &&
+      (bodyData.model.startsWith("o1") ||
+        bodyData.model.startsWith("o3") ||
+        bodyData.model.startsWith("o4")));
   if (isO1Like) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
@@ -1679,6 +1685,10 @@ async function fetchOpenAI(
         role: m.role === "system" ? "user" : m.role,
       }));
     }
+  }
+
+  if (bodyData.messages) {
+    bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
   if (secret.metadata?.supportsStreaming === false) {

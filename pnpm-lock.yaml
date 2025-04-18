@@ -207,8 +207,8 @@ importers:
         specifier: ^3.738.0
         version: 3.738.0
       '@braintrust/core':
-        specifier: ^0.0.79
-        version: 0.0.79
+        specifier: ^0.0.85
+        version: 0.0.85
       '@breezystack/lamejs':
         specifier: ^1.2.7
         version: 1.2.7
@@ -913,14 +913,6 @@ packages:
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
-    dev: false
-
-  /@braintrust/core@0.0.79:
-    resolution: {integrity: sha512-zffm9oBcMtnlEtRjYqEZvsYC4gLevdgshsNp1MPeSDuf4XpaKNo1kblr3yv4mxjIVWi1c7TVOGjJEpkpym+V0w==}
-    dependencies:
-      '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.22.4)
-      uuid: 9.0.1
-      zod: 3.22.4
     dev: false
 
   /@braintrust/core@0.0.84:

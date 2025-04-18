@@ -122,6 +122,21 @@ async function normalizeOpenAIContent(
             file_data: base64ToUrl(base64),
           },
         };
+      } else if (
+        content.image_url.url.startsWith("http://127.0.0.1") ||
+        content.image_url.url.startsWith("http://localhost")
+      ) {
+        const base64 = await convertMediaToBase64({
+          media: content.image_url.url,
+          allowedMediaTypes: null,
+          maxMediaBytes: 20 * 1024 * 1024,
+        });
+        return {
+          type: "image_url",
+          image_url: {
+            url: base64ToUrl(base64),
+          },
+        };
       }
       return content;
     default:

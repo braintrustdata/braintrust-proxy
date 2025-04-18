@@ -79,3 +79,83 @@ export class ProxyBadRequestError extends Error {
     super(message);
   }
 }
+
+export function parseFilenameFromUrl(url: string): string | undefined {
+  try {
+    // Handle empty string
+    if (!url || url.trim() === "") {
+      return undefined;
+    }
+
+    // Handle simple filenames without URLs directly
+    if (!url.includes("/") && !url.includes("://")) {
+      try {
+        return decodeURIComponent(url);
+      } catch (e) {
+        return url;
+      }
+    }
+
+    // For URLs without a protocol, add a dummy one to make URL parsing work
+    const normalizedUrl = url.includes("://") ? url : `http://${url}`;
+
+    // Use URL to parse complex URLs rather than string splitting
+    const parsedUrl = new URL(normalizedUrl);
+
+    // Extract the pathname
+    const pathname = parsedUrl.pathname;
+
+    // Special case: If hostname contains a file extension and path is empty or just "/"
+    const hostnameMatch = parsedUrl.hostname.match(
+      /\.(pdf|docx?|xlsx?|pptx?|csv|txt|rtf|json|xml|html?|zip|rar|gz|tar|7z)$/i,
+    );
+    if (hostnameMatch && (!pathname || pathname === "/")) {
+      try {
+        return decodeURIComponent(parsedUrl.hostname);
+      } catch (e) {
+        return parsedUrl.hostname;
+      }
+    }
+
+    // If pathname is empty or just "/", there's no filename
+    if (!pathname || pathname === "/") {
+      return undefined;
+    }
+
+    // Get the last segment of the path and remove any query parameters
+    const filename = pathname.split("/").pop();
+
+    // Check if filename exists and remove fragment identifier if present
+    if (filename) {
+      try {
+        return decodeURIComponent(filename.split("#")[0]);
+      } catch (e) {
+        return filename.split("#")[0];
+      }
+    }
+
+    return undefined;
+  } catch (error) {
+    // If URL parsing fails (e.g., for invalid URLs), fall back to simple splitting
+    if (!url || url.trim() === "") {
+      return undefined;
+    }
+
+    if (!url.includes("/")) {
+      try {
+        return decodeURIComponent(url);
+      } catch (e) {
+        return url;
+      }
+    }
+
+    const filename = url.split("/").pop()?.split("?")[0]?.split("#")[0];
+    if (!filename) return undefined;
+
+    try {
+      return decodeURIComponent(filename);
+    } catch (e) {
+      return filename;
+    }
+  }
+}

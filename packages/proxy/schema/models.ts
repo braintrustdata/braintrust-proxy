@@ -1910,6 +1910,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     parent: "gemini-1.5-pro",
   },
+  "gemini-2.5-flash-preview-04-17": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    multimodal: true,
+    experimental: false,
+    displayName: "Gemini 2.5 Flash Preview",
+  },
   "gemini-2.5-pro-preview-03-25": {
     format: "google",
     flavor: "chat",

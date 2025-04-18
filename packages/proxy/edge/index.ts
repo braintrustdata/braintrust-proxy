@@ -1,6 +1,6 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { flushMetrics } from "@lib/metrics";
-import { proxyV1 } from "@lib/proxy";
+import { proxyV1, SpanLogger } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
@@ -34,6 +34,7 @@ export interface ProxyOpts {
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
   whitelist?: (string | RegExp)[];
+  spanLogger?: SpanLogger;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -311,6 +312,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cachePut,
         digest: digestMessage,
         meterProvider,
+        spanLogger: opts.spanLogger,
       });
     } catch (e) {
       return new Response(`${e}`, {
@@ -344,7 +346,7 @@ export async function encryptedGet(
   return await decryptMessage(encryptionKey, message.iv, message.data);
 }
 
-async function encryptedPut(
+export async function encryptedPut(
   cache: Cache,
   encryptionKey: string,
   key: string,

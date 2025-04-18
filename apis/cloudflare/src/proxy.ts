@@ -5,10 +5,17 @@ import {
   makeFetchApiSecrets,
   encryptedGet,
 } from "@braintrust/proxy/edge";
-import { NOOP_METER_PROVIDER, initMetrics } from "@braintrust/proxy";
+import {
+  NOOP_METER_PROVIDER,
+  SpanLogger,
+  initMetrics,
+} from "@braintrust/proxy";
 import { PrometheusMetricAggregator } from "./metric-aggregator";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
+import { Span, startSpan } from "braintrust";
+import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
+import { cachedLogin, makeProxySpanLogger } from "./tracing";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -65,31 +72,59 @@ export async function handleProxyV1(
 
   const cache = await caches.open("apikey:cache");
 
+  const credentialsCache = {
+    async get<T>(key: string): Promise<T | null> {
+      const response = await cache.match(apiCacheKey(key));
+      if (response) {
+        return (await response.json()) as T;
+      } else {
+        return null;
+      }
+    },
+    async set<T>(key: string, value: T, { ttl }: { ttl?: number }) {
+      await cache.put(
+        apiCacheKey(key),
+        new Response(JSON.stringify(value), {
+          headers: {
+            "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
+          },
+        }),
+      );
+    },
+  };
+
+  let spanLogger: SpanLogger | undefined;
+  let span: Span | undefined;
+  const parentHeader = request.headers.get(BT_PARENT);
+  if (parentHeader) {
+    let parent;
+    try {
+      parent = resolveParentHeader(parentHeader);
+    } catch (e) {
+      return new Response(
+        `Invalid parent header '${parentHeader}': ${e instanceof Error ? e.message : String(e)}`,
+        { status: 400 },
+      );
+    }
+    span = startSpan({
+      state: await cachedLogin({
+        appUrl: braintrustAppUrl(env).toString(),
+        headers: request.headers,
+        cache: credentialsCache,
+      }),
+      type: "llm",
+      name: "LLM",
+      parent: parent.toStr(),
+    });
+    spanLogger = makeProxySpanLogger(span, ctx.waitUntil.bind(ctx));
+  }
+
   const opts: ProxyOpts = {
     getRelativeURL(request: Request): string {
       return new URL(request.url).pathname.slice(proxyV1Prefix.length);
     },
     cors: true,
-    credentialsCache: {
-      async get<T>(key: string): Promise<T | null> {
-        const response = await cache.match(apiCacheKey(key));
-        if (response) {
-          return (await response.json()) as T;
-        } else {
-          return null;
-        }
-      },
-      async set<T>(key: string, value: T, { ttl }: { ttl?: number }) {
-        await cache.put(
-          apiCacheKey(key),
-          new Response(JSON.stringify(value), {
-            headers: {
-              "Cache-Control": `public${ttl ? `, max-age=${ttl}}` : ""}`,
-            },
-          }),
-        );
-      },
-    },
+    credentialsCache,
     completionsCache: {
       get: async (key) => {
         const start = performance.now();
@@ -114,6 +149,7 @@ export async function handleProxyV1(
     braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider,
     whitelist,
+    spanLogger,
   };
 
   const url = new URL(request.url);

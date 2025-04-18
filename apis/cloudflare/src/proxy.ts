@@ -97,7 +97,15 @@ export async function handleProxyV1(
   let span: Span | undefined;
   const parentHeader = request.headers.get(BT_PARENT);
   if (parentHeader) {
-    const parent = resolveParentHeader(parentHeader);
+    let parent;
+    try {
+      parent = resolveParentHeader(parentHeader);
+    } catch (e) {
+      return new Response(
+        `Invalid parent header '${parentHeader}': ${e instanceof Error ? e.message : String(e)}`,
+        { status: 400 },
+      );
+    }
     span = startSpan({
       state: await cachedLogin({
         appUrl: braintrustAppUrl(env).toString(),

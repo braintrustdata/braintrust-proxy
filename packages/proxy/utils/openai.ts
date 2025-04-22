@@ -229,22 +229,28 @@ type OpenAIStreamReturnTypes =
   ExtractType<AsyncIterableOpenAIStreamReturnTypes>;
 
 export function isChatCompletionChunk(
-  data: OpenAIStreamReturnTypes,
+  data: unknown,
 ): data is ChatCompletionChunk {
+  if (!data || typeof data !== "object") {
+    return false;
+  }
   return (
     "choices" in data &&
     data.choices &&
+    Array.isArray(data.choices) &&
     data.choices[0] &&
     "delta" in data.choices[0]
   );
 }
 
-export function isCompletion(
-  data: OpenAIStreamReturnTypes,
-): data is Completion {
+export function isCompletion(data: unknown): data is Completion {
+  if (!data || typeof data !== "object") {
+    return false;
+  }
   return (
     "choices" in data &&
     data.choices &&
+    Array.isArray(data.choices) &&
     data.choices[0] &&
     "text" in data.choices[0]
   );

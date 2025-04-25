@@ -53,6 +53,50 @@ export const modelParamToModelParam: {
   stop: null,
 };
 
+const effortToBudgetMultiplier = {
+  low: 0.2,
+  medium: 0.5,
+  high: 0.8,
+} as const;
+
+const getBudgetMultiplier = (effort: keyof typeof effortToBudgetMultiplier) => {
+  return effortToBudgetMultiplier[effort] || effortToBudgetMultiplier.low;
+};
+
+export const modelParamMappers: {
+  [name in ModelFormat]?: {
+    [param: string]: (params: any) => Record<string, unknown>;
+  };
+} = {
+  anthropic: {
+    reasoning_effort: ({
+      reasoning_effort,
+      max_tokens,
+      max_completion_tokens,
+      ...params
+    }) => {
+      // TODO(ibolmo): help the user do the right thing, or should we raise an exception?
+
+      // Max tokens are inclusive of budget. If the max tokens are too low (below 1024), then the API will raise an exception.
+      const maxTokens = Math.max(
+        max_completion_tokens || max_tokens || 0,
+        1024 / effortToBudgetMultiplier.low,
+      );
+
+      const budget = getBudgetMultiplier(reasoning_effort || "low") * maxTokens;
+
+      return {
+        ...params,
+        max_tokens: maxTokens,
+        thinking: {
+          budget_tokens: budget,
+          enabled: true,
+        },
+      };
+    },
+  },
+};
+
 export const sliderSpecs: {
   // min, max, step, required
   [name: string]: [number, number, number, boolean];
@@ -119,6 +163,17 @@ export const modelProviderHasTools: {
   js: false,
   window: false,
   converse: true,
+};
+
+export const modelProviderHasReasoning: {
+  [name in ModelFormat]?: RegExp;
+} = {
+  openai: /^o[1-4]/i,
+  anthropic: /^claude-3\.7/i,
+  google: /gemini-2.0-flash$|gemini-2.5/i,
+  js: undefined,
+  window: undefined,
+  converse: undefined,
 };
 
 export const DefaultEndpointTypes: {
@@ -427,23 +482,29 @@ export function translateParams(
   toProvider: ModelFormat,
   params: Record<string, unknown>,
 ): Record<string, unknown> {
-  const translatedParams: Record<string, unknown> = {};
+  let translatedParams: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(params || {})) {
     const safeValue = v ?? undefined; // Don't propagate "null" along
+    const mapper = modelParamMappers[toProvider]?.[k];
+    if (mapper) {
+      translatedParams = mapper(translatedParams);
+      continue;
+    }
+
     const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
       | keyof ModelParams
       | undefined
       | null;
+
     if (translatedKey === null) {
       continue;
-    } else if (
-      translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider][translatedKey] !== undefined
-    ) {
-      translatedParams[translatedKey] = safeValue;
-    } else {
-      translatedParams[k] = safeValue;
     }
+
+    const hasDefaultParam =
+      translatedKey !== undefined &&
+      defaultModelParamSettings[toProvider][translatedKey] !== undefined;
+
+    translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }
 
   return translatedParams;

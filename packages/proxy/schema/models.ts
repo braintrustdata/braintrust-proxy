@@ -44,6 +44,7 @@ export const ModelSchema = z.object({
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
+  o1_like: z.boolean().nullish().describe('DEPRECATED use "reasoning" instead'),
   reasoning: z.boolean().nullish(),
   experimental: z.boolean().nullish(),
   deprecated: z.boolean().nullish(),

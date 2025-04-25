@@ -15,6 +15,7 @@ import {
   ModelSpec,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
+  modelProviderHasReasoning,
 } from "@schema";
 import {
   ModelResponse,
@@ -1657,15 +1658,14 @@ async function fetchOpenAI(
     });
   }
 
-  // TODO(ibolmo): move to is model reasoning registry
-  const isReasoningLike =
+  // TODO: perhaps convert reasoning.effort -> reasoning_effort?
+
+  const hasReasoning =
     bodyData.reasoning ||
     (typeof bodyData.model === "string" &&
-      (bodyData.model.startsWith("o1") ||
-        bodyData.model.startsWith("o3") ||
-        bodyData.model.startsWith("o4")));
+      modelProviderHasReasoning.openai?.test(bodyData.model));
 
-  if (isReasoningLike) {
+  if (hasReasoning) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;

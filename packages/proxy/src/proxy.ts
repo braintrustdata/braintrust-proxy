@@ -1657,15 +1657,15 @@ async function fetchOpenAI(
     });
   }
 
-  // TODO: Ideally this is encapsulated as some advanced per-model config
-  // or mapping, but for now, let's just map it manually.
-  const isO1Like =
-    bodyData.o1_like ||
+  // TODO(ibolmo): move to is model reasoning registry
+  const isReasoningLike =
+    bodyData.reasoning ||
     (typeof bodyData.model === "string" &&
       (bodyData.model.startsWith("o1") ||
         bodyData.model.startsWith("o3") ||
         bodyData.model.startsWith("o4")));
-  if (isO1Like) {
+
+  if (isReasoningLike) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;

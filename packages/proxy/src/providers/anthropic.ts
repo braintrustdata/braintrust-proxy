@@ -112,6 +112,11 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
         text: z.string(),
       }),
       z.object({
+        type: z.literal("thinking"),
+        thinking: z.string(),
+        signature: z.string(),
+      }),
+      z.object({
         type: z.literal("tool_use"),
         id: z.string(),
         name: z.string(),
@@ -166,6 +171,7 @@ export interface AnthropicCompletion {
   role: "assistant";
   content: [
     | { type: "text"; text: string }
+    | { type: "thinking"; thinking: string; signature: string }
     | {
         type: "tool_use";
         id: string;
@@ -266,6 +272,12 @@ export function anthropicEventToOpenAIEvent(
     content = idx === 0 ? event.delta.text.trimStart() : event.delta.text;
   } else if (
     event.type === "content_block_delta" &&
+    event.delta.type === "thinking_delta"
+  ) {
+    content =
+      idx === 0 ? event.delta.thinking.trimStart() : event.delta.thinking;
+  } else if (
+    event.type === "content_block_delta" &&
     event.delta.type === "input_json_delta"
   ) {
     if (isStructuredOutput) {
@@ -352,7 +364,9 @@ export function anthropicCompletionToOpenAICompletion(
   isStructuredOutput: boolean,
 ): ChatCompletion {
   const firstText = completion.content.find((c) => c.type === "text");
+  const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
+
   return {
     id: completion.id,
     choices: [
@@ -390,6 +404,7 @@ export function anthropicCompletionToOpenAICompletion(
                 }
               : undefined,
           refusal: null,
+          ...(firstThinking && { reasoning: firstThinking.thinking }),
         },
       },
     ],

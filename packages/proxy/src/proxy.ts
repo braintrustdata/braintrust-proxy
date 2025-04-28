@@ -199,6 +199,8 @@ export async function proxyV1({
   const cacheMisses = meter.createCounter("results_cache_misses");
   const cacheSkips = meter.createCounter("results_cache_skips");
 
+  console.log("WORLD HELLO!");
+
   totalCalls.add(1);
 
   proxyHeaders = Object.fromEntries(

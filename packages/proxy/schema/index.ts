@@ -73,6 +73,7 @@ export const modelParamMappers: {
       reasoning_effort,
       max_tokens,
       max_completion_tokens,
+      temperature: _,
       ...params
     }) => {
       // TODO(ibolmo): help the user do the right thing, or should we raise an exception?
@@ -88,9 +89,11 @@ export const modelParamMappers: {
       return {
         ...params,
         max_tokens: maxTokens,
+        // must be set when using thinking
+        temperature: 1,
         thinking: {
           budget_tokens: budget,
-          enabled: true,
+          type: "enabled",
         },
       };
     },

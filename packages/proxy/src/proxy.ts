@@ -2067,12 +2067,13 @@ async function fetchAnthropicChatCompletions({
         content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
       }
       if (m.reasoning) {
-        content.unshift({
-          type: "thinking",
-          thinking: m.reasoning,
-          // TODO: we are required to include the reasoning signature, but looks like this works for now.
-          signature: "",
-        });
+        content.unshift(
+          ...m.reasoning.map((r) => ({
+            type: "thinking",
+            thinking: r.content,
+            signature: r.id,
+          })),
+        );
       }
     }
 

@@ -404,7 +404,14 @@ export function anthropicCompletionToOpenAICompletion(
                 }
               : undefined,
           refusal: null,
-          ...(firstThinking && { reasoning: firstThinking.thinking }),
+          ...(firstThinking && {
+            reasoning: [
+              {
+                id: firstThinking.signature,
+                content: firstThinking.thinking,
+              },
+            ],
+          }),
         },
       },
     ],

@@ -199,8 +199,6 @@ export async function proxyV1({
   const cacheMisses = meter.createCounter("results_cache_misses");
   const cacheSkips = meter.createCounter("results_cache_skips");
 
-  console.log("WORLD HELLO!");
-
   totalCalls.add(1);
 
   proxyHeaders = Object.fromEntries(
@@ -2063,9 +2061,19 @@ async function fetchAnthropicChatCompletions({
     } else if (m.role === "tool") {
       role = "user";
       content = openAIToolMessageToAnthropicToolCall(m);
-    } else if (m.role === "assistant" && m.tool_calls) {
+    } else if (m.role === "assistant") {
       content = upgradeAnthropicContentMessage(content);
-      content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      if (m.tool_calls) {
+        content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      }
+      if (m.reasoning) {
+        content.unshift({
+          type: "thinking",
+          thinking: m.reasoning,
+          // TODO: we are required to include the reasoning signature, but looks like this works for now.
+          signature: "",
+        });
+      }
     }
 
     const translatedRole = MessageTypeToMessageType[role];

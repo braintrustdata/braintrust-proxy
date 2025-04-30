@@ -49,7 +49,7 @@ export const modelParamToModelParam: {
   stream_options: null,
   parallel_tool_calls: null,
   response_format: null,
-  reasoning_effort: null,
+  reasoning_effort: "reasoning_effort",
   stop: null,
 };
 
@@ -76,8 +76,6 @@ export const modelParamMappers: {
       temperature: _,
       ...params
     }) => {
-      // TODO(ibolmo): help the user do the right thing, or should we raise an exception?
-
       // Max tokens are inclusive of budget. If the max tokens are too low (below 1024), then the API will raise an exception.
       const maxTokens = Math.max(
         max_completion_tokens || max_tokens || 0,
@@ -129,6 +127,7 @@ export const defaultModelParamSettings: {
     response_format: null,
     stop: undefined,
     use_cache: true,
+    reasoning_effort: "medium",
   },
   anthropic: {
     temperature: undefined,
@@ -136,6 +135,7 @@ export const defaultModelParamSettings: {
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
+    reasoning_effort: "medium",
   },
   google: {
     temperature: undefined,

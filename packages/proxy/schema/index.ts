@@ -96,6 +96,30 @@ export const modelParamMappers: {
       };
     },
   },
+  google: {
+    reasoning_effort: ({
+      reasoning_effort,
+      max_tokens,
+      max_completion_tokens,
+      ...params
+    }) => {
+      const maxTokens = Math.max(
+        max_completion_tokens || max_tokens || 0,
+        1024 / effortToBudgetMultiplier.low,
+      );
+
+      const budget = getBudgetMultiplier(reasoning_effort || "low") * maxTokens;
+
+      return {
+        ...params,
+        thinkingConfig: {
+          thinkingBudget: budget,
+          includeThoughts: true,
+        },
+        maxOutputTokens: maxTokens,
+      };
+    },
+  },
 };
 
 export const sliderSpecs: {

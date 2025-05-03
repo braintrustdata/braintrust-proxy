@@ -51,6 +51,7 @@ import {
 import {
   Message,
   MessageRole,
+  Reasoning,
   responseFormatSchema,
 } from "@braintrust/core/typespecs";
 import { _urljoin, isArray } from "@braintrust/core";
@@ -616,6 +617,7 @@ export async function proxyV1({
     const allChunks: Uint8Array[] = [];
 
     // These parameters are for the streaming case
+    let reasoning: Reasoning[] | undefined = undefined;
     let role: string | undefined = undefined;
     let content: string | undefined = undefined;
     let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
@@ -668,6 +670,22 @@ export async function proxyV1({
                   content = (content || "") + delta.content;
                 }
 
+                if (delta.reasoning) {
+                  if (!reasoning) {
+                    reasoning = [
+                      {
+                        id: delta.reasoning.id || "",
+                        content: delta.reasoning.content || "",
+                      },
+                    ];
+                  } else {
+                    // TODO: could be multiple
+                    reasoning[0].id = reasoning[0].id || delta.reasoning.id;
+                    reasoning[0].content =
+                      reasoning[0].content + (delta.reasoning.content || "");
+                  }
+                }
+
                 if (delta.tool_calls) {
                   if (!tool_calls) {
                     tool_calls = [
@@ -679,6 +697,7 @@ export async function proxyV1({
                       },
                     ];
                   } else if (tool_calls[0].function) {
+                    // TODO: what about parallel calls?
                     tool_calls[0].function.arguments =
                       (tool_calls[0].function.arguments ?? "") +
                       (delta.tool_calls[0].function?.arguments ?? "");
@@ -724,6 +743,7 @@ export async function proxyV1({
                   role,
                   content,
                   tool_calls,
+                  reasoning,
                 },
                 logprobs: null,
                 finish_reason,

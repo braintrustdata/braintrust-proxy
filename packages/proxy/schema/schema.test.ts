@@ -235,7 +235,7 @@ describe("translateParams", () => {
       window: {
         from: {
           temperature,
-          maxTokems: max_tokens,
+          maxTokens: max_tokens,
           topK: top_k,
           topP: top_p,
           stopSequences: ["\n"],

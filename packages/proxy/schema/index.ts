@@ -490,7 +490,7 @@ function translateKey(
     normalizedKey = null;
   } else if (!isObject(braintrustKey)) {
     normalizedKey = braintrustKey;
-  } else if (isObject(braintrustKey)) {
+  } else {
     if (braintrustKey.deprecated) {
       console.warn(`Deprecated model param: ${key}`);
     }
@@ -500,8 +500,6 @@ function translateKey(
     } else {
       normalizedKey = braintrustKey.key;
     }
-  } else {
-    normalizedKey = braintrustKey;
   }
 
   if (normalizedKey === null) {

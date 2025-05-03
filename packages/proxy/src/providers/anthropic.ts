@@ -23,6 +23,7 @@ import {
   Base64ImageSource,
 } from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { type Reasoning } from "@braintrust/core/typespecs";
 
 /*
 Example events:
@@ -223,6 +224,8 @@ export function anthropicEventToOpenAIEvent(
   let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
     undefined;
 
+  let reasoning: Reasoning | undefined = undefined;
+
   if (event.type === "message_start") {
     if (event.message.usage) {
       updateUsage(event.message.usage, usage);
@@ -271,11 +274,27 @@ export function anthropicEventToOpenAIEvent(
   ) {
     content = idx === 0 ? event.delta.text.trimStart() : event.delta.text;
   } else if (
+    event.type === "content_block_start" &&
+    event.content_block.type === "thinking"
+  ) {
+    reasoning = {
+      id: event.content_block.signature,
+      content: event.content_block.thinking,
+    };
+  } else if (
     event.type === "content_block_delta" &&
     event.delta.type === "thinking_delta"
   ) {
-    content =
-      idx === 0 ? event.delta.thinking.trimStart() : event.delta.thinking;
+    reasoning = {
+      content: event.delta.thinking,
+    };
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "signature_delta"
+  ) {
+    reasoning = {
+      id: event.delta.signature,
+    };
   } else if (
     event.type === "content_block_delta" &&
     event.delta.type === "input_json_delta"
@@ -326,6 +345,11 @@ export function anthropicEventToOpenAIEvent(
       },
       finished: true,
     };
+  } else if (event.type === "ping" || event.type === "content_block_stop") {
+    return {
+      event: null,
+      finished: false,
+    };
   } else {
     console.warn(
       `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
@@ -345,6 +369,7 @@ export function anthropicEventToOpenAIEvent(
             content,
             tool_calls: isStructuredOutput ? undefined : tool_calls,
             role: "assistant",
+            reasoning,
           },
           finish_reason: null, // Anthropic places this in a separate stream event.
           index: 0,
@@ -358,12 +383,24 @@ export function anthropicEventToOpenAIEvent(
   };
 }
 
+// TODO: should this live here?
+declare module "openai/resources/chat/completions" {
+  namespace ChatCompletionChunk {
+    namespace Choice {
+      interface Delta {
+        reasoning?: Reasoning;
+      }
+    }
+  }
+}
+
 export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
   isStructuredOutput: boolean,
 ): ChatCompletion {
   const firstText = completion.content.find((c) => c.type === "text");
+  // TODO(ibolmo): we now support multiple thinking blocks
   const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
 

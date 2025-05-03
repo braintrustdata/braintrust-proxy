@@ -1,6 +1,7 @@
 // This is copied from the Vercel AI SDK commit bfa1182c7f5379d7a3d81878ea00ec84682cb046
 // We just need the OpenAI parser, but not the streaming code.
 
+import { Reasoning } from "@braintrust/core/typespecs";
 import { CompletionUsage, FunctionCall, trimStartOfStreamHelper } from "ai";
 
 // https://github.com/openai/openai-node/blob/07b3504e1c40fd929f4aae1651b83afc19e3baf8/src/resources/chat/completions.ts#L28-L40
@@ -47,6 +48,8 @@ interface ChoiceDelta {
   role?: "system" | "user" | "assistant" | "tool";
 
   tool_calls?: Array<DeltaToolCall>;
+
+  reasoning?: Reasoning;
 }
 
 // From https://github.com/openai/openai-node/blob/master/src/resources/chat/completions.ts

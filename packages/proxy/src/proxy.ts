@@ -1324,6 +1324,7 @@ function chatCompletionMessageFromResponseOutput(
   };
 }
 
+// TODO: should return the reasoning
 function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
   return {
     choices: [

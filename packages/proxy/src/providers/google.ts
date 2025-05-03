@@ -260,15 +260,3 @@ export function googleCompletionToOpenAICompletion(
       : undefined,
   };
 }
-
-export const OpenAIParamsToGoogleParams: {
-  [name: string]: string | null;
-} = {
-  temperature: "temperature",
-  top_p: "topP",
-  stop: "stopSequences",
-  max_tokens: "maxOutputTokens",
-  frequency_penalty: null,
-  presence_penalty: null,
-  tool_choice: null,
-};

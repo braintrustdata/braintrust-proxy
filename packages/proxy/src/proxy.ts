@@ -45,7 +45,6 @@ import {
   googleEventToOpenAIChatEvent,
   openAIContentToGoogleContent,
   openAIMessagesToGoogleMessages,
-  OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import {
   Message,
@@ -2081,10 +2080,10 @@ async function fetchAnthropicChatCompletions({
   }
 
   messages = flattenAnthropicMessages(messages);
-  const params: Record<string, unknown> = {
-    max_tokens: 1024, // Required param
-    ...translateParams("anthropic", oaiParams),
-  };
+  const params: Record<string, unknown> = translateParams(
+    "anthropic",
+    oaiParams,
+  );
 
   const stop = z
     .union([z.string(), z.array(z.string())])
@@ -2286,7 +2285,12 @@ async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   return schema;
 }
 
-async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
+async function openAIToolsToGoogleTools(
+  params: Pick<
+    ChatCompletionCreateParams,
+    "tools" | "tool_choice" | "functions"
+  >,
+) {
   if (params.tools || params.functions) {
     params.tools =
       params.tools ||
@@ -2522,18 +2526,7 @@ async function fetchGoogleChatCompletions({
   const content = await openAIMessagesToGoogleMessages(
     oaiMessages.filter((m: any) => m.role !== "system"),
   );
-  const params = Object.fromEntries(
-    Object.entries(translateParams("google", oaiParams))
-      .map(([key, value]) => {
-        const translatedKey = OpenAIParamsToGoogleParams[key];
-        if (translatedKey === null) {
-          // These are unsupported params
-          return [null, null];
-        }
-        return [translatedKey ?? key, value];
-      })
-      .filter(([k, _]) => k !== null),
-  );
+  const params = translateParams("google", oaiParams);
 
   let fullURL: URL;
   if (secret.type === "google") {

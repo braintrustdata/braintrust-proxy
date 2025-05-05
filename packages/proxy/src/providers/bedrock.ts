@@ -806,6 +806,7 @@ function openAIResponse(
   };
 }
 
+// XXX can now replace with translateParams("converse", params)
 function translateInferenceConfig(
   params: Record<string, unknown>,
 ): InferenceConfiguration {

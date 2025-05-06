@@ -714,8 +714,13 @@ export async function proxyV1({
         controller.enqueue(chunk);
       },
       async flush(controller) {
+        const errTruncated =
+          finish_reason === "length"
+            ? "Response was truncated due to token limit."
+            : undefined;
         if (isStreaming) {
           spanLogger.log({
+            error: errTruncated,
             output: [
               {
                 index: 0,
@@ -739,6 +744,7 @@ export async function proxyV1({
             case "completion": {
               const data = dataRaw as ChatCompletion;
               spanLogger.log({
+                error: errTruncated,
                 output: data.choices,
                 metrics: {
                   tokens: data.usage?.total_tokens,

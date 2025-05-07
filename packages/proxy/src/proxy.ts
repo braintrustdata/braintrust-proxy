@@ -643,6 +643,7 @@ export async function proxyV1({
               if (result) {
                 if (result.usage) {
                   spanLogger.log({
+                    // TODO: we should include the proxy meters metrics here
                     metrics: {
                       tokens: result.usage.total_tokens,
                       prompt_tokens: result.usage.prompt_tokens,
@@ -899,8 +900,6 @@ async function fetchModelLoop(
     ttl_seconds?: number,
   ) => Promise<void>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
-  const requestId = ++loopIndex;
-
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -1344,7 +1343,7 @@ function chatCompletionMessageFromResponseOutput(
   };
 }
 
-// TODO: should return the reasoning
+// TODO(ibolmo): should return the reasoning
 function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
   return {
     choices: [
@@ -1678,8 +1677,6 @@ async function fetchOpenAI(
       body: bodyData,
     });
   }
-
-  // TODO: perhaps convert reasoning.effort -> reasoning_effort?
 
   const hasReasoning =
     bodyData.reasoning ||

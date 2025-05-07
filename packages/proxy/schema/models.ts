@@ -2528,6 +2528,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Command Light",
   },
 
+  // TODO: add anthropic 3.7 converse
+
   // VERTEX MODELS
   "publishers/google/models/gemini-2.0-flash": {
     format: "google",

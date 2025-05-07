@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.119",
-    "@types/axios": "^0.14.0",
     "@types/combined-stream": "^1.0.3",
     "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",

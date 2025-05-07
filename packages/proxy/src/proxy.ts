@@ -2111,7 +2111,7 @@ async function fetchAnthropicChatCompletions({
 
   messages = flattenAnthropicMessages(messages);
   const params: Record<string, unknown> = {
-    max_tokens: 1024, // Required param
+    max_tokens: 4096, // Required param
     ...translateParams("anthropic", oaiParams),
   };
 

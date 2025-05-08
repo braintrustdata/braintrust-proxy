@@ -208,6 +208,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pixtral-12b-2409": ["mistral"],
   "mistral-large-2411": ["mistral"],
   "pixtral-large-latest": ["mistral"],
+  "mistral-medium-latest": ["mistral"],
+  "mistral-medium-2505": ["mistral"],
   "pixtral-large-2411": ["mistral", "vertex"],
   "mistral-small-latest": ["mistral"],
   "mistral-small-2501": ["mistral"],

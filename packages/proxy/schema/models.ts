@@ -1175,6 +1175,22 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     parent: "pixtral-large-latest",
   },
+  "mistral-medium-latest": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.4,
+    output_cost_per_mil_tokens: 2,
+    displayName: "Mistral Medium 3",
+    multimodal: true,
+  },
+  "mistral-medium-2505": {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.4,
+    output_cost_per_mil_tokens: 2,
+    multimodal: true,
+    parent: "mistral-medium-latest",
+  },
   "mistral-small-latest": {
     format: "openai",
     flavor: "chat",

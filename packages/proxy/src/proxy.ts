@@ -923,9 +923,9 @@ async function fetchModelLoop(
       url === "/responses" ||
       url === "/anthropic/messages") &&
     isObject(bodyData) &&
-    bodyData.model
+    bodyData?.model
   ) {
-    model = bodyData.model;
+    model = bodyData?.model;
   } else if (method === "POST") {
     const m = url.match(GOOGLE_URL_REGEX);
     if (m) {
@@ -1679,8 +1679,8 @@ async function fetchOpenAI(
   }
 
   const hasReasoning =
-    bodyData.reasoning ||
-    (typeof bodyData.model === "string" &&
+    bodyData?.reasoning ||
+    (typeof bodyData?.model === "string" &&
       modelProviderHasReasoning.openai?.test(bodyData.model));
 
   if (hasReasoning) {
@@ -1693,9 +1693,9 @@ async function fetchOpenAI(
 
     // Only remove system messages for old O1 models.
     if (
-      bodyData.messages &&
+      bodyData?.messages &&
       ["o1-preview", "o1-mini", "o1-preview-2024-09-12"].includes(
-        bodyData.model,
+        bodyData?.model,
       )
     ) {
       bodyData.messages = bodyData.messages.map((m: any) => ({
@@ -1705,7 +1705,7 @@ async function fetchOpenAI(
     }
   }
 
-  if (bodyData.messages) {
+  if (bodyData?.messages) {
     bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
@@ -1719,7 +1719,7 @@ async function fetchOpenAI(
     });
   }
 
-  if (bodyData.model.startsWith("o1-pro")) {
+  if (bodyData?.model.startsWith("o1-pro")) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,
@@ -1728,7 +1728,7 @@ async function fetchOpenAI(
 
   let isManagedStructuredOutput = false;
   const responseFormatParsed = responseFormatSchema.safeParse(
-    bodyData.response_format,
+    bodyData?.response_format,
   );
   if (responseFormatParsed.success) {
     switch (responseFormatParsed.data.type) {
@@ -1788,7 +1788,7 @@ async function fetchOpenAI(
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {
-    if (bodyData.stream) {
+    if (bodyData?.stream) {
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const chunk: ChatCompletionChunk = JSON.parse(data);
@@ -2084,9 +2084,9 @@ async function fetchAnthropicChatCompletions({
       if (m.tool_calls) {
         content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
       }
-      if (m.reasoning) {
+      if (m?.reasoning) {
         content.unshift(
-          ...m.reasoning.map((r) => ({
+          ...m?.reasoning.map((r) => ({
             type: "thinking",
             thinking: r.content,
             signature: r.id,

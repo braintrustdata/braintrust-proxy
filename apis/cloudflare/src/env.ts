@@ -1,5 +1,8 @@
+import { Secrets } from "@braintrust/proxy/edge";
+
 declare global {
-  interface Env {
+  interface Env extends Secrets {
+    API_KEY: string;
     ai_proxy: KVNamespace;
     BRAINTRUST_APP_URL: string;
     DISABLE_METRICS?: boolean;

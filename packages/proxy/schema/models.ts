@@ -1935,7 +1935,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     experimental: false,
     displayName: "Gemini 2.5 Flash Preview",
   },
-  "gemini-2.5-pro-preview-03-25": {
+  "gemini-2.5-pro-preview-05-06": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 1.25,
@@ -1943,6 +1943,15 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     experimental: false,
     displayName: "Gemini 2.5 Pro Preview",
+  },
+  "gemini-2.5-pro-preview-03-25": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    experimental: false,
+    parent: "gemini-2.5-pro-preview-05-06",
   },
   "gemini-2.5-pro-exp-03-25": {
     format: "google",
@@ -2761,6 +2770,20 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.9,
   },
   // Vertex experimental models.
+  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.5 Pro Preview",
+    multimodal: true,
+    experimental: true,
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    experimental: true,
+    parent: "publishers/google/models/gemini-2.5-pro-preview-05-06",
+  },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     format: "google",
     flavor: "chat",

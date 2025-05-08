@@ -80,11 +80,11 @@ export const getKnownApiSecrets: Parameters<
   ].filter((secret) => !!secret.secret && endpointTypes.includes(secret.type));
 };
 
-export async function callProxyV1<Data extends object>({
+export async function callProxyV1<Input extends object, Output extends object>({
   body,
   ...request
 }: Partial<Omit<Parameters<typeof proxyV1>, "body">> & {
-  body: string | object;
+  body: Input;
 }) {
   const [writableStream, chunksPromise] = createResponseStream();
   const { headers, statusCode, setHeader, setStatusCode } =
@@ -130,11 +130,11 @@ export async function callProxyV1<Data extends object>({
       statusCode,
       responseText,
       events() {
-        return chucksToEvents<Data>(chunks);
+        return chucksToEvents<Output>(chunks);
       },
       json() {
         try {
-          return JSON.parse(responseText) as Data;
+          return JSON.parse(responseText) as Output;
         } catch (e) {
           return null;
         }

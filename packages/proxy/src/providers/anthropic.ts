@@ -7,7 +7,7 @@ import {
   ChatCompletionToolMessageParam,
   CompletionUsage,
 } from "openai/resources";
-import { getTimestampInSeconds, isEmpty, ModelResponse } from "../util";
+import { getTimestampInSeconds, isEmpty } from "../util";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {
@@ -23,7 +23,10 @@ import {
   Base64ImageSource,
 } from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
-import { type Reasoning } from "@braintrust/core/typespecs";
+import {
+  ExtendedOpenAIChatCompletionChunk,
+  ExtendedOpenAIChatCompletionChunkChoiceDelta,
+} from "@lib/types";
 
 /*
 Example events:
@@ -203,7 +206,7 @@ export function anthropicEventToOpenAIEvent(
   usage: Partial<CompletionUsage>,
   eventU: unknown,
   isStructuredOutput: boolean,
-): { event: ChatCompletionChunk | null; finished: boolean } {
+): { event: ExtendedOpenAIChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(
@@ -224,7 +227,9 @@ export function anthropicEventToOpenAIEvent(
   let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
     undefined;
 
-  let reasoning: Reasoning | undefined = undefined;
+  let reasoning:
+    | ExtendedOpenAIChatCompletionChunkChoiceDelta["reasoning"]
+    | undefined = undefined;
 
   if (event.type === "message_start") {
     if (event.message.usage) {
@@ -381,17 +386,6 @@ export function anthropicEventToOpenAIEvent(
     },
     finished: false,
   };
-}
-
-// TODO: should this live here?
-declare module "openai/resources/chat/completions" {
-  namespace ChatCompletionChunk {
-    namespace Choice {
-      interface Delta {
-        reasoning?: Reasoning;
-      }
-    }
-  }
 }
 
 export function anthropicCompletionToOpenAICompletion(

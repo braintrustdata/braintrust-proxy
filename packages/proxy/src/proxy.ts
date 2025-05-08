@@ -101,6 +101,7 @@ import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
+import { ExtendedOpenAIChatCompletionChunk } from "./types";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -639,7 +640,9 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
-              const result = JSON.parse(event.data) as ChatCompletionChunk;
+              const result = JSON.parse(
+                event.data,
+              ) as ExtendedOpenAIChatCompletionChunk;
               if (result) {
                 if (result.usage) {
                   spanLogger.log({

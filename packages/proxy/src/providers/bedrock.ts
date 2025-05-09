@@ -34,12 +34,9 @@ import {
   isEmpty,
   ProxyBadRequestError,
 } from "..";
+import { OpenAIChatCompletionChunk, OpenAIChatCompletion } from "@types";
 import {
   Message as OaiMessage,
-  OpenAIChatCompletionChunk,
-  OpenAIChatCompletion,
-} from "@types";
-import {
   MessageRole,
   toolsSchema,
   responseFormatJsonSchemaSchema,
@@ -837,7 +834,6 @@ interface BedrockMessageState {
   role: OpenAIChatCompletionChunk["choices"][0]["delta"]["role"];
 }
 
-// TODO(ibolmo): should support reasoning for claude models
 export function bedrockMessageToOpenAIMessage(
   state: BedrockMessageState,
   output: ConverseStreamOutput,
@@ -878,6 +874,12 @@ export function bedrockMessageToOpenAIMessage(
                       },
                     ]
                   : undefined,
+              ...(value.delta?.reasoningContent && {
+                reasoning: {
+                  id: value.delta.reasoningContent.signature,
+                  content: value.delta.reasoningContent.text,
+                },
+              }),
             },
             finish_reason: null,
             index: 0,

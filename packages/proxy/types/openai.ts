@@ -1,4 +1,4 @@
-// TODO(ibolmo): move from core
+// TODO: move from core
 import { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs/dist";
 export { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs/dist";
 

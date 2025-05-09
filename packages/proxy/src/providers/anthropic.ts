@@ -26,7 +26,6 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionChunkChoiceDelta,
   OpenAIChatCompletionCreateParams,
-  OpenAIChatCompletionMessage,
 } from "@types";
 
 /*
@@ -394,8 +393,8 @@ export function anthropicCompletionToOpenAICompletion(
   isFunction: boolean,
   isStructuredOutput: boolean,
 ): OpenAIChatCompletion {
+  // TODO: will we ever have text -> thinking -> text -> tool_use, thus are we dropping tokens?
   const firstText = completion.content.find((c) => c.type === "text");
-  // TODO(ibolmo): we now support multiple thinking blocks
   const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
 

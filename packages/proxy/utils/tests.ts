@@ -81,8 +81,20 @@ export const getKnownApiSecrets: Parameters<
       name: "vertex",
       metadata: {
         project: process.env.GCP_PROJECT_ID || "",
-        authType: "access_token",
+        authType: "access_token" as const,
         api_base: "",
+        supportsStreaming: true,
+        excludeDefaultModels: false,
+      },
+    },
+    {
+      type: "bedrock" as const,
+      secret: process.env.AWS_SECRET_ACCESS_KEY || "",
+      name: "bedrock" as const,
+      metadata: {
+        region: process.env.AWS_REGION || "",
+        access_key: process.env.AWS_ACCESS_KEY_ID || "",
+        session_token: process.env.AWS_SESSION_TOKEN || "",
         supportsStreaming: true,
         excludeDefaultModels: false,
       },

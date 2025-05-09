@@ -1,7 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
 import {
-  ChatCompletion,
-  ChatCompletionChunk,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
@@ -22,11 +20,14 @@ import {
   MessageCreateParamsBase,
   Base64ImageSource,
 } from "@anthropic-ai/sdk/resources/messages";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 import {
-  ExtendedOpenAIChatCompletionChunk,
-  ExtendedOpenAIChatCompletionChunkChoiceDelta,
-} from "@lib/types";
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChoice,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionChunkChoiceDelta,
+  OpenAIChatCompletionCreateParams,
+  OpenAIChatCompletionMessage,
+} from "@types";
 
 /*
 Example events:
@@ -206,7 +207,7 @@ export function anthropicEventToOpenAIEvent(
   usage: Partial<CompletionUsage>,
   eventU: unknown,
   isStructuredOutput: boolean,
-): { event: ExtendedOpenAIChatCompletionChunk | null; finished: boolean } {
+): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(
@@ -224,12 +225,12 @@ export function anthropicEventToOpenAIEvent(
   }
 
   let content: string | undefined = undefined;
-  let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
-    undefined;
-
-  let reasoning:
-    | ExtendedOpenAIChatCompletionChunkChoiceDelta["reasoning"]
+  let tool_calls:
+    | OpenAIChatCompletionChunkChoiceDelta["tool_calls"]
     | undefined = undefined;
+
+  let reasoning: OpenAIChatCompletionChunkChoiceDelta["reasoning"] | undefined =
+    undefined;
 
   if (event.type === "message_start") {
     if (event.message.usage) {
@@ -392,7 +393,7 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
   const firstText = completion.content.find((c) => c.type === "text");
   // TODO(ibolmo): we now support multiple thinking blocks
   const firstThinking = completion.content.find((c) => c.type === "thinking");
@@ -460,7 +461,7 @@ export function anthropicCompletionToOpenAICompletion(
 
 function anthropicFinishReason(
   stop_reason: string,
-): ChatCompletion.Choice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] | null {
   return stop_reason === "stop_reason"
     ? "stop"
     : stop_reason === "max_tokens"
@@ -602,7 +603,7 @@ export function openAIToolsToAnthropicTools(
 }
 
 export function anthropicToolChoiceToOpenAIToolChoice(
-  toolChoice: ChatCompletionCreateParamsBase["tool_choice"],
+  toolChoice: OpenAIChatCompletionCreateParams["tool_choice"],
 ): MessageCreateParamsBase["tool_choice"] {
   if (!toolChoice) {
     return undefined;

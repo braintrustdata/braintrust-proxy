@@ -8,7 +8,8 @@
     "baseUrl": ".",
     "paths": {
       "@lib/*": ["src/*"],
-      "@schema": ["schema/index"]
+      "@schema": ["schema/index"],
+      "@types": ["types/index"]
     },
     "esModuleInterop": true
   },

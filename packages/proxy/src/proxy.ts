@@ -51,7 +51,6 @@ import {
 import {
   Message,
   MessageRole,
-  Reasoning,
   responseFormatSchema,
 } from "@braintrust/core/typespecs";
 import { _urljoin, isArray } from "@braintrust/core";
@@ -101,7 +100,7 @@ import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
-import { ExtendedOpenAIChatCompletionChunk } from "./types";
+import { OpenAIChatCompletionChunk, OpenAIReasoning } from "@types";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -618,7 +617,7 @@ export async function proxyV1({
     const allChunks: Uint8Array[] = [];
 
     // These parameters are for the streaming case
-    let reasoning: Reasoning[] | undefined = undefined;
+    let reasoning: OpenAIReasoning[] | undefined = undefined;
     let role: string | undefined = undefined;
     let content: string | undefined = undefined;
     let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
@@ -642,7 +641,7 @@ export async function proxyV1({
             if ("data" in event) {
               const result = JSON.parse(
                 event.data,
-              ) as ExtendedOpenAIChatCompletionChunk;
+              ) as OpenAIChatCompletionChunk;
               if (result) {
                 if (result.usage) {
                   spanLogger.log({

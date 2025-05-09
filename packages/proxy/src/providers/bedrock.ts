@@ -12,8 +12,6 @@ import {
   StopReason,
   SystemContentBlock,
   Message as BedrockMessage,
-  ImageBlock,
-  DocumentBlock,
   ToolConfiguration,
   InferenceConfiguration,
   ImageFormat,
@@ -29,7 +27,7 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
 } from "./anthropic";
-import { ChatCompletionChunk, CompletionUsage } from "openai/resources";
+import { CompletionUsage } from "openai/resources";
 import {
   getTimestampInSeconds,
   writeToReadable,
@@ -38,12 +36,15 @@ import {
 } from "..";
 import {
   Message as OaiMessage,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletion,
+} from "@types";
+import {
   MessageRole,
   toolsSchema,
   responseFormatJsonSchemaSchema,
 } from "@braintrust/core/typespecs";
 import {
-  ChatCompletion,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
@@ -752,7 +753,7 @@ function openAIResponse(
   model: string,
   response: ConverseCommandOutput,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
   const firstText = response.output?.message?.content?.find(
     (c) => c.text !== undefined,
   );
@@ -833,19 +834,20 @@ function translateInferenceConfig(
 
 interface BedrockMessageState {
   completionId: string;
-  role: ChatCompletionChunk["choices"][0]["delta"]["role"];
+  role: OpenAIChatCompletionChunk["choices"][0]["delta"]["role"];
 }
 
+// TODO(ibolmo): should support reasoning for claude models
 export function bedrockMessageToOpenAIMessage(
   state: BedrockMessageState,
   output: ConverseStreamOutput,
   isStructuredOutput: boolean,
 ): {
-  event: ChatCompletionChunk | null;
+  event: OpenAIChatCompletionChunk | null;
   finished: boolean;
 } {
   return ConverseStreamOutput.visit<{
-    event: ChatCompletionChunk | null;
+    event: OpenAIChatCompletionChunk | null;
     finished: boolean;
   }>(output, {
     messageStart: (value) => {

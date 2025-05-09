@@ -1,15 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { callProxyV1 } from "../../utils/tests";
 import {
-  ExtendedOpenAIChatCompletion,
-  ExtendedOpenAIChatCompletionChunk,
-  ExtendedOpenAIChatCompletionCreateParams,
-} from "@lib/types";
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionCreateParams,
+} from "@types";
 
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<
-    ExtendedOpenAIChatCompletionCreateParams,
-    ExtendedOpenAIChatCompletionChunk
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
   >({
     body: {
       model: "claude-2",
@@ -48,8 +48,8 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
 
 it("should convert OpenAI non-streaming request to Anthropic and back", async () => {
   const { json } = await callProxyV1<
-    ExtendedOpenAIChatCompletionCreateParams,
-    ExtendedOpenAIChatCompletion
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
   >({
     body: {
       model: "claude-2",
@@ -89,8 +89,8 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
 
 it("should accept and return reasoning/thinking params and detail streaming", async () => {
   const { events } = await callProxyV1<
-    ExtendedOpenAIChatCompletionCreateParams,
-    ExtendedOpenAIChatCompletionChunk
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
   >({
     body: {
       model: "claude-3-7-sonnet-latest",
@@ -137,8 +137,8 @@ it("should accept and return reasoning/thinking params and detail streaming", as
 
 it("should accept and return reasoning/thinking params and detail non-streaming", async () => {
   const { json } = await callProxyV1<
-    ExtendedOpenAIChatCompletionCreateParams,
-    ExtendedOpenAIChatCompletionChunk
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
   >({
     body: {
       model: "claude-3-7-sonnet-20250219",

@@ -36,12 +36,19 @@
       "import": "./utils/dist/index.mjs",
       "module": "./utils/dist/index.mjs",
       "require": "./utils/dist/index.js"
+    },
+    "./types": {
+      "types": "./types/dist/index.d.ts",
+      "import": "./types/dist/index.mjs",
+      "module": "./types/dist/index.mjs",
+      "require": "./types/dist/index.js"
     }
   },
   "files": [
     "dist/**/*",
     "edge/dist/**/*",
-    "schema/dist/**/*"
+    "schema/dist/**/*",
+    "types/dist/**/*"
   ],
   "license": "MIT",
   "publishConfig": {

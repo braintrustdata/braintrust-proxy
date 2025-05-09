@@ -7,8 +7,12 @@ import {
   InlineDataPart,
   Part,
 } from "@google/generative-ai";
-import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
 import { getTimestampInSeconds } from "..";
+import {
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChoice,
+  OpenAIChatCompletionChunk,
+} from "@types";
 import { convertMediaToBase64 } from "./util";
 
 async function makeGoogleMediaBlock(media: string): Promise<InlineDataPart> {
@@ -140,7 +144,7 @@ export async function openAIMessagesToGoogleMessages(
 
 function translateFinishReason(
   reason?: FinishReason,
-): ChatCompletion.Choice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
     case FinishReason.MAX_TOKENS:
@@ -156,12 +160,13 @@ function translateFinishReason(
     case undefined:
       return null;
   }
+  return null;
 }
 
 export function googleEventToOpenAIChatEvent(
   model: string,
   data: GenerateContentResponse,
-): { event: ChatCompletionChunk | null; finished: boolean } {
+): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   return {
     event: data.candidates
       ? {
@@ -216,7 +221,7 @@ export function googleEventToOpenAIChatEvent(
 export function googleCompletionToOpenAICompletion(
   model: string,
   data: GenerateContentResponse,
-): ChatCompletion {
+): OpenAIChatCompletion {
   return {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {

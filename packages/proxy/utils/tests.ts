@@ -3,10 +3,8 @@
 import { TextDecoder } from "util";
 import { Buffer } from "node:buffer";
 import { proxyV1 } from "../src/proxy";
-import { APISecret, AvailableModels, getModelEndpointTypes } from "@schema";
+import { getModelEndpointTypes } from "@schema";
 import { createParser, ParsedEvent, ParseEvent } from "eventsource-parser";
-import { mergeDicts } from "@braintrust/core";
-import { assert } from "vitest";
 
 export function createResponseStream(): [
   WritableStream<Uint8Array>,
@@ -69,13 +67,25 @@ export const getKnownApiSecrets: Parameters<
     },
     {
       type: "google" as const,
-      secret: process.env.VERTEX_AI_API_KEY || "",
+      secret: process.env.GEMINI_API_KEY || "",
       name: "google",
     },
     {
       type: "openai" as const,
       secret: process.env.OPENAI_API_KEY || "",
       name: "openai",
+    },
+    {
+      type: "vertex" as const,
+      secret: process.env.VERTEX_AI_API_KEY || "",
+      name: "vertex",
+      metadata: {
+        project: process.env.GCP_PROJECT_ID || "",
+        authType: "access_token",
+        api_base: "",
+        supportsStreaming: true,
+        excludeDefaultModels: false,
+      },
     },
   ].filter((secret) => !!secret.secret && endpointTypes.includes(secret.type));
 };

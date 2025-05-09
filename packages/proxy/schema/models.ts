@@ -2531,6 +2531,14 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   // TODO: add anthropic 3.7 converse
 
   // VERTEX MODELS
+  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.5 Flash Preview",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  },
   "publishers/google/models/gemini-2.0-flash": {
     format: "google",
     flavor: "chat",

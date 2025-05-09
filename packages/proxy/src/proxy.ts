@@ -15,6 +15,7 @@ import {
   ModelSpec,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
+  modelProviderHasReasoning,
 } from "@schema";
 import {
   ModelResponse,
@@ -99,6 +100,7 @@ import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
+import { OpenAIChatCompletionChunk, OpenAIReasoning } from "@types";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -615,6 +617,7 @@ export async function proxyV1({
     const allChunks: Uint8Array[] = [];
 
     // These parameters are for the streaming case
+    let reasoning: OpenAIReasoning[] | undefined = undefined;
     let role: string | undefined = undefined;
     let content: string | undefined = undefined;
     let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
@@ -636,10 +639,13 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
-              const result = JSON.parse(event.data) as ChatCompletionChunk;
+              const result = JSON.parse(
+                event.data,
+              ) as OpenAIChatCompletionChunk;
               if (result) {
                 if (result.usage) {
                   spanLogger.log({
+                    // TODO: we should include the proxy meters metrics here
                     metrics: {
                       tokens: result.usage.total_tokens,
                       prompt_tokens: result.usage.prompt_tokens,
@@ -667,6 +673,22 @@ export async function proxyV1({
                   content = (content || "") + delta.content;
                 }
 
+                if (delta.reasoning) {
+                  if (!reasoning) {
+                    reasoning = [
+                      {
+                        id: delta.reasoning.id || "",
+                        content: delta.reasoning.content || "",
+                      },
+                    ];
+                  } else {
+                    // TODO: could be multiple
+                    reasoning[0].id = reasoning[0].id || delta.reasoning.id;
+                    reasoning[0].content =
+                      reasoning[0].content + (delta.reasoning.content || "");
+                  }
+                }
+
                 if (delta.tool_calls) {
                   if (!tool_calls) {
                     tool_calls = [
@@ -678,6 +700,7 @@ export async function proxyV1({
                       },
                     ];
                   } else if (tool_calls[0].function) {
+                    // TODO: what about parallel calls?
                     tool_calls[0].function.arguments =
                       (tool_calls[0].function.arguments ?? "") +
                       (delta.tool_calls[0].function?.arguments ?? "");
@@ -723,6 +746,7 @@ export async function proxyV1({
                   role,
                   content,
                   tool_calls,
+                  reasoning,
                 },
                 logprobs: null,
                 finish_reason,
@@ -878,8 +902,6 @@ async function fetchModelLoop(
     ttl_seconds?: number,
   ) => Promise<void>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
-  const requestId = ++loopIndex;
-
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -903,9 +925,9 @@ async function fetchModelLoop(
       url === "/responses" ||
       url === "/anthropic/messages") &&
     isObject(bodyData) &&
-    bodyData.model
+    bodyData?.model
   ) {
-    model = bodyData.model;
+    model = bodyData?.model;
   } else if (method === "POST") {
     const m = url.match(GOOGLE_URL_REGEX);
     if (m) {
@@ -1323,6 +1345,7 @@ function chatCompletionMessageFromResponseOutput(
   };
 }
 
+// TODO(ibolmo): should return the reasoning
 function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
   return {
     choices: [
@@ -1657,15 +1680,12 @@ async function fetchOpenAI(
     });
   }
 
-  // TODO: Ideally this is encapsulated as some advanced per-model config
-  // or mapping, but for now, let's just map it manually.
-  const isO1Like =
-    bodyData.o1_like ||
-    (typeof bodyData.model === "string" &&
-      (bodyData.model.startsWith("o1") ||
-        bodyData.model.startsWith("o3") ||
-        bodyData.model.startsWith("o4")));
-  if (isO1Like) {
+  const hasReasoning =
+    bodyData?.reasoning ||
+    (typeof bodyData?.model === "string" &&
+      modelProviderHasReasoning.openai?.test(bodyData.model));
+
+  if (hasReasoning) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
@@ -1675,9 +1695,9 @@ async function fetchOpenAI(
 
     // Only remove system messages for old O1 models.
     if (
-      bodyData.messages &&
+      bodyData?.messages &&
       ["o1-preview", "o1-mini", "o1-preview-2024-09-12"].includes(
-        bodyData.model,
+        bodyData?.model,
       )
     ) {
       bodyData.messages = bodyData.messages.map((m: any) => ({
@@ -1687,7 +1707,7 @@ async function fetchOpenAI(
     }
   }
 
-  if (bodyData.messages) {
+  if (bodyData?.messages) {
     bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
@@ -1701,7 +1721,7 @@ async function fetchOpenAI(
     });
   }
 
-  if (bodyData.model.startsWith("o1-pro")) {
+  if (bodyData?.model.startsWith("o1-pro")) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,
@@ -1710,7 +1730,7 @@ async function fetchOpenAI(
 
   let isManagedStructuredOutput = false;
   const responseFormatParsed = responseFormatSchema.safeParse(
-    bodyData.response_format,
+    bodyData?.response_format,
   );
   if (responseFormatParsed.success) {
     switch (responseFormatParsed.data.type) {
@@ -1770,7 +1790,7 @@ async function fetchOpenAI(
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {
-    if (bodyData.stream) {
+    if (bodyData?.stream) {
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const chunk: ChatCompletionChunk = JSON.parse(data);
@@ -2061,9 +2081,20 @@ async function fetchAnthropicChatCompletions({
     } else if (m.role === "tool") {
       role = "user";
       content = openAIToolMessageToAnthropicToolCall(m);
-    } else if (m.role === "assistant" && m.tool_calls) {
+    } else if (m.role === "assistant") {
       content = upgradeAnthropicContentMessage(content);
-      content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      if (m.tool_calls) {
+        content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      }
+      if (m?.reasoning) {
+        content.unshift(
+          ...m?.reasoning.map((r) => ({
+            type: "thinking",
+            thinking: r.content,
+            signature: r.id,
+          })),
+        );
+      }
     }
 
     const translatedRole = MessageTypeToMessageType[role];

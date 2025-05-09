@@ -12,8 +12,6 @@ import {
   StopReason,
   SystemContentBlock,
   Message as BedrockMessage,
-  ImageBlock,
-  DocumentBlock,
   ToolConfiguration,
   InferenceConfiguration,
   ImageFormat,
@@ -29,13 +27,14 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
 } from "./anthropic";
-import { ChatCompletionChunk, CompletionUsage } from "openai/resources";
+import { CompletionUsage } from "openai/resources";
 import {
   getTimestampInSeconds,
   writeToReadable,
   isEmpty,
   ProxyBadRequestError,
 } from "..";
+import { OpenAIChatCompletionChunk, OpenAIChatCompletion } from "@types";
 import {
   Message as OaiMessage,
   MessageRole,
@@ -43,7 +42,6 @@ import {
   responseFormatJsonSchemaSchema,
 } from "@braintrust/core/typespecs";
 import {
-  ChatCompletion,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
@@ -752,7 +750,7 @@ function openAIResponse(
   model: string,
   response: ConverseCommandOutput,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
   const firstText = response.output?.message?.content?.find(
     (c) => c.text !== undefined,
   );
@@ -833,7 +831,7 @@ function translateInferenceConfig(
 
 interface BedrockMessageState {
   completionId: string;
-  role: ChatCompletionChunk["choices"][0]["delta"]["role"];
+  role: OpenAIChatCompletionChunk["choices"][0]["delta"]["role"];
 }
 
 export function bedrockMessageToOpenAIMessage(
@@ -841,11 +839,11 @@ export function bedrockMessageToOpenAIMessage(
   output: ConverseStreamOutput,
   isStructuredOutput: boolean,
 ): {
-  event: ChatCompletionChunk | null;
+  event: OpenAIChatCompletionChunk | null;
   finished: boolean;
 } {
   return ConverseStreamOutput.visit<{
-    event: ChatCompletionChunk | null;
+    event: OpenAIChatCompletionChunk | null;
     finished: boolean;
   }>(output, {
     messageStart: (value) => {
@@ -876,6 +874,12 @@ export function bedrockMessageToOpenAIMessage(
                       },
                     ]
                   : undefined,
+              ...(value.delta?.reasoningContent && {
+                reasoning: {
+                  id: value.delta.reasoningContent.signature,
+                  content: value.delta.reasoningContent.text,
+                },
+              }),
             },
             finish_reason: null,
             index: 0,

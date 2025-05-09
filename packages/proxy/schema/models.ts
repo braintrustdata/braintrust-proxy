@@ -44,7 +44,8 @@ export const ModelSchema = z.object({
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
-  o1_like: z.boolean().nullish(),
+  o1_like: z.boolean().nullish().describe('DEPRECATED use "reasoning" instead'),
+  reasoning: z.boolean().nullish(),
   experimental: z.boolean().nullish(),
   deprecated: z.boolean().nullish(),
   parent: z.string().nullish(),
@@ -159,7 +160,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
   },
   "o4-mini-2025-04-16": {
     format: "openai",
@@ -167,7 +168,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
     parent: "o4-mini",
   },
   "o3-mini": {
@@ -176,7 +177,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
   },
   "o3-mini-2025-01-31": {
     format: "openai",
@@ -184,7 +185,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
     parent: "o3-mini",
   },
   o3: {
@@ -193,7 +194,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 10.0,
     output_cost_per_mil_tokens: 40,
-    o1_like: true,
+    reasoning: true,
   },
   "o3-2025-04-16": {
     format: "openai",
@@ -201,7 +202,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 10.0,
     output_cost_per_mil_tokens: 40,
-    o1_like: true,
+    reasoning: true,
     parent: "o3",
   },
   o1: {
@@ -210,7 +211,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-2024-12-17": {
     format: "openai",
@@ -218,7 +219,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
+    reasoning: true,
     parent: "o1",
   },
   "o1-mini": {
@@ -227,7 +228,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-mini-2024-09-12": {
     format: "openai",
@@ -235,7 +236,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
-    o1_like: true,
+    reasoning: true,
     parent: "o1-mini",
   },
   "o1-pro": {
@@ -244,7 +245,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 150,
     output_cost_per_mil_tokens: 600,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-pro-2025-03-19": {
     format: "openai",
@@ -252,7 +253,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 150,
     output_cost_per_mil_tokens: 600,
-    o1_like: true,
+    reasoning: true,
     parent: "o1-pro",
   },
   "chatgpt-4o-latest": {
@@ -349,8 +350,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
     experimental: true,
+    reasoning: true,
     parent: "o1",
   },
   "o1-preview-2024-09-12": {
@@ -359,8 +360,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60.0,
-    o1_like: true,
     experimental: true,
+    reasoning: true,
     parent: "o1",
   },
   "gpt-4o-search-preview": {
@@ -547,6 +548,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.7 Sonnet",
+    reasoning: true,
   },
   "claude-3-7-sonnet-20250219": {
     format: "anthropic",
@@ -1933,6 +1935,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.6,
     multimodal: true,
     experimental: false,
+    reasoning: true,
     displayName: "Gemini 2.5 Flash Preview",
   },
   "gemini-2.5-pro-preview-05-06": {
@@ -1942,6 +1945,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 10,
     multimodal: true,
     experimental: false,
+    reasoning: true,
     displayName: "Gemini 2.5 Pro Preview",
   },
   "gemini-2.5-pro-preview-03-25": {
@@ -1960,6 +1964,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0,
     multimodal: true,
     experimental: true,
+    reasoning: true,
     displayName: "Gemini 2.5 Pro Experimental",
   },
   "gemini-2.0-flash-exp": {
@@ -2548,7 +2553,17 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Command Light",
   },
 
+  // TODO: add anthropic 3.7 converse
+
   // VERTEX MODELS
+  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.5 Flash Preview",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  },
   "publishers/google/models/gemini-2.0-flash": {
     format: "google",
     flavor: "chat",

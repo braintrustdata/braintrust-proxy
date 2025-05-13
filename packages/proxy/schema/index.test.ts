@@ -1,66 +1,68 @@
-import { it, expect } from "vitest";
-import { ModelFormat, translateParams } from "./index";
-import { ChatCompletionCreateParams } from "openai/resources";
 import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
 import { GenerateContentParameters } from "@google/genai";
+import { ChatCompletionCreateParams } from "openai/resources";
+import { expect, it } from "vitest";
+import { ModelFormat, translateParams } from "./index";
 
 const examples: Record<
   string,
-  { openai: ChatCompletionCreateParams } & (
+  {
+    openai: ChatCompletionCreateParams;
+  } & ( // NOTE: these are not strictly the API params.
     | { google: GenerateContentParameters }
     | { anthropic: MessageCreateParamsBase }
   )
 > = {
-  // simple: {
-  //   openai: {
-  //     model: "gpt-4o",
-  //     max_tokens: 1500,
-  //     temperature: 0.7,
-  //     top_p: 0.9,
-  //     frequency_penalty: 0.1,
-  //     presence_penalty: 0.2,
-  //     messages: [
-  //       { role: "system", content: "You are a helpful assistant." },
-  //       { role: "user", content: "Hello, how are you?" },
-  //     ],
-  //     stream: true,
-  //   },
-  //   google: {
-  //     max_tokens: 1500,
-  //     messages: [
-  //       {
-  //         content: "You are a helpful assistant.",
-  //         role: "system",
-  //       },
-  //       {
-  //         content: "Hello, how are you?",
-  //         role: "user",
-  //       },
-  //     ],
-  //     model: "gpt-4o",
-  //     stream: true,
-  //     temperature: 0.7,
-  //     top_p: 0.9,
-  //   },
-  //   anthropic: {
-  //     max_tokens: 1500,
-  //     messages: [
-  //       {
-  //         content: "You are a helpful assistant.",
-  //         // @ts-expect-error -- TODO: shouldn't we have translated this to a non system role?
-  //         role: "system",
-  //       },
-  //       {
-  //         content: "Hello, how are you?",
-  //         role: "user",
-  //       },
-  //     ],
-  //     model: "gpt-4o",
-  //     stream: true,
-  //     temperature: 0.7,
-  //     top_p: 0.9,
-  //   },
-  // },
+  simple: {
+    openai: {
+      model: "gpt-4o",
+      max_tokens: 1500,
+      temperature: 0.7,
+      top_p: 0.9,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.2,
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: "Hello, how are you?" },
+      ],
+      stream: true,
+    },
+    google: {
+      max_tokens: 1500,
+      messages: [
+        {
+          content: "You are a helpful assistant.",
+          role: "system",
+        },
+        {
+          content: "Hello, how are you?",
+          role: "user",
+        },
+      ],
+      model: "gpt-4o",
+      stream: true,
+      temperature: 0.7,
+      top_p: 0.9,
+    },
+    anthropic: {
+      max_tokens: 1500,
+      messages: [
+        {
+          content: "You are a helpful assistant.",
+          // @ts-expect-error -- TODO: shouldn't we have translated this to a non system role?
+          role: "system",
+        },
+        {
+          content: "Hello, how are you?",
+          role: "user",
+        },
+      ],
+      model: "gpt-4o",
+      stream: true,
+      temperature: 0.7,
+      top_p: 0.9,
+    },
+  },
   reasoning: {
     openai: {
       model: "gpt-4o",
@@ -81,6 +83,8 @@ const examples: Record<
     },
     google: {
       model: "gpt-4o",
+      // notice how this is still an intermediate param
+      // google's api expects a content instead of messages, for example
       messages: [
         {
           role: "system",

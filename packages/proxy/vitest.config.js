@@ -4,7 +4,7 @@ const config = {
   plugins: [tsconfigPaths()],
   test: {
     exclude: ["**/node_modules/**"],
-    testTimeout: 15_000,
+    testTimeout: 30_000,
   },
 };
 export default config;

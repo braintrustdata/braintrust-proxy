@@ -4,7 +4,7 @@ import { proxyV1, SpanLogger } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { APISecret, getModelEndpointTypes } from "@schema";
+import { APISecret, getModelEndpointTypes, isFireworksModel, isAnthropicModel, isBedrockModel, isGroqModel, isOpenAIModel, isGoogleModel, isXAIModel, isMistralModel, isPerplexityModel } from "@schema";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -31,7 +31,20 @@ export interface ProxyOpts {
   cors?: boolean;
   credentialsCache?: Cache;
   completionsCache?: Cache;
-  braintrustApiUrl?: string;
+  authConfig?: {
+    type: "cloudflare";
+    /**
+     * The API key to use for proxy authentication
+     */
+    apiKey: string;
+    /**
+     * A function that returns the API secret for a given model
+     */
+    getSecret: (model: string) => Promise<APISecret> | APISecret;
+  } | {
+    type: "braintrust";
+    braintrustApiUrl?: string;
+  }
   meterProvider?: MeterProvider;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
@@ -68,9 +81,9 @@ export function getCorsHeaders(
 
   return origin
     ? {
-        "access-control-allow-origin": origin,
-        ...baseCorsHeaders,
-      }
+      "access-control-allow-origin": origin,
+      ...baseCorsHeaders,
+    }
     : {};
 }
 
@@ -123,6 +136,19 @@ export function makeFetchApiSecrets({
     model: string | null,
     org_name?: string,
   ): Promise<APISecret[]> => {
+    if (opts.authConfig?.type === "cloudflare") {
+      if (authToken !== opts.authConfig.apiKey) {
+        throw new Error("Forbidden");
+      }
+
+      if (!model) {
+        throw new Error("no model provided");
+      }
+
+      const secret = await opts.authConfig.getSecret(model);
+      return [secret];
+    }
+
     // First try to decode & verify as JWT. We gate this on Braintrust JWT
     // format, not just any JWT, in case a future model provider uses JWT as
     // the auth token.
@@ -168,7 +194,7 @@ export function makeFetchApiSecrets({
     let ttl = 60;
     try {
       const response = await fetch(
-        `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
+        `${opts.authConfig?.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
         {
           method: "POST",
           headers: {
@@ -330,6 +356,83 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       headers,
     });
   };
+}
+
+export interface Secrets {
+  OPENAI_API_KEY: string;
+  ANTHROPIC_API_KEY: string;
+  PERPLEXITY_API_KEY: string;
+  REPLICATE_API_KEY: string;
+  FIREWORKS_API_KEY: string;
+  GOOGLE_API_KEY: string;
+  XAI_API_KEY: string;
+
+  TOGETHER_API_KEY: string;
+  LEPTON_API_KEY: string;
+  MISTRAL_API_KEY: string;
+  OLLAMA_API_KEY: string;
+  GROQ_API_KEY: string;
+  CEREBRAS_API_KEY: string;
+
+  BEDROCK_SECRET_KEY: string;
+  BEDROCK_ACCESS_KEY: string;
+  BEDROCK_REGION: string;
+}
+
+export function getApiSecret(model: string, secrets: Secrets): APISecret {
+  if (isOpenAIModel(model)) {
+    return {
+      secret: secrets.OPENAI_API_KEY,
+      type: "openai",
+    };
+  } else if (isAnthropicModel(model)) {
+    return {
+      secret: secrets.ANTHROPIC_API_KEY,
+      type: "anthropic",
+    };
+  } else if (isBedrockModel(model)) {
+    return {
+      secret: secrets.BEDROCK_SECRET_KEY,
+      type: "bedrock",
+      metadata: {
+        "region": secrets.BEDROCK_REGION,
+        "access_key": secrets.BEDROCK_ACCESS_KEY,
+        supportsStreaming: true,
+      },
+    };
+  } else if (isGroqModel(model)) {
+    return {
+      secret: secrets.GROQ_API_KEY,
+      type: "groq",
+    };
+  } else if (isFireworksModel(model)) {
+    return {
+      secret: secrets.FIREWORKS_API_KEY,
+      type: "fireworks",
+    };
+  } else if (isGoogleModel(model)) {
+    return {
+      secret: secrets.GOOGLE_API_KEY,
+      type: "google",
+    };
+  } else if (isXAIModel(model)) {
+    return {
+      secret: secrets.XAI_API_KEY,
+      type: "xAI",
+    };
+  } else if (isMistralModel(model)) {
+    return {
+      secret: secrets.MISTRAL_API_KEY,
+      type: "mistral",
+    };
+  } else if (isPerplexityModel(model)) {
+    return {
+      secret: secrets.PERPLEXITY_API_KEY,
+      type: "perplexity",
+    };
+  }
+
+  throw new Error(`could not find secret for model ${model}`);
 }
 
 // We rely on the fact that Upstash will automatically serialize and deserialize things for us

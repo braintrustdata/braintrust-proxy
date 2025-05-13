@@ -73,9 +73,21 @@ export const modelParamMappers: {
       reasoning_effort,
       max_tokens,
       max_completion_tokens,
-      temperature: _,
+      temperature,
       ...params
     }) => {
+      debugger;
+
+      if (!reasoning_effort) {
+        // noop, but let's clean reasoning_effort
+        return {
+          ...params,
+          max_tokens,
+          max_completion_tokens,
+          temperature,
+        };
+      }
+
       // Max tokens are inclusive of budget. If the max tokens are too low (below 1024), then the API will raise an exception.
       const maxTokens = Math.max(
         max_completion_tokens || max_tokens || 0,
@@ -515,14 +527,9 @@ export function translateParams(
   params: Record<string, unknown>,
 ): Record<string, unknown> {
   let translatedParams: Record<string, unknown> = {};
+
   for (const [k, v] of Object.entries(params || {})) {
     const safeValue = v ?? undefined; // Don't propagate "null" along
-    const mapper = modelParamMappers[toProvider]?.[k];
-    if (mapper) {
-      translatedParams = mapper(translatedParams);
-      continue;
-    }
-
     const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
       | keyof ModelParams
       | undefined
@@ -537,6 +544,14 @@ export function translateParams(
       defaultModelParamSettings[toProvider][translatedKey] !== undefined;
 
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
+  }
+
+  for (const [k, _] of Object.entries(params || {})) {
+    const mapper = modelParamMappers[toProvider]?.[k];
+    if (mapper) {
+      // not ideal.. we should pass the original params to the mappers, but simple params mapping may overwrite complex mappers
+      translatedParams = mapper(translatedParams);
+    }
   }
 
   return translatedParams;

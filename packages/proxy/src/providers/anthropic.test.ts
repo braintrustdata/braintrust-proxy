@@ -52,7 +52,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-2",
+      model: "claude-2.1",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },

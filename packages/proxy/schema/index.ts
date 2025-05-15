@@ -76,13 +76,15 @@ export const modelParamMappers: {
       temperature,
       ...params
     }) => {
-      if (!reasoning_effort) {
-        // noop, but let's clean reasoning_effort
+      if (!reasoning_effort || reasoning_effort === "none") {
         return {
           ...params,
-          max_tokens,
-          max_completion_tokens,
+          max_tokens: max_completion_tokens || max_tokens,
           temperature,
+          // an empty/unset means we should disable
+          thinking: {
+            type: "disabled",
+          },
         };
       }
 
@@ -113,6 +115,18 @@ export const modelParamMappers: {
       max_completion_tokens,
       ...params
     }) => {
+      // TODO: update types to accept an explicit reasoning_effort
+      if (!reasoning_effort || reasoning_effort === "none") {
+        return {
+          ...params,
+          maxOutputTokens: max_completion_tokens || max_tokens,
+          thinkingConfig: {
+            thinkingBudget: 0,
+            includeThoughts: true,
+          },
+        };
+      }
+
       const maxTokens = Math.max(
         max_completion_tokens || max_tokens || 0,
         1024 / effortToBudgetMultiplier.low,
@@ -169,7 +183,7 @@ export const defaultModelParamSettings: {
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
-    reasoning_effort: "medium",
+    reasoning_effort: undefined,
   },
   google: {
     temperature: undefined,
@@ -177,6 +191,7 @@ export const defaultModelParamSettings: {
     topP: 0.7,
     topK: 5,
     use_cache: true,
+    reasoning_effort: undefined,
   },
   js: {},
   window: {

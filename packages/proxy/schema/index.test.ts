@@ -125,6 +125,67 @@ const examples: Record<
       },
     },
   },
+  "reasoning disable": {
+    openai: {
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      temperature: 0,
+      max_tokens: 1000,
+      reasoning_effort: undefined,
+      stream: false,
+    },
+    google: {
+      model: "gpt-4o",
+      // notice how this is still an intermediate param
+      // google's api expects a content instead of messages, for example
+      messages: [
+        {
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      temperature: 0,
+      maxOutputTokens: 1000,
+      thinkingConfig: {
+        thinkingBudget: 0,
+        includeThoughts: true,
+      },
+      stream: false,
+    },
+    anthropic: {
+      model: "gpt-4o",
+      messages: [
+        {
+          // @ts-expect-error  -- we use the role to later manipulate the request
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      max_tokens: 1000,
+      temperature: 0,
+      stream: false,
+      thinking: {
+        type: "disabled",
+      },
+    },
+  },
 };
 
 Object.entries(examples).forEach(([example, { openai, ...providers }]) => {
@@ -137,15 +198,11 @@ Object.entries(examples).forEach(([example, { openai, ...providers }]) => {
       try {
         expect(result).toEqual(expected);
       } catch (error) {
-        try {
-          // try to relax the output a little
-          expect(result).toMatchObject(expected);
-        } finally {
-          console.warn(
-            `Exact openai -> ${provider} translation failed. Found:`,
-            JSON.stringify(result, null, 2),
-          );
-        }
+        console.warn(
+          `Exact openai -> ${provider} translation failed. Found:`,
+          JSON.stringify(result, null, 2),
+        );
+        expect.soft(result).toEqual(expected);
       }
     });
   });

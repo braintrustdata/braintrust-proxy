@@ -1345,7 +1345,6 @@ function chatCompletionMessageFromResponseOutput(
   };
 }
 
-// TODO(ibolmo): should return the reasoning
 function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
   return {
     choices: [

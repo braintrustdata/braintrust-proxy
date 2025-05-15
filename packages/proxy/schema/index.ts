@@ -76,8 +76,6 @@ export const modelParamMappers: {
       temperature,
       ...params
     }) => {
-      debugger;
-
       if (!reasoning_effort) {
         // noop, but let's clean reasoning_effort
         return {

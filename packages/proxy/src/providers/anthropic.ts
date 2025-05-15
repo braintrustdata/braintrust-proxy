@@ -87,6 +87,8 @@ export const anthropicDeltaSchema = z.union([
 export const anthropicUsage = z.object({
   input_tokens: z.number().optional(),
   output_tokens: z.number().optional(),
+  cache_creation_input_tokens: z.number().optional(),
+  cache_read_input_tokens: z.number().optional(),
 });
 
 export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
@@ -176,7 +178,12 @@ export interface AnthropicCompletion {
   model: string;
   stop_reason: string;
   stop_sequence: string | null;
-  usage: { input_tokens: number; output_tokens: number };
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
 }
 
 function updateUsage(
@@ -184,10 +191,18 @@ function updateUsage(
   openai: Partial<CompletionUsage>,
 ) {
   if (!isEmpty(anthropic.input_tokens)) {
-    openai.prompt_tokens = anthropic.input_tokens;
+    openai.prompt_tokens =
+      anthropic.input_tokens + (anthropic.cache_creation_input_tokens ?? 0);
   }
   if (!isEmpty(anthropic.output_tokens)) {
     openai.completion_tokens = anthropic.output_tokens;
+  }
+  openai.total_tokens =
+    (openai.prompt_tokens ?? 0) + (openai.completion_tokens ?? 0);
+  if (!isEmpty(anthropic.cache_read_input_tokens)) {
+    openai.prompt_tokens_details = {
+      cached_tokens: anthropic.cache_read_input_tokens,
+    };
   }
 }
 
@@ -284,6 +299,7 @@ export function anthropicEventToOpenAIEvent(
     if (event.usage) {
       updateUsage(event.usage, usage);
     }
+    console.log("STREAMING USAGE", usage);
     return {
       event: {
         id: uuidv4(),
@@ -353,6 +369,15 @@ export function anthropicCompletionToOpenAICompletion(
 ): ChatCompletion {
   const firstText = completion.content.find((c) => c.type === "text");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
+  let usage: CompletionUsage | undefined = undefined;
+  if (completion.usage) {
+    usage = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+    };
+    updateUsage(completion.usage, usage);
+  }
   return {
     id: completion.id,
     choices: [
@@ -396,12 +421,7 @@ export function anthropicCompletionToOpenAICompletion(
     created: getTimestampInSeconds(),
     model: completion.model,
     object: "chat.completion",
-    usage: {
-      prompt_tokens: completion.usage.input_tokens,
-      completion_tokens: completion.usage.output_tokens,
-      total_tokens:
-        completion.usage.input_tokens + completion.usage.output_tokens,
-    },
+    usage,
   };
 }
 
@@ -452,9 +472,9 @@ export async function makeAnthropicMediaBlock(
 
 export async function openAIContentToAnthropicContent(
   content: Message["content"],
-): Promise<MessageParam["content"]> {
+): Promise<Exclude<MessageParam["content"], string>> {
   if (typeof content === "string") {
-    return content;
+    return [{ type: "text", text: content }];
   }
   return Promise.all(
     content?.map(async (part) =>

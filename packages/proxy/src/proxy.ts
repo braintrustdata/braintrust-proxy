@@ -639,11 +639,17 @@ export async function proxyV1({
               const result = JSON.parse(event.data) as ChatCompletionChunk;
               if (result) {
                 if (result.usage) {
+                  console.log("LOGGING RESULT USAGE", result.usage);
                   spanLogger.log({
                     metrics: {
                       tokens: result.usage.total_tokens,
                       prompt_tokens: result.usage.prompt_tokens,
                       completion_tokens: result.usage.completion_tokens,
+                      prompt_cached_tokens:
+                        result.usage?.prompt_tokens_details?.cached_tokens,
+                      completion_reasoning_tokens:
+                        result.usage?.completion_tokens_details
+                          ?.reasoning_tokens,
                     },
                   });
                 }
@@ -738,12 +744,17 @@ export async function proxyV1({
             case "chat":
             case "completion": {
               const data = dataRaw as ChatCompletion;
+              console.log("LOGGING USAGE", data.usage);
               spanLogger.log({
                 output: data.choices,
                 metrics: {
                   tokens: data.usage?.total_tokens,
                   prompt_tokens: data.usage?.prompt_tokens,
                   completion_tokens: data.usage?.completion_tokens,
+                  prompt_cached_tokens:
+                    data.usage?.prompt_tokens_details?.cached_tokens,
+                  completion_reasoning_tokens:
+                    data.usage?.completion_tokens_details?.reasoning_tokens,
                 },
               });
               break;
@@ -2045,9 +2056,11 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  for (const m of oaiMessages as Message[]) {
+  for (let i = 0; i < oaiMessages.length; i++) {
+    const m = oaiMessages[i];
     let role: MessageRole = m.role;
-    let content: any = await openAIContentToAnthropicContent(m.content);
+    let content = await openAIContentToAnthropicContent(m.content);
+
     if (m.role === "system") {
       system = content;
       continue;
@@ -2064,6 +2077,20 @@ async function fetchAnthropicChatCompletions({
     } else if (m.role === "assistant" && m.tool_calls) {
       content = upgradeAnthropicContentMessage(content);
       content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+    }
+
+    if (i === oaiMessages.length - 1) {
+      const lastContent =
+        content.length > 0 ? content[content.length - 1] : null;
+      if (
+        lastContent &&
+        lastContent.type !== "thinking" &&
+        lastContent.type !== "redacted_thinking"
+      ) {
+        lastContent.cache_control = {
+          type: "ephemeral",
+        };
+      }
     }
 
     const translatedRole = MessageTypeToMessageType[role];

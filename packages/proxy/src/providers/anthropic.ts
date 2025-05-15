@@ -325,11 +325,7 @@ export function anthropicEventToOpenAIEvent(
         created: getTimestampInSeconds(),
         usage:
           !isEmpty(usage.completion_tokens) && !isEmpty(usage.prompt_tokens)
-            ? {
-                prompt_tokens: usage.prompt_tokens,
-                completion_tokens: usage.completion_tokens,
-                total_tokens: usage.completion_tokens + usage.prompt_tokens,
-              }
+            ? (usage as CompletionUsage)
             : undefined,
       },
       finished: true,

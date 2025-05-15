@@ -47,11 +47,7 @@ import {
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
+import { MessageRole, responseFormatSchema } from "@braintrust/core/typespecs";
 import { _urljoin, isArray } from "@braintrust/core";
 import {
   ChatCompletion,
@@ -2056,13 +2052,21 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
+  const maxCacheBreakpoints = 4;
   for (let i = 0; i < oaiMessages.length; i++) {
     const m = oaiMessages[i];
     let role: MessageRole = m.role;
     let content = await openAIContentToAnthropicContent(m.content);
 
+    const canAddBreakpoint = i >= oaiMessages.length - maxCacheBreakpoints;
+
     if (m.role === "system") {
       system = content;
+      const lastContent =
+        content.length > 0 ? content[content.length - 1] : null;
+      if (canAddBreakpoint && lastContent && lastContent.type === "text") {
+        lastContent.cache_control = { type: "ephemeral" };
+      }
       continue;
     } else if (
       m.role === "function" ||
@@ -2079,7 +2083,7 @@ async function fetchAnthropicChatCompletions({
       content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
     }
 
-    if (i === oaiMessages.length - 1) {
+    if (canAddBreakpoint) {
       const lastContent =
         content.length > 0 ? content[content.length - 1] : null;
       if (

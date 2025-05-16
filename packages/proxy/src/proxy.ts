@@ -2112,10 +2112,14 @@ async function fetchAnthropicChatCompletions({
   }
 
   messages = flattenAnthropicMessages(messages);
-  const params: Record<string, unknown> = {
-    max_tokens: 4096, // Required param
-    ...translateParams("anthropic", oaiParams),
-  };
+  const params: Record<string, unknown> = translateParams(
+    "anthropic",
+    oaiParams,
+  );
+
+  if (!params.max_tokens) {
+    params.max_tokens = 4096; // Required param
+  }
 
   const stop = z
     .union([z.string(), z.array(z.string())])

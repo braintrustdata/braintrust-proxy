@@ -139,7 +139,6 @@ const examples: Record<
         },
       ],
       temperature: 0,
-      max_tokens: 1000,
       reasoning_effort: undefined,
       stream: false,
     },
@@ -158,7 +157,6 @@ const examples: Record<
         },
       ],
       temperature: 0,
-      maxOutputTokens: 1000,
       thinkingConfig: {
         thinkingBudget: 0,
       },
@@ -177,7 +175,6 @@ const examples: Record<
           content: "Explain how to solve 2x + 4 = 12 step by step.",
         },
       ],
-      max_tokens: 1000,
       temperature: 0,
       stream: false,
       thinking: {

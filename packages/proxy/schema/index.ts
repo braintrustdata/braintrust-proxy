@@ -77,9 +77,10 @@ export const modelParamMappers: {
       ...params
     }) => {
       if (!reasoning_effort || reasoning_effort === "none") {
+        const maxTokens = max_completion_tokens || max_tokens;
         return {
           ...params,
-          max_tokens: max_completion_tokens || max_tokens,
+          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : undefined), // required by anthropic
           temperature,
           // an empty/unset means we should disable
           thinking: {
@@ -117,9 +118,10 @@ export const modelParamMappers: {
     }) => {
       // TODO: update types to accept an explicit reasoning_effort
       if (!reasoning_effort || reasoning_effort === "none") {
+        const maxTokens = max_completion_tokens || max_tokens;
         return {
           ...params,
-          maxOutputTokens: max_completion_tokens || max_tokens,
+          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : undefined),
           thinkingConfig: {
             thinkingBudget: 0,
           },

@@ -161,7 +161,6 @@ const examples: Record<
       maxOutputTokens: 1000,
       thinkingConfig: {
         thinkingBudget: 0,
-        includeThoughts: true,
       },
       stream: false,
     },

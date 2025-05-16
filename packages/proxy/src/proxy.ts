@@ -2053,21 +2053,13 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  const maxCacheBreakpoints = 4;
   for (let i = 0; i < oaiMessages.length; i++) {
     const m = oaiMessages[i];
     let role: MessageRole = m.role;
     let content = await openAIContentToAnthropicContent(m.content);
 
-    const canAddBreakpoint = i >= oaiMessages.length - maxCacheBreakpoints;
-
     if (m.role === "system") {
       system = content;
-      const lastContent =
-        content.length > 0 ? content[content.length - 1] : null;
-      if (canAddBreakpoint && lastContent && lastContent.type === "text") {
-        lastContent.cache_control = { type: "ephemeral" };
-      }
       continue;
     } else if (
       m.role === "function" ||
@@ -2082,20 +2074,6 @@ async function fetchAnthropicChatCompletions({
     } else if (m.role === "assistant" && m.tool_calls) {
       content = upgradeAnthropicContentMessage(content);
       content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
-    }
-
-    if (canAddBreakpoint) {
-      const lastContent =
-        content.length > 0 ? content[content.length - 1] : null;
-      if (
-        lastContent &&
-        lastContent.type !== "thinking" &&
-        lastContent.type !== "redacted_thinking"
-      ) {
-        lastContent.cache_control = {
-          type: "ephemeral",
-        };
-      }
     }
 
     const translatedRole = MessageTypeToMessageType[role];

@@ -7,8 +7,8 @@ import {
   ChatCompletionToolMessageParam,
   CompletionUsage,
 } from "openai/resources";
-import { getTimestampInSeconds, isEmpty, ModelResponse } from "../util";
-import { Message } from "@braintrust/core/typespecs";
+import { getTimestampInSeconds, isEmpty, isObject } from "../util";
+import { ContentPart, Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {
   MessageParam,
@@ -21,6 +21,7 @@ import {
   DocumentBlockParam,
   MessageCreateParamsBase,
   Base64ImageSource,
+  CacheControlEphemeral,
 } from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
 
@@ -470,6 +471,16 @@ export async function makeAnthropicMediaBlock(
   }
 }
 
+export function extractCacheControl(
+  part: unknown,
+): CacheControlEphemeral | undefined {
+  return isObject(part) &&
+    "cache_control" in part &&
+    isObject(part.cache_control)
+    ? (part.cache_control as CacheControlEphemeral)
+    : undefined;
+}
+
 export async function openAIContentToAnthropicContent(
   content: Message["content"],
 ): Promise<Exclude<MessageParam["content"], string>> {
@@ -477,11 +488,12 @@ export async function openAIContentToAnthropicContent(
     return [{ type: "text", text: content }];
   }
   return Promise.all(
-    content?.map(async (part) =>
-      part.type === "text"
+    (content ?? []).map(async (part) => ({
+      ...(part.type === "text"
         ? part
-        : await makeAnthropicMediaBlock(part.image_url.url),
-    ) ?? [],
+        : await makeAnthropicMediaBlock(part.image_url.url)),
+      cache_control: extractCacheControl(part),
+    })),
   );
 }
 
@@ -493,6 +505,7 @@ export function openAIToolMessageToAnthropicToolCall(
       tool_use_id: toolCall.tool_call_id,
       type: "tool_result",
       content: toolCall.content,
+      cache_control: extractCacheControl(toolCall),
     },
   ];
 }
@@ -505,6 +518,7 @@ export function openAIToolCallsToAnthropicToolUse(
     type: "tool_use",
     input: JSON.parse(t.function.arguments),
     name: t.function.name,
+    cache_control: extractCacheControl(t),
   }));
 }
 

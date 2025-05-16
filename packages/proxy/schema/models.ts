@@ -613,7 +613,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 75,
     parent: "claude-3-opus-latest",
   },
-  "claude-3-sonnet-latest": {
+  "claude-3-sonnet-20240229": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
@@ -621,29 +621,13 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3 Sonnet",
   },
-  "claude-3-sonnet-20240229": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    parent: "claude-3-sonnet-latest",
-  },
-  "claude-3-haiku-latest": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 0.25,
-    output_cost_per_mil_tokens: 1.25,
-    displayName: "Claude 3 Haiku",
-  },
   "claude-3-haiku-20240307": {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
     input_cost_per_mil_tokens: 0.25,
     output_cost_per_mil_tokens: 1.25,
-    parent: "claude-3-haiku-latest",
+    displayName: "Claude 3 Haiku",
   },
   // Anthropic deprecated.
   "claude-instant-1.2": {

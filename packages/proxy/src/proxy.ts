@@ -1688,8 +1688,9 @@ async function fetchOpenAI(
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
-      delete bodyData.temperature;
     }
+
+    delete bodyData.temperature;
     delete bodyData.parallel_tool_calls;
 
     // Only remove system messages for old O1 models.

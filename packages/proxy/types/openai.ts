@@ -1,6 +1,5 @@
 // TODO: move from core
-import { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs/dist";
-export { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs/dist";
+import { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs";
 
 import { z } from "zod";
 
@@ -57,3 +56,17 @@ export type OpenAIChatCompletionChunk = ChatCompletionChunk & {
 export type OpenAIChatCompletionCreateParams = ChatCompletionCreateParams & {
   messages: Array<OpenAIChatCompletionMessage>;
 };
+
+// overrides
+import "openai/resources/chat/completions";
+
+declare module "openai/resources/chat/completions" {
+  interface ChatCompletionAssistantMessageParam {
+    reasoning?: OpenAIReasoning[];
+  }
+  namespace ChatCompletion {
+    interface Choice {
+      reasoning?: OpenAIReasoning[];
+    }
+  }
+}

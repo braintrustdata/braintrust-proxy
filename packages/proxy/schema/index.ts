@@ -122,7 +122,6 @@ export const modelParamMappers: {
           maxOutputTokens: max_completion_tokens || max_tokens,
           thinkingConfig: {
             thinkingBudget: 0,
-            includeThoughts: true,
           },
         };
       }

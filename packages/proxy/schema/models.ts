@@ -44,7 +44,8 @@ export const ModelSchema = z.object({
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
-  o1_like: z.boolean().nullish(),
+  o1_like: z.boolean().nullish().describe('DEPRECATED use "reasoning" instead'),
+  reasoning: z.boolean().nullish(),
   experimental: z.boolean().nullish(),
   deprecated: z.boolean().nullish(),
   parent: z.string().nullish(),
@@ -54,6 +55,18 @@ export const ModelSchema = z.object({
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
+// XXX: General Guidance on Maintainging Available Models:
+//
+// Order here closely resembles how the UI displays the models.
+// For now, let's assume latest models first then previous models.
+//
+// For models that are in multiple providers, e.g. gemini -> vertex ai, remember
+// to propagate changes to those providers.
+//
+// Set experimental, if model is not allowed production load or API is unstable
+// Set parent, if the model was replaced by another model.
+// Set deprecated, if and only if we want to discourage (literally hide) the use of the model.
+// Set displayName, only if the model is the latest production/stable.
 export const AvailableModels: { [name: string]: ModelSpec } = {
   // OPENAI / AZURE MODELS
 
@@ -159,7 +172,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
   },
   "o4-mini-2025-04-16": {
     format: "openai",
@@ -167,7 +180,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
     parent: "o4-mini",
   },
   "o3-mini": {
@@ -176,7 +189,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
   },
   "o3-mini-2025-01-31": {
     format: "openai",
@@ -184,7 +197,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 1.1,
     output_cost_per_mil_tokens: 4.4,
-    o1_like: true,
+    reasoning: true,
     parent: "o3-mini",
   },
   o3: {
@@ -193,7 +206,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 10.0,
     output_cost_per_mil_tokens: 40,
-    o1_like: true,
+    reasoning: true,
   },
   "o3-2025-04-16": {
     format: "openai",
@@ -201,7 +214,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 10.0,
     output_cost_per_mil_tokens: 40,
-    o1_like: true,
+    reasoning: true,
     parent: "o3",
   },
   o1: {
@@ -210,7 +223,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-2024-12-17": {
     format: "openai",
@@ -218,7 +231,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
+    reasoning: true,
     parent: "o1",
   },
   "o1-mini": {
@@ -227,7 +240,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-mini-2024-09-12": {
     format: "openai",
@@ -235,7 +248,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 3.0,
     output_cost_per_mil_tokens: 12.0,
-    o1_like: true,
+    reasoning: true,
     parent: "o1-mini",
   },
   "o1-pro": {
@@ -244,7 +257,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 150,
     output_cost_per_mil_tokens: 600,
-    o1_like: true,
+    reasoning: true,
   },
   "o1-pro-2025-03-19": {
     format: "openai",
@@ -252,7 +265,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     input_cost_per_mil_tokens: 150,
     output_cost_per_mil_tokens: 600,
-    o1_like: true,
+    reasoning: true,
     parent: "o1-pro",
   },
   "chatgpt-4o-latest": {
@@ -349,8 +362,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60,
-    o1_like: true,
     experimental: true,
+    reasoning: true,
     parent: "o1",
   },
   "o1-preview-2024-09-12": {
@@ -359,8 +372,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: false,
     input_cost_per_mil_tokens: 15.0,
     output_cost_per_mil_tokens: 60.0,
-    o1_like: true,
     experimental: true,
+    reasoning: true,
     parent: "o1",
   },
   "gpt-4o-search-preview": {
@@ -547,6 +560,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.7 Sonnet",
+    reasoning: true,
   },
   "claude-3-7-sonnet-20250219": {
     format: "anthropic",
@@ -1790,12 +1804,72 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   },
 
   // GEMINI MODELS
+  "gemini-2.5-pro-preview-05-06": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    // may technically not be true (according to docs), but the Gemini API doesn't complain if we have the params
+    reasoning: true,
+    displayName: "Gemini 2.5 Pro Preview",
+  },
+  "gemini-2.5-pro-exp-03-25": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0,
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    reasoning: true,
+    deprecated: true,
+    parent: "gemini-2.5-pro-preview-05-06",
+  },
+  "gemini-2.5-pro-preview-03-25": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 1.25,
+    output_cost_per_mil_tokens: 10,
+    multimodal: true,
+    reasoning: true,
+    parent: "gemini-2.5-pro-preview-05-06",
+  },
+  "gemini-2.0-pro-exp-02-05": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
+    parent: "gemini-2.5-pro-preview-03-25",
+  },
+  "gemini-2.5-flash-preview-04-17": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+    multimodal: true,
+    reasoning: true,
+    displayName: "Gemini 2.5 Flash Preview",
+  },
+  "gemini-2.0-flash-thinking-exp-01-21": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    reasoning: true,
+    deprecated: true,
+    parent: "gemini-2.5-flash-preview-04-17",
+  },
   "gemini-2.0-flash": {
     format: "google",
     flavor: "chat",
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.4,
-    displayName: "Gemini 2.0 Flash",
+    displayName: "Gemini 2.0 Flash Latest",
     multimodal: true,
   },
   "gemini-2.0-flash-001": {
@@ -1804,6 +1878,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 0.1,
     output_cost_per_mil_tokens: 0.4,
     multimodal: true,
+    parent: "gemini-2.0-flash",
+  },
+  "gemini-2.0-flash-exp": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
     parent: "gemini-2.0-flash",
   },
   "gemini-2.0-flash-lite": {
@@ -1910,60 +1994,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     multimodal: true,
     parent: "gemini-1.5-pro",
   },
-  "gemini-2.5-flash-preview-04-17": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0.15,
-    output_cost_per_mil_tokens: 0.6,
-    multimodal: true,
-    experimental: false,
-    displayName: "Gemini 2.5 Flash Preview",
-  },
-  "gemini-2.5-pro-preview-05-06": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1.25,
-    output_cost_per_mil_tokens: 10,
-    multimodal: true,
-    experimental: false,
-    displayName: "Gemini 2.5 Pro Preview",
-  },
-  "gemini-2.5-pro-preview-03-25": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 1.25,
-    output_cost_per_mil_tokens: 10,
-    multimodal: true,
-    experimental: false,
-    parent: "gemini-2.5-pro-preview-05-06",
-  },
-  "gemini-2.5-pro-exp-03-25": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0,
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    displayName: "Gemini 2.5 Pro Experimental",
-  },
-  "gemini-2.0-flash-exp": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    parent: "gemini-2.0-flash",
-  },
-  "gemini-2.0-flash-thinking-exp-01-21": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    parent: "gemini-2.0-flash",
-  },
   "learnlm-1.5-pro-experimental": {
     format: "google",
     flavor: "chat",
@@ -1971,25 +2001,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0,
     multimodal: true,
     experimental: true,
-  },
-  // Gemini deprecated.
-  "gemini-2.0-pro-exp-02-05": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    deprecated: true,
-  },
-  "gemini-exp-1206": {
-    format: "google",
-    flavor: "chat",
-    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
-    output_cost_per_mil_tokens: 0,
-    multimodal: true,
-    experimental: true,
-    deprecated: true,
   },
   "gemini-1.0-pro": {
     format: "google",
@@ -2006,6 +2017,16 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 0.5,
     displayName: "Gemini Pro",
     deprecated: true,
+  },
+  "gemini-exp-1206": {
+    format: "google",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 0, // TODO: Appears to be free for now?
+    output_cost_per_mil_tokens: 0,
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
+    parent: "gemini-2.0-pro-exp-02-05",
   },
 
   // XAI MODELS
@@ -2143,6 +2164,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     format: "anthropic",
     flavor: "chat",
     multimodal: true,
+    reasoning: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 3.7 Sonnet",
@@ -2150,6 +2172,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
   "us.anthropic.claude-3-7-sonnet-20250219-v1:0": {
     format: "anthropic",
     flavor: "chat",
+    reasoning: true,
     multimodal: true,
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
@@ -2532,7 +2555,50 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Command Light",
   },
 
-  // VERTEX MODELS
+  // TODO: add anthropic 3.7 converse
+
+  // VERTEX AI - GEMINI (GOOGLE)
+  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.5 Pro Preview",
+    multimodal: true,
+    // reasoning: true, // coming soon according to the vertex docs
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    // reasoning: true,  // coming soon according to the vertex docs
+    parent: "publishers/google/models/gemini-2.5-pro-preview-05-06",
+  },
+  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    experimental: true,
+    // reasoning: true, // coming soon according to the vertex docs
+    deprecated: true,
+    parent: "publishers/google/models/gemini-2.5-pro-preview-03-25",
+  },
+  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+    format: "google",
+    flavor: "chat",
+    displayName: "Gemini 2.5 Flash Preview",
+    multimodal: true,
+    reasoning: true,
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  },
+  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
+    format: "google",
+    flavor: "chat",
+    multimodal: true,
+    experimental: true,
+    deprecated: true,
+    // reasoning: true,  // coming soon according to the vertex docs
+    parent: "publishers/google/models/gemini-2.5-flash-preview-04-17",
+  },
   "publishers/google/models/gemini-2.0-flash": {
     format: "google",
     flavor: "chat",
@@ -2628,6 +2694,8 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     flavor: "chat",
     parent: "publishers/google/models/gemini-1.0-pro",
   },
+
+  // VERTEX AI - CLAUDE (ANTHROPIC)
   "publishers/anthropic/models/claude-3-7-sonnet": {
     format: "anthropic",
     flavor: "chat",
@@ -2635,6 +2703,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     input_cost_per_mil_tokens: 3,
     output_cost_per_mil_tokens: 15,
     multimodal: true,
+    reasoning: true,
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
     format: "anthropic",
@@ -2643,6 +2712,7 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     multimodal: true,
     experimental: true,
+    reasoning: true,
     parent: "publishers/anthropic/models/claude-3-7-sonnet",
   },
   "publishers/anthropic/models/claude-3-5-haiku": {
@@ -2752,36 +2822,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Codestral (25.01)",
     input_cost_per_mil_tokens: 0.3,
     output_cost_per_mil_tokens: 0.9,
-  },
-  // Vertex experimental models.
-  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
-    format: "google",
-    flavor: "chat",
-    displayName: "Gemini 2.5 Pro Preview",
-    multimodal: true,
-    experimental: true,
-  },
-  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
-    format: "google",
-    flavor: "chat",
-    multimodal: true,
-    experimental: true,
-    parent: "publishers/google/models/gemini-2.5-pro-preview-05-06",
-  },
-  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
-    format: "google",
-    flavor: "chat",
-    displayName: "Gemini 2.5 Pro Experimental",
-    multimodal: true,
-    experimental: true,
-  },
-  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
-    format: "google",
-    flavor: "chat",
-    displayName: "Gemini 2.0 Flash Thinking Mode",
-    multimodal: true,
-    experimental: true,
-    parent: "publishers/google/models/gemini-2.0-flash",
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     format: "openai",

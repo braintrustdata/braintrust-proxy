@@ -1,13 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import {
-  ChatCompletion,
-  ChatCompletionChunk,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
   CompletionUsage,
 } from "openai/resources";
-import { getTimestampInSeconds, isEmpty, ModelResponse } from "../util";
+import { getTimestampInSeconds, isEmpty } from "../util";
 import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {
@@ -22,7 +20,13 @@ import {
   MessageCreateParamsBase,
   Base64ImageSource,
 } from "@anthropic-ai/sdk/resources/messages";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import {
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChoice,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionChunkChoiceDelta,
+  OpenAIChatCompletionCreateParams,
+} from "@types";
 
 /*
 Example events:
@@ -112,6 +116,11 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
         text: z.string(),
       }),
       z.object({
+        type: z.literal("thinking"),
+        thinking: z.string(),
+        signature: z.string(),
+      }),
+      z.object({
         type: z.literal("tool_use"),
         id: z.string(),
         name: z.string(),
@@ -166,6 +175,7 @@ export interface AnthropicCompletion {
   role: "assistant";
   content: [
     | { type: "text"; text: string }
+    | { type: "thinking"; thinking: string; signature: string }
     | {
         type: "tool_use";
         id: string;
@@ -196,7 +206,7 @@ export function anthropicEventToOpenAIEvent(
   usage: Partial<CompletionUsage>,
   eventU: unknown,
   isStructuredOutput: boolean,
-): { event: ChatCompletionChunk | null; finished: boolean } {
+): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(
@@ -214,7 +224,11 @@ export function anthropicEventToOpenAIEvent(
   }
 
   let content: string | undefined = undefined;
-  let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
+  let tool_calls:
+    | OpenAIChatCompletionChunkChoiceDelta["tool_calls"]
+    | undefined = undefined;
+
+  let reasoning: OpenAIChatCompletionChunkChoiceDelta["reasoning"] | undefined =
     undefined;
 
   if (event.type === "message_start") {
@@ -265,6 +279,28 @@ export function anthropicEventToOpenAIEvent(
   ) {
     content = idx === 0 ? event.delta.text.trimStart() : event.delta.text;
   } else if (
+    event.type === "content_block_start" &&
+    event.content_block.type === "thinking"
+  ) {
+    reasoning = {
+      id: event.content_block.signature,
+      content: event.content_block.thinking,
+    };
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "thinking_delta"
+  ) {
+    reasoning = {
+      content: event.delta.thinking,
+    };
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "signature_delta"
+  ) {
+    reasoning = {
+      id: event.delta.signature,
+    };
+  } else if (
     event.type === "content_block_delta" &&
     event.delta.type === "input_json_delta"
   ) {
@@ -314,6 +350,11 @@ export function anthropicEventToOpenAIEvent(
       },
       finished: true,
     };
+  } else if (event.type === "ping" || event.type === "content_block_stop") {
+    return {
+      event: null,
+      finished: false,
+    };
   } else {
     console.warn(
       `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,
@@ -333,6 +374,7 @@ export function anthropicEventToOpenAIEvent(
             content,
             tool_calls: isStructuredOutput ? undefined : tool_calls,
             role: "assistant",
+            reasoning,
           },
           finish_reason: null, // Anthropic places this in a separate stream event.
           index: 0,
@@ -350,9 +392,12 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
+  // TODO: will we ever have text -> thinking -> text -> tool_use, thus are we dropping tokens?
   const firstText = completion.content.find((c) => c.type === "text");
+  const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
+
   return {
     id: completion.id,
     choices: [
@@ -390,6 +435,14 @@ export function anthropicCompletionToOpenAICompletion(
                 }
               : undefined,
           refusal: null,
+          ...(firstThinking && {
+            reasoning: [
+              {
+                id: firstThinking.signature,
+                content: firstThinking.thinking,
+              },
+            ],
+          }),
         },
       },
     ],
@@ -407,7 +460,7 @@ export function anthropicCompletionToOpenAICompletion(
 
 function anthropicFinishReason(
   stop_reason: string,
-): ChatCompletion.Choice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] | null {
   return stop_reason === "stop_reason"
     ? "stop"
     : stop_reason === "max_tokens"
@@ -549,7 +602,7 @@ export function openAIToolsToAnthropicTools(
 }
 
 export function anthropicToolChoiceToOpenAIToolChoice(
-  toolChoice: ChatCompletionCreateParamsBase["tool_choice"],
+  toolChoice: OpenAIChatCompletionCreateParams["tool_choice"],
 ): MessageCreateParamsBase["tool_choice"] {
   if (!toolChoice) {
     return undefined;

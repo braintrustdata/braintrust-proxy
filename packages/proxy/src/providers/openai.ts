@@ -3,7 +3,6 @@ import {
   ChatCompletion,
   ChatCompletionMessageParam,
   ChatCompletionContentPart,
-  ChatCompletionContentPartRefusal,
 } from "openai/resources";
 import { base64ToUrl, convertBase64Media, convertMediaToBase64 } from "./util";
 import { parseFilenameFromUrl } from "..";
@@ -91,6 +90,10 @@ export async function normalizeOpenAIMessages(
               await normalizeOpenAIContent(c),
           ),
         );
+      }
+      // not part of the openai spec
+      if ("reasoning" in message) {
+        delete message.reasoning;
       }
       return message;
     }),

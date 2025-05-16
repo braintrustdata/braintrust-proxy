@@ -1,3 +1,4 @@
+import contentDisposition from "content-disposition";
 export interface ModelResponse {
   stream: ReadableStream<Uint8Array> | null;
   response: Response;
@@ -80,82 +81,63 @@ export class ProxyBadRequestError extends Error {
   }
 }
 
-export function parseFilenameFromUrl(url: string): string | undefined {
+export function parseFileMetadataFromUrl(
+  url: string,
+): { filename: string; contentType?: string; url: URL } | undefined {
   try {
     // Handle empty string
     if (!url || url.trim() === "") {
       return undefined;
     }
 
-    // Handle simple filenames without URLs directly
-    if (!url.includes("/") && !url.includes("://")) {
-      try {
-        return decodeURIComponent(url);
-      } catch (e) {
-        return url;
-      }
-    }
-
-    // For URLs without a protocol, add a dummy one to make URL parsing work
-    const normalizedUrl = url.includes("://") ? url : `http://${url}`;
-
     // Use URL to parse complex URLs rather than string splitting
-    const parsedUrl = new URL(normalizedUrl);
-
-    // Extract the pathname
-    const pathname = parsedUrl.pathname;
-
-    // Special case: If hostname contains a file extension and path is empty or just "/"
-    const hostnameMatch = parsedUrl.hostname.match(
-      /\.(pdf|docx?|xlsx?|pptx?|csv|txt|rtf|json|xml|html?|zip|rar|gz|tar|7z)$/i,
-    );
-    if (hostnameMatch && (!pathname || pathname === "/")) {
-      try {
-        return decodeURIComponent(parsedUrl.hostname);
-      } catch (e) {
-        return parsedUrl.hostname;
-      }
-    }
-
-    // If pathname is empty or just "/", there's no filename
-    if (!pathname || pathname === "/") {
+    let parsedUrl: URL | undefined;
+    try {
+      parsedUrl = new URL(url);
+    } catch (e) {
       return undefined;
     }
 
-    // Get the last segment of the path and remove any query parameters
-    const filename = pathname.split("/").pop();
-
-    // Check if filename exists and remove fragment identifier if present
-    if (filename) {
-      try {
-        return decodeURIComponent(filename.split("#")[0]);
-      } catch (e) {
-        return filename.split("#")[0];
-      }
-    }
-
-    return undefined;
-  } catch (error) {
-    // If URL parsing fails (e.g., for invalid URLs), fall back to simple splitting
-    if (!url || url.trim() === "") {
+    // If the URL is not http(s), file cannot be accessed
+    // If pathname is empty or ends with "/", there's no filename to extract
+    if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
+      return undefined;
+    } else if (
+      !parsedUrl.pathname ||
+      parsedUrl.pathname === "/" ||
+      parsedUrl.pathname.endsWith("/")
+    ) {
       return undefined;
     }
 
-    if (!url.includes("/")) {
-      try {
-        return decodeURIComponent(url);
-      } catch (e) {
-        return url;
-      }
+    // Get the last segment of the path
+    let filename = parsedUrl.pathname.split("/").pop();
+    if (!filename) {
+      return undefined;
     }
 
-    const filename = url.split("/").pop()?.split("?")[0]?.split("#")[0];
-    if (!filename) return undefined;
+    let contentType = undefined;
+
+    // Handle case where this is an S3 pre-signed URL
+    if (parsedUrl.searchParams.get("X-Amz-Expires") !== null) {
+      const disposition = contentDisposition.parse(
+        parsedUrl.searchParams.get("response-content-disposition") || "",
+      );
+      filename = disposition.parameters.filename
+        ? decodeURIComponent(disposition.parameters.filename)
+        : filename;
+      contentType =
+        parsedUrl.searchParams.get("response-content-type") ?? undefined;
+    }
 
     try {
-      return decodeURIComponent(filename);
+      filename = decodeURIComponent(filename);
     } catch (e) {
-      return filename;
+      // If the filename is not valid UTF-8, we'll just return the original filename
     }
+
+    return { filename, contentType, url: parsedUrl };
+  } catch (e) {
+    return undefined;
   }
 }

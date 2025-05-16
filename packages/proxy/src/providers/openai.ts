@@ -3,10 +3,9 @@ import {
   ChatCompletion,
   ChatCompletionMessageParam,
   ChatCompletionContentPart,
-  ChatCompletionContentPartRefusal,
 } from "openai/resources";
 import { base64ToUrl, convertBase64Media, convertMediaToBase64 } from "./util";
-import { parseFilenameFromUrl } from "..";
+import { parseFileMetadataFromUrl } from "../util";
 
 function openAIChatCompletionToChatEvent(
   completion: ChatCompletion,
@@ -108,7 +107,13 @@ async function normalizeOpenAIContent(
     case "image_url":
       if (convertBase64Media(content.image_url.url)) {
         return content;
-      } else if (content.image_url.url.endsWith(".pdf")) {
+      }
+
+      const parsed = parseFileMetadataFromUrl(content.image_url.url);
+      if (
+        parsed?.filename?.endsWith(".pdf") ||
+        parsed?.contentType === "application/pdf"
+      ) {
         const base64 = await convertMediaToBase64({
           media: content.image_url.url,
           allowedMediaTypes: ["application/pdf"],
@@ -117,8 +122,7 @@ async function normalizeOpenAIContent(
         return {
           type: "file",
           file: {
-            filename:
-              parseFilenameFromUrl(content.image_url.url) ?? "image.pdf",
+            filename: parsed.filename,
             file_data: base64ToUrl(base64),
           },
         };

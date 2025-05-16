@@ -1,167 +1,206 @@
 import { describe, expect, test } from "vitest";
-import { parseFilenameFromUrl } from "./util";
+import { parseFileMetadataFromUrl } from "./util";
 
-describe("parseFilenameFromUrl", () => {
+describe("parseFileMetadataFromUrl", () => {
   test("handles basic URLs", () => {
-    expect(parseFilenameFromUrl("https://example.com/file.pdf")).toBe(
-      "file.pdf",
-    );
-    expect(parseFilenameFromUrl("http://foo.com/bar/example.pdf")).toBe(
-      "example.pdf",
-    );
-    expect(parseFilenameFromUrl("gs://bucket/file.pdf")).toBe("file.pdf");
+    expect(parseFileMetadataFromUrl("https://example.com/file.pdf")).toEqual({
+      filename: "file.pdf",
+      url: expect.any(URL),
+    });
+    expect(parseFileMetadataFromUrl("http://foo.com/bar/example.pdf")).toEqual({
+      filename: "example.pdf",
+      url: expect.any(URL),
+    });
   });
 
   test("handles URLs with query parameters", () => {
     expect(
-      parseFilenameFromUrl("https://example.com/file.pdf?query=value"),
-    ).toBe("file.pdf");
-    expect(parseFilenameFromUrl("http://foo.com/doc.pdf?v=1&id=123")).toBe(
-      "doc.pdf",
-    );
+      parseFileMetadataFromUrl("https://example.com/file.pdf?query=value"),
+    ).toEqual({ filename: "file.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://site.com/download.pdf?token=abc123"),
-    ).toBe("download.pdf");
+      parseFileMetadataFromUrl("http://foo.com/doc.pdf?v=1&id=123"),
+    ).toEqual({ filename: "doc.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl(
+      parseFileMetadataFromUrl("https://site.com/download.pdf?token=abc123"),
+    ).toEqual({ filename: "download.pdf", url: expect.any(URL) });
+    expect(
+      parseFileMetadataFromUrl(
         "http://example.com/report.pdf?token=example%20with%20spaces",
       ),
-    ).toBe("report.pdf");
+    ).toEqual({ filename: "report.pdf", url: expect.any(URL) });
   });
 
   test("handles filenames with spaces and special characters", () => {
-    expect(parseFilenameFromUrl("https://example.com/my%20file.pdf")).toBe(
-      "my file.pdf",
-    );
-    expect(parseFilenameFromUrl("http://foo.com/report-2023.pdf")).toBe(
-      "report-2023.pdf",
-    );
-    expect(parseFilenameFromUrl("https://site.com/exa%20mple.pdf")).toBe(
-      "exa mple.pdf",
+    expect(
+      parseFileMetadataFromUrl("https://example.com/my%20file.pdf"),
+    ).toEqual({ filename: "my file.pdf", url: expect.any(URL) });
+    expect(parseFileMetadataFromUrl("http://foo.com/report-2023.pdf")).toEqual({
+      filename: "report-2023.pdf",
+      url: expect.any(URL),
+    });
+    expect(parseFileMetadataFromUrl("https://site.com/exa%20mple.pdf")).toEqual(
+      { filename: "exa mple.pdf", url: expect.any(URL) },
     );
     expect(
-      parseFilenameFromUrl("http://example.com/file%20with%20spaces.pdf"),
-    ).toBe("file with spaces.pdf");
+      parseFileMetadataFromUrl("http://example.com/file%20with%20spaces.pdf"),
+    ).toEqual({ filename: "file with spaces.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl(
+      parseFileMetadataFromUrl(
         "https://example.com/file-name_with.special-chars.pdf",
       ),
-    ).toBe("file-name_with.special-chars.pdf");
+    ).toEqual({
+      filename: "file-name_with.special-chars.pdf",
+      url: expect.any(URL),
+    });
     expect(
-      parseFilenameFromUrl("http://site.org/file%25with%25percent.pdf"),
-    ).toBe("file%with%percent.pdf");
-    expect(parseFilenameFromUrl("https://example.com/file+with+plus.pdf")).toBe(
-      "file+with+plus.pdf",
-    );
+      parseFileMetadataFromUrl("http://site.org/file%25with%25percent.pdf"),
+    ).toEqual({ filename: "file%with%percent.pdf", url: expect.any(URL) });
+    expect(
+      parseFileMetadataFromUrl("https://example.com/file+with+plus.pdf"),
+    ).toEqual({ filename: "file+with+plus.pdf", url: expect.any(URL) });
   });
 
   test("handles pathless URLs", () => {
-    expect(parseFilenameFromUrl("https://example.pdf")).toBe("example.pdf");
-    expect(parseFilenameFromUrl("file.pdf")).toBe("file.pdf");
-    expect(parseFilenameFromUrl("folder/file.pdf")).toBe("file.pdf");
+    expect(parseFileMetadataFromUrl("https://example.pdf")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("file.pdf")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("folder/file.pdf")).toBeUndefined();
   });
 
   test("handles URLs with fragments", () => {
     expect(
-      parseFilenameFromUrl("https://example.com/document.pdf#page=1"),
-    ).toBe("document.pdf");
-    expect(parseFilenameFromUrl("http://site.com/resume.pdf#section")).toBe(
-      "resume.pdf",
-    );
+      parseFileMetadataFromUrl("https://example.com/document.pdf#page=1"),
+    ).toEqual({ filename: "document.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://example.com/file.pdf#fragment=with=equals"),
-    ).toBe("file.pdf");
+      parseFileMetadataFromUrl("http://site.com/resume.pdf#section"),
+    ).toEqual({ filename: "resume.pdf", url: expect.any(URL) });
+    expect(
+      parseFileMetadataFromUrl(
+        "https://example.com/file.pdf#fragment=with=equals",
+      ),
+    ).toEqual({ filename: "file.pdf", url: expect.any(URL) });
   });
 
   test("handles URLs with both query parameters and fragments", () => {
     expect(
-      parseFilenameFromUrl("https://example.com/report.pdf?version=2#page=5"),
-    ).toBe("report.pdf");
+      parseFileMetadataFromUrl(
+        "https://example.com/report.pdf?version=2#page=5",
+      ),
+    ).toEqual({ filename: "report.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl(
+      parseFileMetadataFromUrl(
         "http://site.org/document.pdf?dl=true#section=summary",
       ),
-    ).toBe("document.pdf");
+    ).toEqual({ filename: "document.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://example.com/file.pdf?a=1&b=2#c=3&d=4"),
-    ).toBe("file.pdf");
+      parseFileMetadataFromUrl("https://example.com/file.pdf?a=1&b=2#c=3&d=4"),
+    ).toEqual({ filename: "file.pdf", url: expect.any(URL) });
   });
 
-  test("handles non-standard URL formats", () => {
+  test("returns undefined for URLs with uninferrable file names", () => {
     expect(
-      parseFilenameFromUrl("http://foo.com/bar/?file=example.pdf"),
+      parseFileMetadataFromUrl("http://foo.com/bar/?file=example.pdf"),
     ).toBeUndefined();
-    expect(parseFilenameFromUrl("ftp://files.org/documents/sample.pdf")).toBe(
-      "sample.pdf",
-    );
-    expect(parseFilenameFromUrl("s3://my-bucket/backup/archive.pdf")).toBe(
-      "archive.pdf",
-    );
+    expect(parseFileMetadataFromUrl("http://foo.com/bar/")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("http://foo.com")).toBeUndefined();
+  });
+
+  test("returns undefined for non-standard URL formats", () => {
     expect(
-      parseFilenameFromUrl("file:///C:/Users/name/Documents/file.pdf"),
-    ).toBe("file.pdf");
+      parseFileMetadataFromUrl("http://foo.com/bar/?file=example.pdf"),
+    ).toBeUndefined();
+    expect(parseFileMetadataFromUrl("gs://bucket/file.pdf")).toBeUndefined();
     expect(
-      parseFilenameFromUrl(
+      parseFileMetadataFromUrl("ftp://files.org/documents/sample.pdf"),
+    ).toBeUndefined();
+    expect(
+      parseFileMetadataFromUrl("s3://my-bucket/backup/archive.pdf"),
+    ).toBeUndefined();
+    expect(
+      parseFileMetadataFromUrl("file:///C:/Users/name/Documents/file.pdf"),
+    ).toBeUndefined();
+    expect(
+      parseFileMetadataFromUrl(
         "sftp://username:password@server.com/path/to/file.pdf",
       ),
-    ).toBe("file.pdf");
+    ).toBeUndefined();
   });
 
   test("returns undefined for URLs without filename", () => {
-    expect(parseFilenameFromUrl("https://example.com/")).toBeUndefined();
-    expect(parseFilenameFromUrl("http://site.org")).toBeUndefined();
-    expect(parseFilenameFromUrl("")).toBeUndefined();
-    expect(parseFilenameFromUrl("   ")).toBeUndefined();
-    expect(parseFilenameFromUrl(null as unknown as string)).toBeUndefined();
+    expect(parseFileMetadataFromUrl("https://example.com/")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("http://site.org")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("")).toBeUndefined();
+    expect(parseFileMetadataFromUrl("   ")).toBeUndefined();
+    expect(parseFileMetadataFromUrl(null as unknown as string)).toBeUndefined();
     expect(
-      parseFilenameFromUrl(undefined as unknown as string),
+      parseFileMetadataFromUrl(undefined as unknown as string),
     ).toBeUndefined();
   });
 
   test("handles different file extensions", () => {
-    expect(parseFilenameFromUrl("https://example.com/document.docx")).toBe(
-      "document.docx",
+    expect(
+      parseFileMetadataFromUrl("https://example.com/document.docx"),
+    ).toEqual({ filename: "document.docx", url: expect.any(URL) });
+    expect(
+      parseFileMetadataFromUrl("https://example.com/spreadsheet.xlsx"),
+    ).toEqual({ filename: "spreadsheet.xlsx", url: expect.any(URL) });
+    expect(
+      parseFileMetadataFromUrl("https://example.com/presentation.pptx"),
+    ).toEqual({ filename: "presentation.pptx", url: expect.any(URL) });
+    expect(parseFileMetadataFromUrl("https://example.com/archive.zip")).toEqual(
+      { filename: "archive.zip", url: expect.any(URL) },
     );
-    expect(parseFilenameFromUrl("https://example.com/spreadsheet.xlsx")).toBe(
-      "spreadsheet.xlsx",
-    );
-    expect(parseFilenameFromUrl("https://example.com/presentation.pptx")).toBe(
-      "presentation.pptx",
-    );
-    expect(parseFilenameFromUrl("https://example.com/archive.zip")).toBe(
-      "archive.zip",
-    );
-    expect(parseFilenameFromUrl("https://example.com/image.jpg")).toBe(
-      "image.jpg",
-    );
-    expect(parseFilenameFromUrl("https://example.com/video.mp4")).toBe(
-      "video.mp4",
-    );
-    expect(parseFilenameFromUrl("https://example.com/data.json")).toBe(
-      "data.json",
-    );
-    expect(parseFilenameFromUrl("https://example.com/page.html")).toBe(
-      "page.html",
-    );
+    expect(parseFileMetadataFromUrl("https://example.com/image.jpg")).toEqual({
+      filename: "image.jpg",
+      url: expect.any(URL),
+    });
+    expect(parseFileMetadataFromUrl("https://example.com/video.mp4")).toEqual({
+      filename: "video.mp4",
+      url: expect.any(URL),
+    });
+    expect(parseFileMetadataFromUrl("https://example.com/data.json")).toEqual({
+      filename: "data.json",
+      url: expect.any(URL),
+    });
+    expect(parseFileMetadataFromUrl("https://example.com/page.html")).toEqual({
+      filename: "page.html",
+      url: expect.any(URL),
+    });
   });
 
   test("handles complex URL encodings", () => {
     expect(
-      parseFilenameFromUrl(
+      parseFileMetadataFromUrl(
         "https://example.com/file%20with%20spaces%20and%20%23%20symbols.pdf",
       ),
-    ).toBe("file with spaces and # symbols.pdf");
+    ).toEqual({
+      filename: "file with spaces and # symbols.pdf",
+      url: expect.any(URL),
+    });
     expect(
-      parseFilenameFromUrl("https://example.com/%E6%96%87%E4%BB%B6.pdf"),
-    ).toBe("文件.pdf");
+      parseFileMetadataFromUrl("https://example.com/%E6%96%87%E4%BB%B6.pdf"),
+    ).toEqual({ filename: "文件.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://example.com/r%C3%A9sum%C3%A9.pdf"),
-    ).toBe("résumé.pdf");
+      parseFileMetadataFromUrl("https://example.com/r%C3%A9sum%C3%A9.pdf"),
+    ).toEqual({ filename: "résumé.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://example.com/file%2Bwith%2Bplus.pdf"),
-    ).toBe("file+with+plus.pdf");
+      parseFileMetadataFromUrl("https://example.com/file%2Bwith%2Bplus.pdf"),
+    ).toEqual({ filename: "file+with+plus.pdf", url: expect.any(URL) });
     expect(
-      parseFilenameFromUrl("https://example.com/file%3Fwith%3Fquestion.pdf"),
-    ).toBe("file?with?question.pdf");
+      parseFileMetadataFromUrl(
+        "https://example.com/file%3Fwith%3Fquestion.pdf",
+      ),
+    ).toEqual({ filename: "file?with?question.pdf", url: expect.any(URL) });
+  });
+
+  test("handles S3 pre-signed URLs", () => {
+    expect(
+      parseFileMetadataFromUrl(
+        "https://somes3subdomain.s3.amazonaws.com/files/e1ebccc2-4006-434e-a739-cba3b3fd85dd?X-Amz-Expires=86400&response-content-disposition=attachment%3B%20filename%3D%22test.pdf%22&response-content-type=application%2Fpdf&x-id=GetObject",
+      ),
+    ).toEqual({
+      filename: "test.pdf",
+      contentType: "application/pdf",
+      url: expect.any(URL),
+    });
   });
 });

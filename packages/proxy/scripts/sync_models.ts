@@ -486,6 +486,10 @@ async function checkPricesCommand(argv: any) {
       ) => {
         if (typeof remoteCostPerToken === "number") {
           const remoteCostPerMil = remoteCostPerToken * 1_000_000;
+          const roundedRemoteCostPerMil = parseFloat(
+            remoteCostPerMil.toFixed(8),
+          );
+
           if (
             localCost === null ||
             typeof localCost !== "number" ||
@@ -499,11 +503,12 @@ async function checkPricesCommand(argv: any) {
             }
             if (!argv.write)
               console.log(
-                `  ${costType} Cost Mismatch/Missing: Local: ${localCost ?? "Not available"}, Remote (calc): ${remoteCostPerMil} (from ${remoteCostPerToken}/token)`,
+                `  ${costType} Cost Mismatch/Missing: Local: ${localCost ?? "Not available"}, Remote (calc): ${remoteCostPerMil} (would write: ${roundedRemoteCostPerMil}) (from ${remoteCostPerToken}/token)`,
               );
             discrepanciesFound++;
             if (argv.write) {
-              (modelInUpdatedList as any)[localFieldName] = remoteCostPerMil;
+              (modelInUpdatedList as any)[localFieldName] =
+                roundedRemoteCostPerMil;
               madeChanges = true;
               if (!modelReportedThisIteration) {
                 console.log(
@@ -512,7 +517,7 @@ async function checkPricesCommand(argv: any) {
                 modelReportedThisIteration = true;
               }
               console.log(
-                `  [WRITE] Updated ${costType} Cost to: ${remoteCostPerMil}`,
+                `  [WRITE] Updated ${costType} Cost to: ${roundedRemoteCostPerMil}`,
               );
             }
           }
@@ -558,12 +563,40 @@ async function checkPricesCommand(argv: any) {
 
     if (argv.write) {
       if (madeChanges) {
+        // Reorder keys according to ModelSchema before writing
+        const orderedModelsToWrite: LocalModelList = {};
+        const schemaKeys = Object.keys(ModelSchema.shape) as Array<
+          keyof ModelSpec
+        >;
+
+        for (const modelName in updatedLocalModels) {
+          const originalModel = updatedLocalModels[modelName];
+          const orderedModel: Partial<ModelSpec> = {};
+
+          // Add schema keys in their defined order
+          for (const key of schemaKeys) {
+            if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+              (orderedModel as any)[key] = originalModel[key];
+            }
+          }
+
+          // Add any other keys not in ModelSchema (e.g., from passthrough or custom additions)
+          for (const key in originalModel) {
+            if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+              if (!schemaKeys.includes(key as keyof ModelSpec)) {
+                (orderedModel as any)[key] = (originalModel as any)[key];
+              }
+            }
+          }
+          orderedModelsToWrite[modelName] = orderedModel as ModelSpec;
+        }
+
         await fs.promises.writeFile(
           LOCAL_MODEL_LIST_PATH,
-          JSON.stringify(updatedLocalModels, null, 2),
+          JSON.stringify(orderedModelsToWrite, null, 2), // Use the reordered models
         );
         console.log(
-          `\nLocal model_list.json has been updated with new pricing information.`,
+          `\nLocal model_list.json has been updated with new pricing information and keys ordered according to schema.`, // Updated message
         );
       } else {
         console.log(

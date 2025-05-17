@@ -4,6 +4,7 @@ import path from "path";
 import { z } from "zod";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { ModelSchema, ModelSpec } from "../schema/models";
 
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
@@ -14,25 +15,26 @@ const searchContextCostPerQuerySchema = z
   })
   .optional();
 
-const modelDetailSchema = z
+// Schema for LiteLLM remote model details
+const liteLLMModelDetailSchema = z
   .object({
     max_tokens: z.union([z.number(), z.string()]).optional(), // LEGACY: Can be number or string
     max_input_tokens: z
       .preprocess(
         (val) => (typeof val === "string" ? parseInt(val, 10) : val),
-        z.number().optional(), // Ensure optional is chained after number
+        z.number().optional(),
       )
       .optional(),
     max_output_tokens: z
       .preprocess(
         (val) => (typeof val === "string" ? parseInt(val, 10) : val),
-        z.number().optional(), // Ensure optional is chained after number
+        z.number().optional(),
       )
       .optional(),
     input_cost_per_token: z.number().optional(),
     output_cost_per_token: z.number().optional(),
-    input_cost_per_mil_tokens: z.number().optional(), // Also in local, for comparison
-    output_cost_per_mil_tokens: z.number().optional(), // Also in local, for comparison
+    input_cost_per_mil_tokens: z.number().optional(), // From LiteLLM if available
+    output_cost_per_mil_tokens: z.number().optional(), // From LiteLLM if available
     output_cost_per_reasoning_token: z.number().optional(),
     cache_creation_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_write
     cache_read_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_read
@@ -62,21 +64,15 @@ const modelDetailSchema = z
     supports_web_search: z.boolean().optional(),
     search_context_cost_per_query: searchContextCostPerQuerySchema,
     deprecation_date: z.string().optional(), // YYYY-MM-DD
-    format: z.string().optional(),
-    flavor: z.string().optional(),
-    multimodal: z.boolean().optional(),
-    displayName: z.string().optional(),
-    parent: z.string().optional(),
-    experimental: z.boolean().optional(),
-    deprecated: z.boolean().optional(),
-    o1_like: z.boolean().optional(),
   })
   .passthrough();
 
-const modelListSchema = z.record(modelDetailSchema);
+const liteLLMModelListSchema = z.record(liteLLMModelDetailSchema);
 
-type ModelDetail = z.infer<typeof modelDetailSchema>;
-type ModelList = z.infer<typeof modelListSchema>;
+type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
+type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
+type LocalModelDetail = ModelSpec; // Use ModelSpec from schema/models.ts
+type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schema/models.ts
 
 const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
@@ -85,7 +81,7 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
-async function fetchRemoteModels(url: string): Promise<ModelList> {
+async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
   return new Promise((resolve, reject) => {
     https
       .get(url, (res) => {
@@ -103,7 +99,7 @@ async function fetchRemoteModels(url: string): Promise<ModelList> {
             ) {
               delete jsonData.sample_spec;
             }
-            const parsedModels = modelListSchema.parse(jsonData);
+            const parsedModels = liteLLMModelListSchema.parse(jsonData);
             resolve(parsedModels);
           } catch (error) {
             if (error instanceof z.ZodError) {
@@ -132,15 +128,12 @@ async function fetchRemoteModels(url: string): Promise<ModelList> {
   });
 }
 
-async function readLocalModels(filePath: string): Promise<ModelList> {
+async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
-    // For local models, we can be a bit more lenient or use a slightly different schema
-    // For now, we parse and then can validate against a local-specific Zod schema if needed.
     const localData = JSON.parse(fileContent);
-    // Example: Validate local data with a Zod schema (can be same or different)
-    // return modelListSchema.parse(localData);
-    return localData as ModelList; // Assuming it fits ModelList for now
+    // Validate local data with the imported ModelSchema
+    return z.record(ModelSchema).parse(localData);
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error(
@@ -194,7 +187,7 @@ async function findMissingCommand(argv: any) {
 
     const localModelNames = new Set(Object.keys(localModels));
     const missingInLocal: string[] = [];
-    const consideredRemoteModels: ModelList = {};
+    const consideredRemoteModels: LiteLLMModelList = {};
 
     for (const remoteModelName in remoteModels) {
       const modelDetail = remoteModels[remoteModelName];
@@ -384,6 +377,11 @@ async function checkPricesCommand(argv: any) {
     const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
+    const updatedLocalModels = JSON.parse(
+      JSON.stringify(localModels),
+    ) as LocalModelList;
+    let madeChanges = false;
+
     console.log("\n--- Price Discrepancy Report ---");
     if (argv.provider) {
       console.log(`(Filtered for provider: ${argv.provider})`);
@@ -392,9 +390,9 @@ async function checkPricesCommand(argv: any) {
 
     const modelsToCompare: Array<{
       localModelName: string;
-      localModelDetail: ModelDetail;
-      remoteModelName: string; // Original remote name
-      remoteModelDetail: ModelDetail;
+      localModelDetail: LocalModelDetail;
+      remoteModelName: string;
+      remoteModelDetail: LiteLLMModelDetail;
     }> = [];
 
     if (argv.provider) {
@@ -428,12 +426,10 @@ async function checkPricesCommand(argv: any) {
         }
       }
     } else {
-      // If no provider filter, check all local models against remote ones
       for (const localModelName in localModels) {
         const localModelDetail = localModels[localModelName];
-        let foundRemoteDetail: ModelDetail | undefined = undefined;
-        let originalRemoteModelName: string | undefined = undefined;
-
+        let foundRemoteDetail: LiteLLMModelDetail | undefined = undefined;
+        let originalRemoteModelNameForLoop: string | undefined = undefined;
         for (const rName in remoteModels) {
           const rDetail = remoteModels[rName];
           const translatedName = translateLiteLLMToBraintrust(
@@ -442,15 +438,15 @@ async function checkPricesCommand(argv: any) {
           );
           if (translatedName === localModelName) {
             foundRemoteDetail = rDetail;
-            originalRemoteModelName = rName;
+            originalRemoteModelNameForLoop = rName;
             break;
           }
         }
-        if (foundRemoteDetail && originalRemoteModelName) {
+        if (foundRemoteDetail && originalRemoteModelNameForLoop) {
           modelsToCompare.push({
             localModelName: localModelName,
             localModelDetail: localModelDetail,
-            remoteModelName: originalRemoteModelName,
+            remoteModelName: originalRemoteModelNameForLoop,
             remoteModelDetail: foundRemoteDetail,
           });
         }
@@ -464,13 +460,14 @@ async function checkPricesCommand(argv: any) {
         remoteModelName: originalRemoteModelName,
         remoteModelDetail,
       } = item;
+      const modelInUpdatedList = updatedLocalModels[localModelName];
 
       const localInputCost = localModelDetail.input_cost_per_mil_tokens;
       const localOutputCost = localModelDetail.output_cost_per_mil_tokens;
-      const localCacheReadCost = (localModelDetail as any)
-        .input_cache_read_cost_per_mil_tokens as number | undefined;
-      const localCacheWriteCost = (localModelDetail as any)
-        .input_cache_write_cost_per_mil_tokens as number | undefined;
+      const localCacheReadCost =
+        localModelDetail.input_cache_read_cost_per_mil_tokens;
+      const localCacheWriteCost =
+        localModelDetail.input_cache_write_cost_per_mil_tokens;
 
       const remoteInputCostPerToken = remoteModelDetail.input_cost_per_token;
       const remoteOutputCostPerToken = remoteModelDetail.output_cost_per_token;
@@ -479,211 +476,110 @@ async function checkPricesCommand(argv: any) {
       const remoteCacheWriteCostPerToken =
         remoteModelDetail.cache_creation_input_token_cost;
 
-      let modelReported = false;
+      let modelReportedThisIteration = false;
 
-      // Check input cost
-      if (
-        typeof localInputCost === "number" &&
-        typeof remoteInputCostPerToken === "number"
-      ) {
-        const remoteInputCostPerMil = remoteInputCostPerToken * 1_000_000;
-        if (Math.abs(localInputCost - remoteInputCostPerMil) > 1e-9) {
-          // Compare with tolerance
-          if (!modelReported) {
+      const checkAndUpdateCost = (
+        costType: string,
+        localCost: number | undefined | null,
+        remoteCostPerToken: number | undefined,
+        localFieldName: keyof ModelSpec,
+      ) => {
+        if (typeof remoteCostPerToken === "number") {
+          const remoteCostPerMil = remoteCostPerToken * 1_000_000;
+          if (
+            localCost === null ||
+            typeof localCost !== "number" ||
+            Math.abs(localCost - remoteCostPerMil) > 1e-9
+          ) {
+            if (!argv.write && !modelReportedThisIteration) {
+              console.log(
+                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+              );
+              modelReportedThisIteration = true;
+            }
+            if (!argv.write)
+              console.log(
+                `  ${costType} Cost Mismatch/Missing: Local: ${localCost ?? "Not available"}, Remote (calc): ${remoteCostPerMil} (from ${remoteCostPerToken}/token)`,
+              );
+            discrepanciesFound++;
+            if (argv.write) {
+              (modelInUpdatedList as any)[localFieldName] = remoteCostPerMil;
+              madeChanges = true;
+              if (!modelReportedThisIteration) {
+                console.log(
+                  `\n[WRITE] Updating prices for Model: ${localModelName} (Remote: ${originalRemoteModelName})`,
+                );
+                modelReportedThisIteration = true;
+              }
+              console.log(
+                `  [WRITE] Updated ${costType} Cost to: ${remoteCostPerMil}`,
+              );
+            }
+          }
+        } else if (typeof localCost === "number") {
+          if (!argv.write && !modelReportedThisIteration) {
             console.log(
               `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
             );
-            modelReported = true;
+            modelReportedThisIteration = true;
           }
-          console.log(
-            `  Input Cost Mismatch: Local: ${localInputCost}, Remote (calculated): ${remoteInputCostPerMil} (from ${remoteInputCostPerToken}/token)`,
-          );
-          discrepanciesFound++;
-        }
-      } else if (
-        typeof localInputCost === "number" &&
-        typeof remoteInputCostPerToken !== "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Input Cost: Local: ${localInputCost}, Remote: Not available`,
-        );
-        discrepanciesFound++;
-      } else if (
-        typeof localInputCost !== "number" &&
-        typeof remoteInputCostPerToken === "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Input Cost: Local: Not available, Remote (calculated): ${remoteInputCostPerToken * 1_000_000}`,
-        );
-        discrepanciesFound++;
-      }
-
-      // Check output cost
-      if (
-        typeof localOutputCost === "number" &&
-        typeof remoteOutputCostPerToken === "number"
-      ) {
-        const remoteOutputCostPerMil = remoteOutputCostPerToken * 1_000_000;
-        if (Math.abs(localOutputCost - remoteOutputCostPerMil) > 1e-9) {
-          // Compare with tolerance
-          if (!modelReported) {
+          if (!argv.write)
             console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+              `  ${costType} Cost: Local: ${localCost}, Remote: Not available`,
             );
-            modelReported = true;
-          }
-          console.log(
-            `  Output Cost Mismatch: Local: ${localOutputCost}, Remote (calculated): ${remoteOutputCostPerMil} (from ${remoteOutputCostPerToken}/token)`,
-          );
-          discrepanciesFound++;
         }
-      } else if (
-        typeof localOutputCost === "number" &&
-        typeof remoteOutputCostPerToken !== "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Output Cost: Local: ${localOutputCost}, Remote: Not available`,
-        );
-        discrepanciesFound++;
-      } else if (
-        typeof localOutputCost !== "number" &&
-        typeof remoteOutputCostPerToken === "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Output Cost: Local: Not available, Remote (calculated): ${remoteOutputCostPerToken * 1_000_000}`,
-        );
-        discrepanciesFound++;
-      }
+      };
 
-      // Check cache read cost
-      if (
-        typeof localCacheReadCost === "number" &&
-        typeof remoteCacheReadCostPerToken === "number"
-      ) {
-        const remoteCacheReadCostPerMil =
-          remoteCacheReadCostPerToken * 1_000_000;
-        if (Math.abs(localCacheReadCost - remoteCacheReadCostPerMil) > 1e-9) {
-          if (!modelReported) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReported = true;
-          }
-          console.log(
-            `  Cache Read Cost Mismatch: Local: ${localCacheReadCost}, Remote (calc): ${remoteCacheReadCostPerMil} (from ${remoteCacheReadCostPerToken}/token)`,
-          );
-          discrepanciesFound++;
-        }
-      } else if (
-        typeof localCacheReadCost === "number" &&
-        typeof remoteCacheReadCostPerToken !== "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Cache Read Cost: Local: ${localCacheReadCost}, Remote: Not available`,
-        );
-        discrepanciesFound++;
-      } else if (
-        typeof localCacheReadCost !== "number" &&
-        typeof remoteCacheReadCostPerToken === "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Cache Read Cost: Local: Not available, Remote (calc): ${remoteCacheReadCostPerToken * 1_000_000}`,
-        );
-        discrepanciesFound++;
-      }
-
-      // Check cache write cost
-      if (
-        typeof localCacheWriteCost === "number" &&
-        typeof remoteCacheWriteCostPerToken === "number"
-      ) {
-        const remoteCacheWriteCostPerMil =
-          remoteCacheWriteCostPerToken * 1_000_000;
-        if (Math.abs(localCacheWriteCost - remoteCacheWriteCostPerMil) > 1e-9) {
-          if (!modelReported) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReported = true;
-          }
-          console.log(
-            `  Cache Write Cost Mismatch: Local: ${localCacheWriteCost}, Remote (calc): ${remoteCacheWriteCostPerMil} (from ${remoteCacheWriteCostPerToken}/token)`,
-          );
-          discrepanciesFound++;
-        }
-      } else if (
-        typeof localCacheWriteCost === "number" &&
-        typeof remoteCacheWriteCostPerToken !== "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Cache Write Cost: Local: ${localCacheWriteCost}, Remote: Not available`,
-        );
-        discrepanciesFound++;
-      } else if (
-        typeof localCacheWriteCost !== "number" &&
-        typeof remoteCacheWriteCostPerToken === "number"
-      ) {
-        if (!modelReported) {
-          console.log(
-            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-          );
-          modelReported = true;
-        }
-        console.log(
-          `  Cache Write Cost: Local: Not available, Remote (calc): ${remoteCacheWriteCostPerToken * 1_000_000}`,
-        );
-        discrepanciesFound++;
-      }
+      checkAndUpdateCost(
+        "Input",
+        localInputCost,
+        remoteInputCostPerToken,
+        "input_cost_per_mil_tokens",
+      );
+      checkAndUpdateCost(
+        "Output",
+        localOutputCost,
+        remoteOutputCostPerToken,
+        "output_cost_per_mil_tokens",
+      );
+      checkAndUpdateCost(
+        "Cache Read",
+        localCacheReadCost,
+        remoteCacheReadCostPerToken,
+        "input_cache_read_cost_per_mil_tokens",
+      );
+      checkAndUpdateCost(
+        "Cache Write",
+        localCacheWriteCost,
+        remoteCacheWriteCostPerToken,
+        "input_cache_write_cost_per_mil_tokens",
+      );
     }
 
-    if (discrepanciesFound === 0) {
-      console.log(
-        "\nNo pricing discrepancies found for models present in both lists.",
-      );
+    if (argv.write) {
+      if (madeChanges) {
+        await fs.promises.writeFile(
+          LOCAL_MODEL_LIST_PATH,
+          JSON.stringify(updatedLocalModels, null, 2),
+        );
+        console.log(
+          `\nLocal model_list.json has been updated with new pricing information.`,
+        );
+      } else {
+        console.log(
+          "\nNo pricing updates were necessary for local model_list.json.",
+        );
+      }
     } else {
-      console.log(`\nFound ${discrepanciesFound} pricing discrepancies.`);
+      if (discrepanciesFound === 0) {
+        console.log(
+          "\nNo pricing discrepancies found for models present in both lists (or matching filter).",
+        );
+      } else {
+        console.log(
+          `\nFound ${discrepanciesFound} pricing discrepancies/missing local prices that could be updated from remote.`,
+        );
+      }
     }
   } catch (error) {
     console.error("Error during check-prices command:", error);
@@ -718,13 +614,19 @@ async function main() {
       "check-prices",
       "Check for pricing discrepancies between local and remote models",
       (y) => {
-        // Add options for check-prices if needed in the future, e.g., --provider
-        return y.option("provider", {
-          alias: "p",
-          type: "string",
-          description:
-            "Filter models by a specific provider for price checking",
-        });
+        return y
+          .option("provider", {
+            alias: "p",
+            type: "string",
+            description:
+              "Filter models by a specific provider for price checking",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write updated pricing information back to the local model_list.json file",
+            default: false,
+          });
       },
       async (argv) => {
         await checkPricesCommand(argv);

@@ -192,8 +192,7 @@ function updateUsage(
   openai: Partial<CompletionUsage>,
 ) {
   if (!isEmpty(anthropic.input_tokens)) {
-    // OpenAI's convention is to accumulate all input tokens, including
-    // cached tokens.
+    // OpenAI's convention is to accumulate all input tokens, including cached tokens.
     openai.prompt_tokens =
       anthropic.input_tokens +
       (anthropic.cache_creation_input_tokens ?? 0) +
@@ -217,8 +216,6 @@ function updateUsage(
   }
   openai.total_tokens =
     (openai.prompt_tokens ?? 0) + (openai.completion_tokens ?? 0);
-
-  console.log("RETURNING USAGE", openai);
 }
 
 export function anthropicEventToOpenAIEvent(
@@ -314,7 +311,6 @@ export function anthropicEventToOpenAIEvent(
     if (event.usage) {
       updateUsage(event.usage, usage);
     }
-    console.log("STREAMING USAGE", usage);
     return {
       event: {
         id: uuidv4(),

@@ -2067,11 +2067,9 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  for (let i = 0; i < oaiMessages.length; i++) {
-    const m = oaiMessages[i];
+  for (const m of oaiMessages as Message[]) {
     let role: MessageRole = m.role;
-    let content = await openAIContentToAnthropicContent(m.content);
-
+    let content: any = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
       continue;

@@ -34,6 +34,8 @@ const modelDetailSchema = z
     input_cost_per_mil_tokens: z.number().optional(), // Also in local, for comparison
     output_cost_per_mil_tokens: z.number().optional(), // Also in local, for comparison
     output_cost_per_reasoning_token: z.number().optional(),
+    cache_creation_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_write
+    cache_read_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_read
     litellm_provider: z.string().optional(),
     mode: z
       .enum([
@@ -196,7 +198,6 @@ async function findMissingCommand(argv: any) {
 
     for (const remoteModelName in remoteModels) {
       const modelDetail = remoteModels[remoteModelName];
-      const currentProvider = modelDetail.litellm_provider;
 
       if (argv.provider) {
         const lowerArgProvider = argv.provider.toLowerCase();
@@ -466,9 +467,17 @@ async function checkPricesCommand(argv: any) {
 
       const localInputCost = localModelDetail.input_cost_per_mil_tokens;
       const localOutputCost = localModelDetail.output_cost_per_mil_tokens;
+      const localCacheReadCost = (localModelDetail as any)
+        .input_cache_read_cost_per_mil_tokens as number | undefined;
+      const localCacheWriteCost = (localModelDetail as any)
+        .input_cache_write_cost_per_mil_tokens as number | undefined;
 
       const remoteInputCostPerToken = remoteModelDetail.input_cost_per_token;
       const remoteOutputCostPerToken = remoteModelDetail.output_cost_per_token;
+      const remoteCacheReadCostPerToken =
+        remoteModelDetail.cache_read_input_token_cost;
+      const remoteCacheWriteCostPerToken =
+        remoteModelDetail.cache_creation_input_token_cost;
 
       let modelReported = false;
 
@@ -566,6 +575,104 @@ async function checkPricesCommand(argv: any) {
         }
         console.log(
           `  Output Cost: Local: Not available, Remote (calculated): ${remoteOutputCostPerToken * 1_000_000}`,
+        );
+        discrepanciesFound++;
+      }
+
+      // Check cache read cost
+      if (
+        typeof localCacheReadCost === "number" &&
+        typeof remoteCacheReadCostPerToken === "number"
+      ) {
+        const remoteCacheReadCostPerMil =
+          remoteCacheReadCostPerToken * 1_000_000;
+        if (Math.abs(localCacheReadCost - remoteCacheReadCostPerMil) > 1e-9) {
+          if (!modelReported) {
+            console.log(
+              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+            );
+            modelReported = true;
+          }
+          console.log(
+            `  Cache Read Cost Mismatch: Local: ${localCacheReadCost}, Remote (calc): ${remoteCacheReadCostPerMil} (from ${remoteCacheReadCostPerToken}/token)`,
+          );
+          discrepanciesFound++;
+        }
+      } else if (
+        typeof localCacheReadCost === "number" &&
+        typeof remoteCacheReadCostPerToken !== "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Cache Read Cost: Local: ${localCacheReadCost}, Remote: Not available`,
+        );
+        discrepanciesFound++;
+      } else if (
+        typeof localCacheReadCost !== "number" &&
+        typeof remoteCacheReadCostPerToken === "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Cache Read Cost: Local: Not available, Remote (calc): ${remoteCacheReadCostPerToken * 1_000_000}`,
+        );
+        discrepanciesFound++;
+      }
+
+      // Check cache write cost
+      if (
+        typeof localCacheWriteCost === "number" &&
+        typeof remoteCacheWriteCostPerToken === "number"
+      ) {
+        const remoteCacheWriteCostPerMil =
+          remoteCacheWriteCostPerToken * 1_000_000;
+        if (Math.abs(localCacheWriteCost - remoteCacheWriteCostPerMil) > 1e-9) {
+          if (!modelReported) {
+            console.log(
+              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+            );
+            modelReported = true;
+          }
+          console.log(
+            `  Cache Write Cost Mismatch: Local: ${localCacheWriteCost}, Remote (calc): ${remoteCacheWriteCostPerMil} (from ${remoteCacheWriteCostPerToken}/token)`,
+          );
+          discrepanciesFound++;
+        }
+      } else if (
+        typeof localCacheWriteCost === "number" &&
+        typeof remoteCacheWriteCostPerToken !== "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Cache Write Cost: Local: ${localCacheWriteCost}, Remote: Not available`,
+        );
+        discrepanciesFound++;
+      } else if (
+        typeof localCacheWriteCost !== "number" &&
+        typeof remoteCacheWriteCostPerToken === "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Cache Write Cost: Local: Not available, Remote (calc): ${remoteCacheWriteCostPerToken * 1_000_000}`,
         );
         discrepanciesFound++;
       }

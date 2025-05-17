@@ -43,6 +43,8 @@ export const ModelSchema = z.object({
   output_cost_per_token: z.number().nullish(),
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_read_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_cost_per_mil_tokens: z.number().nullish(),
   displayName: z.string().nullish(),
   o1_like: z.boolean().nullish(),
   experimental: z.boolean().nullish(),

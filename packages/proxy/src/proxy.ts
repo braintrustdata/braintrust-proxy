@@ -47,7 +47,11 @@ import {
   openAIMessagesToGoogleMessages,
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
-import { MessageRole, responseFormatSchema } from "@braintrust/core/typespecs";
+import {
+  Message,
+  MessageRole,
+  responseFormatSchema,
+} from "@braintrust/core/typespecs";
 import { _urljoin, isArray } from "@braintrust/core";
 import {
   ChatCompletion,

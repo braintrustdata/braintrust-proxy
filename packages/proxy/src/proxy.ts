@@ -95,6 +95,7 @@ import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
+import { completionUsageSchema } from "types";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -632,19 +633,26 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
-              const result = JSON.parse(event.data) as ChatCompletionChunk;
+              const result = JSON.parse(event.data) as
+                | ChatCompletionChunk
+                | undefined;
               if (result) {
-                if (result.usage) {
-                  console.log("LOGGING RESULT USAGE", result.usage);
+                const extendedUsage = completionUsageSchema.safeParse(
+                  result.usage,
+                );
+                if (extendedUsage.success) {
                   spanLogger.log({
                     metrics: {
-                      tokens: result.usage.total_tokens,
-                      prompt_tokens: result.usage.prompt_tokens,
-                      completion_tokens: result.usage.completion_tokens,
+                      tokens: extendedUsage.data.total_tokens,
+                      prompt_tokens: extendedUsage.data.prompt_tokens,
+                      completion_tokens: extendedUsage.data.completion_tokens,
                       prompt_cached_tokens:
-                        result.usage?.prompt_tokens_details?.cached_tokens,
+                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                      prompt_cache_creation_tokens:
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cache_creation_tokens,
                       completion_reasoning_tokens:
-                        result.usage?.completion_tokens_details
+                        extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
                     },
                   });
@@ -740,19 +748,25 @@ export async function proxyV1({
             case "chat":
             case "completion": {
               const data = dataRaw as ChatCompletion;
-              console.log("LOGGING USAGE", data.usage);
-              spanLogger.log({
-                output: data.choices,
-                metrics: {
-                  tokens: data.usage?.total_tokens,
-                  prompt_tokens: data.usage?.prompt_tokens,
-                  completion_tokens: data.usage?.completion_tokens,
-                  prompt_cached_tokens:
-                    data.usage?.prompt_tokens_details?.cached_tokens,
-                  completion_reasoning_tokens:
-                    data.usage?.completion_tokens_details?.reasoning_tokens,
-                },
-              });
+              const extendedUsage = completionUsageSchema.safeParse(data.usage);
+              if (extendedUsage.success) {
+                spanLogger.log({
+                  output: data.choices,
+                  metrics: {
+                    tokens: extendedUsage.data.total_tokens,
+                    prompt_tokens: extendedUsage.data.prompt_tokens,
+                    completion_tokens: extendedUsage.data.completion_tokens,
+                    prompt_cached_tokens:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                    prompt_cache_creation_tokens:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens,
+                    completion_reasoning_tokens:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens,
+                  },
+                });
+              }
               break;
             }
             case "embedding":

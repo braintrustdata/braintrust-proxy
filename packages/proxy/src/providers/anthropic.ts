@@ -5,10 +5,9 @@ import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
-  CompletionUsage,
 } from "openai/resources";
 import { getTimestampInSeconds, isEmpty, isObject } from "../util";
-import { ContentPart, Message } from "@braintrust/core/typespecs";
+import { Message } from "@braintrust/core/typespecs";
 import { z } from "zod";
 import {
   MessageParam,
@@ -24,6 +23,7 @@ import {
   CacheControlEphemeral,
 } from "@anthropic-ai/sdk/resources/messages";
 import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
+import { CompletionUsage } from "types/openai";
 
 /*
 Example events:

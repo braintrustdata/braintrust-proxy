@@ -384,77 +384,102 @@ async function checkPricesCommand(argv: any) {
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     console.log("\n--- Price Discrepancy Report ---");
+    if (argv.provider) {
+      console.log(`(Filtered for provider: ${argv.provider})`);
+    }
     let discrepanciesFound = 0;
 
-    for (const localModelName in localModels) {
-      const localModelDetail = localModels[localModelName];
+    const modelsToCompare: Array<{
+      localModelName: string;
+      localModelDetail: ModelDetail;
+      remoteModelName: string; // Original remote name
+      remoteModelDetail: ModelDetail;
+    }> = [];
 
-      // Attempt to find a corresponding remote model.
-      // This requires a reverse lookup or iterating remote models and translating.
-      // For simplicity now, we'll iterate remote and translate.
-      let remoteModelDetail: ModelDetail | undefined = undefined;
-      let originalRemoteModelName: string | undefined = undefined;
+    if (argv.provider) {
+      const lowerArgProvider = argv.provider.toLowerCase();
+      for (const remoteModelName in remoteModels) {
+        const remoteModelDetail = remoteModels[remoteModelName];
+        const modelProvider = remoteModelDetail.litellm_provider?.toLowerCase();
+        const modelNameProviderPart = remoteModelName
+          .split("/")[0]
+          .toLowerCase();
 
-      for (const rName in remoteModels) {
-        const rDetail = remoteModels[rName];
-        const translatedName = translateLiteLLMToBraintrust(
-          rName,
-          rDetail.litellm_provider,
-        );
-        if (translatedName === localModelName) {
-          remoteModelDetail = rDetail;
-          originalRemoteModelName = rName;
-          break;
+        const matchesProviderFilter =
+          modelProvider?.includes(lowerArgProvider) ||
+          modelNameProviderPart.includes(lowerArgProvider) ||
+          modelProvider === lowerArgProvider ||
+          modelNameProviderPart === lowerArgProvider;
+
+        if (matchesProviderFilter) {
+          const translatedRemoteModelName = translateLiteLLMToBraintrust(
+            remoteModelName,
+            remoteModelDetail.litellm_provider,
+          );
+          if (localModels[translatedRemoteModelName]) {
+            modelsToCompare.push({
+              localModelName: translatedRemoteModelName,
+              localModelDetail: localModels[translatedRemoteModelName],
+              remoteModelName: remoteModelName,
+              remoteModelDetail: remoteModelDetail,
+            });
+          }
         }
       }
+    } else {
+      // If no provider filter, check all local models against remote ones
+      for (const localModelName in localModels) {
+        const localModelDetail = localModels[localModelName];
+        let foundRemoteDetail: ModelDetail | undefined = undefined;
+        let originalRemoteModelName: string | undefined = undefined;
 
-      if (remoteModelDetail) {
-        const localInputCost = localModelDetail.input_cost_per_mil_tokens;
-        const localOutputCost = localModelDetail.output_cost_per_mil_tokens;
-
-        const remoteInputCostPerToken = remoteModelDetail.input_cost_per_token;
-        const remoteOutputCostPerToken =
-          remoteModelDetail.output_cost_per_token;
-
-        let modelReported = false;
-
-        // Check input cost
-        if (
-          typeof localInputCost === "number" &&
-          typeof remoteInputCostPerToken === "number"
-        ) {
-          const remoteInputCostPerMil = remoteInputCostPerToken * 1_000_000;
-          if (Math.abs(localInputCost - remoteInputCostPerMil) > 1e-9) {
-            // Compare with tolerance
-            if (!modelReported) {
-              console.log(
-                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-              );
-              modelReported = true;
-            }
-            console.log(
-              `  Input Cost Mismatch: Local: ${localInputCost}, Remote (calculated): ${remoteInputCostPerMil} (from ${remoteInputCostPerToken}/token)`,
-            );
-            discrepanciesFound++;
-          }
-        } else if (
-          typeof localInputCost === "number" &&
-          typeof remoteInputCostPerToken !== "number"
-        ) {
-          if (!modelReported) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReported = true;
-          }
-          console.log(
-            `  Input Cost: Local: ${localInputCost}, Remote: Not available`,
+        for (const rName in remoteModels) {
+          const rDetail = remoteModels[rName];
+          const translatedName = translateLiteLLMToBraintrust(
+            rName,
+            rDetail.litellm_provider,
           );
-          discrepanciesFound++;
-        } else if (
-          typeof localInputCost !== "number" &&
-          typeof remoteInputCostPerToken === "number"
-        ) {
+          if (translatedName === localModelName) {
+            foundRemoteDetail = rDetail;
+            originalRemoteModelName = rName;
+            break;
+          }
+        }
+        if (foundRemoteDetail && originalRemoteModelName) {
+          modelsToCompare.push({
+            localModelName: localModelName,
+            localModelDetail: localModelDetail,
+            remoteModelName: originalRemoteModelName,
+            remoteModelDetail: foundRemoteDetail,
+          });
+        }
+      }
+    }
+
+    for (const item of modelsToCompare) {
+      const {
+        localModelName,
+        localModelDetail,
+        remoteModelName: originalRemoteModelName,
+        remoteModelDetail,
+      } = item;
+
+      const localInputCost = localModelDetail.input_cost_per_mil_tokens;
+      const localOutputCost = localModelDetail.output_cost_per_mil_tokens;
+
+      const remoteInputCostPerToken = remoteModelDetail.input_cost_per_token;
+      const remoteOutputCostPerToken = remoteModelDetail.output_cost_per_token;
+
+      let modelReported = false;
+
+      // Check input cost
+      if (
+        typeof localInputCost === "number" &&
+        typeof remoteInputCostPerToken === "number"
+      ) {
+        const remoteInputCostPerMil = remoteInputCostPerToken * 1_000_000;
+        if (Math.abs(localInputCost - remoteInputCostPerMil) > 1e-9) {
+          // Compare with tolerance
           if (!modelReported) {
             console.log(
               `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
@@ -462,48 +487,48 @@ async function checkPricesCommand(argv: any) {
             modelReported = true;
           }
           console.log(
-            `  Input Cost: Local: Not available, Remote (calculated): ${remoteInputCostPerToken * 1_000_000}`,
+            `  Input Cost Mismatch: Local: ${localInputCost}, Remote (calculated): ${remoteInputCostPerMil} (from ${remoteInputCostPerToken}/token)`,
           );
           discrepanciesFound++;
         }
-
-        // Check output cost
-        if (
-          typeof localOutputCost === "number" &&
-          typeof remoteOutputCostPerToken === "number"
-        ) {
-          const remoteOutputCostPerMil = remoteOutputCostPerToken * 1_000_000;
-          if (Math.abs(localOutputCost - remoteOutputCostPerMil) > 1e-9) {
-            // Compare with tolerance
-            if (!modelReported) {
-              console.log(
-                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-              );
-              modelReported = true;
-            }
-            console.log(
-              `  Output Cost Mismatch: Local: ${localOutputCost}, Remote (calculated): ${remoteOutputCostPerMil} (from ${remoteOutputCostPerToken}/token)`,
-            );
-            discrepanciesFound++;
-          }
-        } else if (
-          typeof localOutputCost === "number" &&
-          typeof remoteOutputCostPerToken !== "number"
-        ) {
-          if (!modelReported) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReported = true;
-          }
+      } else if (
+        typeof localInputCost === "number" &&
+        typeof remoteInputCostPerToken !== "number"
+      ) {
+        if (!modelReported) {
           console.log(
-            `  Output Cost: Local: ${localOutputCost}, Remote: Not available`,
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
           );
-          discrepanciesFound++;
-        } else if (
-          typeof localOutputCost !== "number" &&
-          typeof remoteOutputCostPerToken === "number"
-        ) {
+          modelReported = true;
+        }
+        console.log(
+          `  Input Cost: Local: ${localInputCost}, Remote: Not available`,
+        );
+        discrepanciesFound++;
+      } else if (
+        typeof localInputCost !== "number" &&
+        typeof remoteInputCostPerToken === "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Input Cost: Local: Not available, Remote (calculated): ${remoteInputCostPerToken * 1_000_000}`,
+        );
+        discrepanciesFound++;
+      }
+
+      // Check output cost
+      if (
+        typeof localOutputCost === "number" &&
+        typeof remoteOutputCostPerToken === "number"
+      ) {
+        const remoteOutputCostPerMil = remoteOutputCostPerToken * 1_000_000;
+        if (Math.abs(localOutputCost - remoteOutputCostPerMil) > 1e-9) {
+          // Compare with tolerance
           if (!modelReported) {
             console.log(
               `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
@@ -511,10 +536,38 @@ async function checkPricesCommand(argv: any) {
             modelReported = true;
           }
           console.log(
-            `  Output Cost: Local: Not available, Remote (calculated): ${remoteOutputCostPerToken * 1_000_000}`,
+            `  Output Cost Mismatch: Local: ${localOutputCost}, Remote (calculated): ${remoteOutputCostPerMil} (from ${remoteOutputCostPerToken}/token)`,
           );
           discrepanciesFound++;
         }
+      } else if (
+        typeof localOutputCost === "number" &&
+        typeof remoteOutputCostPerToken !== "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Output Cost: Local: ${localOutputCost}, Remote: Not available`,
+        );
+        discrepanciesFound++;
+      } else if (
+        typeof localOutputCost !== "number" &&
+        typeof remoteOutputCostPerToken === "number"
+      ) {
+        if (!modelReported) {
+          console.log(
+            `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReported = true;
+        }
+        console.log(
+          `  Output Cost: Local: Not available, Remote (calculated): ${remoteOutputCostPerToken * 1_000_000}`,
+        );
+        discrepanciesFound++;
       }
     }
 
@@ -559,7 +612,12 @@ async function main() {
       "Check for pricing discrepancies between local and remote models",
       (y) => {
         // Add options for check-prices if needed in the future, e.g., --provider
-        return y;
+        return y.option("provider", {
+          alias: "p",
+          type: "string",
+          description:
+            "Filter models by a specific provider for price checking",
+        });
       },
       async (argv) => {
         await checkPricesCommand(argv);

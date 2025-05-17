@@ -199,16 +199,26 @@ function updateUsage(
       (anthropic.cache_creation_input_tokens ?? 0) +
       (anthropic.cache_read_input_tokens ?? 0);
   }
+  if (!isEmpty(anthropic.cache_read_input_tokens)) {
+    openai.prompt_tokens_details = {
+      ...openai.prompt_tokens_details,
+      cached_tokens: anthropic.cache_read_input_tokens,
+    };
+  }
+  if (!isEmpty(anthropic.cache_creation_input_tokens)) {
+    openai.prompt_tokens_details = {
+      ...openai.prompt_tokens_details,
+      cache_creation_tokens: anthropic.cache_creation_input_tokens,
+    };
+  }
+
   if (!isEmpty(anthropic.output_tokens)) {
     openai.completion_tokens = anthropic.output_tokens;
   }
   openai.total_tokens =
     (openai.prompt_tokens ?? 0) + (openai.completion_tokens ?? 0);
-  if (!isEmpty(anthropic.cache_read_input_tokens)) {
-    openai.prompt_tokens_details = {
-      cached_tokens: anthropic.cache_read_input_tokens,
-    };
-  }
+
+  console.log("RETURNING USAGE", openai);
 }
 
 export function anthropicEventToOpenAIEvent(

@@ -11,6 +11,7 @@
       "@schema": ["schema/index"],
       "@types": ["types/index"]
     },
+    "resolveJsonModule": true,
     "esModuleInterop": true
   },
   "include": ["."],

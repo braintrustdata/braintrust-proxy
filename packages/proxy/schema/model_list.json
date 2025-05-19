@@ -1,0 +1,2795 @@
+{
+  "gpt-4o": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-4o"
+  },
+  "gpt-4o-2024-11-20": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "parent": "gpt-4o"
+  },
+  "gpt-4o-2024-08-06": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "parent": "gpt-4o"
+  },
+  "gpt-4o-2024-05-13": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 15,
+    "parent": "gpt-4o"
+  },
+  "gpt-4.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "GPT-4.1"
+  },
+  "gpt-4.1-2025-04-14": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "parent": "gpt-4.1"
+  },
+  "gpt-4o-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "GPT-4o mini"
+  },
+  "gpt-4o-mini-2024-07-18": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "parent": "gpt-4o-mini"
+  },
+  "gpt-4.1-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 1.6,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "GPT-4.1 mini"
+  },
+  "gpt-4.1-mini-2025-04-14": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 1.6,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "parent": "gpt-4.1-mini"
+  },
+  "gpt-4.1-nano": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "GPT-4.1 nano"
+  },
+  "gpt-4.1-nano-2025-04-14": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "parent": "gpt-4.1-nano"
+  },
+  "o4-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.275,
+    "o1_like": true
+  },
+  "o4-mini-2025-04-16": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.275,
+    "o1_like": true,
+    "parent": "o4-mini"
+  },
+  "o3-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "o1_like": true
+  },
+  "o3-mini-2025-01-31": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "o1_like": true,
+    "parent": "o3-mini"
+  },
+  "o3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 2.5,
+    "o1_like": true
+  },
+  "o3-2025-04-16": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 2.5,
+    "o1_like": true,
+    "parent": "o3"
+  },
+  "o1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 60,
+    "input_cache_read_cost_per_mil_tokens": 7.5,
+    "o1_like": true
+  },
+  "o1-2024-12-17": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 60,
+    "input_cache_read_cost_per_mil_tokens": 7.5,
+    "o1_like": true,
+    "parent": "o1"
+  },
+  "o1-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "o1_like": true
+  },
+  "o1-mini-2024-09-12": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "o1_like": true,
+    "parent": "o1-mini"
+  },
+  "o1-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 150,
+    "output_cost_per_mil_tokens": 600,
+    "o1_like": true
+  },
+  "o1-pro-2025-03-19": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 150,
+    "output_cost_per_mil_tokens": 600,
+    "o1_like": true,
+    "parent": "o1-pro"
+  },
+  "chatgpt-4o-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "ChatGPT-4o"
+  },
+  "gpt-4-turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "displayName": "GPT-4 Turbo"
+  },
+  "gpt-4-turbo-2024-04-09": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "parent": "gpt-4-turbo"
+  },
+  "gpt-4-turbo-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "parent": "gpt-4-turbo"
+  },
+  "gpt-4": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 30,
+    "output_cost_per_mil_tokens": 60,
+    "displayName": "GPT-4"
+  },
+  "gpt-4-0125-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "experimental": true,
+    "parent": "gpt-4"
+  },
+  "gpt-4-1106-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "experimental": true,
+    "parent": "gpt-4"
+  },
+  "gpt-4-0613": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 30,
+    "output_cost_per_mil_tokens": 60,
+    "parent": "gpt-4"
+  },
+  "gpt-4-0314": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 30,
+    "output_cost_per_mil_tokens": 60,
+    "parent": "gpt-4"
+  },
+  "gpt-4.5-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 75,
+    "output_cost_per_mil_tokens": 150,
+    "input_cache_read_cost_per_mil_tokens": 37.5,
+    "displayName": "GPT-4.5",
+    "experimental": true
+  },
+  "gpt-4.5-preview-2025-02-27": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 75,
+    "output_cost_per_mil_tokens": 150,
+    "input_cache_read_cost_per_mil_tokens": 37.5,
+    "experimental": true,
+    "parent": "gpt-4.5-preview"
+  },
+  "o1-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 60,
+    "input_cache_read_cost_per_mil_tokens": 7.5,
+    "o1_like": true,
+    "experimental": true,
+    "parent": "o1"
+  },
+  "o1-preview-2024-09-12": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 60,
+    "input_cache_read_cost_per_mil_tokens": 7.5,
+    "o1_like": true,
+    "experimental": true,
+    "parent": "o1"
+  },
+  "gpt-4o-search-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-4o Search Preview",
+    "experimental": true
+  },
+  "gpt-4o-search-preview-2025-03-11": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "experimental": true,
+    "parent": "gpt-4o-search-preview"
+  },
+  "gpt-4o-mini-search-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "GPT-4o mini Search Preview",
+    "experimental": true
+  },
+  "gpt-4o-mini-search-preview-2025-03-11": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "experimental": true,
+    "parent": "gpt-4o-mini-search-preview"
+  },
+  "gpt-3.5-turbo-0125": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "GPT 3.5T 0125",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T",
+    "deprecated": true
+  },
+  "gpt-35-turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "GPT 3.5T",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-1106": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T 1106",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-instruct": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T Instruct",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-instruct-0914": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T Instruct 0914",
+    "deprecated": true
+  },
+  "gpt-4-32k": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 60,
+    "output_cost_per_mil_tokens": 120,
+    "displayName": "GPT 4 32k",
+    "deprecated": true
+  },
+  "gpt-4-32k-0613": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 60,
+    "output_cost_per_mil_tokens": 120,
+    "displayName": "GPT 4 32k 0613",
+    "deprecated": true
+  },
+  "gpt-4-32k-0314": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 60,
+    "output_cost_per_mil_tokens": 120,
+    "displayName": "GPT 4 32k 0314",
+    "deprecated": true
+  },
+  "gpt-4-vision-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "displayName": "GPT 4 Vision-Preview",
+    "deprecated": true
+  },
+  "gpt-4-1106-vision-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 30,
+    "displayName": "GPT 4 1106 Vision-Preview",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-16k": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 4,
+    "displayName": "GPT 3.5T 16k",
+    "deprecated": true
+  },
+  "gpt-35-turbo-16k": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 4,
+    "displayName": "GPT 3.5T 16k",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-16k-0613": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 4,
+    "displayName": "GPT 3.5T 16k 0613",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-0613": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T 0613",
+    "deprecated": true
+  },
+  "gpt-3.5-turbo-0301": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "GPT 3.5T 0301",
+    "deprecated": true
+  },
+  "text-davinci-003": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Text Davinci 003",
+    "deprecated": true
+  },
+  "claude-3-7-sonnet-latest": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 3.7 Sonnet"
+  },
+  "claude-3-7-sonnet-20250219": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "parent": "claude-3-7-sonnet-latest"
+  },
+  "claude-3-5-haiku-latest": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 3.5 Haiku"
+  },
+  "claude-3-5-haiku-20241022": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "parent": "claude-3-5-haiku-latest"
+  },
+  "claude-3-5-sonnet-latest": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 3.5 Sonnet"
+  },
+  "claude-3-5-sonnet-20241022": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "parent": "claude-3-5-sonnet-latest"
+  },
+  "claude-3-5-sonnet-20240620": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "parent": "claude-3-5-sonnet-latest"
+  },
+  "claude-3-opus-latest": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 3 Opus"
+  },
+  "claude-3-opus-20240229": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "parent": "claude-3-opus-latest"
+  },
+  "claude-3-sonnet-20240229": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3 Sonnet"
+  },
+  "claude-3-haiku-20240307": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cache_write_cost_per_mil_tokens": 0.3,
+    "displayName": "Claude 3 Haiku"
+  },
+  "claude-instant-1.2": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.163,
+    "output_cost_per_mil_tokens": 0.551,
+    "displayName": "Claude Instant 1.2",
+    "deprecated": true
+  },
+  "claude-instant-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.63,
+    "output_cost_per_mil_tokens": 5.51,
+    "displayName": "Claude Instant 1",
+    "deprecated": true
+  },
+  "claude-2.1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 24,
+    "displayName": "Claude 2.1",
+    "deprecated": true
+  },
+  "claude-2.0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 24,
+    "displayName": "Claude 2.0",
+    "deprecated": true
+  },
+  "claude-2": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 24,
+    "displayName": "Claude 2",
+    "deprecated": true
+  },
+  "meta/llama-2-70b-chat": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.65,
+    "output_cost_per_mil_tokens": 2.75,
+    "displayName": "LLaMA 2 70b Chat"
+  },
+  "mistral": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0
+  },
+  "phi": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "deprecated": true
+  },
+  "sonar": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 1,
+    "displayName": "Sonar"
+  },
+  "sonar-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Sonar Pro"
+  },
+  "sonar-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Sonar Reasoning"
+  },
+  "sonar-reasoning-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "displayName": "Sonar Reasoning Pro"
+  },
+  "r1-1776": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "displayName": "R1 1776"
+  },
+  "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Maverick Instruct (17Bx128E)"
+  },
+  "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 4 Scout Instruct (17Bx16E)"
+  },
+  "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.88,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Llama 3.3 70B Instruct Turbo"
+  },
+  "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Llama 3.3 70B Instruct Turbo Free"
+  },
+  "meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Llama 3.2 90B Vision Instruct Turbo"
+  },
+  "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Llama 3.2 11B Vision Instruct Turbo"
+  },
+  "meta-llama/Llama-Vision-Free": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Llama Vision Free"
+  },
+  "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "displayName": "Llama 3.2 3B Instruct Turbo"
+  },
+  "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3.5,
+    "output_cost_per_mil_tokens": 3.5,
+    "displayName": "Llama 3.1 405B Instruct Turbo"
+  },
+  "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.88,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Llama 3.1 70B Instruct Turbo"
+  },
+  "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Llama 3.1 8B Instruct Turbo"
+  },
+  "meta-llama/Llama-3-70b-chat-hf": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 3 70B Instruct Reference"
+  },
+  "meta-llama/Meta-Llama-3-70B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.88,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Llama 3 70B Instruct Turbo"
+  },
+  "meta-llama/Meta-Llama-3-70B-Instruct-Lite": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.54,
+    "output_cost_per_mil_tokens": 0.54,
+    "displayName": "Llama 3 70B Instruct Lite"
+  },
+  "meta-llama/Llama-3-8b-chat-hf": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Llama 3 8B Instruct Reference"
+  },
+  "meta-llama/Meta-Llama-3-8B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Llama 3 8B Instruct Turbo"
+  },
+  "meta-llama/Meta-Llama-3-8B-Instruct-Lite": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3 8B Instruct Lite"
+  },
+  "google/gemma-2-27b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.05,
+    "displayName": "Gemma-2 Instruct (27B)"
+  },
+  "google/gemma-2-9b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.05,
+    "displayName": "Gemma-2 Instruct (9B)"
+  },
+  "google/gemma-2b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemma Instruct (2B)"
+  },
+  "mistralai/Mistral-Small-24B-Instruct-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Mistral Small (24B) Instruct 25.01"
+  },
+  "mistralai/Mistral-7B-Instruct-v0.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Mistral (7B) Instruct v0.3"
+  },
+  "mistralai/Mistral-7B-Instruct-v0.2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Mistral (7B) Instruct v0.2"
+  },
+  "mistralai/Mistral-7B-Instruct-v0.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Mistral (7B) Instruct"
+  },
+  "mistralai/Mixtral-8x22B-Instruct-v0.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Mixtral 8x22B Instruct v0.1"
+  },
+  "mistralai/Mixtral-8x7B-Instruct-v0.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mixtral 8x7B Instruct v0.1"
+  },
+  "deepseek-ai/DeepSeek-V3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "DeepSeek V3"
+  },
+  "deepseek-ai/DeepSeek-R1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 7,
+    "output_cost_per_mil_tokens": 7,
+    "displayName": "DeepSeek R1"
+  },
+  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "DeepSeek R1 Distill Llama 70B"
+  },
+  "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-Free": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "DeepSeek R1 Distill Llama 70B Free"
+  },
+  "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.6,
+    "output_cost_per_mil_tokens": 1.6,
+    "displayName": "DeepSeek R1 Distill Qwen 14B"
+  },
+  "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "DeepSeek R1 Distill Qwen 1.5B"
+  },
+  "deepseek-ai/deepseek-llm-67b-chat": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "DeepSeek LLM Chat (67B)"
+  },
+  "Qwen/Qwen2.5-72B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Qwen 2.5 72B Instruct Turbo"
+  },
+  "Qwen/Qwen2.5-7B-Instruct-Turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Qwen 2.5 7B Instruct Turbo"
+  },
+  "Qwen/Qwen2.5-Coder-32B-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen 2.5 Coder 32B Instruct"
+  },
+  "Qwen/QwQ-32B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen QwQ 32B"
+  },
+  "Qwen/Qwen2-VL-72B-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Qwen-2VL (72B) Instruct"
+  },
+  "Qwen/Qwen2-72B-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen 2 Instruct (72B)"
+  },
+  "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.88,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Llama 3.1 Nemotron 70B Instruct HF"
+  },
+  "microsoft/WizardLM-2-8x22B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "WizardLM-2 (8x22B)"
+  },
+  "databricks/dbrx-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "DBRX Instruct"
+  },
+  "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Nous Hermes 2 - Mixtral 8x7B-DPO"
+  },
+  "Gryphe/MythoMax-L2-13b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "MythoMax-L2 (13B)"
+  },
+  "Gryphe/MythoMax-L2-13b-Lite": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Gryphe MythoMax L2 Lite (13B)"
+  },
+  "meta-llama/Meta-Llama-3-70B": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 3 70b",
+    "deprecated": true
+  },
+  "meta-llama/Llama-3-8b-hf": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Llama 3 8b HF",
+    "deprecated": true
+  },
+  "meta-llama/Llama-2-70b-chat-hf": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 2 70b Chat HF",
+    "deprecated": true
+  },
+  "deepseek-ai/deepseek-coder-33b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Deepseek Coder 33b Instruct",
+    "deprecated": true
+  },
+  "Qwen/QwQ-32B-Preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen QwQ 32B Preview",
+    "deprecated": true
+  },
+  "NousResearch/Nous-Hermes-2-Yi-34B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Nous Hermes 2 Yi 34B",
+    "deprecated": true
+  },
+  "mistralai/mixtral-8x7b-32kseqlen": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "displayName": "Mixtral 8x7B 32k",
+    "deprecated": true
+  },
+  "mistralai/Mixtral-8x7B-Instruct-v0.1-json": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mixtral 8x7B Instruct v0.1 JSON",
+    "deprecated": true
+  },
+  "mistralai/Mixtral-8x22B": {
+    "format": "openai",
+    "flavor": "completion",
+    "input_cost_per_mil_tokens": 1.08,
+    "output_cost_per_mil_tokens": 1.08,
+    "displayName": "Mixtral 8x22B",
+    "deprecated": true
+  },
+  "mistral-large-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Mistral Large"
+  },
+  "mistral-large-2411": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "parent": "mistral-large-latest"
+  },
+  "pixtral-large-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Pixtral Large"
+  },
+  "pixtral-large-2411": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "parent": "pixtral-large-latest"
+  },
+  "mistral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium 3"
+  },
+  "mistral-medium-2505": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "parent": "mistral-medium-latest"
+  },
+  "mistral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Mistral Small"
+  },
+  "mistral-small-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "mistral-small-latest"
+  },
+  "codestral-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral"
+  },
+  "codestral-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "parent": "codestral-latest"
+  },
+  "ministral-8b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 8B"
+  },
+  "ministral-8b-2410": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "parent": "ministral-8b-latest"
+  },
+  "ministral-3b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "displayName": "Ministral 3B"
+  },
+  "ministral-3b-2410": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "parent": "ministral-3b-latest"
+  },
+  "mistral-saba-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Saba"
+  },
+  "mistral-saba-2502": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "parent": "mistral-saba-latest"
+  },
+  "pixtral-12b-2409": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Pixtral 12B"
+  },
+  "open-mistral-nemo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Mistral NeMo"
+  },
+  "open-mistral-nemo-2407": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15
+  },
+  "open-codestral-mamba": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Codestral Mamba"
+  },
+  "open-mixtral-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Mixtral 8x22B",
+    "deprecated": true
+  },
+  "mistral-tiny": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.46,
+    "displayName": "Mistral Tiny",
+    "deprecated": true
+  },
+  "mistral-small": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Mistral Small",
+    "deprecated": true
+  },
+  "mistral-medium": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.75,
+    "output_cost_per_mil_tokens": 8.1,
+    "displayName": "Mistral Medium",
+    "deprecated": true
+  },
+  "llama-3.3-70b-versatile": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.59,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Llama 3.3 70B Versatile 128k"
+  },
+  "llama-3.1-8b-instant": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.08,
+    "displayName": "Llama 3.1 8B Instant 128k"
+  },
+  "llama3-70b-8192": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.64,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Llama 3 70B 8k"
+  },
+  "llama3-8b-8192": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3 8B 8k"
+  },
+  "llama-guard-3-8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Llama Guard 3 8B 8k"
+  },
+  "gemma2-9b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Gemma 2 9B"
+  },
+  "meta-llama/llama-4-maverick-17b-128e-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 0.77,
+    "displayName": "Llama 4 Maverick (17Bx128E)",
+    "experimental": true
+  },
+  "meta-llama/llama-4-scout-17b-16e-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.11,
+    "output_cost_per_mil_tokens": 0.34,
+    "displayName": "Llama 4 Scout (17Bx16E)",
+    "experimental": true
+  },
+  "llama-3.3-70b-specdec": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.59,
+    "output_cost_per_mil_tokens": 0.99,
+    "displayName": "Llama 3.3 70B SpecDec 8k",
+    "experimental": true
+  },
+  "llama-3.2-90b-vision-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 3.2 90B Vision 8k (Preview)",
+    "experimental": true
+  },
+  "llama-3.2-11b-vision-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Llama 3.2 11B Vision 8k (Preview)",
+    "experimental": true
+  },
+  "llama-3.2-3b-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "displayName": "Llama 3.2 3B (Preview) 8k",
+    "experimental": true
+  },
+  "llama-3.2-1b-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "displayName": "Llama 3.2 1B (Preview) 8k",
+    "experimental": true
+  },
+  "mistral-saba-24b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.79,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Mistral Saba 24B",
+    "experimental": true
+  },
+  "deepseek-r1-distill-llama-70b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.23,
+    "output_cost_per_mil_tokens": 0.69,
+    "displayName": "DeepSeek R1 Distill Llama 70b",
+    "experimental": true
+  },
+  "deepseek-r1-distill-llama-70b-specdec": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.23,
+    "output_cost_per_mil_tokens": 0.69,
+    "displayName": "DeepSeek R1 Distill Llama 70b SpecDec",
+    "experimental": true
+  },
+  "deepseek-r1-distill-qwen-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.69,
+    "output_cost_per_mil_tokens": 0.69,
+    "displayName": "DeepSeek R1 Distill Qwen 32B 128k",
+    "experimental": true
+  },
+  "qwen-2.5-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.79,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Qwen 2.5 32B Instruct 128k",
+    "experimental": true
+  },
+  "qwen-2.5-coder-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.79,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Qwen 2.5 Coder 32B Instruct 128k",
+    "experimental": true
+  },
+  "qwen-qwq-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.29,
+    "output_cost_per_mil_tokens": 0.39,
+    "displayName": "Qwen QwQ 32B (Preview) 128k",
+    "experimental": true
+  },
+  "gemma-7b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemma 7b IT",
+    "deprecated": true
+  },
+  "llama-3.1-70b-versatile": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "LLaMA 3.1 70b Versatile",
+    "deprecated": true
+  },
+  "llama-3.1-405b-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "LLaMA 3.1 405b Reasoning",
+    "deprecated": true
+  },
+  "llama2-70b-4096": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "LLaMA 2 70b 4096",
+    "deprecated": true
+  },
+  "mixtral-8x7b-32768": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.27,
+    "output_cost_per_mil_tokens": 0.27,
+    "displayName": "Mixtral 8x7B 32k",
+    "deprecated": true
+  },
+  "llama3-3-70b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Llama 3.3 70B"
+  },
+  "llama3-2-3b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.03,
+    "displayName": "Llama 3.2 3B"
+  },
+  "llama3-2-1b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.01,
+    "output_cost_per_mil_tokens": 0.01,
+    "displayName": "Llama 3.2 1B"
+  },
+  "llama3-1-70b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Llama 3.1 70B"
+  },
+  "llama3-1-8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.07,
+    "displayName": "Llama 3.1 8B"
+  },
+  "llama3-70b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Llama 3 70B"
+  },
+  "llama3-8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.07,
+    "displayName": "Llama 3 8B"
+  },
+  "mistral-7b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.07,
+    "displayName": "Mistral 7B"
+  },
+  "mixtral-8x7b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "Mixtral 8x7b"
+  },
+  "wizardlm-2-7b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.07,
+    "displayName": "WizardLM-2 7B"
+  },
+  "wizardlm-2-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 1,
+    "displayName": "WizardLM-2 8x22B"
+  },
+  "nous-hermes-llama2-13b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Nous: Hermes 13B"
+  },
+  "dolphin-mixtral-8x7b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "Dolphin Mixtral 8x7b"
+  },
+  "accounts/fireworks/models/llama4-maverick-instruct-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Llama 4 Maverick Instruct (Basic)"
+  },
+  "accounts/fireworks/models/llama4-scout-instruct-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Llama 4 Scout Instruct (Basic)"
+  },
+  "accounts/fireworks/models/llama-v3p3-70b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 3.3 70B Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p2-90b-vision-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Llama 3.2 90B Vision Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p2-11b-vision-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.18,
+    "output_cost_per_mil_tokens": 0.18,
+    "displayName": "Llama 3.2 11B Vision Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p2-3b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3.2 3B Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p1-405b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Llama 3.1 405B Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p1-405b-instruct-long": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Llama 3.1 405B Instruct Long"
+  },
+  "accounts/fireworks/models/llama-v3p1-70b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Llama 3.1 70B Instruct"
+  },
+  "accounts/fireworks/models/llama-v3p1-8b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Llama 3.1 8B Instruct"
+  },
+  "accounts/fireworks/models/mistral-small-24b-instruct-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Mistral Small 3 Instruct"
+  },
+  "accounts/fireworks/models/mixtral-8x22b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Mixtral MoE 8x22B Instruct"
+  },
+  "accounts/fireworks/models/mixtral-8x7b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "Mixtral MoE 8x7B Instruct"
+  },
+  "accounts/fireworks/models/phi-3-vision-128k-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Phi 3.5 Vision Instruct"
+  },
+  "accounts/fireworks/models/deepseek-v3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "DeepSeek V3"
+  },
+  "accounts/fireworks/models/deepseek-v3-0324": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "DeepSeek V3 03-24"
+  },
+  "accounts/fireworks/models/deepseek-r1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 8,
+    "displayName": "DeepSeek R1 (Fast)"
+  },
+  "accounts/fireworks/models/deepseek-r1-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.55,
+    "output_cost_per_mil_tokens": 2.19,
+    "displayName": "DeepSeek R1 Basic"
+  },
+  "accounts/fireworks/models/qwen2p5-72b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2.5 72B Instruct"
+  },
+  "accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2.5 Coder 32B Instruct"
+  },
+  "accounts/fireworks/models/qwq-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen QwQ 32B"
+  },
+  "accounts/fireworks/models/qwen2-vl-72b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2 VL 72B Instruct"
+  },
+  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen QwQ 32B Preview",
+    "deprecated": true
+  },
+  "llama3.3-70b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3.3 70B"
+  },
+  "llama3.1-8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3.1 8B"
+  },
+  "gemini-2.0-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Gemini 2.0 Flash"
+  },
+  "gemini-2.0-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "parent": "gemini-2.0-flash"
+  },
+  "gemini-2.0-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 2.0 Flash-Lite"
+  },
+  "gemini-2.0-flash-lite-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "gemini-2.0-flash-lite"
+  },
+  "gemini-1.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 1.5 Flash"
+  },
+  "gemini-1.5-flash-latest": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "gemini-1.5-flash"
+  },
+  "gemini-1.5-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "gemini-1.5-flash"
+  },
+  "gemini-1.5-flash-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "gemini-1.5-flash"
+  },
+  "gemini-1.5-flash-8b": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Gemini 1.5 Flash-8B"
+  },
+  "gemini-1.5-flash-8b-latest": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.0375,
+    "output_cost_per_mil_tokens": 0.15,
+    "parent": "gemini-1.5-flash-8b"
+  },
+  "gemini-1.5-flash-8b-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.0375,
+    "output_cost_per_mil_tokens": 0.15,
+    "parent": "gemini-1.5-flash-8b"
+  },
+  "gemini-1.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Gemini 1.5 Pro"
+  },
+  "gemini-1.5-pro-latest": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3.5,
+    "output_cost_per_mil_tokens": 1.05,
+    "parent": "gemini-1.5-pro"
+  },
+  "gemini-1.5-pro-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "parent": "gemini-1.5-pro"
+  },
+  "gemini-1.5-pro-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "parent": "gemini-1.5-pro"
+  },
+  "gemini-2.5-flash-preview-04-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Gemini 2.5 Flash Preview",
+    "experimental": false
+  },
+  "gemini-2.5-pro-preview-05-06": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Pro Preview",
+    "experimental": false
+  },
+  "gemini-2.5-pro-preview-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "experimental": false,
+    "parent": "gemini-2.5-pro-preview-05-06"
+  },
+  "gemini-2.5-pro-exp-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Pro Experimental",
+    "experimental": true
+  },
+  "gemini-2.0-flash-exp": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "experimental": true,
+    "parent": "gemini-2.0-flash"
+  },
+  "gemini-2.0-flash-thinking-exp-01-21": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "experimental": true,
+    "parent": "gemini-2.0-flash"
+  },
+  "learnlm-1.5-pro-experimental": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "experimental": true
+  },
+  "gemini-2.0-pro-exp-02-05": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "experimental": true,
+    "deprecated": true
+  },
+  "gemini-exp-1206": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
+    "experimental": true,
+    "deprecated": true
+  },
+  "gemini-1.0-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini 1.0 Pro",
+    "deprecated": true
+  },
+  "gemini-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini Pro",
+    "deprecated": true
+  },
+  "grok-2-vision": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Grok 2 Vision"
+  },
+  "grok-2-vision-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "parent": "grok-2-vision"
+  },
+  "grok-2-vision-1212": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "parent": "grok-2-vision"
+  },
+  "grok-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Grok 2"
+  },
+  "grok-2-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "parent": "grok-2"
+  },
+  "grok-2-1212": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "parent": "grok-2"
+  },
+  "grok-vision-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 15
+  },
+  "grok-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 15
+  },
+  "amazon.nova-pro-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 3.2,
+    "displayName": "Nova Pro"
+  },
+  "us.amazon.nova-pro-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 3.2,
+    "displayName": "US Nova Pro",
+    "parent": "amazon.nova-pro-v1:0"
+  },
+  "amazon.nova-micro-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.035,
+    "output_cost_per_mil_tokens": 0.14,
+    "displayName": "Nova Micro"
+  },
+  "us.amazon.nova-micro-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.035,
+    "output_cost_per_mil_tokens": 0.14,
+    "displayName": "US Nova Micro",
+    "parent": "amazon.nova-micro-v1:0"
+  },
+  "amazon.nova-lite-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.24,
+    "displayName": "Nova Lite"
+  },
+  "us.amazon.nova-lite-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.24,
+    "displayName": "US Nova Lite",
+    "parent": "amazon.nova-lite-v1:0"
+  },
+  "amazon.titan-text-premier-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Titan Text Premier"
+  },
+  "amazon.titan-text-express-v1": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.3,
+    "output_cost_per_mil_tokens": 1.7,
+    "displayName": "Titan Text Express"
+  },
+  "amazon.titan-text-lite-v1": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Titan Text Lite"
+  },
+  "anthropic.claude-3-7-sonnet-20250219-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 3.7 Sonnet"
+  },
+  "us.anthropic.claude-3-7-sonnet-20250219-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "US Claude 3.7 Sonnet",
+    "parent": "anthropic.claude-3-7-sonnet-20250219-v1:0"
+  },
+  "anthropic.claude-3-5-haiku-20241022-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "displayName": "Claude 3.5 Haiku"
+  },
+  "us.anthropic.claude-3-5-haiku-20241022-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "displayName": "US Claude 3.5 Haiku",
+    "parent": "anthropic.claude-3-5-haiku-20241022-v1:0"
+  },
+  "anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 3.5 Sonnet v2"
+  },
+  "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "US Claude 3.5 Sonnet v2",
+    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0"
+  },
+  "apac.anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "APAC Claude 3.5 Sonnet v2",
+    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0"
+  },
+  "anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3.5 Sonnet"
+  },
+  "us.anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "US Claude 3.5 Sonnet",
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  },
+  "apac.anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "APAC Claude 3.5 Sonnet",
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  },
+  "eu.anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "EU Claude 3.5 Sonnet",
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0"
+  },
+  "anthropic.claude-3-opus-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "Claude 3 Opus"
+  },
+  "us.anthropic.claude-3-opus-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "US Claude 3 Opus",
+    "parent": "anthropic.claude-3-opus-20240229-v1:0"
+  },
+  "anthropic.claude-3-sonnet-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3 Sonnet"
+  },
+  "us.anthropic.claude-3-sonnet-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "US Claude 3 Sonnet",
+    "parent": "anthropic.claude-3-sonnet-20240229-v1:0"
+  },
+  "apac.anthropic.claude-3-sonnet-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "APAC Claude 3 Sonnet",
+    "parent": "anthropic.claude-3-sonnet-20240229-v1:0"
+  },
+  "eu.anthropic.claude-3-sonnet-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "EU Claude 3 Sonnet",
+    "parent": "anthropic.claude-3-sonnet-20240229-v1:0"
+  },
+  "anthropic.claude-3-haiku-20240307-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 3 Haiku"
+  },
+  "us.anthropic.claude-3-haiku-20240307-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "US Claude 3 Haiku",
+    "parent": "anthropic.claude-3-haiku-20240307-v1:0"
+  },
+  "apac.anthropic.claude-3-haiku-20240307-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "APAC Claude 3 Haiku",
+    "parent": "anthropic.claude-3-haiku-20240307-v1:0"
+  },
+  "eu.anthropic.claude-3-haiku-20240307-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "EU Claude 3 Haiku",
+    "parent": "anthropic.claude-3-haiku-20240307-v1:0"
+  },
+  "meta.llama3-3-70b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.72,
+    "output_cost_per_mil_tokens": 0.72,
+    "displayName": "Llama 3.3 70B Instruct"
+  },
+  "us.meta.llama3-3-70b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.72,
+    "output_cost_per_mil_tokens": 0.72,
+    "displayName": "US Llama 3.3 70B Instruct",
+    "parent": "meta.llama3-3-70b-instruct-v1:0"
+  },
+  "meta.llama3-2-90b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Llama 3.2 90B Vision Instruct"
+  },
+  "us.meta.llama3-2-90b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "US Llama 3.2 90B Vision Instruct",
+    "parent": "meta.llama3-2-90b-instruct-v1:0"
+  },
+  "meta.llama3-2-11b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 0.35,
+    "displayName": "Llama 3.2 11B Vision Instruct"
+  },
+  "us.meta.llama3-2-11b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 0.35,
+    "displayName": "US Llama 3.2 11B Vision Instruct",
+    "parent": "meta.llama3-2-11b-instruct-v1:0"
+  },
+  "meta.llama3-2-3b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Llama 3.2 3B Instruct"
+  },
+  "us.meta.llama3-2-3b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "US Llama 3.2 3B Instruct",
+    "parent": "meta.llama3-2-3b-instruct-v1:0"
+  },
+  "eu.meta.llama3-2-3b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19,
+    "output_cost_per_mil_tokens": 0.19,
+    "displayName": "EU Llama 3.2 3B Instruct",
+    "parent": "meta.llama3-2-3b-instruct-v1:0"
+  },
+  "meta.llama3-2-1b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Llama 3.2 1B Instruct"
+  },
+  "us.meta.llama3-2-1b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "US Llama 3.2 1B Instruct",
+    "parent": "meta.llama3-2-1b-instruct-v1:0"
+  },
+  "eu.meta.llama3-2-1b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0.13,
+    "displayName": "EU Llama 3.2 1B Instruct",
+    "parent": "meta.llama3-2-1b-instruct-v1:0"
+  },
+  "meta.llama3-1-405b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5.32,
+    "output_cost_per_mil_tokens": 16,
+    "displayName": "Llama 3.1 405B Instruct"
+  },
+  "us.meta.llama3-1-405b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5.32,
+    "output_cost_per_mil_tokens": 16,
+    "displayName": "US Llama 3.1 405B Instruct",
+    "parent": "meta.llama3-1-405b-instruct-v1:0"
+  },
+  "meta.llama3-1-70b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.99,
+    "output_cost_per_mil_tokens": 0.99,
+    "displayName": "Llama 3.1 70B Instruct"
+  },
+  "us.meta.llama3-1-70b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.99,
+    "output_cost_per_mil_tokens": 0.99,
+    "displayName": "US Llama 3.1 70B Instruct",
+    "parent": "meta.llama3-1-70b-instruct-v1:0"
+  },
+  "meta.llama3-1-8b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.22,
+    "displayName": "Llama 3.1 8B Instruct"
+  },
+  "us.meta.llama3-1-8b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.22,
+    "displayName": "US Llama 3.1 8B Instruct",
+    "parent": "meta.llama3-1-8b-instruct-v1:0"
+  },
+  "meta.llama3-70b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.65,
+    "output_cost_per_mil_tokens": 3.5,
+    "displayName": "Llama 3 70B Instruct"
+  },
+  "meta.llama3-8b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Llama 3 8B Instruct"
+  },
+  "mistral.mistral-large-2402-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 24,
+    "displayName": "Mistral Large 24.02"
+  },
+  "mistral.mistral-small-2402-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Mistral Small 24.02"
+  },
+  "mistral.mixtral-8x7b-instruct-v0:1": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.45,
+    "output_cost_per_mil_tokens": 0.7,
+    "displayName": "Mixtral 8x7B"
+  },
+  "mistral.mistral-7b-instruct-v0:2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Mistral 7B"
+  },
+  "cohere.command-r-plus-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Command R+"
+  },
+  "cohere.command-r-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Command R"
+  },
+  "cohere.command-text-v14": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Command"
+  },
+  "cohere.command-light-text-v14": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Command Light"
+  },
+  "publishers/google/models/gemini-2.0-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Gemini 2.0 Flash"
+  },
+  "publishers/google/models/gemini-2.0-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "parent": "publishers/google/models/gemini-2.0-flash"
+  },
+  "publishers/google/models/gemini-2.0-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 2.0 Flash-Lite"
+  },
+  "publishers/google/models/gemini-2.0-flash-lite-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "publishers/google/models/gemini-2.0-flash-lite"
+  },
+  "publishers/google/models/gemini-1.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 1.5 Pro"
+  },
+  "publishers/google/models/gemini-1.5-pro-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-pro"
+  },
+  "publishers/google/models/gemini-1.5-pro-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-pro"
+  },
+  "publishers/google/models/gemini-1.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 1.5 Flash"
+  },
+  "publishers/google/models/gemini-1.5-flash-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-flash"
+  },
+  "publishers/google/models/gemini-1.5-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-flash"
+  },
+  "publishers/google/models/gemini-1.0-pro-vision": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 1.0 Pro Vision"
+  },
+  "publishers/google/models/gemini-1.0-pro-vision-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.0-pro-vision"
+  },
+  "publishers/google/models/gemini-1.0-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "displayName": "Gemini 1.0 Pro"
+  },
+  "publishers/google/models/gemini-1.0-pro-002": {
+    "format": "google",
+    "flavor": "chat",
+    "parent": "publishers/google/models/gemini-1.0-pro"
+  },
+  "publishers/google/models/gemini-1.0-pro-001": {
+    "format": "google",
+    "flavor": "chat",
+    "parent": "publishers/google/models/gemini-1.0-pro"
+  },
+  "publishers/anthropic/models/claude-3-7-sonnet": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3.7 Sonnet"
+  },
+  "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "experimental": true,
+    "parent": "publishers/anthropic/models/claude-3-7-sonnet"
+  },
+  "publishers/anthropic/models/claude-3-5-haiku": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "displayName": "Claude 3.5 Haiku"
+  },
+  "publishers/anthropic/models/claude-3-5-haiku@20241022": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "parent": "publishers/anthropic/models/claude-3-5-haiku"
+  },
+  "publishers/anthropic/models/claude-3-5-sonnet-v2": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3.5 Sonnet v2"
+  },
+  "publishers/anthropic/models/claude-3-5-sonnet-v2@20241022": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "parent": "publishers/anthropic/models/claude-3-5-sonnet-v2"
+  },
+  "publishers/anthropic/models/claude-3-5-sonnet": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 3.5 Sonnet"
+  },
+  "publishers/anthropic/models/claude-3-5-sonnet@20240620": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "parent": "publishers/anthropic/models/claude-3-5-sonnet"
+  },
+  "publishers/anthropic/models/claude-3-opus": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "Claude 3 Opus"
+  },
+  "publishers/anthropic/models/claude-3-opus@20240229": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "parent": "publishers/anthropic/models/claude-3-opus"
+  },
+  "publishers/anthropic/models/claude-3-haiku": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 3 Haiku"
+  },
+  "publishers/anthropic/models/claude-3-haiku@20240307": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "parent": "publishers/anthropic/models/claude-3-haiku"
+  },
+  "publishers/meta/models/llama-3.1-401b-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 16,
+    "displayName": "Llama 3.1 401B Instruct"
+  },
+  "publishers/mistralai/models/mistral-large-2411": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Mistral Large (24.11)"
+  },
+  "publishers/mistralai/models/mistral-nemo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Mistral Nemo"
+  },
+  "publishers/mistralai/models/codestral-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral (25.01)"
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.5 Pro Preview",
+    "experimental": true
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "experimental": true,
+    "parent": "publishers/google/models/gemini-2.5-pro-preview-05-06"
+  },
+  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.5 Pro Experimental",
+    "experimental": true
+  },
+  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.0 Flash Thinking Mode",
+    "experimental": true,
+    "parent": "publishers/google/models/gemini-2.0-flash"
+  },
+  "publishers/meta/models/llama-3.3-70b-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.3 70B Instruct",
+    "experimental": true
+  },
+  "publishers/meta/models/llama-3.2-90b-vision-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 3.2 90B Vision Instruct",
+    "experimental": true
+  },
+  "publishers/meta/models/llama-3.1-70b-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.1 70B Instruct",
+    "experimental": true
+  },
+  "publishers/meta/models/llama-3.1-8b-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.1 8B Instruct",
+    "experimental": true
+  },
+  "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 2.0 Flash-Lite",
+    "deprecated": true
+  },
+  "databricks-claude-3-7-sonnet": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Claude 3.7 Sonnet"
+  },
+  "databricks-meta-llama-3-3-70b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.3 70B Instruct"
+  },
+  "databricks-meta-llama-3-1-405b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.1 405B Instruct"
+  },
+  "databricks-meta-llama-3-1-8b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Llama 3.1 8B Instruct"
+  },
+  "text-block": {
+    "format": "js",
+    "flavor": "completion",
+    "displayName": "Text-block"
+  }
+}

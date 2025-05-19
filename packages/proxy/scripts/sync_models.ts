@@ -148,10 +148,7 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
   }
 }
 
-function translateLiteLLMToBraintrust(
-  modelName: string,
-  provider?: string,
-): string {
+function translateToBraintrust(modelName: string, provider?: string): string {
   if (provider === "xai" && modelName.startsWith("xai/")) {
     return modelName.substring(4); // "xai/"
   }
@@ -216,7 +213,7 @@ async function findMissingCommand(argv: any) {
     );
 
     for (const modelName of remoteModelNamesFiltered) {
-      const translatedModelName = translateLiteLLMToBraintrust(
+      const translatedModelName = translateToBraintrust(
         modelName,
         consideredRemoteModels[modelName]?.litellm_provider,
       );
@@ -347,7 +344,7 @@ async function findMissingCommand(argv: any) {
         }
         missingInLocal.forEach((modelName) => {
           const detail = consideredRemoteModels[modelName];
-          const translated = translateLiteLLMToBraintrust(
+          const translated = translateToBraintrust(
             modelName,
             detail?.litellm_provider,
           );
@@ -411,7 +408,7 @@ async function checkPricesCommand(argv: any) {
           modelNameProviderPart === lowerArgProvider;
 
         if (matchesProviderFilter) {
-          const translatedRemoteModelName = translateLiteLLMToBraintrust(
+          const translatedRemoteModelName = translateToBraintrust(
             remoteModelName,
             remoteModelDetail.litellm_provider,
           );
@@ -432,7 +429,7 @@ async function checkPricesCommand(argv: any) {
         let originalRemoteModelNameForLoop: string | undefined = undefined;
         for (const rName in remoteModels) {
           const rDetail = remoteModels[rName];
-          const translatedName = translateLiteLLMToBraintrust(
+          const translatedName = translateToBraintrust(
             rName,
             rDetail.litellm_provider,
           );

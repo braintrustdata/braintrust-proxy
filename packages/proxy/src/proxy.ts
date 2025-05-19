@@ -134,6 +134,8 @@ export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
+// The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
+const ANTHROPIC_MESSAGES = "/anthropic/messages";
 const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
 
 // Options to control how the cache key is generated.
@@ -278,6 +280,7 @@ export async function proxyV1({
     url === "/responses" ||
     url === "/completions" ||
     url === "/moderations" ||
+    url === ANTHROPIC_MESSAGES ||
     url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl;
 
@@ -287,6 +290,7 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
+    url === ANTHROPIC_MESSAGES ||
     url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl
   ) {
@@ -336,6 +340,7 @@ export async function proxyV1({
       url === "/completions" ||
       url === "/auto" ||
       url === "/responses" ||
+      url === ANTHROPIC_MESSAGES ||
       url === ANTHROPIC_V1_MESSAGES ||
       isGoogleUrl) &&
     bodyData &&
@@ -928,6 +933,7 @@ async function fetchModelLoop(
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
+      url === ANTHROPIC_MESSAGES ||
       url === ANTHROPIC_V1_MESSAGES) &&
     isObject(bodyData) &&
     bodyData.model
@@ -2021,6 +2027,7 @@ async function fetchAnthropic({
   secret: APISecret;
 }): Promise<ModelResponse> {
   switch (url) {
+    case ANTHROPIC_MESSAGES:
     case ANTHROPIC_V1_MESSAGES:
       return fetchAnthropicMessages({
         secret,

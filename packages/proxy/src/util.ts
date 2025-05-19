@@ -14,15 +14,21 @@ export function parseAuthHeader(
     authValue = authHeader;
   }
 
-  if (!authValue) {
-    return null;
+  if (authValue) {
+    const parts = authValue.split(" ");
+    if (parts.length !== 2) {
+      return null;
+    }
+    return parts[1];
   }
 
-  const parts = authValue.split(" ");
-  if (parts.length !== 2) {
-    return null;
+  // Anthropic uses x-api-key instead of authorization.
+  const apiKeyHeader = headers["x-api-key"];
+  if (apiKeyHeader) {
+    return apiKeyHeader;
   }
-  return parts[1];
+
+  return null;
 }
 
 export function parseNumericHeader(

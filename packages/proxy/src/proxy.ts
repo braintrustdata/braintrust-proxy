@@ -134,6 +134,8 @@ export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
+const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
+
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
@@ -276,7 +278,7 @@ export async function proxyV1({
     url === "/responses" ||
     url === "/completions" ||
     url === "/moderations" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl;
 
   let bodyData = null;
@@ -285,7 +287,7 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl
   ) {
     try {
@@ -334,7 +336,7 @@ export async function proxyV1({
       url === "/completions" ||
       url === "/auto" ||
       url === "/responses" ||
-      url === "/anthropic/messages" ||
+      url === ANTHROPIC_V1_MESSAGES ||
       isGoogleUrl) &&
     bodyData &&
     bodyData.temperature !== 0 &&
@@ -926,7 +928,7 @@ async function fetchModelLoop(
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
-      url === "/anthropic/messages") &&
+      url === ANTHROPIC_V1_MESSAGES) &&
     isObject(bodyData) &&
     bodyData.model
   ) {
@@ -2019,7 +2021,7 @@ async function fetchAnthropic({
   secret: APISecret;
 }): Promise<ModelResponse> {
   switch (url) {
-    case "/anthropic/messages":
+    case ANTHROPIC_V1_MESSAGES:
       return fetchAnthropicMessages({
         secret,
         modelSpec,

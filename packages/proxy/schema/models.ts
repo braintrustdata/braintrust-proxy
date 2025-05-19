@@ -669,6 +669,24 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     displayName: "Claude 2",
     deprecated: true,
   },
+  "claude-3-sonnet-latest": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 3,
+    output_cost_per_mil_tokens: 15,
+    displayName: "Claude 3 Sonnet",
+    deprecated: true,
+  },
+  "claude-3-haiku-latest": {
+    format: "anthropic",
+    flavor: "chat",
+    multimodal: true,
+    input_cost_per_mil_tokens: 0.25,
+    output_cost_per_mil_tokens: 1.25,
+    displayName: "Claude 3 Haiku",
+    deprecated: true,
+  },
 
   // REPLICATE MODELS
   "meta/llama-2-70b-chat": {

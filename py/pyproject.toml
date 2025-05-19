@@ -1,0 +1,10 @@
+[project]
+name = "braintrust-proxy"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "openai>=1.79.0",
+    "pydantic>=2.11.4",
+]

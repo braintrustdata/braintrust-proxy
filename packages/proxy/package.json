@@ -67,6 +67,7 @@
     "express"
   ],
   "devDependencies": {
+    "@types/content-disposition": "^0.5.8",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^20.10.5",
     "@types/uuid": "^9.0.7",
@@ -93,6 +94,7 @@
     "@opentelemetry/sdk-metrics": "^1.19.0",
     "ai": "2.2.37",
     "cache-control-parser": "^2.0.6",
+    "content-disposition": "^0.5.4",
     "date-fns": "^4.1.0",
     "eventsource-parser": "^1.1.1",
     "jose": "^5.9.6",

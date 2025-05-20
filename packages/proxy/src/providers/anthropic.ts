@@ -1,36 +1,37 @@
-import { v4 as uuidv4 } from "uuid";
-import {
-  ChatCompletionMessageToolCall,
-  ChatCompletionTool,
-  ChatCompletionToolMessageParam,
-  CompletionUsage,
-} from "openai/resources";
-import { getTimestampInSeconds, isEmpty } from "../util";
-import { Message } from "@braintrust/core/typespecs";
-import { z } from "zod";
 import {
   MessageParam,
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
-import { convertMediaToBase64 } from "./util";
 import {
-  ImageBlockParam,
-  DocumentBlockParam,
-  MessageCreateParamsBase,
   Base64ImageSource,
+  CacheControlEphemeral,
+  DocumentBlockParam,
+  ImageBlockParam,
   MessageCreateParams,
+  MessageCreateParamsBase,
   ThinkingConfigParam,
 } from "@anthropic-ai/sdk/resources/messages";
+import { Message } from "@braintrust/core/typespecs";
 import {
+  CompletionUsage,
   OpenAIChatCompletion,
   OpenAIChatCompletionChoice,
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionChunkChoiceDelta,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import {
+  ChatCompletionMessageToolCall,
+  ChatCompletionTool,
+  ChatCompletionToolMessageParam,
+} from "openai/resources";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import { getTimestampInSeconds, isEmpty, isObject } from "../util";
+import { convertMediaToBase64 } from "./util";
 
 /*
 Example events:
@@ -95,6 +96,8 @@ export const anthropicDeltaSchema = z.union([
 export const anthropicUsage = z.object({
   input_tokens: z.number().optional(),
   output_tokens: z.number().optional(),
+  cache_creation_input_tokens: z.number().optional(),
+  cache_read_input_tokens: z.number().optional(),
 });
 
 export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
@@ -190,19 +193,44 @@ export interface AnthropicCompletion {
   model: string;
   stop_reason: string;
   stop_sequence: string | null;
-  usage: { input_tokens: number; output_tokens: number };
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+    cache_creation_input_tokens?: number;
+    cache_read_input_tokens?: number;
+  };
 }
 
 function updateUsage(
   anthropic: z.infer<typeof anthropicUsage>,
   openai: Partial<CompletionUsage>,
 ) {
-  if (!isEmpty(anthropic.input_tokens)) {
-    openai.prompt_tokens = anthropic.input_tokens;
+  if (!isEmpty(anthropic.cache_read_input_tokens)) {
+    openai.prompt_tokens_details = {
+      ...openai.prompt_tokens_details,
+      cached_tokens: anthropic.cache_read_input_tokens,
+    };
   }
+  if (!isEmpty(anthropic.cache_creation_input_tokens)) {
+    openai.prompt_tokens_details = {
+      ...openai.prompt_tokens_details,
+      cache_creation_tokens: anthropic.cache_creation_input_tokens,
+    };
+  }
+
+  if (!isEmpty(anthropic.input_tokens)) {
+    // OpenAI's convention is to accumulate all input tokens, including cached tokens.
+    openai.prompt_tokens =
+      anthropic.input_tokens +
+      (anthropic.cache_creation_input_tokens ?? 0) +
+      (anthropic.cache_read_input_tokens ?? 0);
+  }
+
   if (!isEmpty(anthropic.output_tokens)) {
     openai.completion_tokens = anthropic.output_tokens;
   }
+  openai.total_tokens =
+    (openai.prompt_tokens ?? 0) + (openai.completion_tokens ?? 0);
 }
 
 export function anthropicEventToOpenAIEvent(
@@ -345,11 +373,7 @@ export function anthropicEventToOpenAIEvent(
         created: getTimestampInSeconds(),
         usage:
           !isEmpty(usage.completion_tokens) && !isEmpty(usage.prompt_tokens)
-            ? {
-                prompt_tokens: usage.prompt_tokens,
-                completion_tokens: usage.completion_tokens,
-                total_tokens: usage.completion_tokens + usage.prompt_tokens,
-              }
+            ? (usage as CompletionUsage)
             : undefined,
       },
       finished: true,
@@ -401,7 +425,15 @@ export function anthropicCompletionToOpenAICompletion(
   const firstText = completion.content.find((c) => c.type === "text");
   const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
-
+  let usage: CompletionUsage | undefined = undefined;
+  if (completion.usage) {
+    usage = {
+      prompt_tokens: 0,
+      completion_tokens: 0,
+      total_tokens: 0,
+    };
+    updateUsage(completion.usage, usage);
+  }
   return {
     id: completion.id,
     choices: [
@@ -453,12 +485,7 @@ export function anthropicCompletionToOpenAICompletion(
     created: getTimestampInSeconds(),
     model: completion.model,
     object: "chat.completion",
-    usage: {
-      prompt_tokens: completion.usage.input_tokens,
-      completion_tokens: completion.usage.output_tokens,
-      total_tokens:
-        completion.usage.input_tokens + completion.usage.output_tokens,
-    },
+    usage,
   };
 }
 
@@ -507,18 +534,29 @@ export async function makeAnthropicMediaBlock(
   }
 }
 
+export function extractCacheControl(
+  part: unknown,
+): CacheControlEphemeral | undefined {
+  return isObject(part) &&
+    "cache_control" in part &&
+    isObject(part.cache_control)
+    ? (part.cache_control as CacheControlEphemeral)
+    : undefined;
+}
+
 export async function openAIContentToAnthropicContent(
   content: Message["content"],
-): Promise<MessageParam["content"]> {
+): Promise<Exclude<MessageParam["content"], string>> {
   if (typeof content === "string") {
-    return content;
+    return [{ type: "text", text: content }];
   }
   return Promise.all(
-    content?.map(async (part) =>
-      part.type === "text"
+    (content ?? []).map(async (part) => ({
+      ...(part.type === "text"
         ? part
-        : await makeAnthropicMediaBlock(part.image_url.url),
-    ) ?? [],
+        : await makeAnthropicMediaBlock(part.image_url.url)),
+      cache_control: extractCacheControl(part),
+    })),
   );
 }
 
@@ -530,6 +568,7 @@ export function openAIToolMessageToAnthropicToolCall(
       tool_use_id: toolCall.tool_call_id,
       type: "tool_result",
       content: toolCall.content,
+      cache_control: extractCacheControl(toolCall),
     },
   ];
 }
@@ -542,6 +581,7 @@ export function openAIToolCallsToAnthropicToolUse(
     type: "tool_use",
     input: JSON.parse(t.function.arguments),
     name: t.function.name,
+    cache_control: extractCacheControl(t),
   }));
 }
 

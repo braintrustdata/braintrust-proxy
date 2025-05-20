@@ -1,33 +1,69 @@
+import { MessageParam } from "@anthropic-ai/sdk/resources";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
+import {
+  Message,
+  MessageRole,
+  responseFormatSchema,
+} from "@braintrust/core/typespecs";
+import { Meter, MeterProvider } from "@opentelemetry/api";
+import {
+  APISecret,
+  AvailableModels,
+  AzureEntraSecretSchema,
+  DatabricksOAuthSecretSchema,
+  EndpointProviderToBaseURL,
+  MessageTypeToMessageType,
+  modelProviderHasReasoning,
+  ModelSpec,
+  translateParams,
+  VertexMetadataSchema,
+} from "@schema";
+import {
+  completionUsageSchema,
+  OpenAIChatCompletionChunk,
+  OpenAIReasoning,
+} from "@types";
+import { parse as cacheControlParse } from "cache-control-parser";
+import { differenceInSeconds } from "date-fns";
 import {
   createParser,
   type EventSourceParser,
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
-import { parse as cacheControlParse } from "cache-control-parser";
+import { importPKCS8, SignJWT } from "jose";
+import { Buffer } from "node:buffer";
 import {
-  AvailableModels,
-  MessageTypeToMessageType,
-  EndpointProviderToBaseURL,
-  translateParams,
-  APISecret,
-  VertexMetadataSchema,
-  ModelSpec,
-  AzureEntraSecretSchema,
-  DatabricksOAuthSecretSchema,
-  modelProviderHasReasoning,
-} from "@schema";
+  ChatCompletion,
+  ChatCompletionChunk,
+  ChatCompletionCreateParams,
+  CompletionUsage,
+  CreateEmbeddingResponse,
+  ModerationCreateResponse,
+} from "openai/resources";
 import {
-  ModelResponse,
-  ProxyBadRequestError,
-  flattenChunks,
-  flattenChunksArray,
-  getRandomInt,
-  isEmpty,
-  isObject,
-  parseAuthHeader,
-  parseNumericHeader,
-} from "./util";
+  ChatCompletionContentPart,
+  ChatCompletionCreateParamsBase,
+  ChatCompletionMessage,
+  ChatCompletionMessageParam,
+} from "openai/resources/chat/completions";
+import {
+  Response as OpenAIResponse,
+  ResponseCreateParams,
+  ResponseInputContent,
+  ResponseInputItem,
+  ResponseOutputItem,
+} from "openai/resources/responses/responses";
+import {
+  getCurrentUnixTimestamp,
+  isTempCredential,
+  makeTempCredentials,
+  parseOpenAIStream,
+  verifyTempCredentials,
+} from "utils";
+import { z } from "zod";
+import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
@@ -39,8 +75,13 @@ import {
   openAIToolsToAnthropicTools,
   upgradeAnthropicContentMessage,
 } from "./providers/anthropic";
-import { Meter, MeterProvider } from "@opentelemetry/api";
-import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { getAzureEntraAccessToken } from "./providers/azure";
+import {
+  fetchBedrockAnthropic,
+  fetchBedrockAnthropicMessages,
+  fetchConverse,
+} from "./providers/bedrock";
+import { getDatabricksOAuthAccessToken } from "./providers/databricks";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
@@ -49,58 +90,20 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
-import { _urljoin, isArray } from "@braintrust/core";
-import {
-  ChatCompletion,
-  ChatCompletionChunk,
-  ChatCompletionCreateParams,
-  CompletionUsage,
-  CreateEmbeddingResponse,
-  ModerationCreateResponse,
-} from "openai/resources";
-import {
-  ResponseCreateParams,
-  ResponseInputContent,
-  ResponseInputItem,
-  Response as OpenAIResponse,
-  ResponseOutputItem,
-} from "openai/resources/responses/responses";
-import {
-  fetchBedrockAnthropic,
-  fetchBedrockAnthropicMessages,
-  fetchConverse,
-} from "./providers/bedrock";
-import { Buffer } from "node:buffer";
-import { ExperimentLogPartialArgs } from "@braintrust/core";
-import { MessageParam } from "@anthropic-ai/sdk/resources";
-import {
-  getCurrentUnixTimestamp,
-  parseOpenAIStream,
-  isTempCredential,
-  makeTempCredentials,
-  verifyTempCredentials,
-} from "utils";
-import { differenceInSeconds } from "date-fns";
-import {
   makeFakeOpenAIStreamTransformer,
   normalizeOpenAIMessages,
 } from "./providers/openai";
 import {
-  ChatCompletionContentPart,
-  ChatCompletionCreateParamsBase,
-  ChatCompletionMessage,
-  ChatCompletionMessageParam,
-} from "openai/resources/chat/completions";
-import { importPKCS8, SignJWT } from "jose";
-import { z } from "zod";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { getAzureEntraAccessToken } from "./providers/azure";
-import { getDatabricksOAuthAccessToken } from "./providers/databricks";
-import { OpenAIChatCompletionChunk, OpenAIReasoning } from "@types";
+  flattenChunks,
+  flattenChunksArray,
+  getRandomInt,
+  isEmpty,
+  isObject,
+  ModelResponse,
+  parseAuthHeader,
+  parseNumericHeader,
+  ProxyBadRequestError,
+} from "./util";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -134,6 +137,10 @@ export const CACHED_HEADER = "x-bt-cached";
 export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
+
+// The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
+const ANTHROPIC_MESSAGES = "/anthropic/messages";
+const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -277,7 +284,8 @@ export async function proxyV1({
     url === "/responses" ||
     url === "/completions" ||
     url === "/moderations" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_MESSAGES ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl;
 
   let bodyData = null;
@@ -286,7 +294,8 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_MESSAGES ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl
   ) {
     try {
@@ -335,7 +344,8 @@ export async function proxyV1({
       url === "/completions" ||
       url === "/auto" ||
       url === "/responses" ||
-      url === "/anthropic/messages" ||
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES ||
       isGoogleUrl) &&
     bodyData &&
     bodyData.temperature !== 0 &&
@@ -639,17 +649,28 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
-              const result = JSON.parse(
-                event.data,
-              ) as OpenAIChatCompletionChunk;
+              const result = JSON.parse(event.data) as
+                | OpenAIChatCompletionChunk
+                | undefined;
               if (result) {
-                if (result.usage) {
+                const extendedUsage = completionUsageSchema.safeParse(
+                  result.usage,
+                );
+                if (extendedUsage.success) {
                   spanLogger.log({
                     // TODO: we should include the proxy meters metrics here
                     metrics: {
-                      tokens: result.usage.total_tokens,
-                      prompt_tokens: result.usage.prompt_tokens,
-                      completion_tokens: result.usage.completion_tokens,
+                      tokens: extendedUsage.data.total_tokens,
+                      prompt_tokens: extendedUsage.data.prompt_tokens,
+                      completion_tokens: extendedUsage.data.completion_tokens,
+                      prompt_cached_tokens:
+                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                      prompt_cache_creation_tokens:
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cache_creation_tokens,
+                      completion_reasoning_tokens:
+                        extendedUsage.data.completion_tokens_details
+                          ?.reasoning_tokens,
                     },
                   });
                 }
@@ -762,14 +783,25 @@ export async function proxyV1({
             case "chat":
             case "completion": {
               const data = dataRaw as ChatCompletion;
-              spanLogger.log({
-                output: data.choices,
-                metrics: {
-                  tokens: data.usage?.total_tokens,
-                  prompt_tokens: data.usage?.prompt_tokens,
-                  completion_tokens: data.usage?.completion_tokens,
-                },
-              });
+              const extendedUsage = completionUsageSchema.safeParse(data.usage);
+              if (extendedUsage.success) {
+                spanLogger.log({
+                  output: data.choices,
+                  metrics: {
+                    tokens: extendedUsage.data.total_tokens,
+                    prompt_tokens: extendedUsage.data.prompt_tokens,
+                    completion_tokens: extendedUsage.data.completion_tokens,
+                    prompt_cached_tokens:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                    prompt_cache_creation_tokens:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens,
+                    completion_reasoning_tokens:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens,
+                  },
+                });
+              }
               break;
             }
             case "embedding":
@@ -923,7 +955,8 @@ async function fetchModelLoop(
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
-      url === "/anthropic/messages") &&
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES) &&
     isObject(bodyData) &&
     bodyData?.model
   ) {
@@ -2013,7 +2046,8 @@ async function fetchAnthropic({
   secret: APISecret;
 }): Promise<ModelResponse> {
   switch (url) {
-    case "/anthropic/messages":
+    case ANTHROPIC_MESSAGES:
+    case ANTHROPIC_V1_MESSAGES:
       return fetchAnthropicMessages({
         secret,
         modelSpec,

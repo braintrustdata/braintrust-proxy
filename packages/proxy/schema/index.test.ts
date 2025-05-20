@@ -63,7 +63,7 @@ const examples: Record<
       top_p: 0.9,
     },
   },
-  reasoning: {
+  reasoning_effort: {
     openai: {
       model: "gpt-4o",
       messages: [
@@ -139,7 +139,8 @@ const examples: Record<
         },
       ],
       temperature: 0,
-      reasoning_effort: undefined,
+      reasoning_enabled: false,
+      reasoning_budget: 1024,
       stream: false,
     },
     google: {
@@ -179,6 +180,66 @@ const examples: Record<
       stream: false,
       thinking: {
         type: "disabled",
+      },
+    },
+  },
+  "reasoning budget": {
+    openai: {
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      temperature: 0,
+      reasoning_enabled: true,
+      reasoning_budget: 1024,
+      stream: false,
+    },
+    google: {
+      model: "gpt-4o",
+      // notice how this is still an intermediate param
+      // google's api expects a content instead of messages, for example
+      messages: [
+        {
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      temperature: 0,
+      thinkingConfig: {
+        thinkingBudget: 1024,
+        includeThoughts: true,
+      },
+      stream: false,
+    },
+    anthropic: {
+      model: "gpt-4o",
+      messages: [
+        {
+          // @ts-expect-error  -- we use the role to later manipulate the request
+          role: "system",
+          content: "You are a detailed reasoning assistant.",
+        },
+        {
+          role: "user",
+          content: "Explain how to solve 2x + 4 = 12 step by step.",
+        },
+      ],
+      temperature: 1,
+      stream: false,
+      thinking: {
+        budget_tokens: 1024,
+        type: "enabled",
       },
     },
   },

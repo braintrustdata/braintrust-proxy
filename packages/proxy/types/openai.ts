@@ -61,6 +61,10 @@ export type OpenAIChatCompletionCreateParams = ChatCompletionCreateParams & {
 import "openai/resources/chat/completions";
 
 declare module "openai/resources/chat/completions" {
+  interface ChatCompletionCreateParamsBase {
+    reasoning_enabled?: boolean;
+    reasoning_budget?: number;
+  }
   interface ChatCompletionAssistantMessageParam {
     reasoning?: OpenAIReasoning[];
   }

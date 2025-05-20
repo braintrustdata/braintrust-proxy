@@ -76,7 +76,7 @@ export const modelParamMappers: {
       temperature,
       ...params
     }) => {
-      if (!reasoning_effort || reasoning_effort === "none") {
+      if (!reasoning_effort) {
         const maxTokens = max_completion_tokens || max_tokens;
         return {
           ...params,
@@ -108,6 +108,24 @@ export const modelParamMappers: {
         },
       };
     },
+    reasoning_enabled: ({ reasoning_enabled, thinking, ...params }) => {
+      return {
+        ...params,
+        thinking: {
+          ...thinking,
+          enabled: true,
+        },
+      };
+    },
+    reasoning_budget: ({ reasoning_budget, thinking, ...params }) => {
+      return {
+        ...params,
+        thinking: {
+          ...thinking,
+          budget_tokens: reasoning_budget,
+        },
+      };
+    },
   },
   google: {
     reasoning_effort: ({
@@ -116,8 +134,7 @@ export const modelParamMappers: {
       max_completion_tokens,
       ...params
     }) => {
-      // TODO: update types to accept an explicit reasoning_effort
-      if (!reasoning_effort || reasoning_effort === "none") {
+      if (!reasoning_effort) {
         const maxTokens = max_completion_tokens || max_tokens;
         return {
           ...params,
@@ -142,6 +159,30 @@ export const modelParamMappers: {
           includeThoughts: true,
         },
         maxOutputTokens: maxTokens,
+      };
+    },
+    reasoning_enabled: ({ reasoning_enabled, thinkingConfig, ...params }) => {
+      return {
+        ...params,
+        ...(reasoning_enabled && {
+          thinkingConfig: {
+            ...thinkingConfig,
+            includeThoughts: true,
+          },
+        }),
+      };
+    },
+    reasoning_budget: ({ reasoning_budget, thinkingConfig, ...params }) => {
+      const enabled = !!reasoning_budget && reasoning_budget > 0;
+      return {
+        ...params,
+        ...(enabled && {
+          thinkingConfig: {
+            ...thinkingConfig,
+            includeThoughts: true,
+            thinkingBudget: reasoning_budget,
+          },
+        }),
       };
     },
   },

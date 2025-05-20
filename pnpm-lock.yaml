@@ -233,6 +233,9 @@ importers:
       cache-control-parser:
         specifier: ^2.0.6
         version: 2.0.6
+      content-disposition:
+        specifier: ^0.5.4
+        version: 0.5.4
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -255,6 +258,9 @@ importers:
         specifier: 3.22.4
         version: 3.22.4
     devDependencies:
+      '@types/content-disposition':
+        specifier: ^0.5.8
+        version: 0.5.8
       '@types/jsonwebtoken':
         specifier: ^9.0.7
         version: 9.0.7
@@ -3418,6 +3424,10 @@ packages:
     resolution: {integrity: sha512-K6uROf1LD88uDQqJCktA4yzL1YYAK6NgfsI0v/mTgyPKWsX1CnJ0XPSDhViejru1GcRkLWb8RlzFYJRqGUbaug==}
     dependencies:
       '@types/node': 20.10.5
+    dev: true
+
+  /@types/content-disposition@0.5.8:
+    resolution: {integrity: sha512-QVSSvno3dE0MgO76pJhmv4Qyi/j0Yk9pBp0Y7TJ2Tlj+KCgJWY6qX7nnxCOLkZ3VYRSIk1WTxCvwUSdx6CCLdg==}
     dev: true
 
   /@types/cookie@0.6.0:
@@ -9117,7 +9127,7 @@ packages:
     dependencies:
       browserslist: 4.22.1
       escalade: 3.1.1
-      picocolors: 1.1.1
+      picocolors: 1.0.1
     dev: true
 
   /uri-js@4.4.1:

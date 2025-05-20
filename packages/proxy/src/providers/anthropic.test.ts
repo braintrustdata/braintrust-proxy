@@ -207,7 +207,7 @@ it("should disable reasoning/thinking params non-streaming", async () => {
   >({
     body: {
       model: "claude-3-7-sonnet-20250219",
-      reasoning_effort: null,
+      reasoning_enabled: false,
       stream: false,
       messages: [
         {

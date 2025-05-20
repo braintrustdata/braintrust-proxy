@@ -6,6 +6,9 @@ import type {
   ModelParams,
 } from "@braintrust/core/typespecs";
 import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
+import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
+import { OpenAIChatCompletionCreateParams } from "@types";
+import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
 
 export * from "./secrets";
 export * from "./models";
@@ -53,139 +56,11 @@ export const modelParamToModelParam: {
   stop: null,
 };
 
-const effortToBudgetMultiplier = {
-  low: 0.2,
-  medium: 0.5,
-  high: 0.8,
-} as const;
-
-const getBudgetMultiplier = (effort: keyof typeof effortToBudgetMultiplier) => {
-  return effortToBudgetMultiplier[effort] || effortToBudgetMultiplier.low;
-};
-
-export const modelParamMappers: {
-  [name in ModelFormat]?: {
-    [param: string]: (params: any) => Record<string, unknown>;
-  };
-} = {
-  anthropic: {
-    reasoning_effort: ({
-      reasoning_effort,
-      max_tokens,
-      max_completion_tokens,
-      temperature,
-      ...params
-    }) => {
-      if (!reasoning_effort) {
-        const maxTokens = max_completion_tokens || max_tokens;
-        return {
-          ...params,
-          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : undefined), // required by anthropic
-          temperature,
-          // an empty/unset means we should disable
-          thinking: {
-            type: "disabled",
-          },
-        };
-      }
-
-      // Max tokens are inclusive of budget. If the max tokens are too low (below 1024), then the API will raise an exception.
-      const maxTokens = Math.max(
-        max_completion_tokens || max_tokens || 0,
-        1024 / effortToBudgetMultiplier.low,
-      );
-
-      const budget = getBudgetMultiplier(reasoning_effort || "low") * maxTokens;
-
-      return {
-        ...params,
-        max_tokens: maxTokens,
-        // must be set when using thinking
-        temperature: 1,
-        thinking: {
-          budget_tokens: budget,
-          type: "enabled",
-        },
-      };
-    },
-    reasoning_enabled: ({ reasoning_enabled, thinking, ...params }) => {
-      return {
-        ...params,
-        thinking: {
-          ...thinking,
-          enabled: true,
-        },
-      };
-    },
-    reasoning_budget: ({ reasoning_budget, thinking, ...params }) => {
-      return {
-        ...params,
-        thinking: {
-          ...thinking,
-          budget_tokens: reasoning_budget,
-        },
-      };
-    },
-  },
-  google: {
-    reasoning_effort: ({
-      reasoning_effort,
-      max_tokens,
-      max_completion_tokens,
-      ...params
-    }) => {
-      if (!reasoning_effort) {
-        const maxTokens = max_completion_tokens || max_tokens;
-        return {
-          ...params,
-          ...(maxTokens !== undefined ? { max_tokens: maxTokens } : undefined),
-          thinkingConfig: {
-            thinkingBudget: 0,
-          },
-        };
-      }
-
-      const maxTokens = Math.max(
-        max_completion_tokens || max_tokens || 0,
-        1024 / effortToBudgetMultiplier.low,
-      );
-
-      const budget = getBudgetMultiplier(reasoning_effort || "low") * maxTokens;
-
-      return {
-        ...params,
-        thinkingConfig: {
-          thinkingBudget: budget,
-          includeThoughts: true,
-        },
-        maxOutputTokens: maxTokens,
-      };
-    },
-    reasoning_enabled: ({ reasoning_enabled, thinkingConfig, ...params }) => {
-      return {
-        ...params,
-        ...(reasoning_enabled && {
-          thinkingConfig: {
-            ...thinkingConfig,
-            includeThoughts: true,
-          },
-        }),
-      };
-    },
-    reasoning_budget: ({ reasoning_budget, thinkingConfig, ...params }) => {
-      const enabled = !!reasoning_budget && reasoning_budget > 0;
-      return {
-        ...params,
-        ...(enabled && {
-          thinkingConfig: {
-            ...thinkingConfig,
-            includeThoughts: true,
-            thinkingBudget: reasoning_budget,
-          },
-        }),
-      };
-    },
-  },
+const paramMappers: Partial<
+  Record<ModelFormat, (params: OpenAIChatCompletionCreateParams) => object>
+> = {
+  anthropic: openaiParamsToAnthropicMesssageParams,
+  google: openaiParamsToGeminiMessageParams,
 };
 
 export const sliderSpecs: {
@@ -603,12 +478,14 @@ export function translateParams(
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }
 
-  for (const [k, _] of Object.entries(params || {})) {
-    const mapper = modelParamMappers[toProvider]?.[k];
-    if (mapper) {
-      // not ideal.. we should pass the original params to the mappers, but simple params mapping may overwrite complex mappers
-      translatedParams = mapper(translatedParams);
-    }
+  // ideally we should short circuit and just have a master mapper but this avoids scope
+  // for now
+  const mapper = paramMappers[toProvider];
+  if (mapper) {
+    translatedParams = mapper(translatedParams as any) as Record<
+      string,
+      unknown
+    >;
   }
 
   return translatedParams;

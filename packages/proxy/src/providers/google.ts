@@ -3,16 +3,23 @@ import { Message } from "@braintrust/core/typespecs";
 import {
   Content,
   FinishReason,
+  GenerateContentConfig,
+  GenerateContentParameters,
   GenerateContentResponse,
   Part,
+  ThinkingConfig,
 } from "@google/genai";
 import { getTimestampInSeconds } from "..";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChoice,
   OpenAIChatCompletionChunk,
+  OpenAIChatCompletionCreateParams,
 } from "@types";
 import { convertMediaToBase64 } from "./util";
+import { MessageParam } from "@anthropic-ai/sdk/resources";
+import { getBudgetMultiplier } from "utils";
+import { cleanOpenAIParams } from "utils/openai";
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
@@ -302,4 +309,84 @@ export const OpenAIParamsToGoogleParams: {
   frequency_penalty: null,
   presence_penalty: null,
   tool_choice: null,
+};
+
+// because GenAI sdk doesn't provide a convenient API equivalent type
+type GeminiGenerateContentParams = Omit<GenerateContentParameters, "config"> &
+  Omit<
+    GenerateContentConfig,
+    | "httpOptions"
+    | "abortSignal"
+    | "routingConfig"
+    | "modelSelectionConfig"
+    | "labels"
+  >;
+
+export const openaiParamsToGeminiMessageParams = (
+  openai: OpenAIChatCompletionCreateParams,
+): GeminiGenerateContentParams => {
+  const gemini: GeminiGenerateContentParams = {
+    // TODO: we depend on translateParams to get us half way there
+    ...(cleanOpenAIParams(openai) as any),
+  };
+
+  const maxTokens =
+    openai.max_completion_tokens !== undefined ||
+    openai.max_tokens !== undefined
+      ? Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+        1024
+      : undefined;
+
+  gemini.maxOutputTokens = maxTokens;
+
+  if (
+    openai.reasoning_effort !== undefined ||
+    openai.reasoning_budget !== undefined ||
+    openai.reasoning_enabled !== undefined
+  ) {
+    gemini.thinkingConfig = getGeminiThinkingParams({
+      ...openai,
+      max_completion_tokens: maxTokens,
+    });
+  }
+
+  return gemini;
+};
+
+const getGeminiThinkingParams = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens?: Required<number>;
+  },
+): ThinkingConfig => {
+  if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
+    return {
+      thinkingBudget: 0,
+    };
+  }
+
+  return {
+    includeThoughts: true,
+    thinkingBudget: getThinkingBudget(openai),
+  };
+};
+
+const getThinkingBudget = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens?: Required<number>;
+  },
+): number => {
+  if (openai.reasoning_budget !== undefined) {
+    return openai.reasoning_budget;
+  }
+
+  let budget = 1024;
+
+  if (openai.reasoning_effort !== undefined) {
+    budget = Math.floor(
+      getBudgetMultiplier(openai.reasoning_effort || "low") *
+        (openai.max_completion_tokens ?? 1024),
+    );
+  }
+
+  return budget;
 };

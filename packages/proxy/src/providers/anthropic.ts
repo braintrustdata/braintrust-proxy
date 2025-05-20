@@ -19,6 +19,8 @@ import {
   DocumentBlockParam,
   MessageCreateParamsBase,
   Base64ImageSource,
+  MessageCreateParams,
+  ThinkingConfigParam,
 } from "@anthropic-ai/sdk/resources/messages";
 import {
   OpenAIChatCompletion,
@@ -27,6 +29,8 @@ import {
   OpenAIChatCompletionChunkChoiceDelta,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import { getBudgetMultiplier } from "utils";
+import { cleanOpenAIParams } from "utils/openai";
 
 /*
 Example events:
@@ -618,3 +622,85 @@ export function anthropicToolChoiceToOpenAIToolChoice(
       return { type: "tool", name: toolChoice.function.name };
   }
 }
+
+export function openaiParamsToAnthropicMesssageParams(
+  openai: OpenAIChatCompletionCreateParams,
+): MessageCreateParams {
+  const anthropic: MessageCreateParams = {
+    // TODO: we depend on translateParams to get us half way there
+    ...(cleanOpenAIParams(openai) as any),
+  };
+
+  const maxTokens =
+    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) || 1024;
+
+  anthropic.max_tokens = maxTokens;
+
+  if (
+    openai.reasoning_effort !== undefined ||
+    openai.reasoning_budget !== undefined ||
+    openai.reasoning_enabled !== undefined
+  ) {
+    anthropic.thinking = getAnthropicThinkingParams({
+      ...openai,
+      max_completion_tokens: maxTokens,
+    });
+
+    if (anthropic.thinking.type === "enabled") {
+      // must be 1 when thinking
+      anthropic.temperature = 1;
+
+      // avoid anthropic APIs complaining about this
+      // need to make sure max_tokens are greater than budget_tokens
+      const effectiveMax = Math.max(
+        anthropic.max_tokens,
+        anthropic.thinking.budget_tokens,
+      );
+      if (effectiveMax === anthropic.thinking.budget_tokens) {
+        anthropic.max_tokens = Math.floor(anthropic.max_tokens * 1.5);
+      }
+    }
+  }
+
+  return anthropic;
+}
+
+const getAnthropicThinkingParams = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens: Required<number>;
+  },
+): ThinkingConfigParam => {
+  if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
+    return { type: "disabled" };
+  }
+
+  return {
+    type: "enabled",
+    budget_tokens: getThinkingBudget(openai),
+  };
+};
+
+const getThinkingBudget = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens: Required<number>;
+  },
+): number => {
+  if (openai.reasoning_budget !== undefined) {
+    return openai.reasoning_budget;
+  }
+
+  let budget = 1024;
+
+  if (openai.reasoning_effort !== undefined) {
+    // budget must be at least 1024
+    budget = Math.max(
+      Math.floor(
+        getBudgetMultiplier(openai.reasoning_effort || "low") *
+          openai.max_completion_tokens,
+      ),
+      1024,
+    );
+  }
+
+  return budget;
+};

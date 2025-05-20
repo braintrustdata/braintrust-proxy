@@ -55,6 +55,8 @@ export type OpenAIChatCompletionChunk = ChatCompletionChunk & {
 
 export type OpenAIChatCompletionCreateParams = ChatCompletionCreateParams & {
   messages: Array<OpenAIChatCompletionMessage>;
+  reasoning_enabled?: boolean;
+  reasoning_budget?: number;
 };
 
 // overrides

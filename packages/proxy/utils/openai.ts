@@ -1,6 +1,9 @@
-import { OpenAIChatCompletionChunk } from "@types";
+import {
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionCreateParams,
+} from "@types";
 import { trimStartOfStreamHelper } from "ai";
-import { Completion } from "openai/resources";
+import { ChatCompletionCreateParams, Completion } from "openai/resources";
 
 /**
  * Creates a parser function for processing the OpenAI stream data.
@@ -117,4 +120,19 @@ export function isCompletion(data: unknown): data is Completion {
     data.choices[0] &&
     "text" in data.choices[0]
   );
+}
+
+/**
+ * Cleans the OpenAI parameters by removing extra braintrust fields.
+ *
+ * @param {OpenAIChatCompletionCreateParams} params - The OpenAI parameters to clean.
+ * @returns {ChatCompletionCreateParams} - The cleaned OpenAI parameters.
+ */
+export function cleanOpenAIParams({
+  reasoning_effort,
+  reasoning_budget,
+  reasoning_enabled,
+  ...openai
+}: OpenAIChatCompletionCreateParams): ChatCompletionCreateParams {
+  return openai;
 }

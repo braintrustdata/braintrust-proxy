@@ -28,6 +28,7 @@ const examples: Record<
       stream: true,
     },
     google: {
+      maxOutputTokens: 1500,
       max_tokens: 1500,
       messages: [
         {
@@ -97,10 +98,11 @@ const examples: Record<
       ],
       temperature: 0,
       thinkingConfig: {
-        thinkingBudget: 4096,
+        thinkingBudget: 800,
         includeThoughts: true,
       },
-      maxOutputTokens: 5120,
+      maxOutputTokens: 1000,
+      max_tokens: 1000,
       stream: false,
     },
     anthropic: {
@@ -116,11 +118,11 @@ const examples: Record<
           content: "Explain how to solve 2x + 4 = 12 step by step.",
         },
       ],
-      max_tokens: 5120,
       temperature: 1,
       stream: false,
+      max_tokens: 1500,
       thinking: {
-        budget_tokens: 4096,
+        budget_tokens: 1024,
         type: "enabled",
       },
     },
@@ -178,6 +180,7 @@ const examples: Record<
       ],
       temperature: 0,
       stream: false,
+      max_tokens: 1024,
       thinking: {
         type: "disabled",
       },
@@ -237,6 +240,7 @@ const examples: Record<
       ],
       temperature: 1,
       stream: false,
+      max_tokens: 1536,
       thinking: {
         budget_tokens: 1024,
         type: "enabled",

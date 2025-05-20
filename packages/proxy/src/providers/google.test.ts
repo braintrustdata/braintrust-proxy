@@ -134,7 +134,8 @@ for (const model of [
       >({
         body: {
           model,
-          reasoning_effort: null,
+          reasoning_enabled: true,
+          reasoning_budget: 0,
           stream: false,
           messages: [
             {

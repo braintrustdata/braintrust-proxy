@@ -184,7 +184,8 @@ export const defaultModelParamSettings: {
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
-    reasoning_effort: undefined,
+    reasoning_enabled: false,
+    reasoning_budget: undefined,
   },
   google: {
     temperature: undefined,
@@ -192,7 +193,8 @@ export const defaultModelParamSettings: {
     topP: 0.7,
     topK: 5,
     use_cache: true,
-    reasoning_effort: undefined,
+    reasoning_enabled: false,
+    reasoning_budget: undefined,
   },
   js: {},
   window: {

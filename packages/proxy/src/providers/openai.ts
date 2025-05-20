@@ -105,8 +105,20 @@ async function normalizeOpenAIContent(
   }
   switch (content.type) {
     case "image_url":
-      if (convertBase64Media(content.image_url.url)) {
+      const mediaBlock = convertBase64Media(content.image_url.url);
+      if (mediaBlock?.media_type.startsWith("image/")) {
         return content;
+      } else if (mediaBlock) {
+        // Let OpenAI validate the mime type of the base64 encoded input file
+        // As of 05/20/25 this supports .pdf and appears to have limited support for .csv, .xlsx, .docx, and .pptx
+        // but is not clearly documented
+        return {
+          type: "file",
+          file: {
+            filename: "file_from_base64",
+            file_data: content.image_url.url,
+          },
+        };
       }
 
       const parsed = parseFileMetadataFromUrl(content.image_url.url);

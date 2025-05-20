@@ -1,11 +1,9 @@
 import {
   ORG_NAME_HEADER,
   SpanLogger,
-  isObject,
   parseAuthHeader,
 } from "@braintrust/proxy";
-import { Attachment, BraintrustState, loginToState, Span } from "braintrust";
-import { isArray, SpanComponentsV3, SpanObjectTypeV3 } from "@braintrust/core";
+import { BraintrustState, loginToState, Span } from "braintrust";
 import { base64ToArrayBuffer } from "@braintrust/proxy/utils";
 import {
   digestMessage,
@@ -13,14 +11,17 @@ import {
   encryptedPut,
   type Cache as EdgeCache,
 } from "@braintrust/proxy/edge";
+import { AttachmentReference } from "@braintrust/core/typespecs";
+import { replacePayloadWithAttachments } from "./attachment-wrapper";
 
 export function makeProxySpanLogger(
   span: Span,
+  attachments: Record<string, AttachmentReference>,
   waitUntil: (promise: Promise<any>) => void,
 ): SpanLogger {
   return {
     log: (args) => {
-      span.log(replacePayloadWithAttachments(args, span.state()));
+      span.log(replacePayloadWithAttachments(args, span.state(), attachments));
       waitUntil(span.flush());
     },
     end: span.end.bind(span),
@@ -31,43 +32,6 @@ export function makeProxySpanLogger(
       return;
     },
   };
-}
-export function replacePayloadWithAttachments<T>(
-  data: T,
-  state: BraintrustState | undefined,
-): T {
-  return replacePayloadWithAttachmentsInner(data, state) as T;
-}
-
-function replacePayloadWithAttachmentsInner(
-  data: unknown,
-  state: BraintrustState | undefined,
-): unknown {
-  if (isArray(data)) {
-    return data.map((item) => replacePayloadWithAttachmentsInner(item, state));
-  } else if (isObject(data)) {
-    return Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [
-        key,
-        replacePayloadWithAttachmentsInner(value, state),
-      ]),
-    );
-  } else if (typeof data === "string") {
-    if (isBase64Image(data)) {
-      const { mimeType, data: arrayBuffer } = getBase64Parts(data);
-      const filename = `file.${mimeType.split("/")[1]}`;
-      return new Attachment({
-        data: arrayBuffer,
-        contentType: mimeType,
-        filename,
-        state,
-      });
-    } else {
-      return data;
-    }
-  } else {
-    return data;
-  }
 }
 
 const base64ImagePattern =

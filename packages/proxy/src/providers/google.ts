@@ -82,7 +82,7 @@ export async function openAIMessagesToGoogleMessages(
                   name: m.tool_call_id,
                   response: {
                     name: m.tool_call_id,
-                    content: JSON.parse(m.content),
+                    content: m.content,
                   },
                 },
               },
@@ -146,6 +146,9 @@ function translateFinishReason(
     case FinishReason.MAX_TOKENS:
       return "length";
     case FinishReason.SAFETY:
+    case FinishReason.PROHIBITED_CONTENT:
+    case FinishReason.SPII:
+    case FinishReason.BLOCKLIST:
       return "content_filter";
     case FinishReason.STOP:
       return "stop";
@@ -153,7 +156,10 @@ function translateFinishReason(
     case FinishReason.LANGUAGE:
     case FinishReason.OTHER:
     case FinishReason.FINISH_REASON_UNSPECIFIED:
+    case FinishReason.MALFORMED_FUNCTION_CALL:
+      return "content_filter";
     case undefined:
+    default:
       return null;
   }
 }

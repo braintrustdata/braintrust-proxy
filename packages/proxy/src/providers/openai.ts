@@ -97,7 +97,7 @@ export async function normalizeOpenAIMessages(
 }
 
 // https://platform.openai.com/docs/guides/pdf-files?api-mode=chat
-async function normalizeOpenAIContent(
+export async function normalizeOpenAIContent(
   content: ChatCompletionContentPart,
 ): Promise<ChatCompletionContentPart> {
   if (typeof content === "string") {

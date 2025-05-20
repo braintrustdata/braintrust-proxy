@@ -99,6 +99,7 @@ import { z } from "zod";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { getAzureEntraAccessToken } from "./providers/azure";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
+import { completionUsageSchema } from "types";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -132,6 +133,10 @@ export const CACHED_HEADER = "x-bt-cached";
 export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
+
+// The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
+const ANTHROPIC_MESSAGES = "/anthropic/messages";
+const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -275,7 +280,8 @@ export async function proxyV1({
     url === "/responses" ||
     url === "/completions" ||
     url === "/moderations" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_MESSAGES ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl;
 
   let bodyData = null;
@@ -284,7 +290,8 @@ export async function proxyV1({
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
-    url === "/anthropic/messages" ||
+    url === ANTHROPIC_MESSAGES ||
+    url === ANTHROPIC_V1_MESSAGES ||
     isGoogleUrl
   ) {
     try {
@@ -333,7 +340,8 @@ export async function proxyV1({
       url === "/completions" ||
       url === "/auto" ||
       url === "/responses" ||
-      url === "/anthropic/messages" ||
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES ||
       isGoogleUrl) &&
     bodyData &&
     bodyData.temperature !== 0 &&
@@ -636,14 +644,27 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
-              const result = JSON.parse(event.data) as ChatCompletionChunk;
+              const result = JSON.parse(event.data) as
+                | ChatCompletionChunk
+                | undefined;
               if (result) {
-                if (result.usage) {
+                const extendedUsage = completionUsageSchema.safeParse(
+                  result.usage,
+                );
+                if (extendedUsage.success) {
                   spanLogger.log({
                     metrics: {
-                      tokens: result.usage.total_tokens,
-                      prompt_tokens: result.usage.prompt_tokens,
-                      completion_tokens: result.usage.completion_tokens,
+                      tokens: extendedUsage.data.total_tokens,
+                      prompt_tokens: extendedUsage.data.prompt_tokens,
+                      completion_tokens: extendedUsage.data.completion_tokens,
+                      prompt_cached_tokens:
+                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                      prompt_cache_creation_tokens:
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cache_creation_tokens,
+                      completion_reasoning_tokens:
+                        extendedUsage.data.completion_tokens_details
+                          ?.reasoning_tokens,
                     },
                   });
                 }
@@ -738,14 +759,25 @@ export async function proxyV1({
             case "chat":
             case "completion": {
               const data = dataRaw as ChatCompletion;
-              spanLogger.log({
-                output: data.choices,
-                metrics: {
-                  tokens: data.usage?.total_tokens,
-                  prompt_tokens: data.usage?.prompt_tokens,
-                  completion_tokens: data.usage?.completion_tokens,
-                },
-              });
+              const extendedUsage = completionUsageSchema.safeParse(data.usage);
+              if (extendedUsage.success) {
+                spanLogger.log({
+                  output: data.choices,
+                  metrics: {
+                    tokens: extendedUsage.data.total_tokens,
+                    prompt_tokens: extendedUsage.data.prompt_tokens,
+                    completion_tokens: extendedUsage.data.completion_tokens,
+                    prompt_cached_tokens:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                    prompt_cache_creation_tokens:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens,
+                    completion_reasoning_tokens:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens,
+                  },
+                });
+              }
               break;
             }
             case "embedding":
@@ -901,7 +933,8 @@ async function fetchModelLoop(
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
-      url === "/anthropic/messages") &&
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES) &&
     isObject(bodyData) &&
     bodyData.model
   ) {
@@ -1994,7 +2027,8 @@ async function fetchAnthropic({
   secret: APISecret;
 }): Promise<ModelResponse> {
   switch (url) {
-    case "/anthropic/messages":
+    case ANTHROPIC_MESSAGES:
+    case ANTHROPIC_V1_MESSAGES:
       return fetchAnthropicMessages({
         secret,
         modelSpec,

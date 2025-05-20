@@ -6,7 +6,7 @@ export interface ModelResponse {
 
 export function parseAuthHeader(
   headers: Record<string, string | string[] | undefined>,
-) {
+): string | null {
   const authHeader = headers["authorization"];
   let authValue = null;
   if (Array.isArray(authHeader)) {
@@ -15,15 +15,23 @@ export function parseAuthHeader(
     authValue = authHeader;
   }
 
-  if (!authValue) {
-    return null;
+  if (authValue) {
+    const parts = authValue.split(" ");
+    if (parts.length !== 2) {
+      return null;
+    }
+    return parts[1];
   }
 
-  const parts = authValue.split(" ");
-  if (parts.length !== 2) {
-    return null;
+  // Anthropic uses x-api-key instead of authorization.
+  const apiKeyHeader = headers["x-api-key"];
+  if (apiKeyHeader) {
+    return Array.isArray(apiKeyHeader)
+      ? apiKeyHeader[apiKeyHeader.length - 1]
+      : apiKeyHeader;
   }
-  return parts[1];
+
+  return null;
 }
 
 export function parseNumericHeader(

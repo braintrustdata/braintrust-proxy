@@ -116,7 +116,7 @@ export async function handleProxyV1(
       name: "LLM",
       parent: parent.toStr(),
     });
-    spanLogger = makeProxySpanLogger(span, {}, ctx.waitUntil.bind(ctx));
+    spanLogger = makeProxySpanLogger(span, ctx.waitUntil.bind(ctx));
   }
 
   const opts: ProxyOpts = {

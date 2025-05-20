@@ -191,13 +191,6 @@ function updateUsage(
   anthropic: z.infer<typeof anthropicUsage>,
   openai: Partial<CompletionUsage>,
 ) {
-  if (!isEmpty(anthropic.input_tokens)) {
-    // OpenAI's convention is to accumulate all input tokens, including cached tokens.
-    openai.prompt_tokens =
-      anthropic.input_tokens +
-      (anthropic.cache_creation_input_tokens ?? 0) +
-      (anthropic.cache_read_input_tokens ?? 0);
-  }
   if (!isEmpty(anthropic.cache_read_input_tokens)) {
     openai.prompt_tokens_details = {
       ...openai.prompt_tokens_details,
@@ -209,6 +202,14 @@ function updateUsage(
       ...openai.prompt_tokens_details,
       cache_creation_tokens: anthropic.cache_creation_input_tokens,
     };
+  }
+
+  if (!isEmpty(anthropic.input_tokens)) {
+    // OpenAI's convention is to accumulate all input tokens, including cached tokens.
+    openai.prompt_tokens =
+      anthropic.input_tokens +
+      (anthropic.cache_creation_input_tokens ?? 0) +
+      (anthropic.cache_read_input_tokens ?? 0);
   }
 
   if (!isEmpty(anthropic.output_tokens)) {

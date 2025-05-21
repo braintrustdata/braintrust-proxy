@@ -345,6 +345,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/google/models/gemini-2.5-pro-preview-05-06": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-03-25": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-exp-03-25": ["vertex"],
+  "publishers/google/models/gemini-2.5-flash-preview-05-20": ["vertex"],
   "publishers/google/models/gemini-2.5-flash-preview-04-17": ["vertex"],
   "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": ["vertex"],
   "publishers/google/models/gemini-2.0-flash": ["vertex"],

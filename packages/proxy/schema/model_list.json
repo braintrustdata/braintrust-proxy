@@ -1860,7 +1860,7 @@
     "output_cost_per_mil_tokens": 5,
     "parent": "gemini-1.5-pro"
   },
-  "gemini-2.5-flash-preview-04-17": {
+  "gemini-2.5-flash-preview-05-20": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
@@ -1870,6 +1870,17 @@
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Gemini 2.5 Flash Preview",
     "experimental": false
+  },
+  "gemini-2.5-flash-preview-04-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "experimental": false,
+    "parent": "gemini-2.5-flash-preview-05-20"
   },
   "gemini-2.5-pro-preview-05-06": {
     "format": "google",
@@ -2748,7 +2759,7 @@
     "displayName": "Gemini 2.5 Pro Experimental",
     "experimental": true
   },
-  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+  "publishers/google/models/gemini-2.5-flash-preview-05-20": {
     "format": "google",
     "flavor": "chat",
     "displayName": "Gemini 2.5 Flash Preview",
@@ -2757,6 +2768,17 @@
     "reasoning_budget": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6
+  },
+  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+    "format": "google",
+    "flavor": "chat",
+    "displayName": "Gemini 2.5 Flash Preview",
+    "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "parent": "publishers/google/models/gemini-2.5-flash-preview-05-20"
   },
   "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
     "format": "google",

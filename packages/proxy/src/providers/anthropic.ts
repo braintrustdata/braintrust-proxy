@@ -14,7 +14,7 @@ import {
 } from "@anthropic-ai/sdk/resources/messages";
 import { Message } from "@braintrust/core/typespecs";
 import {
-  CompletionUsage,
+  OpenAICompletionUsage,
   OpenAIChatCompletion,
   OpenAIChatCompletionChoice,
   OpenAIChatCompletionChunk,
@@ -203,7 +203,7 @@ export interface AnthropicCompletion {
 
 function updateUsage(
   anthropic: z.infer<typeof anthropicUsage>,
-  openai: Partial<CompletionUsage>,
+  openai: Partial<OpenAICompletionUsage>,
 ) {
   if (!isEmpty(anthropic.cache_read_input_tokens)) {
     openai.prompt_tokens_details = {
@@ -235,7 +235,7 @@ function updateUsage(
 
 export function anthropicEventToOpenAIEvent(
   idx: number,
-  usage: Partial<CompletionUsage>,
+  usage: Partial<OpenAICompletionUsage>,
   eventU: unknown,
   isStructuredOutput: boolean,
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
@@ -373,7 +373,7 @@ export function anthropicEventToOpenAIEvent(
         created: getTimestampInSeconds(),
         usage:
           !isEmpty(usage.completion_tokens) && !isEmpty(usage.prompt_tokens)
-            ? (usage as CompletionUsage)
+            ? (usage as OpenAICompletionUsage)
             : undefined,
       },
       finished: true,
@@ -425,7 +425,7 @@ export function anthropicCompletionToOpenAICompletion(
   const firstText = completion.content.find((c) => c.type === "text");
   const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
-  let usage: CompletionUsage | undefined = undefined;
+  let usage: OpenAICompletionUsage | undefined = undefined;
   if (completion.usage) {
     usage = {
       prompt_tokens: 0,

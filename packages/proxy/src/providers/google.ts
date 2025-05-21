@@ -6,6 +6,7 @@ import {
   GenerateContentConfig,
   GenerateContentParameters,
   GenerateContentResponse,
+  GenerateContentResponseUsageMetadata,
   Part,
   ThinkingConfig,
 } from "@google/genai";
@@ -15,9 +16,9 @@ import {
   OpenAIChatCompletionChoice,
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
+  OpenAICompletionUsage,
 } from "@types";
 import { convertMediaToBase64 } from "./util";
-import { MessageParam } from "@anthropic-ai/sdk/resources";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
 
@@ -233,14 +234,7 @@ export function googleEventToOpenAIChatEvent(
           created: getTimestampInSeconds(),
           model,
           object: "chat.completion.chunk",
-          usage: data.usageMetadata
-            ? {
-                prompt_tokens: data?.usageMetadata?.promptTokenCount || 0,
-                completion_tokens:
-                  data?.usageMetadata?.candidatesTokenCount || 0,
-                total_tokens: data?.usageMetadata?.totalTokenCount || 0,
-              }
-            : undefined,
+          usage: geminiUsageToOpenAIUsage(data.usageMetadata),
         }
       : null,
     finished:
@@ -249,6 +243,29 @@ export function googleEventToOpenAIChatEvent(
       ) ?? false,
   };
 }
+
+const geminiUsageToOpenAIUsage = (
+  usageMetadata?: GenerateContentResponseUsageMetadata,
+): OpenAICompletionUsage | undefined => {
+  if (!usageMetadata) {
+    return undefined;
+  }
+
+  const thoughtsTokenCount = usageMetadata.thoughtsTokenCount;
+  const cachedContentTokenCount = usageMetadata.cachedContentTokenCount;
+
+  return {
+    prompt_tokens: usageMetadata.promptTokenCount || 0,
+    completion_tokens: usageMetadata.candidatesTokenCount || 0,
+    total_tokens: usageMetadata.totalTokenCount || 0,
+    ...(thoughtsTokenCount && {
+      completion_tokens_details: { reasoning_tokens: thoughtsTokenCount },
+    }),
+    ...(cachedContentTokenCount && {
+      prompt_tokens_details: { cached_tokens: cachedContentTokenCount },
+    }),
+  };
+};
 
 export function googleCompletionToOpenAICompletion(
   model: string,
@@ -295,13 +312,7 @@ export function googleCompletionToOpenAICompletion(
     created: getTimestampInSeconds(),
     model,
     object: "chat.completion",
-    usage: data.usageMetadata
-      ? {
-          prompt_tokens: data?.usageMetadata?.promptTokenCount || 0,
-          completion_tokens: data?.usageMetadata?.candidatesTokenCount || 0,
-          total_tokens: data?.usageMetadata.totalTokenCount || 0,
-        }
-      : undefined,
+    usage: geminiUsageToOpenAIUsage(data.usageMetadata),
   };
 }
 

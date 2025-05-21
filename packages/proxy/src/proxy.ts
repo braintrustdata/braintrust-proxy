@@ -1224,6 +1224,7 @@ async function fetchModel(
     ttl_seconds?: number,
   ) => Promise<void>,
 ): Promise<ModelResponse> {
+  debugger;
   const format = modelSpec?.format ?? "openai";
   switch (format) {
     case "openai":

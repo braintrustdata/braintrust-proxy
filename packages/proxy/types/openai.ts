@@ -101,4 +101,4 @@ export const completionUsageSchema = z.object({
     .optional(),
 });
 
-export type CompletionUsage = z.infer<typeof completionUsageSchema>;
+export type OpenAICompletionUsage = z.infer<typeof completionUsageSchema>;

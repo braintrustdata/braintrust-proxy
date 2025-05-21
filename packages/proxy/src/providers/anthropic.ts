@@ -697,7 +697,7 @@ export function openaiParamsToAnthropicMesssageParams(
         anthropic.thinking.budget_tokens,
       );
       if (effectiveMax === anthropic.thinking.budget_tokens) {
-        anthropic.max_tokens = Math.floor(anthropic.max_tokens * 1.5);
+        anthropic.max_tokens = Math.floor(effectiveMax * 1.5);
       }
     }
   }

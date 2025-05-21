@@ -1,6 +1,7 @@
 import { arrayBufferToBase64 } from "utils";
 
-const base64MediaPattern = /^data:([\w\/\-\.]+);base64,([A-Za-z0-9+/]+={0,2})$/;
+const base64MediaPattern =
+  /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/]+={0,2})$/;
 
 interface MediaBlock {
   media_type: string;

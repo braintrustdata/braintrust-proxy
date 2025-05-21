@@ -6,13 +6,13 @@ import {
 } from "@types";
 
 for (const model of [
-  "gemini-2.5-flash-preview-04-17",
+  // "gemini-2.5-flash-preview-04-17",
   // TODO: re-enable when we have a working CI/CD solution
-  // "publishers/google/models/gemini-2.5-flash-preview-04-17",
+  "publishers/google/models/gemini-2.5-flash-preview-04-17",
 ]) {
   describe(model, () => {
     it("should accept and should not return reasoning/thinking params and detail streaming", async () => {
-      const { events } = await callProxyV1<
+      const { events, json } = await callProxyV1<
         OpenAIChatCompletionCreateParams,
         OpenAIChatCompletionChunk
       >({
@@ -57,7 +57,7 @@ for (const model of [
         (event) =>
           event.data.choices[0]?.delta?.reasoning?.content !== undefined,
       );
-      expect(hasReasoning).toBe(isVertex(model)); // as of writing, gemini api does not yet provide this detail!
+      expect(hasReasoning).toBe(true);
     });
 
     it("should accept and return reasoning/thinking params and detail non-streaming", async () => {
@@ -102,14 +102,12 @@ for (const model of [
             logprobs: null,
             message: {
               content: expect.any(String),
-              ...(isVertex(model) && {
-                reasoning: [
-                  {
-                    id: expect.any(String),
-                    content: expect.any(String),
-                  },
-                ],
-              }), // gemini apis do not include reasoning
+              reasoning: [
+                {
+                  id: expect.any(String),
+                  content: expect.any(String),
+                },
+              ],
               refusal: null,
               role: "assistant",
             },
@@ -121,6 +119,9 @@ for (const model of [
         object: "chat.completion",
         usage: {
           completion_tokens: expect.any(Number),
+          completion_tokens_details: {
+            reasoning_tokens: expect.any(Number),
+          },
           prompt_tokens: expect.any(Number),
           total_tokens: expect.any(Number),
         },
@@ -188,5 +189,3 @@ for (const model of [
     });
   });
 }
-
-const isVertex = (model: string) => model.includes("publishers/");

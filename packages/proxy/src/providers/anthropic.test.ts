@@ -83,6 +83,10 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
       completion_tokens: expect.any(Number),
       prompt_tokens: expect.any(Number),
       total_tokens: expect.any(Number),
+      prompt_tokens_details: {
+        cache_creation_tokens: expect.any(Number),
+        cached_tokens: expect.any(Number),
+      },
     },
   });
 });
@@ -196,6 +200,10 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
       completion_tokens: expect.any(Number),
       prompt_tokens: expect.any(Number),
       total_tokens: expect.any(Number),
+      prompt_tokens_details: {
+        cache_creation_tokens: expect.any(Number),
+        cached_tokens: expect.any(Number),
+      },
     },
   });
 });
@@ -255,6 +263,10 @@ it("should disable reasoning/thinking params non-streaming", async () => {
       completion_tokens: expect.any(Number),
       prompt_tokens: expect.any(Number),
       total_tokens: expect.any(Number),
+      prompt_tokens_details: {
+        cache_creation_tokens: expect.any(Number),
+        cached_tokens: expect.any(Number),
+      },
     },
   });
 });

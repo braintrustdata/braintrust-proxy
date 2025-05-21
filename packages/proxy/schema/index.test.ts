@@ -120,7 +120,7 @@ const examples: Record<
       ],
       temperature: 1,
       stream: false,
-      max_tokens: 1500,
+      max_tokens: 1536,
       thinking: {
         budget_tokens: 1024,
         type: "enabled",

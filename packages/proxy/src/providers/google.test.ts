@@ -8,7 +8,7 @@ import {
 for (const model of [
   "gemini-2.5-flash-preview-05-20",
   // TODO: re-enable when we have a working CI/CD solution
-  "publishers/google/models/gemini-2.5-flash-preview-05-20",
+  // "publishers/google/models/gemini-2.5-flash-preview-05-20",
 ]) {
   describe(model, () => {
     it("should accept and should not return reasoning/thinking params and detail streaming", async () => {

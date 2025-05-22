@@ -506,6 +506,16 @@
     "displayName": "Text Davinci 003",
     "deprecated": true
   },
+  "claude-sonnet-4-20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 4 Sonnet"
+  },
   "claude-3-7-sonnet-latest": {
     "format": "anthropic",
     "flavor": "chat",
@@ -575,6 +585,16 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "parent": "claude-3-5-sonnet-latest"
+  },
+  "claude-opus-4-20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 4 Opus"
   },
   "claude-3-opus-latest": {
     "format": "anthropic",

@@ -1586,7 +1586,7 @@ async function fetchOpenAI(
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
     const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
-    if (bodyData.model.startsWith("publishers/meta")) {
+    if (bodyData?.model?.startsWith("publishers/meta")) {
       // Use the OpenAPI endpoint.
       fullURL = new URL(
         `${baseURL}/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
@@ -1754,7 +1754,7 @@ async function fetchOpenAI(
     });
   }
 
-  if (bodyData?.model.startsWith("o1-pro")) {
+  if (bodyData?.model?.startsWith("o1-pro")) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,

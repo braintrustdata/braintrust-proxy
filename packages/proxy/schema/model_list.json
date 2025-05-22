@@ -506,6 +506,26 @@
     "displayName": "Text Davinci 003",
     "deprecated": true
   },
+  "claude-sonnet-4": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 4 Sonnet"
+  },
+  "claude-sonnet-4-20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "parent": "claude-sonnet-4"
+  },
   "claude-3-7-sonnet-latest": {
     "format": "anthropic",
     "flavor": "chat",
@@ -604,7 +624,7 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.5,
     "input_cache_write_cost_per_mil_tokens": 18.75,
-    "parent": "claude-4-opus-latest"
+    "displayName": "Claude 3 Opus"
   },
   "claude-3-opus-20240229": {
     "format": "anthropic",
@@ -2111,6 +2131,27 @@
     "output_cost_per_mil_tokens": 0.4,
     "displayName": "Titan Text Lite"
   },
+  "anthropic.claude-sonnet-4-20250514-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 4 Sonnet"
+  },
+  "us.anthropic.claude-sonnet-4-20250514-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "US Claude 4 Sonnet",
+    "parent": "anthropic.claude-sonnet-4-20250514-v1:0"
+  },
   "anthropic.claude-3-7-sonnet-20250219-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -2626,6 +2667,23 @@
     "format": "google",
     "flavor": "chat",
     "parent": "publishers/google/models/gemini-1.0-pro"
+  },
+  "publishers/anthropic/models/claude-sonnet-4": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 4 Sonnet"
+  },
+  "publishers/anthropic/models/claude-sonnet-4@20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "experimental": true,
+    "parent": "publishers/anthropic/models/claude-sonnet-4"
   },
   "publishers/anthropic/models/claude-3-7-sonnet": {
     "format": "anthropic",

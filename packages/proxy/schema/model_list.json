@@ -2253,7 +2253,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
-    "displayName": "US Claude 3 Opus",
++    "displayName": "US Claude 4 Opus",
     "parent": "anthropic.claude-opus-4-20250514-v1:0"
   },
   "anthropic.claude-3-opus-20240229-v1:0": {

@@ -576,6 +576,26 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "parent": "claude-3-5-sonnet-latest"
   },
+  "claude-4-opus-latest": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 4 Opus"
+  },
+  "claude-opus-4-20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "parent": "claude-4-opus-latest"
+  },
   "claude-3-opus-latest": {
     "format": "anthropic",
     "flavor": "chat",
@@ -584,7 +604,7 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.5,
     "input_cache_write_cost_per_mil_tokens": 18.75,
-    "displayName": "Claude 3 Opus"
+    "parent": "claude-4-opus-latest"
   },
   "claude-3-opus-20240229": {
     "format": "anthropic",
@@ -2198,6 +2218,23 @@
     "displayName": "EU Claude 3.5 Sonnet",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0"
   },
+  "anthropic.claude-opus-4-20250514-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "Claude 4 Opus"
+  },
+  "us.anthropic.claude-opus-4-20250514-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "US Claude 3 Opus",
+    "parent": "anthropic.claude-opus-4-20250514-v1:0"
+  },
   "anthropic.claude-3-opus-20240229-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -2654,6 +2691,22 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "parent": "publishers/anthropic/models/claude-3-5-sonnet"
+  },
+  "publishers/anthropic/models/claude-opus-4": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "displayName": "Claude 3 Opus"
+  },
+  "publishers/anthropic/models/claude-opus-4@20250514": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "parent": "publishers/anthropic/models/claude-opus-4"
   },
   "publishers/anthropic/models/claude-3-opus": {
     "format": "anthropic",

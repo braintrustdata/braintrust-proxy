@@ -492,7 +492,11 @@ export async function openAIContentToAnthropicContent(
   content: Message["content"],
 ): Promise<Exclude<MessageParam["content"], string>> {
   if (typeof content === "string") {
-    return [{ type: "text", text: content }];
+    if (content.trim() === "") {
+      return [];
+    } else {
+      return [{ type: "text", text: content }];
+    }
   }
   return Promise.all(
     (content ?? []).map(async (part) => ({

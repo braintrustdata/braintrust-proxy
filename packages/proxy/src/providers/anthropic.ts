@@ -338,6 +338,11 @@ export function anthropicEventToOpenAIEvent(
       },
       finished: true,
     };
+  } else if (event.type === "ping" || event.type === "content_block_stop") {
+    return {
+      event: null,
+      finished: false,
+    };
   } else {
     console.warn(
       `Skipping unhandled Anthropic stream event: ${JSON.stringify(eventU)}`,

@@ -2749,7 +2749,6 @@ export function createEventStreamTransformer(
     controller.enqueue(new TextEncoder().encode("data: [DONE]\n\n"));
     // This ensures that controller.terminate is not in the same stack frame as start()/transform()
     await new Promise((resolve) => setTimeout(resolve, 0));
-    controller.terminate();
   };
 
   return new TransformStream({

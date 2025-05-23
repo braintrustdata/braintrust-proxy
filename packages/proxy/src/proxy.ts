@@ -1754,6 +1754,7 @@ async function fetchOpenAI(
         delete bodyData.response_format;
         break;
       case "json_schema":
+      case "json_object":
         if (
           bodyData.model.startsWith("gpt") ||
           bodyData.model.startsWith("o1") ||
@@ -1775,8 +1776,20 @@ async function fetchOpenAI(
             function: {
               name: "json",
               description: "Output the result in JSON format",
-              parameters: responseFormatParsed.data.json_schema.schema,
-              strict: responseFormatParsed.data.json_schema.strict,
+              parameters:
+                responseFormatParsed.data.type === "json_schema"
+                  ? responseFormatParsed.data.json_schema.schema
+                  : {
+                      type: "object",
+                      description:
+                        "A flexible schema that accepts any JSON object.",
+                      properties: {},
+                      additionalProperties: true,
+                    },
+              strict:
+                responseFormatParsed.data.type === "json_schema"
+                  ? responseFormatParsed.data.json_schema.strict
+                  : false,
             },
           },
         ];
@@ -2155,7 +2168,10 @@ async function fetchAnthropicChatCompletions({
 
   let isStructuredOutput = false;
   const parsed = responseFormatSchema.safeParse(oaiParams.response_format);
-  if (parsed.success && parsed.data.type === "json_schema") {
+  if (
+    parsed.success &&
+    (parsed.data.type === "json_schema" || parsed.data.type === "json_object")
+  ) {
     isStructuredOutput = true;
     if (params.tools || params.tool_choice) {
       throw new ProxyBadRequestError(
@@ -2166,7 +2182,15 @@ async function fetchAnthropicChatCompletions({
       {
         name: "json",
         description: "Output the result in JSON format",
-        input_schema: parsed.data.json_schema.schema,
+        input_schema:
+          parsed.data.type === "json_schema"
+            ? parsed.data.json_schema.schema
+            : {
+                type: "object",
+                description: "A flexible schema that accepts any JSON object.",
+                properties: {},
+                additionalProperties: true,
+              },
       },
     ];
     params.tool_choice = { type: "tool", name: "json" };

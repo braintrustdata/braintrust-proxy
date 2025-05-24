@@ -1,29 +1,37 @@
-import { v4 as uuidv4 } from "uuid";
-import {
-  ChatCompletion,
-  ChatCompletionChunk,
-  ChatCompletionMessageToolCall,
-  ChatCompletionTool,
-  ChatCompletionToolMessageParam,
-} from "openai/resources";
-import { getTimestampInSeconds, isEmpty, isObject } from "../util";
-import { Message } from "@braintrust/core/typespecs";
-import { z } from "zod";
 import {
   MessageParam,
   ToolResultBlockParam,
   ToolUseBlockParam,
 } from "@anthropic-ai/sdk/resources";
-import { convertMediaToBase64 } from "./util";
 import {
-  ImageBlockParam,
-  DocumentBlockParam,
-  MessageCreateParamsBase,
   Base64ImageSource,
   CacheControlEphemeral,
+  DocumentBlockParam,
+  ImageBlockParam,
+  MessageCreateParams,
+  MessageCreateParamsBase,
+  ThinkingConfigParam,
 } from "@anthropic-ai/sdk/resources/messages";
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions";
-import { CompletionUsage } from "types/openai";
+import { Message } from "@braintrust/core/typespecs";
+import {
+  OpenAICompletionUsage,
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChoice,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionChunkChoiceDelta,
+  OpenAIChatCompletionCreateParams,
+} from "@types";
+import {
+  ChatCompletionMessageToolCall,
+  ChatCompletionTool,
+  ChatCompletionToolMessageParam,
+} from "openai/resources";
+import { getBudgetMultiplier } from "utils";
+import { cleanOpenAIParams } from "utils/openai";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import { getTimestampInSeconds, isEmpty, isObject } from "../util";
+import { convertMediaToBase64 } from "./util";
 
 /*
 Example events:
@@ -115,6 +123,11 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
         text: z.string(),
       }),
       z.object({
+        type: z.literal("thinking"),
+        thinking: z.string(),
+        signature: z.string(),
+      }),
+      z.object({
         type: z.literal("tool_use"),
         id: z.string(),
         name: z.string(),
@@ -169,6 +182,7 @@ export interface AnthropicCompletion {
   role: "assistant";
   content: [
     | { type: "text"; text: string }
+    | { type: "thinking"; thinking: string; signature: string }
     | {
         type: "tool_use";
         id: string;
@@ -189,7 +203,7 @@ export interface AnthropicCompletion {
 
 function updateUsage(
   anthropic: z.infer<typeof anthropicUsage>,
-  openai: Partial<CompletionUsage>,
+  openai: Partial<OpenAICompletionUsage>,
 ) {
   if (!isEmpty(anthropic.cache_read_input_tokens)) {
     openai.prompt_tokens_details = {
@@ -221,10 +235,10 @@ function updateUsage(
 
 export function anthropicEventToOpenAIEvent(
   idx: number,
-  usage: Partial<CompletionUsage>,
+  usage: Partial<OpenAICompletionUsage>,
   eventU: unknown,
   isStructuredOutput: boolean,
-): { event: ChatCompletionChunk | null; finished: boolean } {
+): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(
@@ -242,7 +256,11 @@ export function anthropicEventToOpenAIEvent(
   }
 
   let content: string | undefined = undefined;
-  let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
+  let tool_calls:
+    | OpenAIChatCompletionChunkChoiceDelta["tool_calls"]
+    | undefined = undefined;
+
+  let reasoning: OpenAIChatCompletionChunkChoiceDelta["reasoning"] | undefined =
     undefined;
 
   if (event.type === "message_start") {
@@ -293,6 +311,28 @@ export function anthropicEventToOpenAIEvent(
   ) {
     content = idx === 0 ? event.delta.text.trimStart() : event.delta.text;
   } else if (
+    event.type === "content_block_start" &&
+    event.content_block.type === "thinking"
+  ) {
+    reasoning = {
+      id: event.content_block.signature,
+      content: event.content_block.thinking,
+    };
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "thinking_delta"
+  ) {
+    reasoning = {
+      content: event.delta.thinking,
+    };
+  } else if (
+    event.type === "content_block_delta" &&
+    event.delta.type === "signature_delta"
+  ) {
+    reasoning = {
+      id: event.delta.signature,
+    };
+  } else if (
     event.type === "content_block_delta" &&
     event.delta.type === "input_json_delta"
   ) {
@@ -333,7 +373,7 @@ export function anthropicEventToOpenAIEvent(
         created: getTimestampInSeconds(),
         usage:
           !isEmpty(usage.completion_tokens) && !isEmpty(usage.prompt_tokens)
-            ? (usage as CompletionUsage)
+            ? (usage as OpenAICompletionUsage)
             : undefined,
       },
       finished: true,
@@ -362,6 +402,7 @@ export function anthropicEventToOpenAIEvent(
             content,
             tool_calls: isStructuredOutput ? undefined : tool_calls,
             role: "assistant",
+            reasoning,
           },
           finish_reason: null, // Anthropic places this in a separate stream event.
           index: 0,
@@ -379,10 +420,12 @@ export function anthropicCompletionToOpenAICompletion(
   completion: AnthropicCompletion,
   isFunction: boolean,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
+  // TODO: will we ever have text -> thinking -> text -> tool_use, thus are we dropping tokens?
   const firstText = completion.content.find((c) => c.type === "text");
+  const firstThinking = completion.content.find((c) => c.type === "thinking");
   const firstTool = completion.content.find((c) => c.type === "tool_use");
-  let usage: CompletionUsage | undefined = undefined;
+  let usage: OpenAICompletionUsage | undefined = undefined;
   if (completion.usage) {
     usage = {
       prompt_tokens: 0,
@@ -428,6 +471,14 @@ export function anthropicCompletionToOpenAICompletion(
                 }
               : undefined,
           refusal: null,
+          ...(firstThinking && {
+            reasoning: [
+              {
+                id: firstThinking.signature,
+                content: firstThinking.thinking,
+              },
+            ],
+          }),
         },
       },
     ],
@@ -440,7 +491,7 @@ export function anthropicCompletionToOpenAICompletion(
 
 function anthropicFinishReason(
   stop_reason: string,
-): ChatCompletion.Choice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] | null {
   return stop_reason === "stop_reason"
     ? "stop"
     : stop_reason === "max_tokens"
@@ -599,7 +650,7 @@ export function openAIToolsToAnthropicTools(
 }
 
 export function anthropicToolChoiceToOpenAIToolChoice(
-  toolChoice: ChatCompletionCreateParamsBase["tool_choice"],
+  toolChoice: OpenAIChatCompletionCreateParams["tool_choice"],
 ): MessageCreateParamsBase["tool_choice"] {
   if (!toolChoice) {
     return undefined;
@@ -615,3 +666,85 @@ export function anthropicToolChoiceToOpenAIToolChoice(
       return { type: "tool", name: toolChoice.function.name };
   }
 }
+
+export function openaiParamsToAnthropicMesssageParams(
+  openai: OpenAIChatCompletionCreateParams,
+): MessageCreateParams {
+  const anthropic: MessageCreateParams = {
+    // TODO: we depend on translateParams to get us half way there
+    ...(cleanOpenAIParams(openai) as any),
+  };
+
+  const maxTokens =
+    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) || 1024;
+
+  anthropic.max_tokens = maxTokens;
+
+  if (
+    openai.reasoning_effort !== undefined ||
+    openai.reasoning_budget !== undefined ||
+    openai.reasoning_enabled !== undefined
+  ) {
+    anthropic.thinking = getAnthropicThinkingParams({
+      ...openai,
+      max_completion_tokens: maxTokens,
+    });
+
+    if (anthropic.thinking.type === "enabled") {
+      // must be 1 when thinking
+      anthropic.temperature = 1;
+
+      // avoid anthropic APIs complaining about this
+      // need to make sure max_tokens are greater than budget_tokens
+      const effectiveMax = Math.max(
+        anthropic.max_tokens,
+        anthropic.thinking.budget_tokens,
+      );
+      if (effectiveMax === anthropic.thinking.budget_tokens) {
+        anthropic.max_tokens = Math.floor(effectiveMax * 1.5);
+      }
+    }
+  }
+
+  return anthropic;
+}
+
+const getAnthropicThinkingParams = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens: Required<number>;
+  },
+): ThinkingConfigParam => {
+  if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
+    return { type: "disabled" };
+  }
+
+  return {
+    type: "enabled",
+    budget_tokens: getThinkingBudget(openai),
+  };
+};
+
+const getThinkingBudget = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens: Required<number>;
+  },
+): number => {
+  if (openai.reasoning_budget !== undefined) {
+    return openai.reasoning_budget;
+  }
+
+  let budget = 1024;
+
+  if (openai.reasoning_effort !== undefined) {
+    // budget must be at least 1024
+    budget = Math.max(
+      Math.floor(
+        getBudgetMultiplier(openai.reasoning_effort || "low") *
+          openai.max_completion_tokens,
+      ),
+      1024,
+    );
+  }
+
+  return budget;
+};

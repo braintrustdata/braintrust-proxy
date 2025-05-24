@@ -24,7 +24,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIReasoning,
 } from "@types";
-import { parse as cacheControlParse } from "cache-control-parser";
+import cacheControlParse from "cache-control-parser";
 import { differenceInSeconds } from "date-fns";
 import {
   createParser,
@@ -247,7 +247,9 @@ export async function proxyV1({
     ),
     MAX_CACHE_TTL,
   );
-  const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
+  const cacheControl = cacheControlParse.parse(
+    proxyHeaders["cache-control"] || "",
+  );
   const cacheMaxAge = cacheControl?.["max-age"];
   const noCache = !!cacheControl?.["no-cache"] || cacheMaxAge === 0;
   const noStore = !!cacheControl?.["no-store"];

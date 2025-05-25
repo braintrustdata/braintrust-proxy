@@ -8,7 +8,7 @@ import {
   Part,
 } from "@google/generative-ai";
 import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
-import { getTimestampInSeconds } from "..";
+import { getTimestampInSeconds } from "../util";
 import { convertMediaToBase64 } from "./util";
 
 async function makeGoogleMediaBlock(media: string): Promise<InlineDataPart> {

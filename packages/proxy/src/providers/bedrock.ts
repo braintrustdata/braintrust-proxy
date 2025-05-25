@@ -30,12 +30,7 @@ import {
   anthropicEventToOpenAIEvent,
 } from "./anthropic";
 import { ChatCompletionChunk, CompletionUsage } from "openai/resources";
-import {
-  getTimestampInSeconds,
-  writeToReadable,
-  isEmpty,
-  ProxyBadRequestError,
-} from "..";
+import { getTimestampInSeconds, isEmpty, ProxyBadRequestError } from "../util";
 import {
   Message as OaiMessage,
   MessageRole,
@@ -50,7 +45,7 @@ import {
 } from "openai/resources/chat/completions";
 import { convertMediaToBase64 } from "./util";
 import { makeFakeOpenAIStreamTransformer } from "./openai";
-import { ModelResponse } from "../util";
+import { ModelResponse, writeToReadable } from "../util";
 
 function streamResponse(
   body: AsyncIterable<ResponseStream>,

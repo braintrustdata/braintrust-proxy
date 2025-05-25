@@ -26,6 +26,7 @@ import {
   isObject,
   parseAuthHeader,
   parseNumericHeader,
+  writeToReadable,
 } from "./util";
 import {
   anthropicCompletionToOpenAICompletion,
@@ -2893,12 +2894,3 @@ function logSpanInputs(
     }
   }
 }
-
-export const writeToReadable = (response: string) => {
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(new TextEncoder().encode(response));
-      controller.close();
-    },
-  });
-};

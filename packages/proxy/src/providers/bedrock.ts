@@ -1,54 +1,54 @@
-import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
 import {
+  Message as BedrockMessage,
   BedrockRuntimeClient,
   ContentBlock,
   ConverseCommand,
   ConverseCommandOutput,
   ConverseStreamCommand,
   ConverseStreamOutput,
+  ImageFormat,
+  InferenceConfiguration,
   InvokeModelCommand,
   InvokeModelWithResponseStreamCommand,
+  ResponseStream,
   StopReason,
   SystemContentBlock,
-  Message as BedrockMessage,
   ToolConfiguration,
-  InferenceConfiguration,
-  ImageFormat,
-  ResponseStream,
 } from "@aws-sdk/client-bedrock-runtime";
+import {
+  MessageRole,
+  Message as OaiMessage,
+  responseFormatJsonSchemaSchema,
+  toolsSchema,
+} from "@braintrust/core/typespecs";
 import {
   APISecret,
   BedrockMetadata,
   BedrockMetadataSchema,
   MessageTypeToMessageType,
 } from "@schema";
-import {
-  anthropicCompletionToOpenAICompletion,
-  anthropicEventToOpenAIEvent,
-} from "./anthropic";
+import { OpenAIChatCompletion, OpenAIChatCompletionChunk } from "@types";
 import { CompletionUsage } from "openai/resources";
-import {
-  getTimestampInSeconds,
-  writeToReadable,
-  isEmpty,
-  ProxyBadRequestError,
-} from "..";
-import { OpenAIChatCompletionChunk, OpenAIChatCompletion } from "@types";
-import {
-  Message as OaiMessage,
-  MessageRole,
-  toolsSchema,
-  responseFormatJsonSchemaSchema,
-} from "@braintrust/core/typespecs";
 import {
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources/chat/completions";
-import { convertMediaToBase64 } from "./util";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import {
+  getTimestampInSeconds,
+  isEmpty,
+  ModelResponse,
+  ProxyBadRequestError,
+  writeToReadable,
+} from "../util";
+import {
+  anthropicCompletionToOpenAICompletion,
+  anthropicEventToOpenAIEvent,
+} from "./anthropic";
 import { makeFakeOpenAIStreamTransformer } from "./openai";
-import { ModelResponse } from "../util";
+import { convertMediaToBase64 } from "./util";
 
 function streamResponse(
   body: AsyncIterable<ResponseStream>,

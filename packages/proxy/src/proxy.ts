@@ -103,6 +103,7 @@ import {
   parseAuthHeader,
   parseNumericHeader,
   ProxyBadRequestError,
+  writeToReadable,
 } from "./util";
 
 type CachedMetadata = {
@@ -2929,12 +2930,3 @@ function logSpanInputs(
     }
   }
 }
-
-export const writeToReadable = (response: string) => {
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(new TextEncoder().encode(response));
-      controller.close();
-    },
-  });
-};

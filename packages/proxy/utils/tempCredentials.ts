@@ -5,7 +5,7 @@ import {
   tempCredentialJwtPayloadSchema,
   TempCredentialsCacheValue,
   tempCredentialsCacheValueSchema,
-} from "../schema";
+} from "@schema/secrets";
 import { v4 as uuidv4 } from "uuid";
 import { arrayBufferToBase64 } from "./encrypt";
 import jsonwebtoken from "jsonwebtoken";

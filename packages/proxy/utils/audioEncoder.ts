@@ -1,4 +1,4 @@
-import { Mp3Bitrate, PcmAudioFormat } from "@schema";
+import { Mp3Bitrate, PcmAudioFormat } from "@schema/audio";
 import { Mp3Encoder } from "@breezystack/lamejs";
 
 export function makeWavFile(

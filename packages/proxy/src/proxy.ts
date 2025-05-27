@@ -24,7 +24,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIReasoning,
 } from "@types";
-import { parse as cacheControlParse } from "cache-control-parser";
+import cacheControlParse from "cache-control-parser";
 import { differenceInSeconds } from "date-fns";
 import {
   createParser,
@@ -103,6 +103,7 @@ import {
   parseAuthHeader,
   parseNumericHeader,
   ProxyBadRequestError,
+  writeToReadable,
 } from "./util";
 
 type CachedMetadata = {
@@ -247,7 +248,9 @@ export async function proxyV1({
     ),
     MAX_CACHE_TTL,
   );
-  const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
+  const cacheControl = cacheControlParse.parse(
+    proxyHeaders["cache-control"] || "",
+  );
   const cacheMaxAge = cacheControl?.["max-age"];
   const noCache = !!cacheControl?.["no-cache"] || cacheMaxAge === 0;
   const noStore = !!cacheControl?.["no-store"];
@@ -2927,12 +2930,3 @@ function logSpanInputs(
     }
   }
 }
-
-export const writeToReadable = (response: string) => {
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(new TextEncoder().encode(response));
-      controller.close();
-    },
-  });
-};

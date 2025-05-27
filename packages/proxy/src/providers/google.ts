@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { Message } from "@braintrust/core/typespecs";
 import {
   Content,
@@ -10,7 +9,6 @@ import {
   Part,
   ThinkingConfig,
 } from "@google/genai";
-import { getTimestampInSeconds } from "..";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChoice,
@@ -18,9 +16,11 @@ import {
   OpenAIChatCompletionCreateParams,
   OpenAICompletionUsage,
 } from "@types";
-import { convertMediaToBase64 } from "./util";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
+import { v4 as uuidv4 } from "uuid";
+import { getTimestampInSeconds } from "../util";
+import { convertMediaToBase64 } from "./util";
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({

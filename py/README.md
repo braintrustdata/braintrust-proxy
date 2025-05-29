@@ -1,6 +1,6 @@
-# Braintrust Proxy Python Client
+# Braintrust AI Proxy Python Client
 
-The `braintrust-proxy` package provides Python types, Pydantic models, and helper functions to simplify interaction with the Braintrust AI proxy, particularly enhancing compatibility with the OpenAI Python client.
+The `braintrust-proxy` package provides Python types, Pydantic models, and helper functions to simplify interaction with the Braintrust AI proxy. By providing rich Python types that extend the OpenAI client types, it significantly enhances compatibility and developer experience, enabling features like typechecking and improved editor autocomplete when working with proxy-specific extensions (such as `reasoning`).
 
 ## Installation
 

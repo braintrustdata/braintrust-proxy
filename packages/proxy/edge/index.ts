@@ -184,9 +184,14 @@ export function makeFetchApiSecrets({
       );
       if (response.ok) {
         secrets = await response.json();
-      } else {
+      } else if (response.status === 401) {
+        // Auth failed, but we can still use the provided key.
         lookupFailed = true;
         console.warn("Failed to lookup api key", await response.text());
+      } else {
+        throw new Error(
+          `Failed to lookup api key: ${response.status} ${await response.text()}`,
+        );
       }
     } catch (e) {
       lookupFailed = true;

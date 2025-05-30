@@ -73,6 +73,13 @@ declare module "openai/resources/chat/completions" {
       reasoning?: OpenAIReasoning[];
     }
   }
+  namespace ChatCompletionChunk {
+    namespace Choice {
+      interface Delta {
+        reasoning?: OpenAIReasoning;
+      }
+    }
+  }
 }
 
 export const completionUsageSchema = z.object({

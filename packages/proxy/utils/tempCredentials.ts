@@ -5,14 +5,10 @@ import {
   tempCredentialJwtPayloadSchema,
   TempCredentialsCacheValue,
   tempCredentialsCacheValueSchema,
-} from "../schema";
+} from "@schema/secrets";
 import { v4 as uuidv4 } from "uuid";
 import { arrayBufferToBase64 } from "./encrypt";
-import {
-  sign as jwtSign,
-  verify as jwtVerify,
-  decode as jwtDecode,
-} from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 import { isEmpty } from "@lib/util";
 
 const JWT_ALGORITHM = "HS256";
@@ -81,7 +77,7 @@ export function makeTempCredentialsJwt({
       logging: request.logging ?? undefined,
     },
   };
-  const jwt = jwtSign(jwtPayload, authToken, {
+  const jwt = jsonwebtoken.sign(jwtPayload, authToken, {
     expiresIn: request.ttl_seconds,
     mutatePayload: true,
     algorithm: JWT_ALGORITHM,
@@ -177,7 +173,7 @@ export function isTempCredential(jwt: string): boolean {
     .pick({ iss: true })
     .or(tempCredentialJwtPayloadSchema.pick({ aud: true }));
   return looseJwtPayloadSchema.safeParse(
-    jwtDecode(jwt, { complete: false, json: true }),
+    jsonwebtoken.decode(jwt, { complete: false, json: true }),
   ).success;
 }
 
@@ -195,7 +191,7 @@ export function verifyJwtOnly({
   jwt: string;
   credentialCacheValue: TempCredentialsCacheValue;
 }): void {
-  jwtVerify(jwt, credentialCacheValue.authToken, {
+  jsonwebtoken.verify(jwt, credentialCacheValue.authToken, {
     algorithms: [JWT_ALGORITHM],
   });
 }
@@ -225,7 +221,10 @@ export async function verifyTempCredentials({
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
 }): Promise<VerifyTempCredentialsResult> {
   // Decode, but do not verify, just to get the ID and encryption key.
-  const jwtPayloadRaw = jwtDecode(jwt, { complete: false, json: true });
+  const jwtPayloadRaw = jsonwebtoken.decode(jwt, {
+    complete: false,
+    json: true,
+  });
   if (isEmpty(jwtPayloadRaw)) {
     throw new Error("Could not parse JWT format");
   }

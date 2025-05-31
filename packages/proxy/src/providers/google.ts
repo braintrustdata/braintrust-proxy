@@ -1,17 +1,28 @@
-import { v4 as uuidv4 } from "uuid";
 import { Message } from "@braintrust/core/typespecs";
 import {
   Content,
   FinishReason,
+  GenerateContentConfig,
+  GenerateContentParameters,
   GenerateContentResponse,
-  InlineDataPart,
+  GenerateContentResponseUsageMetadata,
   Part,
-} from "@google/generative-ai";
-import { ChatCompletion, ChatCompletionChunk } from "openai/resources";
-import { getTimestampInSeconds } from "..";
+  ThinkingConfig,
+} from "@google/genai";
+import {
+  OpenAIChatCompletion,
+  OpenAIChatCompletionChoice,
+  OpenAIChatCompletionChunk,
+  OpenAIChatCompletionCreateParams,
+  OpenAICompletionUsage,
+} from "@types";
+import { getBudgetMultiplier } from "utils";
+import { cleanOpenAIParams } from "utils/openai";
+import { v4 as uuidv4 } from "uuid";
+import { getTimestampInSeconds } from "../util";
 import { convertMediaToBase64 } from "./util";
 
-async function makeGoogleMediaBlock(media: string): Promise<InlineDataPart> {
+async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
     media,
     allowedMediaTypes: [
@@ -63,6 +74,11 @@ export async function openAIMessagesToGoogleMessages(
   // First, do a basic mapping
   const content: Content[] = await Promise.all(
     messages.map(async (m) => {
+      const reasoningParts =
+        "reasoning" in m && m.reasoning
+          ? m.reasoning.map((r) => ({ text: r.content, thought: true }))
+          : [];
+
       const contentParts =
         m.role === "tool" ? [] : await openAIContentToGoogleContent(m.content);
       const toolCallParts: Part[] =
@@ -89,7 +105,12 @@ export async function openAIMessagesToGoogleMessages(
             ]
           : [];
       return {
-        parts: [...contentParts, ...toolCallParts, ...toolResponseParts],
+        parts: [
+          ...reasoningParts,
+          ...contentParts,
+          ...toolCallParts,
+          ...toolResponseParts,
+        ],
         role:
           m.role === "assistant"
             ? "model"
@@ -102,13 +123,9 @@ export async function openAIMessagesToGoogleMessages(
 
   const flattenedContent: Content[] = [];
   for (let i = 0; i < content.length; i++) {
-    if (
-      flattenedContent.length > 0 &&
-      flattenedContent[flattenedContent.length - 1].role === content[i].role
-    ) {
-      flattenedContent[flattenedContent.length - 1].parts = flattenedContent[
-        flattenedContent.length - 1
-      ].parts.concat(content[i].parts);
+    const last = flattenedContent[flattenedContent.length - 1];
+    if (last && last.role === content[i].role) {
+      last.parts = [...(last.parts || []), ...(content[i].parts || [])];
     } else {
       flattenedContent.push(content[i]);
     }
@@ -120,9 +137,12 @@ export async function openAIMessagesToGoogleMessages(
   // 3. Then all user messages' text parts
   // The EcmaScript spec requires the sort to be stable, so this is safe.
   const sortedContent: Content[] = flattenedContent.sort((a, b) => {
-    if (a.parts[0].inlineData && !b.parts[0].inlineData) {
+    const aFirst = a.parts?.[0];
+    const bFirst = b.parts?.[0];
+
+    if (aFirst?.inlineData && !bFirst?.inlineData) {
       return -1;
-    } else if (b.parts[0].inlineData && !a.parts[0].inlineData) {
+    } else if (bFirst?.inlineData && !aFirst?.inlineData) {
       return 1;
     }
 
@@ -140,7 +160,7 @@ export async function openAIMessagesToGoogleMessages(
 
 function translateFinishReason(
   reason?: FinishReason,
-): ChatCompletion.Choice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
     case FinishReason.MAX_TOKENS:
@@ -162,37 +182,48 @@ function translateFinishReason(
     default:
       return null;
   }
+  return null;
 }
 
 export function googleEventToOpenAIChatEvent(
   model: string,
   data: GenerateContentResponse,
-): { event: ChatCompletionChunk | null; finished: boolean } {
+): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   return {
     event: data.candidates
       ? {
           id: uuidv4(),
           choices: (data.candidates || []).map((candidate) => {
-            const firstText = candidate.content.parts.find(
-              (p) => p.text !== undefined,
+            const firstThought = candidate.content?.parts?.find(
+              (part) => part.text !== undefined && part.thought,
             );
-            const toolCalls = candidate.content.parts
-              .filter((p) => p.functionCall !== undefined)
-              .map((p, i) => ({
-                id: uuidv4(),
-                type: "function" as const,
-                function: {
-                  name: p.functionCall.name,
-                  arguments: JSON.stringify(p.functionCall.args),
-                },
-                index: i,
-              }));
+            const firstText = candidate.content?.parts?.find(
+              (part) => part.text !== undefined && !part.thought,
+            );
+            const toolCalls =
+              candidate.content?.parts
+                ?.filter((part) => part.functionCall !== undefined)
+                .map((part, i) => ({
+                  id: uuidv4(),
+                  type: "function" as const,
+                  function: {
+                    name: part?.functionCall?.name,
+                    arguments: JSON.stringify(part.functionCall?.args),
+                  },
+                  index: i,
+                })) || [];
             return {
               index: 0,
               delta: {
                 role: "assistant",
                 content: firstText?.text ?? "",
                 tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+                ...(firstThought && {
+                  reasoning: {
+                    id: uuidv4(),
+                    content: firstThought.text,
+                  },
+                }),
               },
               finish_reason:
                 toolCalls.length > 0
@@ -203,13 +234,7 @@ export function googleEventToOpenAIChatEvent(
           created: getTimestampInSeconds(),
           model,
           object: "chat.completion.chunk",
-          usage: data.usageMetadata
-            ? {
-                prompt_tokens: data.usageMetadata.promptTokenCount,
-                completion_tokens: data.usageMetadata.candidatesTokenCount,
-                total_tokens: data.usageMetadata.totalTokenCount,
-              }
-            : undefined,
+          usage: geminiUsageToOpenAIUsage(data.usageMetadata),
         }
       : null,
     finished:
@@ -219,34 +244,64 @@ export function googleEventToOpenAIChatEvent(
   };
 }
 
+const geminiUsageToOpenAIUsage = (
+  usageMetadata?: GenerateContentResponseUsageMetadata,
+): OpenAICompletionUsage | undefined => {
+  if (!usageMetadata) {
+    return undefined;
+  }
+
+  const thoughtsTokenCount = usageMetadata.thoughtsTokenCount;
+  const cachedContentTokenCount = usageMetadata.cachedContentTokenCount;
+
+  return {
+    prompt_tokens: usageMetadata.promptTokenCount || 0,
+    completion_tokens: usageMetadata.candidatesTokenCount || 0,
+    total_tokens: usageMetadata.totalTokenCount || 0,
+    ...(thoughtsTokenCount && {
+      completion_tokens_details: { reasoning_tokens: thoughtsTokenCount },
+    }),
+    ...(cachedContentTokenCount && {
+      prompt_tokens_details: { cached_tokens: cachedContentTokenCount },
+    }),
+  };
+};
+
 export function googleCompletionToOpenAICompletion(
   model: string,
   data: GenerateContentResponse,
-): ChatCompletion {
+): OpenAIChatCompletion {
   return {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {
-      const firstText = candidate.content.parts.find(
-        (p) => p.text !== undefined,
+      const firstText = candidate.content?.parts?.find(
+        (part) => part.text !== undefined && !part.thought,
       );
-      const toolCalls = candidate.content.parts
-        .filter((p) => p.functionCall !== undefined)
-        .map((p) => ({
-          id: uuidv4(),
-          type: "function" as const,
-          function: {
-            name: p.functionCall.name,
-            arguments: JSON.stringify(p.functionCall.args),
-          },
-        }));
+      const firstThought = candidate.content?.parts?.find(
+        (part) => part.text !== undefined && part.thought,
+      );
+      const toolCalls =
+        candidate.content?.parts
+          ?.filter((part) => part.functionCall !== undefined)
+          .map((part) => ({
+            id: uuidv4(),
+            type: "function" as const,
+            function: {
+              name: part?.functionCall?.name || "unknown",
+              arguments: JSON.stringify(part?.functionCall?.args),
+            },
+          })) || [];
       return {
         logprobs: null,
-        index: candidate.index,
+        index: candidate.index || 0,
         message: {
           role: "assistant",
           content: firstText?.text ?? "",
           tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
           refusal: null,
+          ...(firstThought && {
+            reasoning: [{ id: uuidv4(), content: firstThought.text }],
+          }),
         },
         finish_reason:
           toolCalls.length > 0
@@ -257,13 +312,7 @@ export function googleCompletionToOpenAICompletion(
     created: getTimestampInSeconds(),
     model,
     object: "chat.completion",
-    usage: data.usageMetadata
-      ? {
-          prompt_tokens: data.usageMetadata.promptTokenCount,
-          completion_tokens: data.usageMetadata.candidatesTokenCount,
-          total_tokens: data.usageMetadata.totalTokenCount,
-        }
-      : undefined,
+    usage: geminiUsageToOpenAIUsage(data.usageMetadata),
   };
 }
 
@@ -277,4 +326,84 @@ export const OpenAIParamsToGoogleParams: {
   frequency_penalty: null,
   presence_penalty: null,
   tool_choice: null,
+};
+
+// because GenAI sdk doesn't provide a convenient API equivalent type
+type GeminiGenerateContentParams = Omit<GenerateContentParameters, "config"> &
+  Omit<
+    GenerateContentConfig,
+    | "httpOptions"
+    | "abortSignal"
+    | "routingConfig"
+    | "modelSelectionConfig"
+    | "labels"
+  >;
+
+export const openaiParamsToGeminiMessageParams = (
+  openai: OpenAIChatCompletionCreateParams,
+): GeminiGenerateContentParams => {
+  const gemini: GeminiGenerateContentParams = {
+    // TODO: we depend on translateParams to get us half way there
+    ...(cleanOpenAIParams(openai) as any),
+  };
+
+  const maxTokens =
+    openai.max_completion_tokens !== undefined ||
+    openai.max_tokens !== undefined
+      ? Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+        1024
+      : undefined;
+
+  gemini.maxOutputTokens = maxTokens;
+
+  if (
+    openai.reasoning_effort !== undefined ||
+    openai.reasoning_budget !== undefined ||
+    openai.reasoning_enabled !== undefined
+  ) {
+    gemini.thinkingConfig = getGeminiThinkingParams({
+      ...openai,
+      max_completion_tokens: maxTokens,
+    });
+  }
+
+  return gemini;
+};
+
+const getGeminiThinkingParams = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens?: Required<number>;
+  },
+): ThinkingConfig => {
+  if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
+    return {
+      thinkingBudget: 0,
+    };
+  }
+
+  return {
+    includeThoughts: true,
+    thinkingBudget: getThinkingBudget(openai),
+  };
+};
+
+const getThinkingBudget = (
+  openai: OpenAIChatCompletionCreateParams & {
+    max_completion_tokens?: Required<number>;
+  },
+): number => {
+  if (openai.reasoning_budget !== undefined) {
+    return openai.reasoning_budget;
+  }
+
+  let budget = 1024;
+
+  if (openai.reasoning_effort !== undefined) {
+    budget = Math.floor(
+      getBudgetMultiplier(openai.reasoning_effort || "low") *
+        (openai.max_completion_tokens ?? 1024),
+    );
+  }
+
+  return budget;
 };

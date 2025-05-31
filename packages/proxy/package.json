@@ -1,6 +1,6 @@
 {
   "name": "@braintrust/proxy",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A proxy server that load balances across AI providers.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -36,12 +36,19 @@
       "import": "./utils/dist/index.mjs",
       "module": "./utils/dist/index.mjs",
       "require": "./utils/dist/index.js"
+    },
+    "./types": {
+      "types": "./types/dist/index.d.ts",
+      "import": "./types/dist/index.mjs",
+      "module": "./types/dist/index.mjs",
+      "require": "./types/dist/index.js"
     }
   },
   "files": [
     "dist/**/*",
     "edge/dist/**/*",
-    "schema/dist/**/*"
+    "schema/dist/**/*",
+    "types/dist/**/*"
   ],
   "license": "MIT",
   "publishConfig": {
@@ -74,7 +81,9 @@
     "@types/yargs": "^17.0.33",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "esbuild": "^0.19.10",
+    "msw": "^2.8.2",
     "npm-run-all": "^4.1.5",
+    "skott": "^0.35.4",
     "tsup": "^8.4.0",
     "typescript": "5.5.4",
     "vite-tsconfig-paths": "^4.3.2",
@@ -84,10 +93,10 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@apidevtools/json-schema-ref-parser": "^11.9.1",
-    "@aws-sdk/client-bedrock-runtime": "^3.738.0",
-    "@braintrust/core": "^0.0.85",
+    "@aws-sdk/client-bedrock-runtime": "^3.806.0",
+    "@braintrust/core": "^0.0.87",
     "@breezystack/lamejs": "^1.2.7",
-    "@google/generative-ai": "^0.24.0",
+    "@google/genai": "^0.13.0",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/core": "^1.19.0",
     "@opentelemetry/resources": "^1.19.0",

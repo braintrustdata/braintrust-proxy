@@ -8,7 +8,9 @@
     "baseUrl": ".",
     "paths": {
       "@lib/*": ["src/*"],
-      "@schema": ["schema/index"]
+      "@schema": ["schema/index"],
+      "@schema/*": ["schema/*"],
+      "@types": ["types/index"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

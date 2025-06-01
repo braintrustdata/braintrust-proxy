@@ -1,56 +1,54 @@
-import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
 import {
+  Message as BedrockMessage,
   BedrockRuntimeClient,
   ContentBlock,
   ConverseCommand,
   ConverseCommandOutput,
   ConverseStreamCommand,
   ConverseStreamOutput,
+  ImageFormat,
+  InferenceConfiguration,
   InvokeModelCommand,
   InvokeModelWithResponseStreamCommand,
+  ResponseStream,
   StopReason,
   SystemContentBlock,
-  Message as BedrockMessage,
-  ImageBlock,
-  DocumentBlock,
   ToolConfiguration,
-  InferenceConfiguration,
-  ImageFormat,
-  ResponseStream,
 } from "@aws-sdk/client-bedrock-runtime";
+import {
+  MessageRole,
+  Message as OaiMessage,
+  responseFormatJsonSchemaSchema,
+  toolsSchema,
+} from "@braintrust/core/typespecs";
 import {
   APISecret,
   BedrockMetadata,
   BedrockMetadataSchema,
   MessageTypeToMessageType,
 } from "@schema";
+import { OpenAIChatCompletion, OpenAIChatCompletionChunk } from "@types";
+import { CompletionUsage } from "openai/resources";
 import {
-  anthropicCompletionToOpenAICompletion,
-  anthropicEventToOpenAIEvent,
-} from "./anthropic";
-import { ChatCompletionChunk, CompletionUsage } from "openai/resources";
-import {
-  getTimestampInSeconds,
-  writeToReadable,
-  isEmpty,
-  ProxyBadRequestError,
-} from "..";
-import {
-  Message as OaiMessage,
-  MessageRole,
-  toolsSchema,
-  responseFormatJsonSchemaSchema,
-} from "@braintrust/core/typespecs";
-import {
-  ChatCompletion,
   ChatCompletionMessageToolCall,
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources/chat/completions";
-import { convertMediaToBase64 } from "./util";
+import { v4 as uuidv4 } from "uuid";
+import { z } from "zod";
+import {
+  getTimestampInSeconds,
+  isEmpty,
+  ModelResponse,
+  ProxyBadRequestError,
+  writeToReadable,
+} from "../util";
+import {
+  anthropicCompletionToOpenAICompletion,
+  anthropicEventToOpenAIEvent,
+} from "./anthropic";
 import { makeFakeOpenAIStreamTransformer } from "./openai";
-import { ModelResponse } from "../util";
+import { convertMediaToBase64 } from "./util";
 
 function streamResponse(
   body: AsyncIterable<ResponseStream>,
@@ -752,7 +750,7 @@ function openAIResponse(
   model: string,
   response: ConverseCommandOutput,
   isStructuredOutput: boolean,
-): ChatCompletion {
+): OpenAIChatCompletion {
   const firstText = response.output?.message?.content?.find(
     (c) => c.text !== undefined,
   );
@@ -833,7 +831,7 @@ function translateInferenceConfig(
 
 interface BedrockMessageState {
   completionId: string;
-  role: ChatCompletionChunk["choices"][0]["delta"]["role"];
+  role: OpenAIChatCompletionChunk["choices"][0]["delta"]["role"];
 }
 
 export function bedrockMessageToOpenAIMessage(
@@ -841,11 +839,11 @@ export function bedrockMessageToOpenAIMessage(
   output: ConverseStreamOutput,
   isStructuredOutput: boolean,
 ): {
-  event: ChatCompletionChunk | null;
+  event: OpenAIChatCompletionChunk | null;
   finished: boolean;
 } {
   return ConverseStreamOutput.visit<{
-    event: ChatCompletionChunk | null;
+    event: OpenAIChatCompletionChunk | null;
     finished: boolean;
   }>(output, {
     messageStart: (value) => {
@@ -876,6 +874,12 @@ export function bedrockMessageToOpenAIMessage(
                       },
                     ]
                   : undefined,
+              ...(value.delta?.reasoningContent && {
+                reasoning: {
+                  id: value.delta.reasoningContent.signature,
+                  content: value.delta.reasoningContent.text,
+                },
+              }),
             },
             finish_reason: null,
             index: 0,

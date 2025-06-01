@@ -6,6 +6,9 @@ import type {
   ModelParams,
 } from "@braintrust/core/typespecs";
 import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
+import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
+import { OpenAIChatCompletionCreateParams } from "@types";
+import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
 
 export * from "./secrets";
 export * from "./models";
@@ -49,8 +52,15 @@ export const modelParamToModelParam: {
   stream_options: null,
   parallel_tool_calls: null,
   response_format: null,
-  reasoning_effort: null,
+  reasoning_effort: "reasoning_effort",
   stop: null,
+};
+
+const paramMappers: Partial<
+  Record<ModelFormat, (params: OpenAIChatCompletionCreateParams) => object>
+> = {
+  anthropic: openaiParamsToAnthropicMesssageParams,
+  google: openaiParamsToGeminiMessageParams,
 };
 
 export const sliderSpecs: {
@@ -82,6 +92,7 @@ export const defaultModelParamSettings: {
     response_format: null,
     stop: undefined,
     use_cache: true,
+    reasoning_effort: "medium",
   },
   anthropic: {
     temperature: undefined,
@@ -89,6 +100,8 @@ export const defaultModelParamSettings: {
     top_p: 0.7,
     top_k: 5,
     use_cache: true,
+    reasoning_enabled: false,
+    reasoning_budget: undefined,
   },
   google: {
     temperature: undefined,
@@ -96,6 +109,8 @@ export const defaultModelParamSettings: {
     topP: 0.7,
     topK: 5,
     use_cache: true,
+    reasoning_enabled: false,
+    reasoning_budget: undefined,
   },
   js: {},
   window: {
@@ -119,6 +134,17 @@ export const modelProviderHasTools: {
   js: false,
   window: false,
   converse: true,
+};
+
+export const modelProviderHasReasoning: {
+  [name in ModelFormat]?: RegExp;
+} = {
+  openai: /^o[1-4]/i,
+  anthropic: /^claude-3\.7/i,
+  google: /gemini-2.0-flash$|gemini-2.5/i,
+  js: undefined,
+  window: undefined,
+  converse: undefined,
 };
 
 export const DefaultEndpointTypes: {
@@ -441,23 +467,34 @@ export function translateParams(
   toProvider: ModelFormat,
   params: Record<string, unknown>,
 ): Record<string, unknown> {
-  const translatedParams: Record<string, unknown> = {};
+  let translatedParams: Record<string, unknown> = {};
+
   for (const [k, v] of Object.entries(params || {})) {
     const safeValue = v ?? undefined; // Don't propagate "null" along
     const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
       | keyof ModelParams
       | undefined
       | null;
+
     if (translatedKey === null) {
       continue;
-    } else if (
-      translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider][translatedKey] !== undefined
-    ) {
-      translatedParams[translatedKey] = safeValue;
-    } else {
-      translatedParams[k] = safeValue;
     }
+
+    const hasDefaultParam =
+      translatedKey !== undefined &&
+      defaultModelParamSettings[toProvider][translatedKey] !== undefined;
+
+    translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
+  }
+
+  // ideally we should short circuit and just have a master mapper but this avoids scope
+  // for now
+  const mapper = paramMappers[toProvider];
+  if (mapper) {
+    translatedParams = mapper(translatedParams as any) as Record<
+      string,
+      unknown
+    >;
   }
 
   return translatedParams;

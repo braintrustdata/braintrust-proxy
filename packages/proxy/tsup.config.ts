@@ -25,4 +25,10 @@ export default defineConfig([
     outDir: "utils/dist",
     dts: true,
   },
+  {
+    entry: ["types/index.ts"],
+    format: ["cjs", "esm"],
+    outDir: "types/dist",
+    dts: true,
+  },
 ]);

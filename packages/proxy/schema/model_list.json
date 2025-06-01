@@ -113,7 +113,7 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
-    "o1_like": true
+    "reasoning": true
   },
   "o4-mini-2025-04-16": {
     "format": "openai",
@@ -122,7 +122,7 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o4-mini"
   },
   "o3-mini": {
@@ -132,7 +132,7 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
-    "o1_like": true
+    "reasoning": true
   },
   "o3-mini-2025-01-31": {
     "format": "openai",
@@ -141,7 +141,7 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o3-mini"
   },
   "o3": {
@@ -151,7 +151,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 2.5,
-    "o1_like": true
+    "reasoning": true
   },
   "o3-2025-04-16": {
     "format": "openai",
@@ -160,7 +160,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 2.5,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o3"
   },
   "o1": {
@@ -170,7 +170,7 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
-    "o1_like": true
+    "reasoning": true
   },
   "o1-2024-12-17": {
     "format": "openai",
@@ -179,7 +179,7 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o1"
   },
   "o1-mini": {
@@ -189,7 +189,7 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
-    "o1_like": true
+    "reasoning": true
   },
   "o1-mini-2024-09-12": {
     "format": "openai",
@@ -198,7 +198,7 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 1.5,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o1-mini"
   },
   "o1-pro": {
@@ -207,7 +207,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
-    "o1_like": true
+    "reasoning": true
   },
   "o1-pro-2025-03-19": {
     "format": "openai",
@@ -215,7 +215,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
-    "o1_like": true,
+    "reasoning": true,
     "parent": "o1-pro"
   },
   "chatgpt-4o-latest": {
@@ -313,7 +313,7 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
-    "o1_like": true,
+    "reasoning": true,
     "experimental": true,
     "parent": "o1"
   },
@@ -324,7 +324,7 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
-    "o1_like": true,
+    "reasoning": true,
     "experimental": true,
     "parent": "o1"
   },
@@ -510,6 +510,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -531,6 +533,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -541,6 +545,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -601,6 +607,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.5,
@@ -1784,7 +1792,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
-    "displayName": "Gemini 2.0 Flash"
+    "displayName": "Gemini 2.0 Flash Latest"
   },
   "gemini-2.0-flash-001": {
     "format": "google",
@@ -1902,6 +1910,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Gemini 2.5 Flash Preview",
@@ -1911,6 +1921,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "experimental": false,
@@ -1920,6 +1932,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Pro Preview",
@@ -1929,6 +1943,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "experimental": false,
@@ -1938,11 +1954,21 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "displayName": "Gemini 2.5 Pro Experimental",
     "experimental": true,
     "parent": "gemini-2.5-pro-preview-05-06"
+  },
+  "gemini-2.0-pro-exp-02-05": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "experimental": true,
+    "deprecated": true,
+    "parent": "gemini-2.5-pro-preview-03-25"
   },
   "gemini-2.0-flash-exp": {
     "format": "google",
@@ -1957,6 +1983,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
+    "deprecated": true,
     "input_cost_per_mil_tokens": 0,
     "output_cost_per_mil_tokens": 0,
     "experimental": true,
@@ -1969,16 +1998,6 @@
     "input_cost_per_mil_tokens": 0,
     "output_cost_per_mil_tokens": 0,
     "experimental": true
-  },
-  "gemini-2.0-pro-exp-02-05": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "experimental": true,
-    "deprecated": true,
-    "parent": "gemini-2.5-pro-preview-03-25"
   },
   "gemini-exp-1206": {
     "format": "google",
@@ -2137,6 +2156,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -2147,6 +2168,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -2158,6 +2181,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -2168,6 +2193,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
@@ -2265,6 +2292,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
     "displayName": "Claude 4 Opus"
@@ -2273,6 +2302,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
     "displayName": "US Claude 4 Opus",
@@ -2674,6 +2705,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Claude 4 Sonnet"
@@ -2682,6 +2715,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "experimental": true,
@@ -2693,6 +2728,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "reasoning_budget": true,
+    "reasoning": true,
     "displayName": "Claude 3.7 Sonnet"
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
@@ -2701,6 +2738,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "reasoning_budget": true,
+    "reasoning": true,
     "experimental": true,
     "parent": "publishers/anthropic/models/claude-3-7-sonnet"
   },
@@ -2756,6 +2795,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
     "displayName": "Claude 4 Opus"
@@ -2764,6 +2805,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
     "parent": "publishers/anthropic/models/claude-opus-4"
@@ -2854,6 +2897,8 @@
     "flavor": "chat",
     "displayName": "Gemini 2.5 Flash Preview",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6
   },
@@ -2862,6 +2907,8 @@
     "flavor": "chat",
     "displayName": "Gemini 2.5 Flash Preview",
     "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "parent": "publishers/google/models/gemini-2.5-flash-preview-05-20"
@@ -2911,6 +2958,9 @@
   "databricks-claude-3-7-sonnet": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
     "displayName": "Claude 3.7 Sonnet"
   },
   "databricks-meta-llama-3-3-70b-instruct": {

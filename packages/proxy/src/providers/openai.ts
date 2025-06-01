@@ -91,6 +91,10 @@ export async function normalizeOpenAIMessages(
           ),
         );
       }
+      // not part of the openai spec
+      if ("reasoning" in message) {
+        delete message.reasoning;
+      }
       return message;
     }),
   );

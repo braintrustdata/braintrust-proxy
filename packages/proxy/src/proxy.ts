@@ -1,32 +1,69 @@
+import { MessageParam } from "@anthropic-ai/sdk/resources";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
+import {
+  Message,
+  MessageRole,
+  responseFormatSchema,
+} from "@braintrust/core/typespecs";
+import { Meter, MeterProvider } from "@opentelemetry/api";
+import {
+  APISecret,
+  AvailableModels,
+  AzureEntraSecretSchema,
+  DatabricksOAuthSecretSchema,
+  EndpointProviderToBaseURL,
+  MessageTypeToMessageType,
+  modelProviderHasReasoning,
+  ModelSpec,
+  translateParams,
+  VertexMetadataSchema,
+} from "@schema";
+import {
+  completionUsageSchema,
+  OpenAIChatCompletionChunk,
+  OpenAIReasoning,
+} from "@types";
+import cacheControlParse from "cache-control-parser";
+import { differenceInSeconds } from "date-fns";
 import {
   createParser,
   type EventSourceParser,
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
-import { parse as cacheControlParse } from "cache-control-parser";
+import { importPKCS8, SignJWT } from "jose";
+import { Buffer } from "node:buffer";
 import {
-  AvailableModels,
-  MessageTypeToMessageType,
-  EndpointProviderToBaseURL,
-  translateParams,
-  APISecret,
-  VertexMetadataSchema,
-  ModelSpec,
-  AzureEntraSecretSchema,
-  DatabricksOAuthSecretSchema,
-} from "@schema";
+  ChatCompletion,
+  ChatCompletionChunk,
+  ChatCompletionCreateParams,
+  CompletionUsage,
+  CreateEmbeddingResponse,
+  ModerationCreateResponse,
+} from "openai/resources";
 import {
-  ModelResponse,
-  ProxyBadRequestError,
-  flattenChunks,
-  flattenChunksArray,
-  getRandomInt,
-  isEmpty,
-  isObject,
-  parseAuthHeader,
-  parseNumericHeader,
-} from "./util";
+  ChatCompletionContentPart,
+  ChatCompletionCreateParamsBase,
+  ChatCompletionMessage,
+  ChatCompletionMessageParam,
+} from "openai/resources/chat/completions";
+import {
+  Response as OpenAIResponse,
+  ResponseCreateParams,
+  ResponseInputContent,
+  ResponseInputItem,
+  ResponseOutputItem,
+} from "openai/resources/responses/responses";
+import {
+  getCurrentUnixTimestamp,
+  isTempCredential,
+  makeTempCredentials,
+  parseOpenAIStream,
+  verifyTempCredentials,
+} from "utils";
+import { z } from "zod";
+import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
@@ -38,8 +75,13 @@ import {
   openAIToolsToAnthropicTools,
   upgradeAnthropicContentMessage,
 } from "./providers/anthropic";
-import { Meter, MeterProvider } from "@opentelemetry/api";
-import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { getAzureEntraAccessToken } from "./providers/azure";
+import {
+  fetchBedrockAnthropic,
+  fetchBedrockAnthropicMessages,
+  fetchConverse,
+} from "./providers/bedrock";
+import { getDatabricksOAuthAccessToken } from "./providers/databricks";
 import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
@@ -48,58 +90,21 @@ import {
   OpenAIParamsToGoogleParams,
 } from "./providers/google";
 import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
-import { _urljoin, isArray } from "@braintrust/core";
-import {
-  ChatCompletion,
-  ChatCompletionChunk,
-  ChatCompletionCreateParams,
-  CompletionUsage,
-  CreateEmbeddingResponse,
-  ModerationCreateResponse,
-} from "openai/resources";
-import {
-  ResponseCreateParams,
-  ResponseInputContent,
-  ResponseInputItem,
-  Response as OpenAIResponse,
-  ResponseOutputItem,
-} from "openai/resources/responses/responses";
-import {
-  fetchBedrockAnthropic,
-  fetchBedrockAnthropicMessages,
-  fetchConverse,
-} from "./providers/bedrock";
-import { Buffer } from "node:buffer";
-import { ExperimentLogPartialArgs } from "@braintrust/core";
-import { MessageParam } from "@anthropic-ai/sdk/resources";
-import {
-  getCurrentUnixTimestamp,
-  parseOpenAIStream,
-  isTempCredential,
-  makeTempCredentials,
-  verifyTempCredentials,
-} from "utils";
-import { differenceInSeconds } from "date-fns";
-import {
   makeFakeOpenAIStreamTransformer,
   normalizeOpenAIMessages,
 } from "./providers/openai";
 import {
-  ChatCompletionContentPart,
-  ChatCompletionCreateParamsBase,
-  ChatCompletionMessage,
-  ChatCompletionMessageParam,
-} from "openai/resources/chat/completions";
-import { importPKCS8, SignJWT } from "jose";
-import { z } from "zod";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { getAzureEntraAccessToken } from "./providers/azure";
-import { getDatabricksOAuthAccessToken } from "./providers/databricks";
-import { completionUsageSchema } from "types";
+  flattenChunks,
+  flattenChunksArray,
+  getRandomInt,
+  isEmpty,
+  isObject,
+  ModelResponse,
+  parseAuthHeader,
+  parseNumericHeader,
+  ProxyBadRequestError,
+  writeToReadable,
+} from "./util";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -243,7 +248,9 @@ export async function proxyV1({
     ),
     MAX_CACHE_TTL,
   );
-  const cacheControl = cacheControlParse(proxyHeaders["cache-control"] || "");
+  const cacheControl = cacheControlParse.parse(
+    proxyHeaders["cache-control"] || "",
+  );
   const cacheMaxAge = cacheControl?.["max-age"];
   const noCache = !!cacheControl?.["no-cache"] || cacheMaxAge === 0;
   const noStore = !!cacheControl?.["no-store"];
@@ -623,6 +630,7 @@ export async function proxyV1({
     const allChunks: Uint8Array[] = [];
 
     // These parameters are for the streaming case
+    let reasoning: OpenAIReasoning[] | undefined = undefined;
     let role: string | undefined = undefined;
     let content: string | undefined = undefined;
     let tool_calls: ChatCompletionChunk.Choice.Delta.ToolCall[] | undefined =
@@ -645,7 +653,7 @@ export async function proxyV1({
           try {
             if ("data" in event) {
               const result = JSON.parse(event.data) as
-                | ChatCompletionChunk
+                | OpenAIChatCompletionChunk
                 | undefined;
               if (result) {
                 const extendedUsage = completionUsageSchema.safeParse(
@@ -653,6 +661,7 @@ export async function proxyV1({
                 );
                 if (extendedUsage.success) {
                   spanLogger.log({
+                    // TODO: we should include the proxy meters metrics here
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
@@ -688,6 +697,22 @@ export async function proxyV1({
                   content = (content || "") + delta.content;
                 }
 
+                if (delta.reasoning) {
+                  if (!reasoning) {
+                    reasoning = [
+                      {
+                        id: delta.reasoning.id || "",
+                        content: delta.reasoning.content || "",
+                      },
+                    ];
+                  } else {
+                    // TODO: could be multiple
+                    reasoning[0].id = reasoning[0].id || delta.reasoning.id;
+                    reasoning[0].content =
+                      reasoning[0].content + (delta.reasoning.content || "");
+                  }
+                }
+
                 if (delta.tool_calls) {
                   if (!tool_calls) {
                     tool_calls = [
@@ -699,6 +724,7 @@ export async function proxyV1({
                       },
                     ];
                   } else if (tool_calls[0].function) {
+                    // TODO: what about parallel calls?
                     tool_calls[0].function.arguments =
                       (tool_calls[0].function.arguments ?? "") +
                       (delta.tool_calls[0].function?.arguments ?? "");
@@ -744,6 +770,7 @@ export async function proxyV1({
                   role,
                   content,
                   tool_calls,
+                  reasoning,
                 },
                 logprobs: null,
                 finish_reason,
@@ -910,8 +937,6 @@ async function fetchModelLoop(
     ttl_seconds?: number,
   ) => Promise<void>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
-  const requestId = ++loopIndex;
-
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
   const endpointRetryableErrors = meter.createCounter(
@@ -936,9 +961,9 @@ async function fetchModelLoop(
       url === ANTHROPIC_MESSAGES ||
       url === ANTHROPIC_V1_MESSAGES) &&
     isObject(bodyData) &&
-    bodyData.model
+    bodyData?.model
   ) {
-    model = bodyData.model;
+    model = bodyData?.model;
   } else if (method === "POST") {
     const m = url.match(GOOGLE_URL_REGEX);
     if (m) {
@@ -1690,15 +1715,12 @@ async function fetchOpenAI(
     });
   }
 
-  // TODO: Ideally this is encapsulated as some advanced per-model config
-  // or mapping, but for now, let's just map it manually.
-  const isO1Like =
-    bodyData.o1_like ||
-    (typeof bodyData.model === "string" &&
-      (bodyData.model.startsWith("o1") ||
-        bodyData.model.startsWith("o3") ||
-        bodyData.model.startsWith("o4")));
-  if (isO1Like) {
+  const hasReasoning =
+    bodyData?.reasoning ||
+    (typeof bodyData?.model === "string" &&
+      modelProviderHasReasoning.openai?.test(bodyData.model));
+
+  if (hasReasoning) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
@@ -1709,9 +1731,9 @@ async function fetchOpenAI(
 
     // Only remove system messages for old O1 models.
     if (
-      bodyData.messages &&
+      bodyData?.messages &&
       ["o1-preview", "o1-mini", "o1-preview-2024-09-12"].includes(
-        bodyData.model,
+        bodyData?.model,
       )
     ) {
       bodyData.messages = bodyData.messages.map((m: any) => ({
@@ -1721,7 +1743,7 @@ async function fetchOpenAI(
     }
   }
 
-  if (bodyData.messages) {
+  if (bodyData?.messages) {
     bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
@@ -1744,7 +1766,7 @@ async function fetchOpenAI(
 
   let isManagedStructuredOutput = false;
   const responseFormatParsed = responseFormatSchema.safeParse(
-    bodyData.response_format,
+    bodyData?.response_format,
   );
   if (responseFormatParsed.success) {
     switch (responseFormatParsed.data.type) {
@@ -1804,7 +1826,7 @@ async function fetchOpenAI(
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {
-    if (bodyData.stream) {
+    if (bodyData?.stream) {
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const chunk: ChatCompletionChunk = JSON.parse(data);
@@ -2096,9 +2118,20 @@ async function fetchAnthropicChatCompletions({
     } else if (m.role === "tool") {
       role = "user";
       content = openAIToolMessageToAnthropicToolCall(m);
-    } else if (m.role === "assistant" && m.tool_calls) {
+    } else if (m.role === "assistant") {
       content = upgradeAnthropicContentMessage(content);
-      content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      if (m.tool_calls) {
+        content.push(...openAIToolCallsToAnthropicToolUse(m.tool_calls));
+      }
+      if (m?.reasoning) {
+        content.unshift(
+          ...m?.reasoning.map((r) => ({
+            type: "thinking",
+            thinking: r.content,
+            signature: r.id,
+          })),
+        );
+      }
     }
 
     const translatedRole = MessageTypeToMessageType[role];
@@ -2116,10 +2149,14 @@ async function fetchAnthropicChatCompletions({
   }
 
   messages = flattenAnthropicMessages(messages);
-  const params: Record<string, unknown> = {
-    max_tokens: 4096, // Required param
-    ...translateParams("anthropic", oaiParams),
-  };
+  const params: Record<string, unknown> = translateParams(
+    "anthropic",
+    oaiParams,
+  );
+
+  if (!params.max_tokens) {
+    params.max_tokens = 4096; // Required param
+  }
 
   const stop = z
     .union([z.string(), z.array(z.string())])
@@ -2893,12 +2930,3 @@ function logSpanInputs(
     }
   }
 }
-
-export const writeToReadable = (response: string) => {
-  return new ReadableStream({
-    start(controller) {
-      controller.enqueue(new TextEncoder().encode(response));
-      controller.close();
-    },
-  });
-};

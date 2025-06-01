@@ -149,3 +149,12 @@ export function parseFileMetadataFromUrl(
     return undefined;
   }
 }
+
+export const writeToReadable = (response: string) => {
+  return new ReadableStream({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(response));
+      controller.close();
+    },
+  });
+};

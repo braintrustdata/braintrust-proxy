@@ -23,6 +23,6 @@
   },
   "packageManager": "pnpm@8.15.5",
   "resolutions": {
-    "zod": "3.22.4"
+    "zod": "3.25.34"
   }
 }

@@ -20,7 +20,7 @@ const anthropicFileSourceSchema = z.object({
   file_id: z.string(),
 });
 
-const anthropicContentPartImageSchema = z.object({
+export const anthropicContentPartImageSchema = z.object({
   type: z.literal("image"),
   source: z.union([
     anthropicBase64ImageSourceSchema,
@@ -100,7 +100,7 @@ const anthropicCodeExecutionToolResultSuccessSchema = z.object({
     z.object({
       type: z.literal("code_execution_output"),
       file_id: z.string(),
-    }),
+    })
   ),
 });
 
@@ -136,7 +136,7 @@ const anthropicMCPToolResultContentPartSchema = z.object({
         // This is a simplification of the strict citation schema
         citations: z.array(z.record(z.any())).nullish(),
         cache_control: cacheControlSchema.nullish(),
-      }),
+      })
     ),
   ]),
   cache_control: cacheControlSchema.nullish(),
@@ -145,7 +145,7 @@ const anthropicMCPToolResultContentPartSchema = z.object({
 const anthropicTextImageContentBlockSchema = z.union([
   z.string(),
   z.array(
-    z.union([anthropicContentPartTextSchema, anthropicContentPartImageSchema]),
+    z.union([anthropicContentPartTextSchema, anthropicContentPartImageSchema])
   ),
 ]);
 

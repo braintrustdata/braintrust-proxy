@@ -20,7 +20,7 @@ const anthropicFileSourceSchema = z.object({
   file_id: z.string(),
 });
 
-const anthropicContentPartImageSchema = z.object({
+export const anthropicContentPartImageSchema = z.object({
   type: z.literal("image"),
   source: z.union([
     anthropicBase64ImageSourceSchema,

@@ -2206,7 +2206,25 @@ async function fetchAnthropicChatCompletions({
         input_schema: parsed.data.json_schema.schema,
       },
     ];
-    params.tool_choice = { type: "tool", name: "json" };
+
+    const thinkingParamsParsed = z
+      .object({
+        thinking: z.object({
+          type: z.literal("enabled"),
+        }),
+      })
+      .safeParse(params);
+
+    // Claude hack: if thinking is enabled, tool_choice cannot be specified. So
+    // we just omit tool_choice in that case.
+    if (
+      thinkingParamsParsed.success &&
+      thinkingParamsParsed.data.thinking.type === "enabled"
+    ) {
+      delete params.tool_choice;
+    } else {
+      params.tool_choice = { type: "tool", name: "json" };
+    }
   }
 
   if (secret.type === "bedrock") {

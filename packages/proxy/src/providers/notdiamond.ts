@@ -31,6 +31,13 @@ export const ProviderModelMap: Record<string, string[]> = {
     "o1-preview-2024-09-12",
     "o1-mini",
     "o1-mini-2024-09-12",
+    "gpt-4.1",
+    "gpt-4.1-2025-04-14",
+    "gpt-4.1-mini",
+    "gpt-4.1-mini-2025-04-14",
+    "gpt-4.1-nano",
+    "gpt-4.1-nano-2025-04-14",
+    "chatgpt-4o-latest"
   ],
   anthropic: [
     "claude-2.1",
@@ -41,6 +48,12 @@ export const ProviderModelMap: Record<string, string[]> = {
     "claude-3-5-haiku-20241022",
     "claude-3-5-sonnet-latest",
     "claude-3-5-sonnet-20241022",
+    "claude-3-7-sonnet-latest",
+    "claude-3-7-sonnet-20250219",
+    "claude-opus-4-0",
+    "claude-opus-4-20250514",
+    "claude-sonnet-4-0",
+    "claude-sonnet-4-20250514"
   ],
   google: [
     "gemini-pro",
@@ -48,6 +61,10 @@ export const ProviderModelMap: Record<string, string[]> = {
     "gemini-1.5-pro-latest",
     "gemini-1.5-pro-exp-0801",
     "gemini-1.5-flash-latest",
+    "gemini-2.0-flash",
+    "gemini-2.0-flash-001",
+    "gemini-2.5-flash",
+    "gemini-2.5-pro"
   ],
   mistral: [
     "mistral-large-latest",

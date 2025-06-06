@@ -449,14 +449,6 @@ export const AvailableModels: { [name: string]: ModelSpec } = {
     output_cost_per_mil_tokens: 15,
     displayName: "Claude 4 Sonnet 2025-05-14",
   },
-  "claude-3-7-sonnet-latest": {
-    format: "anthropic",
-    flavor: "chat",
-    multimodal: true,
-    input_cost_per_mil_tokens: 3,
-    output_cost_per_mil_tokens: 15,
-    displayName: "Claude 3.7 Sonnet Latest",
-  },
   "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     format: "anthropic",
     flavor: "chat",

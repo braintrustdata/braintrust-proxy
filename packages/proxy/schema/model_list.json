@@ -1928,7 +1928,7 @@
     "experimental": false,
     "parent": "gemini-2.5-flash-preview-05-20"
   },
-  "gemini-2.5-pro-preview-05-06": {
+  "gemini-2.5-pro-preview-06-05": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
@@ -1938,6 +1938,17 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Pro Preview",
     "experimental": false
+  },
+  "gemini-2.5-pro-preview-05-06": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "reasoning_budget": true,
+    "reasoning": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "experimental": false,
+    "parent": "gemini-2.5-pro-preview-06-05"
   },
   "gemini-2.5-pro-preview-03-25": {
     "format": "google",

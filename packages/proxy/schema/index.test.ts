@@ -180,7 +180,7 @@ const examples: Record<
       ],
       temperature: 0,
       stream: false,
-      max_tokens: 1024,
+      max_tokens: 4096,
       thinking: {
         type: "disabled",
       },
@@ -201,7 +201,7 @@ const examples: Record<
       ],
       temperature: 0,
       reasoning_enabled: true,
-      reasoning_budget: 1024,
+      reasoning_budget: 4096,
       stream: false,
     },
     google: {
@@ -220,7 +220,7 @@ const examples: Record<
       ],
       temperature: 0,
       thinkingConfig: {
-        thinkingBudget: 1024,
+        thinkingBudget: 4096,
         includeThoughts: true,
       },
       stream: false,
@@ -240,9 +240,9 @@ const examples: Record<
       ],
       temperature: 1,
       stream: false,
-      max_tokens: 1536,
+      max_tokens: 6144,
       thinking: {
-        budget_tokens: 1024,
+        budget_tokens: 4096,
         type: "enabled",
       },
     },

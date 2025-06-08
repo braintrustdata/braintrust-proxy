@@ -68,6 +68,7 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
+  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -2155,7 +2156,8 @@ async function fetchAnthropicChatCompletions({
   );
 
   if (!params.max_tokens) {
-    params.max_tokens = 4096; // Required param
+    // This is a required parameter.
+    params.max_tokens = DEFAULT_ANTHROPIC_MAX_TOKENS;
   }
 
   const stop = z

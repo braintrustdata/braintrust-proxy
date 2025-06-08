@@ -241,7 +241,6 @@ export function anthropicEventToOpenAIEvent(
   eventU: unknown,
   isStructuredOutput: boolean,
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
-  console.log("anthropicEventToOpenAIEvent", eventU);
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(
@@ -679,6 +678,8 @@ export function anthropicToolChoiceToOpenAIToolChoice(
   }
 }
 
+export const DEFAULT_ANTHROPIC_MAX_TOKENS = 4096;
+
 export function openaiParamsToAnthropicMesssageParams(
   openai: OpenAIChatCompletionCreateParams,
 ): MessageCreateParams {
@@ -688,7 +689,8 @@ export function openaiParamsToAnthropicMesssageParams(
   };
 
   const maxTokens =
-    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) || 1024;
+    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+    DEFAULT_ANTHROPIC_MAX_TOKENS;
 
   anthropic.max_tokens = maxTokens;
 

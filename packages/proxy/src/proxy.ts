@@ -717,24 +717,24 @@ export async function proxyV1({
                   const lastTool = tool_calls
                     ? tool_calls[tool_calls.length - 1]
                     : undefined;
+                  const toolDelta = delta.tool_calls[0];
                   if (
                     !lastTool ||
-                    (lastTool.function &&
-                      delta.tool_calls[0].id &&
-                      lastTool.id !== delta.tool_calls[0].id)
+                    (toolDelta.id && lastTool.id !== toolDelta.id)
                   ) {
                     tool_calls = (tool_calls ?? []).concat([
                       {
                         index: 0,
-                        id: delta.tool_calls[0].id,
-                        type: delta.tool_calls[0].type,
-                        function: delta.tool_calls[0].function,
+                        id: toolDelta.id,
+                        type: toolDelta.type,
+                        function: toolDelta.function,
                       },
                     ]);
                   } else if (lastTool.function) {
-                    lastTool.function.arguments =
-                      (lastTool.function.arguments ?? "") +
-                      (delta.tool_calls[0].function?.arguments ?? "");
+                    lastTool.function.arguments +=
+                      toolDelta.function?.arguments ?? "";
+                  } else {
+                    lastTool.function = toolDelta.function;
                   }
                 }
               }

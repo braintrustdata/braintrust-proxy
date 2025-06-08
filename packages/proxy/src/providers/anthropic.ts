@@ -442,10 +442,7 @@ export function anthropicCompletionToOpenAICompletion(
         finish_reason:
           isStructuredOutput && firstTool
             ? "stop"
-            : anthropicFinishReason(
-                isStructuredOutput,
-                completion.stop_reason,
-              ) ?? "stop",
+            : anthropicFinishReason(isStructuredOutput, completion.stop_reason),
         index: 0,
         message: {
           role: "assistant",
@@ -495,7 +492,7 @@ export function anthropicCompletionToOpenAICompletion(
 function anthropicFinishReason(
   isStructuredOutput: boolean,
   stopReason: z.infer<typeof anthropicStopReason>,
-): OpenAIChatCompletionChoice["finish_reason"] | null {
+): OpenAIChatCompletionChoice["finish_reason"] {
   switch (stopReason) {
     case "end_turn":
     case "stop_sequence":
@@ -510,7 +507,7 @@ function anthropicFinishReason(
       return "length";
     default:
       const _: never = stopReason;
-      return null;
+      return "stop";
   }
 }
 

@@ -239,6 +239,7 @@ export function anthropicEventToOpenAIEvent(
   eventU: unknown,
   isStructuredOutput: boolean,
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
+  console.log("anthropicEventToOpenAIEvent", JSON.stringify(eventU, null, 2));
   const parsedEvent = anthropicStreamEventSchema.safeParse(eventU);
   if (!parsedEvent.success) {
     throw new Error(

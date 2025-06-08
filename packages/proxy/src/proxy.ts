@@ -652,6 +652,7 @@ export async function proxyV1({
 
           try {
             if ("data" in event) {
+              console.log("new event", JSON.stringify(event.data, null, 2));
               const result = JSON.parse(event.data) as
                 | OpenAIChatCompletionChunk
                 | undefined;
@@ -714,19 +715,26 @@ export async function proxyV1({
                 }
 
                 if (delta.tool_calls) {
-                  if (!tool_calls) {
-                    tool_calls = [
+                  const lastTool = tool_calls
+                    ? tool_calls[tool_calls.length - 1]
+                    : undefined;
+                  if (
+                    !lastTool ||
+                    (lastTool.function &&
+                      delta.tool_calls[0].id &&
+                      lastTool.id !== delta.tool_calls[0].id)
+                  ) {
+                    tool_calls = (tool_calls ?? []).concat([
                       {
                         index: 0,
                         id: delta.tool_calls[0].id,
                         type: delta.tool_calls[0].type,
                         function: delta.tool_calls[0].function,
                       },
-                    ];
-                  } else if (tool_calls[0].function) {
-                    // TODO: what about parallel calls?
-                    tool_calls[0].function.arguments =
-                      (tool_calls[0].function.arguments ?? "") +
+                    ]);
+                  } else if (lastTool.function) {
+                    lastTool.function.arguments =
+                      (lastTool.function.arguments ?? "") +
                       (delta.tool_calls[0].function?.arguments ?? "");
                   }
                 }

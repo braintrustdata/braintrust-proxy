@@ -2155,11 +2155,6 @@ async function fetchAnthropicChatCompletions({
     oaiParams,
   );
 
-  if (!params.max_tokens) {
-    // This is a required parameter.
-    params.max_tokens = DEFAULT_ANTHROPIC_MAX_TOKENS;
-  }
-
   const stop = z
     .union([z.string(), z.array(z.string())])
     .nullish()

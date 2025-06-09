@@ -270,3 +270,115 @@ it("should disable reasoning/thinking params non-streaming", async () => {
     },
   });
 });
+
+it("should handle max_tokens stop reason correctly with tool calls", async () => {
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-3-haiku-20240307",
+      messages: [
+        {
+          role: "user",
+          content:
+            "Use the calculate function to add 2 and 3 together. Explain your reasoning in detail.",
+        },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "calculate",
+            description: "Perform a mathematical calculation",
+            parameters: {
+              type: "object",
+              properties: {
+                operation: {
+                  type: "string",
+                  description: "The mathematical operation to perform",
+                },
+                a: {
+                  type: "number",
+                  description: "First number",
+                },
+                b: {
+                  type: "number",
+                  description: "Second number",
+                },
+              },
+              required: ["operation", "a", "b"],
+            },
+          },
+        },
+      ],
+      tool_choice: "auto",
+      stream: false,
+      max_tokens: 5, // Very small to force max_tokens stop reason
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+  expect(response!.choices[0].finish_reason).toBe("length");
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.usage?.completion_tokens).toBeLessThanOrEqual(5);
+});
+
+it("should handle tool_use stop reason correctly with sufficient tokens", async () => {
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-3-haiku-20240307",
+      messages: [
+        {
+          role: "user",
+          content: "Use the calculate function to add 2 and 3.",
+        },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "calculate",
+            description: "Perform a mathematical calculation",
+            parameters: {
+              type: "object",
+              properties: {
+                operation: {
+                  type: "string",
+                  description: "The mathematical operation to perform",
+                },
+                a: {
+                  type: "number",
+                  description: "First number",
+                },
+                b: {
+                  type: "number",
+                  description: "Second number",
+                },
+              },
+              required: ["operation", "a", "b"],
+            },
+          },
+        },
+      ],
+      tool_choice: "required", // Force tool usage
+      stream: false,
+      max_tokens: 150, // Sufficient tokens to complete tool call
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+  expect(response!.choices[0].finish_reason).toBe("tool_calls");
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.tool_calls).toBeTruthy();
+  expect(response!.choices[0].message.tool_calls).toHaveLength(1);
+  expect(response!.choices[0].message.tool_calls![0].function.name).toBe(
+    "calculate",
+  );
+  expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
+});

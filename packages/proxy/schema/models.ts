@@ -72,6 +72,14 @@ export const ModelSchema = z.object({
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
   locations: z.array(z.string()).nullish(),
   description: z.string().nullish(),
+  max_input_tokens: z
+    .number()
+    .nullish()
+    .describe("The model supports a maximum input token limit."),
+  max_output_tokens: z
+    .number()
+    .nullish()
+    .describe("The model supports a maximum output token limit."),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;

@@ -77,6 +77,13 @@ Tools:
 }
 */
 
+export const anthropicStopReason = z.union([
+  z.literal("end_turn"),
+  z.literal("tool_use"),
+  z.literal("max_tokens"),
+  z.literal("stop_sequence"),
+]);
+
 export const anthropicDeltaSchema = z.union([
   z.object({
     type: z.literal("text_delta"),
@@ -88,7 +95,7 @@ export const anthropicDeltaSchema = z.union([
   }),
   z.object({
     type: z.literal("stop_reason"),
-    stop_reason: z.string(),
+    stop_reason: anthropicStopReason,
     stop_sequence: z.string().nullish(),
   }),
 ]);
@@ -108,7 +115,7 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
       type: z.literal("message"),
       role: z.literal("assistant"),
       content: z.array(z.unknown()),
-      stop_reason: z.string().nullish(),
+      stop_reason: anthropicStopReason.nullish(),
       stop_sequence: z.string().nullish(),
       usage: anthropicUsage.optional(),
       model: z.string(),
@@ -147,12 +154,7 @@ export const anthropicStreamEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("message_delta"),
     delta: z.object({
-      stop_reason: z.union([
-        z.literal("end_turn"),
-        z.literal("tool_use"),
-        z.literal("max_tokens"),
-        z.literal("stop_sequence"),
-      ]),
+      stop_reason: anthropicStopReason,
       stop_sequence: z.string().nullish(),
     }),
     usage: anthropicUsage.optional(),
@@ -191,7 +193,7 @@ export interface AnthropicCompletion {
       },
   ];
   model: string;
-  stop_reason: string;
+  stop_reason: z.infer<typeof anthropicStopReason>;
   stop_sequence: string | null;
   usage: {
     input_tokens: number;
@@ -358,13 +360,10 @@ export function anthropicEventToOpenAIEvent(
         choices: [
           {
             delta: {},
-            finish_reason:
-              isStructuredOutput && event.delta.stop_reason === "tool_use"
-                ? "stop"
-                : event.delta.stop_reason === "end_turn" ||
-                    event.delta.stop_reason === "stop_sequence"
-                  ? "stop"
-                  : "tool_calls",
+            finish_reason: anthropicFinishReason(
+              isStructuredOutput,
+              event.delta.stop_reason,
+            ),
             index: 0,
           },
         ],
@@ -442,7 +441,7 @@ export function anthropicCompletionToOpenAICompletion(
         finish_reason:
           isStructuredOutput && firstTool
             ? "stop"
-            : anthropicFinishReason(completion.stop_reason) || "stop",
+            : anthropicFinishReason(isStructuredOutput, completion.stop_reason),
         index: 0,
         message: {
           role: "assistant",
@@ -490,13 +489,25 @@ export function anthropicCompletionToOpenAICompletion(
 }
 
 function anthropicFinishReason(
-  stop_reason: string,
-): OpenAIChatCompletionChoice["finish_reason"] | null {
-  return stop_reason === "stop_reason"
-    ? "stop"
-    : stop_reason === "max_tokens"
-      ? "length"
-      : null;
+  isStructuredOutput: boolean,
+  stopReason: z.infer<typeof anthropicStopReason>,
+): OpenAIChatCompletionChoice["finish_reason"] {
+  switch (stopReason) {
+    case "end_turn":
+    case "stop_sequence":
+      return "stop";
+    case "tool_use":
+      if (isStructuredOutput) {
+        return "stop";
+      } else {
+        return "tool_calls";
+      }
+    case "max_tokens":
+      return "length";
+    default:
+      const _: never = stopReason;
+      return "stop";
+  }
 }
 
 export async function makeAnthropicMediaBlock(
@@ -667,6 +678,8 @@ export function anthropicToolChoiceToOpenAIToolChoice(
   }
 }
 
+export const DEFAULT_ANTHROPIC_MAX_TOKENS = 4096;
+
 export function openaiParamsToAnthropicMesssageParams(
   openai: OpenAIChatCompletionCreateParams,
 ): MessageCreateParams {
@@ -676,7 +689,8 @@ export function openaiParamsToAnthropicMesssageParams(
   };
 
   const maxTokens =
-    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) || 1024;
+    Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+    DEFAULT_ANTHROPIC_MAX_TOKENS;
 
   anthropic.max_tokens = maxTokens;
 

@@ -364,13 +364,13 @@ async function findMissingCommand(argv: any) {
   }
 }
 
-async function checkPricesCommand(argv: any) {
+async function updateModelsCommand(argv: any) {
   try {
-    console.log("Fetching remote models for price check...");
+    console.log("Fetching remote models for model update...");
     const remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
-    console.log("Reading local models for price check...");
+    console.log("Reading local models for model update...");
     const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
@@ -379,7 +379,7 @@ async function checkPricesCommand(argv: any) {
     ) as LocalModelList;
     let madeChanges = false;
 
-    console.log("\n--- Price Discrepancy Report ---");
+    console.log("\n--- Model Update Report ---");
     if (argv.provider) {
       console.log(`(Filtered for provider: ${argv.provider})`);
     }
@@ -509,7 +509,7 @@ async function checkPricesCommand(argv: any) {
               madeChanges = true;
               if (!modelReportedThisIteration) {
                 console.log(
-                  `\n[WRITE] Updating prices for Model: ${localModelName} (Remote: ${originalRemoteModelName})`,
+                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
                 );
                 modelReportedThisIteration = true;
               }
@@ -528,6 +528,57 @@ async function checkPricesCommand(argv: any) {
           if (!argv.write)
             console.log(
               `  ${costType} Cost: Local: ${localCost}, Remote: Not available`,
+            );
+        }
+      };
+
+      const checkAndUpdateTokenLimit = (
+        limitType: string,
+        localLimit: number | undefined | null,
+        remoteLimit: number | undefined,
+        localFieldName: keyof ModelSpec,
+      ) => {
+        if (typeof remoteLimit === "number") {
+          if (
+            localLimit === null ||
+            typeof localLimit !== "number" ||
+            localLimit !== remoteLimit
+          ) {
+            if (!argv.write && !modelReportedThisIteration) {
+              console.log(
+                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+              );
+              modelReportedThisIteration = true;
+            }
+            if (!argv.write)
+              console.log(
+                `  ${limitType} Token Limit Mismatch/Missing: Local: ${localLimit ?? "Not available"}, Remote: ${remoteLimit}`,
+              );
+            discrepanciesFound++;
+            if (argv.write) {
+              (modelInUpdatedList as any)[localFieldName] = remoteLimit;
+              madeChanges = true;
+              if (!modelReportedThisIteration) {
+                console.log(
+                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
+                );
+                modelReportedThisIteration = true;
+              }
+              console.log(
+                `  [WRITE] Updated ${limitType} Token Limit to: ${remoteLimit}`,
+              );
+            }
+          }
+        } else if (typeof localLimit === "number") {
+          if (!argv.write && !modelReportedThisIteration) {
+            console.log(
+              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+            );
+            modelReportedThisIteration = true;
+          }
+          if (!argv.write)
+            console.log(
+              `  ${limitType} Token Limit: Local: ${localLimit}, Remote: Not available`,
             );
         }
       };
@@ -555,6 +606,25 @@ async function checkPricesCommand(argv: any) {
         localCacheWriteCost,
         remoteCacheWriteCostPerToken,
         "input_cache_write_cost_per_mil_tokens",
+      );
+
+      // Check and update token limits
+      const localMaxInputTokens = localModelDetail.max_input_tokens;
+      const localMaxOutputTokens = localModelDetail.max_output_tokens;
+      const remoteMaxInputTokens = remoteModelDetail.max_input_tokens;
+      const remoteMaxOutputTokens = remoteModelDetail.max_output_tokens;
+
+      checkAndUpdateTokenLimit(
+        "Max Input",
+        localMaxInputTokens,
+        remoteMaxInputTokens,
+        "max_input_tokens",
+      );
+      checkAndUpdateTokenLimit(
+        "Max Output",
+        localMaxOutputTokens,
+        remoteMaxOutputTokens,
+        "max_output_tokens",
       );
     }
 
@@ -593,26 +663,26 @@ async function checkPricesCommand(argv: any) {
           JSON.stringify(orderedModelsToWrite, null, 2), // Use the reordered models
         );
         console.log(
-          `\nLocal model_list.json has been updated with new pricing information and keys ordered according to schema.`, // Updated message
+          `\nLocal model_list.json has been updated with new model information (pricing, token limits) and keys ordered according to schema.`,
         );
       } else {
         console.log(
-          "\nNo pricing updates were necessary for local model_list.json.",
+          "\nNo model updates were necessary for local model_list.json.",
         );
       }
     } else {
       if (discrepanciesFound === 0) {
         console.log(
-          "\nNo pricing discrepancies found for models present in both lists (or matching filter).",
+          "\nNo model discrepancies found for models present in both lists (or matching filter).",
         );
       } else {
         console.log(
-          `\nFound ${discrepanciesFound} pricing discrepancies/missing local prices that could be updated from remote.`,
+          `\nFound ${discrepanciesFound} model discrepancies/missing local data that could be updated from remote.`,
         );
       }
     }
   } catch (error) {
-    console.error("Error during check-prices command:", error);
+    console.error("Error during update-models command:", error);
     process.exit(1);
   }
 }
@@ -641,30 +711,29 @@ async function main() {
       },
     )
     .command(
-      "check-prices",
-      "Check for pricing discrepancies between local and remote models",
+      "update-models",
+      "Update local models with pricing, token limits, and other attributes from remote models",
       (y) => {
         return y
           .option("provider", {
             alias: "p",
             type: "string",
-            description:
-              "Filter models by a specific provider for price checking",
+            description: "Filter models by a specific provider for updating",
           })
           .option("write", {
             type: "boolean",
             description:
-              "Write updated pricing information back to the local model_list.json file",
+              "Write updated model information back to the local model_list.json file",
             default: false,
           });
       },
       async (argv) => {
-        await checkPricesCommand(argv);
+        await updateModelsCommand(argv);
       },
     )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing or check-prices).",
+      "You need to specify a command (e.g., find-missing or update-models).",
     )
     .help()
     .alias("help", "h")

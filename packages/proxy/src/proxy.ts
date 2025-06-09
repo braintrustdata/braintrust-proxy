@@ -68,6 +68,7 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
+  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -2160,10 +2161,6 @@ async function fetchAnthropicChatCompletions({
     "anthropic",
     oaiParams,
   );
-
-  if (!params.max_tokens) {
-    params.max_tokens = 4096; // Required param
-  }
 
   const stop = z
     .union([z.string(), z.array(z.string())])

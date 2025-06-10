@@ -1147,7 +1147,7 @@ async function fetchModelLoop(
         headersString.push(`${key}: ${value}`);
       });
       const errorText =
-        `AI provider returned ${httpCode} error.\n\nHeaders:\n` +
+        `The AI provider returned ${httpCode} error. This is likely not an issue with Braintrust, but rather with the model provider.${httpCode === 500 ? " Please check the model provider's status page." : httpCode === 429 ? " Please adjust max concurrency." : ""}\n\nHeaders:\n` +
         headersString.join("\n");
       proxyResponse = {
         response: new Response(null, { status: httpCode }),

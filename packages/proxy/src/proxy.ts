@@ -715,20 +715,27 @@ export async function proxyV1({
                 }
 
                 if (delta.tool_calls) {
-                  if (!tool_calls) {
-                    tool_calls = [
+                  const lastTool = tool_calls
+                    ? tool_calls[tool_calls.length - 1]
+                    : undefined;
+                  const toolDelta = delta.tool_calls[0];
+                  if (
+                    !lastTool ||
+                    (toolDelta.id && lastTool.id !== toolDelta.id)
+                  ) {
+                    tool_calls = (tool_calls ?? []).concat([
                       {
                         index: 0,
-                        id: delta.tool_calls[0].id,
-                        type: delta.tool_calls[0].type,
-                        function: delta.tool_calls[0].function,
+                        id: toolDelta.id,
+                        type: toolDelta.type,
+                        function: toolDelta.function,
                       },
-                    ];
-                  } else if (tool_calls[0].function) {
-                    // TODO: what about parallel calls?
-                    tool_calls[0].function.arguments =
-                      (tool_calls[0].function.arguments ?? "") +
-                      (delta.tool_calls[0].function?.arguments ?? "");
+                    ]);
+                  } else if (lastTool.function) {
+                    lastTool.function.arguments +=
+                      toolDelta.function?.arguments ?? "";
+                  } else {
+                    lastTool.function = toolDelta.function;
                   }
                 }
               }

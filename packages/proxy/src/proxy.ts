@@ -1139,7 +1139,7 @@ async function fetchModelLoop(
         headersString.push(`${key}: ${value}`);
       });
       const errorText =
-        `The AI provider returned ${httpCode} error. This is likely not a problem with Braintrust, but rather with the model provider. Please check the model provider's status page or adjust max concurrency.\n\nHeaders:\n` +
+        `The AI provider returned ${httpCode} error. This is likely not an issue with Braintrust, but rather with the model provider.${httpCode === 500 ? " Please check the model provider's status page." : httpCode === 429 ? " Please adjust max concurrency." : ""}\n\nHeaders:\n` +
         headersString.join("\n");
       proxyResponse = {
         response: new Response(null, { status: httpCode }),
@@ -2206,25 +2206,7 @@ async function fetchAnthropicChatCompletions({
         input_schema: parsed.data.json_schema.schema,
       },
     ];
-
-    const thinkingParamsParsed = z
-      .object({
-        thinking: z.object({
-          type: z.literal("enabled"),
-        }),
-      })
-      .safeParse(params);
-
-    // Claude hack: if thinking is enabled, tool_choice cannot be specified. So
-    // we just omit tool_choice in that case.
-    if (
-      thinkingParamsParsed.success &&
-      thinkingParamsParsed.data.thinking.type === "enabled"
-    ) {
-      delete params.tool_choice;
-    } else {
-      params.tool_choice = { type: "tool", name: "json" };
-    }
+    params.tool_choice = { type: "tool", name: "json" };
   }
 
   if (secret.type === "bedrock") {

@@ -1272,6 +1272,42 @@
     "displayName": "Nous Hermes 2 Yi 34B",
     "deprecated": true
   },
+  "magistral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "displayName": "Magistral Medium Latest",
+    "max_input_tokens": 40960,
+    "max_output_tokens": 40000
+  },
+  "magistral-medium-2506": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "parent": "magistral-medium-latest",
+    "max_input_tokens": 40960,
+    "max_output_tokens": 40000
+  },
+  "magistral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "displayName": "Magistral Small Latest",
+    "max_input_tokens": 40000,
+    "max_output_tokens": 40000
+  },
+  "magistral-small-2506": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.06,
+    "parent": "magistral-small-latest",
+    "max_input_tokens": 40000,
+    "max_output_tokens": 40000
+  },
   "mistralai/mixtral-8x7b-32kseqlen": {
     "format": "openai",
     "flavor": "completion",

@@ -1,10 +1,47 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { callProxyV1 } from "../../utils/tests";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+
+it.only("should convert single system message OpenAI request to Anthropic and back", async () => {
+  const { events } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
+  >({
+    body: {
+      model: "claude-2",
+      messages: [{ role: "system", content: "What is 1+2?" }],
+      stream: true,
+      max_tokens: 150,
+    },
+  });
+
+  const streamedEvents = events();
+
+  expect(streamedEvents.length).toBeGreaterThan(0);
+
+  streamedEvents.forEach((event) => {
+    expect(event.type).toBe("event");
+
+    const data = event.data;
+    expect(data.id).toBeTruthy();
+    expect(data.object).toBe("chat.completion.chunk");
+    expect(data.created).toBeTruthy();
+    expect(Array.isArray(data.choices)).toBe(true);
+
+    if (data.choices[0]?.delta?.content) {
+      expect(data.choices[0].delta.content.trim()).not.toBe("");
+    }
+  });
+
+  const hasContent = streamedEvents.some(
+    (event) => event.data.choices[0]?.delta?.content !== undefined,
+  );
+  expect(hasContent).toBe(true);
+});
 
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<

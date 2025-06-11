@@ -515,10 +515,18 @@ export async function fetchConverse({
 
   let messages: Array<BedrockMessage> | undefined = undefined;
   let system: SystemContentBlock[] | undefined = undefined;
-  for (const m of oaiMessages as OaiMessage[]) {
+  for (const message of oaiMessages as OaiMessage[]) {
+    let m = message;
     if (m.role === "system") {
+      // we should translate a complex content to a string, but should have crashed previously too
+      if (typeof m.content !== "string") {
+        throw new Error("System prompts should only be strings.");
+      }
       system = [{ text: m.content }];
-      continue;
+
+      // hack: bedrock apis need at least a user message
+      // we could do something smarter, but an "empty" message like this shoudldn't affect the output
+      m = { ...m, role: "user", content: "." };
     }
 
     let role: MessageRole = m.role;

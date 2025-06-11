@@ -525,7 +525,7 @@ export async function fetchConverse({
       system = [{ text: m.content }];
 
       // hack: bedrock apis need at least a user message
-      // we could do something smarter, but an "empty" message like this shoudldn't affect the output
+      // we could do something smarter, but an "empty" message like this shouldn't affect the output
       m = { ...m, role: "user", content: "." };
     }
 

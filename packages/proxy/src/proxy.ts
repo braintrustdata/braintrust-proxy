@@ -2110,12 +2110,17 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  for (const m of oaiMessages as Message[]) {
+  for (const message of oaiMessages as Message[]) {
+    let m = message;
     let role: MessageRole = m.role;
     let content: any = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
-      continue;
+
+      // hack: anthropic requires at least one user message. could do something smarter, but shouldn't have an effect
+      // @ts-expect-error
+      role = m.role = "user";
+      content = m.content = ".";
     } else if (
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))

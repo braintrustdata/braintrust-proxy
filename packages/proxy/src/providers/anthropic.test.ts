@@ -6,7 +6,7 @@ import {
   OpenAIChatCompletionCreateParams,
 } from "@types";
 
-it.only("should convert single system message OpenAI request to Anthropic and back", async () => {
+it("should convert single system message OpenAI request to Anthropic and back", async () => {
   const { events } = await callProxyV1<
     OpenAIChatCompletionCreateParams,
     OpenAIChatCompletionChunk

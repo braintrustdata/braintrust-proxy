@@ -2117,7 +2117,7 @@ async function fetchAnthropicChatCompletions({
     if (m.role === "system") {
       system = content;
 
-      // hack: anthropic requires at least one user message. could do something smarter, but shouldn't have an affect
+      // hack: anthropic requires at least one user message. could do something smarter, but shouldn't have an effect
       // @ts-expect-error
       role = m.role = "user";
       content = m.content = ".";

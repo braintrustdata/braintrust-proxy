@@ -106,7 +106,6 @@ import {
   ProxyBadRequestError,
   writeToReadable,
 } from "./util";
-import { f } from "msw/lib/core/HttpResponse-DzeJL_i8";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -1049,7 +1048,6 @@ async function fetchModelLoop(
     let errorHttpHeaders = new Headers();
     endpointCalls.add(1, loggableInfo);
     try {
-      console.log("fetching model", modelSpec, method, endpointUrl);
       proxyResponse = await fetchModel(
         modelSpec,
         method,
@@ -1075,9 +1073,10 @@ async function fetchModelLoop(
           !TRY_ANOTHER_ENDPOINT_ERROR_CODES.includes(
             proxyResponse.response.status,
           )) ||
+        // Or we've exhausted the set of secrets
         i < secrets.length - 1
+        // Then mark this as an error response, and fall through to the error handling logic.
       ) {
-        console.log("setting httpCode", proxyResponse.response.status);
         errorHttpCode = proxyResponse.response.status;
         errorHttpHeaders = proxyResponse.response.headers;
       }

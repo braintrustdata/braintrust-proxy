@@ -1073,7 +1073,7 @@ async function fetchModelLoop(
           !TRY_ANOTHER_ENDPOINT_ERROR_CODES.includes(
             proxyResponse.response.status,
           )) ||
-        // Or we've exhausted the set of secrets
+        // Or we have not exhausted the set of secrets
         i < secrets.length - 1
         // Then mark this as an error response, and fall through to the error handling logic.
       ) {

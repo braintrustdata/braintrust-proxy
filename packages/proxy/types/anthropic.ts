@@ -1,3 +1,4 @@
+import { braintrustAttachmentReferenceSchema } from "@braintrust/core/typespecs";
 import { z } from "zod";
 
 const cacheControlSchema = z.object({
@@ -12,7 +13,7 @@ const anthropicBase64ImageSourceSchema = z.object({
 
 const anthropicUrlImageSourceSchema = z.object({
   type: z.literal("url"),
-  url: z.string(),
+  url: z.union([z.string(), braintrustAttachmentReferenceSchema]),
 });
 
 const anthropicFileSourceSchema = z.object({

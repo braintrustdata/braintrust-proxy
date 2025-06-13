@@ -1061,8 +1061,9 @@ async function fetchModelLoop(
         cachePut,
       );
       secretName = secret.name;
-      // If the response is ok, we can break out of the loop.
-      if (proxyResponse.response.ok) {
+      // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
+      // the exact response.
+      if (proxyResponse.response.ok || proxyResponse.response.status === 400) {
         errorHttpCode = undefined;
         errorHttpHeaders = new Headers();
         break;

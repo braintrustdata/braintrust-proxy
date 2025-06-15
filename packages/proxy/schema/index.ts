@@ -221,6 +221,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "NousResearch/Nous-Hermes-2-Mixtral-8x7B-DPO": ["together"],
   "Gryphe/MythoMax-L2-13b": ["together"],
   "Gryphe/MythoMax-L2-13b-Lite": ["together"],
+  "magistral-medium-latest": ["mistral"],
+  "magistral-medium-2506": ["mistral"],
+  "magistral-small-latest": ["mistral"],
+  "magistral-small-2506": ["mistral"],
   "mistral-large-latest": ["mistral"],
   "open-mistral-nemo": ["mistral"],
   "codestral-latest": ["mistral"],
@@ -482,7 +486,7 @@ export function translateParams(
 
     const hasDefaultParam =
       translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider][translatedKey] !== undefined;
+      defaultModelParamSettings[toProvider]?.[translatedKey] !== undefined;
 
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }

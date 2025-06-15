@@ -1044,8 +1044,8 @@ async function fetchModelLoop(
 
     const additionalHeaders = secret.metadata?.additionalHeaders || {};
 
-    let httpCode = undefined;
-    let httpHeaders = new Headers();
+    let errorHttpCode = undefined;
+    let errorHttpHeaders = new Headers();
     endpointCalls.add(1, loggableInfo);
     try {
       proxyResponse = await fetchModel(
@@ -1061,18 +1061,25 @@ async function fetchModelLoop(
         cachePut,
       );
       secretName = secret.name;
-      if (
-        proxyResponse.response.ok ||
+      // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
+      // the exact response.
+      if (proxyResponse.response.ok || proxyResponse.response.status === 400) {
+        errorHttpCode = undefined;
+        errorHttpHeaders = new Headers();
+        break;
+      } else if (
+        // Otherwise, if this is a non-retryable 400-error
         (proxyResponse.response.status >= 400 &&
           proxyResponse.response.status < 500 &&
           !TRY_ANOTHER_ENDPOINT_ERROR_CODES.includes(
             proxyResponse.response.status,
-          ))
+          )) ||
+        // Or we have not exhausted the set of secrets
+        i < secrets.length - 1
+        // Then mark this as an error response, and fall through to the error handling logic.
       ) {
-        break;
-      } else if (i < secrets.length - 1) {
-        httpCode = proxyResponse.response.status;
-        httpHeaders = proxyResponse.response.headers;
+        errorHttpCode = proxyResponse.response.status;
+        errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
       console.log("ERROR", e);
@@ -1080,13 +1087,13 @@ async function fetchModelLoop(
       if (e instanceof TypeError) {
         if ("cause" in e && e.cause && isObject(e.cause)) {
           if ("statusCode" in e.cause) {
-            httpCode = e.cause.statusCode;
+            errorHttpCode = e.cause.statusCode;
           }
           if ("headers" in e.cause) {
-            httpHeaders = new Headers(e.cause.headers);
+            errorHttpHeaders = new Headers(e.cause.headers);
           }
         }
-        if (!httpCode) {
+        if (!errorHttpCode) {
           console.log(
             "Failed to fetch with a generic error (could be an invalid URL or an unhandled network error)",
             secret.id,
@@ -1103,12 +1110,12 @@ async function fetchModelLoop(
     // loop, and we haven't waited the maximum allotted time, then
     // sleep for a bit, and reset the loop.
     if (
-      httpCode !== undefined &&
-      RATE_LIMITING_ERROR_CODES.includes(httpCode) &&
+      errorHttpCode !== undefined &&
+      RATE_LIMITING_ERROR_CODES.includes(errorHttpCode) &&
       i === secrets.length - 1 &&
       totalWaitedTime < RATE_LIMIT_MAX_WAIT_MS
     ) {
-      const limitReset = tryParseRateLimitReset(httpHeaders);
+      const limitReset = tryParseRateLimitReset(errorHttpHeaders);
       delayMs = Math.max(
         // Make sure we sleep at least 10ms. Sometimes the random backoff logic can get wonky.
         Math.min(
@@ -1126,49 +1133,64 @@ async function fetchModelLoop(
         loopIndex,
       );
 
-      const sleepTime =
-        delayMs > 1000
-          ? Math.round(delayMs / 1000)
-          : Number((delayMs / 1000).toFixed(1));
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
       await new Promise((r) => setTimeout(r, delayMs));
 
       totalWaitedTime += delayMs;
       i = -1; // Reset the loop variable
-    } else if (
-      httpCode !== undefined &&
-      i === secrets.length - 1 &&
-      !proxyResponse
-    ) {
+    } else if (errorHttpCode !== undefined && i === secrets.length - 1) {
       // Convert the HTTP code into a more reasonable error that is easier to parse
       // and display to the user.
       const headersString: string[] = [];
-      httpHeaders.forEach((value, key) => {
+      errorHttpHeaders.forEach((value, key) => {
         headersString.push(`${key}: ${value}`);
       });
       const errorText =
-        `AI provider returned ${httpCode} error.\n\nHeaders:\n` +
+        `AI provider returned ${errorHttpCode} error.\n\nHeaders:\n` +
         headersString.join("\n");
+      const existingResponse = proxyResponse;
       proxyResponse = {
-        response: new Response(null, { status: httpCode }),
+        response: new Response(null, { status: errorHttpCode }),
         stream: new ReadableStream({
           start(controller) {
             controller.enqueue(new TextEncoder().encode(errorText));
-            controller.close();
+
+            if (existingResponse?.stream) {
+              controller.enqueue(
+                new TextEncoder().encode("\n\nResponse body:\n"),
+              );
+              const reader = existingResponse.stream.getReader();
+              const pump = async () => {
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  controller.enqueue(value);
+                }
+              };
+              pump()
+                .catch((e) => {
+                  console.error("Error piping existing response", e);
+                })
+                .finally(() => {
+                  controller.close();
+                });
+            } else {
+              controller.close();
+            }
           },
         }),
       };
     } else {
       console.warn(
         "Received retryable error. Will try the next endpoint",
-        httpCode,
+        errorHttpCode,
       );
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
     endpointRetryableErrors.add(1, {
       ...loggableInfo,
-      http_code: httpCode,
+      http_code: errorHttpCode,
     });
   }
 
@@ -2110,12 +2132,17 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  for (const m of oaiMessages as Message[]) {
+  for (const message of oaiMessages as Message[]) {
+    let m = message;
     let role: MessageRole = m.role;
     let content: any = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
-      continue;
+
+      // hack: anthropic requires at least one user message. could do something smarter, but shouldn't have an effect
+      // @ts-expect-error
+      role = m.role = "user";
+      content = m.content = ".";
     } else if (
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))

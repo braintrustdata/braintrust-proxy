@@ -13,10 +13,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: bot-token
+        with:
+          app-id: ${{ secrets.GH_BOT_APP_ID }}
+          private-key: ${{ secrets.GH_BOT_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,6 +51,21 @@ jobs:
         id: git-check
         run: |
           git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Create release branch and update VERSION file
+        if: steps.git-check.outputs.changes == 'true'
+        id: create_branch
+        run: |
+          set -e  # Exit on any error
+
+          git checkout -b "sync-models-${{ github.run_id }}"
+          echo "${{ steps.new_version.outputs.new_version }}" > VERSION
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add VERSION
+          git commit -m "Propose release ${{ steps.new_version.outputs.new_version }}"
+          git push -f origin "$NEW_BRANCH"
+          echo "BRANCH_NAME=$NEW_BRANCH" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
         if: steps.git-check.outputs.changes == 'true'

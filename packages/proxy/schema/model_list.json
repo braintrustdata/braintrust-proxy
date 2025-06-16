@@ -180,7 +180,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
+    "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "reasoning": true,

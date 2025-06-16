@@ -40,7 +40,7 @@ jobs:
       - name: Get current branch name
         id: branch-name
         run: |
-          BRANCH_NAME=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD)
+          BRANCH_NAME=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse HEAD)
           echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
       - name: Check for changes

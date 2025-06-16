@@ -180,9 +180,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 40,
-    "input_cache_read_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
     "reasoning": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 100000
@@ -191,9 +191,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 40,
-    "input_cache_read_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
     "reasoning": true,
     "parent": "o3",
     "max_input_tokens": 200000,
@@ -1986,8 +1986,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -2019,7 +2019,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 1.5 Flash",
-    "max_input_tokens": 1048576,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 8192
   },
   "gemini-1.5-flash-latest": {
@@ -2041,7 +2041,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
     "parent": "gemini-1.5-flash",
-    "max_input_tokens": 1048576,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 8192
   },
   "gemini-1.5-flash-002": {
@@ -2086,8 +2086,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3.5,
-    "output_cost_per_mil_tokens": 10.5,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
     "displayName": "Gemini 1.5 Pro",
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
@@ -2106,18 +2106,18 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3.5,
-    "output_cost_per_mil_tokens": 10.5,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
     "parent": "gemini-1.5-pro",
-    "max_input_tokens": 2097152,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 8192
   },
   "gemini-1.5-pro-002": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3.5,
-    "output_cost_per_mil_tokens": 10.5,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
     "parent": "gemini-1.5-pro",
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
@@ -2191,8 +2191,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0,
-    "output_cost_per_mil_tokens": 0,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
     "reasoning": true,
     "experimental": true,
     "parent": "gemini-2.5-pro-preview-05-06",
@@ -2203,8 +2203,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0,
-    "output_cost_per_mil_tokens": 0,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
     "experimental": true,
     "deprecated": true,
     "parent": "gemini-2.5-pro-preview-03-25",
@@ -2215,8 +2215,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0,
-    "output_cost_per_mil_tokens": 0,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "experimental": true,
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
@@ -2270,8 +2270,8 @@
   "gemini-pro": {
     "format": "google",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.35,
-    "output_cost_per_mil_tokens": 1.05,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
     "displayName": "Gemini Pro",
     "deprecated": true,
     "max_input_tokens": 32760,
@@ -2283,7 +2283,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "displayName": "Grok 2 Vision"
+    "displayName": "Grok 2 Vision",
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768
   },
   "grok-2-vision-latest": {
     "format": "openai",
@@ -2291,7 +2293,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "parent": "grok-2-vision"
+    "parent": "grok-2-vision",
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768
   },
   "grok-2-vision-1212": {
     "format": "openai",
@@ -2299,41 +2303,53 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "parent": "grok-2-vision"
+    "parent": "grok-2-vision",
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768
   },
   "grok-2": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "displayName": "Grok 2"
+    "displayName": "Grok 2",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   },
   "grok-2-latest": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "parent": "grok-2"
+    "parent": "grok-2",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   },
   "grok-2-1212": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
-    "parent": "grok-2"
+    "parent": "grok-2",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   },
   "grok-vision-beta": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 15
+    "output_cost_per_mil_tokens": 15,
+    "max_input_tokens": 8192,
+    "max_output_tokens": 8192
   },
   "grok-beta": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 15
+    "output_cost_per_mil_tokens": 15,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   },
   "amazon.nova-pro-v1:0": {
     "format": "converse",

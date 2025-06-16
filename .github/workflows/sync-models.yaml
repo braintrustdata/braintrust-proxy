@@ -6,6 +6,7 @@ on:
     # Using 4 PM UTC to cover PST year-round
     - cron: "0 16 * * *"
   workflow_dispatch: # Allow manual triggering
+  pull_request: # TODO: removeme
 
 jobs:
   sync-models:

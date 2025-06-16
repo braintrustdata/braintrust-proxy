@@ -1,4 +1,4 @@
-name: Sync Models Daily
+name: Sync Models
 
 on:
   schedule:
@@ -58,4 +58,6 @@ jobs:
           branch: sync-models-${{ github.run_id }}
           delete-branch: true
           reviewers: |
+            ankrgyl
+            ibolmo
             choochootrain

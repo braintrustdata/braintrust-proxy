@@ -37,6 +37,12 @@ jobs:
           cat sync_output.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      - name: Get current branch name
+        id: branch-name
+        run: |
+          BRANCH_NAME=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD)
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
       - name: Check for changes
         id: git-check
         run: |
@@ -56,6 +62,7 @@ jobs:
             ${{ steps.sync-models.outputs.sync_output }}
             ```
           branch: sync-models-${{ github.run_id }}
+          base: ${{ steps.branch-name.outputs.branch_name }}
           delete-branch: true
           reviewers: |
             ankrgyl

@@ -1,0 +1,60 @@
+name: Sync Models Daily
+
+on:
+  schedule:
+    # Run daily at 8 AM PST (4 PM UTC in standard time, 3 PM UTC in daylight time)
+    # Using 4 PM UTC to cover PST year-round
+    - cron: "0 16 * * *"
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  sync-models:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run model sync
+        id: sync-models
+        run: |
+          pnpm tsx packages/proxy/scripts/sync_models.ts update-models --write > sync_output.txt 2>&1
+          echo "sync_output<<EOF" >> $GITHUB_OUTPUT
+          cat sync_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git diff --exit-code || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        if: steps.git-check.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            [BOT] Synchronize model pricing and configurations
+          title: "chore[BOT]: Synchronize model pricing and configurations"
+          body: |
+            ## sync-models.ts output
+            ```
+            ${{ steps.sync-models.outputs.sync_output }}
+            ```
+          branch: sync-models-${{ github.run_id }}
+          delete-branch: true
+          reviewers: |
+            choochootrain

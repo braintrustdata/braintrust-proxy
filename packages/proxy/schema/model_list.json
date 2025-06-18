@@ -2122,16 +2122,53 @@
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
   },
+  "gemini-2.5-flash-lite-preview-06-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Gemini 2.5 Flash-Lite Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
+  "gemini-2.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Gemini 2.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
+  "gemini-2.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Pro",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
   "gemini-2.5-flash-preview-05-20": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Gemini 2.5 Flash Preview",
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "parent": "gemini-2.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2144,7 +2181,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
-    "parent": "gemini-2.5-flash-preview-05-20",
+    "parent": "gemini-2.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2154,10 +2191,10 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "displayName": "Gemini 2.5 Pro Preview",
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2170,7 +2207,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
-    "parent": "gemini-2.5-pro-preview-06-05",
+    "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2183,7 +2220,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
-    "parent": "gemini-2.5-pro-preview-05-06",
+    "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2195,7 +2232,7 @@
     "output_cost_per_mil_tokens": 10,
     "reasoning": true,
     "experimental": true,
-    "parent": "gemini-2.5-pro-preview-05-06",
+    "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2207,7 +2244,7 @@
     "output_cost_per_mil_tokens": 10,
     "experimental": true,
     "deprecated": true,
-    "parent": "gemini-2.5-pro-preview-03-25",
+    "parent": "gemini-2.5-pro",
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
   },
@@ -3260,36 +3297,57 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral (25.01)"
   },
+  "publishers/google/models/gemini-2.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Pro",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
   "publishers/google/models/gemini-2.5-pro-preview-05-06": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "displayName": "Gemini 2.5 Pro Preview",
-    "experimental": true
+    "parent": "publishers/google/models/gemini-2.5-pro"
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "experimental": true,
-    "parent": "publishers/google/models/gemini-2.5-pro-preview-05-06"
+    "parent": "publishers/google/models/gemini-2.5-pro"
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Gemini 2.5 Pro Experimental",
-    "experimental": true
+    "experimental": true,
+    "parent": "publishers/google/models/gemini-2.5-pro"
+  },
+  "publishers/google/models/gemini-2.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Gemini 2.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
   },
   "publishers/google/models/gemini-2.5-flash-preview-05-20": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Gemini 2.5 Flash Preview",
     "reasoning": true,
-    "reasoning_budget": true
+    "reasoning_budget": true,
+    "parent": "publishers/google/models/gemini-2.5-flash"
   },
   "publishers/google/models/gemini-2.5-flash-preview-04-17": {
     "format": "google",
@@ -3297,10 +3355,22 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Gemini 2.5 Flash Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "publishers/google/models/gemini-2.5-flash-preview-05-20"
+    "parent": "publishers/google/models/gemini-2.5-flash"
+  },
+  "publishers/google/models/gemini-2.5-flash-lite-preview-06-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Gemini 2.5 Flash-Lite Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
   },
   "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
     "format": "google",

@@ -74,8 +74,8 @@ export const sliderSpecs: {
   maxOutputTokens: [1, 32768, 1, true],
   frequency_penalty: [0, 1, 0.01, false],
   presence_penalty: [0, 1, 0.01, false],
-  top_k: [1, 100, 1, true],
-  topK: [1, 100, 1, true],
+  top_k: [1, 100, 1, false],
+  topK: [1, 100, 1, false],
 };
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.
@@ -98,7 +98,7 @@ export const defaultModelParamSettings: {
     temperature: undefined,
     max_tokens: undefined,
     top_p: 0.7,
-    top_k: 5,
+    top_k: undefined,
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
@@ -107,7 +107,7 @@ export const defaultModelParamSettings: {
     temperature: undefined,
     maxOutputTokens: undefined,
     topP: 0.7,
-    topK: 5,
+    topK: undefined,
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,

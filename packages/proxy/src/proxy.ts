@@ -1787,7 +1787,10 @@ async function fetchOpenAI(
     });
   }
 
-  if (bodyData?.model?.startsWith("o1-pro")) {
+  if (
+    bodyData?.model?.startsWith("o1-pro") ||
+    bodyData?.model?.startsWith("o3-pro")
+  ) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,

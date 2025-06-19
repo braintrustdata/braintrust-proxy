@@ -176,6 +176,28 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 100000
   },
+  "o3-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 20,
+    "output_cost_per_mil_tokens": 40,
+    "reasoning": true,
+    "displayName": "o3 Pro",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 100000
+  },
+  "o3-pro-2025-06-10": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 20,
+    "output_cost_per_mil_tokens": 40,
+    "reasoning": true,
+    "parent": "o3-pro",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 100000
+  },
   "o3": {
     "format": "openai",
     "flavor": "chat",

@@ -1155,7 +1155,7 @@ async function fetchModelLoop(
             controller.enqueue(new TextEncoder().encode(errorText));
 
             if (existingResponse?.stream) {
-              controller.enqueue(new TextEncoder().encode("\n"));
+              controller.enqueue(new TextEncoder().encode("\n\n"));
               const reader = existingResponse.stream.getReader();
               const pump = async () => {
                 while (true) {

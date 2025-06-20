@@ -1145,9 +1145,8 @@ async function fetchModelLoop(
       errorHttpHeaders.forEach((value, key) => {
         headersString.push(`${key}: ${value}`);
       });
-      const errorText =
-        `AI provider returned ${errorHttpCode} error.\n\nHeaders:\n` +
-        headersString.join("\n");
+      const errorText = `AI provider returned ${errorHttpCode} error:`;
+      const headersSuffix = `\n\nHeaders:\n` + headersString.join("\n");
       const existingResponse = proxyResponse;
       proxyResponse = {
         response: new Response(null, { status: errorHttpCode }),
@@ -1156,9 +1155,7 @@ async function fetchModelLoop(
             controller.enqueue(new TextEncoder().encode(errorText));
 
             if (existingResponse?.stream) {
-              controller.enqueue(
-                new TextEncoder().encode("\n\nResponse body:\n"),
-              );
+              controller.enqueue(new TextEncoder().encode("\n"));
               const reader = existingResponse.stream.getReader();
               const pump = async () => {
                 while (true) {
@@ -1168,6 +1165,9 @@ async function fetchModelLoop(
                 }
               };
               pump()
+                .then(() => {
+                  controller.enqueue(new TextEncoder().encode(headersSuffix));
+                })
                 .catch((e) => {
                   console.error("Error piping existing response", e);
                 })
@@ -1175,6 +1175,7 @@ async function fetchModelLoop(
                   controller.close();
                 });
             } else {
+              controller.enqueue(new TextEncoder().encode(headersSuffix));
               controller.close();
             }
           },
@@ -2285,6 +2286,9 @@ async function fetchAnthropicChatCompletions({
     params["anthropic_version"] = "vertex-2023-10-16";
     delete params.model;
   }
+
+  console.log("SYSTEM", system);
+  console.log("MESSAGES", messages);
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method: "POST",

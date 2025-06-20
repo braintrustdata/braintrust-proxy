@@ -489,7 +489,7 @@ export function translateParams(
 
     const hasDefaultParam =
       translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider]?.[translatedKey] !== undefined;
+      defaultModelParamSettings[toProvider][translatedKey] !== undefined;
 
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }

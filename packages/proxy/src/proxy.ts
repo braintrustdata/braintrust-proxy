@@ -2282,9 +2282,6 @@ async function fetchAnthropicChatCompletions({
     delete params.model;
   }
 
-  console.log("SYSTEM", system);
-  console.log("MESSAGES", messages);
-
   const proxyResponse = await fetch(fullURL.toString(), {
     method: "POST",
     headers,

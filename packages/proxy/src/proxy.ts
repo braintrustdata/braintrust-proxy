@@ -2200,7 +2200,10 @@ async function fetchAnthropicChatCompletions({
 
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
-    headers["anthropic-beta"] = "tools-2024-05-16";
+    if (secret.type !== "vertex") {
+      headers["anthropic-beta"] = "tools-2024-05-16";
+    }
+
     params.tools = openAIToolsToAnthropicTools(
       params.tools ||
         (params.functions as Array<ChatCompletionCreateParams.Function>).map(

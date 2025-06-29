@@ -382,3 +382,66 @@ it("should handle tool_use stop reason correctly with sufficient tokens", async 
   );
   expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
 });
+
+it("should avoid anthropic-beta headers for vertex calls", async () => {
+  if (!process.env.VERTEX_AI_API_KEY) {
+    expect(1).toBe(1);
+    return;
+  }
+
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "publishers/anthropic/models/claude-sonnet-4",
+      messages: [
+        {
+          role: "user",
+          content: "Use the calculate function to add 2 and 3.",
+        },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "calculate",
+            description: "Perform a mathematical calculation",
+            parameters: {
+              type: "object",
+              properties: {
+                operation: {
+                  type: "string",
+                  description: "The mathematical operation to perform",
+                },
+                a: {
+                  type: "number",
+                  description: "First number",
+                },
+                b: {
+                  type: "number",
+                  description: "Second number",
+                },
+              },
+              required: ["operation", "a", "b"],
+            },
+          },
+        },
+      ],
+      tool_choice: "required", // Force tool usage
+      stream: false,
+      max_tokens: 150, // Sufficient tokens to complete tool call
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+  expect(response!.choices[0].finish_reason).toBe("tool_calls");
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.tool_calls).toBeTruthy();
+  expect(response!.choices[0].message.tool_calls).toHaveLength(1);
+  expect(response!.choices[0].message.tool_calls![0].function.name).toBe(
+    "calculate",
+  );
+  expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
+});

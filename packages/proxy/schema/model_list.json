@@ -1723,6 +1723,15 @@
     "displayName": "Mixtral 8x7B 32k",
     "deprecated": true
   },
+  "llama-4-scout-17b-16e-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.11,
+    "output_cost_per_mil_tokens": 0.34,
+    "displayName": "LLaMA 4 Scout 17B 16e Instruct",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 8192
+  },
   "llama3-3-70b": {
     "format": "openai",
     "flavor": "chat",

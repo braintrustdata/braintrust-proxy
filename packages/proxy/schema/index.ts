@@ -225,6 +225,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "magistral-medium-2506": ["mistral"],
   "magistral-small-latest": ["mistral"],
   "magistral-small-2506": ["mistral"],
+  "devstral-small-latest": ["mistral"],
+  "devstral-small-2507": ["mistral"],
   "mistral-large-latest": ["mistral"],
   "open-mistral-nemo": ["mistral"],
   "codestral-latest": ["mistral"],

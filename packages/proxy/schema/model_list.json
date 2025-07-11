@@ -1354,6 +1354,24 @@
     "displayName": "Mixtral 8x22B",
     "deprecated": true
   },
+  "devstral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_output_tokens": 128000,
+    "max_input_tokens": 128000,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Devstral Small Latest"
+  },
+  "devstral-small-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_output_tokens": 128000,
+    "max_input_tokens": 128000,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "parent": "devstral-small-latest"
+  },
   "mistral-large-latest": {
     "format": "openai",
     "flavor": "chat",

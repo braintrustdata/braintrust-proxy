@@ -2345,6 +2345,33 @@
     "max_input_tokens": 32760,
     "max_output_tokens": 8192
   },
+  "grok-4": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Grok 4",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
+  },
+  "grok-4-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "parent": "grok-4",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
+  },
+  "grok-4-0709": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "parent": "grok-4",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
+  },
   "grok-2-vision": {
     "format": "openai",
     "flavor": "chat",

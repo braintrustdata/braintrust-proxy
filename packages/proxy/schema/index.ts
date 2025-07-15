@@ -471,7 +471,7 @@ export function buildClassicChatPrompt(messages: Message[]) {
     messages
       .map(
         ({ content, role }) => `<|im_start|>${role}
-${content}<|im_end|>`
+${content}<|im_end|>`,
       )
       .join("\n") + "\n<|im_start|>assistant"
   );
@@ -479,7 +479,7 @@ ${content}<|im_end|>`
 
 export function translateParams(
   toProvider: ModelFormat,
-  params: Record<string, unknown>
+  params: Record<string, unknown>,
 ): Record<string, unknown> {
   let translatedParams: Record<string, unknown> = {};
 

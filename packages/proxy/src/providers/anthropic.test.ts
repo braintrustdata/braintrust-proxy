@@ -52,7 +52,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-2.1",
+      model: "claude-3-haiku-20240307",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },
@@ -77,7 +77,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: "claude-2.1",
+    model: "claude-3-haiku-20240307",
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),

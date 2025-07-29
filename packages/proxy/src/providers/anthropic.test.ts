@@ -12,7 +12,7 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-2",
+      model: "claude-3-haiku-20240307",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },

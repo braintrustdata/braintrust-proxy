@@ -1985,7 +1985,7 @@ async function vertexEndpointInfo({
     authType,
   });
   return {
-    baseUrl: `${apiBase}/v1/projects/${project}/locations/${location}`,
+    baseUrl: apiBase,
     accessToken,
     project,
     location,

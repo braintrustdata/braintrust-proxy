@@ -13,6 +13,8 @@ export {
 
 export { makeWavFile, makeMp3File } from "./audioEncoder";
 
+export { formatVertexEndpoint, getVertexAccessToken } from "./providers";
+
 export function getCurrentUnixTimestamp(): number {
   return Date.now() / 1000;
 }

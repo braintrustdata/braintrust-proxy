@@ -32,7 +32,6 @@ import {
   type ParsedEvent,
   type ReconnectInterval,
 } from "eventsource-parser";
-import { importPKCS8, SignJWT } from "jose";
 import { Buffer } from "node:buffer";
 import {
   ChatCompletion,
@@ -68,7 +67,6 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
-  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -106,6 +104,7 @@ import {
   ProxyBadRequestError,
   writeToReadable,
 } from "./util";
+import { formatVertexEndpoint, getVertexAccessToken } from "utils/providers";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -1612,14 +1611,16 @@ async function fetchOpenAI(
 
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
-    const { project, authType, api_base } = VertexMetadataSchema.parse(
-      secret.metadata,
-    );
-    const locations = modelSpec?.locations?.length
-      ? modelSpec.locations
-      : ["us-central1"];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
+    const {
+      baseUrl: baseURL,
+      accessToken,
+      location,
+      project,
+    } = await vertexEndpointInfo({
+      secret,
+      modelSpec,
+      defaultLocation: "us-central1",
+    });
     if (bodyData?.model?.startsWith("publishers/meta")) {
       // Use the OpenAPI endpoint.
       fullURL = new URL(
@@ -1636,12 +1637,7 @@ async function fetchOpenAI(
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
     }
-    if (authType === "access_token") {
-      bearerToken = secret.secret;
-    } else {
-      // authType === "service_account_key"
-      bearerToken = await getGoogleAccessToken(secret.secret);
-    }
+    bearerToken = accessToken;
   } else {
     let baseURL =
       (secret.metadata &&
@@ -1964,6 +1960,8 @@ async function fetchOpenAIFakeStream({
 interface VertexEndpointInfo {
   baseUrl: string;
   accessToken: string;
+  project: string;
+  location: string;
 }
 
 async function vertexEndpointInfo({
@@ -1976,19 +1974,21 @@ async function vertexEndpointInfo({
   defaultLocation: string;
 }): Promise<VertexEndpointInfo> {
   const { project, authType, api_base } = VertexMetadataSchema.parse(metadata);
-  const locations = modelSpec?.locations?.length
-    ? modelSpec.locations
-    : [defaultLocation];
-  const location = locations[Math.floor(Math.random() * locations.length)];
-  const apiBase = api_base || `https://${location}-aiplatform.googleapis.com`;
-  const accessToken =
-    authType === "access_token" ? secret : await getGoogleAccessToken(secret);
-  if (!accessToken) {
-    throw new Error("Failed to get Google access token");
-  }
+  const { apiBase, location } = formatVertexEndpoint({
+    project,
+    apiBase: api_base,
+    modelSpec,
+    defaultLocation,
+  });
+  const accessToken = await getVertexAccessToken({
+    secret,
+    authType,
+  });
   return {
     baseUrl: `${apiBase}/v1/projects/${project}/locations/${location}`,
     accessToken,
+    project,
+    location,
   };
 }
 
@@ -2475,45 +2475,6 @@ async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
   delete params.tools;
   delete params.tool_choice;
   return out;
-}
-
-async function getGoogleAccessToken(secret: string): Promise<string> {
-  const {
-    private_key_id: kid,
-    private_key: pk,
-    client_email: email,
-    token_uri: tokenUri,
-  } = z
-    .object({
-      type: z.literal("service_account"),
-      private_key_id: z.string(),
-      private_key: z.string(),
-      client_email: z.string(),
-      token_uri: z.string(),
-    })
-    .parse(JSON.parse(secret));
-  const jwt = await new SignJWT({
-    scope: "https://www.googleapis.com/auth/cloud-platform",
-  })
-    .setProtectedHeader({ alg: "RS256", typ: "JWT", kid })
-    .setIssuer(email)
-    .setAudience(tokenUri)
-    .setIssuedAt()
-    .setExpirationTime("5m")
-    .sign(await importPKCS8(pk, "RS256"));
-  const res = await fetch(tokenUri, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${jwt}`,
-  });
-  return z
-    .object({
-      access_token: z.string(),
-      token_type: z.literal("Bearer"),
-    })
-    .parse(await res.json()).access_token;
 }
 
 async function fetchGoogleGenerateContent({

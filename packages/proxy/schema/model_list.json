@@ -753,6 +753,20 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
+  "claude-opus-4-1-20250805": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 4.1 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000
+  },
   "claude-opus-4-20250514": {
     "format": "anthropic",
     "flavor": "chat",

@@ -410,6 +410,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
+  "openai/gpt-oss-120b": ["together", "groq"],
+  "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
+  "accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
+  "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
+  "gpt-oss-120b": ["cerebras"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

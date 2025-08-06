@@ -753,6 +753,20 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
+  "claude-opus-4-1-20250805": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 4.1 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000
+  },
   "claude-opus-4-20250514": {
     "format": "anthropic",
     "flavor": "chat",
@@ -873,6 +887,41 @@
     "deprecated": true,
     "max_input_tokens": 100000,
     "max_output_tokens": 8191
+  },
+  "openai/gpt-oss-120b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "OpenAI GPT-OSS (120B)"
+  },
+  "openai/gpt-oss-20b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "OpenAI GPT-OSS (20B)"
+  },
+  "accounts/fireworks/models/gpt-oss-120b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "OpenAI GPT-OSS (120B)"
+  },
+  "accounts/fireworks/models/gpt-oss-20b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "OpenAI GPT-OSS (20B)"
+  },
+  "gpt-oss-120b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 0.69,
+    "displayName": "OpenAI GPT-OSS (120B)"
   },
   "meta/llama-2-70b-chat": {
     "format": "openai",
@@ -2738,6 +2787,35 @@
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
+  },
+  "anthropic.claude-opus-4-1-20250805-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "Claude 4.1 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000
+  },
+  "us.anthropic.claude-opus-4-1-20250805-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 15,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "displayName": "US Claude 4.1 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-20250514-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000
   },
   "anthropic.claude-opus-4-20250514-v1:0": {
     "format": "anthropic",

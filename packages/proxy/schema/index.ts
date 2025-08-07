@@ -24,6 +24,7 @@ export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
 } = {
   system: "system",
+  developer: "system",
   function: undefined,
   tool: "tool",
   user: "user",

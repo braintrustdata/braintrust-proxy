@@ -53,6 +53,7 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: "reasoning_effort",
+  verbosity: "verbosity",
   stop: null,
 };
 
@@ -93,6 +94,7 @@ export const defaultModelParamSettings: {
     stop: undefined,
     use_cache: true,
     reasoning_effort: "medium",
+    verbosity: "medium",
   },
   anthropic: {
     temperature: undefined,
@@ -102,6 +104,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   google: {
     temperature: undefined,
@@ -111,6 +114,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   js: {},
   window: {

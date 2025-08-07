@@ -207,8 +207,8 @@ importers:
         specifier: ^3.806.0
         version: 3.817.0
       '@braintrust/core':
-        specifier: ^0.0.87
-        version: 0.0.87
+        specifier: ^0.0.93
+        version: 0.0.93
       '@breezystack/lamejs':
         specifier: ^1.2.7
         version: 1.2.7
@@ -1025,8 +1025,8 @@ packages:
       zod: 3.25.34
     dev: false
 
-  /@braintrust/core@0.0.87:
-    resolution: {integrity: sha512-yKo+2McKBcluVUq+5qoYI7QfGvqZ7c0ftTOmnRSToBR2RqGyHkClnnQZ3+M8Guuk9NEKJu92UMTTaR9AonIvvA==}
+  /@braintrust/core@0.0.93:
+    resolution: {integrity: sha512-KoQJwRFpxDMj4iyG3JlOHpOqMiG22A/ZJKW14U1JPzALJgggTefXfTrw91NHTHU+hGIeHozxiOnjFostiCyzCA==}
     dependencies:
       '@asteasolutions/zod-to-openapi': 6.4.0(zod@3.25.34)
       uuid: 9.0.1

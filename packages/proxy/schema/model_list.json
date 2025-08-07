@@ -1,4 +1,84 @@
 {
+  "gpt-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-2025-08-07": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5 (2025-08-07)",
+    "parent": "gpt-5",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 2,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "GPT-5 mini",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-mini-2025-08-07": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 2,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "GPT-5 mini (2025-08-07)",
+    "parent": "gpt-5-mini",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-nano": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.005,
+    "displayName": "GPT-5 nano",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-nano-2025-08-07": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.005,
+    "displayName": "GPT-5 nano (2025-08-07)",
+    "parent": "gpt-5-nano",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5-chat-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5 chat",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000
+  },
   "gpt-4o": {
     "format": "openai",
     "flavor": "chat",

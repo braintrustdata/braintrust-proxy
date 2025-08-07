@@ -139,7 +139,7 @@ export const modelProviderHasTools: {
 export const modelProviderHasReasoning: {
   [name in ModelFormat]?: RegExp;
 } = {
-  openai: /^o[1-4]/i,
+  openai: /^(o[1-4])|(gpt-5)/i,
   anthropic: /^claude-3\.7/i,
   google: /gemini-2.0-flash$|gemini-2.5/i,
   js: undefined,

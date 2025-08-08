@@ -86,3 +86,37 @@ export type ModelSpec = z.infer<typeof ModelSchema>;
 
 import models from "./model_list.json";
 export const AvailableModels = models as { [name: string]: ModelSpec };
+
+// Dynamic model loader
+let cachedModels: { [name: string]: ModelSpec } | null = null;
+
+async function loadModelsFromGitHub(
+  url: string = "https://raw.githubusercontent.com/braintrustdata/braintrust-proxy/main/packages/proxy/schema/model_list.json",
+): Promise<{ [name: string]: ModelSpec } | null> {
+  if (cachedModels) {
+    return cachedModels;
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch models: ${response.statusText}`);
+    }
+    const data = await response.json();
+    cachedModels = data as { [name: string]: ModelSpec };
+  } catch (error) {
+    console.warn(
+      "Failed to load models dynamically from GitHub, falling back to static import:",
+      error,
+    );
+  }
+  return cachedModels;
+}
+
+// Initialize models on startup
+export async function initializeModels(url?: string): Promise<void> {
+  const githubModels = await loadModelsFromGitHub(url);
+  if (githubModels) {
+    Object.assign(AvailableModels, githubModels);
+  }
+}

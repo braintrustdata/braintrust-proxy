@@ -114,7 +114,14 @@ async function loadModelsFromGitHub(
 }
 
 // Initialize models on startup
+let hasInitialized = false;
 export async function initializeModels(url?: string): Promise<void> {
+  if (hasInitialized) {
+    return;
+  }
+
+  // If the following code errors, we don't want to keep retrying it.
+  hasInitialized = true;
   const githubModels = await loadModelsFromGitHub(url);
   if (githubModels) {
     Object.assign(AvailableModels, githubModels);

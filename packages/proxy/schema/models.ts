@@ -87,13 +87,24 @@ export type ModelSpec = z.infer<typeof ModelSchema>;
 import models from "./model_list.json";
 export const AvailableModels = models as { [name: string]: ModelSpec };
 
-// Dynamic model loader
+// Dynamic model loader with expiration
 let cachedModels: { [name: string]: ModelSpec } | null = null;
+let cacheTimestamp: number | null = null;
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour in milliseconds
+
+function isCacheValid(): boolean {
+  return !!(
+    cachedModels &&
+    cacheTimestamp &&
+    Date.now() - cacheTimestamp < CACHE_TTL_MS
+  );
+}
 
 async function loadModelsFromGitHub(
   url: string = "https://raw.githubusercontent.com/braintrustdata/braintrust-proxy/main/packages/proxy/schema/model_list.json",
 ): Promise<{ [name: string]: ModelSpec } | null> {
-  if (cachedModels) {
+  // Return cached models if still valid
+  if (isCacheValid()) {
     return cachedModels;
   }
 
@@ -104,6 +115,7 @@ async function loadModelsFromGitHub(
     }
     const data = await response.json();
     cachedModels = data as { [name: string]: ModelSpec };
+    cacheTimestamp = Date.now();
   } catch (error) {
     console.warn(
       "Failed to load models dynamically from GitHub, falling back to static import:",
@@ -113,15 +125,12 @@ async function loadModelsFromGitHub(
   return cachedModels;
 }
 
-// Initialize models on startup
-let hasInitialized = false;
+// Initialize models on startup and refresh when expired
 export async function initializeModels(url?: string): Promise<void> {
-  if (hasInitialized) {
+  if (isCacheValid()) {
     return;
   }
 
-  // If the following code errors, we don't want to keep retrying it.
-  hasInitialized = true;
   const githubModels = await loadModelsFromGitHub(url);
   if (githubModels) {
     Object.assign(AvailableModels, githubModels);

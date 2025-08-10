@@ -215,6 +215,7 @@ export function makeFetchApiSecrets({
       );
     }
 
+    console.log("SECRETS", secrets);
     return secrets;
   };
 }

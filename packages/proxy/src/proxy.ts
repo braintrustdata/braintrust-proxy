@@ -1060,6 +1060,7 @@ async function fetchModelLoop(
         cacheGet,
         cachePut,
       );
+      console.log("PROXY RESPONSE", proxyResponse);
       secretName = secret.name;
       // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
       // the exact response.
@@ -1842,6 +1843,13 @@ async function fetchOpenAI(
     }
   }
 
+  console.log("FETCHING OPENAI", {
+    method,
+    url: fullURL.toString(),
+    bodyData,
+    headers,
+    isManagedStructuredOutput,
+  });
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1857,6 +1865,7 @@ async function fetchOpenAI(
           keepalive: true,
         },
   );
+  console.log("RESPONSE: ", proxyResponse);
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {

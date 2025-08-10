@@ -16,6 +16,9 @@
     "dev": {
       "cache": false
     },
+    "watch": {
+      "cache": false
+    },
     "start": {
       "cache": false
     },

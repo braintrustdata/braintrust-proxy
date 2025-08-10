@@ -6,6 +6,9 @@ declare global {
     PROMETHEUS_SCRAPE_USER?: string;
     PROMETHEUS_SCRAPE_PASSWORD?: string;
     WHITELISTED_ORIGINS?: string;
+
+    NATIVE_OPENAI_API_KEY?: string;
+    NATIVE_ANTHROPIC_API_KEY?: string;
   }
 }
 

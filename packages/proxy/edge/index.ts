@@ -35,6 +35,7 @@ export interface ProxyOpts {
   meterProvider?: MeterProvider;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
+  nativeSecrets?: Record<string, APISecret[]>;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -199,6 +200,8 @@ export function makeFetchApiSecrets({
         secret: authToken,
         type: endpointTypes[0] ?? "openai",
       });
+    } else if (secrets.length === 0 && model && opts.nativeSecrets?.[model]) {
+      secrets.push(...opts.nativeSecrets[model]);
     }
 
     if (opts.credentialsCache) {
@@ -215,7 +218,6 @@ export function makeFetchApiSecrets({
       );
     }
 
-    console.log("SECRETS", secrets);
     return secrets;
   };
 }

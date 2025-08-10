@@ -16,6 +16,11 @@ import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
+import {
+  APISecret,
+  AvailableEndpointTypes,
+  AvailableModels,
+} from "@braintrust/proxy/schema";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -119,6 +124,35 @@ export async function handleProxyV1(
     spanLogger = makeProxySpanLogger(span, ctx.waitUntil.bind(ctx));
   }
 
+  const nativeSecrets: Record<string, APISecret[]> = {};
+  for (const [model, def] of Object.entries(AvailableModels)) {
+    if (
+      env.NATIVE_OPENAI_API_KEY &&
+      def.format === "openai" &&
+      !AvailableEndpointTypes[model]
+    ) {
+      nativeSecrets[model] = [
+        {
+          type: "openai",
+          secret: env.NATIVE_OPENAI_API_KEY,
+        },
+      ];
+    }
+
+    if (
+      env.NATIVE_ANTHROPIC_API_KEY &&
+      def.format === "anthropic" &&
+      !AvailableEndpointTypes[model]
+    ) {
+      nativeSecrets[model] = [
+        {
+          type: "anthropic",
+          secret: env.NATIVE_ANTHROPIC_API_KEY,
+        },
+      ];
+    }
+  }
+
   const opts: ProxyOpts = {
     getRelativeURL(request: Request): string {
       return new URL(request.url).pathname.slice(proxyV1Prefix.length);
@@ -150,6 +184,7 @@ export async function handleProxyV1(
     meterProvider,
     whitelist,
     spanLogger,
+    nativeSecrets,
   };
 
   const url = new URL(request.url);

@@ -22,6 +22,7 @@ export const ModelEndpointType = [
   "vertex",
   "together",
   "fireworks",
+  "baseten",
   "perplexity",
   "xAI",
   "groq",

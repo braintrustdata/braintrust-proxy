@@ -3720,6 +3720,27 @@
     "flavor": "chat",
     "displayName": "Llama 3.1 8B Instruct"
   },
+  "Qwen3-Coder-480B-A35B-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Qwen3 Coder 480B A35B Instruct",
+    "input_cost_per_mil_tokens": 0.38,
+    "output_cost_per_mil_tokens": 1.53
+  },
+  "moonshotai/Kimi-K2-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Kimi K2 Instruct",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.5
+  },
+  "deepseek-ai/DeepSeek-V3-0324": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "DeepSeek V3 0324",
+    "input_cost_per_mil_tokens": 0.77,
+    "output_cost_per_mil_tokens": 0.77
+  },
   "text-block": {
     "format": "js",
     "flavor": "completion",

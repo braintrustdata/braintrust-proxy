@@ -415,11 +415,14 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
-  "openai/gpt-oss-120b": ["together", "groq"],
+  "openai/gpt-oss-120b": ["together", "groq", "baseten"],
   "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
   "accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
   "gpt-oss-120b": ["cerebras"],
+  "Qwen3-Coder-480B-A35B-Instruct": ["baseten"],
+  "moonshotai/Kimi-K2-Instruct": ["baseten"],
+  "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
@@ -444,6 +447,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   LEPTON_API_KEY: "lepton",
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
+  BASETEN_API_KEY: "baseten",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -467,6 +471,7 @@ export const EndpointProviderToBaseURL: {
   groq: "https://api.groq.com/openai/v1",
   lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
+  baseten: "https://inference.baseten.co/v1",
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
   bedrock: null,

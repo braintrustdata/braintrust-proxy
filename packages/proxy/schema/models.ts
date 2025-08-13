@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { _urljoin } from "@braintrust/core";
 
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
@@ -84,9 +85,16 @@ export const ModelSchema = z.object({
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
-import models from "./model_list.json";
-import { _urljoin } from "@braintrust/core";
-export const AvailableModels = models as { [name: string]: ModelSpec };
+import modelListJson from "./model_list.json";
+const modelListJsonTyped = modelListJson as { [name: string]: ModelSpec };
+
+declare global {
+  var availableModels: { [name: string]: ModelSpec } | undefined;
+}
+
+export function getAvailableModels(): { [name: string]: ModelSpec } {
+  return globalThis.availableModels ?? modelListJsonTyped;
+}
 
 // Dynamic model loader with expiration
 let cachedModels: { [name: string]: ModelSpec } | null = null;
@@ -136,6 +144,9 @@ export async function initializeModels(appUrl: string): Promise<void> {
 
   const dynamicModels = await loadModelsFromControlPlane(appUrl);
   if (dynamicModels) {
-    Object.assign(AvailableModels, dynamicModels);
+    if (!globalThis.availableModels) {
+      globalThis.availableModels = { ...modelListJsonTyped };
+    }
+    Object.assign(globalThis.availableModels, dynamicModels);
   }
 }

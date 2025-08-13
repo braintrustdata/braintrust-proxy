@@ -87,26 +87,47 @@ export const ModelSchema = z.object({
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
 import modelListJson from "./model_list.json";
-const modelListJsonTyped = modelListJson as { [name: string]: ModelSpec };
+const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);
 
+// Because this file can be included and bundled in various ways, it's important to
+// really inject these variables into the global scope, rather than let the bundler
+// have its way with them.
 declare global {
-  var availableModels: { [name: string]: ModelSpec } | undefined;
+  var _proxy_availableModels: { [name: string]: ModelSpec } | undefined;
+  var _proxy_cachedModels: { [name: string]: ModelSpec } | null;
+  var _proxy_cacheTimestamp: number | null;
 }
 
+// This function will always return at least the static model list,
 export function getAvailableModels(): { [name: string]: ModelSpec } {
-  return globalThis.availableModels ?? modelListJsonTyped;
+  return globalThis._proxy_availableModels ?? modelListJsonTyped;
+}
+
+// This function will reach out to the control plane and update the
+// available models. It is not required to call. If you don't, you'll
+// just get whatever models are in the static list.
+export async function refreshModels(appUrl: string): Promise<void> {
+  if (isCacheValid()) {
+    return;
+  }
+
+  const dynamicModels = await loadModelsFromControlPlane(appUrl);
+  if (dynamicModels) {
+    if (!globalThis._proxy_availableModels) {
+      globalThis._proxy_availableModels = { ...modelListJsonTyped };
+    }
+    Object.assign(globalThis._proxy_availableModels, dynamicModels);
+  }
 }
 
 // Dynamic model loader with expiration
-let cachedModels: { [name: string]: ModelSpec } | null = null;
-let cacheTimestamp: number | null = null;
 const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour in milliseconds
 
 function isCacheValid(): boolean {
   return !!(
-    cachedModels &&
-    cacheTimestamp &&
-    Date.now() - cacheTimestamp < CACHE_TTL_MS
+    globalThis._proxy_cachedModels &&
+    globalThis._proxy_cacheTimestamp &&
+    Date.now() - globalThis._proxy_cacheTimestamp < CACHE_TTL_MS
   );
 }
 
@@ -115,7 +136,7 @@ async function loadModelsFromControlPlane(
 ): Promise<{ [name: string]: ModelSpec } | null> {
   // Return cached models if still valid
   if (isCacheValid()) {
-    return cachedModels;
+    return globalThis._proxy_cachedModels;
   }
 
   const fetchUrl = _urljoin(appUrl, "api/models/model_list.json");
@@ -126,28 +147,13 @@ async function loadModelsFromControlPlane(
       throw new Error(`Failed to fetch models: ${response.statusText}`);
     }
     const data = await response.json();
-    cachedModels = data as { [name: string]: ModelSpec };
-    cacheTimestamp = Date.now();
+    globalThis._proxy_cachedModels = data as { [name: string]: ModelSpec };
+    globalThis._proxy_cacheTimestamp = Date.now();
   } catch (error) {
     console.warn(
       `Failed to load models dynamically from control plane (${fetchUrl}), falling back to static import:`,
       error,
     );
   }
-  return cachedModels;
-}
-
-// Initialize models on startup and refresh when expired
-export async function initializeModels(appUrl: string): Promise<void> {
-  if (isCacheValid()) {
-    return;
-  }
-
-  const dynamicModels = await loadModelsFromControlPlane(appUrl);
-  if (dynamicModels) {
-    if (!globalThis.availableModels) {
-      globalThis.availableModels = { ...modelListJsonTyped };
-    }
-    Object.assign(globalThis.availableModels, dynamicModels);
-  }
+  return globalThis._proxy_cachedModels;
 }

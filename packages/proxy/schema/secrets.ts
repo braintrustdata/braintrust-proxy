@@ -39,6 +39,7 @@ export const BedrockMetadataSchema = BaseMetadataSchema.merge(
     region: z.string().min(1, "Region cannot be empty"),
     access_key: z.string().min(1, "Access key cannot be empty"),
     session_token: z.string().nullish(),
+    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).strict();
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;

@@ -107,7 +107,7 @@ function streamResponse(
 }
 
 export async function fetchBedrockAnthropicMessages({
-  secret: { secret, metadata },
+  secret: { secret, metadata, type },
   body,
 }: {
   secret: APISecret;
@@ -126,6 +126,13 @@ export async function fetchBedrockAnthropicMessages({
     .passthrough()
     .parse(body);
   const brc = new BedrockRuntimeClient({
+    endpoint:
+      type === "bedrock" &&
+      metadata &&
+      metadata.api_base &&
+      metadata.api_base.length > 0
+        ? metadata.api_base
+        : undefined,
     region,
     credentials: {
       accessKeyId,
@@ -196,6 +203,10 @@ export async function fetchBedrockAnthropic({
   const metadata = secret.metadata as BedrockMetadata;
 
   const brt = new BedrockRuntimeClient({
+    endpoint:
+      metadata.api_base && metadata.api_base.length > 0
+        ? metadata.api_base
+        : undefined,
     region: metadata.region,
     credentials: {
       accessKeyId: metadata.access_key,
@@ -503,6 +514,10 @@ export async function fetchConverse({
   const metadata = secret.metadata as BedrockMetadata;
 
   const brt = new BedrockRuntimeClient({
+    endpoint:
+      metadata.api_base && metadata.api_base.length > 0
+        ? metadata.api_base
+        : undefined,
     region: metadata.region,
     credentials: {
       accessKeyId: metadata.access_key,
@@ -517,7 +532,14 @@ export async function fetchConverse({
   let system: SystemContentBlock[] | undefined = undefined;
   for (const m of oaiMessages as OaiMessage[]) {
     if (m.role === "system") {
-      system = [{ text: m.content }];
+      system = [
+        {
+          text:
+            typeof m.content === "string"
+              ? m.content
+              : JSON.stringify(m.content),
+        },
+      ];
       continue;
     }
 

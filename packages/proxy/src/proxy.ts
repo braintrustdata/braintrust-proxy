@@ -2,10 +2,10 @@ import { MessageParam } from "@anthropic-ai/sdk/resources";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
 import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
+  type ChatCompletionMessageParamType as Message,
+  type MessageRoleType as MessageRole,
+  ResponseFormat as responseFormatSchema,
+} from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
   APISecret,

@@ -16,11 +16,11 @@ import {
   ToolConfiguration,
 } from "@aws-sdk/client-bedrock-runtime";
 import {
-  MessageRole,
-  Message as OaiMessage,
-  responseFormatJsonSchemaSchema,
-  toolsSchema,
-} from "@braintrust/core/typespecs";
+  type MessageRoleType as MessageRole,
+  type ChatCompletionMessageParamType as OaiMessage,
+  ResponseFormatJsonSchema as responseFormatJsonSchemaSchema,
+  ChatCompletionTool as chatCompletionToolSchema,
+} from "../generated_types";
 import {
   APISecret,
   BedrockMetadata,
@@ -584,7 +584,7 @@ export async function fetchConverse({
         type: "function",
         function: f,
       }));
-    const parsed = toolsSchema.safeParse(tools);
+    const parsed = chatCompletionToolSchema.array().safeParse(tools);
     if (!parsed.success) {
       console.warn("Bedrock: invalid tool config: " + parsed.error.message);
     } else {

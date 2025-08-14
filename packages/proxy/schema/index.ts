@@ -1,10 +1,10 @@
 import { z } from "zod";
 import type {
-  AnyModelParam,
-  Message,
-  MessageRole,
-  ModelParams,
-} from "@braintrust/core/typespecs";
+  AnyModelParamsType as AnyModelParam,
+  ChatCompletionMessageParamType as Message,
+  MessageRoleType as MessageRole,
+  ModelParamsType as ModelParams,
+} from "../src/generated_types";
 import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";

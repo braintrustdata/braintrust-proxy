@@ -12,7 +12,7 @@ import {
   MessageCreateParamsBase,
   ThinkingConfigParam,
 } from "@anthropic-ai/sdk/resources/messages";
-import { Message } from "@braintrust/core/typespecs";
+import { type ChatCompletionMessageParamType as Message } from "../generated_types";
 import {
   OpenAICompletionUsage,
   OpenAIChatCompletion,

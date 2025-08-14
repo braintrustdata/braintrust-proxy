@@ -9,10 +9,10 @@ import {
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
   APISecret,
-  AvailableModels,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
+  getAvailableModels,
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
@@ -1000,7 +1000,7 @@ async function fetchModelLoop(
 
     const modelSpec =
       (model !== null
-        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        ? secret.metadata?.customModels?.[model] ?? getAvailableModels()[model]
         : null) ?? null;
 
     let endpointUrl = url;
@@ -2935,7 +2935,7 @@ export function guessSpanType(
     return spanName;
   }
 
-  const flavor = model && AvailableModels[model]?.flavor;
+  const flavor = model && getAvailableModels()[model]?.flavor;
   if (flavor === "chat") {
     return "chat";
   } else if (flavor === "completion") {

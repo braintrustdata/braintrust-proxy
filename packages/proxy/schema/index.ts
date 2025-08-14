@@ -5,7 +5,7 @@ import type {
   MessageRole,
   ModelParams,
 } from "@braintrust/core/typespecs";
-import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
+import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
@@ -428,8 +428,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
-    (AvailableModels[model] &&
-      DefaultEndpointTypes[AvailableModels[model].format]) ||
+    (getAvailableModels()[model] &&
+      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
     []
   );
 }

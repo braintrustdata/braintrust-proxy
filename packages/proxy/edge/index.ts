@@ -5,6 +5,11 @@ import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
+import {
+  mergeRateLimitResponses,
+  RateLimit,
+  RateLimitResponse,
+} from "@schema/rate_limits";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -219,6 +224,22 @@ export function makeFetchApiSecrets({
     }
 
     return secrets;
+  };
+}
+
+export function makeCheckRateLimits({
+  ctx,
+  opts,
+}: {
+  ctx: EdgeContext;
+  opts: ProxyOpts;
+}) {
+  return async (args: {
+    idKey: string;
+    limits: RateLimit[];
+  }): Promise<RateLimitResponse> => {
+    // Check each of the rate limits in parallel, and then merge them
+    return mergeRateLimitResponses(await Promise.all([]));
   };
 }
 

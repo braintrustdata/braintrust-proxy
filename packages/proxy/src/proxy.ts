@@ -106,6 +106,7 @@ import {
   ProxyBadRequestError,
   writeToReadable,
 } from "./util";
+import { RateLimit, RateLimitResponse } from "@schema/rate_limits";
 
 type CachedMetadata = {
   cached_at: Date;
@@ -196,6 +197,10 @@ export async function proxyV1({
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>;
+  checkRateLimit: (args: {
+    idKey: string;
+    limits: RateLimit[];
+  }) => Promise<RateLimitResponse>;
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
   cacheKeyOptions?: CacheKeyOptions;

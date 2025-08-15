@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
+import { rateLimitSchema } from "./rate_limits";
 
 export const BaseMetadataSchema = z
   .object({
@@ -89,6 +90,7 @@ const APISecretBaseSchema = z
     name: z.string().nullish(),
     secret: z.string(),
     metadata: z.record(z.unknown()).nullish(),
+    rate_limit: rateLimitSchema.nullish(),
   })
   .strict();
 

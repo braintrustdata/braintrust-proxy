@@ -19,7 +19,7 @@ import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import {
   APISecret,
   AvailableEndpointTypes,
-  AvailableModels,
+  getAvailableModels,
 } from "@braintrust/proxy/schema";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
@@ -125,7 +125,7 @@ export async function handleProxyV1(
   }
 
   const nativeSecrets: Record<string, APISecret[]> = {};
-  for (const [model, def] of Object.entries(AvailableModels)) {
+  for (const [model, def] of Object.entries(getAvailableModels())) {
     if (
       env.NATIVE_OPENAI_API_KEY &&
       def.format === "openai" &&

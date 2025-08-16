@@ -16,6 +16,7 @@ import {
   EncryptedMessage,
   encryptMessage,
 } from "utils/encrypt";
+import { RateLimiter } from "./rate-limiter";
 
 export { FlushingExporter } from "./exporter";
 
@@ -36,6 +37,7 @@ export interface ProxyOpts {
   cors?: boolean;
   credentialsCache?: Cache;
   completionsCache?: Cache;
+  rateLimitCache?: Cache;
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
   whitelist?: (string | RegExp)[];
@@ -238,8 +240,14 @@ export function makeCheckRateLimits({
     idKey: string;
     limits: RateLimit[];
   }): Promise<RateLimitResponse> => {
-    // Check each of the rate limits in parallel, and then merge them
-    return mergeRateLimitResponses(await Promise.all([]));
+    if (!opts.rateLimitCache) {
+      // No rate limit cache configured, allow all requests
+      return { type: "ok" };
+    }
+
+    const rateLimiter = new RateLimiter(opts.rateLimitCache);
+    const responses = await rateLimiter.checkLimits(args.idKey, args.limits);
+    return mergeRateLimitResponses(responses);
   };
 }
 
@@ -299,6 +307,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     };
 
     const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+    const checkRateLimits = makeCheckRateLimits({ ctx, opts });
 
     const cachePut = async (
       encryptionKey: string,
@@ -332,6 +341,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         setStatusCode: setStatus,
         res: writable,
         getApiSecrets: fetchApiSecrets,
+        checkRateLimit: checkRateLimits,
         cacheGet,
         cachePut,
         digest: digestMessage,

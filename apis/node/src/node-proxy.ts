@@ -66,6 +66,7 @@ export async function nodeProxyV1({
     setStatusCode,
     res: writable,
     getApiSecrets: lookupApiSecret,
+    checkRateLimit: async () => ({ type: "ok" }),
     cacheGet,
     cachePut,
     digest: async (message: string) => {

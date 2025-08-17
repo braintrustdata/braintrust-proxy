@@ -208,6 +208,7 @@ export function makeFetchApiSecrets({
         type: endpointTypes[0] ?? "openai",
       });
     } else if (secrets.length === 0 && model && opts.nativeSecrets?.[model]) {
+      console.log("USING NATIVE SECRETS FOR MODEL", model);
       secrets.push(...opts.nativeSecrets[model]);
     }
 

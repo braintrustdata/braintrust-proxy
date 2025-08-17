@@ -171,6 +171,7 @@ export async function proxyV1({
   getApiSecrets,
   cacheGet,
   cachePut,
+  checkRateLimit,
   digest,
   meterProvider = NOOP_METER_PROVIDER,
   cacheKeyOptions = {},
@@ -552,6 +553,11 @@ export async function proxyV1({
       digest,
       cacheGet,
       cachePut,
+      (limits: RateLimit[]) =>
+        checkRateLimit({
+          idKey: authToken || "anonymous",
+          limits,
+        }),
     );
     stream = proxyStream;
 
@@ -949,6 +955,7 @@ async function fetchModelLoop(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  checkRateLimit: (limits: RateLimit[]) => Promise<RateLimitResponse>,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -1002,6 +1009,13 @@ async function fetchModelLoop(
   for (; i < secrets.length; i++) {
     const idx = (initialIdx + i) % secrets.length;
     const secret = secrets[idx];
+
+    const check = await checkRateLimit(
+      secret.rate_limit ? [secret.rate_limit] : [],
+    ).catch((e) => {
+      console.error(`Failed to check rate limit for secret ${secret.id}`, e);
+    });
+    console.log("CHECK!", check);
 
     const modelSpec =
       (model !== null
@@ -1065,7 +1079,6 @@ async function fetchModelLoop(
         cacheGet,
         cachePut,
       );
-      console.log("PROXY RESPONSE", proxyResponse);
       secretName = secret.name;
       // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
       // the exact response.
@@ -1848,13 +1861,6 @@ async function fetchOpenAI(
     }
   }
 
-  console.log("FETCHING OPENAI", {
-    method,
-    url: fullURL.toString(),
-    bodyData,
-    headers,
-    isManagedStructuredOutput,
-  });
   const proxyResponse = await fetch(
     fullURL.toString(),
     method === "POST"
@@ -1870,7 +1876,6 @@ async function fetchOpenAI(
           keepalive: true,
         },
   );
-  console.log("RESPONSE: ", proxyResponse);
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {

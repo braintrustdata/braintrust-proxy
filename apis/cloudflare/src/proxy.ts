@@ -4,6 +4,7 @@ import {
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
+  Cache,
 } from "@braintrust/proxy/edge";
 import {
   NOOP_METER_PROVIDER,
@@ -135,6 +136,11 @@ export async function handleProxyV1(
         {
           type: "openai",
           secret: env.NATIVE_OPENAI_API_KEY,
+          rate_limit: {
+            window: "hour",
+            limit: 1,
+            resource_id: "native_openai",
+          },
         },
       ];
     }
@@ -148,10 +154,37 @@ export async function handleProxyV1(
         {
           type: "anthropic",
           secret: env.NATIVE_ANTHROPIC_API_KEY,
+          rate_limit: {
+            window: "hour",
+            limit: 1,
+            resource_id: "native_openai",
+          },
         },
       ];
     }
   }
+
+  const completionsCache: Cache = {
+    get: async (key) => {
+      const start = performance.now();
+      const ret = await env.ai_proxy.get(key);
+      const end = performance.now();
+      cacheGetLatency.record(end - start);
+      if (ret) {
+        return JSON.parse(ret);
+      } else {
+        return null;
+      }
+    },
+    set: async (key, value, { ttl }: { ttl?: number }) => {
+      const start = performance.now();
+      await env.ai_proxy.put(key, JSON.stringify(value), {
+        expirationTtl: ttl,
+      });
+      const end = performance.now();
+      cacheSetLatency.record(end - start);
+    },
+  };
 
   const opts: ProxyOpts = {
     getRelativeURL(request: Request): string {
@@ -159,27 +192,8 @@ export async function handleProxyV1(
     },
     cors: true,
     credentialsCache,
-    completionsCache: {
-      get: async (key) => {
-        const start = performance.now();
-        const ret = await env.ai_proxy.get(key);
-        const end = performance.now();
-        cacheGetLatency.record(end - start);
-        if (ret) {
-          return JSON.parse(ret);
-        } else {
-          return null;
-        }
-      },
-      set: async (key, value, { ttl }: { ttl?: number }) => {
-        const start = performance.now();
-        await env.ai_proxy.put(key, JSON.stringify(value), {
-          expirationTtl: ttl,
-        });
-        const end = performance.now();
-        cacheSetLatency.record(end - start);
-      },
-    },
+    completionsCache,
+    rateLimitCache: completionsCache,
     braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider,
     whitelist,

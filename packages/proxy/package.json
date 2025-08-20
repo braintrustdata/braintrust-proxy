@@ -92,7 +92,7 @@
     "yargs": "^17.7.2"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.60.0",
+    "@anthropic-ai/sdk": "^0.39.0",
     "@apidevtools/json-schema-ref-parser": "^11.9.1",
     "@aws-sdk/client-bedrock-runtime": "^3.806.0",
     "@braintrust/core": "^0.0.93",

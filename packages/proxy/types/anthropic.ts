@@ -1,3 +1,4 @@
+import { AttachmentReference as attachmentReferenceSchema } from "../src/generated_types";
 import { z } from "zod";
 
 const cacheControlSchema = z.object({
@@ -12,7 +13,16 @@ const anthropicBase64ImageSourceSchema = z.object({
 
 const anthropicUrlImageSourceSchema = z.object({
   type: z.literal("url"),
-  url: z.string(),
+  url: z.preprocess((val) => {
+    if (typeof val === "string") {
+      return val;
+    }
+    const parsed = attachmentReferenceSchema.safeParse(val);
+    if (parsed.success) {
+      return JSON.stringify(parsed.data);
+    }
+    return val;
+  }, z.string()),
 });
 
 const anthropicFileSourceSchema = z.object({

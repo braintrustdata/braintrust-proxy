@@ -2,17 +2,17 @@ import { MessageParam } from "@anthropic-ai/sdk/resources";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
 import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
+  type ChatCompletionMessageParamType as Message,
+  type MessageRoleType as MessageRole,
+  ResponseFormat as responseFormatSchema,
+} from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
   APISecret,
-  AvailableModels,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
+  getAvailableModels,
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
@@ -1000,7 +1000,7 @@ async function fetchModelLoop(
 
     const modelSpec =
       (model !== null
-        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        ? secret.metadata?.customModels?.[model] ?? getAvailableModels()[model]
         : null) ?? null;
 
     let endpointUrl = url;
@@ -1145,9 +1145,8 @@ async function fetchModelLoop(
       errorHttpHeaders.forEach((value, key) => {
         headersString.push(`${key}: ${value}`);
       });
-      const errorText =
-        `AI provider returned ${errorHttpCode} error.\n\nHeaders:\n` +
-        headersString.join("\n");
+      const errorText = `AI provider returned ${errorHttpCode} error:`;
+      const headersSuffix = `\n\nHeaders:\n` + headersString.join("\n");
       const existingResponse = proxyResponse;
       proxyResponse = {
         response: new Response(null, { status: errorHttpCode }),
@@ -1156,9 +1155,7 @@ async function fetchModelLoop(
             controller.enqueue(new TextEncoder().encode(errorText));
 
             if (existingResponse?.stream) {
-              controller.enqueue(
-                new TextEncoder().encode("\n\nResponse body:\n"),
-              );
+              controller.enqueue(new TextEncoder().encode("\n\n"));
               const reader = existingResponse.stream.getReader();
               const pump = async () => {
                 while (true) {
@@ -1168,6 +1165,9 @@ async function fetchModelLoop(
                 }
               };
               pump()
+                .then(() => {
+                  controller.enqueue(new TextEncoder().encode(headersSuffix));
+                })
                 .catch((e) => {
                   console.error("Error piping existing response", e);
                 })
@@ -1175,6 +1175,7 @@ async function fetchModelLoop(
                   controller.close();
                 });
             } else {
+              controller.enqueue(new TextEncoder().encode(headersSuffix));
               controller.close();
             }
           },
@@ -1787,7 +1788,10 @@ async function fetchOpenAI(
     });
   }
 
-  if (bodyData?.model?.startsWith("o1-pro")) {
+  if (
+    bodyData?.model?.startsWith("o1-pro") ||
+    bodyData?.model?.startsWith("o3-pro")
+  ) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,
@@ -2132,17 +2136,12 @@ async function fetchAnthropicChatCompletions({
 
   let messages: Array<MessageParam> = [];
   let system = undefined;
-  for (const message of oaiMessages as Message[]) {
-    let m = message;
+  for (const m of oaiMessages as Message[]) {
     let role: MessageRole = m.role;
     let content: any = await openAIContentToAnthropicContent(m.content);
     if (m.role === "system") {
       system = content;
-
-      // hack: anthropic requires at least one user message. could do something smarter, but shouldn't have an effect
-      // @ts-expect-error
-      role = m.role = "user";
-      content = m.content = ".";
+      continue;
     } else if (
       m.role === "function" ||
       ("function_call" in m && !isEmpty(m.function_call))
@@ -2201,7 +2200,10 @@ async function fetchAnthropicChatCompletions({
 
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
-    headers["anthropic-beta"] = "tools-2024-05-16";
+    if (secret.type !== "vertex") {
+      headers["anthropic-beta"] = "tools-2024-05-16";
+    }
+
     params.tools = openAIToolsToAnthropicTools(
       params.tools ||
         (params.functions as Array<ChatCompletionCreateParams.Function>).map(
@@ -2933,7 +2935,7 @@ export function guessSpanType(
     return spanName;
   }
 
-  const flavor = model && AvailableModels[model]?.flavor;
+  const flavor = model && getAvailableModels()[model]?.flavor;
   if (flavor === "chat") {
     return "chat";
   } else if (flavor === "completion") {

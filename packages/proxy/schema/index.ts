@@ -69,7 +69,7 @@ export const sliderSpecs: {
   // min, max, step, required
   [name: string]: [number, number, number, boolean];
 } = {
-  temperature: [0, 1, 0.01, false],
+  temperature: [0, 2, 0.01, false],
   top_p: [0, 1, 0.01, false],
   topP: [0, 1, 0.01, false],
   max_tokens: [1, 32768, 1, false],
@@ -79,6 +79,38 @@ export const sliderSpecs: {
   top_k: [1, 100, 1, false],
   topK: [1, 100, 1, false],
 };
+
+// Format-specific slider specification overrides
+const formatSpecificSliderSpecs: {
+  [format in ModelFormat]?: {
+    [paramName: string]: [number, number, number, boolean];
+  };
+} = {
+  anthropic: {
+    temperature: [0, 1, 0.01, false],
+  },
+  converse: {
+    temperature: [0, 1, 0.01, false],
+  },
+};
+
+/**
+ * Get slider specifications for a parameter, with format-specific overrides
+ * @param format - The model format (openai, anthropic, google, etc.)
+ * @param paramName - The parameter name (temperature, max_tokens, etc.)
+ * @returns Slider spec as [min, max, step, required] or undefined if not found
+ */
+export function getSliderSpecs(
+  format: ModelFormat,
+  paramName: string,
+): [number, number, number, boolean] | undefined {
+  const formatOverrides = formatSpecificSliderSpecs[format];
+  if (formatOverrides && formatOverrides[paramName]) {
+    return formatOverrides[paramName];
+  }
+
+  return sliderSpecs[paramName];
+}
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.
 // Even though some of them are not set, it's useful for the "greyed out" placeholders.

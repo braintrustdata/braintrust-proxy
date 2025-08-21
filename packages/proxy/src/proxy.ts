@@ -2,17 +2,17 @@ import { MessageParam } from "@anthropic-ai/sdk/resources";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
 import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
 import {
-  Message,
-  MessageRole,
-  responseFormatSchema,
-} from "@braintrust/core/typespecs";
+  type ChatCompletionMessageParamType as Message,
+  type MessageRoleType as MessageRole,
+  ResponseFormat as responseFormatSchema,
+} from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
   APISecret,
-  AvailableModels,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
+  getAvailableModels,
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
@@ -1000,7 +1000,7 @@ async function fetchModelLoop(
 
     const modelSpec =
       (model !== null
-        ? secret.metadata?.customModels?.[model] ?? AvailableModels[model]
+        ? secret.metadata?.customModels?.[model] ?? getAvailableModels()[model]
         : null) ?? null;
 
     let endpointUrl = url;
@@ -2200,7 +2200,10 @@ async function fetchAnthropicChatCompletions({
 
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
-    headers["anthropic-beta"] = "tools-2024-05-16";
+    if (secret.type !== "vertex") {
+      headers["anthropic-beta"] = "tools-2024-05-16";
+    }
+
     params.tools = openAIToolsToAnthropicTools(
       params.tools ||
         (params.functions as Array<ChatCompletionCreateParams.Function>).map(
@@ -2932,7 +2935,7 @@ export function guessSpanType(
     return spanName;
   }
 
-  const flavor = model && AvailableModels[model]?.flavor;
+  const flavor = model && getAvailableModels()[model]?.flavor;
   if (flavor === "chat") {
     return "chat";
   } else if (flavor === "completion") {

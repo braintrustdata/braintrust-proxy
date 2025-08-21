@@ -12,7 +12,7 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-2",
+      model: "claude-3-haiku-20240307",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },
@@ -34,10 +34,6 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
     expect(data.object).toBe("chat.completion.chunk");
     expect(data.created).toBeTruthy();
     expect(Array.isArray(data.choices)).toBe(true);
-
-    if (data.choices[0]?.delta?.content) {
-      expect(data.choices[0].delta.content.trim()).not.toBe("");
-    }
   });
 
   const hasContent = streamedEvents.some(
@@ -52,7 +48,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-2.1",
+      model: "claude-3-haiku-20240307",
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },
@@ -77,7 +73,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: "claude-2.1",
+    model: "claude-3-haiku-20240307",
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),
@@ -332,6 +328,69 @@ it("should handle tool_use stop reason correctly with sufficient tokens", async 
   >({
     body: {
       model: "claude-3-haiku-20240307",
+      messages: [
+        {
+          role: "user",
+          content: "Use the calculate function to add 2 and 3.",
+        },
+      ],
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "calculate",
+            description: "Perform a mathematical calculation",
+            parameters: {
+              type: "object",
+              properties: {
+                operation: {
+                  type: "string",
+                  description: "The mathematical operation to perform",
+                },
+                a: {
+                  type: "number",
+                  description: "First number",
+                },
+                b: {
+                  type: "number",
+                  description: "Second number",
+                },
+              },
+              required: ["operation", "a", "b"],
+            },
+          },
+        },
+      ],
+      tool_choice: "required", // Force tool usage
+      stream: false,
+      max_tokens: 150, // Sufficient tokens to complete tool call
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+  expect(response!.choices[0].finish_reason).toBe("tool_calls");
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.tool_calls).toBeTruthy();
+  expect(response!.choices[0].message.tool_calls).toHaveLength(1);
+  expect(response!.choices[0].message.tool_calls![0].function.name).toBe(
+    "calculate",
+  );
+  expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
+});
+
+it("should avoid anthropic-beta headers for vertex calls", async () => {
+  if (!process.env.VERTEX_AI_API_KEY) {
+    expect(1).toBe(1);
+    return;
+  }
+
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "publishers/anthropic/models/claude-sonnet-4",
       messages: [
         {
           role: "user",

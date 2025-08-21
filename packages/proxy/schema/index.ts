@@ -1,11 +1,11 @@
 import { z } from "zod";
 import type {
-  AnyModelParam,
-  Message,
-  MessageRole,
-  ModelParams,
-} from "@braintrust/core/typespecs";
-import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
+  AnyModelParamsType as AnyModelParam,
+  ChatCompletionMessageParamType as Message,
+  MessageRoleType as MessageRole,
+  ModelParamsType as ModelParams,
+} from "../src/generated_types";
+import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
@@ -24,6 +24,7 @@ export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
 } = {
   system: "system",
+  developer: "system",
   function: undefined,
   tool: "tool",
   user: "user",
@@ -53,6 +54,7 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: "reasoning_effort",
+  verbosity: "verbosity",
   stop: null,
 };
 
@@ -93,6 +95,7 @@ export const defaultModelParamSettings: {
     stop: undefined,
     use_cache: true,
     reasoning_effort: "medium",
+    verbosity: "medium",
   },
   anthropic: {
     temperature: undefined,
@@ -102,6 +105,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   google: {
     temperature: undefined,
@@ -111,6 +115,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   js: {},
   window: {
@@ -139,7 +144,7 @@ export const modelProviderHasTools: {
 export const modelProviderHasReasoning: {
   [name in ModelFormat]?: RegExp;
 } = {
-  openai: /^o[1-4]/i,
+  openai: /^(o[1-4])|(gpt-5)/i,
   anthropic: /^claude-3\.7/i,
   google: /gemini-2.0-flash$|gemini-2.5/i,
   js: undefined,
@@ -225,6 +230,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "magistral-medium-2506": ["mistral"],
   "magistral-small-latest": ["mistral"],
   "magistral-small-2506": ["mistral"],
+  "devstral-small-latest": ["mistral"],
+  "devstral-small-2507": ["mistral"],
   "mistral-large-latest": ["mistral"],
   "open-mistral-nemo": ["mistral"],
   "codestral-latest": ["mistral"],
@@ -289,6 +296,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "wizardlm-2-8x22b": ["lepton"],
   "nous-hermes-llama2-13b": ["lepton"],
   "dolphin-mixtral-8x7b": ["lepton"],
+  "llama-4-scout-17b-16e-instruct": ["cerebras"],
   "llama3.1-8b": ["cerebras"],
   "llama3.3-70b": ["cerebras"],
   "accounts/fireworks/models/llama4-maverick-instruct-basic": ["fireworks"],
@@ -342,6 +350,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "amazon.nova-pro-v1:0": ["bedrock"],
   "amazon.nova-lite-v1:0": ["bedrock"],
   "amazon.nova-micro-v1:0": ["bedrock"],
+  "grok-4": ["xAI"],
+  "grok-4-latest": ["xAI"],
+  "grok-4-0709": ["xAI"],
   "grok-2-vision": ["xAI"],
   "grok-2-vision-latest": ["xAI"],
   "grok-2-vision-1212": ["xAI"],
@@ -357,6 +368,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/google/models/gemini-2.5-flash": ["vertex"],
   "publishers/google/models/gemini-2.5-flash-preview-05-20": ["vertex"],
   "publishers/google/models/gemini-2.5-flash-preview-04-17": ["vertex"],
+  "publishers/google/models/gemini-2.5-flash-lite": ["vertex"],
   "publishers/google/models/gemini-2.5-flash-lite-preview-06-17": ["vertex"],
   "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": ["vertex"],
   "publishers/google/models/gemini-2.0-flash": ["vertex"],
@@ -403,13 +415,21 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
+  "openai/gpt-oss-120b": ["together", "groq", "baseten"],
+  "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
+  "accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
+  "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
+  "gpt-oss-120b": ["cerebras"],
+  "Qwen3-Coder-480B-A35B-Instruct": ["baseten"],
+  "moonshotai/Kimi-K2-Instruct": ["baseten"],
+  "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
-    (AvailableModels[model] &&
-      DefaultEndpointTypes[AvailableModels[model].format]) ||
+    (getAvailableModels()[model] &&
+      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
     []
   );
 }
@@ -427,6 +447,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   LEPTON_API_KEY: "lepton",
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
+  BASETEN_API_KEY: "baseten",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -450,6 +471,7 @@ export const EndpointProviderToBaseURL: {
   groq: "https://api.groq.com/openai/v1",
   lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
+  baseten: "https://inference.baseten.co/v1",
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
   bedrock: null,

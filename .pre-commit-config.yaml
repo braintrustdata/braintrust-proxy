@@ -18,4 +18,4 @@ repos:
     rev: v3.3.2
     hooks:
       - id: prettier
-        exclude: ^(extension/|.*\.json|.*pnpm-lock.yaml$)
+        exclude: ^(extension/|.*\.json|.*pnpm-lock.yaml|.*\.hbs$)

@@ -87,10 +87,10 @@ const formatSpecificSliderSpecs: {
   };
 } = {
   anthropic: {
-    temperature: [0, 1, 0.01, false], // Anthropic supports max temperature of 1
+    temperature: [0, 1, 0.01, false],
   },
   converse: {
-    temperature: [0, 1, 0.01, false], // Converse (Bedrock) also uses Anthropic-style limits
+    temperature: [0, 1, 0.01, false],
   },
 };
 

@@ -82,6 +82,7 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
   "../schema/model_list.json",
 );
+const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
@@ -174,6 +175,89 @@ function translateToBraintrust(modelName: string, provider?: string): string {
   }
 
   return modelName;
+}
+
+function getProviderMappingForModel(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+): string[] {
+  const provider = remoteModel.litellm_provider;
+
+  // Map LiteLLM provider names to our endpoint types
+  switch (provider) {
+    case "xai":
+      return ["xAI"];
+    case "anthropic":
+      return ["anthropic"];
+    case "openai":
+      return ["openai"];
+    case "google":
+    case "gemini":
+      return ["google"];
+    case "mistral":
+      return ["mistral"];
+    case "together":
+      return ["together"];
+    case "groq":
+      return ["groq"];
+    case "replicate":
+      return ["replicate"];
+    case "fireworks":
+      return ["fireworks"];
+    case "perplexity":
+      return ["perplexity"];
+    case "lepton":
+      return ["lepton"];
+    case "cerebras":
+      return ["cerebras"];
+    case "baseten":
+      return ["baseten"];
+    default:
+      console.warn(
+        `Unknown provider: ${provider} for model ${remoteModelName}`,
+      );
+      return [];
+  }
+}
+
+async function updateProviderMapping(
+  newModels: Array<{
+    name: string;
+    providers: string[];
+    remoteModel: LiteLLMModelDetail;
+  }>,
+): Promise<void> {
+  try {
+    const schemaContent = await fs.promises.readFile(
+      SCHEMA_INDEX_PATH,
+      "utf-8",
+    );
+
+    // Generate new entries for the models
+    const newEntries = newModels.map(
+      ({ name, providers }) => `  "${name}": ${JSON.stringify(providers)},`,
+    );
+
+    // Find the line with "grok-beta": ["xAI"], and insert after it
+    const grokBetaLine = schemaContent.indexOf('"grok-beta": ["xAI"],');
+    if (grokBetaLine !== -1) {
+      const lineEnd = schemaContent.indexOf("\n", grokBetaLine);
+      const beforeInsertion = schemaContent.substring(0, lineEnd + 1);
+      const afterInsertion = schemaContent.substring(lineEnd + 1);
+
+      const updatedSchemaContent =
+        beforeInsertion + newEntries.join("\n") + "\n" + afterInsertion;
+
+      await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedSchemaContent);
+      console.log(
+        `✅ Updated provider mappings for ${newModels.length} models in schema/index.ts`,
+      );
+    } else {
+      console.warn("Could not find grok-beta entry to use as insertion point");
+    }
+  } catch (error) {
+    console.error("Failed to update provider mappings:", error);
+  }
 }
 
 function convertRemoteToLocalModel(
@@ -1069,6 +1153,41 @@ async function addModelsCommand(argv: any) {
 
     if (missingInLocal.length === 0) {
       console.log("No missing models found to add.");
+
+      // Check if we need to update provider mappings for existing models
+      if (argv.updateProviders) {
+        console.log("Checking for missing provider mappings...");
+        const schemaContent = await fs.promises.readFile(
+          SCHEMA_INDEX_PATH,
+          "utf-8",
+        );
+
+        // Check which grok models are missing from provider mappings
+        const allGrokModels = Object.keys(localModels).filter((name) =>
+          name.includes("grok"),
+        );
+        const missingProviderMappings = [];
+
+        for (const model of allGrokModels) {
+          if (!schemaContent.includes(`"${model}": ["xAI"]`)) {
+            missingProviderMappings.push({
+              name: model,
+              providers: ["xAI"],
+              remoteModel: { litellm_provider: "xai" },
+            });
+          }
+        }
+
+        if (missingProviderMappings.length > 0) {
+          console.log(
+            `Found ${missingProviderMappings.length} models missing provider mappings`,
+          );
+          await updateProviderMapping(missingProviderMappings);
+        } else {
+          console.log("All models have provider mappings");
+        }
+      }
+
       return;
     }
 
@@ -1086,6 +1205,15 @@ async function addModelsCommand(argv: any) {
     );
 
     const newModelNames = modelsToAdd.map((m) => m.name);
+
+    // Prepare provider mapping data
+    const providerMappingData = missingInLocal.map(
+      ({ translatedName, remoteModel }) => ({
+        name: translatedName,
+        providers: getProviderMappingForModel(translatedName, remoteModel),
+        remoteModel: remoteModel,
+      }),
+    );
 
     // Get complete optimal ordering
     console.log("\nDetermining optimal model ordering...");
@@ -1158,6 +1286,10 @@ async function addModelsCommand(argv: any) {
       console.log(
         `\n✅ Successfully added ${missingInLocal.length} models to ${LOCAL_MODEL_LIST_PATH}`,
       );
+
+      // Update provider mappings in schema/index.ts
+      console.log("\nUpdating provider mappings...");
+      await updateProviderMapping(providerMappingData);
     } else {
       console.log(`\n📋 To actually add these models, run with --write flag`);
       console.log(
@@ -1228,6 +1360,12 @@ async function main() {
             type: "boolean",
             description:
               "Write the new models to the local model_list.json file",
+            default: false,
+          })
+          .option("updateProviders", {
+            type: "boolean",
+            description:
+              "Update provider mappings in schema/index.ts for existing models",
             default: false,
           });
       },

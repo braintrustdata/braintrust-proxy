@@ -6,8 +6,8 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
     "displayName": "GPT-5",
+    "reasoning": true,
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
@@ -18,8 +18,8 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
     "displayName": "GPT-5 (2025-08-07)",
+    "reasoning": true,
     "parent": "gpt-5",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
@@ -31,8 +31,8 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
-    "reasoning": true,
     "displayName": "GPT-5 mini",
+    "reasoning": true,
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
@@ -43,8 +43,8 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
-    "reasoning": true,
     "displayName": "GPT-5 mini (2025-08-07)",
+    "reasoning": true,
     "parent": "gpt-5-mini",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
@@ -56,8 +56,8 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.005,
-    "reasoning": true,
     "displayName": "GPT-5 nano",
+    "reasoning": true,
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
@@ -68,8 +68,8 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.005,
-    "reasoning": true,
     "displayName": "GPT-5 nano (2025-08-07)",
+    "reasoning": true,
     "parent": "gpt-5-nano",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
@@ -81,8 +81,8 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
     "displayName": "GPT-5 chat",
+    "reasoning": true,
     "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
@@ -1493,20 +1493,20 @@
   "devstral-small-latest": {
     "format": "openai",
     "flavor": "chat",
-    "max_output_tokens": 128000,
-    "max_input_tokens": 128000,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.3,
-    "displayName": "Devstral Small Latest"
+    "displayName": "Devstral Small Latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000
   },
   "devstral-small-2507": {
     "format": "openai",
     "flavor": "chat",
-    "max_output_tokens": 128000,
-    "max_input_tokens": 128000,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.3,
-    "parent": "devstral-small-latest"
+    "parent": "devstral-small-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000
   },
   "mistral-large-latest": {
     "format": "openai",
@@ -2554,6 +2554,100 @@
     "parent": "grok-4",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000
+  },
+  "grok-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 4,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini-fast-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 4,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-mini-fast-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 4,
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-fast-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "grok-3-fast-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   },
   "grok-2-vision": {
     "format": "openai",
@@ -3723,27 +3817,57 @@
   "Qwen3-Coder-480B-A35B-Instruct": {
     "format": "openai",
     "flavor": "chat",
-    "displayName": "Qwen3 Coder 480B A35B Instruct",
     "input_cost_per_mil_tokens": 0.38,
-    "output_cost_per_mil_tokens": 1.53
+    "output_cost_per_mil_tokens": 1.53,
+    "displayName": "Qwen3 Coder 480B A35B Instruct"
   },
   "moonshotai/Kimi-K2-Instruct": {
     "format": "openai",
     "flavor": "chat",
-    "displayName": "Kimi K2 Instruct",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Kimi K2 Instruct"
   },
   "deepseek-ai/DeepSeek-V3-0324": {
     "format": "openai",
     "flavor": "chat",
-    "displayName": "DeepSeek V3 0324",
     "input_cost_per_mil_tokens": 0.77,
-    "output_cost_per_mil_tokens": 0.77
+    "output_cost_per_mil_tokens": 0.77,
+    "displayName": "DeepSeek V3 0324"
   },
   "text-block": {
     "format": "js",
     "flavor": "completion",
     "displayName": "Text-block"
+  },
+  "grok-code-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
+  },
+  "grok-code-fast-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
+  },
+  "grok-code-fast-1-0825": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000
   }
 }

@@ -1814,6 +1814,7 @@ async function fetchOpenAI(
           bodyData.model.startsWith("gpt") ||
           bodyData.model.startsWith("o1") ||
           bodyData.model.startsWith("o3") ||
+          bodyData.model.startsWith("o4") ||
           secret.type === "fireworks"
         ) {
           // Supports structured output, so we do not need to manage it.

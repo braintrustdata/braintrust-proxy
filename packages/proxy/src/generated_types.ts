@@ -1,4 +1,4 @@
-// Auto-generated file (internal git SHA 4306890cf9601749445df7e191651aae5a6d9242) -- do not modify
+// Auto-generated file (internal git SHA be4abfadd22d7196ff6356c7f3fb655aac3fc933) -- do not modify
 
 import { z } from "zod";
 
@@ -128,6 +128,25 @@ export const ApiKey = z.object({
   org_id: z.union([z.string(), z.null()]).optional(),
 });
 export type ApiKeyType = z.infer<typeof ApiKey>;
+export const AsyncScoringState = z.union([
+  z.object({
+    status: z.literal("enabled"),
+    token: z.string(),
+    function_ids: z.array(z.unknown()).min(1),
+    skip_logging: z.union([z.boolean(), z.null()]).optional(),
+  }),
+  z.object({ status: z.literal("disabled") }),
+  z.null(),
+  z.null(),
+]);
+export type AsyncScoringStateType = z.infer<typeof AsyncScoringState>;
+export const AsyncScoringControl = z.union([
+  z.object({ kind: z.literal("score_update"), token: z.string() }),
+  z.object({ kind: z.literal("state_override"), state: AsyncScoringState }),
+  z.object({ kind: z.literal("state_force_reselect") }),
+  z.object({ kind: z.literal("state_enabled_force_rescore") }),
+]);
+export type AsyncScoringControlType = z.infer<typeof AsyncScoringControl>;
 export const BraintrustAttachmentReference = z.object({
   type: z.literal("braintrust_attachment"),
   filename: z.string().min(1),
@@ -384,7 +403,7 @@ export const Dataset = z.object({
     .optional(),
 });
 export type DatasetType = z.infer<typeof Dataset>;
-export const ObjectReference = z.union([
+export const ObjectReferenceNullish = z.union([
   z.object({
     object_type: z.enum([
       "project_logs",
@@ -401,7 +420,7 @@ export const ObjectReference = z.union([
   }),
   z.null(),
 ]);
-export type ObjectReferenceType = z.infer<typeof ObjectReference>;
+export type ObjectReferenceNullishType = z.infer<typeof ObjectReferenceNullish>;
 export const DatasetEvent = z.object({
   id: z.string(),
   _xact_id: z.string(),
@@ -424,7 +443,7 @@ export const DatasetEvent = z.object({
   span_id: z.string(),
   root_span_id: z.string(),
   is_root: z.union([z.boolean(), z.null()]).optional(),
-  origin: ObjectReference.optional(),
+  origin: ObjectReferenceNullish.optional(),
 });
 export type DatasetEventType = z.infer<typeof DatasetEvent>;
 export const EnvVar = z.object({
@@ -529,7 +548,7 @@ export const ExperimentEvent = z.object({
   root_span_id: z.string(),
   span_attributes: SpanAttributes.optional(),
   is_root: z.union([z.boolean(), z.null()]).optional(),
-  origin: ObjectReference.optional(),
+  origin: ObjectReferenceNullish.optional(),
 });
 export type ExperimentEventType = z.infer<typeof ExperimentEvent>;
 export const ExtendedSavedFunctionId = z.union([
@@ -965,6 +984,21 @@ export const MessageRole = z.enum([
   "developer",
 ]);
 export type MessageRoleType = z.infer<typeof MessageRole>;
+export const ObjectReference = z.object({
+  object_type: z.enum([
+    "project_logs",
+    "experiment",
+    "dataset",
+    "prompt",
+    "function",
+    "prompt_session",
+  ]),
+  object_id: z.string().uuid(),
+  id: z.string(),
+  _xact_id: z.union([z.string(), z.null()]).optional(),
+  created: z.union([z.string(), z.null()]).optional(),
+});
+export type ObjectReferenceType = z.infer<typeof ObjectReference>;
 export const OnlineScoreConfig = z.union([
   z.object({
     sampling_rate: z.number().gte(0).lte(1),
@@ -1119,7 +1153,7 @@ export const ProjectLogsEvent = z.object({
   root_span_id: z.string(),
   is_root: z.union([z.boolean(), z.null()]).optional(),
   span_attributes: SpanAttributes.optional(),
-  origin: ObjectReference.optional(),
+  origin: ObjectReferenceNullish.optional(),
 });
 export type ProjectLogsEventType = z.infer<typeof ProjectLogsEvent>;
 export const ProjectScoreType = z.enum([
@@ -1288,6 +1322,17 @@ export const RunEval = z.object({
   tags: z.array(z.string()).optional(),
 });
 export type RunEvalType = z.infer<typeof RunEval>;
+export const ServiceToken = z.object({
+  id: z.string().uuid(),
+  created: z.union([z.string(), z.null()]).optional(),
+  name: z.string(),
+  preview_name: z.string(),
+  service_account_id: z.union([z.string(), z.null()]).optional(),
+  service_account_email: z.union([z.string(), z.null()]).optional(),
+  service_account_name: z.union([z.string(), z.null()]).optional(),
+  org_id: z.union([z.string(), z.null()]).optional(),
+});
+export type ServiceTokenType = z.infer<typeof ServiceToken>;
 export const SpanIFrame = z.object({
   id: z.string().uuid(),
   project_id: z.string().uuid(),
@@ -1308,7 +1353,7 @@ export type SSEConsoleEventDataType = z.infer<typeof SSEConsoleEventData>;
 export const SSEProgressEventData = z.object({
   id: z.string(),
   object_type: FunctionObjectType,
-  origin: ObjectReference.and(z.unknown()).optional(),
+  origin: ObjectReferenceNullish.and(z.unknown()).optional(),
   format: FunctionFormat,
   output_type: FunctionOutputType,
   name: z.string(),
@@ -1357,7 +1402,7 @@ export const ViewDataSearch = z.union([
 ]);
 export type ViewDataSearchType = z.infer<typeof ViewDataSearch>;
 export const ViewData = z.union([
-  z.object({ search: ViewDataSearch }).partial(),
+  z.object({ search: ViewDataSearch, custom_charts: z.unknown() }).partial(),
   z.null(),
 ]);
 export type ViewDataType = z.infer<typeof ViewData>;

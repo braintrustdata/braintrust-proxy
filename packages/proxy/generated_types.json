@@ -403,6 +403,128 @@
           "preview_name"
         ]
       },
+      "AsyncScoringControl": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "score_update"
+                ]
+              },
+              "token": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "token"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_override"
+                ]
+              },
+              "state": {
+                "$ref": "#/components/schemas/AsyncScoringState"
+              }
+            },
+            "required": [
+              "kind",
+              "state"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_force_reselect"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_enabled_force_rescore"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        ]
+      },
+      "AsyncScoringState": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "enabled"
+                ]
+              },
+              "token": {
+                "type": "string"
+              },
+              "function_ids": {
+                "type": "array",
+                "items": {},
+                "minItems": 1
+              },
+              "skip_logging": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "token",
+              "function_ids"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "disabled"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "AttachmentReference": {
         "oneOf": [
           {
@@ -1624,7 +1746,7 @@
             "description": "Whether this span is a root span"
           },
           "origin": {
-            "$ref": "#/components/schemas/ObjectReference"
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
           }
         },
         "required": [
@@ -2001,7 +2123,7 @@
             "description": "Whether this span is a root span"
           },
           "origin": {
-            "$ref": "#/components/schemas/ObjectReference"
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
           }
         },
         "required": [
@@ -3565,6 +3687,52 @@
         ]
       },
       "ObjectReference": {
+        "type": "object",
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "enum": [
+              "project_logs",
+              "experiment",
+              "dataset",
+              "prompt",
+              "function",
+              "prompt_session"
+            ],
+            "description": "Type of the object the event is originating from."
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the object the event is originating from."
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the original event."
+          },
+          "_xact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Transaction ID of the original event."
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Created timestamp of the original event. Used to help sort in the UI"
+          }
+        },
+        "required": [
+          "object_type",
+          "object_id",
+          "id"
+        ],
+        "description": "Reference to the original object and event this was copied from."
+      },
+      "ObjectReferenceNullish": {
         "type": [
           "object",
           "null"
@@ -4250,7 +4418,7 @@
             "$ref": "#/components/schemas/SpanAttributes"
           },
           "origin": {
-            "$ref": "#/components/schemas/ObjectReference"
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
           }
         },
         "required": [
@@ -5532,6 +5700,66 @@
           }
         ]
       },
+      "ServiceToken": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the service token"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of service token creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the service token"
+          },
+          "preview_name": {
+            "type": "string"
+          },
+          "service_account_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the service token"
+          },
+          "service_account_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The service account email (not routable)"
+          },
+          "service_account_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The service account name"
+          },
+          "org_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "preview_name"
+        ]
+      },
       "SpanAttributes": {
         "type": [
           "object",
@@ -5666,7 +5894,7 @@
           "origin": {
             "allOf": [
               {
-                "$ref": "#/components/schemas/ObjectReference"
+                "$ref": "#/components/schemas/ObjectReferenceNullish"
               },
               {
                 "description": "The origin of the event"
@@ -5909,7 +6137,8 @@
         "properties": {
           "search": {
             "$ref": "#/components/schemas/ViewDataSearch"
-          }
+          },
+          "custom_charts": {}
         },
         "description": "The view definition"
       },
@@ -6269,7 +6498,7 @@
     "license": {
       "name": "Apache 2.0"
     },
-    "x-internal-git-sha": "4306890cf9601749445df7e191651aae5a6d9242"
+    "x-internal-git-sha": "be4abfadd22d7196ff6356c7f3fb655aac3fc933"
   },
   "paths": {},
   "webhooks": {}

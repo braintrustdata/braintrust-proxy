@@ -167,3 +167,15 @@ export function _urljoin(...parts: string[]): string {
     .filter((x) => x.trim() !== "")
     .join("/");
 }
+
+export type ExperimentLogPartialArgs = Partial<{
+  output: unknown;
+  expected: unknown;
+  error: unknown;
+  tags: string[];
+  scores: Record<string, number | null>;
+  metadata: Record<string, unknown>;
+  metrics: Record<string, unknown>;
+  datasetRecordId: string;
+  span_attributes: Record<string, unknown>;
+}>;

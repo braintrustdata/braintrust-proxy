@@ -4,7 +4,7 @@ import {
   type ChatCompletionMessageParamType as Message,
   type MessageRoleType as MessageRole,
   ResponseFormat as responseFormatSchema,
-  ExperimentEventType,
+  ObjectReferenceType,
 } from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
@@ -151,9 +151,25 @@ export interface CacheKeyOptions {
   excludeOrgName?: boolean;
 }
 
+type ExperimentLogPartialArgs = Partial<{
+  id: string;
+  input: unknown;
+  output: unknown;
+  expected: unknown;
+  error: unknown;
+  tags: string[];
+  scores: Record<string, number | null>;
+  metadata: Record<string, unknown>;
+  metrics: Record<string, unknown>;
+  datasetRecordId: string;
+  origin: ObjectReferenceType;
+  span_attributes: Record<string, unknown>;
+  _merge_paths: string[][];
+}>;
+
 export interface SpanLogger {
   setName: (name: string) => void;
-  log: (args: Partial<ExperimentEventType>) => void;
+  log: (args: ExperimentLogPartialArgs) => void;
   end: () => void;
   reportProgress: (progress: string) => void;
 }
@@ -664,7 +680,7 @@ export async function proxyV1({
                 if (extendedUsage.success) {
                   spanLogger.log({
                     // TODO: we should include the proxy meters metrics here
-                    metrics: omitUndefined({
+                    metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
                       completion_tokens: extendedUsage.data.completion_tokens,
@@ -676,7 +692,7 @@ export async function proxyV1({
                       completion_reasoning_tokens:
                         extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
-                    }),
+                    },
                   });
                 }
 
@@ -799,7 +815,7 @@ export async function proxyV1({
               if (extendedUsage.success) {
                 spanLogger.log({
                   output: data.choices,
-                  metrics: omitUndefined({
+                  metrics: {
                     tokens: extendedUsage.data.total_tokens,
                     prompt_tokens: extendedUsage.data.prompt_tokens,
                     completion_tokens: extendedUsage.data.completion_tokens,
@@ -811,7 +827,7 @@ export async function proxyV1({
                     completion_reasoning_tokens:
                       extendedUsage.data.completion_tokens_details
                         ?.reasoning_tokens,
-                  }),
+                  },
                 });
               }
               break;
@@ -2981,15 +2997,4 @@ function logSpanInputs(
       break;
     }
   }
-}
-
-function omitUndefined(
-  x: Record<string, number | undefined>,
-): Record<string, number> {
-  return Object.entries(x).reduce((acc: Record<string, number>, [k, v]) => {
-    if (v !== undefined) {
-      acc[k] = v;
-    }
-    return acc;
-  }, {});
 }

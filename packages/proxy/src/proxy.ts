@@ -1,10 +1,10 @@
 import { MessageParam } from "@anthropic-ai/sdk/resources";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
 import {
   type ChatCompletionMessageParamType as Message,
   type MessageRoleType as MessageRole,
   ResponseFormat as responseFormatSchema,
+  ExperimentEventType,
 } from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
@@ -105,6 +105,7 @@ import {
   parseNumericHeader,
   ProxyBadRequestError,
   writeToReadable,
+  _urljoin,
 } from "./util";
 
 type CachedMetadata = {
@@ -152,7 +153,7 @@ export interface CacheKeyOptions {
 
 export interface SpanLogger {
   setName: (name: string) => void;
-  log: (args: ExperimentLogPartialArgs) => void;
+  log: (args: Partial<ExperimentEventType>) => void;
   end: () => void;
   reportProgress: (progress: string) => void;
 }
@@ -663,7 +664,7 @@ export async function proxyV1({
                 if (extendedUsage.success) {
                   spanLogger.log({
                     // TODO: we should include the proxy meters metrics here
-                    metrics: {
+                    metrics: omitUndefined({
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
                       completion_tokens: extendedUsage.data.completion_tokens,
@@ -675,7 +676,7 @@ export async function proxyV1({
                       completion_reasoning_tokens:
                         extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
-                    },
+                    }),
                   });
                 }
 
@@ -798,7 +799,7 @@ export async function proxyV1({
               if (extendedUsage.success) {
                 spanLogger.log({
                   output: data.choices,
-                  metrics: {
+                  metrics: omitUndefined({
                     tokens: extendedUsage.data.total_tokens,
                     prompt_tokens: extendedUsage.data.prompt_tokens,
                     completion_tokens: extendedUsage.data.completion_tokens,
@@ -810,7 +811,7 @@ export async function proxyV1({
                     completion_reasoning_tokens:
                       extendedUsage.data.completion_tokens_details
                         ?.reasoning_tokens,
-                  },
+                  }),
                 });
               }
               break;
@@ -1339,7 +1340,7 @@ function responseInputItemsFromChatCompletionMessage(
     case "user":
       return [
         {
-          content: isArray(message.content)
+          content: Array.isArray(message.content)
             ? message.content.map(responseContentFromChatCompletionContent)
             : message.content,
           role: message.role,
@@ -1356,7 +1357,7 @@ function responseInputItemsFromChatCompletionMessage(
           }))
         : [
             {
-              content: isArray(message.content)
+              content: Array.isArray(message.content)
                 ? message.content
                     .filter((p) => p.type !== "refusal")
                     .map(responseContentFromChatCompletionContent)
@@ -1369,7 +1370,7 @@ function responseInputItemsFromChatCompletionMessage(
       return [
         {
           call_id: message.tool_call_id,
-          output: isArray(message.content)
+          output: Array.isArray(message.content)
             ? message.content.map((c) => c.text).join("")
             : message.content,
           type: "function_call_output",
@@ -2980,4 +2981,15 @@ function logSpanInputs(
       break;
     }
   }
+}
+
+function omitUndefined(
+  x: Record<string, number | undefined>,
+): Record<string, number> {
+  return Object.entries(x).reduce((acc: Record<string, number>, [k, v]) => {
+    if (v !== undefined) {
+      acc[k] = v;
+    }
+    return acc;
+  }, {});
 }

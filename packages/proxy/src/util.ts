@@ -158,3 +158,12 @@ export const writeToReadable = (response: string) => {
     },
   });
 };
+
+export function _urljoin(...parts: string[]): string {
+  return parts
+    .map((x, i) =>
+      x.replace(/^\//, "").replace(i < parts.length - 1 ? /\/$/ : "", ""),
+    )
+    .filter((x) => x.trim() !== "")
+    .join("/");
+}

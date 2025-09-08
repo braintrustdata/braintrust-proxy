@@ -54,7 +54,6 @@ import {
   ResponseInputContent,
   ResponseInputItem,
   ResponseOutputItem,
-  ResponseStreamEvent,
 } from "openai/resources/responses/responses";
 import {
   getCurrentUnixTimestamp,
@@ -69,7 +68,6 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
-  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -823,7 +821,7 @@ export async function proxyV1({
                 metrics: {
                   tokens: data.usage?.total_tokens,
                   prompt_tokens: data.usage?.input_tokens,
-                  cmopletion_tokens: data.usage?.output_tokens,
+                  completion_tokens: data.usage?.output_tokens,
                   prompt_cached_tokens:
                     data.usage?.input_tokens_details.cached_tokens,
                   completion_reasoning_tokens:

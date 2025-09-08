@@ -1575,6 +1575,11 @@ async function fetchOpenAIResponses({
   headers: Record<string, string>;
   body: ResponseCreateParams;
 }): Promise<ModelResponse> {
+  // We allow users to set a seed, to enable caching, but Responses API itself does not.
+  if ("seed" in body && body.seed !== undefined) {
+    delete body.seed;
+  }
+
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers,

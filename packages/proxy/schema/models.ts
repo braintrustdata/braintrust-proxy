@@ -131,6 +131,10 @@ function isCacheValid(): boolean {
   );
 }
 
+// Global variable to track ongoing fetch request (acts as a mutex)
+let _loadModelsPromise: Promise<{ [name: string]: ModelSpec } | null> | null =
+  null;
+
 async function loadModelsFromControlPlane(
   appUrl: string,
 ): Promise<{ [name: string]: ModelSpec } | null> {
@@ -139,21 +143,38 @@ async function loadModelsFromControlPlane(
     return globalThis._proxy_cachedModels;
   }
 
-  const fetchUrl = _urljoin(appUrl, "api/models/model_list.json");
+  // If there's already a request in progress, wait for it
+  if (_loadModelsPromise) {
+    return await _loadModelsPromise;
+  }
+
+  // Create and store the promise to prevent concurrent requests
+  _loadModelsPromise = (async () => {
+    const fetchUrl = _urljoin(appUrl, "api/models/model_list.json");
+
+    try {
+      const response = await fetch(fetchUrl);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch models: ${response.statusText}`);
+      }
+      const data = await response.json();
+      globalThis._proxy_cachedModels = data as { [name: string]: ModelSpec };
+      globalThis._proxy_cacheTimestamp = Date.now();
+    } catch (error) {
+      console.warn(
+        `Failed to load models dynamically from control plane (${fetchUrl}), falling back to static import:`,
+        error,
+      );
+    }
+    return globalThis._proxy_cachedModels;
+  })();
 
   try {
-    const response = await fetch(fetchUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch models: ${response.statusText}`);
-    }
-    const data = await response.json();
-    globalThis._proxy_cachedModels = data as { [name: string]: ModelSpec };
-    globalThis._proxy_cacheTimestamp = Date.now();
-  } catch (error) {
-    console.warn(
-      `Failed to load models dynamically from control plane (${fetchUrl}), falling back to static import:`,
-      error,
-    );
+    // Wait for the request to complete
+    const result = await _loadModelsPromise;
+    return result;
+  } finally {
+    // Clear the promise so future requests can proceed
+    _loadModelsPromise = null;
   }
-  return globalThis._proxy_cachedModels;
 }

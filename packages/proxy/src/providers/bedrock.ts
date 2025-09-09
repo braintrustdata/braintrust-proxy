@@ -109,9 +109,11 @@ function streamResponse(
 export async function fetchBedrockAnthropicMessages({
   secret: { secret, metadata, type },
   body,
+  signal,
 }: {
   secret: APISecret;
   body: unknown;
+  signal: AbortSignal | undefined;
 }): Promise<ModelResponse> {
   const {
     region,
@@ -151,6 +153,7 @@ export async function fetchBedrockAnthropicMessages({
   if (stream) {
     const { body: respBody } = await brc.send(
       new InvokeModelWithResponseStreamCommand(input),
+      { abortSignal: signal },
     );
     return {
       stream: respBody ? streamResponse(respBody) : null,
@@ -163,6 +166,7 @@ export async function fetchBedrockAnthropicMessages({
   } else {
     const { body: respBody, contentType } = await brc.send(
       new InvokeModelCommand(input),
+      { abortSignal: signal },
     );
     return {
       stream: new ReadableStream({
@@ -185,11 +189,13 @@ export async function fetchBedrockAnthropic({
   body,
   isFunction,
   isStructuredOutput,
+  signal,
 }: {
   secret: APISecret;
   body: Record<string, unknown>;
   isFunction: boolean;
   isStructuredOutput: boolean;
+  signal: AbortSignal | undefined;
 }) {
   if (secret.type !== "bedrock") {
     throw new Error("Bedrock: expected secret");
@@ -236,7 +242,7 @@ export async function fetchBedrockAnthropic({
   let responseStream;
   if (stream) {
     const command = new InvokeModelWithResponseStreamCommand(input);
-    const response = await brt.send(command);
+    const response = await brt.send(command, { abortSignal: signal });
     if (!response.body) {
       throw new Error("Bedrock: empty response body");
     }
@@ -355,7 +361,7 @@ export async function fetchBedrockAnthropic({
     httpResponse.headers.set("Content-Type", "text/event-stream");
   } else {
     const command = new InvokeModelCommand(input);
-    const response = await brt.send(command);
+    const response = await brt.send(command, { abortSignal: signal });
     responseStream = new ReadableStream<Uint8Array>({
       start(controller) {
         const valueData = JSON.parse(new TextDecoder().decode(response.body));
@@ -502,7 +508,7 @@ export async function fetchConverse({
 }: {
   secret: APISecret;
   body: Record<string, unknown>;
-  signal?: AbortSignal;
+  signal: AbortSignal | undefined;
 }) {
   if (secret.type !== "bedrock") {
     throw new Error("Bedrock: expected secret");
@@ -649,7 +655,7 @@ export async function fetchConverse({
   try {
     if (doStream) {
       const command = new ConverseStreamCommand(input);
-      const response = await brt.send(command);
+      const response = await brt.send(command, { abortSignal: signal });
       if (!response.stream) {
         throw new Error("Bedrock: empty response body");
       }
@@ -719,7 +725,7 @@ export async function fetchConverse({
       });
     } else {
       const command = new ConverseCommand(input);
-      const response = await brt.send(command);
+      const response = await brt.send(command, { abortSignal: signal });
       responseStream = new ReadableStream<Uint8Array>({
         start(controller) {
           controller.enqueue(

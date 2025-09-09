@@ -498,9 +498,11 @@ function translateTools(tools: ChatCompletionTool[]): ToolConfiguration {
 export async function fetchConverse({
   secret,
   body,
+  signal,
 }: {
   secret: APISecret;
   body: Record<string, unknown>;
+  signal?: AbortSignal;
 }) {
   if (secret.type !== "bedrock") {
     throw new Error("Bedrock: expected secret");

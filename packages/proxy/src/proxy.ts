@@ -68,7 +68,6 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
-  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -769,7 +768,7 @@ export async function proxyV1({
         if (
           first &&
           spanType &&
-          (["completion", "chat"] as SpanType[]).includes(spanType)
+          (["completion", "chat", "response"] as SpanType[]).includes(spanType)
         ) {
           first = false;
           spanLogger.log({
@@ -830,6 +829,22 @@ export async function proxyV1({
                   },
                 });
               }
+              break;
+            }
+            case "response": {
+              const data = dataRaw as OpenAIResponse;
+              spanLogger.log({
+                output: data.output,
+                metrics: {
+                  tokens: data.usage?.total_tokens,
+                  prompt_tokens: data.usage?.input_tokens,
+                  completion_tokens: data.usage?.output_tokens,
+                  prompt_cached_tokens:
+                    data.usage?.input_tokens_details.cached_tokens,
+                  completion_reasoning_tokens:
+                    data.usage?.output_tokens_details.reasoning_tokens,
+                },
+              });
               break;
             }
             case "embedding":
@@ -1592,6 +1607,11 @@ async function fetchOpenAIResponses({
   headers: Record<string, string>;
   body: ResponseCreateParams;
 }): Promise<ModelResponse> {
+  // We allow users to set a seed, to enable caching, but Responses API itself does not.
+  if ("seed" in body && body.seed !== undefined) {
+    delete body.seed;
+  }
+
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers,
@@ -2916,7 +2936,12 @@ function tryParseRateLimitReset(headers: Headers): number | null {
   return null;
 }
 
-export type SpanType = "chat" | "completion" | "embedding" | "moderation";
+export type SpanType =
+  | "chat"
+  | "completion"
+  | "embedding"
+  | "moderation"
+  | "response";
 
 function spanTypeToName(spanType: SpanType): string {
   switch (spanType) {
@@ -2924,6 +2949,8 @@ function spanTypeToName(spanType: SpanType): string {
       return "Chat Completion";
     case "completion":
       return "Completion";
+    case "response":
+      return "Response";
     case "embedding":
       return "Embedding";
     case "moderation":
@@ -2937,7 +2964,6 @@ export function guessSpanType(
 ): SpanType | undefined {
   const spanName =
     url === "/chat/completions" ||
-    url === "/responses" ||
     url === "/anthropic/messages" ||
     GOOGLE_URL_REGEX.test(url)
       ? "chat"
@@ -2947,7 +2973,9 @@ export function guessSpanType(
           ? "embedding"
           : url === "/moderations"
             ? "moderation"
-            : undefined;
+            : url === "/responses"
+              ? "response"
+              : undefined;
   if (spanName) {
     return spanName;
   }
@@ -2993,6 +3021,14 @@ function logSpanInputs(
       spanLogger.log({
         input: bodyData,
         metadata: rest,
+      });
+      break;
+    }
+    case "response": {
+      const { input, ...metadata } = bodyData;
+      spanLogger.log({
+        input,
+        metadata,
       });
       break;
     }

@@ -40,29 +40,30 @@ export function originWhitelist(env: Env) {
     : undefined;
 }
 
-// Cache meters to avoid creating them repeatedly
-const meterCache = new Map<string, any>();
-
-function getCachedMeter(
+// Create meters directly without global caching to avoid stale meter references
+function createMeter(
   meter: Meter,
   name: string,
   type: "counter" | "histogram",
 ) {
-  const key = `${name}_${type}`;
-  if (!meterCache.has(key)) {
-    if (type === "counter") {
-      meterCache.set(key, meter.createCounter(name));
-    } else {
-      meterCache.set(key, meter.createHistogram(name));
-    }
+  if (type === "counter") {
+    return meter.createCounter(name);
+  } else {
+    return meter.createHistogram(name);
   }
-  return meterCache.get(key);
 }
 
 function createLogCounter(meter: Meter): LogCounterFn {
+  // Cache meters per function instance to avoid recreating for each call
+  const meterCache = new Map<string, any>();
+
   return ({ name, value, attributes }) => {
     try {
-      const counter = getCachedMeter(meter, name, "counter");
+      let counter = meterCache.get(name);
+      if (!counter) {
+        counter = meter.createCounter(name);
+        meterCache.set(name, counter);
+      }
       counter.add(value, attributes);
     } catch (error) {
       console.error(`Error logging counter ${name}:`, error);
@@ -71,9 +72,16 @@ function createLogCounter(meter: Meter): LogCounterFn {
 }
 
 function createLogHistogram(meter: Meter): LogHistogramFn {
+  // Cache meters per function instance to avoid recreating for each call
+  const meterCache = new Map<string, any>();
+
   return ({ name, value, attributes }) => {
     try {
-      const histogram = getCachedMeter(meter, name, "histogram");
+      let histogram = meterCache.get(name);
+      if (!histogram) {
+        histogram = meter.createHistogram(name);
+        meterCache.set(name, histogram);
+      }
       histogram.record(value, attributes);
     } catch (error) {
       console.error(`Error logging histogram ${name}:`, error);
@@ -92,7 +100,6 @@ export async function handleProxyV1(
   let logHistogram: LogHistogramFn | undefined;
 
   if (env.METRICS_LICENSE_KEY) {
-    console.log("Initializing metrics");
     meterProvider = initMetrics(
       new FlushingHttpMetricExporter(
         `${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,

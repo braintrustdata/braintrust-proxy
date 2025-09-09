@@ -11,7 +11,6 @@ export default {
     ctx: ExecutionContext,
   ): Promise<Response> {
     const url = new URL(request.url);
-    console.log("URL =", url.pathname);
     if (["/", "/v1/proxy", "/v1/proxy/"].includes(url.pathname)) {
       return new Response("Hello World!", {
         status: 200,

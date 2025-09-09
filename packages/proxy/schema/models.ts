@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { _urljoin } from "@braintrust/core";
+import { _urljoin } from "../src/util";
 
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];

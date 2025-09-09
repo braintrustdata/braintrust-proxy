@@ -5,7 +5,6 @@ import {
   parseAuthHeader,
 } from "@braintrust/proxy";
 import { Attachment, BraintrustState, loginToState, Span } from "braintrust";
-import { isArray, SpanComponentsV3, SpanObjectTypeV3 } from "@braintrust/core";
 import { base64ToArrayBuffer } from "@braintrust/proxy/utils";
 import {
   digestMessage,
@@ -43,7 +42,7 @@ function replacePayloadWithAttachmentsInner(
   data: unknown,
   state: BraintrustState | undefined,
 ): unknown {
-  if (isArray(data)) {
+  if (Array.isArray(data)) {
     return data.map((item) => replacePayloadWithAttachmentsInner(item, state));
   } else if (isObject(data)) {
     return Object.fromEntries(

@@ -1,10 +1,10 @@
 import { MessageParam } from "@anthropic-ai/sdk/resources";
 import $RefParser from "@apidevtools/json-schema-ref-parser";
-import { _urljoin, ExperimentLogPartialArgs, isArray } from "@braintrust/core";
 import {
   type ChatCompletionMessageParamType as Message,
   type MessageRoleType as MessageRole,
   ResponseFormat as responseFormatSchema,
+  ObjectReferenceType,
 } from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
 import {
@@ -104,6 +104,7 @@ import {
   parseNumericHeader,
   ProxyBadRequestError,
   writeToReadable,
+  _urljoin,
 } from "./util";
 
 type CachedMetadata = {
@@ -148,6 +149,22 @@ export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
   excludeOrgName?: boolean;
 }
+
+type ExperimentLogPartialArgs = Partial<{
+  id: string;
+  input: unknown;
+  output: unknown;
+  expected: unknown;
+  error: unknown;
+  tags: string[];
+  scores: Record<string, number | null>;
+  metadata: Record<string, unknown>;
+  metrics: Record<string, unknown>;
+  datasetRecordId: string;
+  origin: ObjectReferenceType;
+  span_attributes: Record<string, unknown>;
+  _merge_paths: string[][];
+}>;
 
 export interface SpanLogger {
   setName: (name: string) => void;
@@ -1354,7 +1371,7 @@ function responseInputItemsFromChatCompletionMessage(
     case "user":
       return [
         {
-          content: isArray(message.content)
+          content: Array.isArray(message.content)
             ? message.content.map(responseContentFromChatCompletionContent)
             : message.content,
           role: message.role,
@@ -1371,7 +1388,7 @@ function responseInputItemsFromChatCompletionMessage(
           }))
         : [
             {
-              content: isArray(message.content)
+              content: Array.isArray(message.content)
                 ? message.content
                     .filter((p) => p.type !== "refusal")
                     .map(responseContentFromChatCompletionContent)
@@ -1384,7 +1401,7 @@ function responseInputItemsFromChatCompletionMessage(
       return [
         {
           call_id: message.tool_call_id,
-          output: isArray(message.content)
+          output: Array.isArray(message.content)
             ? message.content.map((c) => c.text).join("")
             : message.content,
           type: "function_call_output",

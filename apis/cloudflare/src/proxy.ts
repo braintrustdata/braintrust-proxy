@@ -14,7 +14,7 @@ import { PrometheusMetricAggregator } from "./metric-aggregator";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
-import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
+import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];

@@ -22,8 +22,8 @@
     "braintrust": "^0.0.197",
     "@braintrust/proxy": "workspace:*",
     "@openai/realtime-api-beta": "github:openai/openai-realtime-api-beta#cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f",
-    "@opentelemetry/resources": "^1.18.1",
-    "@opentelemetry/sdk-metrics": "^1.18.1",
+    "@opentelemetry/resources": "^2.0.0",
+    "@opentelemetry/sdk-metrics": "^2.0.0",
     "dotenv": "^16.3.1",
     "zod": "3.25.34"
   }

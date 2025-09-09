@@ -1,6 +1,5 @@
 import { diag } from "@opentelemetry/api";
 import {
-  Aggregation,
   AggregationTemporality,
   MetricReader,
 } from "@opentelemetry/sdk-metrics";
@@ -13,7 +12,6 @@ export class FlushingExporter extends MetricReader {
    */
   constructor(private flushFn: (resourceMetrics: any) => Promise<Response>) {
     super({
-      aggregationSelector: (_instrumentType) => Aggregation.Default(),
       aggregationTemporalitySelector: (_instrumentType) =>
         AggregationTemporality.CUMULATIVE,
     });

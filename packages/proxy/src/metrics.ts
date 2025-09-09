@@ -7,27 +7,16 @@ import {
   MetricReader,
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
-import { Resource } from "@opentelemetry/resources";
 import { hrTimeToMicroseconds } from "@opentelemetry/core";
 import { HrTime } from "@opentelemetry/api";
 import { PrometheusSerializer } from "./PrometheusSerializer";
 
 export { NOOP_METER_PROVIDER } from "@opentelemetry/api/build/src/metrics/NoopMeterProvider";
 
-export function initMetrics(
-  metricReader: MetricReader,
-  resourceLabels?: Record<string, string>,
-) {
-  const resource = Resource.default().merge(
-    new Resource({
-      ...resourceLabels,
-    }),
-  );
-
+export function initMetrics(metricReader: MetricReader) {
   const myServiceMeterProvider = new MeterProvider({
-    resource,
+    readers: [metricReader],
   });
-  myServiceMeterProvider.addMetricReader(metricReader);
   return myServiceMeterProvider;
 }
 

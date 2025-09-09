@@ -16,7 +16,7 @@ export class FlushingHttpMetricExporter extends MetricReader {
   constructor(url: string, headers: Record<string, string> = {}) {
     super({
       aggregationTemporalitySelector: (_instrumentType) =>
-        AggregationTemporality.CUMULATIVE,
+        AggregationTemporality.DELTA,
     });
 
     this.url = url;
@@ -43,6 +43,7 @@ export class FlushingHttpMetricExporter extends MetricReader {
           resourceMetrics: [resourceMetrics],
         };
 
+        console.log(JSON.stringify(otlpPayload, null, 2));
         const response = await fetch(this.url, {
           method: "POST",
           headers: this.headers,
@@ -53,6 +54,10 @@ export class FlushingHttpMetricExporter extends MetricReader {
           const errorText = await response.text();
           throw new Error(
             `HTTP Export failed: ${response.status} (${response.statusText}): ${errorText}`,
+          );
+        } else {
+          console.log(
+            `Successfully exported metrics to ${this.url} with status ${response.status}`,
           );
         }
       } catch (error) {

@@ -224,8 +224,8 @@ export async function proxyV1({
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
-  const totalCalls = meter.createCounter("proxy.requests");
-  const cacheHits = meter.createCounter("proxy.results_cache_hits");
+  const totalCalls = meter.createCounter("btproxy.requests");
+  const cacheHits = meter.createCounter("btproxy.results_cache_hits");
   const cacheMisses = meter.createCounter("proxy.results_cache_misses");
   const cacheSkips = meter.createCounter("proxy.results_cache_skips");
   const tokenCounts = meter.createHistogram("proxy.tokens");

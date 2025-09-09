@@ -38,12 +38,14 @@ export async function handleProxyV1(
 ): Promise<Response> {
   let meterProvider = undefined;
   if (env.METRICS_LICENSE_KEY) {
+    console.log("Initializing metrics");
     meterProvider = initMetrics(
       new FlushingHttpMetricExporter(
-        `${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,
+        //`${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,
+        `http://127.0.0.1:4318/v1/metrics`,
         {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
+          //         Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
         },
       ),
     );

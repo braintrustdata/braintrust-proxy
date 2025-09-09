@@ -27,7 +27,7 @@ export class FlushingExporter extends MetricReader {
         diag.error("Error while exporting metrics", error);
       }
     }
-    const resp = await this.flushFn(resourceMetrics);
+    const resp = await this.flushFn({ resourceMetrics, errors });
 
     if (!resp.ok) {
       const error = Error(

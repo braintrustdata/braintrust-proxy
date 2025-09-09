@@ -232,32 +232,7 @@ export async function proxyV1({
   const promptTokens = meter.createHistogram("prompt_tokens");
   const completionTokens = meter.createHistogram("completion_tokens");
 
-  // Extract model name early so we can use it in all metrics
-  let model: string | null = null;
-  if (
-    method === "POST" &&
-    (url === "/auto" ||
-      url === "/chat/completions" ||
-      url === "/completions" ||
-      url === "/responses" ||
-      url === ANTHROPIC_MESSAGES ||
-      url === ANTHROPIC_V1_MESSAGES) &&
-    isObject(bodyData) &&
-    bodyData?.model
-  ) {
-    model = bodyData?.model;
-  } else if (method === "POST") {
-    const m = url.match(GOOGLE_URL_REGEX);
-    if (m) {
-      model = m[1];
-      model = model.replace(/^models\//, "");
-    }
-  }
-
-  // Create attributes object that includes model for all metrics
-  const baseAttributes = { model };
-
-  totalCalls.add(1, baseAttributes);
+  // totalCalls will be updated with model attributes after model extraction
 
   proxyHeaders = Object.fromEntries(
     Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
@@ -356,6 +331,35 @@ export async function proxyV1({
       console.warn("Failed to parse body. This doesn't really matter", e);
     }
   }
+
+  // Extract model name after bodyData is parsed so we can use it in all metrics
+  let model: string | null = null;
+  if (
+    method === "POST" &&
+    (url === "/auto" ||
+      url === "/chat/completions" ||
+      url === "/completions" ||
+      url === "/responses" ||
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES) &&
+    isObject(bodyData) &&
+    bodyData?.model
+  ) {
+    model = bodyData?.model;
+  } else if (method === "POST") {
+    const m = url.match(GOOGLE_URL_REGEX);
+    if (m) {
+      model = m[1];
+      model = model.replace(/^models\//, "");
+    }
+  }
+
+  // Create attributes object that includes model for all metrics
+  // Use undefined instead of null since OpenTelemetry doesn't accept null
+  const baseAttributes = { model: model || undefined };
+
+  // Record total calls with model attributes
+  totalCalls.add(1, baseAttributes);
 
   if (url === "/credentials") {
     let readable: ReadableStream | null = null;

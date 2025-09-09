@@ -10,7 +10,6 @@ import {
   SpanLogger,
   initMetrics,
 } from "@braintrust/proxy";
-import { PrometheusMetricAggregator } from "./metric-aggregator";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
@@ -38,26 +37,19 @@ export async function handleProxyV1(
   ctx: ExecutionContext,
 ): Promise<Response> {
   let meterProvider = undefined;
-  if (!env.DISABLE_METRICS) {
-    const metricShard = Math.floor(
-      Math.random() * PrometheusMetricAggregator.numShards(env),
-    );
-    const aggregator = env.METRICS_AGGREGATOR.get(
-      env.METRICS_AGGREGATOR.idFromName(metricShard.toString()),
-    );
-    const metricAggURL = new URL(request.url);
-    metricAggURL.pathname = "/push";
-
+  if (env.METRICS_LICENSE_KEY) {
     meterProvider = initMetrics(
-      new FlushingExporter((resourceMetrics) =>
-        aggregator.fetch(metricAggURL, {
+      new FlushingExporter((resourceMetrics) => {
+        console.log("Sending metrics to Braintrust");
+        return fetch(`${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
           },
           body: JSON.stringify(resourceMetrics),
-        }),
-      ),
+        });
+      }),
     );
   }
 
@@ -102,7 +94,9 @@ export async function handleProxyV1(
       parent = resolveParentHeader(parentHeader);
     } catch (e) {
       return new Response(
-        `Invalid parent header '${parentHeader}': ${e instanceof Error ? e.message : String(e)}`,
+        `Invalid parent header '${parentHeader}': ${
+          e instanceof Error ? e.message : String(e)
+        }`,
         { status: 400 },
       );
     }
@@ -172,68 +166,4 @@ export async function handleProxyV1(
   }
 
   return EdgeProxyV1(opts)(request, ctx);
-}
-
-export async function handlePrometheusScrape(
-  request: Request,
-  env: Env,
-  ctx: ExecutionContext,
-): Promise<Response> {
-  if (env.DISABLE_METRICS) {
-    return new Response("Metrics disabled", { status: 403 });
-  }
-  if (
-    env.PROMETHEUS_SCRAPE_USER !== undefined ||
-    env.PROMETHEUS_SCRAPE_PASSWORD !== undefined
-  ) {
-    const unauthorized = new Response("Unauthorized", {
-      status: 401,
-      headers: {
-        "WWW-Authenticate": 'Basic realm="Braintrust Proxy Metrics"',
-      },
-    });
-
-    const auth = request.headers.get("Authorization");
-    if (!auth || auth.indexOf("Basic ") !== 0) {
-      return unauthorized;
-    }
-
-    const userPass = atob(auth.slice("Basic ".length)).split(":");
-    if (
-      userPass[0] !== env.PROMETHEUS_SCRAPE_USER ||
-      userPass[1] !== env.PROMETHEUS_SCRAPE_PASSWORD
-    ) {
-      return unauthorized;
-    }
-  }
-  // Array from 0 ... numShards
-  const shards = await Promise.all(
-    Array.from(
-      { length: PrometheusMetricAggregator.numShards(env) },
-      async (_, i) => {
-        const aggregator = env.METRICS_AGGREGATOR.get(
-          env.METRICS_AGGREGATOR.idFromName(i.toString()),
-        );
-        const url = new URL(request.url);
-        url.pathname = "/metrics";
-        const resp = await aggregator.fetch(url, {
-          method: "POST",
-        });
-        if (resp.status !== 200) {
-          throw new Error(
-            `Unexpected status code ${resp.status} ${
-              resp.statusText
-            }: ${await resp.text()}`,
-          );
-        } else {
-          return await resp.text();
-        }
-      },
-    ),
-  );
-  return new Response(shards.join("\n"), {
-    headers: {
-      "Content-Type": "text/plain",
-    },
-  });
 }

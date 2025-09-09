@@ -11,11 +11,11 @@
     "build": "tsup --clean --dts"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241022.0",
+    "@cloudflare/workers-types": "^4.20250810.0",
     "itty-router": "^3.0.12",
     "tsup": "^8.4.0",
     "typescript": "^5.0.4",
-    "wrangler": "^3.107.3"
+    "wrangler": "^4.28.1"
   },
   "dependencies": {
     "@braintrust/core": "^0.0.85",

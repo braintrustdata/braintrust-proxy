@@ -1,11 +1,5 @@
-import {
-  proxyV1Prefixes,
-  handleProxyV1,
-  handlePrometheusScrape,
-  originWhitelist,
-} from "./proxy";
+import { proxyV1Prefixes, handleProxyV1, originWhitelist } from "./proxy";
 import { getCorsHeaders } from "@braintrust/proxy/edge";
-export { PrometheusMetricAggregator } from "./metric-aggregator";
 
 // The fetch handler is invoked when this worker receives a HTTP(S) request
 // and should return a Response (optionally wrapped in a Promise)
@@ -23,9 +17,6 @@ export default {
         status: 200,
         headers: getCorsHeaders(request, originWhitelist(env)),
       });
-    }
-    if (url.pathname === "/metrics") {
-      return handlePrometheusScrape(request, env, ctx);
     }
     for (const prefix of proxyV1Prefixes) {
       if (url.pathname.startsWith(prefix)) {

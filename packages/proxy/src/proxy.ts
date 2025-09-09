@@ -6,7 +6,7 @@ import {
   ResponseFormat as responseFormatSchema,
   ObjectReferenceType,
 } from "./generated_types";
-import { Meter, MeterProvider } from "@opentelemetry/api";
+import { Attributes } from "@opentelemetry/api";
 import {
   APISecret,
   AzureEntraSecretSchema,
@@ -63,7 +63,19 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { z } from "zod";
-import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { nowMs } from "./metrics";
+
+export type LogCounterFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
+
+export type LogHistogramFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
@@ -191,8 +203,8 @@ export async function proxyV1({
   cacheGet,
   cachePut,
   digest,
-  meterProvider = NOOP_METER_PROVIDER,
-  flushMetrics,
+  logCounter,
+  logHistogram,
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
@@ -218,47 +230,12 @@ export async function proxyV1({
     ttl_seconds?: number,
   ) => Promise<void>;
   digest: (message: string) => Promise<string>;
-  meterProvider?: MeterProvider;
-  flushMetrics?: () => void;
+  logCounter?: LogCounterFn;
+  logHistogram?: LogHistogramFn;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
 }): Promise<void> {
-  const meter = meterProvider.getMeter("proxy-metrics");
-
-  const totalCalls = meter.createCounter("proxy.requests");
-  const totalFinished = meter.createCounter("proxy.requests_completed");
-  const cacheHits = meter.createCounter("proxy.results_cache_hits");
-  const cacheMisses = meter.createCounter("proxy.results_cache_misses");
-  const cacheSkips = meter.createCounter("proxy.results_cache_skips");
-  const tokenCounts = meter.createHistogram("proxy.tokens");
-  const promptTokens = meter.createHistogram("proxy.prompt_tokens");
-  const promptCachedTokens = meter.createHistogram(
-    "proxy.prompt_cached_tokens",
-  );
-  const promptCacheCreationTokens = meter.createHistogram(
-    "proxy.prompt_cache_creation_tokens",
-  );
-  const completionTokens = meter.createHistogram("proxy.completion_tokens");
-  const completionReasoningTokens = meter.createHistogram(
-    "proxy.completion_reasoning_tokens",
-  );
-  const secretsFetchTime = meter.createHistogram(
-    "proxy.secrets_fetch_time_ms",
-    {
-      unit: "ms",
-    },
-  );
-  const timeToFirstToken = meter.createHistogram(
-    "proxy.time_to_first_token_ms",
-    {
-      unit: "ms",
-    },
-  );
-  const requestDuration = meter.createHistogram("proxy.request_duration_ms", {
-    unit: "ms",
-  });
-
   // totalCalls will be updated with model attributes after model extraction
 
   proxyHeaders = Object.fromEntries(
@@ -392,7 +369,11 @@ export async function proxyV1({
   }
 
   // Record total calls with model attributes
-  totalCalls.add(1, baseAttributes);
+  logCounter?.({
+    name: "proxy.requests",
+    value: 1,
+    attributes: baseAttributes,
+  });
 
   if (url === "/credentials") {
     let readable: ReadableStream | null = null;
@@ -488,7 +469,11 @@ export async function proxyV1({
         : DEFAULT_CACHE_TTL;
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
-        cacheHits.add(1, baseAttributes);
+        logCounter?.({
+          name: "proxy.results_cache_hits",
+          value: 1,
+          attributes: baseAttributes,
+        });
         for (const [name, value] of Object.entries(cachedData.headers)) {
           setHeader(name, value);
         }
@@ -539,13 +524,25 @@ export async function proxyV1({
           },
         });
       } else {
-        cacheMisses.add(1, baseAttributes);
+        logCounter?.({
+          name: "proxy.results_cache_misses",
+          value: 1,
+          attributes: baseAttributes,
+        });
       }
     } else {
-      cacheMisses.add(1, baseAttributes);
+      logCounter?.({
+        name: "proxy.results_cache_misses",
+        value: 1,
+        attributes: baseAttributes,
+      });
     }
   } else {
-    cacheSkips.add(1, baseAttributes);
+    logCounter?.({
+      name: "proxy.results_cache_skips",
+      value: 1,
+      attributes: baseAttributes,
+    });
   }
 
   let responseFailed = false;
@@ -577,7 +574,8 @@ export async function proxyV1({
       modelResponse: { response: proxyResponse, stream: proxyStream },
       secretName,
     } = await fetchModelLoop(
-      meter,
+      logCounter,
+      logHistogram,
       method,
       url,
       headers,
@@ -620,7 +618,11 @@ export async function proxyV1({
           model,
           orgName,
         );
-        secretsFetchTime.record(nowMs() - start, baseAttributes);
+        logHistogram?.({
+          name: "proxy.secrets_fetch_time_ms",
+          value: nowMs() - start,
+          attributes: baseAttributes,
+        });
 
         if (secrets.length > 0 && !orgName && secrets[0].org_name) {
           baseAttributes.org_name = secrets[0].org_name;
@@ -771,33 +773,42 @@ export async function proxyV1({
                   });
 
                   // Record token metrics
-                  tokenCounts.record(
-                    extendedUsage.data.total_tokens,
-                    baseAttributes,
-                  );
-                  promptTokens.record(
-                    extendedUsage.data.prompt_tokens,
-                    baseAttributes,
-                  );
-                  promptCachedTokens.record(
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                  logHistogram?.({
+                    name: "proxy.tokens",
+                    value: extendedUsage.data.total_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_tokens",
+                    value: extendedUsage.data.prompt_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cached_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens ||
                       0,
-                    baseAttributes,
-                  );
-                  promptCacheCreationTokens.record(
-                    extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens || 0,
-                    baseAttributes,
-                  );
-                  completionTokens.record(
-                    extendedUsage.data.completion_tokens,
-                    baseAttributes,
-                  );
-                  completionReasoningTokens.record(
-                    extendedUsage.data.completion_tokens_details
-                      ?.reasoning_tokens || 0,
-                    baseAttributes,
-                  );
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cache_creation_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens || 0,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_tokens",
+                    value: extendedUsage.data.completion_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_reasoning_tokens",
+                    value:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens || 0,
+                    attributes: baseAttributes,
+                  });
                 }
 
                 const choice = result.choices?.[0];
@@ -882,7 +893,11 @@ export async function proxyV1({
               time_to_first_token: ttft,
             },
           });
-          timeToFirstToken.record(ttft * 1000, baseAttributes);
+          logHistogram?.({
+            name: "proxy.time_to_first_token_ms",
+            value: ttft * 1000,
+            attributes: baseAttributes,
+          });
         }
         if (isStreaming) {
           eventSourceParser?.feed(new TextDecoder().decode(chunk));
@@ -937,32 +952,42 @@ export async function proxyV1({
                 });
 
                 // Record token metrics
-                tokenCounts.record(
-                  extendedUsage.data.total_tokens,
-                  baseAttributes,
-                );
-                promptTokens.record(
-                  extendedUsage.data.prompt_tokens,
-                  baseAttributes,
-                );
-                promptCachedTokens.record(
-                  extendedUsage.data.prompt_tokens_details?.cached_tokens || 0,
-                  baseAttributes,
-                );
-                promptCacheCreationTokens.record(
-                  extendedUsage.data.prompt_tokens_details
-                    ?.cache_creation_tokens || 0,
-                  baseAttributes,
-                );
-                completionTokens.record(
-                  extendedUsage.data.completion_tokens,
-                  baseAttributes,
-                );
-                completionReasoningTokens.record(
-                  extendedUsage.data.completion_tokens_details
-                    ?.reasoning_tokens || 0,
-                  baseAttributes,
-                );
+                logHistogram?.({
+                  name: "proxy.tokens",
+                  value: extendedUsage.data.total_tokens,
+                  attributes: baseAttributes,
+                });
+                logHistogram?.({
+                  name: "proxy.prompt_tokens",
+                  value: extendedUsage.data.prompt_tokens,
+                  attributes: baseAttributes,
+                });
+                logHistogram?.({
+                  name: "proxy.prompt_cached_tokens",
+                  value:
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                    0,
+                  attributes: baseAttributes,
+                });
+                logHistogram?.({
+                  name: "proxy.prompt_cache_creation_tokens",
+                  value:
+                    extendedUsage.data.prompt_tokens_details
+                      ?.cache_creation_tokens || 0,
+                  attributes: baseAttributes,
+                });
+                logHistogram?.({
+                  name: "proxy.completion_tokens",
+                  value: extendedUsage.data.completion_tokens,
+                  attributes: baseAttributes,
+                });
+                logHistogram?.({
+                  name: "proxy.completion_reasoning_tokens",
+                  value:
+                    extendedUsage.data.completion_tokens_details
+                      ?.reasoning_tokens || 0,
+                  attributes: baseAttributes,
+                });
               }
               break;
             }
@@ -990,10 +1015,13 @@ export async function proxyV1({
         }
 
         const duration = getCurrentUnixTimestamp() - startTime;
-        requestDuration.record(duration * 1000, baseAttributes);
+        logHistogram?.({
+          name: "proxy.request_duration_ms",
+          value: duration * 1000,
+          attributes: baseAttributes,
+        });
 
         spanLogger?.end();
-        flushMetrics?.();
         controller.terminate();
       },
     });
@@ -1052,7 +1080,11 @@ export async function proxyV1({
     });
   }
 
-  totalFinished.add(1, baseAttributes);
+  logCounter?.({
+    name: "proxy.requests_completed",
+    value: 1,
+    attributes: baseAttributes,
+  });
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
@@ -1081,7 +1113,8 @@ const RATE_LIMITING_ERROR_CODES = [
 
 let loopIndex = 0;
 async function fetchModelLoop(
-  meter: Meter,
+  logCounter: LogCounterFn | undefined,
+  logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
@@ -1100,19 +1133,6 @@ async function fetchModelLoop(
   ) => Promise<void>,
   model: string | null,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
-  const endpointCalls = meter.createCounter("endpoint_calls");
-  const endpointFailures = meter.createCounter("endpoint_failures");
-  const endpointRetryableErrors = meter.createCounter(
-    "endpoint_retryable_errors",
-  );
-  const retriesPerCall = meter.createHistogram("retries_per_call", {
-    advice: {
-      explicitBucketBoundaries: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    },
-  });
-  const llmTtft = meter.createHistogram("llm_ttft");
-  const llmLatency = meter.createHistogram("llm_latency");
-
   // model is now passed as a parameter
 
   // TODO: Make this smarter. For now, just pick a random one.
@@ -1180,7 +1200,11 @@ async function fetchModelLoop(
 
     let errorHttpCode = undefined;
     let errorHttpHeaders = new Headers();
-    endpointCalls.add(1, loggableInfo);
+    logCounter?.({
+      name: "endpoint_calls",
+      value: 1,
+      attributes: loggableInfo,
+    });
     try {
       proxyResponse = await fetchModel(
         modelSpec,
@@ -1235,7 +1259,11 @@ async function fetchModelLoop(
           );
         }
       } else {
-        endpointFailures.add(1, loggableInfo);
+        logCounter?.({
+          name: "endpoint_failures",
+          value: 1,
+          attributes: loggableInfo,
+        });
         throw e;
       }
     }
@@ -1323,13 +1351,21 @@ async function fetchModelLoop(
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
-    endpointRetryableErrors.add(1, {
-      ...loggableInfo,
-      http_code: errorHttpCode,
+    logCounter?.({
+      name: "endpoint_retryable_errors",
+      value: 1,
+      attributes: {
+        ...loggableInfo,
+        http_code: errorHttpCode,
+      },
     });
   }
 
-  retriesPerCall.record(i, loggableInfo);
+  logHistogram?.({
+    name: "retries_per_call",
+    value: i,
+    attributes: loggableInfo,
+  });
   spanLogger?.log({
     metrics: { retries },
   });
@@ -1346,21 +1382,33 @@ async function fetchModelLoop(
 
   let stream = proxyResponse.stream;
   if (!proxyResponse.response.ok) {
-    endpointFailures.add(1, loggableInfo);
+    logCounter?.({
+      name: "endpoint_failures",
+      value: 1,
+      attributes: loggableInfo,
+    });
   } else if (stream) {
     let first = true;
     const timingStart = nowMs();
     const timingStream = new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, controller) {
         if (first) {
-          llmTtft.record(nowMs() - timingStart, loggableInfo);
+          logHistogram?.({
+            name: "llm_ttft",
+            value: nowMs() - timingStart,
+            attributes: loggableInfo,
+          });
           first = false;
         }
         controller.enqueue(chunk);
       },
       async flush(controller) {
         const duration = nowMs() - timingStart;
-        llmLatency.record(duration, loggableInfo);
+        logHistogram?.({
+          name: "llm_latency",
+          value: duration,
+          attributes: loggableInfo,
+        });
         controller.terminate();
       },
     });

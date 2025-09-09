@@ -1,8 +1,9 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { flushMetrics } from "@lib/metrics";
-import { proxyV1, SpanLogger } from "@lib/proxy";
+import { proxyV1, SpanLogger, LogCounterFn, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
+import { Meter } from "@opentelemetry/api";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
 import { verifyTempCredentials, isTempCredential } from "utils";
@@ -12,7 +13,7 @@ import {
   encryptMessage,
 } from "utils/encrypt";
 
-export { FlushingHttpMetricExporter } from "./exporter";
+// FlushingHttpMetricExporter moved to cloudflare-specific code to avoid Edge Runtime issues
 
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;
@@ -219,8 +220,48 @@ export function makeFetchApiSecrets({
   };
 }
 
+// Cache meters to avoid creating them repeatedly
+const meterCache = new Map<string, any>();
+
+function getCachedMeter(
+  meter: Meter,
+  name: string,
+  type: "counter" | "histogram",
+) {
+  const key = `${name}_${type}`;
+  if (!meterCache.has(key)) {
+    if (type === "counter") {
+      meterCache.set(key, meter.createCounter(name));
+    } else {
+      meterCache.set(key, meter.createHistogram(name));
+    }
+  }
+  return meterCache.get(key);
+}
+
+function createLogCounter(meter: Meter): LogCounterFn {
+  return ({ name, value, attributes }) => {
+    try {
+      const counter = getCachedMeter(meter, name, "counter");
+      counter.add(value, attributes);
+    } catch (error) {
+      console.error(`Error logging counter ${name}:`, error);
+    }
+  };
+}
+
+function createLogHistogram(meter: Meter): LogHistogramFn {
+  return ({ name, value, attributes }) => {
+    try {
+      const histogram = getCachedMeter(meter, name, "histogram");
+      histogram.record(value, attributes);
+    } catch (error) {
+      console.error(`Error logging histogram ${name}:`, error);
+    }
+  };
+}
+
 export function EdgeProxyV1(opts: ProxyOpts) {
-  const meterProvider = opts.meterProvider;
   return async (request: Request, ctx: EdgeContext) => {
     let corsHeaders = {};
     try {
@@ -298,6 +339,16 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
     };
 
+    // Create metric logging functions from meterProvider
+    let logCounter: LogCounterFn | undefined;
+    let logHistogram: LogHistogramFn | undefined;
+
+    if (opts.meterProvider) {
+      const meter = opts.meterProvider.getMeter("edge-metrics");
+      logCounter = createLogCounter(meter);
+      logHistogram = createLogHistogram(meter);
+    }
+
     try {
       await proxyV1({
         method: request.method,
@@ -311,14 +362,15 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cacheGet,
         cachePut,
         digest: digestMessage,
-        meterProvider,
+        logCounter,
+        logHistogram,
         spanLogger: opts.spanLogger,
-        flushMetrics: () => {
-          if (meterProvider) {
-            ctx.waitUntil(flushMetrics(meterProvider));
-          }
-        },
       });
+
+      // Flush metrics after the response
+      if (opts.meterProvider) {
+        ctx.waitUntil(flushMetrics(opts.meterProvider));
+      }
     } catch (e) {
       return new Response(`${e}`, {
         status: 400,

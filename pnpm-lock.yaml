@@ -38,11 +38,17 @@ importers:
       '@openai/realtime-api-beta':
         specifier: github:openai/openai-realtime-api-beta#cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f
         version: github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f
+      '@opentelemetry/api':
+        specifier: 1.9.0
+        version: 1.9.0
+      '@opentelemetry/exporter-metrics-otlp-http':
+        specifier: ^0.204.0
+        version: 0.204.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/resources':
         specifier: ^2.0.0
         version: 2.1.0(@opentelemetry/api@1.9.0)
       '@opentelemetry/sdk-metrics':
-        specifier: ^2.0.0
+        specifier: ^2.1.0
         version: 2.1.0(@opentelemetry/api@1.9.0)
       braintrust:
         specifier: ^0.0.197
@@ -4889,7 +4895,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.5.18
       '@vue/shared': 3.5.18
-      vue: 3.5.18(typescript@5.5.4)
+      vue: 3.5.18(typescript@5.3.3)
     dev: false
 
   /@vue/shared@3.5.13:
@@ -10281,7 +10287,7 @@ packages:
     peerDependencies:
       vue: '>=3.2.26 < 4'
     dependencies:
-      vue: 3.5.18(typescript@5.5.4)
+      vue: 3.5.18(typescript@5.3.3)
     dev: false
 
   /tailwindcss@3.2.7(postcss@8.4.38):

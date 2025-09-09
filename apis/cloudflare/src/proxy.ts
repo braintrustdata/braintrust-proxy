@@ -1,20 +1,17 @@
 import {
   EdgeProxyV1,
-  FlushingHttpMetricExporter,
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
 } from "@braintrust/proxy/edge";
-import {
-  NOOP_METER_PROVIDER,
-  SpanLogger,
-  initMetrics,
-} from "@braintrust/proxy";
+import { FlushingHttpMetricExporter } from "./exporter";
+import { SpanLogger, initMetrics, flushMetrics } from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
+import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -36,7 +33,8 @@ export async function handleProxyV1(
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
-  let meterProvider = undefined;
+  let meterProvider: MeterProvider | undefined;
+
   if (env.METRICS_LICENSE_KEY) {
     console.log("Initializing metrics");
     meterProvider = initMetrics(
@@ -53,14 +51,7 @@ export async function handleProxyV1(
     );
   }
 
-  const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
-    "cloudflare-metrics",
-  );
-
   const whitelist = originWhitelist(env);
-
-  const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
-  const cacheSetLatency = meter.createHistogram("results_cache_set_latency");
 
   const cache = await caches.open("apikey:cache");
 
@@ -124,7 +115,7 @@ export async function handleProxyV1(
         const start = performance.now();
         const ret = await env.ai_proxy.get(key);
         const end = performance.now();
-        cacheGetLatency.record(end - start);
+        // Cache latency will be logged in edge layer
         if (ret) {
           return JSON.parse(ret);
         } else {
@@ -137,11 +128,11 @@ export async function handleProxyV1(
           expirationTtl: ttl,
         });
         const end = performance.now();
-        cacheSetLatency.record(end - start);
+        // Cache latency will be logged in edge layer
       },
     },
     braintrustApiUrl: braintrustAppUrl(env).toString(),
-    meterProvider,
+    meterProvider, // Used to create metric functions in edge layer
     whitelist,
     spanLogger,
   };

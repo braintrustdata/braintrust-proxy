@@ -3,10 +3,12 @@ import {
   AggregationTemporality,
   MetricReader,
 } from "@opentelemetry/sdk-metrics";
+import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 
 export class FlushingHttpMetricExporter extends MetricReader {
   private url: string;
   private headers: Record<string, string>;
+  private otlpExporter: OTLPMetricExporter;
 
   /**
    * Constructor
@@ -24,6 +26,12 @@ export class FlushingHttpMetricExporter extends MetricReader {
       "Content-Type": "application/json",
       ...headers,
     };
+
+    // Create an OTLP exporter instance for serialization
+    this.otlpExporter = new OTLPMetricExporter({
+      url: url,
+      headers: headers,
+    });
   }
 
   override async onForceFlush(): Promise<void> {
@@ -32,38 +40,33 @@ export class FlushingHttpMetricExporter extends MetricReader {
 
     if (errors.length > 0) {
       for (const error of errors) {
+        console.error("Metrics collection error:", error);
         diag.error("Error while collecting metrics", error);
       }
     }
 
-    if (resourceMetrics.scopeMetrics.length > 0) {
-      try {
-        // Format payload in proper OTLP format expected by Braintrust
-        const otlpPayload = {
-          resourceMetrics: [resourceMetrics],
-        };
+    if (resourceMetrics.scopeMetrics.length === 0) {
+      return;
+    }
 
-        console.log(JSON.stringify(otlpPayload, null, 2));
-        const response = await fetch(this.url, {
-          method: "POST",
-          headers: this.headers,
-          body: JSON.stringify(otlpPayload),
+    try {
+      // Use the official OTLP exporter to handle the export
+      await new Promise<void>((resolve, reject) => {
+        this.otlpExporter.export(resourceMetrics, (result) => {
+          if (result.code === 0) {
+            // SUCCESS
+            resolve();
+          } else {
+            reject(
+              new Error(
+                `Export failed: ${result.error?.message || "Unknown error"}`,
+              ),
+            );
+          }
         });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(
-            `HTTP Export failed: ${response.status} (${response.statusText}): ${errorText}`,
-          );
-        } else {
-          console.log(
-            `Successfully exported metrics to ${this.url} with status ${response.status}`,
-          );
-        }
-      } catch (error) {
-        diag.error("Error while exporting metrics", error);
-        throw error;
-      }
+      });
+    } catch (error) {
+      diag.error("Error while exporting metrics", error);
     }
   }
 
@@ -71,6 +74,6 @@ export class FlushingHttpMetricExporter extends MetricReader {
    * Shuts down the export server and clears the registry
    */
   override async onShutdown(): Promise<void> {
-    // nothing to do for HTTP exporter
+    await this.otlpExporter.shutdown();
   }
 }

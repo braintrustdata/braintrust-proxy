@@ -174,6 +174,7 @@ export async function proxyV1({
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
+  signal,
 }: {
   method: "GET" | "POST";
   url: string;

@@ -200,6 +200,7 @@ export async function proxyV1({
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
+  signal?: AbortSignal;
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
@@ -546,6 +547,7 @@ export async function proxyV1({
       digest,
       cacheGet,
       cachePut,
+      signal,
     );
     stream = proxyStream;
 
@@ -785,71 +787,85 @@ export async function proxyV1({
             ],
           });
         } else {
-          const dataRaw = JSON.parse(
-            new TextDecoder().decode(flattenChunksArray(allChunks)),
+          const dataText = new TextDecoder().decode(
+            flattenChunksArray(allChunks),
           );
 
-          switch (spanType) {
-            case "chat":
-            case "completion": {
-              const data = dataRaw as ChatCompletion;
-              const extendedUsage = completionUsageSchema.safeParse(data.usage);
-              if (extendedUsage.success) {
-                spanLogger.log({
-                  output: data.choices,
-                  metrics: {
-                    tokens: extendedUsage.data.total_tokens,
-                    prompt_tokens: extendedUsage.data.prompt_tokens,
-                    completion_tokens: extendedUsage.data.completion_tokens,
-                    prompt_cached_tokens:
-                      extendedUsage.data.prompt_tokens_details?.cached_tokens,
-                    prompt_cache_creation_tokens:
-                      extendedUsage.data.prompt_tokens_details
-                        ?.cache_creation_tokens,
-                    completion_reasoning_tokens:
-                      extendedUsage.data.completion_tokens_details
-                        ?.reasoning_tokens,
-                  },
-                });
+          let dataRaw: unknown = undefined;
+          try {
+            dataRaw = JSON.parse(dataText);
+          } catch (e) {
+            // The body must be an error
+            spanLogger.log({
+              error: dataText,
+            });
+          }
+
+          if (dataRaw) {
+            switch (spanType) {
+              case "chat":
+              case "completion": {
+                const data = dataRaw as ChatCompletion;
+                const extendedUsage = completionUsageSchema.safeParse(
+                  data.usage,
+                );
+                if (extendedUsage.success) {
+                  spanLogger.log({
+                    output: data.choices,
+                    metrics: {
+                      tokens: extendedUsage.data.total_tokens,
+                      prompt_tokens: extendedUsage.data.prompt_tokens,
+                      completion_tokens: extendedUsage.data.completion_tokens,
+                      prompt_cached_tokens:
+                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                      prompt_cache_creation_tokens:
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cache_creation_tokens,
+                      completion_reasoning_tokens:
+                        extendedUsage.data.completion_tokens_details
+                          ?.reasoning_tokens,
+                    },
+                  });
+                }
+                break;
               }
-              break;
-            }
-            case "response": {
-              const data = dataRaw as OpenAIResponse;
-              spanLogger.log({
-                output: data.output,
-                metrics: {
-                  tokens: data.usage?.total_tokens,
-                  prompt_tokens: data.usage?.input_tokens,
-                  completion_tokens: data.usage?.output_tokens,
-                  prompt_cached_tokens:
-                    data.usage?.input_tokens_details.cached_tokens,
-                  completion_reasoning_tokens:
-                    data.usage?.output_tokens_details.reasoning_tokens,
-                },
-              });
-              break;
-            }
-            case "embedding":
-              {
-                const data = dataRaw as CreateEmbeddingResponse;
+              case "response": {
+                const data = dataRaw as OpenAIResponse;
                 spanLogger.log({
-                  output: { embedding_length: data.data[0].embedding.length },
+                  output: data.output,
                   metrics: {
                     tokens: data.usage?.total_tokens,
-                    prompt_tokens: data.usage?.prompt_tokens,
+                    prompt_tokens: data.usage?.input_tokens,
+                    completion_tokens: data.usage?.output_tokens,
+                    prompt_cached_tokens:
+                      data.usage?.input_tokens_details.cached_tokens,
+                    completion_reasoning_tokens:
+                      data.usage?.output_tokens_details.reasoning_tokens,
                   },
                 });
+                break;
               }
-              break;
-            case "moderation":
-              {
-                const data = dataRaw as ModerationCreateResponse;
-                spanLogger.log({
-                  output: data.results,
-                });
-              }
-              break;
+              case "embedding":
+                {
+                  const data = dataRaw as CreateEmbeddingResponse;
+                  spanLogger.log({
+                    output: { embedding_length: data.data[0].embedding.length },
+                    metrics: {
+                      tokens: data.usage?.total_tokens,
+                      prompt_tokens: data.usage?.prompt_tokens,
+                    },
+                  });
+                }
+                break;
+              case "moderation":
+                {
+                  const data = dataRaw as ModerationCreateResponse;
+                  spanLogger.log({
+                    output: data.results,
+                  });
+                }
+                break;
+            }
           }
         }
 
@@ -959,6 +975,7 @@ async function fetchModelLoop(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  signal?: AbortSignal,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -1074,6 +1091,7 @@ async function fetchModelLoop(
         digest,
         cacheGet,
         cachePut,
+        signal,
       );
       secretName = secret.name;
       // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
@@ -1272,6 +1290,7 @@ async function fetchModel(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  signal?: AbortSignal,
 ): Promise<ModelResponse> {
   const format = modelSpec?.format ?? "openai";
   switch (format) {
@@ -1287,6 +1306,7 @@ async function fetchModel(
         digest,
         cacheGet,
         cachePut,
+        signal,
       );
     case "anthropic":
       console.assert(method === "POST");
@@ -1296,6 +1316,7 @@ async function fetchModel(
         headers,
         bodyData,
         secret,
+        signal,
       });
     case "google":
       console.assert(method === "POST");
@@ -1305,12 +1326,14 @@ async function fetchModel(
         url,
         headers,
         bodyData,
+        signal,
       });
     case "converse":
       console.assert(method === "POST");
       return await fetchConverse({
         secret,
         body: bodyData,
+        signal,
       });
     default:
       throw new ProxyBadRequestError(`Unsupported model provider ${format}`);
@@ -1546,14 +1569,17 @@ async function collectStream(stream: ReadableStream<Uint8Array>): Promise<any> {
 async function fetchOpenAIResponsesTranslate({
   headers,
   body,
+  signal,
 }: {
   headers: Record<string, string>;
   body: ChatCompletionCreateParams;
+  signal: AbortSignal | undefined;
 }): Promise<ModelResponse> {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers,
     body: JSON.stringify(responsesRequestFromChatCompletionsRequest(body)),
+    signal,
   });
   let stream = response.body;
   if (response.ok && stream) {
@@ -1586,9 +1612,11 @@ async function fetchOpenAIResponsesTranslate({
 async function fetchOpenAIResponses({
   headers,
   body,
+  signal,
 }: {
   headers: Record<string, string>;
   body: ResponseCreateParams;
+  signal: AbortSignal | undefined;
 }): Promise<ModelResponse> {
   // We allow users to set a seed, to enable caching, but Responses API itself does not.
   if ("seed" in body && body.seed !== undefined) {
@@ -1599,6 +1627,7 @@ async function fetchOpenAIResponses({
     method: "POST",
     headers,
     body: JSON.stringify(body),
+    signal,
   });
   return {
     stream: response.body,
@@ -1622,6 +1651,7 @@ async function fetchOpenAI(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  signal?: AbortSignal,
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
@@ -1763,6 +1793,7 @@ async function fetchOpenAI(
     return fetchOpenAIResponses({
       headers,
       body: bodyData,
+      signal,
     });
   }
 
@@ -1805,6 +1836,7 @@ async function fetchOpenAI(
       headers,
       bodyData,
       setHeader,
+      signal,
     });
   }
 
@@ -1815,6 +1847,7 @@ async function fetchOpenAI(
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,
+      signal,
     });
   }
 
@@ -1870,11 +1903,13 @@ async function fetchOpenAI(
           headers,
           body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
           keepalive: true,
+          signal,
         }
       : {
           method,
           headers,
           keepalive: true,
+          signal,
         },
   );
 
@@ -1939,12 +1974,14 @@ async function fetchOpenAIFakeStream({
   headers,
   bodyData,
   setHeader,
+  signal,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
   headers: Record<string, string>;
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
@@ -1960,11 +1997,13 @@ async function fetchOpenAIFakeStream({
           headers,
           body: isEmpty(bodyData) ? undefined : JSON.stringify(bodyData),
           keepalive: true,
+          signal,
         }
       : {
           method,
           headers,
           keepalive: true,
+          signal,
         },
   );
 
@@ -2016,10 +2055,12 @@ async function fetchVertexAnthropicMessages({
   secret,
   modelSpec,
   body,
+  signal,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   const { baseUrl, accessToken } = await vertexEndpointInfo({
     secret,
@@ -2042,6 +2083,7 @@ async function fetchVertexAnthropicMessages({
       ...rest,
       anthropic_version: "vertex-2023-10-16",
     }),
+    signal,
   }).then((resp) => ({
     stream: resp.body,
     response: resp,
@@ -2052,10 +2094,12 @@ async function fetchAnthropicMessages({
   secret,
   modelSpec,
   body,
+  signal,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   switch (secret.type) {
     case "anthropic":
@@ -2067,6 +2111,7 @@ async function fetchAnthropicMessages({
           "anthropic-version": "2023-06-01",
         },
         body: JSON.stringify(body),
+        signal,
       }).then((resp) => ({
         stream: resp.body,
         response: resp,
@@ -2081,6 +2126,7 @@ async function fetchAnthropicMessages({
         secret,
         modelSpec,
         body,
+        signal,
       });
     default:
       throw new ProxyBadRequestError(
@@ -2095,12 +2141,14 @@ async function fetchAnthropic({
   headers,
   bodyData,
   secret,
+  signal,
 }: {
   url: string;
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   secret: APISecret;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   switch (url) {
     case ANTHROPIC_MESSAGES:
@@ -2109,6 +2157,7 @@ async function fetchAnthropic({
         secret,
         modelSpec,
         body: bodyData,
+        signal,
       });
     case "/chat/completions":
       return fetchAnthropicChatCompletions({
@@ -2116,6 +2165,7 @@ async function fetchAnthropic({
         headers,
         bodyData,
         secret,
+        signal,
       });
     default:
       throw new ProxyBadRequestError(`Unsupported Anthropic URL: ${url}`);
@@ -2127,11 +2177,13 @@ async function fetchAnthropicChatCompletions({
   headers,
   bodyData,
   secret,
+  signal,
 }: {
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   secret: APISecret;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   // https://docs.anthropic.com/claude/reference/complete_post
   let fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
@@ -2314,6 +2366,7 @@ async function fetchAnthropicChatCompletions({
       ...params,
     }),
     keepalive: true,
+    signal,
   });
 
   let stream = proxyResponse.body || createEmptyReadableStream();
@@ -2542,12 +2595,14 @@ async function fetchGoogleGenerateContent({
   modelSpec,
   method,
   body,
+  signal,
 }: {
   secret: APISecret;
   model: string;
   modelSpec: ModelSpec | null;
   method: string;
   body: unknown;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   // Hack since Gemini models are not registered with the models/ prefix.
   model = model.replace(/^models\//, "");
@@ -2566,6 +2621,7 @@ async function fetchGoogleGenerateContent({
           "content-type": "application/json",
         },
         body: JSON.stringify(body),
+        signal,
       }).then((resp) => ({
         stream: resp.body,
         response: resp,
@@ -2588,6 +2644,7 @@ async function fetchGoogleGenerateContent({
           "content-type": "application/json",
         },
         body: JSON.stringify(body),
+        signal,
       }).then((resp) => ({
         stream: resp.body,
         response: resp,
@@ -2606,12 +2663,14 @@ async function fetchGoogle({
   url,
   headers,
   bodyData,
+  signal,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   url: string;
   headers: Record<string, string>;
   bodyData: null | any;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
@@ -2626,6 +2685,7 @@ async function fetchGoogle({
       modelSpec,
       method: m[2],
       body: bodyData,
+      signal,
     });
   } else {
     return await fetchGoogleChatCompletions({
@@ -2633,6 +2693,7 @@ async function fetchGoogle({
       modelSpec,
       headers,
       bodyData,
+      signal,
     });
   }
 }
@@ -2642,11 +2703,13 @@ async function fetchGoogleChatCompletions({
   modelSpec,
   headers,
   bodyData,
+  signal,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
+  signal?: AbortSignal;
 }): Promise<ModelResponse> {
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
@@ -2743,6 +2806,7 @@ async function fetchGoogleChatCompletions({
     headers,
     body,
     keepalive: true,
+    signal,
   });
 
   let stream = proxyResponse.body || createEmptyReadableStream();

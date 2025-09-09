@@ -224,13 +224,31 @@ export async function proxyV1({
 }): Promise<void> {
   const meter = meterProvider.getMeter("proxy-metrics");
 
-  const totalCalls = meter.createCounter("total_calls");
-  const cacheHits = meter.createCounter("results_cache_hits");
-  const cacheMisses = meter.createCounter("results_cache_misses");
-  const cacheSkips = meter.createCounter("results_cache_skips");
-  const tokenCounts = meter.createHistogram("token_counts");
-  const promptTokens = meter.createHistogram("prompt_tokens");
-  const completionTokens = meter.createHistogram("completion_tokens");
+  const totalCalls = meter.createCounter("proxy.requests");
+  const cacheHits = meter.createCounter("proxy.results_cache_hits");
+  const cacheMisses = meter.createCounter("proxy.results_cache_misses");
+  const cacheSkips = meter.createCounter("proxy.results_cache_skips");
+  const tokenCounts = meter.createHistogram("proxy.tokens");
+  const promptTokens = meter.createHistogram("proxy.prompt_tokens");
+  const promptCachedTokens = meter.createHistogram(
+    "proxy.prompt_cached_tokens",
+  );
+  const promptCacheCreationTokens = meter.createHistogram(
+    "proxy.prompt_cache_creation_tokens",
+  );
+  const completionTokens = meter.createHistogram("proxy.completion_tokens");
+  const completionReasoningTokens = meter.createHistogram(
+    "proxy.completion_reasoning_tokens",
+  );
+  const timeToFirstToken = meter.createHistogram(
+    "proxy.time_to_first_token_ms",
+    {
+      unit: "ms",
+    },
+  );
+  const requestDuration = meter.createHistogram("proxy.request_duration_ms", {
+    unit: "ms",
+  });
 
   // totalCalls will be updated with model attributes after model extraction
 
@@ -356,7 +374,7 @@ export async function proxyV1({
 
   // Create attributes object that includes model for all metrics
   // Use undefined instead of null since OpenTelemetry doesn't accept null
-  const baseAttributes = { model: model || undefined };
+  const baseAttributes = { model: model || undefined, endpoint: url.slice(1) };
 
   // Record total calls with model attributes
   totalCalls.add(1, baseAttributes);
@@ -679,7 +697,7 @@ export async function proxyV1({
     }
   }
 
-  if (spanLogger && stream) {
+  if (stream) {
     let first = true;
     const allChunks: Uint8Array[] = [];
 
@@ -714,7 +732,7 @@ export async function proxyV1({
                   result.usage,
                 );
                 if (extendedUsage.success) {
-                  spanLogger.log({
+                  spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
@@ -739,8 +757,23 @@ export async function proxyV1({
                     extendedUsage.data.prompt_tokens,
                     baseAttributes,
                   );
+                  promptCachedTokens.record(
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                      0,
+                    baseAttributes,
+                  );
+                  promptCacheCreationTokens.record(
+                    extendedUsage.data.prompt_tokens_details
+                      ?.cache_creation_tokens || 0,
+                    baseAttributes,
+                  );
                   completionTokens.record(
                     extendedUsage.data.completion_tokens,
+                    baseAttributes,
+                  );
+                  completionReasoningTokens.record(
+                    extendedUsage.data.completion_tokens_details
+                      ?.reasoning_tokens || 0,
                     baseAttributes,
                   );
                 }
@@ -807,7 +840,7 @@ export async function proxyV1({
               }
             }
           } catch (e) {
-            spanLogger.log({
+            spanLogger?.log({
               error: e,
             });
           }
@@ -821,11 +854,13 @@ export async function proxyV1({
           (["completion", "chat"] as SpanType[]).includes(spanType)
         ) {
           first = false;
-          spanLogger.log({
+          const ttft = getCurrentUnixTimestamp() - startTime;
+          spanLogger?.log({
             metrics: {
-              time_to_first_token: getCurrentUnixTimestamp() - startTime,
+              time_to_first_token: ttft,
             },
           });
+          timeToFirstToken.record(ttft * 1000, baseAttributes);
         }
         if (isStreaming) {
           eventSourceParser?.feed(new TextDecoder().decode(chunk));
@@ -836,7 +871,7 @@ export async function proxyV1({
       },
       async flush(controller) {
         if (isStreaming) {
-          spanLogger.log({
+          spanLogger?.log({
             output: [
               {
                 index: 0,
@@ -862,7 +897,7 @@ export async function proxyV1({
               const data = dataRaw as ChatCompletion;
               const extendedUsage = completionUsageSchema.safeParse(data.usage);
               if (extendedUsage.success) {
-                spanLogger.log({
+                spanLogger?.log({
                   output: data.choices,
                   metrics: {
                     tokens: extendedUsage.data.total_tokens,
@@ -888,8 +923,22 @@ export async function proxyV1({
                   extendedUsage.data.prompt_tokens,
                   baseAttributes,
                 );
+                promptCachedTokens.record(
+                  extendedUsage.data.prompt_tokens_details?.cached_tokens || 0,
+                  baseAttributes,
+                );
+                promptCacheCreationTokens.record(
+                  extendedUsage.data.prompt_tokens_details
+                    ?.cache_creation_tokens || 0,
+                  baseAttributes,
+                );
                 completionTokens.record(
                   extendedUsage.data.completion_tokens,
+                  baseAttributes,
+                );
+                completionReasoningTokens.record(
+                  extendedUsage.data.completion_tokens_details
+                    ?.reasoning_tokens || 0,
                   baseAttributes,
                 );
               }
@@ -898,7 +947,7 @@ export async function proxyV1({
             case "embedding":
               {
                 const data = dataRaw as CreateEmbeddingResponse;
-                spanLogger.log({
+                spanLogger?.log({
                   output: { embedding_length: data.data[0].embedding.length },
                   metrics: {
                     tokens: data.usage?.total_tokens,
@@ -910,7 +959,7 @@ export async function proxyV1({
             case "moderation":
               {
                 const data = dataRaw as ModerationCreateResponse;
-                spanLogger.log({
+                spanLogger?.log({
                   output: data.results,
                 });
               }
@@ -918,7 +967,10 @@ export async function proxyV1({
           }
         }
 
-        spanLogger.end();
+        const duration = getCurrentUnixTimestamp() - startTime;
+        requestDuration.record(duration * 1000, baseAttributes);
+
+        spanLogger?.end();
         controller.terminate();
       },
     });
@@ -1689,7 +1741,9 @@ async function fetchOpenAI(
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
-        `${baseURL}/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+        `${baseURL}/v1/projects/${project}/locations/${location}/${
+          bodyData.model
+        }:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
     }
@@ -2335,7 +2389,9 @@ async function fetchAnthropicChatCompletions({
       defaultLocation: "us-east5",
     });
     fullURL = new URL(
-      `${baseUrl}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+      `${baseUrl}/${params.model}:${
+        params.stream ? "streamRawPredict" : "rawPredict"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
     params["anthropic_version"] = "vertex-2023-10-16";
@@ -2733,7 +2789,9 @@ async function fetchGoogleChatCompletions({
       defaultLocation: "us-central1",
     });
     fullURL = new URL(
-      `${baseUrl}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `${baseUrl}/${model}:${
+        streamingMode ? "streamGenerateContent" : "generateContent"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
   }

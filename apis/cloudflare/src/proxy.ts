@@ -1,6 +1,6 @@
 import {
   EdgeProxyV1,
-  FlushingExporter,
+  FlushingHttpMetricExporter,
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
@@ -39,17 +39,13 @@ export async function handleProxyV1(
   let meterProvider = undefined;
   if (env.METRICS_LICENSE_KEY) {
     meterProvider = initMetrics(
-      new FlushingExporter((resourceMetrics) => {
-        console.log("Sending metrics to Braintrust");
-        return fetch(`${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
-          },
-          body: JSON.stringify(resourceMetrics),
-        });
-      }),
+      new FlushingHttpMetricExporter(
+        `${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,
+        {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
+        },
+      ),
     );
   }
 

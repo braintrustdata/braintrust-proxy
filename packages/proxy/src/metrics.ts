@@ -8,10 +8,50 @@ import {
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
 import { hrTimeToMicroseconds } from "@opentelemetry/core";
-import { HrTime } from "@opentelemetry/api";
+import {
+  HrTime,
+  Meter,
+  MeterProvider as APIMeterProvider,
+} from "@opentelemetry/api";
 import { PrometheusSerializer } from "./PrometheusSerializer";
 
-export { NOOP_METER_PROVIDER } from "@opentelemetry/api/build/src/metrics/NoopMeterProvider";
+// Create a simple noop meter provider since the import path changed in v1.9.0
+class NoopMeter implements Meter {
+  createCounter() {
+    return { add: () => {} } as any;
+  }
+  createHistogram() {
+    return { record: () => {} } as any;
+  }
+  createGauge() {
+    return { set: () => {} } as any;
+  }
+  createUpDownCounter() {
+    return { add: () => {} } as any;
+  }
+  createObservableCounter() {
+    return {} as any;
+  }
+  createObservableGauge() {
+    return {} as any;
+  }
+  createObservableHistogram() {
+    return {} as any;
+  }
+  createObservableUpDownCounter() {
+    return {} as any;
+  }
+  addBatchObservableCallback() {}
+  removeBatchObservableCallback() {}
+}
+
+class NoopMeterProvider implements APIMeterProvider {
+  getMeter(): Meter {
+    return new NoopMeter();
+  }
+}
+
+export const NOOP_METER_PROVIDER = new NoopMeterProvider();
 
 export function initMetrics(metricReader: MetricReader) {
   const myServiceMeterProvider = new MeterProvider({

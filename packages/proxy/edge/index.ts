@@ -12,7 +12,7 @@ import {
   encryptMessage,
 } from "utils/encrypt";
 
-export { FlushingExporter } from "./exporter";
+export { FlushingHttpMetricExporter } from "./exporter";
 
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;

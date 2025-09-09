@@ -34,6 +34,8 @@ export interface ProxyOpts {
   completionsCache?: Cache;
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
+  logCounter?: LogCounterFn;
+  logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
 }
@@ -220,46 +222,7 @@ export function makeFetchApiSecrets({
   };
 }
 
-// Cache meters to avoid creating them repeatedly
-const meterCache = new Map<string, any>();
-
-function getCachedMeter(
-  meter: Meter,
-  name: string,
-  type: "counter" | "histogram",
-) {
-  const key = `${name}_${type}`;
-  if (!meterCache.has(key)) {
-    if (type === "counter") {
-      meterCache.set(key, meter.createCounter(name));
-    } else {
-      meterCache.set(key, meter.createHistogram(name));
-    }
-  }
-  return meterCache.get(key);
-}
-
-function createLogCounter(meter: Meter): LogCounterFn {
-  return ({ name, value, attributes }) => {
-    try {
-      const counter = getCachedMeter(meter, name, "counter");
-      counter.add(value, attributes);
-    } catch (error) {
-      console.error(`Error logging counter ${name}:`, error);
-    }
-  };
-}
-
-function createLogHistogram(meter: Meter): LogHistogramFn {
-  return ({ name, value, attributes }) => {
-    try {
-      const histogram = getCachedMeter(meter, name, "histogram");
-      histogram.record(value, attributes);
-    } catch (error) {
-      console.error(`Error logging histogram ${name}:`, error);
-    }
-  };
-}
+// Metric logging functions are now created in the calling layer (e.g., Cloudflare proxy)
 
 export function EdgeProxyV1(opts: ProxyOpts) {
   return async (request: Request, ctx: EdgeContext) => {
@@ -339,16 +302,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
     };
 
-    // Create metric logging functions from meterProvider
-    let logCounter: LogCounterFn | undefined;
-    let logHistogram: LogHistogramFn | undefined;
-
-    if (opts.meterProvider) {
-      const meter = opts.meterProvider.getMeter("edge-metrics");
-      logCounter = createLogCounter(meter);
-      logHistogram = createLogHistogram(meter);
-    }
-
     try {
       await proxyV1({
         method: request.method,
@@ -362,8 +315,8 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cacheGet,
         cachePut,
         digest: digestMessage,
-        logCounter,
-        logHistogram,
+        logCounter: opts.logCounter,
+        logHistogram: opts.logHistogram,
         spanLogger: opts.spanLogger,
       });
 

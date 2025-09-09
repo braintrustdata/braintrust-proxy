@@ -12,6 +12,19 @@ import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
+import { Meter, Attributes } from "@opentelemetry/api";
+
+export type LogCounterFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
+
+export type LogHistogramFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -27,6 +40,47 @@ export function originWhitelist(env: Env) {
     : undefined;
 }
 
+// Cache meters to avoid creating them repeatedly
+const meterCache = new Map<string, any>();
+
+function getCachedMeter(
+  meter: Meter,
+  name: string,
+  type: "counter" | "histogram",
+) {
+  const key = `${name}_${type}`;
+  if (!meterCache.has(key)) {
+    if (type === "counter") {
+      meterCache.set(key, meter.createCounter(name));
+    } else {
+      meterCache.set(key, meter.createHistogram(name));
+    }
+  }
+  return meterCache.get(key);
+}
+
+function createLogCounter(meter: Meter): LogCounterFn {
+  return ({ name, value, attributes }) => {
+    try {
+      const counter = getCachedMeter(meter, name, "counter");
+      counter.add(value, attributes);
+    } catch (error) {
+      console.error(`Error logging counter ${name}:`, error);
+    }
+  };
+}
+
+function createLogHistogram(meter: Meter): LogHistogramFn {
+  return ({ name, value, attributes }) => {
+    try {
+      const histogram = getCachedMeter(meter, name, "histogram");
+      histogram.record(value, attributes);
+    } catch (error) {
+      console.error(`Error logging histogram ${name}:`, error);
+    }
+  };
+}
+
 export async function handleProxyV1(
   request: Request,
   proxyV1Prefix: string,
@@ -34,6 +88,8 @@ export async function handleProxyV1(
   ctx: ExecutionContext,
 ): Promise<Response> {
   let meterProvider: MeterProvider | undefined;
+  let logCounter: LogCounterFn | undefined;
+  let logHistogram: LogHistogramFn | undefined;
 
   if (env.METRICS_LICENSE_KEY) {
     console.log("Initializing metrics");
@@ -49,6 +105,13 @@ export async function handleProxyV1(
         service: "cfproxy",
       },
     );
+
+    // Create metric logging functions for cache latency (local to Cloudflare)
+    if (meterProvider) {
+      const meter = meterProvider.getMeter("cloudflare-cache");
+      logCounter = createLogCounter(meter);
+      logHistogram = createLogHistogram(meter);
+    }
   }
 
   const whitelist = originWhitelist(env);
@@ -115,7 +178,10 @@ export async function handleProxyV1(
         const start = performance.now();
         const ret = await env.ai_proxy.get(key);
         const end = performance.now();
-        // Cache latency will be logged in edge layer
+        logHistogram?.({
+          name: "results_cache_get_latency",
+          value: end - start,
+        });
         if (ret) {
           return JSON.parse(ret);
         } else {
@@ -128,11 +194,16 @@ export async function handleProxyV1(
           expirationTtl: ttl,
         });
         const end = performance.now();
-        // Cache latency will be logged in edge layer
+        logHistogram?.({
+          name: "results_cache_set_latency",
+          value: end - start,
+        });
       },
     },
     braintrustApiUrl: braintrustAppUrl(env).toString(),
-    meterProvider, // Used to create metric functions in edge layer
+    meterProvider, // Used for flushing metrics
+    logCounter, // Pass logging functions to edge layer
+    logHistogram, // Pass logging functions to edge layer
     whitelist,
     spanLogger,
   };

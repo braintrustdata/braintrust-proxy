@@ -192,6 +192,7 @@ export async function proxyV1({
   cachePut,
   digest,
   meterProvider = NOOP_METER_PROVIDER,
+  flushMetrics,
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
@@ -218,6 +219,7 @@ export async function proxyV1({
   ) => Promise<void>;
   digest: (message: string) => Promise<string>;
   meterProvider?: MeterProvider;
+  flushMetrics?: () => void;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
@@ -225,6 +227,7 @@ export async function proxyV1({
   const meter = meterProvider.getMeter("proxy-metrics");
 
   const totalCalls = meter.createCounter("proxy.requests");
+  const totalFinished = meter.createCounter("proxy.requests_completed");
   const cacheHits = meter.createCounter("proxy.results_cache_hits");
   const cacheMisses = meter.createCounter("proxy.results_cache_misses");
   const cacheSkips = meter.createCounter("proxy.results_cache_skips");
@@ -239,6 +242,12 @@ export async function proxyV1({
   const completionTokens = meter.createHistogram("proxy.completion_tokens");
   const completionReasoningTokens = meter.createHistogram(
     "proxy.completion_reasoning_tokens",
+  );
+  const secretsFetchTime = meter.createHistogram(
+    "proxy.secrets_fetch_time_ms",
+    {
+      unit: "ms",
+    },
   );
   const timeToFirstToken = meter.createHistogram(
     "proxy.time_to_first_token_ms",
@@ -374,7 +383,13 @@ export async function proxyV1({
 
   // Create attributes object that includes model for all metrics
   // Use undefined instead of null since OpenTelemetry doesn't accept null
-  const baseAttributes = { model: model || undefined, endpoint: url.slice(1) };
+  const baseAttributes: Record<string, string | undefined> = {
+    model: model ?? undefined,
+    endpoint: url.slice(1),
+  };
+  if (orgName) {
+    baseAttributes.org_name = orgName;
+  }
 
   // Record total calls with model attributes
   totalCalls.add(1, baseAttributes);
@@ -598,12 +613,19 @@ export async function proxyV1({
           }
         }
 
+        const start = nowMs();
         const secrets = await getApiSecrets(
           useCredentialsCacheMode !== "never",
           cachedAuthToken || authToken,
           model,
           orgName,
         );
+        secretsFetchTime.record(nowMs() - start, baseAttributes);
+
+        if (secrets.length > 0 && !orgName && secrets[0].org_name) {
+          baseAttributes.org_name = secrets[0].org_name;
+        }
+
         if (endpointName) {
           return secrets.filter((s) => s.name === endpointName);
         } else {
@@ -971,6 +993,7 @@ export async function proxyV1({
         requestDuration.record(duration * 1000, baseAttributes);
 
         spanLogger?.end();
+        flushMetrics?.();
         controller.terminate();
       },
     });
@@ -1028,6 +1051,8 @@ export async function proxyV1({
       console.error("Error closing response", e);
     });
   }
+
+  totalFinished.add(1, baseAttributes);
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;

@@ -36,6 +36,7 @@ export class FlushingHttpMetricExporter extends MetricReader {
 
   override async onForceFlush(): Promise<void> {
     // This is the main entry point, since the exporter is called by the SDK
+    console.log("Exporting metrics to", this.url);
     const { resourceMetrics, errors } = await this.collect();
 
     if (errors.length > 0) {

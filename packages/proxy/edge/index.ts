@@ -313,16 +313,17 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         digest: digestMessage,
         meterProvider,
         spanLogger: opts.spanLogger,
+        flushMetrics: () => {
+          if (meterProvider) {
+            ctx.waitUntil(flushMetrics(meterProvider));
+          }
+        },
       });
     } catch (e) {
       return new Response(`${e}`, {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
-    } finally {
-      if (meterProvider) {
-        ctx.waitUntil(flushMetrics(meterProvider));
-      }
     }
 
     return new Response(readable, {

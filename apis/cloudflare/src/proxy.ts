@@ -47,6 +47,9 @@ export async function handleProxyV1(
           Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
         },
       ),
+      {
+        service: "cfproxy",
+      },
     );
   }
 

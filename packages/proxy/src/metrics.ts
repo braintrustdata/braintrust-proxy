@@ -7,11 +7,13 @@ import {
   MetricReader,
   ResourceMetrics,
 } from "@opentelemetry/sdk-metrics";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import { hrTimeToMicroseconds } from "@opentelemetry/core";
 import {
   HrTime,
   Meter,
   MeterProvider as APIMeterProvider,
+  Attributes,
 } from "@opentelemetry/api";
 import { PrometheusSerializer } from "./PrometheusSerializer";
 
@@ -53,9 +55,13 @@ class NoopMeterProvider implements APIMeterProvider {
 
 export const NOOP_METER_PROVIDER = new NoopMeterProvider();
 
-export function initMetrics(metricReader: MetricReader) {
+export function initMetrics(
+  metricReader: MetricReader,
+  attributes?: Attributes,
+) {
   const myServiceMeterProvider = new MeterProvider({
     readers: [metricReader],
+    ...(attributes && { resource: resourceFromAttributes(attributes) }),
   });
   return myServiceMeterProvider;
 }

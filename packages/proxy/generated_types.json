@@ -1,0 +1,6505 @@
+{
+  "components": {
+    "schemas": {
+      "Acl": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the acl"
+          },
+          "object_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AclObjectType"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the object the ACL applies to"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Id of the user the ACL applies to. Exactly one of `user_id` and `group_id` will be provided"
+          },
+          "group_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Id of the group the ACL applies to. Exactly one of `user_id` and `group_id` will be provided"
+          },
+          "permission": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Permission"
+              },
+              {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Permission the ACL grants. Exactly one of `permission` and `role_id` will be provided"
+              }
+            ]
+          },
+          "restrict_object_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AclObjectType"
+              },
+              {
+                "description": "When setting a permission directly, optionally restricts the permission grant to just the specified object type. Cannot be set alongside a `role_id`."
+              }
+            ]
+          },
+          "role_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Id of the role the ACL grants. Exactly one of `permission` and `role_id` will be provided"
+          },
+          "_object_org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The organization the ACL's referred object belongs to"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of acl creation"
+          }
+        },
+        "required": [
+          "id",
+          "object_type",
+          "object_id",
+          "_object_org_id"
+        ],
+        "description": "An ACL grants a certain permission or role to a certain user or group on an object.\n\nACLs are inherited across the object hierarchy. So for example, if a user has read permissions on a project, they will also have read permissions on any experiment, dataset, etc. created within that project.\n\nTo restrict a grant to a particular sub-object, you may specify `restrict_object_type` in the ACL, as part of a direct permission grant or as part of a role."
+      },
+      "AclObjectType": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "organization",
+          "project",
+          "experiment",
+          "dataset",
+          "prompt",
+          "prompt_session",
+          "group",
+          "role",
+          "org_member",
+          "project_log",
+          "org_project"
+        ],
+        "description": "The object type that the ACL applies to"
+      },
+      "AISecret": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the AI secret"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of AI secret creation"
+          },
+          "updated_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of last AI secret update"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the AI secret"
+          },
+          "type": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {}
+          },
+          "preview_secret": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "org_id",
+          "name"
+        ]
+      },
+      "AnyModelParams": {
+        "type": "object",
+        "properties": {
+          "temperature": {
+            "type": "number"
+          },
+          "top_p": {
+            "type": "number"
+          },
+          "max_tokens": {
+            "type": "number"
+          },
+          "max_completion_tokens": {
+            "type": "number",
+            "description": "The successor to max_tokens"
+          },
+          "frequency_penalty": {
+            "type": "number"
+          },
+          "presence_penalty": {
+            "type": "number"
+          },
+          "response_format": {
+            "$ref": "#/components/schemas/ResponseFormatNullish"
+          },
+          "tool_choice": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto"
+                ],
+                "title": "auto"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "none"
+                ],
+                "title": "none"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "required"
+                ],
+                "title": "required"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "function"
+                    ]
+                  },
+                  "function": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "function"
+                ],
+                "title": "function"
+              }
+            ]
+          },
+          "function_call": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto"
+                ],
+                "title": "auto"
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "none"
+                ],
+                "title": "none"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "title": "function"
+              }
+            ]
+          },
+          "n": {
+            "type": "number"
+          },
+          "stop": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reasoning_effort": {
+            "type": "string",
+            "enum": [
+              "minimal",
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "verbosity": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "top_k": {
+            "type": "number"
+          },
+          "stop_sequences": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "max_tokens_to_sample": {
+            "type": "number",
+            "description": "This is a legacy parameter that should not be used."
+          },
+          "maxOutputTokens": {
+            "type": "number"
+          },
+          "topP": {
+            "type": "number"
+          },
+          "topK": {
+            "type": "number"
+          },
+          "use_cache": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "max_tokens"
+        ]
+      },
+      "ApiKey": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the api key"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of api key creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the api key"
+          },
+          "preview_name": {
+            "type": "string"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the user"
+          },
+          "user_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The user's email"
+          },
+          "user_given_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Given name of the user"
+          },
+          "user_family_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Family name of the user"
+          },
+          "org_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "preview_name"
+        ]
+      },
+      "AsyncScoringControl": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "score_update"
+                ]
+              },
+              "token": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "token"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_override"
+                ]
+              },
+              "state": {
+                "$ref": "#/components/schemas/AsyncScoringState"
+              }
+            },
+            "required": [
+              "kind",
+              "state"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_force_reselect"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "state_enabled_force_rescore"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          }
+        ]
+      },
+      "AsyncScoringState": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "enabled"
+                ]
+              },
+              "token": {
+                "type": "string"
+              },
+              "function_ids": {
+                "type": "array",
+                "items": {},
+                "minItems": 1
+              },
+              "skip_logging": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "status",
+              "token",
+              "function_ids"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "disabled"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          {
+            "type": "null"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "AttachmentReference": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/BraintrustAttachmentReference"
+          },
+          {
+            "$ref": "#/components/schemas/ExternalAttachmentReference"
+          }
+        ],
+        "discriminator": {
+          "propertyName": "type",
+          "mapping": {
+            "braintrust_attachment": "#/components/schemas/BraintrustAttachmentReference",
+            "external_attachment": "#/components/schemas/ExternalAttachmentReference"
+          }
+        }
+      },
+      "AttachmentStatus": {
+        "type": "object",
+        "properties": {
+          "upload_status": {
+            "$ref": "#/components/schemas/UploadStatus"
+          },
+          "error_message": {
+            "type": "string",
+            "description": "Describes the error encountered while uploading."
+          }
+        },
+        "required": [
+          "upload_status"
+        ]
+      },
+      "BraintrustAttachmentReference": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "braintrust_attachment"
+            ],
+            "description": "An identifier to help disambiguate parsing."
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable filename for user interfaces. Not related to attachment storage."
+          },
+          "content_type": {
+            "type": "string",
+            "minLength": 1,
+            "description": "MIME type of this file."
+          },
+          "key": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Key in the object store bucket for this attachment."
+          }
+        },
+        "required": [
+          "type",
+          "filename",
+          "content_type",
+          "key"
+        ]
+      },
+      "BraintrustModelParams": {
+        "type": "object",
+        "properties": {
+          "use_cache": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CallEvent": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "text_delta"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "text_delta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "reasoning_delta"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "reasoning_delta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "json_delta"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "json_delta"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "progress"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "progress"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "error"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "error"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "console"
+                ]
+              }
+            },
+            "required": [
+              "data",
+              "event"
+            ],
+            "title": "console"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "start"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            },
+            "required": [
+              "event",
+              "data"
+            ],
+            "title": "start"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "enum": [
+                  "done"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "enum": [
+                  ""
+                ]
+              }
+            },
+            "required": [
+              "event",
+              "data"
+            ],
+            "title": "done"
+          }
+        ]
+      },
+      "ChatCompletionContentPart": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/ChatCompletionContentPartTextWithTitle"
+          },
+          {
+            "$ref": "#/components/schemas/ChatCompletionContentPartImageWithTitle"
+          }
+        ],
+        "title": "chat_completion_content_part"
+      },
+      "ChatCompletionContentPartImageWithTitle": {
+        "type": "object",
+        "properties": {
+          "image_url": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "detail": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "auto"
+                    ],
+                    "title": "auto"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "low"
+                    ],
+                    "title": "low"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "high"
+                    ],
+                    "title": "high"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "url"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "image_url"
+            ]
+          }
+        },
+        "required": [
+          "image_url",
+          "type"
+        ],
+        "title": "image_url"
+      },
+      "ChatCompletionContentPartText": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          },
+          "cache_control": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ephemeral"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ]
+      },
+      "ChatCompletionContentPartTextWithTitle": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ]
+          },
+          "cache_control": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "ephemeral"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "title": "text"
+      },
+      "ChatCompletionMessageParam": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "system"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "system"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPart"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "user"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "user"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "assistant"
+                ]
+              },
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "function_call": {
+                "type": "object",
+                "properties": {
+                  "arguments": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "arguments",
+                  "name"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "tool_calls": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageToolCall"
+                }
+              },
+              "reasoning": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageReasoning"
+                }
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "title": "assistant"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "tool"
+                ]
+              },
+              "tool_call_id": {
+                "type": "string",
+                "default": ""
+              }
+            },
+            "required": [
+              "role",
+              "content",
+              "tool_call_id"
+            ],
+            "title": "tool"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              }
+            },
+            "required": [
+              "content",
+              "name",
+              "role"
+            ],
+            "title": "function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "developer"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "developer"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "model"
+                ]
+              },
+              "content": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "title": "fallback"
+          }
+        ]
+      },
+      "ChatCompletionMessageReasoning": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          }
+        },
+        "description": "Note: This is not part of the OpenAI API spec, but we added it for interoperability with multiple reasoning models."
+      },
+      "ChatCompletionMessageToolCall": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "function": {
+            "type": "object",
+            "properties": {
+              "arguments": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "arguments",
+              "name"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "function"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "function",
+          "type"
+        ]
+      },
+      "ChatCompletionOpenAIMessageParam": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "system"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "system"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPart"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "user"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "user"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "role": {
+                "type": "string",
+                "enum": [
+                  "assistant"
+                ]
+              },
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "function_call": {
+                "type": "object",
+                "properties": {
+                  "arguments": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "arguments",
+                  "name"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "tool_calls": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageToolCall"
+                }
+              },
+              "reasoning": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageReasoning"
+                }
+              }
+            },
+            "required": [
+              "role"
+            ],
+            "title": "assistant"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "tool"
+                ]
+              },
+              "tool_call_id": {
+                "type": "string",
+                "default": ""
+              }
+            },
+            "required": [
+              "role",
+              "content",
+              "tool_call_id"
+            ],
+            "title": "tool"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              }
+            },
+            "required": [
+              "content",
+              "name",
+              "role"
+            ],
+            "title": "function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "content": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "default": "",
+                    "title": "text"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/ChatCompletionContentPartText"
+                    },
+                    "title": "array"
+                  }
+                ]
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "developer"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "role",
+              "content"
+            ],
+            "title": "developer"
+          }
+        ]
+      },
+      "ChatCompletionTool": {
+        "type": "object",
+        "properties": {
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "name"
+            ]
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "function"
+            ]
+          }
+        },
+        "required": [
+          "function",
+          "type"
+        ]
+      },
+      "CodeBundle": {
+        "type": "object",
+        "properties": {
+          "runtime_context": {
+            "type": "object",
+            "properties": {
+              "runtime": {
+                "type": "string",
+                "enum": [
+                  "node",
+                  "python"
+                ]
+              },
+              "version": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "runtime",
+              "version"
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "experiment"
+                    ]
+                  },
+                  "eval_name": {
+                    "type": "string"
+                  },
+                  "position": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "task"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "scorer"
+                            ]
+                          },
+                          "index": {
+                            "type": "integer",
+                            "minimum": 0
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "index"
+                        ],
+                        "title": "scorer"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "type",
+                  "eval_name",
+                  "position"
+                ],
+                "title": "experiment"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "function"
+                    ]
+                  },
+                  "index": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "type",
+                  "index"
+                ],
+                "title": "function"
+              }
+            ]
+          },
+          "bundle_id": {
+            "type": "string"
+          },
+          "preview": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A preview of the code"
+          }
+        },
+        "required": [
+          "runtime_context",
+          "location",
+          "bundle_id"
+        ]
+      },
+      "Dataset": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the dataset"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the dataset belongs under"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the dataset. Within a project, dataset names are unique"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the dataset"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of dataset creation"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of dataset deletion, or null if the dataset is still active"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the dataset"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "User-controlled metadata about the dataset"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name"
+        ]
+      },
+      "DatasetEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the dataset event. If you don't provide one, Braintrust will generate one for you"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the dataset (see the `version` parameter)"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp the dataset event was created"
+          },
+          "_pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A stable, time-ordered key that can be used to paginate over dataset events. This field is auto-generated by Braintrust and only exists in Brainstore."
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the dataset belongs under"
+          },
+          "dataset_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the dataset"
+          },
+          "input": {
+            "description": "The argument that uniquely define an input case (an arbitrary, JSON serializable object)"
+          },
+          "expected": {
+            "description": "The output of your application, including post-processing (an arbitrary, JSON serializable object)"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "model": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The model used for this example"
+              }
+            },
+            "additionalProperties": {},
+            "description": "A dictionary with additional data about the test example, model outputs, or just about anything else that's relevant, that you can use to help find and analyze examples later. For example, you could log the `prompt`, example's `id`, or anything else that would be useful to slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys must be strings"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags to log"
+          },
+          "span_id": {
+            "type": "string",
+            "description": "A unique identifier used to link different dataset events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+          },
+          "root_span_id": {
+            "type": "string",
+            "description": "A unique identifier for the trace this dataset event belongs to"
+          },
+          "is_root": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether this span is a root span"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "created",
+          "project_id",
+          "dataset_id",
+          "span_id",
+          "root_span_id"
+        ]
+      },
+      "EnvVar": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the environment variable"
+          },
+          "object_type": {
+            "type": "string",
+            "enum": [
+              "organization",
+              "project",
+              "function"
+            ],
+            "description": "The type of the object the environment variable is scoped for"
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the object the environment variable is scoped for"
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the environment variable"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of environment variable creation"
+          },
+          "used": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date the environment variable was last used"
+          }
+        },
+        "required": [
+          "id",
+          "object_type",
+          "object_id",
+          "name"
+        ]
+      },
+      "Experiment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the experiment"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the experiment belongs under"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the experiment. Within a project, experiment names are unique"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the experiment"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of experiment creation"
+          },
+          "repo_info": {
+            "$ref": "#/components/schemas/RepoInfo"
+          },
+          "commit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Commit, taken directly from `repo_info.commit`"
+          },
+          "base_exp_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Id of default base experiment to compare against when viewing this experiment"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of experiment deletion, or null if the experiment is still active"
+          },
+          "dataset_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifier of the linked dataset, or null if the experiment is not linked to a dataset"
+          },
+          "dataset_version": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Version number of the linked dataset the experiment was run against. This can be used to reproduce the experiment after the dataset has been modified."
+          },
+          "public": {
+            "type": "boolean",
+            "description": "Whether or not the experiment is public. Public experiments can be viewed by anybody inside or outside the organization"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the experiment"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "User-controlled metadata about the experiment"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags for the experiment"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "public"
+        ]
+      },
+      "ExperimentEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the experiment event. If you don't provide one, Braintrust will generate one for you"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the experiment (see the `version` parameter)"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp the experiment event was created"
+          },
+          "_pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A stable, time-ordered key that can be used to paginate over experiment events. This field is auto-generated by Braintrust and only exists in Brainstore."
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the experiment belongs under"
+          },
+          "experiment_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the experiment"
+          },
+          "input": {
+            "description": "The arguments that uniquely define a test case (an arbitrary, JSON serializable object). Later on, Braintrust will use the `input` to know whether two test cases are the same between experiments, so they should not contain experiment-specific state. A simple rule of thumb is that if you run the same experiment twice, the `input` should be identical"
+          },
+          "output": {
+            "description": "The output of your application, including post-processing (an arbitrary, JSON serializable object), that allows you to determine whether the result is correct or not. For example, in an app that generates SQL queries, the `output` should be the _result_ of the SQL query generated by the model, not the query itself, because there may be multiple valid queries that answer a single question"
+          },
+          "expected": {
+            "description": "The ground truth value (an arbitrary, JSON serializable object) that you'd compare to `output` to determine if your `output` value is correct or not. Braintrust currently does not compare `output` to `expected` for you, since there are so many different ways to do that correctly. Instead, these values are just used to help you navigate your experiments while digging into analyses. However, we may later use these values to re-score outputs or fine-tune your models"
+          },
+          "error": {
+            "description": "The error that occurred, if any."
+          },
+          "scores": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "description": "A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety of signals that help you determine how accurate the outputs are compared to what you expect and diagnose failures. For example, a summarization app might have one score that tells you how accurate the summary is, and another that measures the word similarity between the generated and grouth truth summary. The word similarity score could help you determine whether the summarization was covering similar concepts or not. You can use these scores to help you sort, filter, and compare experiments"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "model": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The model used for this example"
+              }
+            },
+            "additionalProperties": {},
+            "description": "A dictionary with additional data about the test example, model outputs, or just about anything else that's relevant, that you can use to help find and analyze examples later. For example, you could log the `prompt`, example's `id`, or anything else that would be useful to slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys must be strings"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags to log"
+          },
+          "metrics": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "start": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "A unix timestamp recording when the section of code which produced the experiment event started"
+              },
+              "end": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "A unix timestamp recording when the section of code which produced the experiment event finished"
+              },
+              "prompt_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The number of tokens in the prompt used to generate the experiment event (only set if this is an LLM span)"
+              },
+              "completion_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The number of tokens in the completion generated by the model (only set if this is an LLM span)"
+              },
+              "tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The total number of tokens in the input and output of the experiment event."
+              },
+              "caller_functionname": {
+                "description": "This metric is deprecated"
+              },
+              "caller_filename": {
+                "description": "This metric is deprecated"
+              },
+              "caller_lineno": {
+                "description": "This metric is deprecated"
+              }
+            },
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Metrics are numerical measurements tracking the execution of the code that produced the experiment event. Use \"start\" and \"end\" to track the time span over which the experiment event was produced"
+          },
+          "context": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "caller_functionname": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The function in code which created the experiment event"
+              },
+              "caller_filename": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Name of the file in code where the experiment event was created"
+              },
+              "caller_lineno": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Line of code where the experiment event was created"
+              }
+            },
+            "additionalProperties": {},
+            "description": "Context is additional information about the code that produced the experiment event. It is essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the location in code which produced the experiment event"
+          },
+          "span_id": {
+            "type": "string",
+            "description": "A unique identifier used to link different experiment events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+          },
+          "span_parents": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "An array of the parent `span_ids` of this experiment event. This should be empty for the root span of a trace, and should most often contain just one parent element for subspans"
+          },
+          "root_span_id": {
+            "type": "string",
+            "description": "A unique identifier for the trace this experiment event belongs to"
+          },
+          "span_attributes": {
+            "$ref": "#/components/schemas/SpanAttributes"
+          },
+          "is_root": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether this span is a root span"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "created",
+          "project_id",
+          "experiment_id",
+          "span_id",
+          "root_span_id"
+        ]
+      },
+      "ExtendedSavedFunctionId": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "id"
+            ],
+            "title": "function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "global"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "name"
+            ],
+            "title": "global"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "slug"
+                ]
+              },
+              "project_id": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "project_id",
+              "slug"
+            ]
+          }
+        ]
+      },
+      "ExternalAttachmentReference": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "external_attachment"
+            ],
+            "description": "An identifier to help disambiguate parsing."
+          },
+          "filename": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Human-readable filename for user interfaces. Not related to attachment storage."
+          },
+          "content_type": {
+            "type": "string",
+            "minLength": 1,
+            "description": "MIME type of this file."
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Fully qualified URL to the object in the external object store."
+          }
+        },
+        "required": [
+          "type",
+          "filename",
+          "content_type",
+          "url"
+        ]
+      },
+      "Function": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the prompt"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the prompt (see the `version` parameter)"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the prompt belongs under"
+          },
+          "log_id": {
+            "type": "string",
+            "enum": [
+              "p"
+            ],
+            "description": "A literal 'p' which identifies the object as a project prompt"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the prompt"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Unique identifier for the prompt"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the prompt"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of prompt creation"
+          },
+          "prompt_data": {
+            "$ref": "#/components/schemas/PromptDataNullish"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags for the prompt"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "User-controlled metadata about the prompt"
+          },
+          "function_type": {
+            "$ref": "#/components/schemas/FunctionTypeEnumNullish"
+          },
+          "function_data": {
+            "$ref": "#/components/schemas/FunctionData"
+          },
+          "origin": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "object_type": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AclObjectType"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              },
+              "object_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Id of the object the function is originating from"
+              },
+              "internal": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "The function exists for internal purposes and should not be displayed in the list of functions."
+              }
+            },
+            "required": [
+              "object_type",
+              "object_id"
+            ]
+          },
+          "function_schema": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "parameters": {},
+              "returns": {}
+            },
+            "description": "JSON schema for the function's parameters and return type"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "project_id",
+          "log_id",
+          "org_id",
+          "name",
+          "slug",
+          "function_data"
+        ]
+      },
+      "FunctionData": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "prompt"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "prompt"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "code"
+                ]
+              },
+              "data": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "bundle"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "$ref": "#/components/schemas/CodeBundle"
+                      }
+                    ],
+                    "title": "bundle"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "inline"
+                        ]
+                      },
+                      "runtime_context": {
+                        "type": "object",
+                        "properties": {
+                          "runtime": {
+                            "type": "string",
+                            "enum": [
+                              "node",
+                              "python"
+                            ]
+                          },
+                          "version": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "runtime",
+                          "version"
+                        ]
+                      },
+                      "code": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "runtime_context",
+                      "code"
+                    ],
+                    "title": "inline"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "data"
+            ],
+            "title": "code"
+          },
+          {
+            "$ref": "#/components/schemas/GraphData"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "remote_eval"
+                ]
+              },
+              "endpoint": {
+                "type": "string"
+              },
+              "eval_name": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "type",
+              "endpoint",
+              "eval_name",
+              "parameters"
+            ],
+            "description": "A remote eval to run",
+            "title": "remote_eval"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "global"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "name"
+            ],
+            "title": "global"
+          }
+        ]
+      },
+      "FunctionFormat": {
+        "type": "string",
+        "enum": [
+          "llm",
+          "code",
+          "global",
+          "graph"
+        ]
+      },
+      "FunctionId": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "function_id": {
+                "type": "string",
+                "description": "The ID of the function"
+              },
+              "version": {
+                "type": "string",
+                "description": "The version of the function"
+              }
+            },
+            "required": [
+              "function_id"
+            ],
+            "description": "Function id",
+            "title": "function_id"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "project_name": {
+                "type": "string",
+                "description": "The name of the project containing the function"
+              },
+              "slug": {
+                "type": "string",
+                "description": "The slug of the function"
+              },
+              "version": {
+                "type": "string",
+                "description": "The version of the function"
+              }
+            },
+            "required": [
+              "project_name",
+              "slug"
+            ],
+            "description": "Project name and slug",
+            "title": "project_slug"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "global_function": {
+                "type": "string",
+                "description": "The name of the global function. Currently, the global namespace includes the functions in autoevals"
+              }
+            },
+            "required": [
+              "global_function"
+            ],
+            "description": "Global function name",
+            "title": "global_function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "prompt_session_id": {
+                "type": "string",
+                "description": "The ID of the prompt session"
+              },
+              "prompt_session_function_id": {
+                "type": "string",
+                "description": "The ID of the function in the prompt session"
+              },
+              "version": {
+                "type": "string",
+                "description": "The version of the function"
+              }
+            },
+            "required": [
+              "prompt_session_id",
+              "prompt_session_function_id"
+            ],
+            "description": "Prompt session id",
+            "title": "prompt_session_id"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "inline_context": {
+                "type": "object",
+                "properties": {
+                  "runtime": {
+                    "type": "string",
+                    "enum": [
+                      "node",
+                      "python"
+                    ]
+                  },
+                  "version": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "runtime",
+                  "version"
+                ]
+              },
+              "code": {
+                "type": "string",
+                "description": "The inline code to execute"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The name of the inline code function"
+              }
+            },
+            "required": [
+              "inline_context",
+              "code"
+            ],
+            "description": "Inline code function",
+            "title": "inline_code"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "inline_prompt": {
+                "$ref": "#/components/schemas/PromptData"
+              },
+              "inline_function": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The name of the inline function"
+              }
+            },
+            "required": [
+              "inline_function"
+            ],
+            "description": "Inline function definition",
+            "title": "inline_function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "inline_prompt": {
+                "$ref": "#/components/schemas/PromptData"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
+              },
+              "name": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The name of the inline prompt"
+              }
+            },
+            "required": [
+              "inline_prompt"
+            ],
+            "description": "Inline prompt definition",
+            "title": "inline_prompt"
+          }
+        ],
+        "description": "Options for identifying a function"
+      },
+      "FunctionIdRef": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": {},
+        "description": "Options for identifying a function"
+      },
+      "FunctionObjectType": {
+        "type": "string",
+        "enum": [
+          "prompt",
+          "tool",
+          "scorer",
+          "task",
+          "agent"
+        ]
+      },
+      "FunctionOutputType": {
+        "type": "string",
+        "enum": [
+          "completion",
+          "score",
+          "any"
+        ]
+      },
+      "FunctionTypeEnum": {
+        "type": "string",
+        "enum": [
+          "llm",
+          "scorer",
+          "task",
+          "tool"
+        ]
+      },
+      "FunctionTypeEnumNullish": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "llm",
+          "scorer",
+          "task",
+          "tool"
+        ]
+      },
+      "GitMetadataSettings": {
+        "type": "object",
+        "properties": {
+          "collect": {
+            "type": "string",
+            "enum": [
+              "all",
+              "none",
+              "some"
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "commit",
+                "branch",
+                "tag",
+                "dirty",
+                "author_name",
+                "author_email",
+                "commit_message",
+                "commit_time",
+                "git_diff"
+              ]
+            }
+          }
+        },
+        "required": [
+          "collect"
+        ],
+        "additionalProperties": false
+      },
+      "GraphData": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "graph"
+            ]
+          },
+          "nodes": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GraphNode"
+            }
+          },
+          "edges": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/GraphEdge"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "nodes",
+          "edges"
+        ],
+        "description": "This feature is preliminary and unsupported.",
+        "title": "graph"
+      },
+      "GraphEdge": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "object",
+            "properties": {
+              "node": {
+                "type": "string",
+                "maxLength": 1024,
+                "description": "The id of the node in the graph"
+              },
+              "variable": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "node",
+              "variable"
+            ]
+          },
+          "target": {
+            "type": "object",
+            "properties": {
+              "node": {
+                "type": "string",
+                "maxLength": 1024,
+                "description": "The id of the node in the graph"
+              },
+              "variable": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "node",
+              "variable"
+            ]
+          },
+          "purpose": {
+            "type": "string",
+            "enum": [
+              "control",
+              "data",
+              "messages"
+            ],
+            "description": "The purpose of the edge"
+          }
+        },
+        "required": [
+          "source",
+          "target",
+          "purpose"
+        ]
+      },
+      "GraphNode": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "function": {
+                "$ref": "#/components/schemas/FunctionIdRef"
+              }
+            },
+            "required": [
+              "type",
+              "function"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "input"
+                ],
+                "description": "The input to the graph"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "output"
+                ],
+                "description": "The output of the graph"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "literal"
+                ]
+              },
+              "value": {
+                "description": "A literal value to be returned"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "btql"
+                ]
+              },
+              "expr": {
+                "type": "string",
+                "description": "A BTQL expression to be evaluated"
+              }
+            },
+            "required": [
+              "type",
+              "expr"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "gate"
+                ]
+              },
+              "condition": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "A BTQL expression to be evaluated"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "aggregator"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The description of the node"
+              },
+              "position": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "description": "The x position of the node"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "The y position of the node"
+                  }
+                },
+                "required": [
+                  "x",
+                  "y"
+                ],
+                "description": "The position of the node"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "prompt_template"
+                ]
+              },
+              "prompt": {
+                "$ref": "#/components/schemas/PromptBlockData"
+              }
+            },
+            "required": [
+              "type",
+              "prompt"
+            ]
+          }
+        ]
+      },
+      "Group": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the group"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique id for the organization that the group belongs under\n\nIt is forbidden to change the org after creating a group"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the group"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of group creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the group"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the group"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of group deletion, or null if the group is still active"
+          },
+          "member_users": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of users which belong to this group"
+          },
+          "member_groups": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of the groups this group inherits from\n\nAn inheriting group has all the users contained in its member groups, as well as all of their inherited users"
+          }
+        },
+        "required": [
+          "id",
+          "org_id",
+          "name"
+        ],
+        "description": "A group is a collection of users which can be assigned an ACL\n\nGroups can consist of individual users, as well as a set of groups they inherit from"
+      },
+      "IfExists": {
+        "type": "string",
+        "enum": [
+          "error",
+          "ignore",
+          "replace"
+        ]
+      },
+      "InvokeFunction": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FunctionId"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "input": {
+                "description": "Argument to the function, which can be any JSON serializable value"
+              },
+              "expected": {
+                "description": "The expected output of the function"
+              },
+              "metadata": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {},
+                "description": "Any relevant metadata. This will be logged and available as the `metadata` argument."
+              },
+              "tags": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                },
+                "description": "Any relevant tags to log on the span."
+              },
+              "messages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageParam"
+                },
+                "description": "If the function is an LLM, additional messages to pass along to it"
+              },
+              "parent": {
+                "$ref": "#/components/schemas/InvokeParent"
+              },
+              "stream": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "Whether to stream the response. If true, results will be returned in the Braintrust SSE format."
+              },
+              "mode": {
+                "$ref": "#/components/schemas/StreamingMode"
+              },
+              "strict": {
+                "type": [
+                  "boolean",
+                  "null"
+                ],
+                "description": "If true, throw an error if one of the variables in the prompt is not present in the input"
+              }
+            }
+          }
+        ],
+        "description": "Options for identifying a function"
+      },
+      "InvokeParent": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "object_type": {
+                "type": "string",
+                "enum": [
+                  "project_logs",
+                  "experiment",
+                  "playground_logs"
+                ]
+              },
+              "object_id": {
+                "type": "string",
+                "description": "The id of the container object you are logging to"
+              },
+              "row_ids": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "The id of the row"
+                  },
+                  "span_id": {
+                    "type": "string",
+                    "description": "The span_id of the row"
+                  },
+                  "root_span_id": {
+                    "type": "string",
+                    "description": "The root_span_id of the row"
+                  }
+                },
+                "required": [
+                  "id",
+                  "span_id",
+                  "root_span_id"
+                ],
+                "description": "Identifiers for the row to to log a subspan under"
+              },
+              "propagated_event": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {},
+                "description": "Include these properties in every span created under this parent"
+              }
+            },
+            "required": [
+              "object_type",
+              "object_id"
+            ],
+            "description": "Span parent properties",
+            "title": "span_parent_struct"
+          },
+          {
+            "type": "string",
+            "description": "The parent's span identifier, created by calling `.export()` on a span"
+          }
+        ],
+        "description": "Options for tracing the function call"
+      },
+      "MessageRole": {
+        "type": "string",
+        "enum": [
+          "system",
+          "user",
+          "assistant",
+          "function",
+          "tool",
+          "model",
+          "developer"
+        ]
+      },
+      "ModelParams": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "use_cache": {
+                "type": "boolean"
+              },
+              "temperature": {
+                "type": "number"
+              },
+              "top_p": {
+                "type": "number"
+              },
+              "max_tokens": {
+                "type": "number"
+              },
+              "max_completion_tokens": {
+                "type": "number",
+                "description": "The successor to max_tokens"
+              },
+              "frequency_penalty": {
+                "type": "number"
+              },
+              "presence_penalty": {
+                "type": "number"
+              },
+              "response_format": {
+                "$ref": "#/components/schemas/ResponseFormatNullish"
+              },
+              "tool_choice": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "auto"
+                    ],
+                    "title": "auto"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "none"
+                    ],
+                    "title": "none"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "required"
+                    ],
+                    "title": "required"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": [
+                          "function"
+                        ]
+                      },
+                      "function": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "function"
+                    ],
+                    "title": "function"
+                  }
+                ]
+              },
+              "function_call": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "auto"
+                    ],
+                    "title": "auto"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "none"
+                    ],
+                    "title": "none"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name"
+                    ],
+                    "title": "function"
+                  }
+                ]
+              },
+              "n": {
+                "type": "number"
+              },
+              "stop": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "reasoning_effort": {
+                "type": "string",
+                "enum": [
+                  "minimal",
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "verbosity": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              }
+            },
+            "additionalProperties": {},
+            "title": "OpenAIModelParams"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "use_cache": {
+                "type": "boolean"
+              },
+              "max_tokens": {
+                "type": "number"
+              },
+              "temperature": {
+                "type": "number"
+              },
+              "top_p": {
+                "type": "number"
+              },
+              "top_k": {
+                "type": "number"
+              },
+              "stop_sequences": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "max_tokens_to_sample": {
+                "type": "number",
+                "description": "This is a legacy parameter that should not be used."
+              }
+            },
+            "required": [
+              "max_tokens",
+              "temperature"
+            ],
+            "additionalProperties": {},
+            "title": "AnthropicModelParams"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "use_cache": {
+                "type": "boolean"
+              },
+              "temperature": {
+                "type": "number"
+              },
+              "maxOutputTokens": {
+                "type": "number"
+              },
+              "topP": {
+                "type": "number"
+              },
+              "topK": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": {},
+            "title": "GoogleModelParams"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "use_cache": {
+                "type": "boolean"
+              },
+              "temperature": {
+                "type": "number"
+              },
+              "topK": {
+                "type": "number"
+              }
+            },
+            "additionalProperties": {},
+            "title": "WindowAIModelParams"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "use_cache": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": {},
+            "title": "JsCompletionParams"
+          }
+        ]
+      },
+      "ObjectReference": {
+        "type": "object",
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "enum": [
+              "project_logs",
+              "experiment",
+              "dataset",
+              "prompt",
+              "function",
+              "prompt_session"
+            ],
+            "description": "Type of the object the event is originating from."
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the object the event is originating from."
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the original event."
+          },
+          "_xact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Transaction ID of the original event."
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Created timestamp of the original event. Used to help sort in the UI"
+          }
+        },
+        "required": [
+          "object_type",
+          "object_id",
+          "id"
+        ],
+        "description": "Reference to the original object and event this was copied from."
+      },
+      "ObjectReferenceNullish": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "enum": [
+              "project_logs",
+              "experiment",
+              "dataset",
+              "prompt",
+              "function",
+              "prompt_session"
+            ],
+            "description": "Type of the object the event is originating from."
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the object the event is originating from."
+          },
+          "id": {
+            "type": "string",
+            "description": "ID of the original event."
+          },
+          "_xact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Transaction ID of the original event."
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Created timestamp of the original event. Used to help sort in the UI"
+          }
+        },
+        "required": [
+          "object_type",
+          "object_id",
+          "id"
+        ],
+        "description": "Indicates the event was copied from another object."
+      },
+      "OnlineScoreConfig": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "sampling_rate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "The sampling rate for online scoring"
+          },
+          "scorers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SavedFunctionId"
+            },
+            "description": "The list of scorers to use for online scoring"
+          },
+          "btql_filter": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Filter logs using BTQL"
+          },
+          "apply_to_root_span": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether to trigger online scoring on the root span of each trace"
+          },
+          "apply_to_span_names": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "Trigger online scoring on any spans with a name in this list"
+          },
+          "skip_logging": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether to skip adding scorer spans when computing scores"
+          }
+        },
+        "required": [
+          "sampling_rate",
+          "scorers"
+        ]
+      },
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the organization"
+          },
+          "api_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "is_universal_api": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "proxy_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "realtime_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of organization creation"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "Permission": {
+        "type": "string",
+        "enum": [
+          "create",
+          "read",
+          "update",
+          "delete",
+          "create_acls",
+          "read_acls",
+          "update_acls",
+          "delete_acls"
+        ],
+        "description": "Each permission permits a certain type of operation on an object in the system\n\nPermissions can be assigned to to objects on an individual basis, or grouped into roles"
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique id for the organization that the project belongs under"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the project"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of project creation"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of project deletion, or null if the project is still active"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the project"
+          },
+          "settings": {
+            "$ref": "#/components/schemas/ProjectSettings"
+          }
+        },
+        "required": [
+          "id",
+          "org_id",
+          "name"
+        ]
+      },
+      "ProjectAutomation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project automation"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the project automation belongs under"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the project automation"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of project automation creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the project automation"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the project automation"
+          },
+          "config": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "logs"
+                    ],
+                    "description": "The type of automation."
+                  },
+                  "btql_filter": {
+                    "type": "string",
+                    "description": "BTQL filter to identify rows for the automation rule"
+                  },
+                  "interval_seconds": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2592000,
+                    "description": "Perform the triggered action at most once in this interval of seconds"
+                  },
+                  "action": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "webhook"
+                            ],
+                            "description": "The type of action to take"
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "The webhook URL to send the request to"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "url"
+                        ]
+                      }
+                    ],
+                    "description": "The action to take when the automation rule is triggered"
+                  }
+                },
+                "required": [
+                  "event_type",
+                  "btql_filter",
+                  "interval_seconds",
+                  "action"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "btql_export"
+                    ],
+                    "description": "The type of automation."
+                  },
+                  "export_definition": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "log_traces"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "log_spans"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "btql_query"
+                            ]
+                          },
+                          "btql_query": {
+                            "type": "string",
+                            "description": "The BTQL query to export"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "btql_query"
+                        ]
+                      }
+                    ],
+                    "description": "The definition of what to export"
+                  },
+                  "export_path": {
+                    "type": "string",
+                    "description": "The path to export the results to. It should include the storage protocol and prefix, e.g. s3://bucket-name/path/to/export"
+                  },
+                  "format": {
+                    "type": "string",
+                    "enum": [
+                      "jsonl",
+                      "parquet"
+                    ],
+                    "description": "The format to export the results in"
+                  },
+                  "interval_seconds": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 2592000,
+                    "description": "Perform the triggered action at most once in this interval of seconds"
+                  },
+                  "credentials": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "aws_iam"
+                            ]
+                          },
+                          "role_arn": {
+                            "type": "string",
+                            "description": "The ARN of the IAM role to use"
+                          },
+                          "external_id": {
+                            "type": "string",
+                            "description": "The automation-specific external id component (auto-generated by default)"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "role_arn",
+                          "external_id"
+                        ]
+                      }
+                    ]
+                  },
+                  "batch_size": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "The number of rows to export in each batch"
+                  }
+                },
+                "required": [
+                  "event_type",
+                  "export_definition",
+                  "export_path",
+                  "format",
+                  "interval_seconds",
+                  "credentials"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "retention"
+                    ],
+                    "description": "The type of automation."
+                  },
+                  "object_type": {
+                    "$ref": "#/components/schemas/RetentionObjectType"
+                  },
+                  "retention_days": {
+                    "type": "number",
+                    "minimum": 0,
+                    "description": "The number of days to retain the object"
+                  }
+                },
+                "required": [
+                  "event_type",
+                  "object_type",
+                  "retention_days"
+                ]
+              }
+            ],
+            "description": "The configuration for the automation rule"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "config"
+        ]
+      },
+      "ProjectLogsEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the project logs event. If you don't provide one, Braintrust will generate one for you"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the project logs (see the `version` parameter)"
+          },
+          "_pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A stable, time-ordered key that can be used to paginate over project logs events. This field is auto-generated by Braintrust and only exists in Brainstore."
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp the project logs event was created"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique id for the organization that the project belongs under"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project"
+          },
+          "log_id": {
+            "type": "string",
+            "enum": [
+              "g"
+            ],
+            "description": "A literal 'g' which identifies the log as a project log"
+          },
+          "input": {
+            "description": "The arguments that uniquely define a user input (an arbitrary, JSON serializable object)."
+          },
+          "output": {
+            "description": "The output of your application, including post-processing (an arbitrary, JSON serializable object), that allows you to determine whether the result is correct or not. For example, in an app that generates SQL queries, the `output` should be the _result_ of the SQL query generated by the model, not the query itself, because there may be multiple valid queries that answer a single question."
+          },
+          "expected": {
+            "description": "The ground truth value (an arbitrary, JSON serializable object) that you'd compare to `output` to determine if your `output` value is correct or not. Braintrust currently does not compare `output` to `expected` for you, since there are so many different ways to do that correctly. Instead, these values are just used to help you navigate while digging into analyses. However, we may later use these values to re-score outputs or fine-tune your models."
+          },
+          "error": {
+            "description": "The error that occurred, if any."
+          },
+          "scores": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1
+            },
+            "description": "A dictionary of numeric values (between 0 and 1) to log. The scores should give you a variety of signals that help you determine how accurate the outputs are compared to what you expect and diagnose failures. For example, a summarization app might have one score that tells you how accurate the summary is, and another that measures the word similarity between the generated and grouth truth summary. The word similarity score could help you determine whether the summarization was covering similar concepts or not. You can use these scores to help you sort, filter, and compare logs."
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "model": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The model used for this example"
+              }
+            },
+            "additionalProperties": {},
+            "description": "A dictionary with additional data about the test example, model outputs, or just about anything else that's relevant, that you can use to help find and analyze examples later. For example, you could log the `prompt`, example's `id`, or anything else that would be useful to slice/dice later. The values in `metadata` can be any JSON-serializable type, but its keys must be strings"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags to log"
+          },
+          "metrics": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "start": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "A unix timestamp recording when the section of code which produced the project logs event started"
+              },
+              "end": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "description": "A unix timestamp recording when the section of code which produced the project logs event finished"
+              },
+              "prompt_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The number of tokens in the prompt used to generate the project logs event (only set if this is an LLM span)"
+              },
+              "completion_tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The number of tokens in the completion generated by the model (only set if this is an LLM span)"
+              },
+              "tokens": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "The total number of tokens in the input and output of the project logs event."
+              },
+              "caller_functionname": {
+                "description": "This metric is deprecated"
+              },
+              "caller_filename": {
+                "description": "This metric is deprecated"
+              },
+              "caller_lineno": {
+                "description": "This metric is deprecated"
+              }
+            },
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Metrics are numerical measurements tracking the execution of the code that produced the project logs event. Use \"start\" and \"end\" to track the time span over which the project logs event was produced"
+          },
+          "context": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "caller_functionname": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "The function in code which created the project logs event"
+              },
+              "caller_filename": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Name of the file in code where the project logs event was created"
+              },
+              "caller_lineno": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "description": "Line of code where the project logs event was created"
+              }
+            },
+            "additionalProperties": {},
+            "description": "Context is additional information about the code that produced the project logs event. It is essentially the textual counterpart to `metrics`. Use the `caller_*` attributes to track the location in code which produced the project logs event"
+          },
+          "span_id": {
+            "type": "string",
+            "description": "A unique identifier used to link different project logs events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+          },
+          "span_parents": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "An array of the parent `span_ids` of this project logs event. This should be empty for the root span of a trace, and should most often contain just one parent element for subspans"
+          },
+          "root_span_id": {
+            "type": "string",
+            "description": "A unique identifier for the trace this project logs event belongs to"
+          },
+          "is_root": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether this span is a root span"
+          },
+          "span_attributes": {
+            "$ref": "#/components/schemas/SpanAttributes"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/ObjectReferenceNullish"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "created",
+          "org_id",
+          "project_id",
+          "log_id",
+          "span_id",
+          "root_span_id"
+        ]
+      },
+      "ProjectScore": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project score"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the project score belongs under"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of project score creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the project score"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the project score"
+          },
+          "score_type": {
+            "$ref": "#/components/schemas/ProjectScoreType"
+          },
+          "categories": {
+            "$ref": "#/components/schemas/ProjectScoreCategories"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ProjectScoreConfig"
+          },
+          "position": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "An optional LexoRank-based string that sets the sort position for the score in the UI"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "user_id",
+          "name",
+          "score_type"
+        ],
+        "description": "A project score is a user-configured score, which can be manually-labeled through the UI"
+      },
+      "ProjectScoreCategories": {
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProjectScoreCategory"
+            },
+            "description": "For categorical-type project scores, the list of all categories",
+            "title": "categorical"
+          },
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "For weighted-type project scores, the weights of each score",
+            "title": "weighted"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "For minimum-type project scores, the list of included scores",
+            "title": "minimum"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "ProjectScoreCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the category"
+          },
+          "value": {
+            "type": "number",
+            "description": "Numerical value of the category. Must be between 0 and 1, inclusive"
+          }
+        },
+        "required": [
+          "name",
+          "value"
+        ],
+        "description": "For categorical-type project scores, defines a single category"
+      },
+      "ProjectScoreConfig": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "multi_select": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "destination": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "online": {
+            "$ref": "#/components/schemas/OnlineScoreConfig"
+          }
+        }
+      },
+      "ProjectScoreType": {
+        "type": "string",
+        "enum": [
+          "slider",
+          "categorical",
+          "weighted",
+          "minimum",
+          "maximum",
+          "online",
+          "free-form"
+        ],
+        "description": "The type of the configured score"
+      },
+      "ProjectSettings": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "comparison_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The key used to join two experiments (defaults to `input`)"
+          },
+          "baseline_experiment_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "The id of the experiment to use as the default baseline for comparisons"
+          },
+          "spanFieldOrder": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "object_type": {
+                  "type": "string"
+                },
+                "column_id": {
+                  "type": "string"
+                },
+                "position": {
+                  "type": "string"
+                },
+                "layout": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "full"
+                      ]
+                    },
+                    {
+                      "type": "string",
+                      "enum": [
+                        "two_column"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              },
+              "required": [
+                "object_type",
+                "column_id",
+                "position"
+              ]
+            },
+            "description": "The order of the fields to display in the trace view"
+          },
+          "remote_eval_sources": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "url",
+                "name"
+              ]
+            },
+            "description": "The remote eval sources to use for the project"
+          }
+        }
+      },
+      "ProjectTag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project tag"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the project tag belongs under"
+          },
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of project tag creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the project tag"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the project tag"
+          },
+          "color": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Color of the tag for the UI"
+          },
+          "position": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "An optional LexoRank-based string that sets the sort position for the tag in the UI"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "user_id",
+          "name"
+        ],
+        "description": "A project tag is a user-configured tag for tracking and filtering your experiments, logs, and other data"
+      },
+      "Prompt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the prompt"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the prompt (see the `version` parameter)"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the prompt belongs under"
+          },
+          "log_id": {
+            "type": "string",
+            "enum": [
+              "p"
+            ],
+            "description": "A literal 'p' which identifies the object as a project prompt"
+          },
+          "org_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the prompt"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Unique identifier for the prompt"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the prompt"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of prompt creation"
+          },
+          "prompt_data": {
+            "$ref": "#/components/schemas/PromptDataNullish"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags for the prompt"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "User-controlled metadata about the prompt"
+          },
+          "function_type": {
+            "$ref": "#/components/schemas/FunctionTypeEnumNullish"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "project_id",
+          "log_id",
+          "org_id",
+          "name",
+          "slug"
+        ]
+      },
+      "PromptBlockData": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "completion"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "content"
+            ],
+            "title": "completion"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "chat"
+                ]
+              },
+              "messages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageParam"
+                }
+              },
+              "tools": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "messages"
+            ],
+            "title": "chat"
+          }
+        ]
+      },
+      "PromptBlockDataNullish": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "completion"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "content"
+            ],
+            "title": "completion"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "chat"
+                ]
+              },
+              "messages": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatCompletionMessageParam"
+                }
+              },
+              "tools": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "messages"
+            ],
+            "title": "chat"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "PromptData": {
+        "type": "object",
+        "properties": {
+          "prompt": {
+            "$ref": "#/components/schemas/PromptBlockDataNullish"
+          },
+          "options": {
+            "$ref": "#/components/schemas/PromptOptionsNullish"
+          },
+          "parser": {
+            "$ref": "#/components/schemas/PromptParserNullish"
+          },
+          "tool_functions": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SavedFunctionId"
+            }
+          },
+          "origin": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "prompt_id": {
+                "type": "string"
+              },
+              "project_id": {
+                "type": "string"
+              },
+              "prompt_version": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "PromptDataNullish": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "prompt": {
+            "$ref": "#/components/schemas/PromptBlockDataNullish"
+          },
+          "options": {
+            "$ref": "#/components/schemas/PromptOptionsNullish"
+          },
+          "parser": {
+            "$ref": "#/components/schemas/PromptParserNullish"
+          },
+          "tool_functions": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/SavedFunctionId"
+            }
+          },
+          "origin": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "prompt_id": {
+                "type": "string"
+              },
+              "project_id": {
+                "type": "string"
+              },
+              "prompt_version": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "description": "The prompt, model, and its parameters"
+      },
+      "PromptOptions": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/components/schemas/ModelParams"
+          },
+          "position": {
+            "type": "string"
+          }
+        }
+      },
+      "PromptOptionsNullish": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "model": {
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/components/schemas/ModelParams"
+          },
+          "position": {
+            "type": "string"
+          }
+        }
+      },
+      "PromptParserNullish": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "llm_classifier"
+            ]
+          },
+          "use_cot": {
+            "type": "boolean"
+          },
+          "choice_scores": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "required": [
+          "type",
+          "use_cot",
+          "choice_scores"
+        ]
+      },
+      "PromptSessionEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the prompt session event. If you don't provide one, Braintrust will generate one for you"
+          },
+          "_xact_id": {
+            "type": "string",
+            "description": "The transaction id of an event is unique to the network operation that processed the event insertion. Transaction ids are monotonically increasing over time and can be used to retrieve a versioned snapshot of the prompt session (see the `version` parameter)"
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp the prompt session event was created"
+          },
+          "_pagination_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A stable, time-ordered key that can be used to paginate over prompt session events. This field is auto-generated by Braintrust and only exists in Brainstore."
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the prompt belongs under"
+          },
+          "prompt_session_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the prompt"
+          },
+          "prompt_session_data": {
+            "description": "Data about the prompt session"
+          },
+          "prompt_data": {
+            "description": "Data about the prompt"
+          },
+          "function_data": {
+            "description": "Data about the function"
+          },
+          "function_type": {
+            "$ref": "#/components/schemas/FunctionTypeEnumNullish"
+          },
+          "object_data": {
+            "description": "Data about the mapped data"
+          },
+          "completion": {
+            "description": "Data about the completion"
+          },
+          "tags": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "A list of tags to log"
+          }
+        },
+        "required": [
+          "id",
+          "_xact_id",
+          "created",
+          "project_id",
+          "prompt_session_id"
+        ]
+      },
+      "RepoInfo": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "commit": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "SHA of most recent commit"
+          },
+          "branch": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the branch the most recent commit belongs to"
+          },
+          "tag": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the tag on the most recent commit"
+          },
+          "dirty": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether or not the repo had uncommitted changes when snapshotted"
+          },
+          "author_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the author of the most recent commit"
+          },
+          "author_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Email of the author of the most recent commit"
+          },
+          "commit_message": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Most recent commit message"
+          },
+          "commit_time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Time of the most recent commit"
+          },
+          "git_diff": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "If the repo was dirty when run, this includes the diff between the current state of the repo and the most recent commit."
+          }
+        },
+        "description": "Metadata about the state of the repo when the experiment was created"
+      },
+      "ResponseFormat": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "json_object"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "json_object"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "json_schema"
+                ]
+              },
+              "json_schema": {
+                "$ref": "#/components/schemas/ResponseFormatJsonSchema"
+              }
+            },
+            "required": [
+              "type",
+              "json_schema"
+            ],
+            "title": "json_schema"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "text"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "text"
+          }
+        ]
+      },
+      "ResponseFormatJsonSchema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "schema": {
+            "anyOf": [
+              {
+                "type": "object",
+                "additionalProperties": {},
+                "title": "object"
+              },
+              {
+                "type": "string",
+                "title": "string"
+              }
+            ]
+          },
+          "strict": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "ResponseFormatNullish": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "json_object"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "json_object"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "json_schema"
+                ]
+              },
+              "json_schema": {
+                "$ref": "#/components/schemas/ResponseFormatJsonSchema"
+              }
+            },
+            "required": [
+              "type",
+              "json_schema"
+            ],
+            "title": "json_schema"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "text"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "text"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "RetentionObjectType": {
+        "type": "string",
+        "enum": [
+          "project_logs",
+          "experiment",
+          "dataset"
+        ],
+        "description": "The object type that the retention policy applies to"
+      },
+      "Role": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the role"
+          },
+          "org_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique id for the organization that the role belongs under\n\nA null org_id indicates a system role, which may be assigned to anybody and inherited by any other role, but cannot be edited.\n\nIt is forbidden to change the org after creating a role"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the role"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of role creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the role"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the role"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of role deletion, or null if the role is still active"
+          },
+          "member_permissions": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "object",
+              "properties": {
+                "permission": {
+                  "$ref": "#/components/schemas/Permission"
+                },
+                "restrict_object_type": {
+                  "$ref": "#/components/schemas/AclObjectType"
+                }
+              },
+              "required": [
+                "permission"
+              ]
+            },
+            "description": "(permission, restrict_object_type) tuples which belong to this role"
+          },
+          "member_roles": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "Ids of the roles this role inherits from\n\nAn inheriting role has all the permissions contained in its member roles, as well as all of their inherited permissions"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "description": "A role is a collection of permissions which can be granted as part of an ACL\n\nRoles can consist of individual permissions, as well as a set of roles they inherit from"
+      },
+      "RunEval": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "string",
+            "description": "Unique identifier for the project to run the eval in"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "dataset_id": {
+                    "type": "string"
+                  },
+                  "_internal_btql": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {}
+                  }
+                },
+                "required": [
+                  "dataset_id"
+                ],
+                "description": "Dataset id",
+                "title": "dataset_id"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "project_name": {
+                    "type": "string"
+                  },
+                  "dataset_name": {
+                    "type": "string"
+                  },
+                  "_internal_btql": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {}
+                  }
+                },
+                "required": [
+                  "project_name",
+                  "dataset_name"
+                ],
+                "description": "Project and dataset name",
+                "title": "project_dataset_name"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "data": {
+                    "type": "array",
+                    "items": {}
+                  }
+                },
+                "required": [
+                  "data"
+                ],
+                "description": "Dataset rows",
+                "title": "dataset_rows"
+              }
+            ],
+            "description": "The dataset to use"
+          },
+          "task": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FunctionId"
+              },
+              {
+                "description": "The function to evaluate"
+              }
+            ]
+          },
+          "scores": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FunctionId"
+            },
+            "description": "The functions to score the eval on"
+          },
+          "experiment_name": {
+            "type": "string",
+            "description": "An optional name for the experiment created by this eval. If it conflicts with an existing experiment, it will be suffixed with a unique identifier."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": {},
+            "description": "Optional experiment-level metadata to store about the evaluation. You can later use this to slice & dice across experiments."
+          },
+          "parent": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InvokeParent"
+              },
+              {
+                "description": "Options for tracing the evaluation"
+              }
+            ]
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "Whether to stream the results of the eval. If true, the request will return two events: one to indicate the experiment has started, and another upon completion. If false, the request will return the evaluation's summary upon completion."
+          },
+          "trial_count": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "The number of times to run the evaluator per input. This is useful for evaluating applications that have non-deterministic behavior and gives you both a stronger aggregate measure and a sense of the variance in the results."
+          },
+          "is_public": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether the experiment should be public. Defaults to false."
+          },
+          "timeout": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "The maximum duration, in milliseconds, to run the evaluation. Defaults to undefined, in which case there is no timeout."
+          },
+          "max_concurrency": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "default": 10,
+            "description": "The maximum number of tasks/scorers that will be run concurrently. Defaults to 10. If null is provided, no max concurrency will be used."
+          },
+          "base_experiment_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "An optional experiment name to use as a base. If specified, the new experiment will be summarized and compared to this experiment."
+          },
+          "base_experiment_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "An optional experiment id to use as a base. If specified, the new experiment will be summarized and compared to this experiment."
+          },
+          "git_metadata_settings": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/GitMetadataSettings"
+              },
+              {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "description": "Optional settings for collecting git metadata. By default, will collect all git metadata fields allowed in org-level settings."
+              }
+            ]
+          },
+          "repo_info": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RepoInfo"
+              },
+              {
+                "description": "Optionally explicitly specify the git metadata for this experiment. This takes precedence over `gitMetadataSettings` if specified."
+              }
+            ]
+          },
+          "strict": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "If true, throw an error if one of the variables in the prompt is not present in the input"
+          },
+          "stop_token": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The token to stop the run"
+          },
+          "extra_messages": {
+            "type": "string",
+            "description": "A template path of extra messages to append to the conversion. These messages will be appended to the end of the conversation, after the last message."
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Optional tags that will be added to the experiment."
+          }
+        },
+        "required": [
+          "project_id",
+          "data",
+          "task",
+          "scores"
+        ]
+      },
+      "SavedFunctionId": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "id"
+            ],
+            "title": "function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "global"
+                ]
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "name"
+            ],
+            "title": "global"
+          }
+        ]
+      },
+      "ServiceToken": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the service token"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of service token creation"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the service token"
+          },
+          "preview_name": {
+            "type": "string"
+          },
+          "service_account_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the service token"
+          },
+          "service_account_email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The service account email (not routable)"
+          },
+          "service_account_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The service account name"
+          },
+          "org_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Unique identifier for the organization"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "preview_name"
+        ]
+      },
+      "SpanAttributes": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Name of the span, for display purposes only"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SpanType"
+          }
+        },
+        "additionalProperties": {},
+        "description": "Human-identifying attributes of the span, such as name, type, etc."
+      },
+      "SpanIFrame": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the span iframe"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the span iframe belongs under"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the span iframe"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of span iframe creation"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of span iframe deletion, or null if the span iframe is still active"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the span iframe"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the span iframe"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL to embed the project viewer in an iframe"
+          },
+          "post_message": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Whether to post messages to the iframe containing the span's data. This is useful when you want to render more data than fits in the URL."
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "url"
+        ]
+      },
+      "SpanType": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "llm",
+          "score",
+          "function",
+          "eval",
+          "task",
+          "tool"
+        ],
+        "description": "Type of the span, for display purposes only"
+      },
+      "SSEConsoleEventData": {
+        "type": "object",
+        "properties": {
+          "stream": {
+            "type": "string",
+            "enum": [
+              "stderr",
+              "stdout"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream",
+          "message"
+        ]
+      },
+      "SSEProgressEventData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The id of the span this event is for"
+          },
+          "object_type": {
+            "$ref": "#/components/schemas/FunctionObjectType"
+          },
+          "origin": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ObjectReferenceNullish"
+              },
+              {
+                "description": "The origin of the event"
+              }
+            ]
+          },
+          "format": {
+            "$ref": "#/components/schemas/FunctionFormat"
+          },
+          "output_type": {
+            "$ref": "#/components/schemas/FunctionOutputType"
+          },
+          "name": {
+            "type": "string"
+          },
+          "event": {
+            "type": "string",
+            "enum": [
+              "reasoning_delta",
+              "text_delta",
+              "json_delta",
+              "error",
+              "console",
+              "start",
+              "done",
+              "progress"
+            ]
+          },
+          "data": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "object_type",
+          "format",
+          "output_type",
+          "name",
+          "event",
+          "data"
+        ]
+      },
+      "StreamingMode": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "auto",
+          "parallel"
+        ],
+        "description": "The mode format of the returned value (defaults to 'auto')"
+      },
+      "ToolFunctionDefinition": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "function"
+            ]
+          },
+          "function": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "parameters": {
+                "type": "object",
+                "additionalProperties": {}
+              },
+              "strict": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "name"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "function"
+        ]
+      },
+      "UploadStatus": {
+        "type": "string",
+        "enum": [
+          "uploading",
+          "done",
+          "error"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the user"
+          },
+          "given_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Given name of the user"
+          },
+          "family_name": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Family name of the user"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The user's email"
+          },
+          "avatar_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL of the user's Avatar image"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of user creation"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
+      "View": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the view"
+          },
+          "object_type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AclObjectType"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "object_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The id of the object the view applies to"
+          },
+          "view_type": {
+            "type": "string",
+            "enum": [
+              "projects",
+              "experiments",
+              "experiment",
+              "playgrounds",
+              "playground",
+              "datasets",
+              "dataset",
+              "prompts",
+              "tools",
+              "scorers",
+              "logs",
+              "agents",
+              "monitor"
+            ],
+            "description": "Type of object that the view corresponds to."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the view"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of view creation"
+          },
+          "view_data": {
+            "$ref": "#/components/schemas/ViewData"
+          },
+          "options": {
+            "$ref": "#/components/schemas/ViewOptions"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the view"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of role deletion, or null if the role is still active"
+          }
+        },
+        "required": [
+          "id",
+          "object_type",
+          "object_id",
+          "view_type",
+          "name"
+        ]
+      },
+      "ViewData": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "search": {
+            "$ref": "#/components/schemas/ViewDataSearch"
+          },
+          "custom_charts": {}
+        },
+        "description": "The view definition"
+      },
+      "ViewDataSearch": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "filter": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {}
+          },
+          "tag": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {}
+          },
+          "match": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {}
+          },
+          "sort": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {}
+          }
+        }
+      },
+      "ViewOptions": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "viewType": {
+                "type": "string",
+                "enum": [
+                  "monitor"
+                ]
+              },
+              "options": {
+                "type": "object",
+                "properties": {
+                  "spanType": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "range",
+                      "frame"
+                    ]
+                  },
+                  "rangeValue": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "frameStart": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "frameEnd": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "tzUTC": {
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "chartVisibility": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "type": "boolean"
+                    }
+                  },
+                  "projectId": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "type": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "project",
+                      "experiment"
+                    ]
+                  },
+                  "groupBy": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "viewType",
+              "options"
+            ],
+            "title": "MonitorViewOptions"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "columnVisibility": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {
+                  "type": "boolean"
+                }
+              },
+              "columnOrder": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "string"
+                }
+              },
+              "columnSizing": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {
+                  "type": "number"
+                }
+              },
+              "grouping": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "rowHeight": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "tallGroupRows": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "layout": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "chartHeight": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "excludedMeasures": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "none",
+                        "score",
+                        "metric",
+                        "metadata"
+                      ]
+                    },
+                    "value": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "value"
+                  ]
+                }
+              },
+              "yMetric": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "score",
+                      "metric",
+                      "metadata"
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "value"
+                ]
+              },
+              "xAxis": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "score",
+                      "metric",
+                      "metadata"
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "value"
+                ]
+              },
+              "symbolGrouping": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "none",
+                      "score",
+                      "metric",
+                      "metadata"
+                    ]
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "value"
+                ]
+              },
+              "xAxisAggregation": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "One of 'avg', 'sum', 'min', 'max', 'median', 'all'"
+              },
+              "chartAnnotations": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "text"
+                  ]
+                }
+              },
+              "timeRangeFilter": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string"
+                      },
+                      "to": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "title": "TableViewOptions"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Options for the view in the app"
+      }
+    },
+    "parameters": {}
+  },
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Braintrust exported typespecs",
+    "description": "Publicly exported typespecs for the Braintrust API.",
+    "license": {
+      "name": "Apache 2.0"
+    },
+    "x-internal-git-sha": "be4abfadd22d7196ff6356c7f3fb655aac3fc933"
+  },
+  "paths": {},
+  "webhooks": {}
+}

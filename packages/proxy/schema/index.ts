@@ -1,11 +1,11 @@
 import { z } from "zod";
 import type {
-  AnyModelParam,
-  Message,
-  MessageRole,
-  ModelParams,
-} from "@braintrust/core/typespecs";
-import { AvailableModels, ModelFormat, ModelEndpointType } from "./models";
+  AnyModelParamsType as AnyModelParam,
+  ChatCompletionMessageParamType as Message,
+  MessageRoleType as MessageRole,
+  ModelParamsType as ModelParams,
+} from "../src/generated_types";
+import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
@@ -24,6 +24,7 @@ export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
 } = {
   system: "system",
+  developer: "system",
   function: undefined,
   tool: "tool",
   user: "user",
@@ -53,6 +54,7 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: "reasoning_effort",
+  verbosity: "verbosity",
   stop: null,
 };
 
@@ -67,7 +69,7 @@ export const sliderSpecs: {
   // min, max, step, required
   [name: string]: [number, number, number, boolean];
 } = {
-  temperature: [0, 1, 0.01, false],
+  temperature: [0, 2, 0.01, false],
   top_p: [0, 1, 0.01, false],
   topP: [0, 1, 0.01, false],
   max_tokens: [1, 32768, 1, false],
@@ -77,6 +79,38 @@ export const sliderSpecs: {
   top_k: [1, 100, 1, false],
   topK: [1, 100, 1, false],
 };
+
+// Format-specific slider specification overrides
+const formatSpecificSliderSpecs: {
+  [format in ModelFormat]?: {
+    [paramName: string]: [number, number, number, boolean];
+  };
+} = {
+  anthropic: {
+    temperature: [0, 1, 0.01, false],
+  },
+  converse: {
+    temperature: [0, 1, 0.01, false],
+  },
+};
+
+/**
+ * Get slider specifications for a parameter, with format-specific overrides
+ * @param format - The model format (openai, anthropic, google, etc.)
+ * @param paramName - The parameter name (temperature, max_tokens, etc.)
+ * @returns Slider spec as [min, max, step, required] or undefined if not found
+ */
+export function getSliderSpecs(
+  format: ModelFormat,
+  paramName: string,
+): [number, number, number, boolean] | undefined {
+  const formatOverrides = formatSpecificSliderSpecs[format];
+  if (formatOverrides && formatOverrides[paramName]) {
+    return formatOverrides[paramName];
+  }
+
+  return sliderSpecs[paramName];
+}
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.
 // Even though some of them are not set, it's useful for the "greyed out" placeholders.
@@ -93,6 +127,7 @@ export const defaultModelParamSettings: {
     stop: undefined,
     use_cache: true,
     reasoning_effort: "medium",
+    verbosity: "medium",
   },
   anthropic: {
     temperature: undefined,
@@ -102,6 +137,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   google: {
     temperature: undefined,
@@ -111,6 +147,7 @@ export const defaultModelParamSettings: {
     use_cache: true,
     reasoning_enabled: false,
     reasoning_budget: undefined,
+    verbosity: undefined,
   },
   js: {},
   window: {
@@ -139,7 +176,7 @@ export const modelProviderHasTools: {
 export const modelProviderHasReasoning: {
   [name in ModelFormat]?: RegExp;
 } = {
-  openai: /^o[1-4]/i,
+  openai: /^(o[1-4])|(gpt-5)/i,
   anthropic: /^claude-3\.7/i,
   google: /gemini-2.0-flash$|gemini-2.5/i,
   js: undefined,
@@ -356,6 +393,20 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "grok-3": ["xAI"],
+  "grok-3-latest": ["xAI"],
+  "grok-3-beta": ["xAI"],
+  "grok-3-fast-beta": ["xAI"],
+  "grok-3-fast-latest": ["xAI"],
+  "grok-3-mini": ["xAI"],
+  "grok-3-mini-latest": ["xAI"],
+  "grok-3-mini-fast": ["xAI"],
+  "grok-3-mini-fast-latest": ["xAI"],
+  "grok-3-mini-beta": ["xAI"],
+  "grok-3-mini-fast-beta": ["xAI"],
+  "grok-code-fast-1": ["xAI"],
+  "grok-code-fast": ["xAI"],
+  "grok-code-fast-1-0825": ["xAI"],
   "publishers/google/models/gemini-2.5-pro": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-05-06": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-03-25": ["vertex"],
@@ -410,18 +461,21 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
-  "openai/gpt-oss-120b": ["together", "groq"],
+  "openai/gpt-oss-120b": ["together", "groq", "baseten"],
   "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
   "accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
   "gpt-oss-120b": ["cerebras"],
+  "Qwen3-Coder-480B-A35B-Instruct": ["baseten"],
+  "moonshotai/Kimi-K2-Instruct": ["baseten"],
+  "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
-    (AvailableModels[model] &&
-      DefaultEndpointTypes[AvailableModels[model].format]) ||
+    (getAvailableModels()[model] &&
+      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
     []
   );
 }
@@ -439,6 +493,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   LEPTON_API_KEY: "lepton",
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
+  BASETEN_API_KEY: "baseten",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -462,6 +517,7 @@ export const EndpointProviderToBaseURL: {
   groq: "https://api.groq.com/openai/v1",
   lepton: "https://<model>.lepton.run/api/v1/", // As far as I can tell, this works for all models
   fireworks: "https://api.fireworks.ai/inference/v1",
+  baseten: "https://inference.baseten.co/v1",
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
   bedrock: null,

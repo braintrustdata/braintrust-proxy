@@ -1,7 +1,4 @@
-import {
-  attachmentReferenceSchema,
-  braintrustAttachmentReferenceSchema,
-} from "@braintrust/core/typespecs";
+import { AttachmentReference as attachmentReferenceSchema } from "../src/generated_types";
 import { z } from "zod";
 
 const cacheControlSchema = z.object({

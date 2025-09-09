@@ -4,7 +4,11 @@ import path from "path";
 import { z } from "zod";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { exec, spawn } from "child_process";
+import { promisify } from "util";
 import { ModelSchema, ModelSpec } from "../schema/models";
+
+const execAsync = promisify(exec);
 
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
@@ -78,6 +82,7 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
   "../schema/model_list.json",
 );
+const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
@@ -170,6 +175,413 @@ function translateToBraintrust(modelName: string, provider?: string): string {
   }
 
   return modelName;
+}
+
+function getProviderMappingForModel(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+): string[] {
+  const provider = remoteModel.litellm_provider;
+
+  // Map LiteLLM provider names to our endpoint types
+  switch (provider) {
+    case "xai":
+      return ["xAI"];
+    case "anthropic":
+      return ["anthropic"];
+    case "openai":
+      return ["openai"];
+    case "google":
+    case "gemini":
+      return ["google"];
+    case "mistral":
+      return ["mistral"];
+    case "together":
+      return ["together"];
+    case "groq":
+      return ["groq"];
+    case "replicate":
+      return ["replicate"];
+    case "fireworks":
+      return ["fireworks"];
+    case "perplexity":
+      return ["perplexity"];
+    case "lepton":
+      return ["lepton"];
+    case "cerebras":
+      return ["cerebras"];
+    case "baseten":
+      return ["baseten"];
+    default:
+      console.warn(
+        `Unknown provider: ${provider} for model ${remoteModelName}`,
+      );
+      return [];
+  }
+}
+
+async function updateProviderMapping(
+  newModels: Array<{
+    name: string;
+    providers: string[];
+    remoteModel: LiteLLMModelDetail;
+  }>,
+): Promise<void> {
+  try {
+    const schemaContent = await fs.promises.readFile(
+      SCHEMA_INDEX_PATH,
+      "utf-8",
+    );
+
+    // Generate new entries for the models
+    const newEntries = newModels.map(
+      ({ name, providers }) => `  "${name}": ${JSON.stringify(providers)},`,
+    );
+
+    // Find the line with "grok-beta": ["xAI"], and insert after it
+    const grokBetaLine = schemaContent.indexOf('"grok-beta": ["xAI"],');
+    if (grokBetaLine !== -1) {
+      const lineEnd = schemaContent.indexOf("\n", grokBetaLine);
+      const beforeInsertion = schemaContent.substring(0, lineEnd + 1);
+      const afterInsertion = schemaContent.substring(lineEnd + 1);
+
+      const updatedSchemaContent =
+        beforeInsertion + newEntries.join("\n") + "\n" + afterInsertion;
+
+      await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedSchemaContent);
+      console.log(
+        `✅ Updated provider mappings for ${newModels.length} models in schema/index.ts`,
+      );
+    } else {
+      console.warn("Could not find grok-beta entry to use as insertion point");
+    }
+  } catch (error) {
+    console.error("Failed to update provider mappings:", error);
+  }
+}
+
+function convertRemoteToLocalModel(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+): ModelSpec {
+  const baseModel: Partial<ModelSpec> = {
+    format: "openai", // Default format for most models
+    flavor: "chat", // Default flavor for most models
+  };
+
+  // Add multimodal support if indicated
+  if (remoteModel.supports_vision) {
+    baseModel.multimodal = true;
+  }
+
+  // Add reasoning support if indicated
+  if (remoteModel.supports_reasoning) {
+    baseModel.reasoning = true;
+  }
+
+  // Convert cost information
+  if (remoteModel.input_cost_per_token) {
+    baseModel.input_cost_per_mil_tokens =
+      remoteModel.input_cost_per_token * 1_000_000;
+  }
+  if (remoteModel.output_cost_per_token) {
+    baseModel.output_cost_per_mil_tokens =
+      remoteModel.output_cost_per_token * 1_000_000;
+  }
+  if (remoteModel.cache_read_input_token_cost) {
+    baseModel.input_cache_read_cost_per_mil_tokens =
+      remoteModel.cache_read_input_token_cost * 1_000_000;
+  }
+  if (remoteModel.cache_creation_input_token_cost) {
+    baseModel.input_cache_write_cost_per_mil_tokens =
+      remoteModel.cache_creation_input_token_cost * 1_000_000;
+  }
+  // Note: output_reasoning_cost_per_mil_tokens may not be in ModelSpec yet,
+  // so we'll skip this for now to avoid type errors
+  // if (remoteModel.output_cost_per_reasoning_token) {
+  //   baseModel.output_reasoning_cost_per_mil_tokens = remoteModel.output_cost_per_reasoning_token * 1_000_000;
+  // }
+
+  // Add token limits
+  if (remoteModel.max_input_tokens) {
+    baseModel.max_input_tokens = remoteModel.max_input_tokens;
+  }
+  if (remoteModel.max_output_tokens) {
+    baseModel.max_output_tokens = remoteModel.max_output_tokens;
+  }
+
+  return baseModel as ModelSpec;
+}
+
+async function getOptimalModelOrderingFromClaude(
+  modelsToAdd: Array<{ name: string; model: ModelSpec }>,
+  existingModels: LocalModelList,
+): Promise<string[]> {
+  const existingModelNames = Object.keys(existingModels);
+  const newModelNames = modelsToAdd.map((m) => m.name);
+
+  // Focus on grok models for validation
+  const grokModels = existingModelNames.filter((name) => name.includes("grok"));
+
+  const prompt = `Order these Grok models optimally:
+
+EXISTING: ${grokModels.join(", ")}
+NEW: ${newModelNames.join(", ")}
+
+Rules: version desc (4→3→2), then base→latest→variants, then larger→smaller sizes.
+
+JSON array only:`;
+
+  try {
+    const output = await callClaudeWithSpawn(prompt);
+
+    // Try to extract JSON from the output
+    const jsonMatch = output.match(/\[[\s\S]*\]/);
+    if (jsonMatch) {
+      try {
+        const parsedOrder = JSON.parse(jsonMatch[0]);
+
+        // Validate that all grok models are included
+        const allGrokModels = [...grokModels, ...newModelNames];
+        if (
+          parsedOrder.length === allGrokModels.length &&
+          parsedOrder.every((name) => allGrokModels.includes(name)) &&
+          allGrokModels.every((name) => parsedOrder.includes(name))
+        ) {
+          console.log("✅ Claude Code provided optimal Grok ordering");
+          // Rebuild complete model list with optimally ordered grok models
+          return rebuildCompleteModelList(existingModelNames, parsedOrder);
+        } else {
+          console.warn(
+            `Claude response validation failed: got ${parsedOrder.length} grok models, expected ${allGrokModels.length}`,
+          );
+        }
+      } catch (parseError) {
+        console.warn(
+          "Failed to parse Claude's JSON response:",
+          parseError.message,
+        );
+      }
+    } else {
+      console.warn("No JSON array found in Claude's response");
+    }
+
+    console.warn(
+      "Could not use Claude's response, falling back to smart ordering",
+    );
+    return getFallbackCompleteOrdering(existingModelNames, newModelNames);
+  } catch (error) {
+    console.warn("Failed to get ordering from Claude:", error.message);
+    return getFallbackCompleteOrdering(existingModelNames, newModelNames);
+  }
+}
+
+function callClaudeWithSpawn(prompt: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const claude = spawn("claude", [], {
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    let stdout = "";
+    let stderr = "";
+    let isResolved = false;
+
+    // Set up timeout
+    const timeout = setTimeout(() => {
+      if (!isResolved) {
+        claude.kill("SIGTERM");
+        isResolved = true;
+        reject(new Error("Claude CLI timeout after 15 seconds"));
+      }
+    }, 15000);
+
+    claude.stdout.on("data", (data) => {
+      stdout += data.toString();
+    });
+
+    claude.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    claude.on("close", (code) => {
+      clearTimeout(timeout);
+      if (!isResolved) {
+        isResolved = true;
+        if (code === 0) {
+          // Try stderr first, then stdout
+          const output = stderr.trim() || stdout.trim();
+          resolve(output);
+        } else {
+          reject(new Error(`Claude CLI exited with code ${code}`));
+        }
+      }
+    });
+
+    claude.on("error", (error) => {
+      clearTimeout(timeout);
+      if (!isResolved) {
+        isResolved = true;
+        reject(error);
+      }
+    });
+
+    // Send the prompt to stdin and close it
+    claude.stdin.write(prompt);
+    claude.stdin.end();
+  });
+}
+
+function rebuildCompleteModelList(
+  existingModelNames: string[],
+  orderedGrokModels: string[],
+): string[] {
+  // Start with existing models, replace grok models with the optimally ordered ones
+  const result: string[] = [];
+  const grokModelSet = new Set(orderedGrokModels);
+  let grokInserted = false;
+
+  for (const modelName of existingModelNames) {
+    if (modelName.includes("grok")) {
+      // Skip individual grok models, we'll insert them all at once
+      if (!grokInserted) {
+        result.push(...orderedGrokModels);
+        grokInserted = true;
+      }
+    } else {
+      result.push(modelName);
+    }
+  }
+
+  // If no grok models were in the original list, add them at the end
+  if (!grokInserted) {
+    result.push(...orderedGrokModels);
+  }
+
+  return result;
+}
+
+function getFallbackCompleteOrdering(
+  existingModelNames: string[],
+  newModelNames: string[],
+): string[] {
+  // Create a complete list by intelligently inserting new models into existing order
+  const allModels = [...existingModelNames];
+
+  // Sort new models by their logical order first
+  const sortedNewModels = newModelNames.sort((a, b) => {
+    // Extract version numbers and variants for grok models
+    const aMatch = a.match(/grok-(\d+)(?:-(.+))?/);
+    const bMatch = b.match(/grok-(\d+)(?:-(.+))?/);
+
+    if (aMatch && bMatch) {
+      const aVersion = parseInt(aMatch[1]);
+      const bVersion = parseInt(bMatch[1]);
+
+      // Sort by version number (higher first)
+      if (aVersion !== bVersion) {
+        return bVersion - aVersion;
+      }
+
+      // Same version, sort by variant
+      const aVariant = aMatch[2] || "";
+      const bVariant = bMatch[2] || "";
+
+      // Base model first, then latest, then others
+      const variantOrder = [
+        "",
+        "latest",
+        "beta",
+        "mini",
+        "mini-latest",
+        "mini-beta",
+        "mini-fast",
+        "mini-fast-latest",
+        "mini-fast-beta",
+        "fast-beta",
+        "fast-latest",
+      ];
+      const aIndex = variantOrder.indexOf(aVariant);
+      const bIndex = variantOrder.indexOf(bVariant);
+
+      if (aIndex !== -1 && bIndex !== -1) {
+        return aIndex - bIndex;
+      }
+
+      return aVariant.localeCompare(bVariant);
+    }
+
+    // Fallback to alphabetical
+    return a.localeCompare(b);
+  });
+
+  // Insert each new model at the appropriate position
+  for (const newModel of sortedNewModels) {
+    const insertionIndex = findInsertionIndex(allModels, newModel);
+    allModels.splice(insertionIndex, 0, newModel);
+  }
+
+  return allModels;
+}
+
+function findInsertionIndex(
+  existingModels: string[],
+  newModel: string,
+): number {
+  // For grok models, find the right position based on version and variant
+  const newMatch = newModel.match(/grok-(\d+)(?:-(.+))?/);
+  if (!newMatch) {
+    // Non-grok model, add at end
+    return existingModels.length;
+  }
+
+  const newVersion = parseInt(newMatch[1]);
+  const newVariant = newMatch[2] || "";
+
+  // Find insertion point by comparing with existing models
+  for (let i = 0; i < existingModels.length; i++) {
+    const existingModel = existingModels[i];
+    const existingMatch = existingModel.match(/grok-(\d+)(?:-(.+))?/);
+
+    if (existingMatch) {
+      const existingVersion = parseInt(existingMatch[1]);
+      const existingVariant = existingMatch[2] || "";
+
+      // Insert before models with lower version numbers
+      if (newVersion > existingVersion) {
+        return i;
+      }
+
+      // Same version - check variant ordering
+      if (newVersion === existingVersion) {
+        const variantOrder = [
+          "",
+          "latest",
+          "beta",
+          "mini",
+          "mini-latest",
+          "mini-beta",
+          "mini-fast",
+          "mini-fast-latest",
+          "mini-fast-beta",
+          "fast-beta",
+          "fast-latest",
+        ];
+        const newVariantIndex = variantOrder.indexOf(newVariant);
+        const existingVariantIndex = variantOrder.indexOf(existingVariant);
+
+        if (newVariantIndex !== -1 && existingVariantIndex !== -1) {
+          if (newVariantIndex < existingVariantIndex) {
+            return i;
+          }
+        } else if (newVariant.localeCompare(existingVariant) < 0) {
+          return i;
+        }
+      }
+    }
+  }
+
+  // If we didn't find a position, add at the end
+  return existingModels.length;
 }
 
 async function findMissingCommand(argv: any) {
@@ -687,6 +1099,209 @@ async function updateModelsCommand(argv: any) {
   }
 }
 
+async function addModelsCommand(argv: any) {
+  try {
+    console.log("Fetching remote models from:", REMOTE_MODEL_URL);
+    const remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
+    console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const localModelNames = new Set(Object.keys(localModels));
+    const missingInLocal: Array<{
+      remoteModelName: string;
+      translatedName: string;
+      remoteModel: LiteLLMModelDetail;
+    }> = [];
+
+    // Find missing models
+    for (const remoteModelName in remoteModels) {
+      const modelDetail = remoteModels[remoteModelName];
+
+      if (argv.provider) {
+        const lowerArgProvider = argv.provider.toLowerCase();
+        const modelProvider = modelDetail.litellm_provider?.toLowerCase();
+        const modelNameProviderPart = remoteModelName
+          .split("/")[0]
+          .toLowerCase();
+
+        if (
+          !modelProvider?.includes(lowerArgProvider) &&
+          !modelNameProviderPart.includes(lowerArgProvider) &&
+          !(modelProvider === lowerArgProvider) &&
+          !(modelNameProviderPart === lowerArgProvider)
+        ) {
+          continue;
+        }
+      }
+
+      const translatedModelName = translateToBraintrust(
+        remoteModelName,
+        modelDetail.litellm_provider,
+      );
+
+      if (!localModelNames.has(translatedModelName)) {
+        missingInLocal.push({
+          remoteModelName,
+          translatedName: translatedModelName,
+          remoteModel: modelDetail,
+        });
+      }
+    }
+
+    if (missingInLocal.length === 0) {
+      console.log("No missing models found to add.");
+
+      // Check if we need to update provider mappings for existing models
+      if (argv.updateProviders) {
+        console.log("Checking for missing provider mappings...");
+        const schemaContent = await fs.promises.readFile(
+          SCHEMA_INDEX_PATH,
+          "utf-8",
+        );
+
+        // Check which grok models are missing from provider mappings
+        const allGrokModels = Object.keys(localModels).filter((name) =>
+          name.includes("grok"),
+        );
+        const missingProviderMappings = [];
+
+        for (const model of allGrokModels) {
+          if (!schemaContent.includes(`"${model}": ["xAI"]`)) {
+            missingProviderMappings.push({
+              name: model,
+              providers: ["xAI"],
+              remoteModel: { litellm_provider: "xai" },
+            });
+          }
+        }
+
+        if (missingProviderMappings.length > 0) {
+          console.log(
+            `Found ${missingProviderMappings.length} models missing provider mappings`,
+          );
+          await updateProviderMapping(missingProviderMappings);
+        } else {
+          console.log("All models have provider mappings");
+        }
+      }
+
+      return;
+    }
+
+    console.log(`\nFound ${missingInLocal.length} missing models:`);
+    missingInLocal.forEach(({ remoteModelName, translatedName }) => {
+      console.log(`  ${remoteModelName} -> ${translatedName}`);
+    });
+
+    // Convert remote models to local format
+    const modelsToAdd = missingInLocal.map(
+      ({ translatedName, remoteModel }) => ({
+        name: translatedName,
+        model: convertRemoteToLocalModel(translatedName, remoteModel),
+      }),
+    );
+
+    const newModelNames = modelsToAdd.map((m) => m.name);
+
+    // Prepare provider mapping data
+    const providerMappingData = missingInLocal.map(
+      ({ translatedName, remoteModel }) => ({
+        name: translatedName,
+        providers: getProviderMappingForModel(translatedName, remoteModel),
+        remoteModel: remoteModel,
+      }),
+    );
+
+    // Get complete optimal ordering
+    console.log("\nDetermining optimal model ordering...");
+    let completeModelOrder;
+
+    if (process.env.USE_CLAUDE === "true") {
+      console.log("Using Claude Code for ordering (USE_CLAUDE=true)");
+      completeModelOrder = await getOptimalModelOrderingFromClaude(
+        modelsToAdd,
+        localModels,
+      );
+    } else {
+      console.log("Using smart fallback ordering");
+      completeModelOrder = getFallbackCompleteOrdering(
+        Object.keys(localModels),
+        newModelNames,
+      );
+    }
+
+    // Rebuild the entire model list in the optimal order
+    const updatedModels: LocalModelList = {};
+
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        // Existing model - keep original
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        // New model - add from modelsToAdd
+        const modelToAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (modelToAdd) {
+          updatedModels[modelName] = modelToAdd.model;
+          console.log(`Added ${modelName}`);
+        }
+      }
+    }
+
+    if (argv.write) {
+      // Reorder keys according to ModelSchema and write
+      const orderedModelsToWrite: LocalModelList = {};
+      const schemaKeys = Object.keys(ModelSchema.shape) as Array<
+        keyof ModelSpec
+      >;
+
+      for (const modelName in updatedModels) {
+        const originalModel = updatedModels[modelName];
+        const orderedModel: Partial<ModelSpec> = {};
+
+        // Add schema keys in their defined order
+        for (const key of schemaKeys) {
+          if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+            (orderedModel as any)[key] = originalModel[key];
+          }
+        }
+
+        // Add any other keys not in ModelSchema
+        for (const key in originalModel) {
+          if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+            if (!schemaKeys.includes(key as keyof ModelSpec)) {
+              (orderedModel as any)[key] = (originalModel as any)[key];
+            }
+          }
+        }
+        orderedModelsToWrite[modelName] = orderedModel as ModelSpec;
+      }
+
+      await fs.promises.writeFile(
+        LOCAL_MODEL_LIST_PATH,
+        JSON.stringify(orderedModelsToWrite, null, 2),
+      );
+      console.log(
+        `\n✅ Successfully added ${missingInLocal.length} models to ${LOCAL_MODEL_LIST_PATH}`,
+      );
+
+      // Update provider mappings in schema/index.ts
+      console.log("\nUpdating provider mappings...");
+      await updateProviderMapping(providerMappingData);
+    } else {
+      console.log(`\n📋 To actually add these models, run with --write flag`);
+      console.log(
+        `   Example: npx tsx packages/proxy/scripts/sync_models.ts add-models -p ${argv.provider || "PROVIDER"} --write`,
+      );
+    }
+  } catch (error) {
+    console.error("Error during add-models command:", error);
+    process.exit(1);
+  }
+}
+
 async function main() {
   await yargs(hideBin(process.argv))
     .command(
@@ -731,9 +1346,36 @@ async function main() {
         await updateModelsCommand(argv);
       },
     )
+    .command(
+      "add-models",
+      "Add missing models from remote to local model list with smart ordering",
+      (y) => {
+        return y
+          .option("provider", {
+            alias: "p",
+            type: "string",
+            description: "Filter models by a specific provider for adding",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write the new models to the local model_list.json file",
+            default: false,
+          })
+          .option("updateProviders", {
+            type: "boolean",
+            description:
+              "Update provider mappings in schema/index.ts for existing models",
+            default: false,
+          });
+      },
+      async (argv) => {
+        await addModelsCommand(argv);
+      },
+    )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing or update-models).",
+      "You need to specify a command (e.g., find-missing, update-models, or add-models).",
     )
     .help()
     .alias("help", "h")

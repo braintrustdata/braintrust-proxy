@@ -1,4 +1,4 @@
-import { Message } from "@braintrust/core/typespecs";
+import { type ChatCompletionMessageParamType as Message } from "../generated_types";
 import {
   Content,
   FinishReason,

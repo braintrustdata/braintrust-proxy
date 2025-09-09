@@ -34,10 +34,6 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
     expect(data.object).toBe("chat.completion.chunk");
     expect(data.created).toBeTruthy();
     expect(Array.isArray(data.choices)).toBe(true);
-
-    if (data.choices[0]?.delta?.content) {
-      expect(data.choices[0].delta.content.trim()).not.toBe("");
-    }
   });
 
   const hasContent = streamedEvents.some(

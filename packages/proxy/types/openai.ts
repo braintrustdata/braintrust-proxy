@@ -1,5 +1,4 @@
-// TODO: move from core
-import { chatCompletionMessageParamSchema } from "@braintrust/core/typespecs";
+import { ChatCompletionMessageParam as chatCompletionMessageParamSchema } from "../src/generated_types";
 
 import { z } from "zod";
 

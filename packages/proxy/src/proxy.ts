@@ -145,6 +145,9 @@ const CACHE_MODES = ["auto", "always", "never"] as const;
 const ANTHROPIC_MESSAGES = "/anthropic/messages";
 const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
 
+const GOOGLE_URL_REGEX =
+  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
+
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
@@ -225,8 +228,36 @@ export async function proxyV1({
   const cacheHits = meter.createCounter("results_cache_hits");
   const cacheMisses = meter.createCounter("results_cache_misses");
   const cacheSkips = meter.createCounter("results_cache_skips");
+  const tokenCounts = meter.createHistogram("token_counts");
+  const promptTokens = meter.createHistogram("prompt_tokens");
+  const completionTokens = meter.createHistogram("completion_tokens");
 
-  totalCalls.add(1);
+  // Extract model name early so we can use it in all metrics
+  let model: string | null = null;
+  if (
+    method === "POST" &&
+    (url === "/auto" ||
+      url === "/chat/completions" ||
+      url === "/completions" ||
+      url === "/responses" ||
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES) &&
+    isObject(bodyData) &&
+    bodyData?.model
+  ) {
+    model = bodyData?.model;
+  } else if (method === "POST") {
+    const m = url.match(GOOGLE_URL_REGEX);
+    if (m) {
+      model = m[1];
+      model = model.replace(/^models\//, "");
+    }
+  }
+
+  // Create attributes object that includes model for all metrics
+  const baseAttributes = { model };
+
+  totalCalls.add(1, baseAttributes);
 
   proxyHeaders = Object.fromEntries(
     Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
@@ -420,7 +451,7 @@ export async function proxyV1({
         : DEFAULT_CACHE_TTL;
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
-        cacheHits.add(1);
+        cacheHits.add(1, baseAttributes);
         for (const [name, value] of Object.entries(cachedData.headers)) {
           setHeader(name, value);
         }
@@ -471,13 +502,13 @@ export async function proxyV1({
           },
         });
       } else {
-        cacheMisses.add(1);
+        cacheMisses.add(1, baseAttributes);
       }
     } else {
-      cacheMisses.add(1);
+      cacheMisses.add(1, baseAttributes);
     }
   } else {
-    cacheSkips.add(1);
+    cacheSkips.add(1, baseAttributes);
   }
 
   let responseFailed = false;
@@ -564,6 +595,7 @@ export async function proxyV1({
       digest,
       cacheGet,
       cachePut,
+      model,
     );
     stream = proxyStream;
 
@@ -679,7 +711,6 @@ export async function proxyV1({
                 );
                 if (extendedUsage.success) {
                   spanLogger.log({
-                    // TODO: we should include the proxy meters metrics here
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
@@ -694,6 +725,20 @@ export async function proxyV1({
                           ?.reasoning_tokens,
                     },
                   });
+
+                  // Record token metrics
+                  tokenCounts.record(
+                    extendedUsage.data.total_tokens,
+                    baseAttributes,
+                  );
+                  promptTokens.record(
+                    extendedUsage.data.prompt_tokens,
+                    baseAttributes,
+                  );
+                  completionTokens.record(
+                    extendedUsage.data.completion_tokens,
+                    baseAttributes,
+                  );
                 }
 
                 const choice = result.choices?.[0];
@@ -829,6 +874,20 @@ export async function proxyV1({
                         ?.reasoning_tokens,
                   },
                 });
+
+                // Record token metrics
+                tokenCounts.record(
+                  extendedUsage.data.total_tokens,
+                  baseAttributes,
+                );
+                promptTokens.record(
+                  extendedUsage.data.prompt_tokens,
+                  baseAttributes,
+                );
+                completionTokens.record(
+                  extendedUsage.data.completion_tokens,
+                  baseAttributes,
+                );
               }
               break;
             }
@@ -939,9 +998,6 @@ const RATE_LIMITING_ERROR_CODES = [
   OVERLOADED_ERROR_CODE,
 ];
 
-const GOOGLE_URL_REGEX =
-  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
-
 let loopIndex = 0;
 async function fetchModelLoop(
   meter: Meter,
@@ -961,6 +1017,7 @@ async function fetchModelLoop(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  model: string | null,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   const endpointCalls = meter.createCounter("endpoint_calls");
   const endpointFailures = meter.createCounter("endpoint_failures");
@@ -975,28 +1032,7 @@ async function fetchModelLoop(
   const llmTtft = meter.createHistogram("llm_ttft");
   const llmLatency = meter.createHistogram("llm_latency");
 
-  let model: string | null = null;
-
-  if (
-    method === "POST" &&
-    (url === "/auto" ||
-      url === "/chat/completions" ||
-      url === "/completions" ||
-      url === "/responses" ||
-      url === ANTHROPIC_MESSAGES ||
-      url === ANTHROPIC_V1_MESSAGES) &&
-    isObject(bodyData) &&
-    bodyData?.model
-  ) {
-    model = bodyData?.model;
-  } else if (method === "POST") {
-    const m = url.match(GOOGLE_URL_REGEX);
-    if (m) {
-      model = m[1];
-      // Hack since Gemini models are not registered with the models/ prefix.
-      model = model.replace(/^models\//, "");
-    }
-  }
+  // model is now passed as a parameter
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);

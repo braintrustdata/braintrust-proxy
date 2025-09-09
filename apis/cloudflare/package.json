@@ -18,14 +18,13 @@
     "wrangler": "^4.28.1"
   },
   "dependencies": {
-    "@braintrust/core": "^0.0.85",
+    "braintrust": "^0.3.7",
     "@braintrust/proxy": "workspace:*",
     "@openai/realtime-api-beta": "github:openai/openai-realtime-api-beta#cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f",
     "@opentelemetry/api": "1.9.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.204.0",
     "@opentelemetry/resources": "^2.0.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
-    "braintrust": "^0.0.197",
     "dotenv": "^16.3.1",
     "zod": "3.25.34"
   }

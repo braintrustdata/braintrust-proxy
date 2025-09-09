@@ -9,7 +9,7 @@ import { SpanLogger, initMetrics, flushMetrics } from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
-import { BT_PARENT, resolveParentHeader } from "@braintrust/core";
+import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 import { Meter, Attributes } from "@opentelemetry/api";

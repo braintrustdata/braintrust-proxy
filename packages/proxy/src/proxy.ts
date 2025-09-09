@@ -2138,6 +2138,7 @@ async function fetchAnthropicMessages({
       return fetchBedrockAnthropicMessages({
         secret,
         body,
+        signal,
       });
     case "vertex":
       return fetchVertexAnthropicMessages({
@@ -2360,6 +2361,7 @@ async function fetchAnthropicChatCompletions({
       },
       isFunction,
       isStructuredOutput,
+      signal,
     });
   } else if (secret.type === "vertex") {
     const { baseUrl, accessToken } = await vertexEndpointInfo({

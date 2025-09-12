@@ -2994,7 +2994,7 @@
     "displayName": "US Claude 4.1 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-20250514-v1:0",
+    "parent": "anthropic.claude-opus-4-1-20250805-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000
   },

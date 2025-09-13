@@ -2,10 +2,8 @@ declare global {
   interface Env {
     ai_proxy: KVNamespace;
     BRAINTRUST_APP_URL: string;
-    DISABLE_METRICS?: boolean;
-    PROMETHEUS_SCRAPE_USER?: string;
-    PROMETHEUS_SCRAPE_PASSWORD?: string;
     WHITELISTED_ORIGINS?: string;
+    METRICS_LICENSE_KEY?: string;
   }
 }
 

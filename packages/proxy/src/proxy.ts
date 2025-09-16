@@ -1788,7 +1788,12 @@ async function fetchOpenAI(
     delete bodyData["stream_options"];
   }
 
-  if (secret.type === "mistral" || secret.type === "databricks") {
+  if (
+    secret.type === "mistral" ||
+    secret.type === "databricks" ||
+    secret.type === "azure"
+  ) {
+    // Azure doesn't support parallel_tool_calls: https://github.com/Azure/azure-rest-api-specs/issues/29545
     delete bodyData["parallel_tool_calls"];
   }
 

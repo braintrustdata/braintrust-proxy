@@ -54,6 +54,8 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: "reasoning_effort",
+  reasoning_enabled: "reasoning_enabled",
+  reasoning_budget: "reasoning_budget",
   verbosity: "verbosity",
   stop: null,
 };

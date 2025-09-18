@@ -29,7 +29,7 @@ export const toolDefinitionTypeSchema = z.object({
   type: z.literal("function").optional(),
   name: z.string(),
   description: z.string(),
-  parameters: z.record(z.unknown()),
+  parameters: z.record(z.string(), z.unknown()),
 });
 
 export const sessionResourceTypeSchema = z.object({

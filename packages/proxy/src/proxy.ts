@@ -6,7 +6,7 @@ import {
   ResponseFormat as responseFormatSchema,
   ObjectReferenceType,
 } from "./generated_types";
-import { Meter, MeterProvider } from "@opentelemetry/api";
+import { Attributes } from "@opentelemetry/api";
 import {
   APISecret,
   AzureEntraSecretSchema,
@@ -63,11 +63,12 @@ import {
   verifyTempCredentials,
 } from "utils";
 import { z } from "zod";
-import { NOOP_METER_PROVIDER, nowMs } from "./metrics";
+import { nowMs } from "./metrics";
 import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
+  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -107,6 +108,18 @@ import {
   _urljoin,
 } from "./util";
 
+export type LogCounterFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
+
+export type LogHistogramFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
+
 type CachedMetadata = {
   cached_at: Date;
   ttl: number;
@@ -143,6 +156,9 @@ const CACHE_MODES = ["auto", "always", "never"] as const;
 // The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
 const ANTHROPIC_MESSAGES = "/anthropic/messages";
 const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
+
+const GOOGLE_URL_REGEX =
+  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -187,7 +203,8 @@ export async function proxyV1({
   cacheGet,
   cachePut,
   digest,
-  meterProvider = NOOP_METER_PROVIDER,
+  logCounter,
+  logHistogram,
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
@@ -214,20 +231,14 @@ export async function proxyV1({
     ttl_seconds?: number,
   ) => Promise<void>;
   digest: (message: string) => Promise<string>;
-  meterProvider?: MeterProvider;
+  logCounter?: LogCounterFn;
+  logHistogram?: LogHistogramFn;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
   signal?: AbortSignal;
 }): Promise<void> {
-  const meter = meterProvider.getMeter("proxy-metrics");
-
-  const totalCalls = meter.createCounter("total_calls");
-  const cacheHits = meter.createCounter("results_cache_hits");
-  const cacheMisses = meter.createCounter("results_cache_misses");
-  const cacheSkips = meter.createCounter("results_cache_skips");
-
-  totalCalls.add(1);
+  // totalCalls will be updated with model attributes after model extraction
 
   proxyHeaders = Object.fromEntries(
     Object.entries(proxyHeaders).map(([k, v]) => [k.toLowerCase(), v]),
@@ -327,6 +338,45 @@ export async function proxyV1({
     }
   }
 
+  // Extract model name after bodyData is parsed so we can use it in all metrics
+  let model: string | null = null;
+  if (
+    method === "POST" &&
+    (url === "/auto" ||
+      url === "/chat/completions" ||
+      url === "/completions" ||
+      url === "/responses" ||
+      url === ANTHROPIC_MESSAGES ||
+      url === ANTHROPIC_V1_MESSAGES) &&
+    isObject(bodyData) &&
+    bodyData?.model
+  ) {
+    model = bodyData?.model;
+  } else if (method === "POST") {
+    const m = url.match(GOOGLE_URL_REGEX);
+    if (m) {
+      model = m[1];
+      model = model.replace(/^models\//, "");
+    }
+  }
+
+  // Create attributes object that includes model for all metrics
+  // Use undefined instead of null since OpenTelemetry doesn't accept null
+  const baseAttributes: Record<string, string | undefined> = {
+    model: model ?? undefined,
+    endpoint: url.slice(1),
+  };
+  if (orgName) {
+    baseAttributes.org_name = orgName;
+  }
+
+  // Record total calls with model attributes
+  logCounter?.({
+    name: "proxy.requests",
+    value: 1,
+    attributes: baseAttributes,
+  });
+
   if (url === "/credentials") {
     let readable: ReadableStream | null = null;
     try {
@@ -421,7 +471,11 @@ export async function proxyV1({
         : DEFAULT_CACHE_TTL;
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
-        cacheHits.add(1);
+        logCounter?.({
+          name: "proxy.results_cache_hits",
+          value: 1,
+          attributes: baseAttributes,
+        });
         for (const [name, value] of Object.entries(cachedData.headers)) {
           setHeader(name, value);
         }
@@ -472,13 +526,25 @@ export async function proxyV1({
           },
         });
       } else {
-        cacheMisses.add(1);
+        logCounter?.({
+          name: "proxy.results_cache_misses",
+          value: 1,
+          attributes: baseAttributes,
+        });
       }
     } else {
-      cacheMisses.add(1);
+      logCounter?.({
+        name: "proxy.results_cache_misses",
+        value: 1,
+        attributes: baseAttributes,
+      });
     }
   } else {
-    cacheSkips.add(1);
+    logCounter?.({
+      name: "proxy.results_cache_skips",
+      value: 1,
+      attributes: baseAttributes,
+    });
   }
 
   let responseFailed = false;
@@ -510,7 +576,8 @@ export async function proxyV1({
       modelResponse: { response: proxyResponse, stream: proxyStream },
       secretName,
     } = await fetchModelLoop(
-      meter,
+      logCounter,
+      logHistogram,
       method,
       url,
       headers,
@@ -546,12 +613,23 @@ export async function proxyV1({
           }
         }
 
+        const start = nowMs();
         const secrets = await getApiSecrets(
           useCredentialsCacheMode !== "never",
           cachedAuthToken || authToken,
           model,
           orgName,
         );
+        logHistogram?.({
+          name: "proxy.secrets_fetch_time_ms",
+          value: nowMs() - start,
+          attributes: baseAttributes,
+        });
+
+        if (secrets.length > 0 && !orgName && secrets[0].org_name) {
+          baseAttributes.org_name = secrets[0].org_name;
+        }
+
         if (endpointName) {
           return secrets.filter((s) => s.name === endpointName);
         } else {
@@ -565,6 +643,7 @@ export async function proxyV1({
       digest,
       cacheGet,
       cachePut,
+      model,
       signal,
     );
     stream = proxyStream;
@@ -645,7 +724,7 @@ export async function proxyV1({
     }
   }
 
-  if (spanLogger && stream) {
+  if (stream) {
     let first = true;
     const allChunks: Uint8Array[] = [];
 
@@ -680,8 +759,7 @@ export async function proxyV1({
                   result.usage,
                 );
                 if (extendedUsage.success) {
-                  spanLogger.log({
-                    // TODO: we should include the proxy meters metrics here
+                  spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
@@ -695,6 +773,44 @@ export async function proxyV1({
                         extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
                     },
+                  });
+
+                  // Record token metrics
+                  logHistogram?.({
+                    name: "proxy.tokens",
+                    value: extendedUsage.data.total_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_tokens",
+                    value: extendedUsage.data.prompt_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cached_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                      0,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cache_creation_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens || 0,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_tokens",
+                    value: extendedUsage.data.completion_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_reasoning_tokens",
+                    value:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens || 0,
+                    attributes: baseAttributes,
                   });
                 }
 
@@ -760,7 +876,7 @@ export async function proxyV1({
               }
             }
           } catch (e) {
-            spanLogger.log({
+            spanLogger?.log({
               error: e,
             });
           }
@@ -774,10 +890,16 @@ export async function proxyV1({
           (["completion", "chat", "response"] as SpanType[]).includes(spanType)
         ) {
           first = false;
-          spanLogger.log({
+          const ttft = getCurrentUnixTimestamp() - startTime;
+          spanLogger?.log({
             metrics: {
-              time_to_first_token: getCurrentUnixTimestamp() - startTime,
+              time_to_first_token: ttft,
             },
+          });
+          logHistogram?.({
+            name: "proxy.time_to_first_token_ms",
+            value: ttft * 1000,
+            attributes: baseAttributes,
           });
         }
         if (isStreaming) {
@@ -789,7 +911,7 @@ export async function proxyV1({
       },
       async flush(controller) {
         if (isStreaming) {
-          spanLogger.log({
+          spanLogger?.log({
             output: [
               {
                 index: 0,
@@ -814,7 +936,7 @@ export async function proxyV1({
             dataRaw = JSON.parse(dataText);
           } catch (e) {
             // The body must be an error
-            spanLogger.log({
+            spanLogger?.log({
               error: dataText,
             });
           }
@@ -828,7 +950,7 @@ export async function proxyV1({
                   data.usage,
                 );
                 if (extendedUsage.success) {
-                  spanLogger.log({
+                  spanLogger?.log({
                     output: data.choices,
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
@@ -844,21 +966,59 @@ export async function proxyV1({
                           ?.reasoning_tokens,
                     },
                   });
+
+                  // Record token metrics
+                  logHistogram?.({
+                    name: "proxy.tokens",
+                    value: extendedUsage.data.total_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_tokens",
+                    value: extendedUsage.data.prompt_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cached_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                      0,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.prompt_cache_creation_tokens",
+                    value:
+                      extendedUsage.data.prompt_tokens_details
+                        ?.cache_creation_tokens || 0,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_tokens",
+                    value: extendedUsage.data.completion_tokens,
+                    attributes: baseAttributes,
+                  });
+                  logHistogram?.({
+                    name: "proxy.completion_reasoning_tokens",
+                    value:
+                      extendedUsage.data.completion_tokens_details
+                        ?.reasoning_tokens || 0,
+                    attributes: baseAttributes,
+                  });
                 }
                 break;
               }
               case "response": {
                 const data = dataRaw as OpenAIResponse;
-                spanLogger.log({
+                spanLogger?.log({
                   output: data.output,
                   metrics: {
                     tokens: data.usage?.total_tokens,
                     prompt_tokens: data.usage?.input_tokens,
                     completion_tokens: data.usage?.output_tokens,
                     prompt_cached_tokens:
-                      data.usage?.input_tokens_details.cached_tokens,
+                      data.usage?.input_tokens_details?.cached_tokens,
                     completion_reasoning_tokens:
-                      data.usage?.output_tokens_details.reasoning_tokens,
+                      data.usage?.output_tokens_details?.reasoning_tokens,
                   },
                 });
                 break;
@@ -866,7 +1026,7 @@ export async function proxyV1({
               case "embedding":
                 {
                   const data = dataRaw as CreateEmbeddingResponse;
-                  spanLogger.log({
+                  spanLogger?.log({
                     output: { embedding_length: data.data[0].embedding.length },
                     metrics: {
                       tokens: data.usage?.total_tokens,
@@ -878,7 +1038,7 @@ export async function proxyV1({
               case "moderation":
                 {
                   const data = dataRaw as ModerationCreateResponse;
-                  spanLogger.log({
+                  spanLogger?.log({
                     output: data.results,
                   });
                 }
@@ -887,7 +1047,14 @@ export async function proxyV1({
           }
         }
 
-        spanLogger.end();
+        const duration = getCurrentUnixTimestamp() - startTime;
+        logHistogram?.({
+          name: "proxy.request_duration_ms",
+          value: duration * 1000,
+          attributes: baseAttributes,
+        });
+
+        spanLogger?.end();
         controller.terminate();
       },
     });
@@ -945,6 +1112,12 @@ export async function proxyV1({
       console.error("Error closing response", e);
     });
   }
+
+  logCounter?.({
+    name: "proxy.requests_completed",
+    value: 1,
+    attributes: baseAttributes,
+  });
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
@@ -971,12 +1144,10 @@ const RATE_LIMITING_ERROR_CODES = [
   OVERLOADED_ERROR_CODE,
 ];
 
-const GOOGLE_URL_REGEX =
-  /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
-
 let loopIndex = 0;
 async function fetchModelLoop(
-  meter: Meter,
+  logCounter: LogCounterFn | undefined,
+  logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
   url: string,
   headers: Record<string, string>,
@@ -993,43 +1164,10 @@ async function fetchModelLoop(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
+  model: string | null,
   signal?: AbortSignal,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
-  const endpointCalls = meter.createCounter("endpoint_calls");
-  const endpointFailures = meter.createCounter("endpoint_failures");
-  const endpointRetryableErrors = meter.createCounter(
-    "endpoint_retryable_errors",
-  );
-  const retriesPerCall = meter.createHistogram("retries_per_call", {
-    advice: {
-      explicitBucketBoundaries: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    },
-  });
-  const llmTtft = meter.createHistogram("llm_ttft");
-  const llmLatency = meter.createHistogram("llm_latency");
-
-  let model: string | null = null;
-
-  if (
-    method === "POST" &&
-    (url === "/auto" ||
-      url === "/chat/completions" ||
-      url === "/completions" ||
-      url === "/responses" ||
-      url === ANTHROPIC_MESSAGES ||
-      url === ANTHROPIC_V1_MESSAGES) &&
-    isObject(bodyData) &&
-    bodyData?.model
-  ) {
-    model = bodyData?.model;
-  } else if (method === "POST") {
-    const m = url.match(GOOGLE_URL_REGEX);
-    if (m) {
-      model = m[1];
-      // Hack since Gemini models are not registered with the models/ prefix.
-      model = model.replace(/^models\//, "");
-    }
-  }
+  // model is now passed as a parameter
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
@@ -1096,7 +1234,11 @@ async function fetchModelLoop(
 
     let errorHttpCode = undefined;
     let errorHttpHeaders = new Headers();
-    endpointCalls.add(1, loggableInfo);
+    logCounter?.({
+      name: "endpoint_calls",
+      value: 1,
+      attributes: loggableInfo,
+    });
     try {
       proxyResponse = await fetchModel(
         modelSpec,
@@ -1152,7 +1294,11 @@ async function fetchModelLoop(
           );
         }
       } else {
-        endpointFailures.add(1, loggableInfo);
+        logCounter?.({
+          name: "endpoint_failures",
+          value: 1,
+          attributes: loggableInfo,
+        });
         throw e;
       }
     }
@@ -1240,13 +1386,21 @@ async function fetchModelLoop(
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
-    endpointRetryableErrors.add(1, {
-      ...loggableInfo,
-      http_code: errorHttpCode,
+    logCounter?.({
+      name: "endpoint_retryable_errors",
+      value: 1,
+      attributes: {
+        ...loggableInfo,
+        http_code: errorHttpCode,
+      },
     });
   }
 
-  retriesPerCall.record(i, loggableInfo);
+  logHistogram?.({
+    name: "retries_per_call",
+    value: i,
+    attributes: loggableInfo,
+  });
   spanLogger?.log({
     metrics: { retries },
   });
@@ -1263,21 +1417,33 @@ async function fetchModelLoop(
 
   let stream = proxyResponse.stream;
   if (!proxyResponse.response.ok) {
-    endpointFailures.add(1, loggableInfo);
+    logCounter?.({
+      name: "endpoint_failures",
+      value: 1,
+      attributes: loggableInfo,
+    });
   } else if (stream) {
     let first = true;
     const timingStart = nowMs();
     const timingStream = new TransformStream<Uint8Array, Uint8Array>({
       transform(chunk, controller) {
         if (first) {
-          llmTtft.record(nowMs() - timingStart, loggableInfo);
+          logHistogram?.({
+            name: "llm_ttft",
+            value: nowMs() - timingStart,
+            attributes: loggableInfo,
+          });
           first = false;
         }
         controller.enqueue(chunk);
       },
       async flush(controller) {
         const duration = nowMs() - timingStart;
-        llmLatency.record(duration, loggableInfo);
+        logHistogram?.({
+          name: "llm_latency",
+          value: duration,
+          attributes: loggableInfo,
+        });
         controller.terminate();
       },
     });
@@ -1700,7 +1866,9 @@ async function fetchOpenAI(
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
-        `${baseURL}/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+        `${baseURL}/v1/projects/${project}/locations/${location}/${
+          bodyData.model
+        }:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
     }
@@ -2375,7 +2543,9 @@ async function fetchAnthropicChatCompletions({
       defaultLocation: "us-east5",
     });
     fullURL = new URL(
-      `${baseUrl}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+      `${baseUrl}/${params.model}:${
+        params.stream ? "streamRawPredict" : "rawPredict"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
     params["anthropic_version"] = "vertex-2023-10-16";
@@ -2784,7 +2954,9 @@ async function fetchGoogleChatCompletions({
       defaultLocation: "us-central1",
     });
     fullURL = new URL(
-      `${baseUrl}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `${baseUrl}/${model}:${
+        streamingMode ? "streamGenerateContent" : "generateContent"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
   }

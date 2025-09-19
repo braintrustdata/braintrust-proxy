@@ -42,13 +42,20 @@
       "import": "./types/dist/index.mjs",
       "module": "./types/dist/index.mjs",
       "require": "./types/dist/index.js"
+    },
+    "./providers": {
+      "types": "./providers/dist/index.d.ts",
+      "import": "./providers/dist/index.mjs",
+      "module": "./providers/dist/index.mjs",
+      "require": "./providers/dist/index.js"
     }
   },
   "files": [
     "dist/**/*",
     "edge/dist/**/*",
     "schema/dist/**/*",
-    "types/dist/**/*"
+    "types/dist/**/*",
+    "providers/dist/**/*"
   ],
   "license": "MIT",
   "publishConfig": {

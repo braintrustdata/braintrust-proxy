@@ -1,10 +1,10 @@
 import { z } from "zod";
 import type {
-  AnyModelParam,
-  Message,
-  MessageRole,
-  ModelParams,
-} from "@braintrust/core/typespecs";
+  AnyModelParamsType as AnyModelParam,
+  ChatCompletionMessageParamType as Message,
+  MessageRoleType as MessageRole,
+  ModelParamsType as ModelParams,
+} from "../src/generated_types";
 import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
@@ -54,6 +54,8 @@ export const modelParamToModelParam: {
   parallel_tool_calls: null,
   response_format: null,
   reasoning_effort: "reasoning_effort",
+  reasoning_enabled: "reasoning_enabled",
+  reasoning_budget: "reasoning_budget",
   verbosity: "verbosity",
   stop: null,
 };
@@ -69,7 +71,7 @@ export const sliderSpecs: {
   // min, max, step, required
   [name: string]: [number, number, number, boolean];
 } = {
-  temperature: [0, 1, 0.01, false],
+  temperature: [0, 2, 0.01, false],
   top_p: [0, 1, 0.01, false],
   topP: [0, 1, 0.01, false],
   max_tokens: [1, 32768, 1, false],
@@ -79,6 +81,38 @@ export const sliderSpecs: {
   top_k: [1, 100, 1, false],
   topK: [1, 100, 1, false],
 };
+
+// Format-specific slider specification overrides
+const formatSpecificSliderSpecs: {
+  [format in ModelFormat]?: {
+    [paramName: string]: [number, number, number, boolean];
+  };
+} = {
+  anthropic: {
+    temperature: [0, 1, 0.01, false],
+  },
+  converse: {
+    temperature: [0, 1, 0.01, false],
+  },
+};
+
+/**
+ * Get slider specifications for a parameter, with format-specific overrides
+ * @param format - The model format (openai, anthropic, google, etc.)
+ * @param paramName - The parameter name (temperature, max_tokens, etc.)
+ * @returns Slider spec as [min, max, step, required] or undefined if not found
+ */
+export function getSliderSpecs(
+  format: ModelFormat,
+  paramName: string,
+): [number, number, number, boolean] | undefined {
+  const formatOverrides = formatSpecificSliderSpecs[format];
+  if (formatOverrides && formatOverrides[paramName]) {
+    return formatOverrides[paramName];
+  }
+
+  return sliderSpecs[paramName];
+}
 
 // These values resemble the default values in OpenAI's playground and Anthropic's docs.
 // Even though some of them are not set, it's useful for the "greyed out" placeholders.
@@ -347,6 +381,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "apac.anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
   "eu.anthropic.claude-3-haiku-20240307-v1:0": ["bedrock"],
+  "anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
+  "us.anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
   "amazon.nova-pro-v1:0": ["bedrock"],
   "amazon.nova-lite-v1:0": ["bedrock"],
   "amazon.nova-micro-v1:0": ["bedrock"],
@@ -361,6 +397,20 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "grok-3": ["xAI"],
+  "grok-3-latest": ["xAI"],
+  "grok-3-beta": ["xAI"],
+  "grok-3-fast-beta": ["xAI"],
+  "grok-3-fast-latest": ["xAI"],
+  "grok-3-mini": ["xAI"],
+  "grok-3-mini-latest": ["xAI"],
+  "grok-3-mini-fast": ["xAI"],
+  "grok-3-mini-fast-latest": ["xAI"],
+  "grok-3-mini-beta": ["xAI"],
+  "grok-3-mini-fast-beta": ["xAI"],
+  "grok-code-fast-1": ["xAI"],
+  "grok-code-fast": ["xAI"],
+  "grok-code-fast-1-0825": ["xAI"],
   "publishers/google/models/gemini-2.5-pro": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-05-06": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-03-25": ["vertex"],

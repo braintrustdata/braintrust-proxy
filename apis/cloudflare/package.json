@@ -18,7 +18,7 @@
     "wrangler": "^4.28.1"
   },
   "dependencies": {
-    "@braintrust/core": "^0.0.85",
+    "braintrust": "^0.3.7",
     "@braintrust/proxy": "workspace:*",
     "@openai/realtime-api-beta": "github:openai/openai-realtime-api-beta#cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f",
     "@opentelemetry/resources": "^1.18.1",

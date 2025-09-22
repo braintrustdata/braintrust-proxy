@@ -67,9 +67,8 @@ const schedulingSchema = z.enum([
 ]);
 
 const videoMetadataSchema = z.object({
-  startOffset: z.string().optional(),
   endOffset: z.string().optional(),
-  fps: z.number().optional(),
+  startOffset: z.string().optional(),
 });
 
 const outcomeSchema = z.enum([
@@ -87,8 +86,8 @@ const codeExecutionResultSchema = z.object({
 const languageSchema = z.enum(["LANGUAGE_UNSPECIFIED", "PYTHON"]);
 
 const executableCodeSchema = z.object({
-  language: languageSchema.optional(),
   code: z.string().optional(),
+  language: languageSchema.optional(),
 });
 
 const fileDataSchema = z.object({
@@ -98,34 +97,31 @@ const fileDataSchema = z.object({
 
 const functionCallSchema = z.object({
   id: z.string().optional(),
-  name: z.string().optional(),
   args: z.record(z.unknown()).optional(),
+  name: z.string().optional(),
 });
 
 const functionResponseSchema = z.object({
   id: z.string().optional(),
   name: z.string().optional(),
   response: z.record(z.unknown()).optional(),
-  willContinue: z.boolean().optional(),
-  scheduling: schedulingSchema.optional(),
 });
 
 const blobSchema = z.object({
-  mimeType: z.string().optional(),
   data: z.string().optional(),
+  mimeType: z.string().optional(),
 });
 
 const partSchema = z.object({
+  videoMetadata: videoMetadataSchema.optional(),
   thought: z.boolean().optional(),
-  thoughtSignature: z.string().optional(),
-  text: z.string().optional(),
-  inlineData: blobSchema.optional(),
+  codeExecutionResult: codeExecutionResultSchema.optional(),
+  executableCode: executableCodeSchema.optional(),
+  fileData: fileDataSchema.optional(),
   functionCall: functionCallSchema.optional(),
   functionResponse: functionResponseSchema.optional(),
-  fileData: fileDataSchema.optional(),
-  executableCode: executableCodeSchema.optional(),
-  codeExecutionResult: codeExecutionResultSchema.optional(),
-  videoMetadata: videoMetadataSchema.optional(),
+  inlineData: blobSchema.optional(),
+  text: z.string().optional(),
 });
 
 const contentSchema = z.object({
@@ -308,4 +304,321 @@ export const generateContentResponseSchema = z.object({
 
 export type GenerateContentResponse = z.infer<
   typeof generateContentResponseSchema
+>;
+
+const toolCodeExecutionSchema = z.object({});
+
+const vertexAiSearchSchema = z.object({
+  datastore: z.string().optional(),
+  engine: z.string().optional(),
+});
+
+const vertexRagStoreRagResourceSchema = z.object({
+  ragCorpus: z.string().optional(),
+  ragFileIds: z.array(z.string()).optional(),
+});
+
+const ragRetrievalConfigFilterSchema = z.object({
+  metadataFilter: z.string().optional(),
+  vectorDistanceThreshold: z.string().optional(),
+  vectorSimilarityThreshold: z.string().optional(),
+});
+
+const ragRetrievalConfigHybridSearchSchema = z.object({
+  alpha: z.number().optional(),
+});
+
+const ragRetrievalConfigRankingLlmRankerSchema = z.object({
+  modelName: z.string().optional(),
+});
+
+const ragRetrievalConfigRankingRankServiceSchema = z.object({
+  modelName: z.string().optional(),
+});
+
+const ragRetrievalConfigRankingSchema = z.object({
+  llmRanker: ragRetrievalConfigRankingLlmRankerSchema.optional(),
+  rankService: ragRetrievalConfigRankingRankServiceSchema.optional(),
+});
+
+const ragRetrievalConfigSchema = z.object({
+  filter: ragRetrievalConfigFilterSchema.optional(),
+  hybridSearch: ragRetrievalConfigHybridSearchSchema.optional(),
+  ranking: ragRetrievalConfigRankingSchema.optional(),
+  topK: z.number().optional(),
+});
+
+const vertexRagStoreSchema = z.object({
+  ragCorpora: z.array(z.string()).optional(),
+  ragResources: z.array(vertexRagStoreRagResourceSchema).optional(),
+  ragRetrievalConfig: ragRetrievalConfigSchema.optional(),
+  similarityTopK: z.number().optional(),
+  vectorDistanceThreshold: z.number().optional(),
+});
+
+const retrievalSchema = z.object({
+  disableAttribution: z.boolean().optional(),
+  vertexAiSearch: vertexAiSearchSchema.optional(),
+  vertexRagStore: vertexRagStoreSchema.optional(),
+});
+
+const googleSearchSchema = z.object({});
+
+const dynamicRetrievalConfigModeSchema = z.enum([
+  "MODE_UNSPECIFIED",
+  "MODE_DYNAMIC",
+]);
+
+const dynamicRetrievalConfigSchema = z.object({
+  mode: dynamicRetrievalConfigModeSchema.optional(),
+  dynamicThreshold: z.number().optional(),
+});
+
+const googleSearchRetrievalSchema = z.object({
+  mode: dynamicRetrievalConfigSchema.optional(),
+  dynamicThreshold: z.number().optional(),
+});
+
+const enterpriseWebSearchSchema = z.object({});
+
+const googleMapsSchema = z.object({
+  // authConfig
+});
+
+const functionDeclarationSchema = z.object({
+  description: z.string().optional(),
+  name: z.string().optional(),
+  parameters: z.lazy(() => schemaSchema).optional(),
+  response: z.lazy(() => schemaSchema).optional(),
+});
+
+const toolSchema = z.object({
+  retrieval: retrievalSchema.optional(),
+  googleSearch: googleSearchSchema.optional(),
+  googleSearchRetrieval: googleSearchRetrievalSchema.optional(),
+  enterpriseWebSearch: enterpriseWebSearchSchema.optional(),
+  googleMaps: googleMapsSchema.optional(),
+  codeExecution: toolCodeExecutionSchema.optional(),
+  functionDeclarations: z.array(functionDeclarationSchema).optional(),
+});
+
+const functionCallingConfigSchema = z.object({
+  mode: z.enum(["MODE_UNSPECIFIED", "AUTO", "ANY", "NONE"]).optional(),
+  allowedFunctionNames: z.array(z.string()).optional(),
+});
+
+const retrievalConfigSchema = z.object({
+  maxChunksToRetrieve: z.number().optional(),
+  minScore: z.number().optional(),
+  filters: z
+    .object({
+      metadataFilters: z
+        .array(
+          z.object({
+            key: z.string().optional(),
+            operation: z
+              .enum([
+                "OPERATOR_UNSPECIFIED",
+                "LESS",
+                "LESS_EQUAL",
+                "EQUAL",
+                "GREATER_EQUAL",
+                "GREATER",
+                "NOT_EQUAL",
+                "INCLUDES",
+                "EXCLUDES",
+                "AND",
+                "OR",
+                "NOT",
+                "IN",
+                "NOT_IN",
+                "CUSTOM",
+              ])
+              .optional(),
+            stringValue: z.string().optional(),
+            numericValue: z.number().optional(),
+            conditions: z.lazy(() => z.array(z.unknown())).optional(),
+          }),
+        )
+        .optional(),
+    })
+    .optional(),
+});
+
+const toolConfigSchema = z.object({
+  functionCallingConfig: functionCallingConfigSchema.optional(),
+  retrievalConfig: retrievalConfigSchema.optional(),
+});
+
+const typeSchema = z.enum([
+  "TYPE_UNSPECIFIED",
+  "STRING",
+  "NUMBER",
+  "INTEGER",
+  "BOOLEAN",
+  "ARRAY",
+  "OBJECT",
+]);
+
+const schemaSchema: z.ZodSchema<any> = z.object({
+  anyOf: z.lazy(() => z.array(schemaSchema)).optional(),
+  default: z.unknown().optional(),
+  description: z.string().optional(),
+  enum: z.array(z.string()).optional(),
+  example: z.unknown().optional(),
+  format: z.string().optional(),
+  items: z.lazy(() => schemaSchema).optional(),
+  maxItems: z.string().optional(), // genai sdk shows string instead of number
+  maxLength: z.string().optional(), // genai sdk shows string instead of number
+  maxProperties: z.string().optional(), // genai sdk shows string instead of number
+  maximum: z.number().optional(),
+  minItems: z.string().optional(), // genai sdk shows string instead of number
+  minLength: z.string().optional(), // genai sdk shows string instead of number
+  minProperties: z.string().optional(), // genai sdk shows string instead of number
+  minimum: z.number().optional(),
+  nullable: z.boolean().optional(),
+  pattern: z.string().optional(),
+  properties: z.lazy(() => z.record(schemaSchema)).optional(),
+  propertyOrdering: z.array(z.string()).optional(),
+  required: z.array(z.string()).optional(),
+  title: z.string().optional(),
+  type: typeSchema.optional(),
+});
+
+const generationConfigRoutingAutoRoutingMode = z.object({
+  modelRoutingPreference: z
+    .enum(["UNKNOWN", "PRIORITIZE_QUALITY", "BALANCED", "PRIORITIZE_COST"])
+    .optional(),
+});
+
+const generationConfigRoutingManualRoutingMode = z.object({
+  modelName: z.string().optional(),
+});
+
+const generationConfigRoutingConfigSchema = z.object({
+  autoMode: generationConfigRoutingAutoRoutingMode.optional(),
+  manualMode: generationConfigRoutingManualRoutingMode.optional(),
+});
+
+const featureSelectionPreferenceSchema = z.enum([
+  "FEATURE_SELECTION_PREFERENCE_UNSPECIFIED",
+  "PRIORITIZE_QUALITY",
+  "BALANCED",
+  "PRIORITIZE_COST",
+]);
+
+const modelSelectionConfigSchema = z.object({
+  featureSelectionPreference: featureSelectionPreferenceSchema.optional(),
+});
+
+const mediaResolutionSchema = z.enum([
+  "MEDIA_RESOLUTION_UNSPECIFIED",
+  "MEDIA_RESOLUTION_LOW",
+  "MEDIA_RESOLUTION_MEDIUM",
+  "MEDIA_RESOLUTION_HIGH",
+]);
+
+const thinkingConfigSchema = z.object({
+  includeThoughts: z.boolean().optional(),
+  thinkingBudget: z.number().optional(),
+});
+
+const prebuiltVoiceConfigSchema = z.object({
+  voiceName: z.string().optional(),
+});
+
+const voiceConfigSchema = z.object({
+  prebuiltVoiceConfig: prebuiltVoiceConfigSchema.optional(),
+});
+
+const speechConfigSchema = z.object({
+  voiceConfig: voiceConfigSchema.optional(),
+});
+
+const speechConfigUnionSchema = z.union([speechConfigSchema, z.undefined()]);
+
+const schemaUnionSchema = schemaSchema;
+
+const toolListUnionSchema = z.array(toolSchema);
+
+const partUnionSchema = z.union([partSchema, z.string()]);
+
+const partListUnionSchema = z.union([
+  partUnionSchema,
+  z.array(partUnionSchema),
+]);
+
+const contentUnionSchema = z.union([
+  contentSchema,
+  z.array(partUnionSchema),
+  partUnionSchema,
+]);
+
+const contentListUnionSchema = z.union([
+  contentSchema,
+  z.array(contentSchema),
+  partUnionSchema,
+  z.array(partUnionSchema),
+]);
+
+const harmBlockMethodSchema = z.enum([
+  "HARM_BLOCK_METHOD_UNSPECIFIED",
+  "SEVERITY",
+  "PROBABILITY",
+]);
+
+const harmBlockThresholdSchema = z.enum([
+  "HARM_BLOCK_THRESHOLD_UNSPECIFIED",
+  "BLOCK_LOW_AND_ABOVE",
+  "BLOCK_MEDIUM_AND_ABOVE",
+  "BLOCK_ONLY_HIGH",
+  "BLOCK_NONE",
+  "OFF",
+]);
+
+const safetySettingSchema = z.object({
+  method: harmBlockMethodSchema.optional(),
+  category: harmCategorySchema.optional(),
+  threshold: harmBlockThresholdSchema.optional(),
+});
+
+const generateContentConfigSchema = z.object({
+  // httpOptions
+  // abortSignals
+  systemInstruction: contentUnionSchema.optional(),
+  temperature: z.number().optional(),
+  topP: z.number().optional(),
+  topK: z.number().optional(),
+  candidateCount: z.number().optional(),
+  maxOutputTokens: z.number().optional(),
+  stopSequences: z.array(z.string()).optional(),
+  responseLogprobs: z.boolean().optional(),
+  logprobs: z.number().optional(),
+  presencePenalty: z.number().optional(),
+  frequencyPenalty: z.number().optional(),
+  seed: z.number().optional(),
+  responseMimeType: z.string().optional(),
+  responseSchema: schemaUnionSchema.optional(),
+  routingConfig: generationConfigRoutingConfigSchema.optional(),
+  modelSelectionConfig: modelSelectionConfigSchema.optional(),
+  safetySettings: z.array(safetySettingSchema).optional(),
+  tools: toolListUnionSchema.optional(),
+  toolConfig: toolConfigSchema.optional(),
+  labels: z.record(z.string()).optional(),
+  cachedContent: z.string().optional(),
+  responseModalities: z.array(z.string()).optional(),
+  mediaResolution: mediaResolutionSchema.optional(),
+  speechConfig: speechConfigUnionSchema.optional(),
+  audioTimestamp: z.boolean().optional(),
+  thinkingConfig: thinkingConfigSchema.optional(),
+});
+
+export const generateContentParametersSchema = z.object({
+  model: z.string(),
+  contents: contentListUnionSchema,
+  config: generateContentConfigSchema.optional(),
+});
+
+export type GenerateContentParameters = z.infer<
+  typeof generateContentParametersSchema
 >;

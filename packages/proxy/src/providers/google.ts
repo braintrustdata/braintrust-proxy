@@ -1,12 +1,14 @@
 import { type ChatCompletionMessageParamType as Message } from "../generated_types";
 import {
   Content,
+  ContentUnion,
+  ContentListUnion,
+  Part,
   FinishReason,
   GenerateContentConfig,
   GenerateContentParameters,
   GenerateContentResponse,
   GenerateContentResponseUsageMetadata,
-  Part,
   ThinkingConfig,
 } from "@google/genai";
 import {
@@ -15,9 +17,9 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
   OpenAICompletionUsage,
-} from "@types";
-import { getBudgetMultiplier } from "utils";
-import { cleanOpenAIParams } from "utils/openai";
+} from "../../types";
+import { getBudgetMultiplier } from "../../utils";
+import { cleanOpenAIParams } from "../../utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds } from "../util";
 import { convertMediaToBase64 } from "./util";
@@ -191,51 +193,59 @@ export function googleEventToOpenAIChatEvent(
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   return {
     event: data.candidates
-      ? {
-          id: uuidv4(),
-          choices: (data.candidates || []).map((candidate) => {
-            const firstThought = candidate.content?.parts?.find(
-              (part) => part.text !== undefined && part.thought,
-            );
-            const firstText = candidate.content?.parts?.find(
-              (part) => part.text !== undefined && !part.thought,
-            );
-            const toolCalls =
-              candidate.content?.parts
-                ?.filter((part) => part.functionCall !== undefined)
-                .map((part, i) => ({
-                  id: uuidv4(),
-                  type: "function" as const,
-                  function: {
-                    name: part?.functionCall?.name,
-                    arguments: JSON.stringify(part.functionCall?.args),
-                  },
-                  index: i,
-                })) || [];
-            return {
-              index: 0,
-              delta: {
-                role: "assistant",
-                content: firstText?.text ?? "",
-                tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
-                ...(firstThought && {
-                  reasoning: {
+      ? (() => {
+          const usage = geminiUsageToOpenAIUsage(data.usageMetadata);
+          const chunk: OpenAIChatCompletionChunk = {
+            id: uuidv4(),
+            choices: (data.candidates || []).map((candidate) => {
+              const firstThought = candidate.content?.parts?.find(
+                (part) => part.text !== undefined && part.thought,
+              );
+              const firstText = candidate.content?.parts?.find(
+                (part) => part.text !== undefined && !part.thought,
+              );
+              const toolCalls =
+                candidate.content?.parts
+                  ?.filter((part) => part.functionCall !== undefined)
+                  .map((part, i) => ({
                     id: uuidv4(),
-                    content: firstThought.text,
-                  },
-                }),
-              },
-              finish_reason:
-                toolCalls.length > 0
-                  ? "tool_calls"
-                  : translateFinishReason(candidate.finishReason),
-            };
-          }),
-          created: getTimestampInSeconds(),
-          model,
-          object: "chat.completion.chunk",
-          usage: geminiUsageToOpenAIUsage(data.usageMetadata),
-        }
+                    type: "function" as const,
+                    function: {
+                      name: part?.functionCall?.name,
+                      arguments: JSON.stringify(part.functionCall?.args),
+                    },
+                    index: i,
+                  })) || [];
+              return {
+                index: 0,
+                delta: {
+                  role: "assistant",
+                  content: firstText?.text ?? "",
+                  tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
+                  ...(firstThought && {
+                    reasoning: {
+                      id: uuidv4(),
+                      content: firstThought.text,
+                    },
+                  }),
+                },
+                finish_reason:
+                  toolCalls.length > 0
+                    ? "tool_calls"
+                    : translateFinishReason(candidate.finishReason),
+              };
+            }),
+            created: getTimestampInSeconds(),
+            model,
+            object: "chat.completion.chunk" as const,
+          } as OpenAIChatCompletionChunk;
+
+          if (usage) {
+            (chunk as any).usage = usage;
+          }
+
+          return chunk;
+        })()
       : null,
     finished:
       data.candidates?.every(
@@ -254,24 +264,29 @@ const geminiUsageToOpenAIUsage = (
   const thoughtsTokenCount = usageMetadata.thoughtsTokenCount;
   const cachedContentTokenCount = usageMetadata.cachedContentTokenCount;
 
-  return {
+  const usage: OpenAICompletionUsage = {
     prompt_tokens: usageMetadata.promptTokenCount || 0,
     completion_tokens: usageMetadata.candidatesTokenCount || 0,
     total_tokens: usageMetadata.totalTokenCount || 0,
-    ...(thoughtsTokenCount && {
-      completion_tokens_details: { reasoning_tokens: thoughtsTokenCount },
-    }),
-    ...(cachedContentTokenCount && {
-      prompt_tokens_details: { cached_tokens: cachedContentTokenCount },
-    }),
   };
+
+  if (thoughtsTokenCount) {
+    usage.completion_tokens_details = { reasoning_tokens: thoughtsTokenCount };
+  }
+
+  if (cachedContentTokenCount) {
+    usage.prompt_tokens_details = { cached_tokens: cachedContentTokenCount };
+  }
+
+  return usage;
 };
 
 export function googleCompletionToOpenAICompletion(
   model: string,
   data: GenerateContentResponse,
 ): OpenAIChatCompletion {
-  return {
+  const usage = geminiUsageToOpenAIUsage(data.usageMetadata);
+  const completion: OpenAIChatCompletion = {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {
       const firstText = candidate.content?.parts?.find(
@@ -311,9 +326,14 @@ export function googleCompletionToOpenAICompletion(
     }),
     created: getTimestampInSeconds(),
     model,
-    object: "chat.completion",
-    usage: geminiUsageToOpenAIUsage(data.usageMetadata),
-  };
+    object: "chat.completion" as const,
+  } as OpenAIChatCompletion;
+
+  if (usage) {
+    (completion as any).usage = usage;
+  }
+
+  return completion;
 }
 
 export const OpenAIParamsToGoogleParams: {
@@ -406,4 +426,434 @@ const getThinkingBudget = (
   }
 
   return budget;
+};
+
+export const geminiParamsToOpenAIParams = (
+  params: GenerateContentParameters,
+): OpenAIChatCompletionCreateParams => {
+  const thinkingBudget = params.config?.thinkingConfig?.thinkingBudget || 0;
+  const tools = geminiParamsToOpenAITools(params);
+
+  // Map responseMimeType to response_format
+  let responseFormat = undefined;
+  if (params.config?.responseSchema) {
+    // Use structured output if response schema is provided
+    responseFormat = {
+      type: "json_schema" as const,
+      json_schema: {
+        name: "response",
+        schema: params.config.responseSchema as Record<string, unknown>,
+        strict: true,
+      },
+    };
+  } else if (params.config?.responseMimeType === "application/json") {
+    responseFormat = { type: "json_object" as const };
+  }
+
+  // Map toolConfig to tool_choice
+  let toolChoice:
+    | "none"
+    | "auto"
+    | "required"
+    | { type: "function"; function: { name: string } }
+    | undefined = undefined;
+  if (params.config?.toolConfig?.functionCallingConfig) {
+    const mode = params.config.toolConfig.functionCallingConfig.mode;
+    switch (mode) {
+      case "AUTO":
+        toolChoice = "auto" as const;
+        break;
+      case "ANY":
+        toolChoice = "required" as const;
+        break;
+      case "NONE":
+        toolChoice = "none" as const;
+        break;
+    }
+
+    // Handle specific function names
+    const allowedNames =
+      params.config.toolConfig.functionCallingConfig.allowedFunctionNames;
+    if (allowedNames && allowedNames.length === 1 && tools) {
+      toolChoice = {
+        type: "function" as const,
+        function: { name: allowedNames[0] },
+      };
+    }
+  }
+
+  return {
+    // model
+    model: params.model,
+
+    // contents
+    messages: geminiParamsToOpenAIMessages(params),
+
+    // config
+    n: params.config?.candidateCount,
+    top_p: params.config?.topP,
+    max_completion_tokens: params.config?.maxOutputTokens,
+    stop: params.config?.stopSequences,
+    top_logprobs: params.config?.logprobs,
+    temperature: params.config?.temperature,
+    reasoning_enabled: thinkingBudget > 0,
+    reasoning_budget: thinkingBudget,
+    presence_penalty: params.config?.presencePenalty,
+    frequency_penalty: params.config?.frequencyPenalty,
+    seed: params.config?.seed,
+    response_format: responseFormat,
+    tools: tools,
+    tool_choice: toolChoice,
+    logprobs: params.config?.responseLogprobs,
+  };
+};
+
+export const geminiParamsToOpenAIMessages = (
+  params: GenerateContentParameters,
+): OpenAIChatCompletionCreateParams["messages"] => {
+  const messages: OpenAIChatCompletionCreateParams["messages"] = [];
+
+  // Add system instruction if present
+  if (params.config?.systemInstruction) {
+    const systemContent = convertContentToString(
+      params.config.systemInstruction,
+    );
+    if (systemContent) {
+      messages.push({
+        role: "system",
+        content: systemContent,
+      });
+    }
+  }
+
+  // Convert contents to messages
+  const contents = normalizeContents(params.contents);
+  for (const content of contents) {
+    const message = convertGeminiContentToOpenAIMessage(content);
+    if (message) {
+      messages.push(message);
+    }
+  }
+
+  return messages;
+};
+
+export const geminiParamsToOpenAITools = (
+  params: GenerateContentParameters,
+): OpenAIChatCompletionCreateParams["tools"] => {
+  const tools: OpenAIChatCompletionCreateParams["tools"] = [];
+
+  // Convert function declarations from tools
+  if (params.config?.tools) {
+    const toolsList = Array.isArray(params.config.tools)
+      ? params.config.tools
+      : [params.config.tools];
+
+    for (const tool of toolsList) {
+      if (tool.functionDeclarations) {
+        for (const funcDecl of tool.functionDeclarations) {
+          // Skip functions without names as they're required by OpenAI
+          if (!funcDecl.name) continue;
+
+          tools.push({
+            type: "function",
+            function: {
+              name: funcDecl.name,
+              description: funcDecl.description,
+              parameters:
+                (funcDecl.parameters as Record<string, unknown>) || {},
+            },
+          });
+        }
+      }
+      // Note: Other tool types like retrieval, codeExecution, etc. are not directly mappable to OpenAI
+    }
+  }
+
+  // Handle response schema as a structured output tool if present
+  if (params.config?.responseSchema) {
+    const schema =
+      typeof params.config.responseSchema === "object"
+        ? params.config.responseSchema
+        : undefined;
+
+    if (schema) {
+      tools.push({
+        type: "function",
+        function: {
+          name: "structured_output",
+          description: "Structured output response",
+          parameters: schema as Record<string, unknown>,
+        },
+      });
+    }
+  }
+
+  return tools.length > 0 ? tools : undefined;
+};
+
+// Helper function to normalize contents into an array of Content objects
+const normalizeContents = (contents: ContentListUnion): Content[] => {
+  // Handle single Content object
+  if (isContent(contents)) {
+    return [contents];
+  }
+
+  // Handle array of Content objects
+  if (Array.isArray(contents)) {
+    const result: Content[] = [];
+    for (const item of contents) {
+      if (isContent(item)) {
+        result.push(item);
+      } else if (isPart(item)) {
+        // Convert Part to Content with user role
+        result.push({
+          role: "user",
+          parts: [item],
+        });
+      } else if (typeof item === "string") {
+        // Convert string to Content with user role
+        result.push({
+          role: "user",
+          parts: [{ text: item }],
+        });
+      }
+    }
+    return result;
+  }
+
+  // Handle single Part or string
+  if (isPart(contents) || typeof contents === "string") {
+    return [
+      {
+        role: "user",
+        parts: isPart(contents) ? [contents] : [{ text: contents }],
+      },
+    ];
+  }
+
+  return [];
+};
+
+// Helper function to check if an object is a Content
+const isContent = (obj: any): obj is Content => {
+  return obj && typeof obj === "object" && "parts" in obj;
+};
+
+// Helper function to check if an object is a Part
+const isPart = (obj: any): obj is Part => {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    ("text" in obj ||
+      "functionCall" in obj ||
+      "functionResponse" in obj ||
+      "inlineData" in obj ||
+      "fileData" in obj ||
+      "executableCode" in obj ||
+      "codeExecutionResult" in obj)
+  );
+};
+
+// Convert Gemini Content to OpenAI message
+const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
+  // Handle function responses as tool messages first
+  if (content.parts) {
+    const functionResponse = content.parts.find((p) => p.functionResponse);
+    if (functionResponse?.functionResponse) {
+      return {
+        role: "tool",
+        tool_call_id: functionResponse.functionResponse.id || "unknown",
+        content: JSON.stringify(
+          functionResponse.functionResponse.response || {},
+        ),
+      };
+    }
+  }
+
+  const role = mapGeminiRoleToOpenAI(content.role);
+  const messageContent = convertPartsToMessageContent(content.parts);
+
+  if (!messageContent) {
+    return null;
+  }
+
+  // Handle function calls for assistant messages
+  if (role === "assistant" && content.parts) {
+    const toolCalls = extractToolCalls(content.parts);
+    if (toolCalls.length > 0) {
+      return {
+        role: "assistant",
+        content: typeof messageContent === "string" ? messageContent : null,
+        tool_calls: toolCalls,
+      };
+    }
+  }
+
+  return {
+    role: role,
+    content: messageContent,
+  };
+};
+
+// Map Gemini role to OpenAI role
+const mapGeminiRoleToOpenAI = (
+  geminiRole?: string,
+): "system" | "user" | "assistant" | "tool" => {
+  if (!geminiRole) return "user";
+
+  switch (geminiRole.toLowerCase()) {
+    case "model":
+      return "assistant";
+    case "user":
+      return "user";
+    case "system":
+      return "system";
+    case "function":
+    case "tool":
+      return "tool";
+    default:
+      return "user";
+  }
+};
+
+// Convert Gemini parts to OpenAI message content
+const convertPartsToMessageContent = (
+  parts?: Part[],
+): string | Array<any> | null => {
+  if (!parts || parts.length === 0) {
+    return null;
+  }
+
+  const contentParts: any[] = [];
+  let hasComplexContent = false;
+
+  for (const part of parts) {
+    if (part.text) {
+      contentParts.push({
+        type: "text",
+        text: part.text,
+      });
+    } else if (part.inlineData) {
+      hasComplexContent = true;
+      // Handle image data
+      if (part.inlineData.mimeType?.startsWith("image/")) {
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`,
+          },
+        });
+      } else if (part.inlineData.mimeType?.startsWith("audio/")) {
+        contentParts.push({
+          type: "input_audio",
+          input_audio: {
+            data: part.inlineData.data,
+            format: part.inlineData.mimeType.split("/")[1] || "wav",
+          },
+        });
+      }
+    } else if (part.fileData) {
+      hasComplexContent = true;
+      // Handle file references
+      if (part.fileData.mimeType?.startsWith("image/")) {
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: part.fileData.fileUri || "",
+          },
+        });
+      }
+    } else if (part.executableCode) {
+      contentParts.push({
+        type: "text",
+        text: `\`\`\`${part.executableCode.language || ""}\n${
+          part.executableCode.code
+        }\n\`\`\``,
+      });
+    } else if (part.codeExecutionResult) {
+      contentParts.push({
+        type: "text",
+        text: `Execution Result (${part.codeExecutionResult.outcome}):\n${
+          part.codeExecutionResult.output || ""
+        }`,
+      });
+    }
+  }
+
+  // Return simple string if only text content
+  if (
+    !hasComplexContent &&
+    contentParts.length === 1 &&
+    contentParts[0].type === "text"
+  ) {
+    return contentParts[0].text;
+  }
+
+  return contentParts.length > 0 ? contentParts : null;
+};
+
+// Extract tool calls from parts
+const extractToolCalls = (parts: Part[]): any[] => {
+  const toolCalls: any[] = [];
+
+  for (const part of parts) {
+    if (part.functionCall) {
+      toolCalls.push({
+        id: part.functionCall.id || `call_${Date.now()}_${Math.random()}`,
+        type: "function",
+        function: {
+          name: part.functionCall.name,
+          arguments: JSON.stringify(part.functionCall.args || {}),
+        },
+      });
+    }
+  }
+
+  return toolCalls;
+};
+
+// Convert ContentUnion to string for system instruction
+const convertContentToString = (content: ContentUnion): string | null => {
+  if (typeof content === "string") {
+    return content;
+  }
+
+  if (isContent(content)) {
+    return convertPartsToString(content.parts);
+  }
+
+  if (Array.isArray(content)) {
+    const strings: string[] = [];
+    for (const item of content) {
+      if (typeof item === "string") {
+        strings.push(item);
+      } else if (isPart(item) && item.text) {
+        strings.push(item.text);
+      }
+    }
+    return strings.length > 0 ? strings.join("\n") : null;
+  }
+
+  if (isPart(content) && content.text) {
+    return content.text;
+  }
+
+  return null;
+};
+
+// Convert parts array to string
+const convertPartsToString = (parts?: Part[]): string | null => {
+  if (!parts || parts.length === 0) {
+    return null;
+  }
+
+  const textParts: string[] = [];
+  for (const part of parts) {
+    if (part.text) {
+      textParts.push(part.text);
+    }
+  }
+
+  return textParts.length > 0 ? textParts.join("\n") : null;
 };

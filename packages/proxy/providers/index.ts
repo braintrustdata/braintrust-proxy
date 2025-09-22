@@ -1,2 +1,5 @@
-// Export Google provider utilities
-export { googleCompletionToOpenAICompletion } from "../src/providers/google";
+export {
+  googleCompletionToOpenAICompletion,
+  geminiParamsToOpenAIMessages,
+  geminiParamsToOpenAITools,
+} from "../src/providers/google";

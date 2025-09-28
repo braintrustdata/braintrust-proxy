@@ -569,7 +569,6 @@ export async function proxyV1({
     );
     stream = proxyStream;
 
-    console.log("proxyResponse", proxyResponse.status);
     setStatusCode(proxyResponse.status);
     if (!proxyResponse.ok) {
       responseFailed = true;

@@ -1,5 +1,4 @@
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {
   type ChatCompletionMessageParamType as Message,
   type MessageRoleType as MessageRole,
@@ -7,6 +6,7 @@ import {
   ObjectReferenceType,
 } from "./generated_types";
 import { Meter, MeterProvider } from "@opentelemetry/api";
+import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
 import {
   APISecret,
   AzureEntraSecretSchema,
@@ -569,8 +569,9 @@ export async function proxyV1({
     );
     stream = proxyStream;
 
+    console.log("proxyResponse", proxyResponse.status);
+    setStatusCode(proxyResponse.status);
     if (!proxyResponse.ok) {
-      setStatusCode(proxyResponse.status);
       responseFailed = true;
     }
 
@@ -1292,6 +1293,24 @@ async function fetchModelLoop(
   };
 }
 
+function stripFields(obj: any) {
+  delete obj.additionalProperties;
+
+  if (obj.anyOf) {
+    obj.anyOf.forEach(stripFields);
+  }
+
+  if (obj.properties) {
+    for (const value of Object.values(obj.properties)) {
+      stripFields(value);
+    }
+  }
+
+  if (obj.items) {
+    stripFields(obj.items);
+  }
+}
+
 async function fetchModel(
   modelSpec: ModelSpec | null,
   method: "GET" | "POST",
@@ -1700,7 +1719,9 @@ async function fetchOpenAI(
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
-        `${baseURL}/v1/projects/${project}/locations/${location}/${bodyData.model}:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
+        `${baseURL}/v1/projects/${project}/locations/${location}/${
+          bodyData.model
+        }:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
     }
@@ -2375,7 +2396,9 @@ async function fetchAnthropicChatCompletions({
       defaultLocation: "us-east5",
     });
     fullURL = new URL(
-      `${baseUrl}/${params.model}:${params.stream ? "streamRawPredict" : "rawPredict"}`,
+      `${baseUrl}/${params.model}:${
+        params.stream ? "streamRawPredict" : "rawPredict"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
     params["anthropic_version"] = "vertex-2023-10-16";
@@ -2447,64 +2470,15 @@ async function fetchAnthropicChatCompletions({
   };
 }
 
-function convertToNullable(obj: any) {
-  const anyOf = obj.anyOf;
-  if (anyOf) {
-    if (anyOf.length !== 2) {
-      throw new ProxyBadRequestError(
-        "Google only supports Optional types for unions",
-      );
-    }
-    const [a, b] = anyOf;
-    if (a.type === "null") {
-      Object.assign(obj, b);
-    } else if (b.type === "null") {
-      Object.assign(obj, a);
-    } else {
-      throw new ProxyBadRequestError(
-        "Google only supports Optional types for unions",
-      );
-    }
-    delete obj.anyOf;
-    obj.nullable = true;
-  }
-
-  if (obj.properties) {
-    for (const value of Object.values(obj.properties)) {
-      convertToNullable(value);
-    }
-  }
-
-  if (obj.items) {
-    convertToNullable(obj.items);
-  }
-}
-
-function stripFields(obj: any) {
-  delete obj.title;
-  delete obj.additionalProperties;
-  delete obj.default;
-
-  if (obj.properties) {
-    for (const value of Object.values(obj.properties)) {
-      stripFields(value);
-    }
-  }
-
-  if (obj.items) {
-    stripFields(obj.items);
-  }
-}
-
 async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
-  if (!schema || typeof schema !== "object") {
-    return schema;
-  }
-  await $RefParser.dereference(schema);
-  delete schema.$defs;
-  convertToNullable(schema);
-  stripFields(schema);
-  return schema;
+  const converted =
+    !schema || typeof schema !== "object"
+      ? schema
+      : await jsonSchemaToOpenAPISchema(schema);
+
+  stripFields(converted);
+
+  return converted;
 }
 
 async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
@@ -2784,7 +2758,9 @@ async function fetchGoogleChatCompletions({
       defaultLocation: "us-central1",
     });
     fullURL = new URL(
-      `${baseUrl}/${model}:${streamingMode ? "streamGenerateContent" : "generateContent"}`,
+      `${baseUrl}/${model}:${
+        streamingMode ? "streamGenerateContent" : "generateContent"
+      }`,
     );
     headers["authorization"] = `Bearer ${accessToken}`;
   }

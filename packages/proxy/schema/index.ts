@@ -356,6 +356,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/mistral-small-24b-instruct-2501": ["fireworks"],
   "accounts/fireworks/models/mixtral-8x7b-instruct": ["fireworks"],
   "accounts/fireworks/models/phi-3-vision-128k-instruct": ["fireworks"],
+  "anthropic.claude-sonnet-4-5-20250929-v1:0": ["bedrock"],
+  "us.anthropic.claude-sonnet-4-5-20250929-v1:0": ["bedrock"],
   "anthropic.claude-sonnet-4-20250514-v1:0": ["bedrock"],
   "us.anthropic.claude-sonnet-4-20250514-v1:0": ["bedrock"],
   "anthropic.claude-3-7-sonnet-20250219-v1:0": ["bedrock"],

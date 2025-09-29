@@ -3548,6 +3548,27 @@
     "flavor": "chat",
     "parent": "publishers/google/models/gemini-1.0-pro"
   },
+  "publishers/anthropic/models/claude-sonnet-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true
+  },
+  "publishers/anthropic/models/claude-sonnet-4-5@20250929": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "parent": "publishers/anthropic/models/claude-sonnet-4-5"
+  },
   "publishers/anthropic/models/claude-sonnet-4": {
     "format": "anthropic",
     "flavor": "chat",

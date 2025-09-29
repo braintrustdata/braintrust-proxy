@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  zod: 3.25.34
+  zod: 4.1.8
 
 importers:
 
@@ -43,13 +43,13 @@ importers:
         version: 1.19.0(@opentelemetry/api@1.7.0)
       braintrust:
         specifier: ^0.3.7
-        version: 0.3.7(zod@3.25.34)
+        version: 0.3.7(zod@4.1.8)
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
       zod:
-        specifier: 3.25.34
-        version: 3.25.34
+        specifier: 4.1.8
+        version: 4.1.8
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20241022.0
@@ -107,7 +107,7 @@ importers:
         version: 4.19.2
       openai:
         specifier: ^4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(zod@4.1.8)
       redis:
         specifier: ^4.6.8
         version: 4.6.8
@@ -244,13 +244,13 @@ importers:
         version: 9.0.2
       openai:
         specifier: 4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(zod@4.1.8)
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
       zod:
-        specifier: 3.25.34
-        version: 3.25.34
+        specifier: 4.1.8
+        version: 4.1.8
     devDependencies:
       '@types/content-disposition':
         specifier: ^0.5.8
@@ -2274,8 +2274,8 @@ packages:
     dependencies:
       google-auth-library: 9.15.1
       ws: 8.18.0
-      zod: 3.25.34
-      zod-to-json-schema: 3.23.5(zod@3.25.34)
+      zod: 4.1.8
+      zod-to-json-schema: 3.23.5(zod@4.1.8)
     transitivePeerDependencies:
       - bufferutil
       - encoding
@@ -4395,14 +4395,14 @@ packages:
     resolution: {integrity: sha512-cZy8Dq+uuIXbxCZpuLd2GJdeSO/lIzIspC2WtkqIpje5QyFbvLaI5wZtdUjLHjGZrlVX6GilejatWwVYYRc8tA==}
     dev: false
 
-  /@zodios/core@10.9.6(axios@1.11.0)(zod@3.25.34):
+  /@zodios/core@10.9.6(axios@1.11.0)(zod@4.1.8):
     resolution: {integrity: sha512-aH4rOdb3AcezN7ws8vDgBfGboZMk2JGGzEq/DtW65MhnRxyTGRuLJRWVQ/2KxDgWvV2F5oTkAS+5pnjKbl0n+A==}
     peerDependencies:
       axios: ^0.x || ^1.0.0
-      zod: 3.25.34
+      zod: 4.1.8
     dependencies:
       axios: 1.11.0
-      zod: 3.25.34
+      zod: 4.1.8
     dev: true
 
   /abbrev@1.1.1:
@@ -4928,11 +4928,11 @@ packages:
       fill-range: 7.1.1
     dev: true
 
-  /braintrust@0.3.7(zod@3.25.34):
+  /braintrust@0.3.7(zod@4.1.8):
     resolution: {integrity: sha512-P6nJLgM98IOiBvAsgfUn9dbrLhmTfvED/+2ouacImTgs9adlZoGrIib9BkRAm+keSTfKLBPFqMmUi7QZ4ClemQ==}
     hasBin: true
     peerDependencies:
-      zod: 3.25.34
+      zod: 4.1.8
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@next/env': 14.2.3
@@ -4954,8 +4954,8 @@ packages:
       slugify: 1.6.6
       source-map: 0.7.4
       uuid: 9.0.1
-      zod: 3.25.34
-      zod-to-json-schema: 3.23.5(zod@3.25.34)
+      zod: 4.1.8
+      zod-to-json-schema: 3.23.5(zod@4.1.8)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-web-identity'
       - supports-color
@@ -7950,7 +7950,7 @@ packages:
       workerd: 1.20250129.0
       ws: 8.18.0
       youch: 3.3.4
-      zod: 3.25.34
+      zod: 4.1.8
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8352,12 +8352,12 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /openai@4.104.0(zod@3.25.34):
+  /openai@4.104.0(zod@4.1.8):
     resolution: {integrity: sha512-p99EFNsA/yX6UhVO93f5kJsDRLAg+CTA2RBqdHK4RtK8u5IJw32Hyb2dTGKbnnFmnuoBv5r7Z2CURI9sGZpSuA==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: 3.25.34
+      zod: 4.1.8
     peerDependenciesMeta:
       ws:
         optional: true
@@ -8371,7 +8371,7 @@ packages:
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
-      zod: 3.25.34
+      zod: 4.1.8
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -8386,7 +8386,7 @@ packages:
     dependencies:
       '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
       '@liuli-util/fs-extra': 0.1.0
-      '@zodios/core': 10.9.6(axios@1.11.0)(zod@3.25.34)
+      '@zodios/core': 10.9.6(axios@1.11.0)(zod@4.1.8)
       axios: 1.11.0
       cac: 6.7.14
       handlebars: 4.7.8
@@ -8397,7 +8397,7 @@ packages:
       tanu: 0.1.13
       ts-pattern: 5.8.0
       whence: 2.1.0
-      zod: 3.25.34
+      zod: 4.1.8
     transitivePeerDependencies:
       - debug
       - react
@@ -11036,16 +11036,16 @@ packages:
       stacktracey: 2.1.8
     dev: true
 
-  /zod-to-json-schema@3.23.5(zod@3.25.34):
+  /zod-to-json-schema@3.23.5(zod@4.1.8):
     resolution: {integrity: sha512-5wlSS0bXfF/BrL4jPAbz9da5hDlDptdEppYfe+x4eIJ7jioqKG9uUxOwPzqof09u/XeVdrgFu29lZi+8XNDJtA==}
     peerDependencies:
-      zod: 3.25.34
+      zod: 4.1.8
     dependencies:
-      zod: 3.25.34
+      zod: 4.1.8
     dev: false
 
-  /zod@3.25.34:
-    resolution: {integrity: sha512-lZHvSc2PpWdcfpHlyB33HA9nqP16GpC9IpiG4lYq9jZCJVLZNnWd6Y1cj79bcLSBKTkxepfpjckPv5Y5VOPlwA==}
+  /zod@4.1.8:
+    resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
 
   github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f:
     resolution: {tarball: https://codeload.github.com/openai/openai-realtime-api-beta/tar.gz/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f}

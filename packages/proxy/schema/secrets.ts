@@ -4,7 +4,7 @@ import { ModelSchema } from "./models";
 export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).nullish(),
-    customModels: z.record(ModelSchema).nullish(),
+    customModels: z.record(z.string(), ModelSchema).nullish(),
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),
@@ -88,7 +88,7 @@ const APISecretBaseSchema = z
     org_name: z.string().nullish(),
     name: z.string().nullish(),
     secret: z.string(),
-    metadata: z.record(z.unknown()).nullish(),
+    metadata: z.record(z.string(), z.unknown()).nullish(),
   })
   .strict();
 

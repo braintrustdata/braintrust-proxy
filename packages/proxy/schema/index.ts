@@ -447,8 +447,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/mistralai/models/mistral-large-2411": ["vertex"],
   "publishers/mistralai/models/mistral-nemo": ["vertex"],
   "publishers/mistralai/models/codestral-2501": ["vertex"],
-  "publishers/anthropic/models/claude-sonnet-4-5": ["vertex"],
-  "publishers/anthropic/models/claude-sonnet-4-5@20250929": ["vertex"],
   "publishers/anthropic/models/claude-sonnet-4": ["vertex"],
   "publishers/anthropic/models/claude-sonnet-4@20250514": ["vertex"],
   "publishers/anthropic/models/claude-3-7-sonnet": ["vertex"],

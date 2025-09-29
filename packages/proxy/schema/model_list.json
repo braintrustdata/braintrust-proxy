@@ -725,6 +725,34 @@
     "displayName": "Text Davinci 003",
     "deprecated": true
   },
+  "claude-sonnet-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
+  "claude-sonnet-4-5-20250929": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "claude-sonnet-4-5",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "claude-sonnet-4-20250514": {
     "format": "anthropic",
     "flavor": "chat",
@@ -2811,6 +2839,35 @@
     "max_input_tokens": 42000,
     "max_output_tokens": 4000
   },
+  "anthropic.claude-sonnet-4-5-20250929-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
+  "us.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "US Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "anthropic.claude-sonnet-4-20250514-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -3490,6 +3547,27 @@
     "format": "google",
     "flavor": "chat",
     "parent": "publishers/google/models/gemini-1.0-pro"
+  },
+  "publishers/anthropic/models/claude-sonnet-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "displayName": "Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true
+  },
+  "publishers/anthropic/models/claude-sonnet-4-5@20250929": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "parent": "publishers/anthropic/models/claude-sonnet-4-5"
   },
   "publishers/anthropic/models/claude-sonnet-4": {
     "format": "anthropic",

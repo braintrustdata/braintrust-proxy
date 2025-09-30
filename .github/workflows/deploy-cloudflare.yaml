@@ -17,8 +17,12 @@ jobs:
       - uses: pnpm/action-setup@v4
       - run: pnpm install
       - run: pnpm run build --filter=@braintrust/ai-proxy-wrangler
-      - run: cp wrangler-template.toml wrangler.toml
+      - name: Configure wrangler.toml
         working-directory: apis/cloudflare
+        run: |
+          cp wrangler-template.toml wrangler.toml
+          sed -i 's/<YOUR_KV_ID>/${{ secrets.CLOUDFLARE_KV_ID }}/g' wrangler.toml
+          sed -i 's/<YOUR_PASSWORD>/${{ secrets.PROMETHEUS_SCRAPE_PASSWORD }}/g' wrangler.toml
       - run: pnpm run deploy
         working-directory: apis/cloudflare
         env:

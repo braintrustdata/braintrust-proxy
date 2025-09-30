@@ -35,18 +35,17 @@ export function createResponseStream(): [
 }
 
 export function createHeaderHandlers() {
-  const headers: Record<string, string> = {};
-  let statusCode = 200;
-
-  const setHeader = (name: string, value: string) => {
-    headers[name] = value;
+  const ref = {
+    headers: {} as Record<string, string>,
+    statusCode: -1,
+    setHeader(name: string, value: string) {
+      ref.headers[name] = value;
+    },
+    setStatusCode(code: number) {
+      ref.statusCode = code;
+    },
   };
-
-  const setStatusCode = (code: number) => {
-    statusCode = code;
-  };
-
-  return { headers, statusCode, setHeader, setStatusCode };
+  return ref;
 }
 
 export const getKnownApiSecrets: Parameters<
@@ -107,10 +106,16 @@ export async function callProxyV1<Input extends object, Output extends object>({
   ...request
 }: Partial<Omit<Parameters<typeof proxyV1>, "body">> & {
   body: Input;
-}) {
+}): Promise<
+  ReturnType<typeof createHeaderHandlers> & {
+    chunks: Uint8Array[];
+    responseText: string;
+    events: ReturnType<typeof chucksToEvents<Output>>;
+    json: () => Output;
+  }
+> {
   const [writableStream, chunksPromise] = createResponseStream();
-  const { headers, statusCode, setHeader, setStatusCode } =
-    createHeaderHandlers();
+  const ref = createHeaderHandlers();
 
   let timeoutId: NodeJS.Timeout | null = null;
   const timeoutPromise = new Promise<Uint8Array[]>((_, reject) => {
@@ -129,8 +134,8 @@ export async function callProxyV1<Input extends object, Output extends object>({
         "content-type": "application/json",
         authorization: `Bearer dummy-token`,
       },
-      setHeader,
-      setStatusCode,
+      setHeader: ref.setHeader,
+      setStatusCode: ref.setStatusCode,
       res: writableStream,
       getApiSecrets: getKnownApiSecrets,
       cacheGet: async () => null,
@@ -146,22 +151,24 @@ export async function callProxyV1<Input extends object, Output extends object>({
     const chunks = await Promise.race([chunksPromise, timeoutPromise]);
     const responseText = new TextDecoder().decode(Buffer.concat(chunks));
 
-    return {
-      chunks,
-      headers,
-      statusCode,
-      responseText,
-      events() {
-        return chucksToEvents<Output>(chunks);
-      },
-      json() {
-        try {
-          return JSON.parse(responseText) as Output;
-        } catch (e) {
-          return null;
-        }
-      },
+    // TODO: avoid object reference trick
+    // @ts-expect-error
+    ref.chunks = chunks;
+    // @ts-expect-error
+    ref.responseText = responseText;
+    // @ts-expect-error
+    ref.events = () => chucksToEvents<Output>(chunks);
+    // @ts-expect-error
+    ref.json = () => {
+      try {
+        return JSON.parse(responseText) as Output;
+      } catch (e) {
+        return null;
+      }
     };
+
+    // @ts-expect-error
+    return ref;
   } catch (error) {
     throw error;
   } finally {

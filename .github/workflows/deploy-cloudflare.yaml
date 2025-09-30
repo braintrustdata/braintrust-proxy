@@ -16,6 +16,7 @@ jobs:
           node-version: 20
       - uses: pnpm/action-setup@v4
       - run: pnpm install
-      - run: npx wrangler deploy
+      - run: pnpm run deploy
+        working-directory: apis/cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

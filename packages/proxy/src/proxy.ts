@@ -569,8 +569,8 @@ export async function proxyV1({
     );
     stream = proxyStream;
 
-    setStatusCode(proxyResponse.status);
     if (!proxyResponse.ok) {
+      setStatusCode(proxyResponse.status);
       responseFailed = true;
     }
 

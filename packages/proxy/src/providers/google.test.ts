@@ -4,7 +4,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
-import { GenerateContentParameters } from "@google/genai";
+import { GenerateContentParameters } from "../../types/google";
 import {
   geminiParamsToOpenAIParams,
   geminiParamsToOpenAIMessages,

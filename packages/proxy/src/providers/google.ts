@@ -1,5 +1,6 @@
-import { type ChatCompletionMessageParamType as Message } from "../generated_types";
-import {
+import type { ChatCompletionMessageParamType as Message } from "../generated_types";
+import { finishReasonSchema } from "../../types/google";
+import type {
   Content,
   ContentUnion,
   ContentListUnion,
@@ -10,8 +11,8 @@ import {
   GenerateContentResponse,
   GenerateContentResponseUsageMetadata,
   ThinkingConfig,
-} from "@google/genai";
-import {
+} from "../../types/google";
+import type {
   OpenAIChatCompletion,
   OpenAIChatCompletionChoice,
   OpenAIChatCompletionChunk,
@@ -160,25 +161,27 @@ export async function openAIMessagesToGoogleMessages(
   return sortedContent;
 }
 
+const finishReason = finishReasonSchema.Enum;
+
 function translateFinishReason(
-  reason?: FinishReason,
+  reason?: FinishReason | null,
 ): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
-    case FinishReason.MAX_TOKENS:
+    case finishReason.MAX_TOKENS:
       return "length";
-    case FinishReason.SAFETY:
-    case FinishReason.PROHIBITED_CONTENT:
-    case FinishReason.SPII:
-    case FinishReason.BLOCKLIST:
+    case finishReason.SAFETY:
+    case finishReason.PROHIBITED_CONTENT:
+    case finishReason.SPII:
+    case finishReason.BLOCKLIST:
       return "content_filter";
-    case FinishReason.STOP:
+    case finishReason.STOP:
       return "stop";
-    case FinishReason.RECITATION:
-    case FinishReason.LANGUAGE:
-    case FinishReason.OTHER:
-    case FinishReason.FINISH_REASON_UNSPECIFIED:
-    case FinishReason.MALFORMED_FUNCTION_CALL:
+    case finishReason.RECITATION:
+    case finishReason.LANGUAGE:
+    case finishReason.OTHER:
+    case finishReason.FINISH_REASON_UNSPECIFIED:
+    case finishReason.MALFORMED_FUNCTION_CALL:
       return "content_filter";
     case undefined:
     default:
@@ -255,7 +258,7 @@ export function googleEventToOpenAIChatEvent(
 }
 
 const geminiUsageToOpenAIUsage = (
-  usageMetadata?: GenerateContentResponseUsageMetadata,
+  usageMetadata?: GenerateContentResponseUsageMetadata | null,
 ): OpenAICompletionUsage | undefined => {
   if (!usageMetadata) {
     return undefined;
@@ -308,7 +311,7 @@ export function googleCompletionToOpenAICompletion(
           })) || [];
       return {
         logprobs: null,
-        index: candidate.index || 0,
+        index: "index" in candidate ? candidate.index : 0,
         message: {
           role: "assistant",
           content: firstText?.text ?? "",
@@ -559,7 +562,7 @@ export const geminiParamsToOpenAITools = (
             type: "function",
             function: {
               name: funcDecl.name,
-              description: funcDecl.description,
+              description: funcDecl.description ?? undefined,
               parameters:
                 (funcDecl.parameters as Record<string, unknown>) || {},
             },
@@ -698,7 +701,7 @@ const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
 
 // Map Gemini role to OpenAI role
 const mapGeminiRoleToOpenAI = (
-  geminiRole?: string,
+  geminiRole?: string | null,
 ): "system" | "user" | "assistant" | "tool" => {
   if (!geminiRole) return "user";
 
@@ -719,7 +722,7 @@ const mapGeminiRoleToOpenAI = (
 
 // Convert Gemini parts to OpenAI message content
 const convertPartsToMessageContent = (
-  parts?: Part[],
+  parts?: Part[] | null,
 ): string | Array<any> | null => {
   if (!parts || parts.length === 0) {
     return null;
@@ -843,7 +846,7 @@ const convertContentToString = (content: ContentUnion): string | null => {
 };
 
 // Convert parts array to string
-const convertPartsToString = (parts?: Part[]): string | null => {
+const convertPartsToString = (parts?: Part[] | null): string | null => {
   if (!parts || parts.length === 0) {
     return null;
   }

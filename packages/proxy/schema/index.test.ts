@@ -1,5 +1,5 @@
 import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
-import { GenerateContentParameters } from "@google/genai";
+import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { expect, it } from "vitest";
 import { ModelFormat, translateParams } from "./index";

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const finishReasonSchema = z.enum([
+export const finishReasonSchema = z.enum([
   "FINISH_REASON_UNSPECIFIED",
   "STOP",
   "MAX_TOKENS",
@@ -16,6 +16,8 @@ const finishReasonSchema = z.enum([
   "UNEXPECTED_TOOL_CALL",
   "TOO_MANY_TOOL_CALLS",
 ]);
+
+export type FinishReason = z.infer<typeof finishReasonSchema>;
 
 export const generateContentResponseFinishReasonSchema = finishReasonSchema;
 
@@ -67,8 +69,8 @@ const schedulingSchema = z.enum([
 ]);
 
 const videoMetadataSchema = z.object({
-  endOffset: z.string().optional(),
-  startOffset: z.string().optional(),
+  endOffset: z.string().nullish(),
+  startOffset: z.string().nullish(),
 });
 
 const outcomeSchema = z.enum([
@@ -79,148 +81,152 @@ const outcomeSchema = z.enum([
 ]);
 
 const codeExecutionResultSchema = z.object({
-  outcome: outcomeSchema.optional(),
-  output: z.string().optional(),
+  outcome: outcomeSchema.nullish(),
+  output: z.string().nullish(),
 });
 
 const languageSchema = z.enum(["LANGUAGE_UNSPECIFIED", "PYTHON"]);
 
 const executableCodeSchema = z.object({
-  code: z.string().optional(),
-  language: languageSchema.optional(),
+  code: z.string().nullish(),
+  language: languageSchema.nullish(),
 });
 
 const fileDataSchema = z.object({
-  fileUri: z.string().optional(),
-  mimeType: z.string().optional(),
+  fileUri: z.string().nullish(),
+  mimeType: z.string().nullish(),
 });
 
 const functionCallSchema = z.object({
-  id: z.string().optional(),
-  args: z.record(z.unknown()).optional(),
-  name: z.string().optional(),
+  id: z.string().nullish(),
+  args: z.record(z.unknown()).nullish(),
+  name: z.string().nullish(),
 });
 
 const functionResponseSchema = z.object({
-  id: z.string().optional(),
-  name: z.string().optional(),
-  response: z.record(z.unknown()).optional(),
+  id: z.string().nullish(),
+  name: z.string().nullish(),
+  response: z.record(z.unknown()).nullish(),
 });
 
 const blobSchema = z.object({
-  data: z.string().optional(),
-  mimeType: z.string().optional(),
+  data: z.string().nullish(),
+  mimeType: z.string().nullish(),
 });
 
 const partSchema = z.object({
-  videoMetadata: videoMetadataSchema.optional(),
-  thought: z.boolean().optional(),
-  codeExecutionResult: codeExecutionResultSchema.optional(),
-  executableCode: executableCodeSchema.optional(),
-  fileData: fileDataSchema.optional(),
-  functionCall: functionCallSchema.optional(),
-  functionResponse: functionResponseSchema.optional(),
-  inlineData: blobSchema.optional(),
-  text: z.string().optional(),
+  videoMetadata: videoMetadataSchema.nullish(),
+  thought: z.boolean().nullish(),
+  codeExecutionResult: codeExecutionResultSchema.nullish(),
+  executableCode: executableCodeSchema.nullish(),
+  fileData: fileDataSchema.nullish(),
+  functionCall: functionCallSchema.nullish(),
+  functionResponse: functionResponseSchema.nullish(),
+  inlineData: blobSchema.nullish(),
+  text: z.string().nullish(),
 });
 
+export type Part = z.infer<typeof partSchema>;
+
 const contentSchema = z.object({
-  parts: z.array(partSchema).optional(),
-  role: z.string().optional(),
+  parts: z.array(partSchema).nullish(),
+  role: z.string().nullish(),
 });
+
+export type Content = z.infer<typeof contentSchema>;
 
 export const generateContentResponseContentSchema = contentSchema;
 
 const citationSourcesSchema = z.object({
-  startIndex: z.number().optional(),
-  endIndex: z.number().optional(),
-  uri: z.string().optional(),
-  license: z.string().optional(),
+  startIndex: z.number().nullish(),
+  endIndex: z.number().nullish(),
+  uri: z.string().nullish(),
+  license: z.string().nullish(),
 });
 
 const citationMetadataSchema = z.object({
-  citationSources: z.array(citationSourcesSchema).optional(),
+  citationSources: z.array(citationSourcesSchema).nullish(),
 });
 
 const safetyRatingSchema = z.object({
-  category: harmCategorySchema.optional(),
-  probability: harmProbabilitySchema.optional(),
-  blocked: z.boolean().optional(),
+  category: harmCategorySchema.nullish(),
+  probability: harmProbabilitySchema.nullish(),
+  blocked: z.boolean().nullish(),
 });
 
 const logprobsResultCandidateSchema = z.object({
-  logProbability: z.number().optional(),
-  token: z.string().optional(),
-  tokenId: z.number().optional(),
+  logProbability: z.number().nullish(),
+  token: z.string().nullish(),
+  tokenId: z.number().nullish(),
 });
 
 const logprobsResultTopCandidatesSchema = z.object({
-  candidates: z.array(logprobsResultCandidateSchema).optional(),
+  candidates: z.array(logprobsResultCandidateSchema).nullish(),
 });
 
 const logprobsResultSchema = z.object({
-  topCandidates: z.array(logprobsResultTopCandidatesSchema).optional(),
-  chosenCandidates: z.array(logprobsResultCandidateSchema).optional(),
+  topCandidates: z.array(logprobsResultTopCandidatesSchema).nullish(),
+  chosenCandidates: z.array(logprobsResultCandidateSchema).nullish(),
 });
 
 const groundingPassageSchema = z.object({
-  passageId: z.string().optional(),
-  partIndex: z.number().optional(),
+  passageId: z.string().nullish(),
+  partIndex: z.number().nullish(),
 });
 
 const semanticRetrieverChunkSchema = z.object({
-  source: z.string().optional(),
-  chunk: z.string().optional(),
+  source: z.string().nullish(),
+  chunk: z.string().nullish(),
 });
 
 const attributionSourceId = z.object({
-  groundingPassage: groundingPassageSchema.optional(),
-  semanticRetrieverChunk: semanticRetrieverChunkSchema.optional(),
+  groundingPassage: groundingPassageSchema.nullish(),
+  semanticRetrieverChunk: semanticRetrieverChunkSchema.nullish(),
 });
 
 const groundingAttributionSchema = z.object({
-  sourceId: attributionSourceId.optional(),
-  content: contentSchema.optional(),
+  sourceId: attributionSourceId.nullish(),
+  content: contentSchema.nullish(),
 });
 
 const webSchema = z.object({
-  uri: z.string().optional(),
-  title: z.string().optional(),
+  uri: z.string().nullish(),
+  title: z.string().nullish(),
 });
 
 const groundingChunkSchema = z.object({
-  web: webSchema.optional(),
+  web: webSchema.nullish(),
 });
 
 const segmentSchema = z.object({
-  partIndex: z.number().optional(),
-  startIndex: z.number().optional(),
-  endIndex: z.number().optional(),
-  text: z.string().optional(),
+  partIndex: z.number().nullish(),
+  startIndex: z.number().nullish(),
+  endIndex: z.number().nullish(),
+  text: z.string().nullish(),
 });
 
 const groundingSupportSchema = z.object({
-  groundingChunkIndices: z.array(z.number()).optional(),
-  confidenceScores: z.array(z.number()).optional(),
-  segment: segmentSchema.optional(),
+  groundingChunkIndices: z.array(z.number()).nullish(),
+  confidenceScores: z.array(z.number()).nullish(),
+  segment: segmentSchema.nullish(),
 });
 
 const searchEntryPointSchema = z.object({
-  renderedContent: z.string().optional(),
-  sdkBlob: z.string().optional(),
+  renderedContent: z.string().nullish(),
+  sdkBlob: z.string().nullish(),
 });
 
 const retrievalMetadataSchema = z.object({
-  googleSearchDynamicRetrievalScore: z.number().optional(),
+  googleSearchDynamicRetrievalScore: z.number().nullish(),
 });
 
 const topCandidatesSchema = z.object({
-  candidates: z.unknown().optional(), // TODO: use candidateSchema
+  candidates: z.unknown().nullish(), // TODO: use candidateSchema
 });
 
 const logpropsResultSchema = z.object({
-  topCandidates: z.array(topCandidatesSchema).optional(),
-  chosenCandidates: z.array(z.unknown()).optional(), // TODO: use candidateSchema
+  topCandidates: z.array(topCandidatesSchema).nullish(),
+  chosenCandidates: z.array(z.unknown()).nullish(), // TODO: use candidateSchema
 });
 
 const urlRetrievalStatusSchema = z.enum([
@@ -232,74 +238,78 @@ const urlRetrievalStatusSchema = z.enum([
 ]);
 
 const urlMetadataSchema = z.object({
-  retrievedUrl: z.string().optional(),
-  urlRetrievalStatus: urlRetrievalStatusSchema.optional(),
+  retrievedUrl: z.string().nullish(),
+  urlRetrievalStatus: urlRetrievalStatusSchema.nullish(),
 });
 
 const urlContextMetadataSchema = z.object({
-  urlMetadata: z.array(urlMetadataSchema).optional(),
+  urlMetadata: z.array(urlMetadataSchema).nullish(),
 });
 
 const groundingMetadataSchema = z.object({
-  groundingChunks: z.array(groundingChunkSchema).optional(),
-  groundingSupports: z.array(groundingSupportSchema).optional(),
-  webSearchQueries: z.array(z.string()).optional(),
-  searchEntryPoint: searchEntryPointSchema.optional(),
-  retrievalMetadata: retrievalMetadataSchema.optional(),
-  avgLogprobs: z.number().optional(),
-  logprobsResult: logpropsResultSchema.optional(),
-  urlContextMetadata: urlContextMetadataSchema.optional(),
-  index: z.number().optional(),
+  groundingChunks: z.array(groundingChunkSchema).nullish(),
+  groundingSupports: z.array(groundingSupportSchema).nullish(),
+  webSearchQueries: z.array(z.string()).nullish(),
+  searchEntryPoint: searchEntryPointSchema.nullish(),
+  retrievalMetadata: retrievalMetadataSchema.nullish(),
+  avgLogprobs: z.number().nullish(),
+  logprobsResult: logpropsResultSchema.nullish(),
+  urlContextMetadata: urlContextMetadataSchema.nullish(),
+  index: z.number().nullish(),
 });
 
 export const generateContentResponseGroundingMetadataSchema =
   groundingMetadataSchema;
 
 const candidateSchema = z.object({
-  content: contentSchema.optional(),
-  finishReason: finishReasonSchema.optional(),
-  safetyRatings: z.array(safetyRatingSchema).optional(),
-  citationMetadata: citationMetadataSchema.optional(),
-  tokenCount: z.number().optional(),
-  groundingAttributions: z.array(groundingAttributionSchema).optional(),
-  groundingMetadata: groundingMetadataSchema.optional(),
-  finishMessage: z.string().optional(),
-  logprobs: logprobsResultSchema.optional(),
+  content: contentSchema.nullish(),
+  finishReason: finishReasonSchema.nullish(),
+  safetyRatings: z.array(safetyRatingSchema).nullish(),
+  citationMetadata: citationMetadataSchema.nullish(),
+  tokenCount: z.number().nullish(),
+  groundingAttributions: z.array(groundingAttributionSchema).nullish(),
+  groundingMetadata: groundingMetadataSchema.nullish(),
+  finishMessage: z.string().nullish(),
+  logprobs: logprobsResultSchema.nullish(),
 });
 
 export const generateContentResponseCandidateSchema = candidateSchema;
 
 const modalityTokenCountSchema = z.object({
-  modality: mediaModalitySchema.optional(),
-  tokenCount: z.number().optional(),
+  modality: mediaModalitySchema.nullish(),
+  tokenCount: z.number().nullish(),
 });
 
 export const generateContentResponsePromptFeedbackSchema = z.object({
-  blockReason: blockedReasonSchema.optional(),
-  safetyRatings: z.array(safetyRatingSchema).optional(),
+  blockReason: blockedReasonSchema.nullish(),
+  safetyRatings: z.array(safetyRatingSchema).nullish(),
 });
 
 // TODO: a bit silly to have this prefix
 export const generateContentResponseUsageMetadataSchema = z.object({
-  promptTokenCount: z.number().optional(),
-  cachedContentTokenCount: z.number().optional(),
-  candidatesTokenCount: z.number().optional(),
-  toolUsePromptTokenCount: z.number().optional(),
-  thoughtsTokenCount: z.number().optional(),
-  totalTokenCount: z.number().optional(),
-  promptTokensDetails: z.array(modalityTokenCountSchema).optional(),
-  cacheTokensDetails: z.array(modalityTokenCountSchema).optional(),
-  candidatesTokensDetails: z.array(modalityTokenCountSchema).optional(),
-  toolUsePromptTokensDetails: z.array(modalityTokenCountSchema).optional(),
+  promptTokenCount: z.number().nullish(),
+  cachedContentTokenCount: z.number().nullish(),
+  candidatesTokenCount: z.number().nullish(),
+  toolUsePromptTokenCount: z.number().nullish(),
+  thoughtsTokenCount: z.number().nullish(),
+  totalTokenCount: z.number().nullish(),
+  promptTokensDetails: z.array(modalityTokenCountSchema).nullish(),
+  cacheTokensDetails: z.array(modalityTokenCountSchema).nullish(),
+  candidatesTokensDetails: z.array(modalityTokenCountSchema).nullish(),
+  toolUsePromptTokensDetails: z.array(modalityTokenCountSchema).nullish(),
 });
 
+export type GenerateContentResponseUsageMetadata = z.infer<
+  typeof generateContentResponseUsageMetadataSchema
+>;
+
 export const generateContentResponseSchema = z.object({
-  candidates: z.array(candidateSchema).optional(),
-  createTime: z.string().optional(),
-  responseId: z.string().optional(),
-  modelVersion: z.string().optional(),
-  promptFeedback: generateContentResponsePromptFeedbackSchema.optional(),
-  usageMetadata: generateContentResponseUsageMetadataSchema.optional(),
+  candidates: z.array(candidateSchema).nullish(),
+  createTime: z.string().nullish(),
+  responseId: z.string().nullish(),
+  modelVersion: z.string().nullish(),
+  promptFeedback: generateContentResponsePromptFeedbackSchema.nullish(),
+  usageMetadata: generateContentResponseUsageMetadataSchema.nullish(),
 });
 
 export type GenerateContentResponse = z.infer<
@@ -309,57 +319,57 @@ export type GenerateContentResponse = z.infer<
 const toolCodeExecutionSchema = z.object({});
 
 const vertexAiSearchSchema = z.object({
-  datastore: z.string().optional(),
-  engine: z.string().optional(),
+  datastore: z.string().nullish(),
+  engine: z.string().nullish(),
 });
 
 const vertexRagStoreRagResourceSchema = z.object({
-  ragCorpus: z.string().optional(),
-  ragFileIds: z.array(z.string()).optional(),
+  ragCorpus: z.string().nullish(),
+  ragFileIds: z.array(z.string()).nullish(),
 });
 
 const ragRetrievalConfigFilterSchema = z.object({
-  metadataFilter: z.string().optional(),
-  vectorDistanceThreshold: z.string().optional(),
-  vectorSimilarityThreshold: z.string().optional(),
+  metadataFilter: z.string().nullish(),
+  vectorDistanceThreshold: z.string().nullish(),
+  vectorSimilarityThreshold: z.string().nullish(),
 });
 
 const ragRetrievalConfigHybridSearchSchema = z.object({
-  alpha: z.number().optional(),
+  alpha: z.number().nullish(),
 });
 
 const ragRetrievalConfigRankingLlmRankerSchema = z.object({
-  modelName: z.string().optional(),
+  modelName: z.string().nullish(),
 });
 
 const ragRetrievalConfigRankingRankServiceSchema = z.object({
-  modelName: z.string().optional(),
+  modelName: z.string().nullish(),
 });
 
 const ragRetrievalConfigRankingSchema = z.object({
-  llmRanker: ragRetrievalConfigRankingLlmRankerSchema.optional(),
-  rankService: ragRetrievalConfigRankingRankServiceSchema.optional(),
+  llmRanker: ragRetrievalConfigRankingLlmRankerSchema.nullish(),
+  rankService: ragRetrievalConfigRankingRankServiceSchema.nullish(),
 });
 
 const ragRetrievalConfigSchema = z.object({
-  filter: ragRetrievalConfigFilterSchema.optional(),
-  hybridSearch: ragRetrievalConfigHybridSearchSchema.optional(),
-  ranking: ragRetrievalConfigRankingSchema.optional(),
-  topK: z.number().optional(),
+  filter: ragRetrievalConfigFilterSchema.nullish(),
+  hybridSearch: ragRetrievalConfigHybridSearchSchema.nullish(),
+  ranking: ragRetrievalConfigRankingSchema.nullish(),
+  topK: z.number().nullish(),
 });
 
 const vertexRagStoreSchema = z.object({
-  ragCorpora: z.array(z.string()).optional(),
-  ragResources: z.array(vertexRagStoreRagResourceSchema).optional(),
-  ragRetrievalConfig: ragRetrievalConfigSchema.optional(),
-  similarityTopK: z.number().optional(),
-  vectorDistanceThreshold: z.number().optional(),
+  ragCorpora: z.array(z.string()).nullish(),
+  ragResources: z.array(vertexRagStoreRagResourceSchema).nullish(),
+  ragRetrievalConfig: ragRetrievalConfigSchema.nullish(),
+  similarityTopK: z.number().nullish(),
+  vectorDistanceThreshold: z.number().nullish(),
 });
 
 const retrievalSchema = z.object({
-  disableAttribution: z.boolean().optional(),
-  vertexAiSearch: vertexAiSearchSchema.optional(),
-  vertexRagStore: vertexRagStoreSchema.optional(),
+  disableAttribution: z.boolean().nullish(),
+  vertexAiSearch: vertexAiSearchSchema.nullish(),
+  vertexRagStore: vertexRagStoreSchema.nullish(),
 });
 
 const googleSearchSchema = z.object({});
@@ -370,13 +380,13 @@ const dynamicRetrievalConfigModeSchema = z.enum([
 ]);
 
 const dynamicRetrievalConfigSchema = z.object({
-  mode: dynamicRetrievalConfigModeSchema.optional(),
-  dynamicThreshold: z.number().optional(),
+  mode: dynamicRetrievalConfigModeSchema.nullish(),
+  dynamicThreshold: z.number().nullish(),
 });
 
 const googleSearchRetrievalSchema = z.object({
-  mode: dynamicRetrievalConfigSchema.optional(),
-  dynamicThreshold: z.number().optional(),
+  mode: dynamicRetrievalConfigSchema.nullish(),
+  dynamicThreshold: z.number().nullish(),
 });
 
 const enterpriseWebSearchSchema = z.object({});
@@ -386,36 +396,36 @@ const googleMapsSchema = z.object({
 });
 
 const functionDeclarationSchema = z.object({
-  description: z.string().optional(),
-  name: z.string().optional(),
-  parameters: z.lazy(() => schemaSchema).optional(),
-  response: z.lazy(() => schemaSchema).optional(),
+  description: z.string().nullish(),
+  name: z.string().nullish(),
+  parameters: z.lazy(() => schemaSchema).nullish(),
+  response: z.lazy(() => schemaSchema).nullish(),
 });
 
 const toolSchema = z.object({
-  retrieval: retrievalSchema.optional(),
-  googleSearch: googleSearchSchema.optional(),
-  googleSearchRetrieval: googleSearchRetrievalSchema.optional(),
-  enterpriseWebSearch: enterpriseWebSearchSchema.optional(),
-  googleMaps: googleMapsSchema.optional(),
-  codeExecution: toolCodeExecutionSchema.optional(),
-  functionDeclarations: z.array(functionDeclarationSchema).optional(),
+  retrieval: retrievalSchema.nullish(),
+  googleSearch: googleSearchSchema.nullish(),
+  googleSearchRetrieval: googleSearchRetrievalSchema.nullish(),
+  enterpriseWebSearch: enterpriseWebSearchSchema.nullish(),
+  googleMaps: googleMapsSchema.nullish(),
+  codeExecution: toolCodeExecutionSchema.nullish(),
+  functionDeclarations: z.array(functionDeclarationSchema).nullish(),
 });
 
 const functionCallingConfigSchema = z.object({
-  mode: z.enum(["MODE_UNSPECIFIED", "AUTO", "ANY", "NONE"]).optional(),
-  allowedFunctionNames: z.array(z.string()).optional(),
+  mode: z.enum(["MODE_UNSPECIFIED", "AUTO", "ANY", "NONE"]).nullish(),
+  allowedFunctionNames: z.array(z.string()).nullish(),
 });
 
 const retrievalConfigSchema = z.object({
-  maxChunksToRetrieve: z.number().optional(),
-  minScore: z.number().optional(),
+  maxChunksToRetrieve: z.number().nullish(),
+  minScore: z.number().nullish(),
   filters: z
     .object({
       metadataFilters: z
         .array(
           z.object({
-            key: z.string().optional(),
+            key: z.string().nullish(),
             operation: z
               .enum([
                 "OPERATOR_UNSPECIFIED",
@@ -434,20 +444,20 @@ const retrievalConfigSchema = z.object({
                 "NOT_IN",
                 "CUSTOM",
               ])
-              .optional(),
-            stringValue: z.string().optional(),
-            numericValue: z.number().optional(),
-            conditions: z.lazy(() => z.array(z.unknown())).optional(),
+              .nullish(),
+            stringValue: z.string().nullish(),
+            numericValue: z.number().nullish(),
+            conditions: z.lazy(() => z.array(z.unknown())).nullish(),
           }),
         )
-        .optional(),
+        .nullish(),
     })
-    .optional(),
+    .nullish(),
 });
 
 const toolConfigSchema = z.object({
-  functionCallingConfig: functionCallingConfigSchema.optional(),
-  retrievalConfig: retrievalConfigSchema.optional(),
+  functionCallingConfig: functionCallingConfigSchema.nullish(),
+  retrievalConfig: retrievalConfigSchema.nullish(),
 });
 
 const typeSchema = z.enum([
@@ -461,43 +471,43 @@ const typeSchema = z.enum([
 ]);
 
 const schemaSchema: z.ZodSchema<any> = z.object({
-  anyOf: z.lazy(() => z.array(schemaSchema)).optional(),
-  default: z.unknown().optional(),
-  description: z.string().optional(),
-  enum: z.array(z.string()).optional(),
-  example: z.unknown().optional(),
-  format: z.string().optional(),
-  items: z.lazy(() => schemaSchema).optional(),
-  maxItems: z.string().optional(), // genai sdk shows string instead of number
-  maxLength: z.string().optional(), // genai sdk shows string instead of number
-  maxProperties: z.string().optional(), // genai sdk shows string instead of number
-  maximum: z.number().optional(),
-  minItems: z.string().optional(), // genai sdk shows string instead of number
-  minLength: z.string().optional(), // genai sdk shows string instead of number
-  minProperties: z.string().optional(), // genai sdk shows string instead of number
-  minimum: z.number().optional(),
-  nullable: z.boolean().optional(),
-  pattern: z.string().optional(),
-  properties: z.lazy(() => z.record(schemaSchema)).optional(),
-  propertyOrdering: z.array(z.string()).optional(),
-  required: z.array(z.string()).optional(),
-  title: z.string().optional(),
-  type: typeSchema.optional(),
+  anyOf: z.lazy(() => z.array(schemaSchema)).nullish(),
+  default: z.unknown().nullish(),
+  description: z.string().nullish(),
+  enum: z.array(z.string()).nullish(),
+  example: z.unknown().nullish(),
+  format: z.string().nullish(),
+  items: z.lazy(() => schemaSchema).nullish(),
+  maxItems: z.string().nullish(), // genai sdk shows string instead of number
+  maxLength: z.string().nullish(), // genai sdk shows string instead of number
+  maxProperties: z.string().nullish(), // genai sdk shows string instead of number
+  maximum: z.number().nullish(),
+  minItems: z.string().nullish(), // genai sdk shows string instead of number
+  minLength: z.string().nullish(), // genai sdk shows string instead of number
+  minProperties: z.string().nullish(), // genai sdk shows string instead of number
+  minimum: z.number().nullish(),
+  nullable: z.boolean().nullish(),
+  pattern: z.string().nullish(),
+  properties: z.lazy(() => z.record(schemaSchema)).nullish(),
+  propertyOrdering: z.array(z.string()).nullish(),
+  required: z.array(z.string()).nullish(),
+  title: z.string().nullish(),
+  type: typeSchema.nullish(),
 });
 
 const generationConfigRoutingAutoRoutingMode = z.object({
   modelRoutingPreference: z
     .enum(["UNKNOWN", "PRIORITIZE_QUALITY", "BALANCED", "PRIORITIZE_COST"])
-    .optional(),
+    .nullish(),
 });
 
 const generationConfigRoutingManualRoutingMode = z.object({
-  modelName: z.string().optional(),
+  modelName: z.string().nullish(),
 });
 
 const generationConfigRoutingConfigSchema = z.object({
-  autoMode: generationConfigRoutingAutoRoutingMode.optional(),
-  manualMode: generationConfigRoutingManualRoutingMode.optional(),
+  autoMode: generationConfigRoutingAutoRoutingMode.nullish(),
+  manualMode: generationConfigRoutingManualRoutingMode.nullish(),
 });
 
 const featureSelectionPreferenceSchema = z.enum([
@@ -508,7 +518,7 @@ const featureSelectionPreferenceSchema = z.enum([
 ]);
 
 const modelSelectionConfigSchema = z.object({
-  featureSelectionPreference: featureSelectionPreferenceSchema.optional(),
+  featureSelectionPreference: featureSelectionPreferenceSchema.nullish(),
 });
 
 const mediaResolutionSchema = z.enum([
@@ -519,20 +529,22 @@ const mediaResolutionSchema = z.enum([
 ]);
 
 const thinkingConfigSchema = z.object({
-  includeThoughts: z.boolean().optional(),
-  thinkingBudget: z.number().optional(),
+  includeThoughts: z.boolean().nullish(),
+  thinkingBudget: z.number().nullish(),
 });
 
+export type ThinkingConfig = z.infer<typeof thinkingConfigSchema>;
+
 const prebuiltVoiceConfigSchema = z.object({
-  voiceName: z.string().optional(),
+  voiceName: z.string().nullish(),
 });
 
 const voiceConfigSchema = z.object({
-  prebuiltVoiceConfig: prebuiltVoiceConfigSchema.optional(),
+  prebuiltVoiceConfig: prebuiltVoiceConfigSchema.nullish(),
 });
 
 const speechConfigSchema = z.object({
-  voiceConfig: voiceConfigSchema.optional(),
+  voiceConfig: voiceConfigSchema.nullish(),
 });
 
 const speechConfigUnionSchema = z.union([speechConfigSchema, z.undefined()]);
@@ -554,12 +566,16 @@ const contentUnionSchema = z.union([
   partUnionSchema,
 ]);
 
+export type ContentUnion = z.infer<typeof contentUnionSchema>;
+
 const contentListUnionSchema = z.union([
   contentSchema,
   z.array(contentSchema),
   partUnionSchema,
   z.array(partUnionSchema),
 ]);
+
+export type ContentListUnion = z.infer<typeof contentListUnionSchema>;
 
 const harmBlockMethodSchema = z.enum([
   "HARM_BLOCK_METHOD_UNSPECIFIED",
@@ -577,46 +593,48 @@ const harmBlockThresholdSchema = z.enum([
 ]);
 
 const safetySettingSchema = z.object({
-  method: harmBlockMethodSchema.optional(),
-  category: harmCategorySchema.optional(),
-  threshold: harmBlockThresholdSchema.optional(),
+  method: harmBlockMethodSchema.nullish(),
+  category: harmCategorySchema.nullish(),
+  threshold: harmBlockThresholdSchema.nullish(),
 });
 
 const generateContentConfigSchema = z.object({
   // httpOptions
   // abortSignals
-  systemInstruction: contentUnionSchema.optional(),
-  temperature: z.number().optional(),
-  topP: z.number().optional(),
-  topK: z.number().optional(),
-  candidateCount: z.number().optional(),
-  maxOutputTokens: z.number().optional(),
-  stopSequences: z.array(z.string()).optional(),
-  responseLogprobs: z.boolean().optional(),
-  logprobs: z.number().optional(),
-  presencePenalty: z.number().optional(),
-  frequencyPenalty: z.number().optional(),
-  seed: z.number().optional(),
-  responseMimeType: z.string().optional(),
-  responseSchema: schemaUnionSchema.optional(),
-  routingConfig: generationConfigRoutingConfigSchema.optional(),
-  modelSelectionConfig: modelSelectionConfigSchema.optional(),
-  safetySettings: z.array(safetySettingSchema).optional(),
-  tools: toolListUnionSchema.optional(),
-  toolConfig: toolConfigSchema.optional(),
-  labels: z.record(z.string()).optional(),
-  cachedContent: z.string().optional(),
-  responseModalities: z.array(z.string()).optional(),
-  mediaResolution: mediaResolutionSchema.optional(),
-  speechConfig: speechConfigUnionSchema.optional(),
-  audioTimestamp: z.boolean().optional(),
-  thinkingConfig: thinkingConfigSchema.optional(),
+  systemInstruction: contentUnionSchema.nullish(),
+  temperature: z.number().nullish(),
+  topP: z.number().nullish(),
+  topK: z.number().nullish(),
+  candidateCount: z.number().nullish(),
+  maxOutputTokens: z.number().nullish(),
+  stopSequences: z.array(z.string()).nullish(),
+  responseLogprobs: z.boolean().nullish(),
+  logprobs: z.number().nullish(),
+  presencePenalty: z.number().nullish(),
+  frequencyPenalty: z.number().nullish(),
+  seed: z.number().nullish(),
+  responseMimeType: z.string().nullish(),
+  responseSchema: schemaUnionSchema.nullish(),
+  routingConfig: generationConfigRoutingConfigSchema.nullish(),
+  modelSelectionConfig: modelSelectionConfigSchema.nullish(),
+  safetySettings: z.array(safetySettingSchema).nullish(),
+  tools: toolListUnionSchema.nullish(),
+  toolConfig: toolConfigSchema.nullish(),
+  labels: z.record(z.string()).nullish(),
+  cachedContent: z.string().nullish(),
+  responseModalities: z.array(z.string()).nullish(),
+  mediaResolution: mediaResolutionSchema.nullish(),
+  speechConfig: speechConfigUnionSchema.nullish(),
+  audioTimestamp: z.boolean().nullish(),
+  thinkingConfig: thinkingConfigSchema.nullish(),
 });
+
+export type GenerateContentConfig = z.infer<typeof generateContentConfigSchema>;
 
 export const generateContentParametersSchema = z.object({
   model: z.string(),
   contents: contentListUnionSchema,
-  config: generateContentConfigSchema.optional(),
+  config: generateContentConfigSchema.nullish(),
 });
 
 export type GenerateContentParameters = z.infer<

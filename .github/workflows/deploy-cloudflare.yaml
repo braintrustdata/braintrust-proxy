@@ -16,6 +16,10 @@ jobs:
           node-version: 20
       - uses: pnpm/action-setup@v4
       - run: pnpm install
+      - run: pnpm run build
+        working-directory: apis/cloudflare
+      - run: cp wrangler-template.toml wrangler.toml
+        working-directory: apis/cloudflare
       - run: pnpm run deploy
         working-directory: apis/cloudflare
         env:

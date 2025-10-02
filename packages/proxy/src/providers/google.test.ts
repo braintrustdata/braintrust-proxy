@@ -10,6 +10,8 @@ import {
   geminiParamsToOpenAIMessages,
   geminiParamsToOpenAITools,
 } from "./google";
+import { zodToJsonSchema } from "zod-to-json-schema";
+import { z } from "zod";
 
 for (const model of [
   "gemini-2.5-flash-preview-05-20",
@@ -190,6 +192,194 @@ for (const model of [
           completion_tokens: expect.any(Number),
           prompt_tokens: expect.any(Number),
           total_tokens: expect.any(Number),
+        },
+      });
+    });
+
+    it("should work with zod-json-schemafied parameters (convert to valid gemini (openapi 3) objects)", async () => {
+      // Test union types that include null with more than 2 options
+      const unionSchema = z.object({
+        status: z
+          .union([z.literal("active"), z.literal("inactive"), z.null()])
+          .optional(),
+        count: z.union([z.number(), z.null()]),
+        data: z
+          .union([
+            z.object({
+              type: z.literal("text"),
+              content: z.string(),
+            }),
+            z.object({
+              type: z.literal("number"),
+              value: z.number(),
+            }),
+            z.null(),
+          ])
+          .optional(),
+      });
+
+      // we do this in sdk/js/src/functions/upload.ts
+      const jsonSchema = zodToJsonSchema(unionSchema);
+
+      const body: OpenAIChatCompletionCreateParams = {
+        model,
+        messages: [
+          {
+            role: "user",
+            content: "Use the union tool. Let's try 10.",
+          },
+        ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "unionTool",
+              description: "A tool with union types including null",
+              parameters: jsonSchema as any,
+            },
+          },
+        ],
+        stream: false,
+      };
+
+      const result = await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body,
+      });
+
+      expect(result.json()).toMatchObject({
+        id: expect.any(String),
+        choices: [
+          {
+            logprobs: null,
+            index: 0,
+            message: {
+              role: "assistant",
+              content: "",
+              refusal: null,
+              tool_calls: [
+                {
+                  function: {
+                    arguments: expect.any(String),
+                    name: "unionTool",
+                  },
+                  id: expect.any(String),
+                  type: "function",
+                },
+              ],
+            },
+            finish_reason: "tool_calls",
+          },
+        ],
+        created: expect.any(Number),
+        model: "gemini-2.5-flash-preview-05-20",
+        object: "chat.completion",
+        usage: {
+          prompt_tokens: expect.any(Number),
+          completion_tokens: expect.any(Number),
+          total_tokens: expect.any(Number),
+          completion_tokens_details: { reasoning_tokens: expect.any(Number) },
+        },
+      });
+    });
+
+    it("should work with openapi 3 parameters", async () => {
+      const body: OpenAIChatCompletionCreateParams = {
+        model,
+        messages: [
+          {
+            role: "user",
+            content: "Use the union tool. Let's try 10.",
+          },
+        ],
+        tools: [
+          {
+            type: "function",
+            function: {
+              name: "unionTool",
+              description: "A tool with union types including null",
+              parameters: {
+                type: "object",
+                properties: {
+                  status: {
+                    anyOf: [
+                      { type: "string", nullable: true, enum: ["active"] },
+                      { type: "string", nullable: true, enum: ["inactive"] },
+                    ],
+                  },
+                  count: { type: "number", nullable: true },
+                  data: {
+                    anyOf: [
+                      {
+                        type: "object",
+                        properties: {
+                          type: { type: "string", enum: ["text"] },
+                          content: { type: "string" },
+                        },
+                        required: ["type", "content"],
+                        nullable: true,
+                      },
+                      {
+                        type: "object",
+                        properties: {
+                          type: { type: "string", enum: ["number"] },
+                          value: { type: "number" },
+                        },
+                        required: ["type", "value"],
+                        nullable: true,
+                      },
+                    ],
+                  },
+                },
+                required: ["count"],
+              },
+            },
+          },
+        ],
+        stream: false,
+      };
+
+      const result = await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body,
+      });
+
+      expect(result.json()).toMatchObject({
+        id: expect.any(String),
+        choices: [
+          {
+            logprobs: null,
+            index: 0,
+            message: {
+              role: "assistant",
+              content: "",
+              refusal: null,
+              tool_calls: [
+                {
+                  function: {
+                    arguments: expect.any(String),
+                    name: "unionTool",
+                  },
+                  id: expect.any(String),
+                  type: "function",
+                },
+              ],
+            },
+            finish_reason: "tool_calls",
+          },
+        ],
+        created: expect.any(Number),
+        model: "gemini-2.5-flash-preview-05-20",
+        object: "chat.completion",
+        usage: {
+          prompt_tokens: expect.any(Number),
+          completion_tokens: expect.any(Number),
+          total_tokens: expect.any(Number),
+          completion_tokens_details: { reasoning_tokens: expect.any(Number) },
         },
       });
     });

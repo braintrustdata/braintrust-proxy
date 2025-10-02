@@ -399,7 +399,9 @@ const functionDeclarationSchema = z.object({
   description: z.string().nullish(),
   name: z.string().nullish(),
   parameters: z.lazy(() => schemaSchema).nullish(),
+  parametersJsonSchema: z.record(z.string(), z.unknown()).nullish(),
   response: z.lazy(() => schemaSchema).nullish(),
+  responseJsonSchema: z.record(z.string(), z.unknown()).nullish(),
 });
 
 const toolSchema = z.object({

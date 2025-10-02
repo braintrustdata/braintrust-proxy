@@ -103,6 +103,7 @@
     "@apidevtools/json-schema-ref-parser": "^11.9.1",
     "@aws-sdk/client-bedrock-runtime": "^3.806.0",
     "@breezystack/lamejs": "^1.2.7",
+    "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/core": "^1.19.0",
     "@opentelemetry/resources": "^1.19.0",

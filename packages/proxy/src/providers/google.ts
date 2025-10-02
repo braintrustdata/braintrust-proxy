@@ -22,8 +22,9 @@ import type {
 import { getBudgetMultiplier } from "../../utils";
 import { cleanOpenAIParams } from "../../utils/openai";
 import { v4 as uuidv4 } from "uuid";
-import { getTimestampInSeconds } from "../util";
+import { getTimestampInSeconds, isEmpty } from "../util";
 import { convertMediaToBase64 } from "./util";
+import toJsonSchema from "@openapi-contrib/openapi-schema-to-json-schema";
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
@@ -558,13 +559,19 @@ export const geminiParamsToOpenAITools = (
           // Skip functions without names as they're required by OpenAI
           if (!funcDecl.name) continue;
 
+          let parameters = {};
+          if (!isEmpty(funcDecl.parameters)) {
+            parameters = toJsonSchema(funcDecl.parameters);
+          } else if (!isEmpty(funcDecl.parametersJsonSchema)) {
+            parameters = funcDecl.parametersJsonSchema;
+          }
+
           tools.push({
             type: "function",
             function: {
               name: funcDecl.name,
               description: funcDecl.description ?? undefined,
-              parameters:
-                (funcDecl.parameters as Record<string, unknown>) || {},
+              parameters,
             },
           });
         }
@@ -586,7 +593,7 @@ export const geminiParamsToOpenAITools = (
         function: {
           name: "structured_output",
           description: "Structured output response",
-          parameters: schema as Record<string, unknown>,
+          parameters: toJsonSchema(schema),
         },
       });
     }

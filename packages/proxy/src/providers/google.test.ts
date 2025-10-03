@@ -9,6 +9,7 @@ import {
   geminiParamsToOpenAIParams,
   geminiParamsToOpenAIMessages,
   geminiParamsToOpenAITools,
+  normalizeOpenAISchema,
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
@@ -509,9 +510,12 @@ for (const model of [
           name: "get_weather",
           description: "Get weather info",
           parameters: {
+            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
-              location: { type: "string" },
+              location: {
+                type: "string",
+              },
             },
           },
         },
@@ -711,9 +715,12 @@ for (const model of [
           name: "search",
           description: "Search the web",
           parameters: {
+            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
-              query: { type: "string" },
+              query: {
+                type: "string",
+              },
             },
             required: ["query"],
           },
@@ -725,6 +732,7 @@ for (const model of [
           name: "calculate",
           description: "Perform calculations",
           parameters: {
+            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
               expression: { type: "string" },
@@ -744,5 +752,216 @@ for (const model of [
 
       expect(tools).toBeUndefined();
     });
+  });
+
+  it("should normalize openapi schemas to json schema", () => {
+    // Test 1: Type conversions (UPPERCASE to lowercase)
+    expect(
+      normalizeOpenAISchema({
+        type: "OBJECT",
+        properties: {
+          str: { type: "STRING" },
+          num: { type: "NUMBER" },
+          int: { type: "INTEGER" },
+          bool: { type: "BOOLEAN" },
+          arr: { type: "ARRAY" },
+          nil: { type: "NULL" },
+        },
+      }),
+    ).toEqual({
+      type: "object",
+      properties: {
+        str: { type: "string" },
+        num: { type: "number" },
+        int: { type: "integer" },
+        bool: { type: "boolean" },
+        arr: { type: "array" },
+        nil: { type: "null" },
+      },
+    });
+
+    // Test 2: Null/undefined removal
+    expect(
+      normalizeOpenAISchema({
+        type: "OBJECT",
+        nullable: null,
+        undefined: undefined,
+        properties: {
+          field1: {
+            type: "STRING",
+            nullable: null,
+            description: "keeps non-null values",
+          },
+          field2: {
+            null: null,
+            undefined: undefined,
+            // This becomes an empty object and should be removed
+          },
+        },
+        additionalProperties: null,
+      }),
+    ).toEqual({
+      type: "object",
+      properties: {
+        field1: {
+          type: "string",
+          description: "keeps non-null values",
+        },
+      },
+    });
+
+    // Test 3: Complex nested structure with anyOf/oneOf
+    expect(
+      normalizeOpenAISchema({
+        type: "OBJECT",
+        properties: {
+          polymorphic: {
+            anyOf: [
+              { type: "STRING", minLength: 1 },
+              { type: "NUMBER", minimum: 0 },
+              {
+                type: "OBJECT",
+                properties: {
+                  nested: { type: "BOOLEAN" },
+                },
+              },
+            ],
+          },
+          choice: {
+            oneOf: [
+              { type: "NULL" },
+              {
+                type: "ARRAY",
+                items: { type: "INTEGER" },
+                minItems: 1,
+                null: null,
+              },
+            ],
+          },
+        },
+        required: ["polymorphic"],
+      }),
+    ).toEqual({
+      type: "object",
+      properties: {
+        polymorphic: {
+          anyOf: [
+            { type: "string", minLength: 1 },
+            { type: "number", minimum: 0 },
+            {
+              type: "object",
+              properties: {
+                nested: { type: "boolean" },
+              },
+            },
+          ],
+        },
+        choice: {
+          oneOf: [
+            { type: "null" },
+            {
+              type: "array",
+              items: { type: "integer" },
+              minItems: 1,
+            },
+          ],
+        },
+      },
+      required: ["polymorphic"],
+    });
+
+    // Test 4: Arrays with mixed content (null, undefined, empty object, valid schemas)
+    expect(
+      normalizeOpenAISchema([
+        null,
+        undefined,
+        {},
+        { type: "STRING" },
+        { type: "NUMBER", null: null },
+      ]),
+    ).toEqual([
+      {}, // Empty objects in arrays are preserved
+      { type: "string" },
+      { type: "number" },
+    ]);
+
+    // Test 5: Deeply nested with constraints
+    expect(
+      normalizeOpenAISchema({
+        type: "OBJECT",
+        properties: {
+          user: {
+            type: "OBJECT",
+            properties: {
+              name: {
+                type: "STRING",
+                pattern: "^[A-Za-z ]+$",
+                minLength: 1,
+                maxLength: 100,
+              },
+              age: {
+                type: "INTEGER",
+                minimum: 0,
+                maximum: 150,
+                null: null, // should be removed
+              },
+              addresses: {
+                type: "ARRAY",
+                items: {
+                  type: "OBJECT",
+                  properties: {
+                    street: { type: "STRING" },
+                    city: { type: "STRING", enum: ["NYC", "LA", "Chicago"] },
+                    empty: {}, // should be removed as property
+                  },
+                  required: ["street", "city"],
+                },
+              },
+            },
+            required: ["name"],
+          },
+        },
+      }),
+    ).toEqual({
+      type: "object",
+      properties: {
+        user: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              pattern: "^[A-Za-z ]+$",
+              minLength: 1,
+              maxLength: 100,
+            },
+            age: {
+              type: "integer",
+              minimum: 0,
+              maximum: 150,
+            },
+            addresses: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  street: { type: "string" },
+                  city: { type: "string", enum: ["NYC", "LA", "Chicago"] },
+                },
+                required: ["street", "city"],
+              },
+            },
+          },
+          required: ["name"],
+        },
+      },
+    });
+
+    // Test 6: Edge cases
+    expect(normalizeOpenAISchema(null)).toBeUndefined();
+    expect(normalizeOpenAISchema(undefined)).toBeUndefined();
+    expect(normalizeOpenAISchema({})).toEqual({});
+    expect(normalizeOpenAISchema("string value")).toEqual("string value");
+    expect(normalizeOpenAISchema(42)).toEqual(42);
+    expect(normalizeOpenAISchema(true)).toEqual(true);
   });
 }

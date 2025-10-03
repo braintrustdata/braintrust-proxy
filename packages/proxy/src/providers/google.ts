@@ -561,7 +561,7 @@ export const geminiParamsToOpenAITools = (
 
           let parameters = {};
           if (!isEmpty(funcDecl.parameters)) {
-            parameters = toJsonSchema(funcDecl.parameters);
+            parameters = fromOpenAPIToJSONSchema(funcDecl.parameters);
           } else if (!isEmpty(funcDecl.parametersJsonSchema)) {
             parameters = funcDecl.parametersJsonSchema;
           }
@@ -593,7 +593,7 @@ export const geminiParamsToOpenAITools = (
         function: {
           name: "structured_output",
           description: "Structured output response",
-          parameters: toJsonSchema(schema),
+          parameters: fromOpenAPIToJSONSchema(schema),
         },
       });
     }
@@ -601,6 +601,61 @@ export const geminiParamsToOpenAITools = (
 
   return tools.length > 0 ? tools : undefined;
 };
+
+const fromOpenAPIToJSONSchema = (schema: any): any => {
+  try {
+    return toJsonSchema(normalizeOpenAISchema(schema));
+  } catch {
+    return schema;
+  }
+};
+
+// defensive coding here. we want to guard against unexpected values
+export function normalizeOpenAISchema(schema: any): any {
+  if (schema === null || schema === undefined) {
+    return undefined;
+  }
+
+  if (Array.isArray(schema)) {
+    return schema
+      .map(normalizeOpenAISchema)
+      .filter((item) => item !== undefined);
+  }
+
+  if (typeof schema !== "object") {
+    return schema;
+  }
+
+  const result: any = {};
+
+  for (const [key, value] of Object.entries(schema)) {
+    // types undefined/null values are unusual
+    if ((value ?? null) === null) {
+      continue;
+    }
+
+    // types are enum and must be lower case
+    if (key === "type" && typeof value === "string") {
+      result[key] = value.toLowerCase();
+    } else if (typeof value === "object") {
+      const processed = normalizeOpenAISchema(value);
+      if (
+        processed !== undefined &&
+        !(
+          typeof processed === "object" &&
+          !Array.isArray(processed) &&
+          Object.keys(processed).length === 0
+        )
+      ) {
+        result[key] = processed;
+      }
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
 
 // Helper function to normalize contents into an array of Content objects
 const normalizeContents = (contents: ContentListUnion): Content[] => {

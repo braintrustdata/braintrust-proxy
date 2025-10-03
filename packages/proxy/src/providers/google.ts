@@ -1,4 +1,5 @@
 import type { ChatCompletionMessageParamType as Message } from "../generated_types";
+
 import { finishReasonSchema } from "../../types/google";
 import type {
   Content,
@@ -58,7 +59,7 @@ async function makeGoogleMediaBlock(media: string): Promise<Part> {
 }
 
 export async function openAIContentToGoogleContent(
-  content: Message["content"]
+  content: Message["content"],
 ): Promise<Part[]> {
   if (typeof content === "string") {
     return [{ text: content }];
@@ -67,13 +68,13 @@ export async function openAIContentToGoogleContent(
     content?.map(async (part) =>
       part.type === "text"
         ? { text: part.text }
-        : await makeGoogleMediaBlock(part.image_url.url)
-    ) ?? []
+        : await makeGoogleMediaBlock(part.image_url.url),
+    ) ?? [],
   );
 }
 
 export async function openAIMessagesToGoogleMessages(
-  messages: Message[]
+  messages: Message[],
 ): Promise<Content[]> {
   // First, do a basic mapping
   const content: Content[] = await Promise.all(
@@ -119,10 +120,10 @@ export async function openAIMessagesToGoogleMessages(
           m.role === "assistant"
             ? "model"
             : m.role === "tool"
-            ? "user"
-            : m.role,
+              ? "user"
+              : m.role,
       };
-    })
+    }),
   );
 
   const flattenedContent: Content[] = [];
@@ -165,7 +166,7 @@ export async function openAIMessagesToGoogleMessages(
 const finishReason = finishReasonSchema.Enum;
 
 function translateFinishReason(
-  reason?: FinishReason | null
+  reason?: FinishReason | null,
 ): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
@@ -193,7 +194,7 @@ function translateFinishReason(
 
 export function googleEventToOpenAIChatEvent(
   model: string,
-  data: GenerateContentResponse
+  data: GenerateContentResponse,
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   return {
     event: data.candidates
@@ -203,10 +204,10 @@ export function googleEventToOpenAIChatEvent(
             id: uuidv4(),
             choices: (data.candidates || []).map((candidate) => {
               const firstThought = candidate.content?.parts?.find(
-                (part) => part.text !== undefined && part.thought
+                (part) => part.text !== undefined && part.thought,
               );
               const firstText = candidate.content?.parts?.find(
-                (part) => part.text !== undefined && !part.thought
+                (part) => part.text !== undefined && !part.thought,
               );
               const toolCalls =
                 candidate.content?.parts
@@ -253,13 +254,13 @@ export function googleEventToOpenAIChatEvent(
       : null,
     finished:
       data.candidates?.every(
-        (candidate) => candidate.finishReason !== undefined
+        (candidate) => candidate.finishReason !== undefined,
       ) ?? false,
   };
 }
 
 const geminiUsageToOpenAIUsage = (
-  usageMetadata?: GenerateContentResponseUsageMetadata | null
+  usageMetadata?: GenerateContentResponseUsageMetadata | null,
 ): OpenAICompletionUsage | undefined => {
   if (!usageMetadata) {
     return undefined;
@@ -287,17 +288,17 @@ const geminiUsageToOpenAIUsage = (
 
 export function googleCompletionToOpenAICompletion(
   model: string,
-  data: GenerateContentResponse
+  data: GenerateContentResponse,
 ): OpenAIChatCompletion {
   const usage = geminiUsageToOpenAIUsage(data.usageMetadata);
   const completion: OpenAIChatCompletion = {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {
       const firstText = candidate.content?.parts?.find(
-        (part) => part.text !== undefined && !part.thought
+        (part) => part.text !== undefined && !part.thought,
       );
       const firstThought = candidate.content?.parts?.find(
-        (part) => part.text !== undefined && part.thought
+        (part) => part.text !== undefined && part.thought,
       );
       const toolCalls =
         candidate.content?.parts
@@ -364,7 +365,7 @@ type GeminiGenerateContentParams = Omit<GenerateContentParameters, "config"> &
   >;
 
 export const openaiParamsToGeminiMessageParams = (
-  openai: OpenAIChatCompletionCreateParams
+  openai: OpenAIChatCompletionCreateParams,
 ): GeminiGenerateContentParams => {
   const gemini: GeminiGenerateContentParams = {
     // TODO: we depend on translateParams to get us half way there
@@ -397,7 +398,7 @@ export const openaiParamsToGeminiMessageParams = (
 const getGeminiThinkingParams = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
-  }
+  },
 ): ThinkingConfig => {
   if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
     return {
@@ -414,7 +415,7 @@ const getGeminiThinkingParams = (
 const getThinkingBudget = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
-  }
+  },
 ): number => {
   if (openai.reasoning_budget !== undefined) {
     return openai.reasoning_budget;
@@ -425,7 +426,7 @@ const getThinkingBudget = (
   if (openai.reasoning_effort !== undefined) {
     budget = Math.floor(
       getBudgetMultiplier(openai.reasoning_effort || "low") *
-        (openai.max_completion_tokens ?? 1024)
+        (openai.max_completion_tokens ?? 1024),
     );
   }
 
@@ -433,7 +434,7 @@ const getThinkingBudget = (
 };
 
 export const geminiParamsToOpenAIParams = (
-  params: GenerateContentParameters
+  params: GenerateContentParameters,
 ): OpenAIChatCompletionCreateParams => {
   const thinkingBudget = params.config?.thinkingConfig?.thinkingBudget || 0;
   const tools = geminiParamsToOpenAITools(params);
@@ -513,14 +514,14 @@ export const geminiParamsToOpenAIParams = (
 };
 
 export const geminiParamsToOpenAIMessages = (
-  params: GenerateContentParameters
+  params: GenerateContentParameters,
 ): OpenAIChatCompletionCreateParams["messages"] => {
   const messages: OpenAIChatCompletionCreateParams["messages"] = [];
 
   // Add system instruction if present
   if (params.config?.systemInstruction) {
     const systemContent = convertContentToString(
-      params.config.systemInstruction
+      params.config.systemInstruction,
     );
     if (systemContent) {
       messages.push({
@@ -543,7 +544,7 @@ export const geminiParamsToOpenAIMessages = (
 };
 
 export const geminiParamsToOpenAITools = (
-  params: GenerateContentParameters
+  params: GenerateContentParameters,
 ): OpenAIChatCompletionCreateParams["tools"] => {
   const tools: OpenAIChatCompletionCreateParams["tools"] = [];
 
@@ -672,6 +673,26 @@ const normalizeContents = (contents: ContentListUnion): Content[] => {
 
   // Handle array of Content objects
   if (Array.isArray(contents)) {
+    // Check if array contains only Parts (no Content objects)
+    const hasContentObjects = contents.some((item) => isContent(item));
+
+    if (!hasContentObjects) {
+      // All items are Parts or strings - group them into a single user message
+      const parts: Part[] = [];
+      for (const item of contents) {
+        if (isPart(item)) {
+          parts.push(item);
+        } else if (typeof item === "string") {
+          parts.push({ text: item });
+        }
+      }
+      if (parts.length > 0) {
+        return [{ role: "user", parts }];
+      }
+      return [];
+    }
+
+    // Mix of Content objects and Parts - handle individually
     const result: Content[] = [];
     for (const item of contents) {
       if (isContent(item)) {
@@ -718,11 +739,19 @@ const isPart = (obj: any): obj is Part => {
     typeof obj === "object" &&
     ("text" in obj ||
       "functionCall" in obj ||
+      "function_call" in obj ||
       "functionResponse" in obj ||
+      "function_response" in obj ||
       "inlineData" in obj ||
+      "inline_data" in obj ||
       "fileData" in obj ||
+      "file_data" in obj ||
       "executableCode" in obj ||
-      "codeExecutionResult" in obj)
+      "executable_code" in obj ||
+      "codeExecutionResult" in obj ||
+      "code_execution_result" in obj ||
+      "image_url" in obj ||
+      "imageUrl" in obj) // Support hybrid format with OpenAI-style image_url and imageUrl
   );
 };
 
@@ -770,7 +799,7 @@ const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
 
 // Map Gemini role to OpenAI role
 const mapGeminiRoleToOpenAI = (
-  geminiRole?: string | null
+  geminiRole?: string | null,
 ): "system" | "user" | "assistant" | "tool" => {
   if (!geminiRole) return "user";
 
@@ -791,7 +820,7 @@ const mapGeminiRoleToOpenAI = (
 
 // Convert Gemini parts to OpenAI message content
 const convertPartsToMessageContent = (
-  parts?: Part[] | null
+  parts?: Part[] | null,
 ): string | Array<any> | null => {
   if (!parts || parts.length === 0) {
     return null;
@@ -806,24 +835,79 @@ const convertPartsToMessageContent = (
         type: "text",
         text: part.text,
       });
-    } else if (part.inlineData) {
+    } else if (part.inlineData || (part as any).inline_data) {
       hasComplexContent = true;
-      // Handle image data
-      if (part.inlineData.mimeType?.startsWith("image/")) {
+      const inlineData = part.inlineData || (part as any).inline_data;
+      const data = inlineData.data;
+      const mimeType = inlineData.mimeType || inlineData.mime_type;
+
+      // Check if data is already an object (e.g., Attachment reference)
+      if (typeof data === "object" && data !== null) {
+        // Check if this is a Braintrust attachment reference
+        // and ensure it uses snake_case keys (not camelCase)
+        let attachmentRef = data;
+        if (
+          (data as any).type === "braintrust_attachment" ||
+          (data as any).type === "external_attachment"
+        ) {
+          // Convert camelCase keys back to snake_case for attachment references
+          attachmentRef = {
+            type: (data as any).type,
+            filename: (data as any).filename,
+            content_type:
+              (data as any).contentType || (data as any).content_type,
+            key: (data as any).key,
+            ...((data as any).type === "external_attachment" &&
+            (data as any).url
+              ? { url: (data as any).url }
+              : {}),
+          };
+        }
         contentParts.push({
           type: "image_url",
           image_url: {
-            url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`,
+            url: attachmentRef,
           },
         });
-      } else if (part.inlineData.mimeType?.startsWith("audio/")) {
-        contentParts.push({
-          type: "input_audio",
-          input_audio: {
-            data: part.inlineData.data,
-            format: part.inlineData.mimeType.split("/")[1] || "wav",
-          },
-        });
+      } else if (typeof data === "string") {
+        // Handle different mime types
+        if (mimeType?.startsWith("audio/")) {
+          contentParts.push({
+            type: "input_audio",
+            input_audio: {
+              data: data,
+              format: mimeType.split("/")[1] || "wav",
+            },
+          });
+        } else if (
+          mimeType?.startsWith("image/") ||
+          mimeType?.startsWith("application/")
+        ) {
+          // Handle images and documents (e.g., PDFs)
+          // Check if it's already a data URL
+          if (data.startsWith("data:")) {
+            contentParts.push({
+              type: "image_url",
+              image_url: {
+                url: data,
+              },
+            });
+          } else {
+            // It's a raw base64 string, create the data URL
+            contentParts.push({
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${data}`,
+              },
+            });
+          }
+        }
+      } else {
+        // Unexpected data type - log a warning and skip
+        console.warn(
+          `Unexpected data type for inlineData.data: ${typeof data}`,
+          data,
+        );
       }
     } else if (part.fileData) {
       hasComplexContent = true;

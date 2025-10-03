@@ -1,3 +1,4 @@
+import { AttachmentReference } from "@lib/generated_types";
 import { z } from "zod";
 
 export const finishReasonSchema = z.enum([
@@ -59,6 +60,7 @@ const mediaModalitySchema = z.enum([
   "IMAGE",
   "AUDIO",
   "VIDEO",
+  "DOCUMENT",
 ]);
 
 const schedulingSchema = z.enum([
@@ -114,6 +116,9 @@ const blobSchema = z.object({
   mimeType: z.string().nullish(),
 });
 
+// at braintrust attachments may be the ai provider's attachment or braintrust's attachment
+const inlineDataSchema = z.union([blobSchema, AttachmentReference]);
+
 const partSchema = z.object({
   videoMetadata: videoMetadataSchema.nullish(),
   thought: z.boolean().nullish(),
@@ -122,7 +127,7 @@ const partSchema = z.object({
   fileData: fileDataSchema.nullish(),
   functionCall: functionCallSchema.nullish(),
   functionResponse: functionResponseSchema.nullish(),
-  inlineData: blobSchema.nullish(),
+  inlineData: inlineDataSchema.nullish(),
   text: z.string().nullish(),
 });
 

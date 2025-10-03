@@ -110,7 +110,7 @@ export async function callProxyV1<Input extends object, Output extends object>({
   ReturnType<typeof createHeaderHandlers> & {
     chunks: Uint8Array[];
     responseText: string;
-    events: ReturnType<typeof chucksToEvents<Output>>;
+    events: () => ReturnType<typeof chucksToEvents<Output>>;
     json: () => Output;
   }
 > {

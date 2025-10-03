@@ -12,7 +12,7 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
     if (["/", "/v1/proxy", "/v1/proxy/"].includes(url.pathname)) {
-      return new Response("Hello World!", {
+      return new Response("Hello world!", {
         status: 200,
         headers: getCorsHeaders(request, originWhitelist(env)),
       });

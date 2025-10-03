@@ -54,6 +54,7 @@ const liteLLMModelDetailSchema = z
         "moderation",
         "rerank",
         "responses",
+        "video_generation",
       ])
       .optional(),
     supports_function_calling: z.boolean().optional(),

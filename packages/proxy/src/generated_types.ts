@@ -1,4 +1,4 @@
-// Auto-generated file (internal git SHA be4abfadd22d7196ff6356c7f3fb655aac3fc933) -- do not modify
+// Auto-generated file (internal git SHA 8932323b183fd4833c9e8ae867e78cb0f739cddc) -- do not modify
 
 import { z } from "zod";
 
@@ -109,6 +109,8 @@ export const AnyModelParams = z.object({
   verbosity: z.enum(["low", "medium", "high"]).optional(),
   top_k: z.number().optional(),
   stop_sequences: z.array(z.string()).optional(),
+  reasoning_enabled: z.boolean().optional(),
+  reasoning_budget: z.number().optional(),
   max_tokens_to_sample: z.number().optional(),
   maxOutputTokens: z.number().optional(),
   topP: z.number().optional(),
@@ -613,6 +615,8 @@ export const ModelParams = z.union([
       top_p: z.number().optional(),
       top_k: z.number().optional(),
       stop_sequences: z.array(z.string()).optional(),
+      reasoning_enabled: z.boolean().optional(),
+      reasoning_budget: z.number().optional(),
       max_tokens_to_sample: z.number().optional(),
     })
     .passthrough(),

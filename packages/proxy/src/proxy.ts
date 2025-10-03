@@ -1,5 +1,4 @@
 import { MessageParam } from "@anthropic-ai/sdk/resources";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
 import {
   type ChatCompletionMessageParamType as Message,
   type MessageRoleType as MessageRole,
@@ -7,6 +6,7 @@ import {
   ObjectReferenceType,
 } from "./generated_types";
 import { Attributes } from "@opentelemetry/api";
+import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
 import {
   APISecret,
   AzureEntraSecretSchema,
@@ -1275,7 +1275,10 @@ async function fetchModelLoop(
         errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
-      console.log("ERROR", e);
+      const isAbortError = e instanceof DOMException && e.name === "AbortError";
+      if (!isAbortError) {
+        console.log("ERROR", e);
+      }
       lastException = e;
       if (e instanceof TypeError) {
         if ("cause" in e && e.cause && isObject(e.cause)) {
@@ -1456,6 +1459,24 @@ async function fetchModelLoop(
     },
     secretName,
   };
+}
+
+function stripFields(obj: any) {
+  delete obj.additionalProperties;
+
+  if (obj.anyOf) {
+    obj.anyOf.forEach(stripFields);
+  }
+
+  if (obj.properties) {
+    for (const value of Object.values(obj.properties)) {
+      stripFields(value);
+    }
+  }
+
+  if (obj.items) {
+    stripFields(obj.items);
+  }
 }
 
 async function fetchModel(
@@ -1956,7 +1977,12 @@ async function fetchOpenAI(
     delete bodyData["stream_options"];
   }
 
-  if (secret.type === "mistral" || secret.type === "databricks") {
+  if (
+    secret.type === "mistral" ||
+    secret.type === "databricks" ||
+    secret.type === "azure"
+  ) {
+    // Azure doesn't support parallel_tool_calls: https://github.com/Azure/azure-rest-api-specs/issues/29545
     delete bodyData["parallel_tool_calls"];
   }
 
@@ -2612,64 +2638,15 @@ async function fetchAnthropicChatCompletions({
   };
 }
 
-function convertToNullable(obj: any) {
-  const anyOf = obj.anyOf;
-  if (anyOf) {
-    if (anyOf.length !== 2) {
-      throw new ProxyBadRequestError(
-        "Google only supports Optional types for unions",
-      );
-    }
-    const [a, b] = anyOf;
-    if (a.type === "null") {
-      Object.assign(obj, b);
-    } else if (b.type === "null") {
-      Object.assign(obj, a);
-    } else {
-      throw new ProxyBadRequestError(
-        "Google only supports Optional types for unions",
-      );
-    }
-    delete obj.anyOf;
-    obj.nullable = true;
-  }
-
-  if (obj.properties) {
-    for (const value of Object.values(obj.properties)) {
-      convertToNullable(value);
-    }
-  }
-
-  if (obj.items) {
-    convertToNullable(obj.items);
-  }
-}
-
-function stripFields(obj: any) {
-  delete obj.title;
-  delete obj.additionalProperties;
-  delete obj.default;
-
-  if (obj.properties) {
-    for (const value of Object.values(obj.properties)) {
-      stripFields(value);
-    }
-  }
-
-  if (obj.items) {
-    stripFields(obj.items);
-  }
-}
-
 async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
-  if (!schema || typeof schema !== "object") {
-    return schema;
-  }
-  await $RefParser.dereference(schema);
-  delete schema.$defs;
-  convertToNullable(schema);
-  stripFields(schema);
-  return schema;
+  const converted =
+    !schema || typeof schema !== "object"
+      ? schema
+      : await jsonSchemaToOpenAPISchema(schema);
+
+  stripFields(converted);
+
+  return converted;
 }
 
 async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {

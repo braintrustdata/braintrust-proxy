@@ -42,13 +42,20 @@
       "import": "./types/dist/index.mjs",
       "module": "./types/dist/index.mjs",
       "require": "./types/dist/index.js"
+    },
+    "./providers": {
+      "types": "./providers/dist/index.d.ts",
+      "import": "./providers/dist/index.mjs",
+      "module": "./providers/dist/index.mjs",
+      "require": "./providers/dist/index.js"
     }
   },
   "files": [
     "dist/**/*",
     "edge/dist/**/*",
     "schema/dist/**/*",
-    "types/dist/**/*"
+    "types/dist/**/*",
+    "providers/dist/**/*"
   ],
   "license": "MIT",
   "publishConfig": {
@@ -96,7 +103,7 @@
     "@anthropic-ai/sdk": "^0.39.0",
     "@aws-sdk/client-bedrock-runtime": "^3.806.0",
     "@breezystack/lamejs": "^1.2.7",
-    "@google/genai": "^0.13.0",
+    "@openapi-contrib/openapi-schema-to-json-schema": "^5.1.0",
     "@openapi-contrib/json-schema-to-openapi-schema": "^4.2.0",
     "@opentelemetry/api": "^1.7.0",
     "@opentelemetry/core": "^1.19.0",

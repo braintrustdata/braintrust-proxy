@@ -1,8 +1,9 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { flushMetrics } from "@lib/metrics";
-import { proxyV1, SpanLogger } from "@lib/proxy";
+import { proxyV1, SpanLogger, LogCounterFn, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
+import { Meter } from "@opentelemetry/api";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
 import { verifyTempCredentials, isTempCredential } from "utils";
@@ -12,7 +13,7 @@ import {
   encryptMessage,
 } from "utils/encrypt";
 
-export { FlushingExporter } from "./exporter";
+// FlushingHttpMetricExporter moved to cloudflare-specific code to avoid Edge Runtime issues
 
 export interface EdgeContext {
   waitUntil(promise: Promise<any>): void;
@@ -33,6 +34,8 @@ export interface ProxyOpts {
   completionsCache?: Cache;
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
+  logCounter?: LogCounterFn;
+  logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
 }
@@ -219,8 +222,9 @@ export function makeFetchApiSecrets({
   };
 }
 
+// Metric logging functions are now created in the calling layer (e.g., Cloudflare proxy)
+
 export function EdgeProxyV1(opts: ProxyOpts) {
-  const meterProvider = opts.meterProvider;
   return async (request: Request, ctx: EdgeContext) => {
     let corsHeaders = {};
     try {
@@ -311,18 +315,20 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cacheGet,
         cachePut,
         digest: digestMessage,
-        meterProvider,
+        logCounter: opts.logCounter,
+        logHistogram: opts.logHistogram,
         spanLogger: opts.spanLogger,
       });
+
+      // Flush metrics after the response
+      if (opts.meterProvider) {
+        ctx.waitUntil(flushMetrics(opts.meterProvider));
+      }
     } catch (e) {
       return new Response(`${e}`, {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
-    } finally {
-      if (meterProvider) {
-        ctx.waitUntil(flushMetrics(meterProvider));
-      }
     }
 
     return new Response(readable, {

@@ -58,7 +58,7 @@ async function makeGoogleMediaBlock(media: string): Promise<Part> {
 }
 
 export async function openAIContentToGoogleContent(
-  content: Message["content"],
+  content: Message["content"]
 ): Promise<Part[]> {
   if (typeof content === "string") {
     return [{ text: content }];
@@ -67,13 +67,13 @@ export async function openAIContentToGoogleContent(
     content?.map(async (part) =>
       part.type === "text"
         ? { text: part.text }
-        : await makeGoogleMediaBlock(part.image_url.url),
-    ) ?? [],
+        : await makeGoogleMediaBlock(part.image_url.url)
+    ) ?? []
   );
 }
 
 export async function openAIMessagesToGoogleMessages(
-  messages: Message[],
+  messages: Message[]
 ): Promise<Content[]> {
   // First, do a basic mapping
   const content: Content[] = await Promise.all(
@@ -119,10 +119,10 @@ export async function openAIMessagesToGoogleMessages(
           m.role === "assistant"
             ? "model"
             : m.role === "tool"
-              ? "user"
-              : m.role,
+            ? "user"
+            : m.role,
       };
-    }),
+    })
   );
 
   const flattenedContent: Content[] = [];
@@ -165,7 +165,7 @@ export async function openAIMessagesToGoogleMessages(
 const finishReason = finishReasonSchema.Enum;
 
 function translateFinishReason(
-  reason?: FinishReason | null,
+  reason?: FinishReason | null
 ): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
@@ -193,7 +193,7 @@ function translateFinishReason(
 
 export function googleEventToOpenAIChatEvent(
   model: string,
-  data: GenerateContentResponse,
+  data: GenerateContentResponse
 ): { event: OpenAIChatCompletionChunk | null; finished: boolean } {
   return {
     event: data.candidates
@@ -203,10 +203,10 @@ export function googleEventToOpenAIChatEvent(
             id: uuidv4(),
             choices: (data.candidates || []).map((candidate) => {
               const firstThought = candidate.content?.parts?.find(
-                (part) => part.text !== undefined && part.thought,
+                (part) => part.text !== undefined && part.thought
               );
               const firstText = candidate.content?.parts?.find(
-                (part) => part.text !== undefined && !part.thought,
+                (part) => part.text !== undefined && !part.thought
               );
               const toolCalls =
                 candidate.content?.parts
@@ -253,13 +253,13 @@ export function googleEventToOpenAIChatEvent(
       : null,
     finished:
       data.candidates?.every(
-        (candidate) => candidate.finishReason !== undefined,
+        (candidate) => candidate.finishReason !== undefined
       ) ?? false,
   };
 }
 
 const geminiUsageToOpenAIUsage = (
-  usageMetadata?: GenerateContentResponseUsageMetadata | null,
+  usageMetadata?: GenerateContentResponseUsageMetadata | null
 ): OpenAICompletionUsage | undefined => {
   if (!usageMetadata) {
     return undefined;
@@ -287,17 +287,17 @@ const geminiUsageToOpenAIUsage = (
 
 export function googleCompletionToOpenAICompletion(
   model: string,
-  data: GenerateContentResponse,
+  data: GenerateContentResponse
 ): OpenAIChatCompletion {
   const usage = geminiUsageToOpenAIUsage(data.usageMetadata);
   const completion: OpenAIChatCompletion = {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {
       const firstText = candidate.content?.parts?.find(
-        (part) => part.text !== undefined && !part.thought,
+        (part) => part.text !== undefined && !part.thought
       );
       const firstThought = candidate.content?.parts?.find(
-        (part) => part.text !== undefined && part.thought,
+        (part) => part.text !== undefined && part.thought
       );
       const toolCalls =
         candidate.content?.parts
@@ -364,7 +364,7 @@ type GeminiGenerateContentParams = Omit<GenerateContentParameters, "config"> &
   >;
 
 export const openaiParamsToGeminiMessageParams = (
-  openai: OpenAIChatCompletionCreateParams,
+  openai: OpenAIChatCompletionCreateParams
 ): GeminiGenerateContentParams => {
   const gemini: GeminiGenerateContentParams = {
     // TODO: we depend on translateParams to get us half way there
@@ -397,7 +397,7 @@ export const openaiParamsToGeminiMessageParams = (
 const getGeminiThinkingParams = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
-  },
+  }
 ): ThinkingConfig => {
   if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
     return {
@@ -414,7 +414,7 @@ const getGeminiThinkingParams = (
 const getThinkingBudget = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
-  },
+  }
 ): number => {
   if (openai.reasoning_budget !== undefined) {
     return openai.reasoning_budget;
@@ -425,7 +425,7 @@ const getThinkingBudget = (
   if (openai.reasoning_effort !== undefined) {
     budget = Math.floor(
       getBudgetMultiplier(openai.reasoning_effort || "low") *
-        (openai.max_completion_tokens ?? 1024),
+        (openai.max_completion_tokens ?? 1024)
     );
   }
 
@@ -433,7 +433,7 @@ const getThinkingBudget = (
 };
 
 export const geminiParamsToOpenAIParams = (
-  params: GenerateContentParameters,
+  params: GenerateContentParameters
 ): OpenAIChatCompletionCreateParams => {
   const thinkingBudget = params.config?.thinkingConfig?.thinkingBudget || 0;
   const tools = geminiParamsToOpenAITools(params);
@@ -513,14 +513,14 @@ export const geminiParamsToOpenAIParams = (
 };
 
 export const geminiParamsToOpenAIMessages = (
-  params: GenerateContentParameters,
+  params: GenerateContentParameters
 ): OpenAIChatCompletionCreateParams["messages"] => {
   const messages: OpenAIChatCompletionCreateParams["messages"] = [];
 
   // Add system instruction if present
   if (params.config?.systemInstruction) {
     const systemContent = convertContentToString(
-      params.config.systemInstruction,
+      params.config.systemInstruction
     );
     if (systemContent) {
       messages.push({
@@ -543,7 +543,7 @@ export const geminiParamsToOpenAIMessages = (
 };
 
 export const geminiParamsToOpenAITools = (
-  params: GenerateContentParameters,
+  params: GenerateContentParameters
 ): OpenAIChatCompletionCreateParams["tools"] => {
   const tools: OpenAIChatCompletionCreateParams["tools"] = [];
 
@@ -604,7 +604,13 @@ export const geminiParamsToOpenAITools = (
 
 const fromOpenAPIToJSONSchema = (schema: any): any => {
   try {
-    return toJsonSchema(normalizeOpenAISchema(schema));
+    const result = toJsonSchema(normalizeOpenAISchema(schema));
+    // Remove the $schema field that toJsonSchema adds
+    if (result && typeof result === "object" && "$schema" in result) {
+      const { $schema, ...rest } = result;
+      return rest;
+    }
+    return result;
   } catch {
     return schema;
   }
@@ -724,35 +730,36 @@ const isPart = (obj: any): obj is Part => {
 const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
   // Handle function responses as tool messages first
   if (content.parts) {
-    const functionResponse = content.parts.find((p) => p.functionResponse);
-    if (functionResponse?.functionResponse) {
+    const part = content.parts.find((p) => p.functionResponse);
+    if (part?.functionResponse) {
       return {
         role: "tool",
-        tool_call_id: functionResponse.functionResponse.id || "unknown",
-        content: JSON.stringify(
-          functionResponse.functionResponse.response || {},
-        ),
+        tool_call_id:
+          part.functionResponse.id || part.functionResponse.name || "unknown",
+        content: JSON.stringify(part.functionResponse.response || {}),
       };
     }
   }
 
   const role = mapGeminiRoleToOpenAI(content.role);
-  const messageContent = convertPartsToMessageContent(content.parts);
 
-  if (!messageContent) {
-    return null;
-  }
-
-  // Handle function calls for assistant messages
+  // Handle function calls for assistant messages before checking content
   if (role === "assistant" && content.parts) {
     const toolCalls = extractToolCalls(content.parts);
     if (toolCalls.length > 0) {
+      const messageContent = convertPartsToMessageContent(content.parts);
       return {
         role: "assistant",
         content: typeof messageContent === "string" ? messageContent : null,
         tool_calls: toolCalls,
       };
     }
+  }
+
+  const messageContent = convertPartsToMessageContent(content.parts);
+
+  if (!messageContent) {
+    return null;
   }
 
   return {
@@ -763,7 +770,7 @@ const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
 
 // Map Gemini role to OpenAI role
 const mapGeminiRoleToOpenAI = (
-  geminiRole?: string | null,
+  geminiRole?: string | null
 ): "system" | "user" | "assistant" | "tool" => {
   if (!geminiRole) return "user";
 
@@ -784,7 +791,7 @@ const mapGeminiRoleToOpenAI = (
 
 // Convert Gemini parts to OpenAI message content
 const convertPartsToMessageContent = (
-  parts?: Part[] | null,
+  parts?: Part[] | null
 ): string | Array<any> | null => {
   if (!parts || parts.length === 0) {
     return null;
@@ -865,7 +872,8 @@ const extractToolCalls = (parts: Part[]): any[] => {
   for (const part of parts) {
     if (part.functionCall) {
       toolCalls.push({
-        id: part.functionCall.id || `call_${Date.now()}_${Math.random()}`,
+        // Use function name as ID when no ID is provided for consistency with function responses
+        id: part.functionCall.id || part.functionCall.name,
         type: "function",
         function: {
           name: part.functionCall.name,

@@ -58,13 +58,13 @@ for (const model of [
       expect(streamedEvents.length).toBeGreaterThan(0);
 
       const hasContent = streamedEvents.some(
-        (event) => event.data.choices[0]?.delta?.content !== undefined,
+        (event) => event.data.choices[0]?.delta?.content !== undefined
       );
       expect(hasContent).toBe(true);
 
       const hasReasoning = streamedEvents.some(
         (event) =>
-          event.data.choices[0]?.delta?.reasoning?.content !== undefined,
+          event.data.choices[0]?.delta?.reasoning?.content !== undefined
       );
       expect(hasReasoning).toBe(true);
     });
@@ -510,7 +510,6 @@ for (const model of [
           name: "get_weather",
           description: "Get weather info",
           parameters: {
-            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
               location: {
@@ -668,6 +667,156 @@ for (const model of [
         },
       ]);
     });
+
+    it("should maintain consistent IDs between function calls and responses", () => {
+      const params: any = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "What is 127 multiplied by 49?" }],
+          },
+          {
+            role: "model",
+            parts: [
+              {
+                functionCall: {
+                  name: "calculate",
+                  args: { a: 127, b: 49, operation: "multiply" },
+                  // Note: no id field
+                },
+              },
+            ],
+          },
+          {
+            role: "user",
+            parts: [
+              {
+                functionResponse: {
+                  name: "calculate",
+                  response: { result: 6223 },
+                  // Note: no id field
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      const messages = geminiParamsToOpenAIMessages(params);
+
+      // Should have 3 messages: user, assistant with tool_call, tool response
+      expect(messages).toHaveLength(3);
+
+      // First message should be user
+      expect(messages[0]).toEqual({
+        role: "user",
+        content: "What is 127 multiplied by 49?",
+      });
+
+      // Second message should be assistant with tool_call
+      expect(messages[1]).toHaveProperty("role", "assistant");
+      expect(messages[1]).toHaveProperty("tool_calls");
+      const assistantMessage = messages[1] as any;
+      expect(assistantMessage.tool_calls).toHaveLength(1);
+      expect(assistantMessage.tool_calls[0]).toHaveProperty("type", "function");
+      expect(assistantMessage.tool_calls[0].function).toEqual({
+        name: "calculate",
+        arguments: JSON.stringify({ a: 127, b: 49, operation: "multiply" }),
+      });
+
+      // Third message should be tool response
+      expect(messages[2]).toHaveProperty("role", "tool");
+      expect(messages[2]).toHaveProperty(
+        "content",
+        JSON.stringify({ result: 6223 })
+      );
+
+      // CRITICAL: The tool_call_id should match between the assistant's tool_call and the tool response
+      const toolCallId = assistantMessage.tool_calls[0].id;
+      expect(toolCallId).toBeDefined();
+      const toolMessage = messages[2] as any;
+      expect(toolMessage.tool_call_id).toBe(toolCallId);
+    });
+    it("should handle exact genai.json span structure with snake_case keys", () => {
+      // This test case matches the exact structure from the genai.json span
+      const params: any = {
+        contents: [
+          {
+            parts: [
+              {
+                text: "What is 127 multiplied by 49?",
+              },
+            ],
+            role: "user",
+          },
+          {
+            parts: [
+              {
+                functionCall: {
+                  args: {
+                    a: 127,
+                    b: 49,
+                    operation: "multiply",
+                  },
+                  name: "calculate",
+                },
+              },
+            ],
+            role: "model",
+          },
+          {
+            parts: [
+              {
+                functionResponse: {
+                  name: "calculate",
+                  response: {
+                    result: 6223,
+                  },
+                },
+              },
+            ],
+            role: "user",
+          },
+        ],
+        model: "gemini-2.0-flash-001",
+      };
+
+      const messages = geminiParamsToOpenAIMessages(params);
+
+      // Should have 3 messages: user, assistant with tool_call, tool response
+      expect(messages).toHaveLength(3);
+
+      // First message should be user
+      expect(messages[0]).toEqual({
+        role: "user",
+        content: "What is 127 multiplied by 49?",
+      });
+
+      // Second message should be assistant with tool_call
+      expect(messages[1]).toHaveProperty("role", "assistant");
+      expect(messages[1]).toHaveProperty("tool_calls");
+      const assistantMessage = messages[1] as any;
+      expect(assistantMessage.tool_calls).toHaveLength(1);
+      expect(assistantMessage.tool_calls[0]).toHaveProperty("type", "function");
+      expect(assistantMessage.tool_calls[0].function).toEqual({
+        name: "calculate",
+        arguments: JSON.stringify({ a: 127, b: 49, operation: "multiply" }),
+      });
+
+      // Third message should be tool response
+      expect(messages[2]).toHaveProperty("role", "tool");
+      expect(messages[2]).toHaveProperty(
+        "content",
+        JSON.stringify({ result: 6223 })
+      );
+
+      // The tool_call_id should match between the assistant's tool_call and the tool response
+      const toolCallId = assistantMessage.tool_calls[0].id;
+      expect(toolCallId).toBeDefined();
+      expect(toolCallId).toBe("calculate"); // When no ID is provided, we use the function name
+      const toolMessage = messages[2] as any;
+      expect(toolMessage.tool_call_id).toBe(toolCallId);
+    });
   });
 
   describe("geminiParamsToOpenAITools", () => {
@@ -715,7 +864,6 @@ for (const model of [
           name: "search",
           description: "Search the web",
           parameters: {
-            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
               query: {
@@ -732,7 +880,6 @@ for (const model of [
           name: "calculate",
           description: "Perform calculations",
           parameters: {
-            $schema: "http://json-schema.org/draft-04/schema#",
             type: "object",
             properties: {
               expression: { type: "string" },
@@ -767,7 +914,7 @@ for (const model of [
           arr: { type: "ARRAY" },
           nil: { type: "NULL" },
         },
-      }),
+      })
     ).toEqual({
       type: "object",
       properties: {
@@ -799,7 +946,7 @@ for (const model of [
           },
         },
         additionalProperties: null,
-      }),
+      })
     ).toEqual({
       type: "object",
       properties: {
@@ -840,7 +987,7 @@ for (const model of [
           },
         },
         required: ["polymorphic"],
-      }),
+      })
     ).toEqual({
       type: "object",
       properties: {
@@ -878,7 +1025,7 @@ for (const model of [
         {},
         { type: "STRING" },
         { type: "NUMBER", null: null },
-      ]),
+      ])
     ).toEqual([
       {}, // Empty objects in arrays are preserved
       { type: "string" },
@@ -921,7 +1068,7 @@ for (const model of [
             required: ["name"],
           },
         },
-      }),
+      })
     ).toEqual({
       type: "object",
       properties: {

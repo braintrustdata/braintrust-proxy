@@ -40,19 +40,6 @@ export function originWhitelist(env: Env) {
     : undefined;
 }
 
-// Create meters directly without global caching to avoid stale meter references
-function createMeter(
-  meter: Meter,
-  name: string,
-  type: "counter" | "histogram",
-) {
-  if (type === "counter") {
-    return meter.createCounter(name);
-  } else {
-    return meter.createHistogram(name);
-  }
-}
-
 function createLogCounter(meter: Meter): LogCounterFn {
   // Cache meters per function instance to avoid recreating for each call
   const meterCache = new Map<string, any>();
@@ -61,7 +48,7 @@ function createLogCounter(meter: Meter): LogCounterFn {
     try {
       let counter = meterCache.get(name);
       if (!counter) {
-        counter = meter.createCounter(name);
+        counter = meter.createHistogram(name); // This keeps datadog happy
         meterCache.set(name, counter);
       }
       counter.add(value, attributes);

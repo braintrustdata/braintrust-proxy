@@ -372,7 +372,7 @@ export async function proxyV1({
 
   // Record total calls with model attributes
   logCounter?.({
-    name: "metrics_test_proxy.requests",
+    name: "metrics_2_test.requests",
     value: 1,
     attributes: baseAttributes,
   });

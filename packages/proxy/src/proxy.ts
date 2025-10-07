@@ -81,6 +81,7 @@ import {
   fetchBedrockAnthropicMessages,
   fetchConverse,
 } from "./providers/bedrock";
+import { transformMistralThinkingChunks } from "./providers/mistral";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
 import {
   googleCompletionToOpenAICompletion,
@@ -2009,32 +2010,8 @@ async function fetchOpenAI(
   }
 
   if (secret.type === "mistral" && stream && bodyData?.stream) {
-    // Mistral would return a lot of thinking chunks, in a specific format not compatible with OpenAI's streaming format
-    // e.g. {"id":"426a1c8c62704d959621a94c1ff0cffb","object":"chat.completion.chunk","created":1759752086,"model":"magistral-medium-latest","choices":[{"index":0,"delta":{"content":[{"type":"thinking","thinking":[{"type":"text","text":" by 2 is"}]}]},"finish_reason":null}]}
-    // We need to discard these chunks
     stream = stream.pipeThrough(
-      createEventStreamTransformer((data) => {
-        const chunk: ChatCompletionChunk = JSON.parse(data);
-        if (
-          chunk.choices?.some((choice) => {
-            const content = choice.delta?.content;
-            if (Array.isArray(content)) {
-              return content.some((item: any) => item.type === "thinking");
-            }
-            return false;
-          })
-        ) {
-          return {
-            data: null,
-            finished: false,
-          };
-        }
-
-        return {
-          data: data,
-          finished: false,
-        };
-      }),
+      createEventStreamTransformer(transformMistralThinkingChunks()),
     );
   }
 

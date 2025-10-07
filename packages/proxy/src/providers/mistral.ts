@@ -33,9 +33,19 @@ export function transformMistralThinkingChunks(): (data: string) => {
         }
 
         if (hasThinking) {
-          // If we found thinking items, replace content with extracted text
-          // plus any other text content
-          choice.delta.content = extractedText + nonThinkingTextItems.join("");
+          // If we found thinking items, put extracted text in reasoning.content
+          // and put any other text content in delta.content
+          if (!choice.delta.reasoning) {
+            choice.delta.reasoning = { content: "" };
+          }
+          choice.delta.reasoning.content = extractedText;
+
+          if (nonThinkingTextItems.length > 0) {
+            choice.delta.content = nonThinkingTextItems.join("");
+          } else {
+            // Clear the original content array since we moved it to reasoning
+            choice.delta.content = null;
+          }
         }
       }
     }

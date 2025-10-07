@@ -35,7 +35,10 @@ describe("transformMistralThinkingChunks", () => {
     expect(result.data).toBeTruthy();
 
     const parsedResult = JSON.parse(result.data!);
-    expect(parsedResult.choices[0].delta.content).toBe(" by 2 is equal to");
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe(
+      " by 2 is equal to",
+    );
+    expect(parsedResult.choices[0].delta.content).toBeNull();
   });
 
   it("should handle non-thinking content without modification", () => {
@@ -88,8 +91,9 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(emptyThinkingChunk);
     const parsedResult = JSON.parse(result.data!);
-    // Empty thinking array returns empty string
-    expect(parsedResult.choices[0].delta.content).toBe("");
+    // Empty thinking array returns empty string in reasoning.content
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe("");
+    expect(parsedResult.choices[0].delta.content).toBeNull();
   });
 
   it("should handle multiple choices", () => {
@@ -130,8 +134,14 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(multiChoiceChunk);
     const parsedResult = JSON.parse(result.data!);
-    expect(parsedResult.choices[0].delta.content).toBe("First choice");
-    expect(parsedResult.choices[1].delta.content).toBe("Second choice");
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe(
+      "First choice",
+    );
+    expect(parsedResult.choices[0].delta.content).toBeNull();
+    expect(parsedResult.choices[1].delta.reasoning.content).toBe(
+      "Second choice",
+    );
+    expect(parsedResult.choices[1].delta.content).toBeNull();
   });
 
   it("should handle mixed content types in array", () => {
@@ -164,10 +174,13 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(mixedContentChunk);
     const parsedResult = JSON.parse(result.data!);
-    expect(parsedResult.choices[0].delta.content).toBe("Thinking text");
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe(
+      "Thinking text",
+    );
+    expect(parsedResult.choices[0].delta.content).toBeNull();
   });
 
-  it("should concatenate thinking and text content", () => {
+  it("should handle thinking and text content", () => {
     const parser = transformMistralThinkingChunks();
 
     const mixedChunk = JSON.stringify({
@@ -197,9 +210,8 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(mixedChunk);
     const parsedResult = JSON.parse(result.data!);
-    expect(parsedResult.choices[0].delta.content).toBe(
-      "Thought: actual response",
-    );
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe("Thought: ");
+    expect(parsedResult.choices[0].delta.content).toBe("actual response");
   });
 
   it("should handle thinking items without text field", () => {
@@ -231,8 +243,9 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(noTextChunk);
     const parsedResult = JSON.parse(result.data!);
-    // When thinking has no text, it returns empty string
-    expect(parsedResult.choices[0].delta.content).toBe("");
+    // When thinking has no text, it returns empty string in reasoning.content
+    expect(parsedResult.choices[0].delta.reasoning.content).toBe("");
+    expect(parsedResult.choices[0].delta.content).toBeNull();
   });
 
   it("should preserve non-thinking content unchanged", () => {

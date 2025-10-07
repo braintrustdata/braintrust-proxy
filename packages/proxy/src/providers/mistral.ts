@@ -1,7 +1,9 @@
 import { ChatCompletionChunk } from "openai/resources";
-import { AIStreamParser } from "../proxy";
 
-export function transformMistralThinkingChunks(): AIStreamParser {
+export function transformMistralThinkingChunks(): (data: string) => {
+  data: string | null;
+  finished: boolean;
+} {
   return (data: string) => {
     const chunk: ChatCompletionChunk = JSON.parse(data);
 

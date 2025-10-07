@@ -14,18 +14,28 @@ export function transformMistralThinkingChunks(): (data: string) => {
       const content = choice.delta?.content;
       if (Array.isArray(content)) {
         let extractedText = "";
+        let hasThinking = false;
+        const nonThinkingTextItems = [];
+
         for (const item of content) {
           if (item.type === "thinking" && Array.isArray(item.thinking)) {
+            hasThinking = true;
             for (const thinkingItem of item.thinking) {
               if (thinkingItem.type === "text" && thinkingItem.text) {
                 extractedText += thinkingItem.text;
               }
             }
+          } else if (item.type === "text" && item.text) {
+            // Collect non-thinking text items to concatenate
+            nonThinkingTextItems.push(item.text);
           }
+          // Other types (images, etc.) are not text and can't be concatenated
         }
 
-        if (extractedText) {
-          choice.delta.content = extractedText;
+        if (hasThinking) {
+          // If we found thinking items, replace content with extracted text
+          // plus any other text content
+          choice.delta.content = extractedText + nonThinkingTextItems.join("");
         }
       }
     }

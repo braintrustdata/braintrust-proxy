@@ -88,9 +88,8 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(emptyThinkingChunk);
     const parsedResult = JSON.parse(result.data!);
-    expect(parsedResult.choices[0].delta.content).toEqual([
-      { type: "thinking", thinking: [] },
-    ]);
+    // Empty thinking array returns empty string
+    expect(parsedResult.choices[0].delta.content).toBe("");
   });
 
   it("should handle multiple choices", () => {
@@ -168,6 +167,41 @@ describe("transformMistralThinkingChunks", () => {
     expect(parsedResult.choices[0].delta.content).toBe("Thinking text");
   });
 
+  it("should concatenate thinking and text content", () => {
+    const parser = transformMistralThinkingChunks();
+
+    const mixedChunk = JSON.stringify({
+      id: "test-id",
+      object: "chat.completion.chunk",
+      created: 1759752086,
+      model: "magistral-medium-latest",
+      choices: [
+        {
+          index: 0,
+          delta: {
+            content: [
+              {
+                type: "thinking",
+                thinking: [{ type: "text", text: "Thought: " }],
+              },
+              {
+                type: "text",
+                text: "actual response",
+              },
+            ],
+          },
+          finish_reason: null,
+        },
+      ],
+    });
+
+    const result = parser(mixedChunk);
+    const parsedResult = JSON.parse(result.data!);
+    expect(parsedResult.choices[0].delta.content).toBe(
+      "Thought: actual response",
+    );
+  });
+
   it("should handle thinking items without text field", () => {
     const parser = transformMistralThinkingChunks();
 
@@ -197,10 +231,49 @@ describe("transformMistralThinkingChunks", () => {
 
     const result = parser(noTextChunk);
     const parsedResult = JSON.parse(result.data!);
+    // When thinking has no text, it returns empty string
+    expect(parsedResult.choices[0].delta.content).toBe("");
+  });
+
+  it("should preserve non-thinking content unchanged", () => {
+    const parser = transformMistralThinkingChunks();
+
+    const nonThinkingChunk = JSON.stringify({
+      id: "test-id",
+      object: "chat.completion.chunk",
+      created: 1759752086,
+      model: "magistral-medium-latest",
+      choices: [
+        {
+          index: 0,
+          delta: {
+            content: [
+              {
+                type: "text",
+                text: "Regular text",
+              },
+              {
+                type: "image",
+                url: "http://example.com/image.png",
+              },
+            ],
+          },
+          finish_reason: null,
+        },
+      ],
+    });
+
+    const result = parser(nonThinkingChunk);
+    const parsedResult = JSON.parse(result.data!);
+    // Non-thinking content arrays remain unchanged
     expect(parsedResult.choices[0].delta.content).toEqual([
       {
-        type: "thinking",
-        thinking: [{ type: "text" }, { type: "other", value: "ignored" }],
+        type: "text",
+        text: "Regular text",
+      },
+      {
+        type: "image",
+        url: "http://example.com/image.png",
       },
     ]);
   });

@@ -10,7 +10,6 @@ import {
   geminiParamsToOpenAIMessages,
   geminiParamsToOpenAITools,
   normalizeOpenAISchema,
-  openAIContentToGoogleContent,
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";

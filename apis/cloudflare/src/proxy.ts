@@ -1,21 +1,30 @@
 import {
   EdgeProxyV1,
-  FlushingExporter,
   ProxyOpts,
   makeFetchApiSecrets,
   encryptedGet,
 } from "@braintrust/proxy/edge";
-import {
-  NOOP_METER_PROVIDER,
-  SpanLogger,
-  initMetrics,
-} from "@braintrust/proxy";
-import { PrometheusMetricAggregator } from "./metric-aggregator";
+import { FlushingHttpMetricExporter } from "./exporter";
+import { SpanLogger, initMetrics, flushMetrics } from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
+import { MeterProvider } from "@opentelemetry/sdk-metrics";
+import { Meter, Attributes } from "@opentelemetry/api";
+
+export type LogCounterFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
+
+export type LogHistogramFn = (args: {
+  name: string;
+  value: number;
+  attributes?: Attributes;
+}) => void;
 
 export const proxyV1Prefixes = ["/v1/proxy", "/v1"];
 
@@ -31,44 +40,75 @@ export function originWhitelist(env: Env) {
     : undefined;
 }
 
+function createLogCounter(meter: Meter): LogCounterFn {
+  // Cache meters per function instance to avoid recreating for each call
+  const meterCache = new Map<string, any>();
+
+  return ({ name, value, attributes }) => {
+    try {
+      let counter = meterCache.get(name);
+      if (!counter) {
+        counter = meter.createHistogram(name); // This keeps datadog happy
+        meterCache.set(name, counter);
+      }
+      counter.add(value, attributes);
+    } catch (error) {
+      console.error(`Error logging counter ${name}:`, error);
+    }
+  };
+}
+
+function createLogHistogram(meter: Meter): LogHistogramFn {
+  // Cache meters per function instance to avoid recreating for each call
+  const meterCache = new Map<string, any>();
+
+  return ({ name, value, attributes }) => {
+    try {
+      let histogram = meterCache.get(name);
+      if (!histogram) {
+        histogram = meter.createHistogram(name);
+        meterCache.set(name, histogram);
+      }
+      histogram.record(value, attributes);
+    } catch (error) {
+      console.error(`Error logging histogram ${name}:`, error);
+    }
+  };
+}
+
 export async function handleProxyV1(
   request: Request,
   proxyV1Prefix: string,
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
-  let meterProvider = undefined;
-  if (!env.DISABLE_METRICS) {
-    const metricShard = Math.floor(
-      Math.random() * PrometheusMetricAggregator.numShards(env),
-    );
-    const aggregator = env.METRICS_AGGREGATOR.get(
-      env.METRICS_AGGREGATOR.idFromName(metricShard.toString()),
-    );
-    const metricAggURL = new URL(request.url);
-    metricAggURL.pathname = "/push";
+  let meterProvider: MeterProvider | undefined;
+  let logCounter: LogCounterFn | undefined;
+  let logHistogram: LogHistogramFn | undefined;
 
+  if (env.METRICS_LICENSE_KEY) {
     meterProvider = initMetrics(
-      new FlushingExporter((resourceMetrics) =>
-        aggregator.fetch(metricAggURL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(resourceMetrics),
-        }),
+      new FlushingHttpMetricExporter(
+        `${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,
+        {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
+        },
       ),
+      {
+        service: "cfproxy",
+      },
     );
+
+    // Create metric logging functions for cache latency (local to Cloudflare)
+    if (meterProvider) {
+      const meter = meterProvider.getMeter("cloudflare-cache");
+      logCounter = createLogCounter(meter);
+      logHistogram = createLogHistogram(meter);
+    }
   }
 
-  const meter = (meterProvider || NOOP_METER_PROVIDER).getMeter(
-    "cloudflare-metrics",
-  );
-
   const whitelist = originWhitelist(env);
-
-  const cacheGetLatency = meter.createHistogram("results_cache_get_latency");
-  const cacheSetLatency = meter.createHistogram("results_cache_set_latency");
 
   const cache = await caches.open("apikey:cache");
 
@@ -102,7 +142,9 @@ export async function handleProxyV1(
       parent = resolveParentHeader(parentHeader);
     } catch (e) {
       return new Response(
-        `Invalid parent header '${parentHeader}': ${e instanceof Error ? e.message : String(e)}`,
+        `Invalid parent header '${parentHeader}': ${
+          e instanceof Error ? e.message : String(e)
+        }`,
         { status: 400 },
       );
     }
@@ -130,7 +172,10 @@ export async function handleProxyV1(
         const start = performance.now();
         const ret = await env.ai_proxy.get(key);
         const end = performance.now();
-        cacheGetLatency.record(end - start);
+        logHistogram?.({
+          name: "results_cache_get_latency",
+          value: end - start,
+        });
         if (ret) {
           return JSON.parse(ret);
         } else {
@@ -143,11 +188,16 @@ export async function handleProxyV1(
           expirationTtl: ttl,
         });
         const end = performance.now();
-        cacheSetLatency.record(end - start);
+        logHistogram?.({
+          name: "results_cache_set_latency",
+          value: end - start,
+        });
       },
     },
     braintrustApiUrl: braintrustAppUrl(env).toString(),
-    meterProvider,
+    meterProvider, // Used for flushing metrics
+    logCounter, // Pass logging functions to edge layer
+    logHistogram, // Pass logging functions to edge layer
     whitelist,
     spanLogger,
   };
@@ -172,68 +222,4 @@ export async function handleProxyV1(
   }
 
   return EdgeProxyV1(opts)(request, ctx);
-}
-
-export async function handlePrometheusScrape(
-  request: Request,
-  env: Env,
-  ctx: ExecutionContext,
-): Promise<Response> {
-  if (env.DISABLE_METRICS) {
-    return new Response("Metrics disabled", { status: 403 });
-  }
-  if (
-    env.PROMETHEUS_SCRAPE_USER !== undefined ||
-    env.PROMETHEUS_SCRAPE_PASSWORD !== undefined
-  ) {
-    const unauthorized = new Response("Unauthorized", {
-      status: 401,
-      headers: {
-        "WWW-Authenticate": 'Basic realm="Braintrust Proxy Metrics"',
-      },
-    });
-
-    const auth = request.headers.get("Authorization");
-    if (!auth || auth.indexOf("Basic ") !== 0) {
-      return unauthorized;
-    }
-
-    const userPass = atob(auth.slice("Basic ".length)).split(":");
-    if (
-      userPass[0] !== env.PROMETHEUS_SCRAPE_USER ||
-      userPass[1] !== env.PROMETHEUS_SCRAPE_PASSWORD
-    ) {
-      return unauthorized;
-    }
-  }
-  // Array from 0 ... numShards
-  const shards = await Promise.all(
-    Array.from(
-      { length: PrometheusMetricAggregator.numShards(env) },
-      async (_, i) => {
-        const aggregator = env.METRICS_AGGREGATOR.get(
-          env.METRICS_AGGREGATOR.idFromName(i.toString()),
-        );
-        const url = new URL(request.url);
-        url.pathname = "/metrics";
-        const resp = await aggregator.fetch(url, {
-          method: "POST",
-        });
-        if (resp.status !== 200) {
-          throw new Error(
-            `Unexpected status code ${resp.status} ${
-              resp.statusText
-            }: ${await resp.text()}`,
-          );
-        } else {
-          return await resp.text();
-        }
-      },
-    ),
-  );
-  return new Response(shards.join("\n"), {
-    headers: {
-      "Content-Type": "text/plain",
-    },
-  });
 }

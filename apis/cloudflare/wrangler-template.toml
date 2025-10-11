@@ -17,20 +17,21 @@ new_classes = ["PrometheusMetricAggregator"] # Array of new classes
 tag = "v2" # Migration identifier. This should be unique for each migration entry
 deleted_classes = ["PrometheusMetricAggregator"] # Array of deleted class names
 
+[observability.logs]
+enabled = true
+head_sampling_rate = 0.2
+
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/platform/environment-variables
 [vars]
 # You should not need to edit this
 BRAINTRUST_APP_URL = "https://www.braintrust.dev"
-PROMETHEUS_SCRAPE_USER="admin"
-PROMETHEUS_SCRAPE_PASSWORD="<YOUR_PASSWORD>"
+METRICS_LICENSE_KEY="<YOUR_METRICS_LICENSE_KEY>"
 
 [env.staging.vars]
 BRAINTRUST_APP_URL = "https://www.braintrust.dev"
-# These are not real credentials, just populated to suppress a wrangler warning.
-PROMETHEUS_SCRAPE_USER="admin"
-PROMETHEUS_SCRAPE_PASSWORD="password"
+METRICS_LICENSE_KEY="<YOUR_METRICS_LICENSE_KEY>"
 
 [env.staging]
 kv_namespaces = [
@@ -42,8 +43,3 @@ kv_namespaces = [
 [env.staging.observability]
 enabled = true
 head_sampling_rate = 1.0 # Sample 100% of staging logs.
-
-[env.staging.durable_objects]
-bindings = [
-    { name = "METRICS_AGGREGATOR", class_name = "PrometheusMetricAggregator" },
-]

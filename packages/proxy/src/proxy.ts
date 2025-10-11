@@ -373,7 +373,7 @@ export async function proxyV1({
 
   // Record total calls with model attributes
   logCounter?.({
-    name: "metrics_2_test.requests",
+    name: "aiproxy.requests",
     value: 1,
     attributes: baseAttributes,
   });
@@ -473,7 +473,7 @@ export async function proxyV1({
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
         logCounter?.({
-          name: "proxy.results_cache_hits",
+          name: "aiproxy.results_cache_hits",
           value: 1,
           attributes: baseAttributes,
         });
@@ -528,21 +528,21 @@ export async function proxyV1({
         });
       } else {
         logCounter?.({
-          name: "proxy.results_cache_misses",
+          name: "aiproxy.results_cache_misses",
           value: 1,
           attributes: baseAttributes,
         });
       }
     } else {
       logCounter?.({
-        name: "proxy.results_cache_misses",
+        name: "aiproxy.results_cache_misses",
         value: 1,
         attributes: baseAttributes,
       });
     }
   } else {
     logCounter?.({
-      name: "proxy.results_cache_skips",
+      name: "aiproxy.results_cache_skips",
       value: 1,
       attributes: baseAttributes,
     });
@@ -622,7 +622,7 @@ export async function proxyV1({
           orgName,
         );
         logHistogram?.({
-          name: "proxy.secrets_fetch_time_ms",
+          name: "aiproxy.secrets_fetch_time_ms",
           value: nowMs() - start,
           attributes: baseAttributes,
         });
@@ -778,36 +778,36 @@ export async function proxyV1({
 
                   // Record token metrics
                   logHistogram?.({
-                    name: "proxy.tokens",
+                    name: "aiproxy.tokens",
                     value: extendedUsage.data.total_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_tokens",
+                    name: "aiproxy.prompt_tokens",
                     value: extendedUsage.data.prompt_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_cached_tokens",
+                    name: "aiproxy.prompt_cached_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details?.cached_tokens ||
                       0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_cache_creation_tokens",
+                    name: "aiproxy.prompt_cache_creation_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details
                         ?.cache_creation_tokens || 0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.completion_tokens",
+                    name: "aiproxy.completion_tokens",
                     value: extendedUsage.data.completion_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.completion_reasoning_tokens",
+                    name: "aiproxy.completion_reasoning_tokens",
                     value:
                       extendedUsage.data.completion_tokens_details
                         ?.reasoning_tokens || 0,
@@ -898,7 +898,7 @@ export async function proxyV1({
             },
           });
           logHistogram?.({
-            name: "proxy.time_to_first_token_ms",
+            name: "aiproxy.time_to_first_token_ms",
             value: ttft * 1000,
             attributes: baseAttributes,
           });
@@ -970,36 +970,36 @@ export async function proxyV1({
 
                   // Record token metrics
                   logHistogram?.({
-                    name: "proxy.tokens",
+                    name: "aiproxy.tokens",
                     value: extendedUsage.data.total_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_tokens",
+                    name: "aiproxy.prompt_tokens",
                     value: extendedUsage.data.prompt_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_cached_tokens",
+                    name: "aiproxy.prompt_cached_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details?.cached_tokens ||
                       0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.prompt_cache_creation_tokens",
+                    name: "aiproxy.prompt_cache_creation_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details
                         ?.cache_creation_tokens || 0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.completion_tokens",
+                    name: "aiproxy.completion_tokens",
                     value: extendedUsage.data.completion_tokens,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
-                    name: "proxy.completion_reasoning_tokens",
+                    name: "aiproxy.completion_reasoning_tokens",
                     value:
                       extendedUsage.data.completion_tokens_details
                         ?.reasoning_tokens || 0,
@@ -1050,7 +1050,7 @@ export async function proxyV1({
 
         const duration = getCurrentUnixTimestamp() - startTime;
         logHistogram?.({
-          name: "proxy.request_duration_ms",
+          name: "aiproxy.request_duration_ms",
           value: duration * 1000,
           attributes: baseAttributes,
         });
@@ -1115,7 +1115,7 @@ export async function proxyV1({
   }
 
   logCounter?.({
-    name: "proxy.requests_completed",
+    name: "aiproxy.requests_completed",
     value: 1,
     attributes: baseAttributes,
   });

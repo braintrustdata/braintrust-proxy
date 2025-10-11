@@ -3,7 +3,6 @@ name: Deploy to Cloudflare
 on:
   workflow_dispatch:
   push:
-    branches: ["main"]
 
 jobs:
   deploy:
@@ -23,7 +22,7 @@ jobs:
         run: |
           cp wrangler-template.toml wrangler.toml
           sed -i 's/<YOUR_KV_ID>/${{ secrets.CLOUDFLARE_KV_ID }}/g' wrangler.toml
-          sed -i 's/<YOUR_PASSWORD>/${{ secrets.PROMETHEUS_SCRAPE_PASSWORD }}/g' wrangler.toml
+          sed -i 's/<YOUR_METRICS_LICENSE_KEY>/${{ secrets.METRICS_LICENSE_KEY }}/g' wrangler.toml
       - run: pnpm run deploy
         working-directory: apis/cloudflare
         env:

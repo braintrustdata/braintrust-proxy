@@ -14,12 +14,6 @@ import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 import { Meter, Attributes, Histogram } from "@opentelemetry/api";
 
-export type LogCounterFn = (args: {
-  name: string;
-  value: number;
-  attributes?: Attributes;
-}) => void;
-
 export type LogHistogramFn = (args: {
   name: string;
   value: number;
@@ -38,24 +32,6 @@ export function originWhitelist(env: Env) {
         .map((x) => x.trim())
         .filter((x) => x)
     : undefined;
-}
-
-function createLogCounter(meter: Meter): LogCounterFn {
-  // Cache meters per function instance to avoid recreating for each call
-  const meterCache = new Map<string, Histogram>();
-
-  return ({ name, value, attributes }) => {
-    try {
-      let counter = meterCache.get(name);
-      if (!counter) {
-        counter = meter.createHistogram(name); // This keeps datadog happy
-        meterCache.set(name, counter);
-      }
-      counter.record(value, attributes);
-    } catch (error) {
-      console.error(`Error logging counter ${name}:`, error);
-    }
-  };
 }
 
 function createLogHistogram(meter: Meter): LogHistogramFn {
@@ -83,7 +59,6 @@ export async function handleProxyV1(
   ctx: ExecutionContext,
 ): Promise<Response> {
   let meterProvider: MeterProvider | undefined;
-  let logCounter: LogCounterFn | undefined;
   let logHistogram: LogHistogramFn | undefined;
 
   if (env.METRICS_LICENSE_KEY) {
@@ -103,7 +78,6 @@ export async function handleProxyV1(
     // Create metric logging functions for cache latency (local to Cloudflare)
     if (meterProvider) {
       const meter = meterProvider.getMeter("cloudflare-cache");
-      logCounter = createLogCounter(meter);
       logHistogram = createLogHistogram(meter);
     }
   }
@@ -196,7 +170,6 @@ export async function handleProxyV1(
     },
     braintrustApiUrl: braintrustAppUrl(env).toString(),
     meterProvider, // Used for flushing metrics
-    logCounter, // Pass logging functions to edge layer
     logHistogram, // Pass logging functions to edge layer
     whitelist,
     spanLogger,

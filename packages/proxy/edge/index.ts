@@ -1,6 +1,6 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { flushMetrics } from "@lib/metrics";
-import { proxyV1, SpanLogger, LogCounterFn, LogHistogramFn } from "@lib/proxy";
+import { proxyV1, SpanLogger, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 import { Meter } from "@opentelemetry/api";
@@ -34,7 +34,6 @@ export interface ProxyOpts {
   completionsCache?: Cache;
   braintrustApiUrl?: string;
   meterProvider?: MeterProvider;
-  logCounter?: LogCounterFn;
   logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
@@ -315,7 +314,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         cacheGet,
         cachePut,
         digest: digestMessage,
-        logCounter: opts.logCounter,
         logHistogram: opts.logHistogram,
         spanLogger: opts.spanLogger,
       });

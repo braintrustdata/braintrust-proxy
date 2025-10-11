@@ -296,14 +296,14 @@ export class OpenAiRealtimeLogger {
         },
       });
       // Assume the audio codec cannot change during the session.
-      if (!this.inputAudioFormat && message.session.input_audio_format) {
+      if (!this.inputAudioFormat) {
         this.inputAudioFormat = openAiToPcmAudioFormat(
-          message.session.input_audio_format,
+          message.session.input_audio_format ?? "pcm16",
         );
       }
-      if (!this.outputAudioFormat && message.session.output_audio_format) {
+      if (!this.outputAudioFormat) {
         this.outputAudioFormat = openAiToPcmAudioFormat(
-          message.session.output_audio_format,
+          message.session.output_audio_format ?? "pcm16",
         );
       }
       this.turnDetectionEnabled = !!message.session.turn_detection;
@@ -317,7 +317,11 @@ export class OpenAiRealtimeLogger {
       const itemId = message.item_id;
       if (message.part.type === "audio") {
         if (!this.outputAudioFormat) {
-          throw new Error("Messages may have been received out of order.");
+          // Use default format (pcm16 @ 24kHz) if session hasn't been received yet
+          this.outputAudioFormat = openAiToPcmAudioFormat("pcm16");
+          console.warn(
+            "Received content part before session configuration, using default format",
+          );
         }
         this.serverAudioBuffer.set(
           itemId,
@@ -326,18 +330,32 @@ export class OpenAiRealtimeLogger {
       }
     } else if (message.type === "response.output_audio.delta") {
       const id = message.item_id;
-      const audioBuffer = this.serverAudioBuffer.get(id);
+      let audioBuffer = this.serverAudioBuffer.get(id);
       if (!audioBuffer) {
-        throw new Error(
-          `Invalid response ID: ${message.response_id}, item ID: ${id}`,
-        );
+        // Lazily create the audio buffer if we haven't seen content_part.added yet
+        if (!this.outputAudioFormat) {
+          // Use default format (pcm16 @ 24kHz) if session hasn't been received yet
+          this.outputAudioFormat = openAiToPcmAudioFormat("pcm16");
+          console.warn(
+            "Received audio delta before session configuration, using default format",
+          );
+        }
+        audioBuffer = new AudioBuffer({ inputCodec: this.outputAudioFormat });
+        this.serverAudioBuffer.set(id, audioBuffer);
       }
       audioBuffer.push(message.delta);
     } else if (message.type === "response.output_audio.done") {
       const itemId = message.item_id;
       const audioBuffer = this.serverAudioBuffer.get(itemId);
-      const span = this.serverSpans.get(itemId);
-      if (!audioBuffer || !span) {
+      let span = this.serverSpans.get(itemId);
+
+      // Lazily create span if we haven't seen output_item.added yet
+      if (!span) {
+        span = this.rootSpan.startSpan({ event: { id: itemId } });
+        this.serverSpans.set(itemId, span);
+      }
+
+      if (!audioBuffer) {
         throw new Error(
           `Invalid response ID: ${message.response_id}, item ID: ${itemId}`,
         );

@@ -4,7 +4,7 @@ import {
   EndpointProviderToBaseURL,
   ProxyLoggingParam,
 } from "@braintrust/proxy/schema";
-import { ORG_NAME_HEADER } from "@braintrust/proxy";
+import { ORG_NAME_HEADER, parseAuthHeader } from "@braintrust/proxy";
 import {
   isTempCredential,
   verifyTempCredentials,
@@ -42,9 +42,11 @@ export async function handleRealtimeProxy({
   let loggingParams: ProxyLoggingParam | undefined;
 
   const authHeader = request.headers.get("Authorization");
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    apiKey = authHeader.slice("Bearer ".length).trim();
+  if (authHeader) {
+    apiKey = parseAuthHeader({ authorization: authHeader }) ?? undefined;
   }
+
+  const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
 
   const parentHeader = request.headers.get(BT_PARENT);
   if (parentHeader) {
@@ -124,8 +126,6 @@ export async function handleRealtimeProxy({
     model = jwtPayload.bt.model ?? MODEL;
   }
 
-  const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
-
   secrets = await getApiSecrets(true, apiKey, model, orgName);
   if (secrets.length === 0) {
     // As a hack, check for gpt-4o, because many of the gpt realtime models are not
@@ -139,11 +139,12 @@ export async function handleRealtimeProxy({
 
   const realtimeLogger: OpenAiRealtimeLogger | undefined =
     loggingParams &&
-    new OpenAiRealtimeLogger({
+    (await OpenAiRealtimeLogger.make({
       apiKey,
       appUrl: braintrustAppUrl(env).toString(),
+      orgName,
       loggingParams,
-    });
+    }));
 
   const secret = secrets[0];
 

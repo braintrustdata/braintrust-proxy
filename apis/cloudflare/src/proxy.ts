@@ -5,7 +5,13 @@ import {
   encryptedGet,
 } from "@braintrust/proxy/edge";
 import { FlushingHttpMetricExporter } from "./exporter";
-import { SpanLogger, initMetrics, flushMetrics } from "@braintrust/proxy";
+import {
+  SpanLogger,
+  initMetrics,
+  flushMetrics,
+  ORG_NAME_HEADER,
+  parseAuthHeader,
+} from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
 import { Span, startSpan } from "braintrust";
@@ -148,10 +154,18 @@ export async function handleProxyV1(
         { status: 400 },
       );
     }
+
+    const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
+    const apiKey =
+      parseAuthHeader({
+        authorization: request.headers.get("authorization") ?? undefined,
+      }) ?? undefined;
+
     span = startSpan({
       state: await cachedLogin({
         appUrl: braintrustAppUrl(env).toString(),
-        headers: request.headers,
+        apiKey,
+        orgName,
         cache: credentialsCache,
       }),
       type: "llm",

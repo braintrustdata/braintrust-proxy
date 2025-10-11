@@ -5,6 +5,8 @@ import {
   PcmAudioFormat,
   ProxyLoggingParam,
 } from "@braintrust/proxy/schema";
+import { Cache as EdgeCache } from "@braintrust/proxy/edge";
+import { cachedLogin } from "./tracing";
 
 // The maximum audio buffer size after pushing.
 const maxAudioBufferBytes = 50 * 1024 * 1024;
@@ -172,31 +174,50 @@ export class OpenAiRealtimeLogger {
   private turnDetectionEnabled: boolean = false;
 
   constructor({
-    apiKey,
-    appUrl,
-    loggingParams,
+    state,
+    parent,
+    compressAudio,
   }: {
-    apiKey: string;
-    appUrl: string;
-    loggingParams: ProxyLoggingParam;
+    state: Braintrust.BraintrustState;
+    parent: string;
+    compressAudio: boolean;
   }) {
-    const btLogger = Braintrust.initLogger({
-      state: new Braintrust.BraintrustState({}),
-      apiKey,
-      appUrl,
-      projectName: loggingParams.project_name,
-      asyncFlush: true,
-      setCurrent: false,
-    });
-
-    this.rootSpan = btLogger.startSpan({
+    this.rootSpan = Braintrust.startSpan({
       name: "Realtime session",
       type: "task",
+      state,
+      parent,
     });
     this.serverAudioBuffer = new Map();
     this.serverSpans = new Map();
     this.toolSpans = new Map();
-    this.compressAudio = loggingParams.compress_audio;
+    this.compressAudio = compressAudio;
+  }
+
+  public static async make({
+    apiKey,
+    orgName,
+    appUrl,
+    cache,
+    loggingParams,
+  }: {
+    apiKey: string;
+    orgName?: string;
+    appUrl: string;
+    cache: EdgeCache;
+    loggingParams: ProxyLoggingParam;
+  }): Promise<OpenAiRealtimeLogger | undefined> {
+    const state = await cachedLogin({
+      appUrl,
+      apiKey,
+      orgName,
+      cache,
+    });
+    return new OpenAiRealtimeLogger({
+      state,
+      parent: loggingParams.parent,
+      compressAudio: loggingParams.compress_audio ?? false,
+    });
   }
 
   handleMessageClient(rawMessage: unknown) {

@@ -30,7 +30,7 @@ export class FlushingHttpMetricExporter extends MetricReader {
     // Create an OTLP exporter instance for serialization
     this.otlpExporter = new OTLPMetricExporter({
       url: url,
-      headers: headers,
+      headers: this.headers,
     });
   }
 

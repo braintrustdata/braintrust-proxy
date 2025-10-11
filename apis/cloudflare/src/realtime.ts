@@ -12,6 +12,7 @@ import {
 import { OpenAiRealtimeLogger } from "./realtime-logger";
 import { braintrustAppUrl } from "./env";
 import { BT_PARENT, resolveParentHeader } from "braintrust/util";
+import { Cache as EdgeCache } from "@braintrust/proxy/edge";
 
 const MODEL = "gpt-4o-realtime-preview-2024-10-01";
 
@@ -21,6 +22,7 @@ export async function handleRealtimeProxy({
   ctx,
   cacheGet,
   getApiSecrets,
+  credentialsCache,
 }: {
   request: Request;
   env: Env;
@@ -32,6 +34,7 @@ export async function handleRealtimeProxy({
     model: string | null,
     org_name?: string,
   ) => Promise<APISecret[]>;
+  credentialsCache: EdgeCache;
 }): Promise<Response> {
   const upgradeHeader = request.headers.get("Upgrade");
   if (!upgradeHeader || upgradeHeader !== "websocket") {
@@ -144,6 +147,7 @@ export async function handleRealtimeProxy({
       appUrl: braintrustAppUrl(env).toString(),
       orgName,
       loggingParams,
+      cache: credentialsCache,
     }));
 
   const secret = secrets[0];

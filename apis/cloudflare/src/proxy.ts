@@ -232,6 +232,7 @@ export async function handleProxyV1(
         );
       },
       getApiSecrets: makeFetchApiSecrets({ ctx, opts }),
+      credentialsCache,
     });
   }
 

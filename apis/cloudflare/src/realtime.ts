@@ -135,7 +135,7 @@ export async function handleRealtimeProxy({
   }
 
   // Relay: OpenAI Realtime API Event -> Client
-  realtimeApi.on("server.*", (event: { type: string }) => {
+  realtimeApi.on("event", (event) => {
     server.send(JSON.stringify(event));
     try {
       realtimeLogger?.handleMessageServer(event);
@@ -144,7 +144,8 @@ export async function handleRealtimeProxy({
     }
   });
 
-  realtimeApi.on("close", () => {
+  // Listen to the underlying WebSocket close event
+  realtimeApi.socket.addEventListener("close", () => {
     console.log("Closing server-side because I received a close event");
     server.close();
     if (realtimeLogger) {
@@ -155,57 +156,58 @@ export async function handleRealtimeProxy({
   // Relay: Client -> OpenAI Realtime API Event
   const messageQueue: string[] = [];
 
-  server.addEventListener("message", (event: MessageEvent) => {
-    const messageHandler = (data: string) => {
+  const messageHandler = (data: string) => {
+    try {
+      const parsedEvent = JSON.parse(data);
+      realtimeApi!.send(parsedEvent);
       try {
-        const parsedEvent = JSON.parse(data);
-        realtimeApi.send(parsedEvent.type, parsedEvent);
-        try {
-          realtimeLogger?.handleMessageClient(parsedEvent);
-        } catch (e) {
-          console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
-        }
+        realtimeLogger?.handleMessageClient(parsedEvent);
       } catch (e) {
-        console.error(`Error parsing event from client: ${data}`);
+        console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
       }
-    };
+    } catch (e) {
+      console.error(`Error parsing event from client: ${data}`);
+    }
+    console.log("Sent message to OpenAI", data);
+  };
+
+  server.addEventListener("message", (event: MessageEvent) => {
+    console.log("Message from client", event.data);
 
     const data =
       typeof event.data === "string" ? event.data : event.data.toString();
-    if (!realtimeApi.isConnected()) {
+    if (realtimeApi!.socket.readyState !== 1) {
+      console.log("Queueing message because socket is not open yet");
       messageQueue.push(data);
     } else {
+      console.log("Sending message to OpenAI");
       messageHandler(data);
     }
   });
 
   server.addEventListener("close", () => {
     console.log("Closing server-side because the client closed the connection");
-    realtimeApi.disconnect();
+    realtimeApi!.close();
     if (realtimeLogger) {
       ctx.waitUntil(realtimeLogger.close());
     }
   });
 
-  // Connect to OpenAI Realtime API.
-  try {
-    console.log(`Connecting to OpenAI...`);
-    await realtimeApi.connect();
+  // Wait for the WebSocket to be connected and send queued messages
+  realtimeApi.socket.addEventListener("open", () => {
     console.log(`Connected to OpenAI successfully!`);
     while (messageQueue.length) {
       const message = messageQueue.shift();
       if (message) {
-        server.send(message);
+        messageHandler(message);
       }
     }
-  } catch (e) {
-    if (e instanceof Error) {
-      console.error(`Error connecting to OpenAI: ${e.message}`);
-    } else {
-      console.error(`Error connecting to OpenAI: ${e}`);
-    }
-    return new Response("Error connecting to OpenAI", { status: 502 });
-  }
+  });
+
+  realtimeApi.socket.addEventListener("error", (e) => {
+    console.error(`Error connecting to OpenAI:`, e);
+    server.close();
+  });
 
   return new Response(null, {
     status: 101,

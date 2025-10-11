@@ -1,4 +1,4 @@
-import * as Braintrust from "braintrust/browser";
+import * as Braintrust from "braintrust";
 import { makeWavFile, makeMp3File } from "@braintrust/proxy/utils";
 import {
   openAiRealtimeMessageSchema,
@@ -117,6 +117,8 @@ class AudioBuffer {
     );
   }
 }
+
+type AudioFormatType = "pcm16" | "g711_ulaw" | "g711_alaw";
 
 function openAiToPcmAudioFormat(audioFormat: AudioFormatType): PcmAudioFormat {
   const common = {
@@ -407,7 +409,7 @@ export class OpenAiRealtimeLogger {
           data: audioFile,
           filename: `audio.${fileExt}`,
           contentType: audioFile.type,
-          state: this.rootSpan.state,
+          state: this.rootSpan.state(),
         }),
       },
     });
@@ -425,7 +427,9 @@ export class OpenAiRealtimeLogger {
     // Check if there is a pending audio buffers.
     if (this.serverAudioBuffer.size || this.clientAudioBuffer) {
       console.warn(
-        `Closing with ${this.serverAudioBuffer.size} pending server + ${this.clientAudioBuffer ? 1 : 0} pending client audio buffers`,
+        `Closing with ${this.serverAudioBuffer.size} pending server + ${
+          this.clientAudioBuffer ? 1 : 0
+        } pending client audio buffers`,
       );
     }
 

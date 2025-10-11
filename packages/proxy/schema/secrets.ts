@@ -155,7 +155,7 @@ export type APISecret = z.infer<typeof APISecretSchema>;
 
 export const proxyLoggingParamSchema = z
   .object({
-    project_name: z.string(),
+    parent: z.string(),
     compress_audio: z.boolean().default(true),
   })
   .describe(

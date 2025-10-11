@@ -11,6 +11,7 @@ import {
 } from "@braintrust/proxy/utils";
 import { OpenAiRealtimeLogger } from "./realtime-logger";
 import { braintrustAppUrl } from "./env";
+import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 
 const MODEL = "gpt-4o-realtime-preview-2024-10-01";
 
@@ -38,10 +39,37 @@ export async function handleRealtimeProxy({
   }
 
   let apiKey: string | undefined;
+  let loggingParams: ProxyLoggingParam | undefined;
 
   const authHeader = request.headers.get("Authorization");
   if (authHeader && authHeader.startsWith("Bearer ")) {
     apiKey = authHeader.slice("Bearer ".length).trim();
+  }
+
+  const parentHeader = request.headers.get(BT_PARENT);
+  if (parentHeader) {
+    let parent;
+    try {
+      parent = resolveParentHeader(parentHeader);
+    } catch (e) {
+      return new Response(
+        `Invalid parent header '${parentHeader}': ${
+          e instanceof Error ? e.message : String(e)
+        }`,
+        { status: 400 },
+      );
+    }
+    loggingParams = {
+      parent: parent.toStr(),
+      compress_audio: false,
+    };
+  }
+
+  const compressAudioHeader = request.headers.get("x-bt-compress-audio");
+  if (compressAudioHeader && loggingParams) {
+    const normalized = compressAudioHeader.trim().toLowerCase();
+    const compressAudio: boolean = normalized === "1" || normalized === "true";
+    loggingParams.compress_audio = compressAudio;
   }
 
   const webSocketPair = new WebSocketPair();
@@ -79,7 +107,6 @@ export async function handleRealtimeProxy({
     return new Response("Missing API key", { status: 401 });
   }
 
-  let loggingParams: ProxyLoggingParam | undefined;
   let secrets: APISecret[] = [];
 
   // First, try to use temp credentials, because then we'll get access to the project name

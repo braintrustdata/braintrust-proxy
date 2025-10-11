@@ -90,6 +90,11 @@ export async function handleRealtimeProxy({
   const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
 
   secrets = await getApiSecrets(true, apiKey, model, orgName);
+  if (secrets.length === 0) {
+    // As a hack, check for gpt-4o, because many of the gpt realtime models are not
+    // registered in the model list yet.
+    secrets = await getApiSecrets(true, apiKey, "gpt-4o", orgName);
+  }
 
   if (secrets.length === 0) {
     return new Response("No secrets found", { status: 401 });

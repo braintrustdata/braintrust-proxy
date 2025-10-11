@@ -9,14 +9,13 @@ kv_namespaces = [
     { binding = "ai_proxy", id = "<YOUR_KV_ID>" },
 ]
 
-[durable_objects]
-bindings = [
-    { name = "METRICS_AGGREGATOR", class_name = "PrometheusMetricAggregator" },
-]
-
 [[migrations]]
 tag = "v1"                                   # Should be unique for each entry
 new_classes = ["PrometheusMetricAggregator"] # Array of new classes
+
+[[migrations]]
+tag = "v2" # Migration identifier. This should be unique for each migration entry
+deleted_classes = ["PrometheusMetricAggregator"] # Array of deleted class names
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.

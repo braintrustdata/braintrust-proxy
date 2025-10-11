@@ -1,5 +1,9 @@
-import { RealtimeAPI } from "@openai/realtime-api-beta";
-import { APISecret, ProxyLoggingParam } from "@braintrust/proxy/schema";
+import { OpenAIRealtimeWebSocket } from "openai/realtime/websocket";
+import {
+  APISecret,
+  EndpointProviderToBaseURL,
+  ProxyLoggingParam,
+} from "@braintrust/proxy/schema";
 import { ORG_NAME_HEADER } from "@braintrust/proxy";
 import {
   isTempCredential,
@@ -36,7 +40,7 @@ export async function handleRealtimeProxy({
   const webSocketPair = new WebSocketPair();
   const [client, server] = Object.values(webSocketPair);
 
-  let realtimeApi: RealtimeAPI | null = null;
+  let realtimeApi: OpenAIRealtimeWebSocket | null = null;
 
   server.accept();
 
@@ -108,10 +112,22 @@ export async function handleRealtimeProxy({
       loggingParams,
     });
 
+  const secret = secrets[0];
+
+  let baseURL =
+    (secret.metadata &&
+      "api_base" in secret.metadata &&
+      secret.metadata.api_base) ||
+    EndpointProviderToBaseURL[secret.type] ||
+    EndpointProviderToBaseURL["openai"]!;
+
   // Create RealtimeClient
   try {
     console.log("Creating RealtimeApi");
-    realtimeApi = new RealtimeAPI({ apiKey: secrets[0].secret });
+    realtimeApi = new OpenAIRealtimeWebSocket(
+      { model },
+      { apiKey: secret.secret, baseURL },
+    );
   } catch (e) {
     console.error(`Error connecting to OpenAI: ${e}`);
     server.close();

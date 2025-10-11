@@ -82,6 +82,7 @@ import {
   fetchBedrockAnthropicMessages,
   fetchConverse,
 } from "./providers/bedrock";
+import { transformMistralThinkingChunks } from "./providers/mistral";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
 import {
   googleCompletionToOpenAICompletion,
@@ -2054,7 +2055,9 @@ async function fetchOpenAI(
 
   if (
     bodyData?.model?.startsWith("o1-pro") ||
-    bodyData?.model?.startsWith("o3-pro")
+    bodyData?.model?.startsWith("o3-pro") ||
+    bodyData?.model?.startsWith("gpt-5-pro") ||
+    bodyData?.model?.startsWith("gpt-5-codex")
   ) {
     return fetchOpenAIResponsesTranslate({
       headers,
@@ -2172,6 +2175,12 @@ async function fetchOpenAI(
         }),
       );
     }
+  }
+
+  if (secret.type === "mistral" && stream && bodyData?.stream) {
+    stream = stream.pipeThrough(
+      createEventStreamTransformer(transformMistralThinkingChunks()),
+    );
   }
 
   return {

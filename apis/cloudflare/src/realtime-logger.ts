@@ -232,6 +232,7 @@ export class OpenAiRealtimeLogger {
       return;
     }
     const message = parsed.data;
+    console.log("Client message", message.type);
     if (message.type === "input_audio_buffer.append") {
       // Lazy create span.
       if (!this.clientSpan) {
@@ -308,10 +309,13 @@ export class OpenAiRealtimeLogger {
       this.turnDetectionEnabled = !!message.session.turn_detection;
     } else if (message.type === "response.output_item.added") {
       const itemId = message.item.id;
-      if (
-        message.item.type === "message" &&
-        message.item.role === "assistant"
-      ) {
+      this.serverSpans.set(
+        itemId,
+        this.rootSpan.startSpan({ event: { id: itemId } }),
+      );
+    } else if (message.type === "response.content_part.added") {
+      const itemId = message.item_id;
+      if (message.part.type === "audio") {
         if (!this.outputAudioFormat) {
           throw new Error("Messages may have been received out of order.");
         }
@@ -320,11 +324,7 @@ export class OpenAiRealtimeLogger {
           new AudioBuffer({ inputCodec: this.outputAudioFormat }),
         );
       }
-      this.serverSpans.set(
-        itemId,
-        this.rootSpan.startSpan({ event: { id: itemId } }),
-      );
-    } else if (message.type === "response.audio.delta") {
+    } else if (message.type === "response.output_audio.delta") {
       const id = message.item_id;
       const audioBuffer = this.serverAudioBuffer.get(id);
       if (!audioBuffer) {
@@ -333,7 +333,7 @@ export class OpenAiRealtimeLogger {
         );
       }
       audioBuffer.push(message.delta);
-    } else if (message.type === "response.audio.done") {
+    } else if (message.type === "response.output_audio.done") {
       const itemId = message.item_id;
       const audioBuffer = this.serverAudioBuffer.get(itemId);
       const span = this.serverSpans.get(itemId);

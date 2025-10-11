@@ -12,7 +12,7 @@ import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
-import { Meter, Attributes } from "@opentelemetry/api";
+import { Meter, Attributes, Histogram } from "@opentelemetry/api";
 
 export type LogCounterFn = (args: {
   name: string;
@@ -42,7 +42,7 @@ export function originWhitelist(env: Env) {
 
 function createLogCounter(meter: Meter): LogCounterFn {
   // Cache meters per function instance to avoid recreating for each call
-  const meterCache = new Map<string, any>();
+  const meterCache = new Map<string, Histogram>();
 
   return ({ name, value, attributes }) => {
     try {
@@ -51,7 +51,7 @@ function createLogCounter(meter: Meter): LogCounterFn {
         counter = meter.createHistogram(name); // This keeps datadog happy
         meterCache.set(name, counter);
       }
-      counter.add(value, attributes);
+      counter.record(value, attributes);
     } catch (error) {
       console.error(`Error logging counter ${name}:`, error);
     }
@@ -60,7 +60,7 @@ function createLogCounter(meter: Meter): LogCounterFn {
 
 function createLogHistogram(meter: Meter): LogHistogramFn {
   // Cache meters per function instance to avoid recreating for each call
-  const meterCache = new Map<string, any>();
+  const meterCache = new Map<string, Histogram>();
 
   return ({ name, value, attributes }) => {
     try {

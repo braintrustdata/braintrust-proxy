@@ -37,6 +37,13 @@ export async function handleRealtimeProxy({
     return new Response("Expected Upgrade: websocket", { status: 426 });
   }
 
+  let apiKey: string | undefined;
+
+  const authHeader = request.headers.get("Authorization");
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    apiKey = authHeader.slice("Bearer ".length).trim();
+  }
+
   const webSocketPair = new WebSocketPair();
   const [client, server] = Object.values(webSocketPair);
 
@@ -46,7 +53,6 @@ export async function handleRealtimeProxy({
 
   const responseHeaders = new Headers();
   const protocolHeader = request.headers.get("Sec-WebSocket-Protocol");
-  let apiKey: string | undefined;
   if (protocolHeader) {
     const requestedProtocols = protocolHeader.split(",").map((p) => p.trim());
     if (requestedProtocols.includes("realtime")) {

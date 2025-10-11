@@ -109,12 +109,6 @@ import {
   _urljoin,
 } from "./util";
 
-export type LogCounterFn = (args: {
-  name: string;
-  value: number;
-  attributes?: Attributes;
-}) => void;
-
 export type LogHistogramFn = (args: {
   name: string;
   value: number;
@@ -204,7 +198,6 @@ export async function proxyV1({
   cacheGet,
   cachePut,
   digest,
-  logCounter,
   logHistogram,
   cacheKeyOptions = {},
   decompressFetch = false,
@@ -232,7 +225,6 @@ export async function proxyV1({
     ttl_seconds?: number,
   ) => Promise<void>;
   digest: (message: string) => Promise<string>;
-  logCounter?: LogCounterFn;
   logHistogram?: LogHistogramFn;
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
@@ -372,7 +364,7 @@ export async function proxyV1({
   }
 
   // Record total calls with model attributes
-  logCounter?.({
+  logHistogram?.({
     name: "aiproxy.requests",
     value: 1,
     attributes: baseAttributes,
@@ -472,7 +464,7 @@ export async function proxyV1({
         : DEFAULT_CACHE_TTL;
 
       if (!cacheMaxAge || age <= cacheMaxAge) {
-        logCounter?.({
+        logHistogram?.({
           name: "aiproxy.results_cache_hits",
           value: 1,
           attributes: baseAttributes,
@@ -527,21 +519,21 @@ export async function proxyV1({
           },
         });
       } else {
-        logCounter?.({
+        logHistogram?.({
           name: "aiproxy.results_cache_misses",
           value: 1,
           attributes: baseAttributes,
         });
       }
     } else {
-      logCounter?.({
+      logHistogram?.({
         name: "aiproxy.results_cache_misses",
         value: 1,
         attributes: baseAttributes,
       });
     }
   } else {
-    logCounter?.({
+    logHistogram?.({
       name: "aiproxy.results_cache_skips",
       value: 1,
       attributes: baseAttributes,
@@ -577,14 +569,13 @@ export async function proxyV1({
       modelResponse: { response: proxyResponse, stream: proxyStream },
       secretName,
     } = await fetchModelLoop(
-      logCounter,
       logHistogram,
       method,
       url,
       headers,
       bodyData,
       setOverriddenHeader,
-      async (model) => {
+      async (model: string | null) => {
         // First, try to use temp credentials, because then we'll get access
         // to the model.
         let cachedAuthToken: string | undefined;
@@ -638,7 +629,7 @@ export async function proxyV1({
         }
       },
       spanLogger,
-      (st) => {
+      (st: SpanType) => {
         spanType = st;
       },
       digest,
@@ -1114,7 +1105,7 @@ export async function proxyV1({
     });
   }
 
-  logCounter?.({
+  logHistogram?.({
     name: "aiproxy.requests_completed",
     value: 1,
     attributes: baseAttributes,
@@ -1147,7 +1138,6 @@ const RATE_LIMITING_ERROR_CODES = [
 
 let loopIndex = 0;
 async function fetchModelLoop(
-  logCounter: LogCounterFn | undefined,
   logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
   url: string,
@@ -1235,7 +1225,7 @@ async function fetchModelLoop(
 
     let errorHttpCode = undefined;
     let errorHttpHeaders = new Headers();
-    logCounter?.({
+    logHistogram?.({
       name: "endpoint_calls",
       value: 1,
       attributes: loggableInfo,
@@ -1298,7 +1288,7 @@ async function fetchModelLoop(
           );
         }
       } else {
-        logCounter?.({
+        logHistogram?.({
           name: "endpoint_failures",
           value: 1,
           attributes: loggableInfo,
@@ -1390,7 +1380,7 @@ async function fetchModelLoop(
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
 
-    logCounter?.({
+    logHistogram?.({
       name: "endpoint_retryable_errors",
       value: 1,
       attributes: {
@@ -1421,7 +1411,7 @@ async function fetchModelLoop(
 
   let stream = proxyResponse.stream;
   if (!proxyResponse.response.ok) {
-    logCounter?.({
+    logHistogram?.({
       name: "endpoint_failures",
       value: 1,
       attributes: loggableInfo,

@@ -11,14 +11,15 @@ import {
 } from "@braintrust/proxy/utils";
 import { OpenAiRealtimeLogger } from "./realtime-logger";
 import { braintrustAppUrl } from "./env";
-import { BT_PARENT, resolveParentHeader } from "braintrust/util";
+import {
+  BT_PARENT,
+  resolveParentHeader,
+  SpanComponentsV3,
+  SpanObjectTypeV3,
+} from "braintrust/util";
 import { Cache as EdgeCache } from "@braintrust/proxy/edge";
 import { Span, startSpan } from "braintrust";
 import { cachedLogin } from "./tracing";
-import {
-  SpanComponentsV3,
-  SpanObjectTypeV3,
-} from "braintrust/util/span_identifier_v3";
 
 const MODEL = "gpt-4o-realtime-preview-2024-10-01";
 

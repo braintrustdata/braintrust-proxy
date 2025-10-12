@@ -337,13 +337,11 @@ export class OpenAiRealtimeLogger {
         this.serverSpans.set(itemId, span);
       }
 
-      if (!audioBuffer) {
-        throw new Error(
-          `Invalid response ID: ${message.response_id}, item ID: ${itemId}`,
-        );
+      // Only close audio if we have a buffer (might not have received any deltas)
+      if (audioBuffer) {
+        this.closeAudio(audioBuffer, span, "output");
+        this.serverAudioBuffer.delete(itemId);
       }
-      this.closeAudio(audioBuffer, span, "output");
-      this.serverAudioBuffer.delete(itemId);
     } else if (message.type === "input_audio_buffer.speech_started") {
       if (!this.clientAudioBuffer) {
         throw new Error();

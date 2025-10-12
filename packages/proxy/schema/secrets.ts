@@ -155,11 +155,15 @@ export type APISecret = z.infer<typeof APISecretSchema>;
 
 export const proxyLoggingParamSchema = z
   .object({
-    parent: z.string(),
+    parent: z.string().optional(),
+    project_name: z.string().optional(),
     compress_audio: z.boolean().default(true),
   })
+  .refine((data) => data.parent || data.project_name, {
+    message: "Either 'parent' or 'project_name' must be provided",
+  })
   .describe(
-    "If present, proxy will log requests to the given Braintrust project name.",
+    "If present, proxy will log requests to the given Braintrust project or parent span.",
   );
 
 export type ProxyLoggingParam = z.infer<typeof proxyLoggingParamSchema>;

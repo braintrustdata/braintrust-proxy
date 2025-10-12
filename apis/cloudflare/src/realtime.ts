@@ -13,7 +13,12 @@ import { OpenAiRealtimeLogger } from "./realtime-logger";
 import { braintrustAppUrl } from "./env";
 import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { Cache as EdgeCache } from "@braintrust/proxy/edge";
-import { Span } from "braintrust";
+import { Span, startSpan } from "braintrust";
+import { cachedLogin } from "./tracing";
+import {
+  SpanComponentsV3,
+  SpanObjectTypeV3,
+} from "braintrust/util/span_identifier_v3";
 
 const MODEL = "gpt-4o-realtime-preview-2024-10-01";
 
@@ -130,6 +135,41 @@ export async function handleRealtimeProxy({
     apiKey = credentialCacheValue.authToken;
     loggingParams = jwtPayload.bt.logging ?? undefined;
     model = jwtPayload.bt.model ?? MODEL;
+
+    // Create a span if we have logging params but no span (temp credential case)
+    if (loggingParams) {
+      let parentStr: string;
+      if (loggingParams.project_name) {
+        // Construct SpanComponentsV3 from project_name
+        const components = new SpanComponentsV3({
+          object_type: SpanObjectTypeV3.PROJECT_LOGS,
+          compute_object_metadata_args: {
+            project_name: loggingParams.project_name,
+          },
+        });
+        parentStr = await components.export();
+      } else if (loggingParams.parent) {
+        // Use existing parent
+        const parent = resolveParentHeader(loggingParams.parent);
+        parentStr = parent.toStr();
+      } else {
+        throw new Error(
+          "loggingParams must provide either project_name or parent",
+        );
+      }
+
+      span = startSpan({
+        state: await cachedLogin({
+          appUrl: braintrustAppUrl(env).toString(),
+          apiKey,
+          orgName,
+          cache: credentialsCache,
+        }),
+        type: "llm",
+        name: "LLM",
+        parent: parentStr,
+      });
+    }
   }
 
   secrets = await getApiSecrets(true, apiKey, model, orgName);
@@ -196,17 +236,22 @@ export async function handleRealtimeProxy({
   const messageQueue: string[] = [];
 
   const messageHandler = (data: string) => {
+    let parsedEvent;
     try {
-      const parsedEvent = JSON.parse(data);
-      realtimeApi!.send(parsedEvent);
-      try {
-        realtimeLogger?.handleMessageClient(parsedEvent);
-      } catch (e) {
-        console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
-      }
+      parsedEvent = JSON.parse(data);
     } catch (e) {
       console.error(`Error parsing event from client: ${data}`);
+      return;
     }
+
+    realtimeApi!.send(parsedEvent);
+
+    try {
+      realtimeLogger?.handleMessageClient(parsedEvent);
+    } catch (e) {
+      console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
+    }
+
     console.log("Sent message to OpenAI", data);
   };
 

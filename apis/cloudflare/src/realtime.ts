@@ -23,6 +23,27 @@ import { cachedLogin } from "./tracing";
 
 const MODEL = "gpt-4o-realtime-preview-2024-10-01";
 
+function extractErrorMessage(e: unknown): string {
+  if (e instanceof Error) {
+    return e.message;
+  }
+  if ((e as any).error instanceof Error) {
+    return (e as any).error.message;
+  }
+  if ((e as any).message) {
+    return (e as any).message;
+  }
+  try {
+    const stringified = JSON.stringify(e);
+    if (stringified !== "{}") {
+      return stringified;
+    }
+  } catch {
+    // Ignore stringify errors
+  }
+  return "Unknown error";
+}
+
 export async function handleRealtimeProxy({
   request,
   env,
@@ -180,6 +201,8 @@ export async function handleRealtimeProxy({
     secrets = await getApiSecrets(true, apiKey, "gpt-4o", orgName);
   }
 
+  secrets = secrets.filter((s) => s.type === "openai");
+
   if (secrets.length === 0) {
     return new Response("No secrets found", { status: 401 });
   }
@@ -203,15 +226,15 @@ export async function handleRealtimeProxy({
 
   // Create RealtimeClient
   try {
-    console.log("Creating RealtimeApi");
     realtimeApi = new OpenAIRealtimeWebSocket(
       { model },
       { apiKey: secret.secret, baseURL },
     );
   } catch (e) {
-    console.error(`Error connecting to OpenAI: ${e}`);
-    server.close();
-    return new Response("Error connecting to OpenAI", { status: 502 });
+    const errString = e instanceof Error ? e.message : String(e);
+    return new Response(`Error connecting to OpenAI: ${errString}`, {
+      status: 502,
+    });
   }
 
   // Relay: OpenAI Realtime API Event -> Client
@@ -226,7 +249,6 @@ export async function handleRealtimeProxy({
 
   // Listen to the underlying WebSocket close event
   realtimeApi.socket.addEventListener("close", () => {
-    console.log("Closing server-side because I received a close event");
     server.close();
     if (realtimeLogger) {
       ctx.waitUntil(realtimeLogger.close());
@@ -241,7 +263,6 @@ export async function handleRealtimeProxy({
     try {
       parsedEvent = JSON.parse(data);
     } catch (e) {
-      console.error(`Error parsing event from client: ${data}`);
       return;
     }
 
@@ -252,26 +273,19 @@ export async function handleRealtimeProxy({
     } catch (e) {
       console.warn(`Error logging client event: ${e} ${parsedEvent.type}`);
     }
-
-    console.log("Sent message to OpenAI", data);
   };
 
   server.addEventListener("message", (event: MessageEvent) => {
-    console.log("Message from client", event.data);
-
     const data =
       typeof event.data === "string" ? event.data : event.data.toString();
     if (realtimeApi!.socket.readyState !== 1) {
-      console.log("Queueing message because socket is not open yet");
       messageQueue.push(data);
     } else {
-      console.log("Sending message to OpenAI");
       messageHandler(data);
     }
   });
 
   server.addEventListener("close", () => {
-    console.log("Closing server-side because the client closed the connection");
     realtimeApi!.close();
     if (realtimeLogger) {
       ctx.waitUntil(realtimeLogger.close());
@@ -280,7 +294,6 @@ export async function handleRealtimeProxy({
 
   // Wait for the WebSocket to be connected and send queued messages
   realtimeApi.socket.addEventListener("open", () => {
-    console.log(`Connected to OpenAI successfully!`);
     while (messageQueue.length) {
       const message = messageQueue.shift();
       if (message) {
@@ -290,7 +303,24 @@ export async function handleRealtimeProxy({
   });
 
   realtimeApi.socket.addEventListener("error", (e) => {
-    console.error(`Error connecting to OpenAI:`, e);
+    const errorMessage = extractErrorMessage(e);
+
+    // Forward error to client in OpenAI Realtime API format
+    try {
+      server.send(
+        JSON.stringify({
+          type: "error",
+          error: {
+            type: "server_error",
+            code: "connection_error",
+            message: errorMessage,
+          },
+        }),
+      );
+    } catch {
+      // Connection may already be closed
+    }
+
     server.close();
   });
 

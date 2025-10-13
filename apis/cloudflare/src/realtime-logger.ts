@@ -214,7 +214,6 @@ export class OpenAiRealtimeLogger {
       return;
     }
     const message = parsed.data;
-    console.log("Client message", message.type);
     if (message.type === "input_audio_buffer.append") {
       // Lazy create span.
       if (!this.clientSpan) {

@@ -485,7 +485,7 @@ describe("geminiParamsToOpenAIParams", () => {
       },
     };
 
-    const openaiParams = await geminiParamsToOpenAIParams(geminiParams);
+    const openaiParams = geminiParamsToOpenAIParams(geminiParams);
 
     expect(openaiParams).toEqual({
       model: "gemini-2.0-flash",
@@ -513,7 +513,7 @@ describe("geminiParamsToOpenAIParams", () => {
       },
     };
 
-    const openaiParams = await geminiParamsToOpenAIParams(geminiParams);
+    const openaiParams = geminiParamsToOpenAIParams(geminiParams);
 
     expect(openaiParams.reasoning_enabled).toBe(true);
     expect(openaiParams.reasoning_budget).toBe(500);
@@ -536,7 +536,7 @@ describe("geminiParamsToOpenAIParams", () => {
       },
     };
 
-    const openaiParams = await geminiParamsToOpenAIParams(geminiParams);
+    const openaiParams = geminiParamsToOpenAIParams(geminiParams);
 
     expect(openaiParams.response_format).toEqual({
       type: "json_schema",
@@ -584,7 +584,7 @@ describe("geminiParamsToOpenAIParams", () => {
       },
     };
 
-    const openaiParams = await geminiParamsToOpenAIParams(geminiParams);
+    const openaiParams = geminiParamsToOpenAIParams(geminiParams);
 
     expect(openaiParams.tool_choice).toBe("auto");
     expect(openaiParams.tools).toHaveLength(1);
@@ -1064,7 +1064,7 @@ describe("geminiParamsToOpenAITools", () => {
       },
     };
 
-    const tools = await geminiParamsToOpenAITools(geminiParams);
+    const tools = geminiParamsToOpenAITools(geminiParams);
 
     expect(tools).toHaveLength(2);
     expect(tools?.[0]).toEqual({
@@ -1104,7 +1104,7 @@ describe("geminiParamsToOpenAITools", () => {
       contents: "Test",
     };
 
-    const tools = await geminiParamsToOpenAITools(geminiParams);
+    const tools = geminiParamsToOpenAITools(geminiParams);
 
     expect(tools).toBeUndefined();
   });

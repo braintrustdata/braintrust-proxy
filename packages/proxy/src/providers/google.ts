@@ -434,11 +434,11 @@ const getThinkingBudget = (
   return budget;
 };
 
-export const geminiParamsToOpenAIParams = async (
+export const geminiParamsToOpenAIParams = (
   params: GenerateContentParameters,
-): Promise<OpenAIChatCompletionCreateParams> => {
+): OpenAIChatCompletionCreateParams => {
   const thinkingBudget = params.config?.thinkingConfig?.thinkingBudget || 0;
-  const tools = await geminiParamsToOpenAITools(params);
+  const tools = geminiParamsToOpenAITools(params);
 
   // Map responseMimeType to response_format
   let responseFormat = undefined;
@@ -544,9 +544,9 @@ export const geminiParamsToOpenAIMessages = (
   return messages;
 };
 
-export const geminiParamsToOpenAITools = async (
+export const geminiParamsToOpenAITools = (
   params: GenerateContentParameters,
-): Promise<OpenAIChatCompletionCreateParams["tools"]> => {
+): OpenAIChatCompletionCreateParams["tools"] => {
   const tools: OpenAIChatCompletionCreateParams["tools"] = [];
 
   // Convert function declarations from tools
@@ -563,7 +563,7 @@ export const geminiParamsToOpenAITools = async (
 
           let parameters = {};
           if (!isEmpty(funcDecl.parameters)) {
-            parameters = await fromOpenAPIToJSONSchema(funcDecl.parameters);
+            parameters = fromOpenAPIToJSONSchema(funcDecl.parameters);
           } else if (!isEmpty(funcDecl.parametersJsonSchema)) {
             parameters = funcDecl.parametersJsonSchema;
           }

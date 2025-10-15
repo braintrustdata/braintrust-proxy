@@ -26,8 +26,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds, isEmpty } from "../util";
 import { convertMediaToBase64 } from "./util";
 import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
-// @ts-ignore
-import deref from "json-schema-deref-sync";
+import { dereferenceSync as deref } from "dereference-json-schema";
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({

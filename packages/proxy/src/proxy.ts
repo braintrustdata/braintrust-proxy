@@ -7,8 +7,7 @@ import {
 } from "./generated_types";
 import { Attributes } from "@opentelemetry/api";
 import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
-// @ts-ignore
-import deref from "json-schema-deref-sync";
+import { dereferenceSync as deref } from "dereference-json-schema";
 import {
   APISecret,
   AzureEntraSecretSchema,

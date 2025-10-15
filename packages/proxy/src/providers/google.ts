@@ -612,7 +612,9 @@ export const fromOpenAPIToJSONSchema = async (schema: any): Promise<any> => {
     if (schema && typeof schema === "object") {
       try {
         // Dereference the schema to resolve $ref and $defs
-        resolvedSchema = await $RefParser.dereference(structuredClone(schema));
+        resolvedSchema = await $RefParser.dereference(structuredClone(schema), {
+          resolve: { http: false, file: false },
+        });
 
         // Remove x-$defs if present as it's not valid for Gemini
         if ("x-$defs" in resolvedSchema) {

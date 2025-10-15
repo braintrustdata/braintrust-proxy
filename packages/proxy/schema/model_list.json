@@ -842,6 +842,30 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },
+  "claude-haiku-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 4.5 Haiku",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
+  "claude-haiku-4-5-20251001": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "parent": "claude-haiku-4-5-latest",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "claude-3-5-haiku-latest": {
     "format": "anthropic",
     "flavor": "chat",
@@ -2988,6 +3012,31 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
+  "anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "displayName": "Claude 3.5 Haiku",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
+  "us.anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "displayName": "US Claude 3.5 Haiku",
+    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -3673,21 +3722,53 @@
     "experimental": true,
     "parent": "publishers/anthropic/models/claude-3-7-sonnet"
   },
+  "publishers/anthropic/models/claude-haiku-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 4.5 Haiku",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
+  "publishers/anthropic/models/claude-haiku-4-5@20251001": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "parent": "publishers/anthropic/models/claude-haiku-4-5",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "publishers/anthropic/models/claude-3-5-haiku": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 4,
-    "displayName": "Claude 3.5 Haiku"
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Claude 3.5 Haiku",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192
   },
   "publishers/anthropic/models/claude-3-5-haiku@20241022": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 4,
-    "parent": "publishers/anthropic/models/claude-3-5-haiku"
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "parent": "publishers/anthropic/models/claude-3-5-haiku",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192
   },
   "publishers/anthropic/models/claude-3-5-sonnet-v2": {
     "format": "anthropic",

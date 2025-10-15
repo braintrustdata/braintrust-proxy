@@ -1,4 +1,4 @@
-import * as Braintrust from "braintrust/browser";
+import * as Braintrust from "braintrust";
 import { makeWavFile, makeMp3File } from "@braintrust/proxy/utils";
 import {
   openAiRealtimeMessageSchema,
@@ -118,6 +118,8 @@ class AudioBuffer {
   }
 }
 
+type AudioFormatType = "pcm16" | "g711_ulaw" | "g711_alaw";
+
 function openAiToPcmAudioFormat(audioFormat: AudioFormatType): PcmAudioFormat {
   const common = {
     byte_order: "little",
@@ -170,31 +172,34 @@ export class OpenAiRealtimeLogger {
   private turnDetectionEnabled: boolean = false;
 
   constructor({
-    apiKey,
-    appUrl,
-    loggingParams,
+    span,
+    compressAudio,
   }: {
-    apiKey: string;
-    appUrl: string;
-    loggingParams: ProxyLoggingParam;
+    span: Braintrust.Span;
+    compressAudio: boolean;
   }) {
-    const btLogger = Braintrust.initLogger({
-      state: new Braintrust.BraintrustState({}),
-      apiKey,
-      appUrl,
-      projectName: loggingParams.project_name,
-      asyncFlush: true,
-      setCurrent: false,
-    });
-
-    this.rootSpan = btLogger.startSpan({
+    this.rootSpan = span;
+    this.rootSpan.setAttributes({
       name: "Realtime session",
       type: "task",
     });
     this.serverAudioBuffer = new Map();
     this.serverSpans = new Map();
     this.toolSpans = new Map();
-    this.compressAudio = loggingParams.compress_audio;
+    this.compressAudio = compressAudio;
+  }
+
+  public static async make({
+    span,
+    loggingParams,
+  }: {
+    span: Braintrust.Span;
+    loggingParams: ProxyLoggingParam;
+  }): Promise<OpenAiRealtimeLogger | undefined> {
+    return new OpenAiRealtimeLogger({
+      span,
+      compressAudio: loggingParams.compress_audio ?? false,
+    });
   }
 
   handleMessageClient(rawMessage: unknown) {
@@ -272,55 +277,70 @@ export class OpenAiRealtimeLogger {
         },
       });
       // Assume the audio codec cannot change during the session.
-      if (!this.inputAudioFormat && message.session.input_audio_format) {
+      if (!this.inputAudioFormat) {
         this.inputAudioFormat = openAiToPcmAudioFormat(
-          message.session.input_audio_format,
+          message.session.input_audio_format ?? "pcm16",
         );
       }
-      if (!this.outputAudioFormat && message.session.output_audio_format) {
+      if (!this.outputAudioFormat) {
         this.outputAudioFormat = openAiToPcmAudioFormat(
-          message.session.output_audio_format,
+          message.session.output_audio_format ?? "pcm16",
         );
       }
       this.turnDetectionEnabled = !!message.session.turn_detection;
     } else if (message.type === "response.output_item.added") {
       const itemId = message.item.id;
-      if (
-        message.item.type === "message" &&
-        message.item.role === "assistant"
-      ) {
+      this.serverSpans.set(
+        itemId,
+        this.rootSpan.startSpan({ event: { id: itemId } }),
+      );
+    } else if (message.type === "response.content_part.added") {
+      const itemId = message.item_id;
+      if (message.part.type === "audio") {
         if (!this.outputAudioFormat) {
-          throw new Error("Messages may have been received out of order.");
+          // Use default format (pcm16 @ 24kHz) if session hasn't been received yet
+          this.outputAudioFormat = openAiToPcmAudioFormat("pcm16");
+          console.warn(
+            "Received content part before session configuration, using default format",
+          );
         }
         this.serverAudioBuffer.set(
           itemId,
           new AudioBuffer({ inputCodec: this.outputAudioFormat }),
         );
       }
-      this.serverSpans.set(
-        itemId,
-        this.rootSpan.startSpan({ event: { id: itemId } }),
-      );
-    } else if (message.type === "response.audio.delta") {
+    } else if (message.type === "response.output_audio.delta") {
       const id = message.item_id;
-      const audioBuffer = this.serverAudioBuffer.get(id);
+      let audioBuffer = this.serverAudioBuffer.get(id);
       if (!audioBuffer) {
-        throw new Error(
-          `Invalid response ID: ${message.response_id}, item ID: ${id}`,
-        );
+        // Lazily create the audio buffer if we haven't seen content_part.added yet
+        if (!this.outputAudioFormat) {
+          // Use default format (pcm16 @ 24kHz) if session hasn't been received yet
+          this.outputAudioFormat = openAiToPcmAudioFormat("pcm16");
+          console.warn(
+            "Received audio delta before session configuration, using default format",
+          );
+        }
+        audioBuffer = new AudioBuffer({ inputCodec: this.outputAudioFormat });
+        this.serverAudioBuffer.set(id, audioBuffer);
       }
       audioBuffer.push(message.delta);
-    } else if (message.type === "response.audio.done") {
+    } else if (message.type === "response.output_audio.done") {
       const itemId = message.item_id;
       const audioBuffer = this.serverAudioBuffer.get(itemId);
-      const span = this.serverSpans.get(itemId);
-      if (!audioBuffer || !span) {
-        throw new Error(
-          `Invalid response ID: ${message.response_id}, item ID: ${itemId}`,
-        );
+      let span = this.serverSpans.get(itemId);
+
+      // Lazily create span if we haven't seen output_item.added yet
+      if (!span) {
+        span = this.rootSpan.startSpan({ event: { id: itemId } });
+        this.serverSpans.set(itemId, span);
       }
-      this.closeAudio(audioBuffer, span, "output");
-      this.serverAudioBuffer.delete(itemId);
+
+      // Only close audio if we have a buffer (might not have received any deltas)
+      if (audioBuffer) {
+        this.closeAudio(audioBuffer, span, "output");
+        this.serverAudioBuffer.delete(itemId);
+      }
     } else if (message.type === "input_audio_buffer.speech_started") {
       if (!this.clientAudioBuffer) {
         throw new Error();
@@ -407,7 +427,7 @@ export class OpenAiRealtimeLogger {
           data: audioFile,
           filename: `audio.${fileExt}`,
           contentType: audioFile.type,
-          state: this.rootSpan.state,
+          state: this.rootSpan.state(),
         }),
       },
     });
@@ -425,7 +445,9 @@ export class OpenAiRealtimeLogger {
     // Check if there is a pending audio buffers.
     if (this.serverAudioBuffer.size || this.clientAudioBuffer) {
       console.warn(
-        `Closing with ${this.serverAudioBuffer.size} pending server + ${this.clientAudioBuffer ? 1 : 0} pending client audio buffers`,
+        `Closing with ${this.serverAudioBuffer.size} pending server + ${
+          this.clientAudioBuffer ? 1 : 0
+        } pending client audio buffers`,
       );
     }
 

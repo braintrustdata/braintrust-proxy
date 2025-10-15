@@ -26,7 +26,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds, isEmpty } from "../util";
 import { convertMediaToBase64 } from "./util";
 import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
+// @ts-ignore
+import deref from "json-schema-deref-sync";
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
@@ -595,7 +596,7 @@ export const geminiParamsToOpenAITools = async (
         function: {
           name: "structured_output",
           description: "Structured output response",
-          parameters: await fromOpenAPIToJSONSchema(schema),
+          parameters: fromOpenAPIToJSONSchema(schema),
         },
       });
     }
@@ -604,7 +605,7 @@ export const geminiParamsToOpenAITools = async (
   return tools.length > 0 ? tools : undefined;
 };
 
-export const fromOpenAPIToJSONSchema = async (schema: any): Promise<any> => {
+export const fromOpenAPIToJSONSchema = (schema: any): any => {
   try {
     // First, resolve any $ref references in the schema
     let resolvedSchema = schema;
@@ -612,9 +613,8 @@ export const fromOpenAPIToJSONSchema = async (schema: any): Promise<any> => {
     if (schema && typeof schema === "object") {
       try {
         // Dereference the schema to resolve $ref and $defs
-        resolvedSchema = await $RefParser.dereference(structuredClone(schema), {
-          resolve: { http: false, file: false },
-        });
+        // json-schema-deref-sync modifies in place, so we clone first
+        resolvedSchema = deref(structuredClone(schema));
 
         // Remove x-$defs if present as it's not valid for Gemini
         if ("x-$defs" in resolvedSchema) {

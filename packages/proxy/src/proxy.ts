@@ -7,7 +7,8 @@ import {
 } from "./generated_types";
 import { Attributes } from "@opentelemetry/api";
 import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
-import $RefParser from "@apidevtools/json-schema-ref-parser";
+// @ts-ignore
+import deref from "json-schema-deref-sync";
 import {
   APISecret,
   AzureEntraSecretSchema,
@@ -2659,9 +2660,8 @@ async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   let resolvedSchema = schema;
   try {
     // Dereference the schema to resolve $ref and $defs
-    resolvedSchema = await $RefParser.dereference(structuredClone(schema), {
-      resolve: { http: false, file: false },
-    });
+    // json-schema-deref-sync modifies in place, so we clone first
+    resolvedSchema = deref(structuredClone(schema));
 
     // Remove x-$defs if present as it's not valid for Gemini
     if ("x-$defs" in resolvedSchema) {

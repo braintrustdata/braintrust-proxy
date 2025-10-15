@@ -36,6 +36,7 @@ export const anthropicContentPartImageSchema = z.object({
     anthropicBase64ImageSourceSchema,
     anthropicUrlImageSourceSchema,
     anthropicFileSourceSchema,
+    attachmentReferenceSchema,
   ]),
   cache_control: cacheControlSchema.optional(),
 });

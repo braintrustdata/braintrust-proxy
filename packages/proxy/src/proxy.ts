@@ -1583,12 +1583,14 @@ function responseInputItemsFromChatCompletionMessage(
       ];
     case "assistant":
       return message.tool_calls
-        ? message.tool_calls.map((t) => ({
-            arguments: t.function.arguments,
-            call_id: t.id,
-            name: t.function.name,
-            type: "function_call",
-          }))
+        ? message.tool_calls
+            .filter((t) => t.type === "function")
+            .map((t) => ({
+              arguments: t.function.arguments,
+              call_id: t.id,
+              name: t.function.name,
+              type: "function_call",
+            }))
         : [
             {
               content: Array.isArray(message.content)
@@ -1727,20 +1729,28 @@ function responsesRequestFromChatCompletionsRequest(
             case "required":
               return tool_choice;
             default:
-              return {
-                name: tool_choice.function.name,
-                type: "function",
-              };
+              if (
+                typeof tool_choice === "object" &&
+                "function" in tool_choice
+              ) {
+                return {
+                  name: tool_choice.function.name,
+                  type: "function",
+                };
+              }
+              return "auto";
           }
         })()
       : undefined,
-    tools: request.tools?.map((tool) => ({
-      name: tool.function.name,
-      parameters: tool.function.parameters ?? {},
-      strict: false,
-      type: "function",
-      description: tool.function.description,
-    })),
+    tools: request.tools
+      ?.filter((tool) => tool.type === "function")
+      .map((tool) => ({
+        name: tool.function.name,
+        parameters: tool.function.parameters ?? {},
+        strict: false,
+        type: "function",
+        description: tool.function.description,
+      })),
     top_p: request.top_p,
   };
 }
@@ -2156,8 +2166,10 @@ async function fetchOpenAI(
           flush(controller) {
             const data: ChatCompletion = JSON.parse(flattenChunks(chunks));
             const choice = data.choices[0];
-            choice.message.content =
-              choice.message.tool_calls![0].function.arguments;
+            const toolCall = choice.message.tool_calls![0];
+            if (toolCall.type === "function") {
+              choice.message.content = toolCall.function.arguments;
+            }
             choice.finish_reason = "stop";
             delete choice.message.tool_calls;
             controller.enqueue(new TextEncoder().encode(JSON.stringify(data)));
@@ -2708,12 +2720,17 @@ async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
         };
         break;
       default:
-        tool_config = {
-          function_calling_config: {
-            mode: "ANY",
-            allowed_function_names: [params.tool_choice.function.name],
-          },
-        };
+        if (
+          typeof params.tool_choice === "object" &&
+          "function" in params.tool_choice
+        ) {
+          tool_config = {
+            function_calling_config: {
+              mode: "ANY",
+              allowed_function_names: [params.tool_choice.function.name],
+            },
+          };
+        }
         break;
     }
   }
@@ -2722,13 +2739,15 @@ async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
       ? [
           {
             function_declarations: await Promise.all(
-              params.tools.map(async (t) => ({
-                name: t.function.name,
-                description: t.function.description,
-                parameters: await googleSchemaFromJsonSchema(
-                  t.function.parameters,
-                ),
-              })),
+              params.tools
+                .filter((t) => t.type === "function")
+                .map(async (t) => ({
+                  name: t.function.name,
+                  description: t.function.description,
+                  parameters: await googleSchemaFromJsonSchema(
+                    t.function.parameters,
+                  ),
+                })),
             ),
           },
         ]

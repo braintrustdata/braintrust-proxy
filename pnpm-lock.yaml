@@ -32,9 +32,6 @@ importers:
       '@braintrust/proxy':
         specifier: workspace:*
         version: link:../../packages/proxy
-      '@openai/realtime-api-beta':
-        specifier: github:openai/openai-realtime-api-beta#cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f
-        version: github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f
       '@opentelemetry/api':
         specifier: 1.9.0
         version: 1.9.0
@@ -53,6 +50,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      openai:
+        specifier: ^6.3.0
+        version: 6.3.0(zod@3.25.34)
       zod:
         specifier: 3.25.34
         version: 3.25.34
@@ -8704,6 +8704,21 @@ packages:
       - encoding
     dev: false
 
+  /openai@6.3.0(zod@3.25.34):
+    resolution: {integrity: sha512-E6vOGtZvdcb4yXQ5jXvDlUG599OhIkb/GjBLZXS+qk0HF+PJReIldEc9hM8Ft81vn+N6dRdFRb7BZNK8bbvXrw==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: 3.25.34
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      zod: 3.25.34
+    dev: false
+
   /openapi-json-schema@2.0.0:
     resolution: {integrity: sha512-jT5sg8ZuDQO8Unxpg3k0arUqPTdLmOknRxBOggvQLoGgJbExTdk/tDUECcCi2/UzmXiw22aq9ocdFI8j+MzKNQ==}
     engines: {node: '>=14.13.1 || >= 16'}
@@ -11413,6 +11428,7 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dev: true
 
   /xml2js@0.5.0:
     resolution: {integrity: sha512-drPFnkQJik/O+uPKpqSgr22mpuFHqKdbS835iAQrUC73L2F5WkboIRd63ai/2Yg6I1jzifPFKH2NTK+cfglkIA==}
@@ -11557,14 +11573,3 @@ packages:
 
   /zod@3.25.34:
     resolution: {integrity: sha512-lZHvSc2PpWdcfpHlyB33HA9nqP16GpC9IpiG4lYq9jZCJVLZNnWd6Y1cj79bcLSBKTkxepfpjckPv5Y5VOPlwA==}
-
-  github.com/openai/openai-realtime-api-beta/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f:
-    resolution: {tarball: https://codeload.github.com/openai/openai-realtime-api-beta/tar.gz/cd8a9251dcfb0cba0d7b0501e9ff36c915f5090f}
-    name: '@openai/realtime-api-beta'
-    version: 0.0.0
-    dependencies:
-      ws: 8.18.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false

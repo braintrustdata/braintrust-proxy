@@ -98,21 +98,17 @@ export function getBase64Parts(s: string): {
 
 export async function cachedLogin({
   appUrl,
-  headers,
+  apiKey,
+  orgName,
   cache,
 }: {
-  headers: Headers;
   appUrl: string;
+  apiKey: string | undefined;
+  orgName: string | undefined;
   cache: EdgeCache;
 }) {
-  const orgName = headers.get(ORG_NAME_HEADER) ?? undefined;
-  const token =
-    parseAuthHeader({
-      authorization: headers.get("authorization") ?? undefined,
-    }) ?? undefined;
-
   const encryptionKey = await digestMessage(
-    JSON.stringify({ token: token ?? "anon", orgName }),
+    JSON.stringify({ token: apiKey ?? "anon", orgName }),
   );
 
   let state: BraintrustState;
@@ -123,10 +119,7 @@ export async function cachedLogin({
     });
   } else {
     state = await loginToState({
-      apiKey:
-        parseAuthHeader({
-          authorization: headers.get("authorization") ?? undefined,
-        }) ?? undefined,
+      apiKey,
       // If the app URL is explicitly set to an env var, it's meant to override
       // the origin.
       appUrl: appUrl,

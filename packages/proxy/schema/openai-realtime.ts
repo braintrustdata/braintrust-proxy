@@ -7,7 +7,7 @@ import { z } from "zod";
 // - Where the OpenAI implementation differs from their type spec.
 // - Replace the fields we don't use with `z.unknown()` for more permissive parsing.
 export const baseMessageSchema = z.object({
-  event_id: z.string(),
+  event_id: z.string().optional(),
 });
 
 export const audioFormatTypeSchema = z.enum([
@@ -90,9 +90,19 @@ export const inputTextContentSchema = z.object({
   text: z.string(),
 });
 
+export const outputTextContentSchema = z.object({
+  type: z.literal("output_text"),
+  text: z.string(),
+});
+
 export const inputAudioContentSchema = z.object({
   type: z.literal("input_audio"),
-  transcript: z.string().nullable(),
+  transcript: z.string().nullable().optional(),
+});
+
+export const outputAudioContentSchema = z.object({
+  type: z.literal("output_audio"),
+  transcript: z.string().nullable().optional(),
 });
 
 export const textContentSchema = z.object({
@@ -103,7 +113,7 @@ export const textContentSchema = z.object({
 // Add the `audio` case.
 export const audioContentSchema = z.object({
   type: z.literal("audio"),
-  transcript: z.string(),
+  transcript: z.string().optional(),
 });
 
 export const messageContentSchema = z.discriminatedUnion("role", [
@@ -123,7 +133,12 @@ export const messageContentSchema = z.discriminatedUnion("role", [
   z.object({
     role: z.literal("assistant"),
     content: z.array(
-      z.discriminatedUnion("type", [textContentSchema, audioContentSchema]),
+      z.discriminatedUnion("type", [
+        textContentSchema,
+        outputTextContentSchema,
+        audioContentSchema,
+        outputAudioContentSchema,
+      ]),
     ),
   }),
 ]);
@@ -150,7 +165,7 @@ export const inputItemSchema = z.union([
 export const outputItemSchema = inputItemSchema.and(
   z.object({
     id: z.string(),
-    object: z.literal("realtime.item"),
+    object: z.literal("realtime.item").optional(),
     status: responseStatusSchema,
   }),
 );
@@ -188,38 +203,88 @@ export const responseOutputItemAddedSchema = baseMessageSchema.extend({
   type: z.literal("response.output_item.added"),
   response_id: z.string(),
   output_index: z.number(),
+  item: z.object({
+    id: z.string(),
+    type: z.string(),
+  }),
+});
+
+export const responseContentPartAddedSchema = baseMessageSchema.extend({
+  type: z.literal("response.content_part.added"),
+  response_id: z.string(),
+  item_id: z.string(),
+  output_index: z.number(),
+  content_index: z.number(),
+  part: z.object({
+    type: z.enum(["text", "audio"]),
+    text: z.string().optional(),
+    audio: z.string().optional(),
+    transcript: z.string().optional(),
+  }),
+});
+
+export const responseContentPartDoneSchema = baseMessageSchema.extend({
+  type: z.literal("response.content_part.done"),
+  response_id: z.string(),
+  item_id: z.string(),
+  output_index: z.number(),
+  content_index: z.number(),
+  part: z.object({
+    type: z.enum(["text", "audio"]),
+    text: z.string().optional(),
+    audio: z.string().optional(),
+    transcript: z.string().optional(),
+  }),
+});
+
+export const responseOutputItemDoneSchema = baseMessageSchema.extend({
+  type: z.literal("response.output_item.done"),
+  response_id: z.string(),
+  output_index: z.number(),
+  item: outputItemSchema,
+});
+
+export const conversationItemAddedSchema = baseMessageSchema.extend({
+  type: z.literal("conversation.item.added"),
+  previous_item_id: z.string().nullish(),
+  item: outputItemSchema,
+});
+
+export const conversationItemDoneSchema = baseMessageSchema.extend({
+  type: z.literal("conversation.item.done"),
+  previous_item_id: z.string().nullish(),
   item: outputItemSchema,
 });
 
 export const audioBaseMessageSchema = baseMessageSchema.extend({
   item_id: z.string(),
   content_index: z.number(),
+  output_index: z.number(),
+  response_id: z.string(),
 });
 
 export const audioDoneMessageSchema = audioBaseMessageSchema.extend({
-  type: z.literal("response.audio.done"),
-  output_index: z.number(),
-  response_id: z.string(),
+  type: z.literal("response.output_audio.done"),
 });
 
 export const audioResponseTranscriptDoneMessageSchema =
   audioBaseMessageSchema.extend({
-    type: z.literal("response.audio_transcript.done"),
-    output_index: z.number(),
-    response_id: z.string(),
+    type: z.literal("response.output_audio_transcript.done"),
     transcript: z.string(),
   });
 
-export const audioInputTranscriptDoneMessageSchema =
-  audioBaseMessageSchema.extend({
-    type: z.literal("conversation.item.input_audio_transcription.completed"),
-    transcript: z.string(),
-  });
+export const audioInputTranscriptDoneMessageSchema = baseMessageSchema.extend({
+  type: z.literal("conversation.item.input_audio_transcription.completed"),
+  item_id: z.string(),
+  content_index: z.number(),
+  transcript: z.string(),
+});
 
 export const audioDeltaMessageSchema = audioBaseMessageSchema.extend({
-  type: z.enum(["response.audio.delta", "response.audio_transcript.delta"]),
-  output_index: z.number(),
-  response_id: z.string(),
+  type: z.enum([
+    "response.output_audio.delta",
+    "response.output_audio_transcript.delta",
+  ]),
   delta: z.string(),
 });
 
@@ -279,19 +344,40 @@ export const errorMessageSchema = baseMessageSchema.extend({
   error: z.unknown(),
 });
 
+export const responseTextDeltaSchema = baseMessageSchema.extend({
+  type: z.literal("response.output_text.delta"),
+  response_id: z.string(),
+  item_id: z.string(),
+  output_index: z.number(),
+  content_index: z.number(),
+  delta: z.string(),
+});
+
+export const responseTextDoneSchema = baseMessageSchema.extend({
+  type: z.literal("response.output_text.done"),
+  response_id: z.string(),
+  item_id: z.string(),
+  output_index: z.number(),
+  content_index: z.number(),
+  text: z.string(),
+});
+
 /** Message types we know about, but do not wish to handle at this time. */
 export const unhandledMessageSchema = baseMessageSchema.extend({
   type: z.enum([
     "session.update",
     "rate_limits.updated",
     "response.create",
-    "response.output_item.done",
-    "response.content_part.done",
-    "response.content_part.added",
     "conversation.item.created",
     "input_audio_buffer.committed",
+    "input_audio_buffer.cleared",
     "conversation.item.truncate",
     "conversation.item.truncated",
+    "conversation.item.deleted",
+    "input_audio_buffer.timeout_triggered",
+    "conversation.item.input_audio_transcription.delta",
+    "conversation.item.input_audio_transcription.failed",
+    "conversation.item.input_audio_transcription.segment",
   ]),
 });
 
@@ -300,12 +386,19 @@ export const openAiRealtimeMessageSchema = z.discriminatedUnion("type", [
   responseCreatedMessageSchema,
   responseDoneMssageSchema,
   responseOutputItemAddedSchema,
+  responseOutputItemDoneSchema,
+  responseContentPartAddedSchema,
+  responseContentPartDoneSchema,
+  conversationItemAddedSchema,
+  conversationItemDoneSchema,
   clientAudioAppendMessageSchema,
   clientAudioCommitMessageSchema,
   audioDeltaMessageSchema,
   audioDoneMessageSchema,
   audioResponseTranscriptDoneMessageSchema,
   audioInputTranscriptDoneMessageSchema,
+  responseTextDeltaSchema,
+  responseTextDoneSchema,
   cancelResponseMessageSchema,
   functionCallDeltaMessageSchema,
   functionCallDoneMessageSchema,

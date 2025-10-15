@@ -426,7 +426,7 @@ const getThinkingBudget = (
 
   if (openai.reasoning_effort !== undefined) {
     budget = Math.floor(
-      getBudgetMultiplier(openai.reasoning_effort || "low") *
+      getBudgetMultiplier(openai.reasoning_effort || "minimal") *
         (openai.max_completion_tokens ?? 1024),
     );
   }

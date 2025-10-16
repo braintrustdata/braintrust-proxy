@@ -10,6 +10,7 @@ import {
   geminiParamsToOpenAIMessages,
   geminiParamsToOpenAITools,
   normalizeOpenAISchema,
+  fromOpenAPIToJSONSchema,
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
@@ -385,12 +386,92 @@ for (const model of [
         },
       });
     });
+
+    it("should work with schemas containing $ref and $defs references", async () => {
+      // Schema with $ref and $defs that need to be resolved
+      const schemaWithRefs = {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          addresses: {
+            type: "array",
+            items: { $ref: "#/$defs/address" },
+          },
+        },
+        required: ["name", "addresses"],
+        $defs: {
+          address: {
+            type: "object",
+            properties: {
+              street: { type: "string" },
+              city: { type: "string" },
+              zipCode: { type: "string" },
+            },
+            required: ["street", "city"],
+          },
+        },
+      };
+
+      const body: OpenAIChatCompletionCreateParams = {
+        model,
+        messages: [
+          {
+            role: "user",
+            content:
+              "Generate a person with name John Doe and two addresses: one in New York and one in Los Angeles.",
+          },
+        ],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "person_with_addresses",
+            schema: schemaWithRefs,
+            strict: true,
+          },
+        },
+        stream: false,
+      };
+
+      const result = await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body,
+      });
+
+      const response = result.json();
+      expect(response).toMatchObject({
+        id: expect.any(String),
+        choices: expect.arrayContaining([
+          expect.objectContaining({
+            message: expect.objectContaining({
+              role: "assistant",
+              content: expect.any(String),
+            }),
+          }),
+        ]),
+        model: expect.stringContaining("gemini"),
+      });
+
+      // Parse and validate the response content
+      const messageContent = response.choices[0]?.message?.content;
+      if (messageContent) {
+        const parsed = JSON.parse(messageContent);
+        expect(parsed).toHaveProperty("name");
+        expect(parsed).toHaveProperty("addresses");
+        expect(Array.isArray(parsed.addresses)).toBe(true);
+        if (parsed.addresses.length > 0) {
+          expect(parsed.addresses[0]).toHaveProperty("street");
+          expect(parsed.addresses[0]).toHaveProperty("city");
+        }
+      }
+    });
   });
 }
 
 // Unit tests for helper functions
 describe("geminiParamsToOpenAIParams", () => {
-  it("should convert basic Gemini params to OpenAI format", () => {
+  it("should convert basic Gemini params to OpenAI format", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Hello, world!",
@@ -420,7 +501,7 @@ describe("geminiParamsToOpenAIParams", () => {
     });
   });
 
-  it("should handle thinking config", () => {
+  it("should handle thinking config", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Think about this",
@@ -438,7 +519,7 @@ describe("geminiParamsToOpenAIParams", () => {
     expect(openaiParams.reasoning_budget).toBe(500);
   });
 
-  it("should convert response format correctly", () => {
+  it("should convert response format correctly", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Generate JSON",
@@ -474,7 +555,7 @@ describe("geminiParamsToOpenAIParams", () => {
     });
   });
 
-  it("should convert tool config to tool_choice", () => {
+  it("should convert tool config to tool_choice", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Use a tool",
@@ -948,7 +1029,7 @@ describe("geminiParamsToOpenAIMessages", () => {
 });
 
 describe("geminiParamsToOpenAITools", () => {
-  it("should convert function declarations to tools", () => {
+  it("should convert function declarations to tools", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Test",
@@ -1017,7 +1098,7 @@ describe("geminiParamsToOpenAITools", () => {
     });
   });
 
-  it("should return undefined for empty tools", () => {
+  it("should return undefined for empty tools", async () => {
     const geminiParams: GenerateContentParameters = {
       model: "gemini-2.0-flash",
       contents: "Test",
@@ -1239,5 +1320,73 @@ describe("normalizeOpenAISchema", () => {
     expect(normalizeOpenAISchema("string value")).toEqual("string value");
     expect(normalizeOpenAISchema(42)).toEqual(42);
     expect(normalizeOpenAISchema(true)).toEqual(true);
+  });
+});
+
+describe("fromOpenAPIToJSONSchema", () => {
+  it("should resolve $ref and $defs in schemas", async () => {
+    // Schema with $ref and $defs that need to be resolved
+    const schemaWithRefs = {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        addresses: {
+          type: "array",
+          items: { $ref: "#/$defs/address" },
+        },
+      },
+      required: ["name", "addresses"],
+      $defs: {
+        address: {
+          type: "object",
+          properties: {
+            street: { type: "string" },
+            city: { type: "string" },
+            zipCode: { type: "string" },
+          },
+          required: ["street", "city"],
+        },
+      },
+    };
+
+    // Call the function to resolve refs
+    const resolvedSchema = await fromOpenAPIToJSONSchema(schemaWithRefs);
+
+    // Verify $ref was resolved
+    expect(resolvedSchema.properties.addresses.items.$ref).toBeUndefined();
+
+    // Verify the address schema was properly inlined
+    expect(resolvedSchema.properties.addresses.items).toEqual({
+      type: "object",
+      properties: {
+        street: { type: "string" },
+        city: { type: "string" },
+        zipCode: { type: "string" },
+      },
+      required: ["street", "city"],
+    });
+
+    // Verify $defs was removed
+    expect(resolvedSchema.$defs).toBeUndefined();
+    expect(resolvedSchema["x-$defs"]).toBeUndefined();
+  });
+
+  it("should handle schemas without refs", async () => {
+    const simpleSchema = {
+      type: "object",
+      properties: {
+        name: { type: "string" },
+        age: { type: "number" },
+      },
+      required: ["name"],
+    };
+
+    const result = await fromOpenAPIToJSONSchema(simpleSchema);
+
+    // Schema should remain largely unchanged (except for any normalization)
+    expect(result.type).toBe("object");
+    expect(result.properties.name).toEqual({ type: "string" });
+    expect(result.properties.age).toEqual({ type: "number" });
+    expect(result.required).toEqual(["name"]);
   });
 });

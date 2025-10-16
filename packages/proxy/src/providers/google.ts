@@ -26,6 +26,8 @@ import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds, isEmpty } from "../util";
 import { convertMediaToBase64 } from "./util";
 import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
+import * as dereferenceJsonSchema from "dereference-json-schema";
+const deref = dereferenceJsonSchema.dereferenceSync;
 
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
@@ -603,15 +605,47 @@ export const geminiParamsToOpenAITools = (
   return tools.length > 0 ? tools : undefined;
 };
 
-const fromOpenAPIToJSONSchema = (schema: any): any => {
+export const fromOpenAPIToJSONSchema = (schema: any): any => {
   try {
-    const result = toJsonSchema(normalizeOpenAISchema(schema));
-    // Remove the $schema field that toJsonSchema adds
-    if (result && typeof result === "object" && "$schema" in result) {
-      const { $schema, ...rest } = result;
-      return rest;
+    // First, resolve any $ref references in the schema
+    let resolvedSchema = schema;
+
+    if (schema && typeof schema === "object") {
+      try {
+        // Dereference the schema to resolve $ref and $defs
+        // json-schema-deref-sync modifies in place, so we clone first
+        resolvedSchema = deref(structuredClone(schema));
+
+        // Remove x-$defs if present as it's not valid for Gemini
+        if ("x-$defs" in resolvedSchema) {
+          delete resolvedSchema["x-$defs"];
+        }
+        // Remove $defs after dereferencing as they're no longer needed
+        if ("$defs" in resolvedSchema) {
+          delete resolvedSchema["$defs"];
+        }
+      } catch (refError) {
+        // If ref resolution fails, continue with original schema
+        console.warn("Failed to dereference schema:", refError);
+      }
     }
-    return result;
+
+    // Normalize the schema
+    const normalizedSchema = normalizeOpenAISchema(resolvedSchema);
+
+    // Try to convert from OpenAPI to JSON Schema
+    try {
+      const result = toJsonSchema(normalizedSchema);
+      // Remove the $schema field that toJsonSchema adds
+      if (result && typeof result === "object" && "$schema" in result) {
+        const { $schema, ...rest } = result;
+        return rest;
+      }
+      return result;
+    } catch {
+      // If conversion fails, return the normalized schema
+      return normalizedSchema;
+    }
   } catch {
     return schema;
   }

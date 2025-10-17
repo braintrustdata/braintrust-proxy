@@ -943,6 +943,45 @@ const convertPartsToMessageContent = (
           data,
         );
       }
+    } else if ((part as any).image_url || (part as any).imageUrl) {
+      hasComplexContent = true;
+      // Handle image_url format (from wrapper)
+      const imageUrlObj = (part as any).image_url || (part as any).imageUrl;
+      const url = imageUrlObj.url;
+
+      // Check if url is an attachment reference object
+      if (typeof url === "object" && url !== null) {
+        let attachmentRef = url;
+        if (
+          (url as any).type === "braintrust_attachment" ||
+          (url as any).type === "external_attachment"
+        ) {
+          // Ensure snake_case keys
+          attachmentRef = {
+            type: (url as any).type,
+            filename: (url as any).filename,
+            content_type: (url as any).contentType || (url as any).content_type,
+            key: (url as any).key,
+            ...((url as any).type === "external_attachment" && (url as any).url
+              ? { url: (url as any).url }
+              : {}),
+          };
+        }
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: attachmentRef,
+          },
+        });
+      } else {
+        // url is a string (data URL or external URL)
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: url,
+          },
+        });
+      }
     } else if (part.fileData) {
       hasComplexContent = true;
       // Handle file references

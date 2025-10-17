@@ -1026,6 +1026,117 @@ describe("geminiParamsToOpenAIMessages", () => {
       },
     ]);
   });
+
+  it("should handle image_url format with attachments and data URLs", () => {
+    // Test that image_url format (from wrapper/OpenAI format) is properly converted
+    // This tests the new code path that handles image_url/imageUrl in parts
+    const geminiParams: GenerateContentParameters = {
+      model: "gemini-2.0-flash-001",
+      contents: [
+        {
+          parts: [
+            {
+              text: "What color is this image?",
+            },
+            {
+              image_url: {
+                url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA",
+              },
+            } as any,
+          ],
+        },
+        {
+          parts: [
+            {
+              text: "Analyze this image:",
+            },
+            {
+              image_url: {
+                url: {
+                  type: "braintrust_attachment",
+                  filename: "test-image.png",
+                  contentType: "image/png", // camelCase
+                  key: "test-key-123",
+                },
+              },
+            } as any,
+          ],
+        },
+        {
+          parts: [
+            {
+              imageUrl: {
+                url: {
+                  type: "external_attachment",
+                  filename: "remote.jpg",
+                  contentType: "image/jpeg", // camelCase
+                  key: "remote-456",
+                  url: "https://example.com/image.jpg",
+                },
+              },
+            } as any,
+          ],
+        },
+      ] as any,
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toEqual([
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "What color is this image?",
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA",
+            },
+          },
+        ],
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "Analyze this image:",
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: {
+                type: "braintrust_attachment",
+                filename: "test-image.png",
+                content_type: "image/png", // Fixed to snake_case
+                key: "test-key-123",
+              },
+            },
+          },
+        ],
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "image_url",
+            image_url: {
+              url: {
+                type: "external_attachment",
+                filename: "remote.jpg",
+                content_type: "image/jpeg", // Fixed to snake_case
+                key: "remote-456",
+                url: "https://example.com/image.jpg",
+              },
+            },
+          },
+        ],
+      },
+    ]);
+  });
 });
 
 describe("geminiParamsToOpenAITools", () => {

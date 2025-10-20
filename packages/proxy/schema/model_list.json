@@ -2246,7 +2246,7 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Llama 3.3 70B"
   },
-    "llama3.1-8b": {
+  "llama3.1-8b": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,

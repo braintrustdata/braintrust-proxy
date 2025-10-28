@@ -1912,7 +1912,7 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 40960,
-    "experimental": true,
+    "experimental": true
   },
   "moonshotai/kimi-k2-instruct-0905": {
     "format": "openai",
@@ -1924,7 +1924,7 @@
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,
-    "experimental": true,
+    "experimental": true
   },
   "qwen-2.5-32b": {
     "format": "openai",
@@ -1932,7 +1932,7 @@
     "input_cost_per_mil_tokens": 0.79,
     "output_cost_per_mil_tokens": 0.79,
     "displayName": "Qwen 2.5 32B Instruct 128k",
-    "experimental": true,
+    "experimental": true
   },
   "qwen-2.5-coder-32b": {
     "format": "openai",

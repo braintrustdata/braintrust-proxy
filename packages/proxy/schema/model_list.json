@@ -2670,7 +2670,7 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
-    "parent": "grok-4-fast-reasoning",
+    "parent": "grok-4-fast-reasoning-latest",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000
   },
@@ -2690,7 +2690,7 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
-    "parent": "grok-4-fast-non-reasoning",
+    "parent": "grok-4-fast-non-reasoning-latest",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000
   },

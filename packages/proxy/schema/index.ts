@@ -314,6 +314,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "llama-guard-3-8b": ["groq"],
   "deepseek-r1-distill-llama-70b-specdec": ["groq"],
   "deepseek-r1-distill-qwen-32b": ["groq"],
+  "qwen/qwen3-32b": ["groq"],
+  "moonshotai/kimi-k2-instruct-0905": ["groq"],
   "qwen-2.5-32b": ["groq"],
   "qwen-2.5-coder-32b": ["groq"],
   "qwen-qwq-32b": ["groq"],

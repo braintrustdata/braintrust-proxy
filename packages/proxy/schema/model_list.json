@@ -900,7 +900,8 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3.5 Sonnet",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192
+    "max_output_tokens": 8192,
+    "deprecated": true
   },
   "claude-3-5-sonnet-20241022": {
     "format": "anthropic",
@@ -912,7 +913,8 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192
+    "max_output_tokens": 8192,
+    "deprecated": true
   },
   "claude-3-5-sonnet-20240620": {
     "format": "anthropic",
@@ -924,7 +926,8 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192
+    "max_output_tokens": 8192,
+    "deprecated": true
   },
   "claude-opus-4-1-20250805": {
     "format": "anthropic",

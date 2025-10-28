@@ -1906,6 +1906,28 @@
     "displayName": "DeepSeek R1 Distill Qwen 32B 128k",
     "experimental": true
   },
+  "qwen/qwen3-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.29,
+    "output_cost_per_mil_tokens": 0.59,
+    "displayName": "Qwen3-32B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "experimental": true
+  },
+  "moonshotai/kimi-k2-instruct-0905": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.0,
+    "output_cost_per_mil_tokens": 3.0,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Kimi K2 0905",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 16384,
+    "experimental": true
+  },
   "qwen-2.5-32b": {
     "format": "openai",
     "flavor": "chat",
@@ -2644,6 +2666,46 @@
     "deprecated": true,
     "max_input_tokens": 32760,
     "max_output_tokens": 8192
+  },
+  "grok-4-fast-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "parent": "grok-4-fast-reasoning-latest",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-fast-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Grok 4 Fast",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-fast-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "parent": "grok-4-fast-non-reasoning-latest",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-fast-non-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Grok 4 Fast (Non-Reasoning)",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
   },
   "grok-4": {
     "format": "openai",

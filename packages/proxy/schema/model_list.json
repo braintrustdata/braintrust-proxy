@@ -66,8 +66,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 120,
-    "parent": "gpt-5-pro",
     "reasoning": true,
+    "parent": "gpt-5-pro",
     "max_input_tokens": 400000,
     "max_output_tokens": 272000
   },
@@ -2650,6 +2650,25 @@
     "displayName": "Grok 4",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000
+  },
+  "grok-4-fast-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.049999999999999996,
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-fast-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.049999999999999996,
+    "reasoning": true,
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
   },
   "grok-4-latest": {
     "format": "openai",

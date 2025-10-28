@@ -55,6 +55,9 @@ const liteLLMModelDetailSchema = z
         "rerank",
         "responses",
         "video_generation",
+        "search",
+        "ocr",
+        "vector_store",
       ])
       .optional(),
     supports_function_calling: z.boolean().optional(),

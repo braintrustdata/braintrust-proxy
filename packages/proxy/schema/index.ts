@@ -401,6 +401,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "grok-4-fast-reasoning": ["xAI"],
+  "grok-4-fast-non-reasoning": ["xAI"],
   "grok-3": ["xAI"],
   "grok-3-latest": ["xAI"],
   "grok-3-beta": ["xAI"],

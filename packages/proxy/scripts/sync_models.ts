@@ -55,6 +55,9 @@ const liteLLMModelDetailSchema = z
         "rerank",
         "responses",
         "video_generation",
+        "search",
+        "ocr",
+        "vector_store",
       ])
       .optional(),
     supports_function_calling: z.boolean().optional(),
@@ -632,7 +635,9 @@ async function findMissingCommand(argv: any) {
       );
       if (argv.provider) {
         console.log(
-          `[DEBUG] Remote: ${modelName} (Provider: ${consideredRemoteModels[modelName]?.litellm_provider || "N/A"}) -> Translated: ${translatedModelName}`,
+          `[DEBUG] Remote: ${modelName} (Provider: ${
+            consideredRemoteModels[modelName]?.litellm_provider || "N/A"
+          }) -> Translated: ${translatedModelName}`,
         );
       }
       if (!localModelNames.has(translatedModelName)) {
@@ -762,7 +767,9 @@ async function findMissingCommand(argv: any) {
             detail?.litellm_provider,
           );
           console.log(
-            `${modelName} (Provider: ${detail?.litellm_provider || "N/A"}, Translated: ${translated})`,
+            `${modelName} (Provider: ${
+              detail?.litellm_provider || "N/A"
+            }, Translated: ${translated})`,
           );
         });
       } else {
@@ -913,7 +920,9 @@ async function updateModelsCommand(argv: any) {
             }
             if (!argv.write)
               console.log(
-                `  ${costType} Cost Mismatch/Missing: Local: ${localCost ?? "Not available"}, Remote (calc): ${remoteCostPerMil} (would write: ${roundedRemoteCostPerMil}) (from ${remoteCostPerToken}/token)`,
+                `  ${costType} Cost Mismatch/Missing: Local: ${
+                  localCost ?? "Not available"
+                }, Remote (calc): ${remoteCostPerMil} (would write: ${roundedRemoteCostPerMil}) (from ${remoteCostPerToken}/token)`,
               );
             discrepanciesFound++;
             if (argv.write) {
@@ -965,7 +974,9 @@ async function updateModelsCommand(argv: any) {
             }
             if (!argv.write)
               console.log(
-                `  ${limitType} Token Limit Mismatch/Missing: Local: ${localLimit ?? "Not available"}, Remote: ${remoteLimit}`,
+                `  ${limitType} Token Limit Mismatch/Missing: Local: ${
+                  localLimit ?? "Not available"
+                }, Remote: ${remoteLimit}`,
               );
             discrepanciesFound++;
             if (argv.write) {
@@ -1294,7 +1305,9 @@ async function addModelsCommand(argv: any) {
     } else {
       console.log(`\n📋 To actually add these models, run with --write flag`);
       console.log(
-        `   Example: npx tsx packages/proxy/scripts/sync_models.ts add-models -p ${argv.provider || "PROVIDER"} --write`,
+        `   Example: npx tsx packages/proxy/scripts/sync_models.ts add-models -p ${
+          argv.provider || "PROVIDER"
+        } --write`,
       );
     }
   } catch (error) {

@@ -1920,7 +1920,7 @@
     "input_cost_per_mil_tokens": 1.00,
     "output_cost_per_mil_tokens": 3.00,
     "input_cache_read_cost_per_mil_tokens": 0.50,
-    "displayName": "Qwen3-32B",
+    "displayName": "Kimi K2 0905",
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,

@@ -2684,39 +2684,6 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000
   },
-  "grok-code-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.20,
-    "output_cost_per_mil_tokens": 0.50,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
-    "displayName": "Grok 4 Code Fast",
-    "reasoning": true,
-    "max_input_tokens": 2000000,
-    "max_output_tokens": 2000000
-  },
-  "grok-code-fast-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.20,
-    "output_cost_per_mil_tokens": 1.50,
-    "input_cache_read_cost_per_mil_tokens": 0.02,
-    "parent": "grok-code-fast",
-    "reasoning": true,
-    "max_input_tokens": 2000000,
-    "max_output_tokens": 2000000
-  },
-  "grok-code-fast-1-0825": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.20,
-    "output_cost_per_mil_tokens": 1.50,
-    "input_cache_read_cost_per_mil_tokens": 0.02,
-    "parent": "grok-code-fast",
-    "reasoning": true,
-    "max_input_tokens": 2000000,
-    "max_output_tokens": 2000000
-  },
   "grok-4": {
     "format": "openai",
     "flavor": "chat",

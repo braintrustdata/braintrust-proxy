@@ -11,6 +11,8 @@ import {
   geminiParamsToOpenAITools,
   normalizeOpenAISchema,
   fromOpenAPIToJSONSchema,
+  googleCompletionToOpenAICompletion,
+  googleEventToOpenAIChatEvent,
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
@@ -1136,6 +1138,306 @@ describe("geminiParamsToOpenAIMessages", () => {
         ],
       },
     ]);
+  });
+
+  it("should handle snake_case function_call in assistant messages", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: "What is the weather like in Paris, France?" }],
+        },
+        {
+          role: "model",
+          parts: [
+            {
+              function_call: {
+                name: "get_weather",
+                args: {
+                  city_and_state: "Paris, France",
+                  temperature_unit: "celsius",
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(2);
+    expect(messages[0]).toEqual({
+      role: "user",
+      content: "What is the weather like in Paris, France?",
+    });
+
+    expect(messages[1]).toHaveProperty("role", "assistant");
+    expect(messages[1]).toHaveProperty("tool_calls");
+    const assistantMessage = messages[1] as any;
+    expect(assistantMessage.tool_calls).toHaveLength(1);
+    expect(assistantMessage.tool_calls[0]).toHaveProperty("type", "function");
+    expect(assistantMessage.tool_calls[0].function).toEqual({
+      name: "get_weather",
+      arguments: JSON.stringify({
+        city_and_state: "Paris, France",
+        temperature_unit: "celsius",
+      }),
+    });
+  });
+
+  it("should handle snake_case function_response as tool messages", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              function_response: {
+                id: "call_123",
+                name: "get_weather",
+                response: {
+                  temperature_celsius: 22,
+                  weather_condition: "sunny",
+                  humidity_percent: 65,
+                },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toEqual({
+      role: "tool",
+      tool_call_id: "call_123",
+      content: JSON.stringify({
+        temperature_celsius: 22,
+        weather_condition: "sunny",
+        humidity_percent: 65,
+      }),
+    });
+  });
+
+  it("should handle mixed camelCase and snake_case in same request", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: "Calculate something" }],
+        },
+        {
+          role: "model",
+          parts: [
+            {
+              function_call: {
+                name: "calculate",
+                args: {
+                  operation_type: "multiply",
+                  first_value: 5,
+                  second_value: 10,
+                },
+              },
+            },
+          ],
+        },
+        {
+          role: "user",
+          parts: [
+            {
+              functionResponse: {
+                name: "calculate",
+                response: { calculation_result: 50 },
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(3);
+
+    // Check function_call (snake_case) was converted
+    const assistantMessage = messages[1] as any;
+    expect(assistantMessage.tool_calls[0].function).toEqual({
+      name: "calculate",
+      arguments: JSON.stringify({
+        operation_type: "multiply",
+        first_value: 5,
+        second_value: 10,
+      }),
+    });
+
+    // Check functionResponse (camelCase) was converted
+    expect(messages[2]).toHaveProperty("role", "tool");
+    expect(messages[2]).toHaveProperty(
+      "content",
+      JSON.stringify({ calculation_result: 50 }),
+    );
+  });
+});
+
+describe("googleCompletionToOpenAICompletion", () => {
+  it("should handle snake_case function_call in output", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                function_call: {
+                  name: "get_weather",
+                  args: {
+                    city_and_state: "Paris, France",
+                    include_forecast: true,
+                    forecast_days: 7,
+                  },
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata: {
+        promptTokenCount: 10,
+        candidatesTokenCount: 5,
+        totalTokenCount: 15,
+      },
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.0-flash",
+      geminiResponse,
+    );
+
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message).toHaveProperty("role", "assistant");
+    expect(result.choices[0].message).toHaveProperty("tool_calls");
+    expect(result.choices[0].message.tool_calls).toHaveLength(1);
+    expect(result.choices[0].message.tool_calls![0].function).toEqual({
+      name: "get_weather",
+      arguments: JSON.stringify({
+        city_and_state: "Paris, France",
+        include_forecast: true,
+        forecast_days: 7,
+      }),
+    });
+    expect(result.choices[0].finish_reason).toBe("tool_calls");
+  });
+
+  it("should handle mixed camelCase and snake_case function_call", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                functionCall: {
+                  name: "calculate",
+                  args: {
+                    operation_type: "add",
+                    use_decimals: false,
+                  },
+                },
+              },
+              {
+                function_call: {
+                  name: "get_data",
+                  args: {
+                    data_id: "123",
+                    include_metadata: true,
+                    max_depth: 3,
+                  },
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.0-flash",
+      geminiResponse,
+    );
+
+    expect(result.choices[0].message.tool_calls).toHaveLength(2);
+    expect(result.choices[0].message.tool_calls![0].function.name).toBe(
+      "calculate",
+    );
+    expect(result.choices[0].message.tool_calls![1].function.name).toBe(
+      "get_data",
+    );
+    expect(
+      JSON.parse(result.choices[0].message.tool_calls![1].function.arguments),
+    ).toEqual({
+      data_id: "123",
+      include_metadata: true,
+      max_depth: 3,
+    });
+  });
+});
+
+describe("googleEventToOpenAIChatEvent", () => {
+  it("should handle snake_case function_call in streaming output", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiEvent: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                function_call: {
+                  name: "search_database",
+                  args: {
+                    query_string: "test",
+                    max_results: 10,
+                    sort_order: "desc",
+                    include_archived: false,
+                  },
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleEventToOpenAIChatEvent(
+      "gemini-2.0-flash",
+      geminiEvent,
+    );
+
+    expect(result.event).not.toBeNull();
+    expect(result.event!.choices).toHaveLength(1);
+    expect(result.event!.choices[0].delta).toHaveProperty("tool_calls");
+    expect(result.event!.choices[0].delta.tool_calls).toHaveLength(1);
+    expect(result.event!.choices[0].delta.tool_calls![0].function).toEqual({
+      name: "search_database",
+      arguments: JSON.stringify({
+        query_string: "test",
+        max_results: 10,
+        sort_order: "desc",
+        include_archived: false,
+      }),
+    });
+    expect(result.event!.choices[0].finish_reason).toBe("tool_calls");
   });
 });
 

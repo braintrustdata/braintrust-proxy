@@ -213,16 +213,25 @@ export function googleEventToOpenAIChatEvent(
               );
               const toolCalls =
                 candidate.content?.parts
-                  ?.filter((part) => part.functionCall !== undefined)
-                  .map((part, i) => ({
-                    id: uuidv4(),
-                    type: "function" as const,
-                    function: {
-                      name: part?.functionCall?.name,
-                      arguments: JSON.stringify(part.functionCall?.args),
-                    },
-                    index: i,
-                  })) || [];
+                  ?.filter(
+                    (part) =>
+                      part.functionCall !== undefined ||
+                      (part as any).function_call !== undefined,
+                  )
+                  .map((part, i) => {
+                    // Handle both camelCase and snake_case
+                    const functionCall =
+                      part.functionCall || (part as any).function_call;
+                    return {
+                      id: uuidv4(),
+                      type: "function" as const,
+                      function: {
+                        name: functionCall?.name,
+                        arguments: JSON.stringify(functionCall?.args),
+                      },
+                      index: i,
+                    };
+                  }) || [];
               return {
                 index: 0,
                 delta: {
@@ -304,15 +313,24 @@ export function googleCompletionToOpenAICompletion(
       );
       const toolCalls =
         candidate.content?.parts
-          ?.filter((part) => part.functionCall !== undefined)
-          .map((part) => ({
-            id: uuidv4(),
-            type: "function" as const,
-            function: {
-              name: part?.functionCall?.name || "unknown",
-              arguments: JSON.stringify(part?.functionCall?.args),
-            },
-          })) || [];
+          ?.filter(
+            (part) =>
+              part.functionCall !== undefined ||
+              (part as any).function_call !== undefined,
+          )
+          .map((part) => {
+            // Handle both camelCase and snake_case
+            const functionCall =
+              part.functionCall || (part as any).function_call;
+            return {
+              id: uuidv4(),
+              type: "function" as const,
+              function: {
+                name: functionCall?.name || "unknown",
+                arguments: JSON.stringify(functionCall?.args),
+              },
+            };
+          }) || [];
       return {
         logprobs: null,
         index: "index" in candidate ? candidate.index : 0,
@@ -793,14 +811,21 @@ const isPart = (obj: any): obj is Part => {
 const convertGeminiContentToOpenAIMessage = (content: Content): any | null => {
   // Handle function responses as tool messages first
   if (content.parts) {
-    const part = content.parts.find((p) => p.functionResponse);
-    if (part?.functionResponse) {
-      return {
-        role: "tool",
-        tool_call_id:
-          part.functionResponse.id || part.functionResponse.name || "unknown",
-        content: JSON.stringify(part.functionResponse.response || {}),
-      };
+    // Handle both camelCase and snake_case
+    const part = content.parts.find(
+      (p) => p.functionResponse || (p as any).function_response,
+    );
+    if (part) {
+      const functionResponse =
+        part.functionResponse || (part as any).function_response;
+      if (functionResponse) {
+        return {
+          role: "tool",
+          tool_call_id:
+            functionResponse.id || functionResponse.name || "unknown",
+          content: JSON.stringify(functionResponse.response || {}),
+        };
+      }
     }
   }
 
@@ -1027,14 +1052,16 @@ const extractToolCalls = (parts: Part[]): any[] => {
   const toolCalls: any[] = [];
 
   for (const part of parts) {
-    if (part.functionCall) {
+    // Handle both camelCase and snake_case
+    const functionCall = part.functionCall || (part as any).function_call;
+    if (functionCall) {
       toolCalls.push({
         // Use function name as ID when no ID is provided for consistency with function responses
-        id: part.functionCall.id || part.functionCall.name,
+        id: functionCall.id || functionCall.name,
         type: "function",
         function: {
-          name: part.functionCall.name,
-          arguments: JSON.stringify(part.functionCall.args || {}),
+          name: functionCall.name,
+          arguments: JSON.stringify(functionCall.args || {}),
         },
       });
     }

@@ -123,16 +123,38 @@ export function isCompletion(data: unknown): data is Completion {
 }
 
 /**
- * Cleans the OpenAI parameters by removing extra braintrust fields.
+ * Removes Braintrust-specific parameters that are not part of OpenAI's API.
+ * Keeps reasoning_effort since it's natively supported by OpenAI (for o1 models).
+ * Removes reasoning_enabled and reasoning_budget which are Braintrust extensions
+ * used for Anthropic/Google translation.
+ *
+ * Use this when sending to OpenAI/Azure/Together/etc. that support reasoning_effort.
  *
  * @param {OpenAIChatCompletionCreateParams} params - The OpenAI parameters to clean.
  * @returns {ChatCompletionCreateParams} - The cleaned OpenAI parameters.
  */
-export function cleanOpenAIParams({
-  reasoning_effort,
+export function cleanBraintrustOpenAIParams({
   reasoning_budget,
   reasoning_enabled,
   ...openai
 }: OpenAIChatCompletionCreateParams): ChatCompletionCreateParams {
   return openai;
+}
+
+/**
+ * Removes ALL reasoning-related parameters from OpenAI params.
+ * This includes both Braintrust-specific params (reasoning_enabled, reasoning_budget)
+ * AND OpenAI-native params (reasoning_effort).
+ *
+ * Use this in Anthropic/Google mappers where they need to handle reasoning params
+ * themselves and convert them to provider-specific formats (thinking, thinkingConfig).
+ *
+ * @param {OpenAIChatCompletionCreateParams} params - The OpenAI parameters to clean.
+ * @returns {ChatCompletionCreateParams} - The cleaned OpenAI parameters.
+ */
+export function cleanOpenAIParams({
+  reasoning_enabled,
+  ...openai
+}: OpenAIChatCompletionCreateParams): ChatCompletionCreateParams {
+  return cleanBraintrustOpenAIParams(openai);
 }

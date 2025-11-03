@@ -153,7 +153,7 @@ export function cleanBraintrustOpenAIParams({
  * @returns {ChatCompletionCreateParams} - The cleaned OpenAI parameters.
  */
 export function cleanOpenAIParams({
-  reasoning_enabled,
+  reasoning_effort,
   ...openai
 }: OpenAIChatCompletionCreateParams): ChatCompletionCreateParams {
   return cleanBraintrustOpenAIParams(openai);

@@ -538,11 +538,13 @@ export const geminiParamsToOpenAIMessages = (
 ): OpenAIChatCompletionCreateParams["messages"] => {
   const messages: OpenAIChatCompletionCreateParams["messages"] = [];
 
-  // Add system instruction if present
-  if (params.config?.systemInstruction) {
-    const systemContent = convertContentToString(
-      params.config.systemInstruction,
-    );
+  // Add system instruction if present (handle both camelCase and snake_case)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const systemInstruction =
+    params.config?.systemInstruction ||
+    (params.config as any)?.system_instruction;
+  if (systemInstruction) {
+    const systemContent = convertContentToString(systemInstruction);
     if (systemContent) {
       messages.push({
         role: "system",
@@ -575,16 +577,24 @@ export const geminiParamsToOpenAITools = (
       : [params.config.tools];
 
     for (const tool of toolsList) {
-      if (tool.functionDeclarations) {
-        for (const funcDecl of tool.functionDeclarations) {
+      // Handle both camelCase and snake_case
+      const functionDeclarations =
+        tool.functionDeclarations || (tool as any).function_declarations;
+      if (functionDeclarations) {
+        for (const funcDecl of functionDeclarations) {
           // Skip functions without names as they're required by OpenAI
           if (!funcDecl.name) continue;
 
           let parameters = {};
           if (!isEmpty(funcDecl.parameters)) {
             parameters = fromOpenAPIToJSONSchema(funcDecl.parameters);
-          } else if (!isEmpty(funcDecl.parametersJsonSchema)) {
-            parameters = funcDecl.parametersJsonSchema;
+          } else if (
+            !isEmpty(funcDecl.parametersJsonSchema) ||
+            !isEmpty((funcDecl as any).parameters_json_schema)
+          ) {
+            parameters =
+              funcDecl.parametersJsonSchema ||
+              (funcDecl as any).parameters_json_schema;
           }
 
           tools.push({
@@ -601,12 +611,12 @@ export const geminiParamsToOpenAITools = (
     }
   }
 
-  // Handle response schema as a structured output tool if present
-  if (params.config?.responseSchema) {
+  // Handle response schema as a structured output tool if present (both camelCase and snake_case)
+  const responseSchema =
+    params.config?.responseSchema || (params.config as any)?.response_schema;
+  if (responseSchema) {
     const schema =
-      typeof params.config.responseSchema === "object"
-        ? params.config.responseSchema
-        : undefined;
+      typeof responseSchema === "object" ? responseSchema : undefined;
 
     if (schema) {
       tools.push({
@@ -1007,30 +1017,45 @@ const convertPartsToMessageContent = (
           },
         });
       }
-    } else if (part.fileData) {
+    } else if (part.fileData || (part as any).file_data) {
       hasComplexContent = true;
-      // Handle file references
-      if (part.fileData.mimeType?.startsWith("image/")) {
+      // Handle file references (both camelCase and snake_case)
+      const fileData = part.fileData || (part as any).file_data;
+      const mimeType = fileData.mimeType || fileData.mime_type;
+      const fileUri = fileData.fileUri || fileData.file_uri;
+
+      if (mimeType?.startsWith("image/")) {
         contentParts.push({
           type: "image_url",
           image_url: {
-            url: part.fileData.fileUri || "",
+            url: fileUri || "",
           },
         });
       }
-    } else if (part.executableCode) {
+    } else if (part.executableCode || (part as any).executable_code) {
+      // Handle both camelCase and snake_case
+      const executableCode =
+        part.executableCode || (part as any).executable_code;
+      const language = executableCode.language;
+      const code = executableCode.code;
+
       contentParts.push({
         type: "text",
-        text: `\`\`\`${part.executableCode.language || ""}\n${
-          part.executableCode.code
-        }\n\`\`\``,
+        text: `\`\`\`${language || ""}\n${code}\n\`\`\``,
       });
-    } else if (part.codeExecutionResult) {
+    } else if (
+      part.codeExecutionResult ||
+      (part as any).code_execution_result
+    ) {
+      // Handle both camelCase and snake_case
+      const codeExecutionResult =
+        part.codeExecutionResult || (part as any).code_execution_result;
+      const outcome = codeExecutionResult.outcome;
+      const output = codeExecutionResult.output;
+
       contentParts.push({
         type: "text",
-        text: `Execution Result (${part.codeExecutionResult.outcome}):\n${
-          part.codeExecutionResult.output || ""
-        }`,
+        text: `Execution Result (${outcome}):\n${output || ""}`,
       });
     }
   }

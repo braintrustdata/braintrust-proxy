@@ -1283,6 +1283,95 @@ describe("geminiParamsToOpenAIMessages", () => {
       JSON.stringify({ calculation_result: 50 }),
     );
   });
+
+  it("should handle snake_case file_data from Python SDK", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              file_data: {
+                mime_type: "image/png",
+                file_uri: "gs://bucket/image.png",
+              },
+            },
+            { text: "What's in this image?" },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toHaveProperty("role", "user");
+    const content = messages[0].content as any[];
+    expect(content).toHaveLength(2);
+    expect(content[0]).toEqual({
+      type: "image_url",
+      image_url: {
+        url: "gs://bucket/image.png",
+      },
+    });
+    expect(content[1]).toEqual({
+      type: "text",
+      text: "What's in this image?",
+    });
+  });
+
+  it("should handle snake_case executable_code from Python SDK", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "model",
+          parts: [
+            {
+              executable_code: {
+                language: "python",
+                code: "print('Hello, world!')",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toHaveProperty("role", "assistant");
+    expect(messages[0].content).toBe("```python\nprint('Hello, world!')\n```");
+  });
+
+  it("should handle snake_case code_execution_result from Python SDK", () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: [
+        {
+          role: "model",
+          parts: [
+            {
+              code_execution_result: {
+                outcome: "SUCCESS",
+                output: "Hello, world!",
+              },
+            },
+          ],
+        },
+      ],
+    };
+
+    const messages = geminiParamsToOpenAIMessages(geminiParams);
+
+    expect(messages).toHaveLength(1);
+    expect(messages[0]).toHaveProperty("role", "assistant");
+    expect(messages[0].content).toBe(
+      "Execution Result (SUCCESS):\nHello, world!",
+    );
+  });
 });
 
 describe("googleCompletionToOpenAICompletion", () => {
@@ -1520,6 +1609,134 @@ describe("geminiParamsToOpenAITools", () => {
     const tools = geminiParamsToOpenAITools(geminiParams);
 
     expect(tools).toBeUndefined();
+  });
+
+  it("should handle snake_case function_declarations from Python SDK", async () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: "Test",
+      config: {
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_weather",
+                description: "Get weather information",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    location: { type: "string" },
+                    unit: { type: "string" },
+                  },
+                  required: ["location"],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const tools = geminiParamsToOpenAITools(geminiParams);
+
+    expect(tools).toHaveLength(1);
+    expect(tools?.[0]).toEqual({
+      type: "function",
+      function: {
+        name: "get_weather",
+        description: "Get weather information",
+        parameters: {
+          type: "object",
+          properties: {
+            location: { type: "string" },
+            unit: { type: "string" },
+          },
+          required: ["location"],
+        },
+      },
+    });
+  });
+
+  it("should handle snake_case parameters_json_schema from Python SDK", async () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: "Test",
+      config: {
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "create_block",
+                description: "Create a new block",
+                parameters_json_schema: {
+                  type: "object",
+                  properties: {
+                    block_id: { type: "string" },
+                    block_type: { type: "string" },
+                  },
+                  required: ["block_id"],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    const tools = geminiParamsToOpenAITools(geminiParams);
+
+    expect(tools).toHaveLength(1);
+    expect(tools?.[0]).toEqual({
+      type: "function",
+      function: {
+        name: "create_block",
+        description: "Create a new block",
+        parameters: {
+          type: "object",
+          properties: {
+            block_id: { type: "string" },
+            block_type: { type: "string" },
+          },
+          required: ["block_id"],
+        },
+      },
+    });
+  });
+
+  it("should handle snake_case response_schema from Python SDK", async () => {
+    const geminiParams: any = {
+      model: "gemini-2.0-flash",
+      contents: "Test",
+      config: {
+        response_schema: {
+          type: "object",
+          properties: {
+            user_name: { type: "string" },
+            user_age: { type: "number" },
+          },
+          required: ["user_name"],
+        },
+      },
+    };
+
+    const tools = geminiParamsToOpenAITools(geminiParams);
+
+    expect(tools).toHaveLength(1);
+    expect(tools?.[0]).toEqual({
+      type: "function",
+      function: {
+        name: "structured_output",
+        description: "Structured output response",
+        parameters: {
+          type: "object",
+          properties: {
+            user_name: { type: "string" },
+            user_age: { type: "number" },
+          },
+          required: ["user_name"],
+        },
+      },
+    });
   });
 });
 

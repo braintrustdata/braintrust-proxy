@@ -213,11 +213,12 @@ export function googleEventToOpenAIChatEvent(
               );
               const toolCalls =
                 candidate.content?.parts
-                  ?.filter(
-                    (part) =>
-                      part.functionCall !== undefined ||
-                      (part as any).function_call !== undefined,
-                  )
+                  ?.filter((part) => {
+                    // Check that function call exists and is not null
+                    const functionCall =
+                      part.functionCall || (part as any).function_call;
+                    return !!functionCall;
+                  })
                   .map((part, i) => {
                     // Handle both camelCase and snake_case
                     const functionCall =
@@ -226,8 +227,8 @@ export function googleEventToOpenAIChatEvent(
                       id: uuidv4(),
                       type: "function" as const,
                       function: {
-                        name: functionCall?.name,
-                        arguments: JSON.stringify(functionCall?.args),
+                        name: functionCall.name || "unknown",
+                        arguments: JSON.stringify(functionCall.args),
                       },
                       index: i,
                     };
@@ -313,11 +314,12 @@ export function googleCompletionToOpenAICompletion(
       );
       const toolCalls =
         candidate.content?.parts
-          ?.filter(
-            (part) =>
-              part.functionCall !== undefined ||
-              (part as any).function_call !== undefined,
-          )
+          ?.filter((part) => {
+            // Check that function call exists and is not null
+            const functionCall =
+              part.functionCall || (part as any).function_call;
+            return !!functionCall;
+          })
           .map((part) => {
             // Handle both camelCase and snake_case
             const functionCall =
@@ -326,8 +328,8 @@ export function googleCompletionToOpenAICompletion(
               id: uuidv4(),
               type: "function" as const,
               function: {
-                name: functionCall?.name || "unknown",
-                arguments: JSON.stringify(functionCall?.args),
+                name: functionCall.name || "unknown",
+                arguments: JSON.stringify(functionCall.args),
               },
             };
           }) || [];

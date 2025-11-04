@@ -2,6 +2,7 @@ export {
   parseOpenAIStream,
   isChatCompletionChunk,
   isCompletion,
+  cleanBraintrustOpenAIParams,
 } from "./openai";
 export * from "./encrypt";
 

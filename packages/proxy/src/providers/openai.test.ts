@@ -343,7 +343,6 @@ describe("request/response checking", () => {
       {
         request: {
           body: {
-            reasoning_effort: null, // let openai decide what is the default
             messages: [
               {
                 content: "How many rs in 'ferrocarril'",

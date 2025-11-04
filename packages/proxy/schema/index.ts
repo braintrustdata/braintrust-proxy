@@ -9,7 +9,6 @@ import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
-import { cleanBraintrustOpenAIParams } from "utils";
 
 export * from "./secrets";
 export * from "./models";
@@ -66,7 +65,6 @@ const paramMappers: Partial<
 > = {
   anthropic: openaiParamsToAnthropicMesssageParams,
   google: openaiParamsToGeminiMessageParams,
-  openai: cleanBraintrustOpenAIParams,
 };
 
 export const sliderSpecs: {

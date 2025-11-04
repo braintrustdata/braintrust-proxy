@@ -1865,10 +1865,6 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
-  if (bodyData) {
-    bodyData = translateParams("openai", bodyData);
-  }
-
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;
 

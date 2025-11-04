@@ -75,18 +75,6 @@ export const getKnownApiSecrets: Parameters<
       name: "openai",
     },
     {
-      type: "azure" as const,
-      secret: process.env.AZURE_OPENAI_API_KEY || "",
-      name: "azure",
-      metadata: {
-        api_base: process.env.AZURE_OPENAI_ENDPOINT || "",
-        api_version: process.env.AZURE_OPENAI_API_VERSION || "",
-        deployment: "gpt-5",
-        supportsStreaming: true,
-        excludeDefaultModels: false,
-      },
-    },
-    {
       type: "vertex" as const,
       secret: process.env.VERTEX_AI_API_KEY || "",
       name: "vertex",

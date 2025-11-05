@@ -8,6 +8,7 @@ import { GenerateContentParameters } from "../../types/google";
 import {
   geminiParamsToOpenAIParams,
   geminiParamsToOpenAIMessages,
+  openAIMessagesToGoogleMessages,
   geminiParamsToOpenAITools,
   normalizeOpenAISchema,
   fromOpenAPIToJSONSchema,
@@ -1371,6 +1372,326 @@ describe("geminiParamsToOpenAIMessages", () => {
     expect(messages[0].content).toBe(
       "Execution Result (SUCCESS):\nHello, world!",
     );
+  });
+
+  it("should fix position-based turn alternation violations when converting OpenAI to Gemini", async () => {
+    // This test demonstrates the Gemini API constraint:
+    // Position 0 (even) must be "user", position 1 (odd) must be "model", etc.
+    // See: https://discuss.ai.google.dev/t/function-call-turn-error-with-even-user-turns/45270
+
+    // Scenario 1: Multiple consecutive assistant messages (would violate alternation)
+    const openAIMessagesConsecutiveAssistant = [
+      {
+        role: "user" as const,
+        content: "What's the weather?",
+      },
+      {
+        role: "assistant" as const,
+        content: "Let me check that.",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "call_123",
+            type: "function" as const,
+            function: {
+              name: "get_weather",
+              arguments: '{"location":"Boston"}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "call_123",
+        content: '{"temperature":38}',
+      },
+    ];
+
+    const geminiContents1 = await openAIMessagesToGoogleMessages(
+      openAIMessagesConsecutiveAssistant,
+    );
+
+    // Verify proper alternation in Gemini format
+    expect(geminiContents1.length).toBeGreaterThan(0);
+    expect(geminiContents1[0].role).toBe("user"); // Position 0 must be user
+
+    // Check that all positions follow alternation rule
+    for (let i = 0; i < geminiContents1.length; i++) {
+      const expectedRole = i % 2 === 0 ? "user" : "model";
+      const actualRole = geminiContents1[i].role;
+      expect(actualRole).toBe(expectedRole);
+    }
+
+    // Scenario 2: Multiple consecutive tool responses (would violate alternation)
+    const openAIMessagesConsecutiveTool = [
+      {
+        role: "user" as const,
+        content: "Get weather for Boston and NYC",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "call_1",
+            type: "function" as const,
+            function: {
+              name: "get_weather",
+              arguments: '{"location":"Boston"}',
+            },
+          },
+          {
+            id: "call_2",
+            type: "function" as const,
+            function: {
+              name: "get_weather",
+              arguments: '{"location":"NYC"}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "call_1",
+        content: '{"temperature":38}',
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "call_2",
+        content: '{"temperature":45}',
+      },
+    ];
+
+    const geminiContents2 = await openAIMessagesToGoogleMessages(
+      openAIMessagesConsecutiveTool,
+    );
+
+    // Verify proper alternation
+    expect(geminiContents2.length).toBeGreaterThan(0);
+    expect(geminiContents2[0].role).toBe("user");
+
+    for (let i = 0; i < geminiContents2.length; i++) {
+      const expectedRole = i % 2 === 0 ? "user" : "model";
+      const actualRole = geminiContents2[i].role;
+      expect(actualRole).toBe(expectedRole);
+    }
+
+    // Scenario 3: Valid alternating conversation (should pass through correctly)
+    const openAIMessagesValid = [
+      {
+        role: "user" as const,
+        content: "What is the weather in Boston?",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "call_abc",
+            type: "function" as const,
+            function: {
+              name: "get_weather",
+              arguments: '{"location":"Boston"}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "call_abc",
+        content: '{"temperature":38,"condition":"cloudy"}',
+      },
+      {
+        role: "assistant" as const,
+        content: "It's 38°F and cloudy in Boston.",
+      },
+    ];
+
+    const geminiContents3 =
+      await openAIMessagesToGoogleMessages(openAIMessagesValid);
+
+    // This should maintain proper alternation
+    expect(geminiContents3.length).toBe(4);
+    expect(geminiContents3[0].role).toBe("user");
+    expect(geminiContents3[1].role).toBe("model");
+    expect(geminiContents3[2].role).toBe("user"); // tool response becomes user
+    expect(geminiContents3[3].role).toBe("model");
+
+    // Verify function call is preserved
+    expect(geminiContents3[1].parts?.[0]).toHaveProperty("functionCall");
+    // Verify function response is preserved
+    expect(geminiContents3[2].parts?.[0]).toHaveProperty("functionResponse");
+  });
+
+  it("should handle real-world span data with complex function calling workflow", async () => {
+    // This test uses actual normalized span data from the issue that triggered the error:
+    // "Please ensure that function call turn comes immediately after a user turn or after a function response turn"
+    //
+    // The span shows a complex multi-turn conversation with workflow management functions
+    // that was causing the position-based alternation error.
+
+    const realWorldOpenAIMessages = [
+      {
+        role: "system" as const,
+        content:
+          "You are an agent that adheres to the workflow you have been given...",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "workflow_tool_set_current_node",
+            type: "function" as const,
+            function: {
+              name: "workflow_tool_set_current_node",
+              arguments: '{"node_id":8}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "workflow_tool_set_current_node",
+        content: '{"text":"Successfully set current node to ID 8."}',
+      },
+      {
+        role: "assistant" as const,
+        content:
+          "Great. Now, could you please tell me your insurance member ID?",
+      },
+      {
+        role: "user" as const,
+        content: "xof12345",
+      },
+      {
+        role: "assistant" as const,
+        content:
+          "Okay, so your insurance member ID is X O F one two three four five. Is that correct?",
+      },
+      {
+        role: "user" as const,
+        content: "sure",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "workflow_tool_set_current_node_2",
+            type: "function" as const,
+            function: {
+              name: "workflow_tool_set_current_node",
+              arguments: '{"node_id":9}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "workflow_tool_set_current_node_2",
+        content: '{"text":"Successfully set current node to ID 9."}',
+      },
+      {
+        role: "assistant" as const,
+        content: "Alright. And are you the policyholder for this insurance?",
+      },
+      {
+        role: "user" as const,
+        content: "yes",
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "workflow_tool_set_current_node_3",
+            type: "function" as const,
+            function: {
+              name: "workflow_tool_set_current_node",
+              arguments: '{"node_id":10}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "workflow_tool_set_current_node_3",
+        content: '{"text":"Successfully set current node to ID 10."}',
+      },
+      {
+        role: "assistant" as const,
+        content: null,
+        tool_calls: [
+          {
+            id: "create_or_update_patient_insurance",
+            type: "function" as const,
+            function: {
+              name: "create_or_update_patient_insurance",
+              arguments:
+                '{"patient_ehr_id":"416213","patient_dob":"2001-01-17","inputted_insurance_name":"United Health","member_id":"XOF12345","policy_holder_first_name":"Sean","policy_holder_last_name":"Assort","policy_holder_dob":"2001-01-17"}',
+            },
+          },
+        ],
+      },
+      {
+        role: "tool" as const,
+        tool_call_id: "create_or_update_patient_insurance",
+        content:
+          '{"text":"Successfully Created and/or Updated Insurance! Insurance provider: United Health, Member ID: XOF12345"}',
+      },
+    ];
+
+    // Convert to Gemini format (this is what the proxy does)
+    const geminiContents = await openAIMessagesToGoogleMessages(
+      realWorldOpenAIMessages.filter((m) => m.role !== "system"),
+    );
+
+    // Debug: Log the converted contents
+    console.log("Real-world span - geminiContents:");
+    geminiContents.forEach((c, i) => {
+      console.log(`  [${i}] role: ${c.role}, parts count: ${c.parts?.length}`);
+      c.parts?.forEach((p, pi) => {
+        if (p.functionCall)
+          console.log(`    [${pi}] functionCall: ${p.functionCall.name}`);
+        if (p.functionResponse)
+          console.log(
+            `    [${pi}] functionResponse: ${p.functionResponse.name}`,
+          );
+        if (p.text)
+          console.log(`    [${pi}] text: ${p.text.substring(0, 50)}...`);
+      });
+    });
+
+    // Verify the conversion produces valid Gemini alternation
+    expect(geminiContents.length).toBeGreaterThan(0);
+
+    // Check that position 0 is "user"
+    expect(geminiContents[0].role).toBe("user");
+
+    // Check all positions follow alternation rule
+    for (let i = 0; i < geminiContents.length; i++) {
+      const expectedRole = i % 2 === 0 ? "user" : "model";
+      const actualRole = geminiContents[i].role;
+      expect(actualRole).toBe(expectedRole);
+    }
+
+    // Verify we preserved all the function calls and responses
+    const allParts = geminiContents.flatMap((c) => c.parts || []);
+    const functionCalls = allParts.filter((p) => p.functionCall);
+    const functionResponses = allParts.filter((p) => p.functionResponse);
+
+    // We should have 4 function calls and 4 function responses
+    expect(functionCalls.length).toBe(4);
+    expect(functionResponses.length).toBe(4);
+
+    // Verify specific function calls are preserved
+    const functionCallNames = functionCalls.map((fc) => fc.functionCall?.name);
+    expect(functionCallNames).toContain("workflow_tool_set_current_node");
+    expect(functionCallNames).toContain("create_or_update_patient_insurance");
   });
 });
 

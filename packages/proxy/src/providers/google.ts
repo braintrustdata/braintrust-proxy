@@ -29,6 +29,70 @@ import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
 import * as dereferenceJsonSchema from "dereference-json-schema";
 const deref = dereferenceJsonSchema.dereferenceSync;
 
+/**
+ * Ensures Gemini's position-based turn alternation constraint.
+ * Gemini requires strict alternation: position 0 must be "user", position 1 must be "model", etc.
+ * This function fixes violations by inserting placeholder messages or merging adjacent same-role messages.
+ *
+ * The Gemini API uses array index position to determine whose turn it is, not the role field:
+ * - Position 0 (even indices): Must be "user" role
+ * - Position 1 (odd indices): Must be "model" role
+ * - Alternation must continue throughout
+ *
+ * See: https://discuss.ai.google.dev/t/function-call-turn-error-with-even-user-turns/45270
+ */
+function ensureGeminiTurnAlternation(contents: Content[]): Content[] {
+  if (contents.length === 0) {
+    return contents;
+  }
+
+  const fixed: Content[] = [];
+
+  for (let i = 0; i < contents.length; i++) {
+    const msg = contents[i];
+    // Normalize "function" role to "user" for position checking
+    const normalizedRole = msg.role === "function" ? "user" : msg.role;
+
+    if (fixed.length === 0) {
+      // First message must be "user"
+      if (normalizedRole !== "user") {
+        // Insert a placeholder user message to start the conversation
+        fixed.push({
+          role: "user",
+          parts: [{ text: "" }],
+        });
+      }
+      fixed.push(msg);
+    } else {
+      // Calculate expected role based on current fixed array length (not input index)
+      const expectedRole = fixed.length % 2 === 0 ? "user" : "model";
+      const lastNormalizedRole =
+        fixed[fixed.length - 1].role === "function"
+          ? "user"
+          : fixed[fixed.length - 1].role;
+
+      if (normalizedRole === lastNormalizedRole) {
+        // Merge with previous message of same role
+        fixed[fixed.length - 1].parts = [
+          ...(fixed[fixed.length - 1].parts || []),
+          ...(msg.parts || []),
+        ];
+      } else if (normalizedRole !== expectedRole) {
+        // Insert a placeholder to maintain alternation
+        fixed.push({
+          role: expectedRole,
+          parts: [{ text: "" }],
+        });
+        fixed.push(msg);
+      } else {
+        fixed.push(msg);
+      }
+    }
+  }
+
+  return fixed;
+}
+
 async function makeGoogleMediaBlock(media: string): Promise<Part> {
   const { media_type: mimeType, data } = await convertMediaToBase64({
     media,
@@ -138,12 +202,15 @@ export async function openAIMessagesToGoogleMessages(
     }
   }
 
+  // Ensure Gemini's position-based turn alternation constraint
+  const alternatedContent = ensureGeminiTurnAlternation(flattenedContent);
+
   // Finally, sort the messages so that:
   // 1. All images are up front
   // 2. The system prompt.
   // 3. Then all user messages' text parts
   // The EcmaScript spec requires the sort to be stable, so this is safe.
-  const sortedContent: Content[] = flattenedContent.sort((a, b) => {
+  const sortedContent: Content[] = alternatedContent.sort((a, b) => {
     const aFirst = a.parts?.[0];
     const bFirst = b.parts?.[0];
 

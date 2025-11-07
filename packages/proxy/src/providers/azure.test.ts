@@ -3,6 +3,14 @@ import { expect, it } from "vitest";
 import { callProxyV1 } from "../../utils/tests";
 
 it("should filter Braintrust parameters when calling OpenAI", async () => {
+  if (!process.env.AZURE_OPENAI_API_KEY) {
+    console.warn(
+      "Skipping Azure OpenAI test because AZURE_OPENAI_API_KEY is not set",
+    );
+    expect(1).toBe(1);
+    return;
+  }
+
   const { json } = await callProxyV1<
     OpenAIChatCompletionCreateParams & {
       reasoning_enabled?: boolean;

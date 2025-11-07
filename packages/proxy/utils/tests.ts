@@ -98,6 +98,31 @@ export const getKnownApiSecrets: Parameters<
         excludeDefaultModels: false,
       },
     },
+    {
+      type: "azure" as const,
+      secret: process.env.AZURE_OPENAI_API_KEY || "",
+      name: "azure",
+      metadata: {
+        api_base: process.env.AZURE_OPENAI_ENDPOINT || "",
+        auth_type: "api_key" as const,
+        deployment: "gpt-5",
+        api_version: process.env.AZURE_OPENAI_API_VERSION || "",
+        customModels: {
+          "gpt-5": {
+            flavor: "chat",
+            format: "openai",
+            reasoning: true,
+            multimodal: false,
+            description: "",
+            displayName: "",
+            reasoning_budget: true,
+          },
+        },
+        supportsStreaming: true,
+        no_named_deployment: false,
+        excludeDefaultModels: true,
+      },
+    },
   ].filter((secret) => !!secret.secret && endpointTypes.includes(secret.type));
 };
 

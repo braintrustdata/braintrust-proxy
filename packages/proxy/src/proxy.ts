@@ -1865,6 +1865,12 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
+  // XXX: we previously allowed passing these braintrust-only params to OpenAI flavored ai providers. Some may be more strict, however. Best to remove!
+  try {
+    delete bodyData?.reasoning_enabled;
+    delete bodyData?.reasoning_budget;
+  } catch {}
+
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;
 

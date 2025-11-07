@@ -128,9 +128,11 @@ export const getKnownApiSecrets: Parameters<
 
 export async function callProxyV1<Input extends object, Output extends object>({
   body,
+  proxyHeaders,
   ...request
-}: Partial<Omit<Parameters<typeof proxyV1>, "body">> & {
+}: Partial<Omit<Parameters<typeof proxyV1>, "body" | "proxyHeaders">> & {
   body: Input;
+  proxyHeaders?: Record<string, string>;
 }): Promise<
   ReturnType<typeof createHeaderHandlers> & {
     chunks: Uint8Array[];
@@ -158,6 +160,7 @@ export async function callProxyV1<Input extends object, Output extends object>({
       proxyHeaders: {
         "content-type": "application/json",
         authorization: `Bearer dummy-token`,
+        ...proxyHeaders,
       },
       setHeader: ref.setHeader,
       setStatusCode: ref.setStatusCode,

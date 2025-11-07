@@ -36,6 +36,9 @@ it("should deny reasoning_effort for unsupported models non-streaming", async ()
       stream: true,
       max_tokens: 150,
     },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
+    },
   });
 
   expect(json()).toEqual({
@@ -62,6 +65,9 @@ it("should deny reasoning_effort for unsupported models non-streaming", async ()
       ],
       stream: false,
       max_tokens: 150,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
     },
   });
 
@@ -106,6 +112,9 @@ it("should accept and return reasoning/thinking params and detail streaming", as
         },
       ],
       stream: true,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
     },
   });
 
@@ -154,6 +163,9 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
           content: "How many e in what you said?",
         },
       ],
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
     },
   });
 
@@ -299,6 +311,9 @@ describe("request/response checking", () => {
           },
         ],
       },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
     });
 
     expect(json()).toEqual({
@@ -419,6 +434,7 @@ describe("normalizeOpenAIContent", () => {
     const content = "This is a simple string.";
     // The function has a `typeof content === "string"` check,
     // though its signature expects ChatCompletionContentPart.
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
     const result = await normalizeOpenAIContent(content as any);
     expect(result).toBe(content);
   });

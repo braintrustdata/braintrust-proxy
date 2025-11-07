@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { it, expect } from "vitest";
 import { callProxyV1 } from "../../utils/tests";
 import {
   OpenAIChatCompletion,

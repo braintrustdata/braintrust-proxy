@@ -25,7 +25,7 @@ for (const model of [
 ]) {
   describe(model, () => {
     it("should accept and should not return reasoning/thinking params and detail streaming", async () => {
-      const { events, json } = await callProxyV1<
+      const { events } = await callProxyV1<
         OpenAIChatCompletionCreateParams,
         OpenAIChatCompletionChunk
       >({

@@ -4215,7 +4215,7 @@
     "input_cost_per_mil_tokens": 0.8999999999999999,
     "output_cost_per_mil_tokens": 0.8999999999999999,
     "max_input_tokens": 128000,
-    "max_output_tokens": 8192
+    "max_output_tokens": 128000
   },
   "fireworks_ai/accounts/fireworks/models/deepseek-v3-0324": {
     "format": "openai",
@@ -4279,7 +4279,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.5,
     "max_input_tokens": 131072,
-    "max_output_tokens": 16384
+    "max_output_tokens": 131072
   },
   "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": {
     "format": "openai",

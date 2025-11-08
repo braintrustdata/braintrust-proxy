@@ -12,6 +12,7 @@ const deref = dereferenceJsonSchema.dereferenceSync;
 import {
   APISecret,
   AzureEntraSecretSchema,
+  BT_PARAMS,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
   getAvailableModels,
@@ -1865,10 +1866,10 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
-  // XXX: we previously allowed passing these braintrust-only params to OpenAI flavored ai providers. Some may be more strict, however. Best to remove!
   try {
-    delete bodyData?.reasoning_enabled;
-    delete bodyData?.reasoning_budget;
+    for (const forbidden of BT_PARAMS) {
+      delete bodyData?.[forbidden];
+    }
   } catch {}
 
   let fullURL: URL | null | undefined = undefined;

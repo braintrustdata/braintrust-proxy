@@ -556,6 +556,11 @@ ${content}<|im_end|>`,
   );
 }
 
+/**
+ * Params that are BT specific and should not be sent to AI providers.
+ */
+export const BT_PARAMS = ["reasoning_enabled", "reasoning_budget"];
+
 export function translateParams(
   toProvider: ModelFormat,
   params: Record<string, unknown>,

@@ -309,6 +309,11 @@ function convertRemoteToLocalModel(
     flavor: "chat", // Default flavor for most models
   };
 
+  // Helper to round cost values to avoid floating point precision issues
+  const roundCost = (costPerToken: number): number => {
+    return parseFloat((costPerToken * 1_000_000).toFixed(8));
+  };
+
   // Add multimodal support if indicated
   if (remoteModel.supports_vision) {
     baseModel.multimodal = true;
@@ -321,25 +326,29 @@ function convertRemoteToLocalModel(
 
   // Convert cost information
   if (remoteModel.input_cost_per_token) {
-    baseModel.input_cost_per_mil_tokens =
-      remoteModel.input_cost_per_token * 1_000_000;
+    baseModel.input_cost_per_mil_tokens = roundCost(
+      remoteModel.input_cost_per_token,
+    );
   }
   if (remoteModel.output_cost_per_token) {
-    baseModel.output_cost_per_mil_tokens =
-      remoteModel.output_cost_per_token * 1_000_000;
+    baseModel.output_cost_per_mil_tokens = roundCost(
+      remoteModel.output_cost_per_token,
+    );
   }
   if (remoteModel.cache_read_input_token_cost) {
-    baseModel.input_cache_read_cost_per_mil_tokens =
-      remoteModel.cache_read_input_token_cost * 1_000_000;
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(
+      remoteModel.cache_read_input_token_cost,
+    );
   }
   if (remoteModel.cache_creation_input_token_cost) {
-    baseModel.input_cache_write_cost_per_mil_tokens =
-      remoteModel.cache_creation_input_token_cost * 1_000_000;
+    baseModel.input_cache_write_cost_per_mil_tokens = roundCost(
+      remoteModel.cache_creation_input_token_cost,
+    );
   }
   // Note: output_reasoning_cost_per_mil_tokens may not be in ModelSpec yet,
   // so we'll skip this for now to avoid type errors
   // if (remoteModel.output_cost_per_reasoning_token) {
-  //   baseModel.output_reasoning_cost_per_mil_tokens = remoteModel.output_cost_per_reasoning_token * 1_000_000;
+  //   baseModel.output_reasoning_cost_per_mil_tokens = roundCost(remoteModel.output_cost_per_reasoning_token);
   // }
 
   // Add token limits

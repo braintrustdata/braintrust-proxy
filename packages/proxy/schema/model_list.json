@@ -4150,7 +4150,7 @@
   "grok-code-fast": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
@@ -4160,7 +4160,7 @@
   "grok-code-fast-1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
@@ -4170,7 +4170,7 @@
   "grok-code-fast-1-0825": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
@@ -4205,23 +4205,23 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.55,
-    "output_cost_per_mil_tokens": 2.1900000000000004,
+    "output_cost_per_mil_tokens": 2.19,
     "max_input_tokens": 128000,
     "max_output_tokens": 20480
   },
   "fireworks_ai/accounts/fireworks/models/deepseek-v3": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 128000,
     "max_output_tokens": 128000
   },
   "fireworks_ai/accounts/fireworks/models/deepseek-v3-0324": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 163840,
     "max_output_tokens": 163840
   },
@@ -4236,8 +4236,8 @@
   "fireworks_ai/accounts/fireworks/models/firefunction-v2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 8192,
     "max_output_tokens": 8192
   },
@@ -4245,7 +4245,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.55,
-    "output_cost_per_mil_tokens": 2.1900000000000004,
+    "output_cost_per_mil_tokens": 2.19,
     "max_input_tokens": 128000,
     "max_output_tokens": 96000
   },
@@ -4268,8 +4268,8 @@
   "fireworks_ai/accounts/fireworks/models/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.049999999999999996,
-    "output_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -4292,8 +4292,8 @@
   "fireworks_ai/accounts/fireworks/models/llama-v3p1-8b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09999999999999999,
-    "output_cost_per_mil_tokens": 0.09999999999999999,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
     "max_input_tokens": 16384,
     "max_output_tokens": 16384
   },
@@ -4301,24 +4301,24 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.19999999999999998,
-    "output_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
     "max_input_tokens": 16384,
     "max_output_tokens": 16384
   },
   "fireworks_ai/accounts/fireworks/models/llama-v3p2-1b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09999999999999999,
-    "output_cost_per_mil_tokens": 0.09999999999999999,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
     "max_input_tokens": 16384,
     "max_output_tokens": 16384
   },
   "fireworks_ai/accounts/fireworks/models/llama-v3p2-3b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09999999999999999,
-    "output_cost_per_mil_tokens": 0.09999999999999999,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
     "max_input_tokens": 16384,
     "max_output_tokens": 16384
   },
@@ -4326,8 +4326,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 16384,
     "max_output_tokens": 16384
   },
@@ -4358,16 +4358,16 @@
   "fireworks_ai/accounts/fireworks/models/qwen2-72b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 32768,
     "max_output_tokens": 32768
   },
   "fireworks_ai/accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096
   },
@@ -4412,8 +4412,8 @@
   "fireworks-ai-4.1b-to-16b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
-    "output_cost_per_mil_tokens": 0.19999999999999998
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2
   },
   "fireworks-ai-56b-to-176b": {
     "format": "openai",
@@ -4424,8 +4424,8 @@
   "fireworks-ai-above-16b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8999999999999999,
-    "output_cost_per_mil_tokens": 0.8999999999999999
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9
   },
   "fireworks-ai-default": {
     "format": "openai",
@@ -4450,7 +4450,7 @@
   "fireworks-ai-up-to-4b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
-    "output_cost_per_mil_tokens": 0.19999999999999998
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2
   }
 }

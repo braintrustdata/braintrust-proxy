@@ -185,43 +185,79 @@ function getProviderMappingForModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
 ): string[] {
-  const provider = remoteModel.litellm_provider;
+  // Helper function to map provider name to endpoint type
+  const mapProviderName = (providerName: string | undefined): string[] => {
+    if (!providerName) return [];
 
-  // Map LiteLLM provider names to our endpoint types
-  switch (provider) {
-    case "xai":
+    const lowerProvider = providerName.toLowerCase();
+
+    // Map provider names to our endpoint types
+    if (lowerProvider === "xai" || lowerProvider.includes("xai")) {
       return ["xAI"];
-    case "anthropic":
+    }
+    if (lowerProvider === "anthropic" || lowerProvider.includes("anthropic")) {
       return ["anthropic"];
-    case "openai":
+    }
+    if (lowerProvider === "openai" || lowerProvider.includes("openai")) {
       return ["openai"];
-    case "google":
-    case "gemini":
+    }
+    if (
+      lowerProvider === "google" ||
+      lowerProvider === "gemini" ||
+      lowerProvider.includes("google") ||
+      lowerProvider.includes("gemini")
+    ) {
       return ["google"];
-    case "mistral":
+    }
+    if (lowerProvider === "mistral" || lowerProvider.includes("mistral")) {
       return ["mistral"];
-    case "together":
+    }
+    if (lowerProvider === "together" || lowerProvider.includes("together")) {
       return ["together"];
-    case "groq":
+    }
+    if (lowerProvider === "groq" || lowerProvider.includes("groq")) {
       return ["groq"];
-    case "replicate":
+    }
+    if (lowerProvider === "replicate" || lowerProvider.includes("replicate")) {
       return ["replicate"];
-    case "fireworks":
+    }
+    if (lowerProvider === "fireworks" || lowerProvider.includes("fireworks")) {
       return ["fireworks"];
-    case "perplexity":
+    }
+    if (
+      lowerProvider === "perplexity" ||
+      lowerProvider.includes("perplexity")
+    ) {
       return ["perplexity"];
-    case "lepton":
+    }
+    if (lowerProvider === "lepton" || lowerProvider.includes("lepton")) {
       return ["lepton"];
-    case "cerebras":
+    }
+    if (lowerProvider === "cerebras" || lowerProvider.includes("cerebras")) {
       return ["cerebras"];
-    case "baseten":
+    }
+    if (lowerProvider === "baseten" || lowerProvider.includes("baseten")) {
       return ["baseten"];
-    default:
-      console.warn(
-        `Unknown provider: ${provider} for model ${remoteModelName}`,
-      );
-      return [];
+    }
+
+    return [];
+  };
+
+  // Try litellm_provider first
+  const provider = remoteModel.litellm_provider;
+  let result = mapProviderName(provider);
+
+  // If no match, try model name prefix as fallback
+  if (result.length === 0) {
+    const modelNameProviderPart = remoteModelName.split("/")[0];
+    result = mapProviderName(modelNameProviderPart);
   }
+
+  if (result.length === 0) {
+    console.warn(`Unknown provider: ${provider} for model ${remoteModelName}`);
+  }
+
+  return result;
 }
 
 async function updateProviderMapping(

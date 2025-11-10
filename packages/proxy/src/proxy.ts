@@ -12,7 +12,6 @@ const deref = dereferenceJsonSchema.dereferenceSync;
 import {
   APISecret,
   AzureEntraSecretSchema,
-  BT_PARAMS,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
   getAvailableModels,
@@ -1865,12 +1864,6 @@ async function fetchOpenAI(
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
-
-  try {
-    for (const forbidden of BT_PARAMS) {
-      delete bodyData?.[forbidden];
-    }
-  } catch {}
 
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;

@@ -185,43 +185,79 @@ function getProviderMappingForModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
 ): string[] {
-  const provider = remoteModel.litellm_provider;
+  // Helper function to map provider name to endpoint type
+  const mapProviderName = (providerName: string | undefined): string[] => {
+    if (!providerName) return [];
 
-  // Map LiteLLM provider names to our endpoint types
-  switch (provider) {
-    case "xai":
+    const lowerProvider = providerName.toLowerCase();
+
+    // Map provider names to our endpoint types
+    if (lowerProvider === "xai" || lowerProvider.includes("xai")) {
       return ["xAI"];
-    case "anthropic":
+    }
+    if (lowerProvider === "anthropic" || lowerProvider.includes("anthropic")) {
       return ["anthropic"];
-    case "openai":
+    }
+    if (lowerProvider === "openai" || lowerProvider.includes("openai")) {
       return ["openai"];
-    case "google":
-    case "gemini":
+    }
+    if (
+      lowerProvider === "google" ||
+      lowerProvider === "gemini" ||
+      lowerProvider.includes("google") ||
+      lowerProvider.includes("gemini")
+    ) {
       return ["google"];
-    case "mistral":
+    }
+    if (lowerProvider === "mistral" || lowerProvider.includes("mistral")) {
       return ["mistral"];
-    case "together":
+    }
+    if (lowerProvider === "together" || lowerProvider.includes("together")) {
       return ["together"];
-    case "groq":
+    }
+    if (lowerProvider === "groq" || lowerProvider.includes("groq")) {
       return ["groq"];
-    case "replicate":
+    }
+    if (lowerProvider === "replicate" || lowerProvider.includes("replicate")) {
       return ["replicate"];
-    case "fireworks":
+    }
+    if (lowerProvider === "fireworks" || lowerProvider.includes("fireworks")) {
       return ["fireworks"];
-    case "perplexity":
+    }
+    if (
+      lowerProvider === "perplexity" ||
+      lowerProvider.includes("perplexity")
+    ) {
       return ["perplexity"];
-    case "lepton":
+    }
+    if (lowerProvider === "lepton" || lowerProvider.includes("lepton")) {
       return ["lepton"];
-    case "cerebras":
+    }
+    if (lowerProvider === "cerebras" || lowerProvider.includes("cerebras")) {
       return ["cerebras"];
-    case "baseten":
+    }
+    if (lowerProvider === "baseten" || lowerProvider.includes("baseten")) {
       return ["baseten"];
-    default:
-      console.warn(
-        `Unknown provider: ${provider} for model ${remoteModelName}`,
-      );
-      return [];
+    }
+
+    return [];
+  };
+
+  // Try litellm_provider first
+  const provider = remoteModel.litellm_provider;
+  let result = mapProviderName(provider);
+
+  // If no match, try model name prefix as fallback
+  if (result.length === 0) {
+    const modelNameProviderPart = remoteModelName.split("/")[0];
+    result = mapProviderName(modelNameProviderPart);
   }
+
+  if (result.length === 0) {
+    console.warn(`Unknown provider: ${provider} for model ${remoteModelName}`);
+  }
+
+  return result;
 }
 
 async function updateProviderMapping(
@@ -273,6 +309,11 @@ function convertRemoteToLocalModel(
     flavor: "chat", // Default flavor for most models
   };
 
+  // Helper to round cost values to avoid floating point precision issues
+  const roundCost = (costPerToken: number): number => {
+    return parseFloat((costPerToken * 1_000_000).toFixed(8));
+  };
+
   // Add multimodal support if indicated
   if (remoteModel.supports_vision) {
     baseModel.multimodal = true;
@@ -285,25 +326,29 @@ function convertRemoteToLocalModel(
 
   // Convert cost information
   if (remoteModel.input_cost_per_token) {
-    baseModel.input_cost_per_mil_tokens =
-      remoteModel.input_cost_per_token * 1_000_000;
+    baseModel.input_cost_per_mil_tokens = roundCost(
+      remoteModel.input_cost_per_token,
+    );
   }
   if (remoteModel.output_cost_per_token) {
-    baseModel.output_cost_per_mil_tokens =
-      remoteModel.output_cost_per_token * 1_000_000;
+    baseModel.output_cost_per_mil_tokens = roundCost(
+      remoteModel.output_cost_per_token,
+    );
   }
   if (remoteModel.cache_read_input_token_cost) {
-    baseModel.input_cache_read_cost_per_mil_tokens =
-      remoteModel.cache_read_input_token_cost * 1_000_000;
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(
+      remoteModel.cache_read_input_token_cost,
+    );
   }
   if (remoteModel.cache_creation_input_token_cost) {
-    baseModel.input_cache_write_cost_per_mil_tokens =
-      remoteModel.cache_creation_input_token_cost * 1_000_000;
+    baseModel.input_cache_write_cost_per_mil_tokens = roundCost(
+      remoteModel.cache_creation_input_token_cost,
+    );
   }
   // Note: output_reasoning_cost_per_mil_tokens may not be in ModelSpec yet,
   // so we'll skip this for now to avoid type errors
   // if (remoteModel.output_cost_per_reasoning_token) {
-  //   baseModel.output_reasoning_cost_per_mil_tokens = remoteModel.output_cost_per_reasoning_token * 1_000_000;
+  //   baseModel.output_reasoning_cost_per_mil_tokens = roundCost(remoteModel.output_cost_per_reasoning_token);
   // }
 
   // Add token limits

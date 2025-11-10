@@ -66,8 +66,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 120,
-    "parent": "gpt-5-pro",
     "reasoning": true,
+    "parent": "gpt-5-pro",
     "max_input_tokens": 400000,
     "max_output_tokens": 272000
   },
@@ -899,9 +899,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3.5 Sonnet",
+    "deprecated": true,
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecated": true
+    "max_output_tokens": 8192
   },
   "claude-3-5-sonnet-20241022": {
     "format": "anthropic",
@@ -911,10 +911,10 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "deprecated": true,
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecated": true
+    "max_output_tokens": 8192
   },
   "claude-3-5-sonnet-20240620": {
     "format": "anthropic",
@@ -924,10 +924,10 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "deprecated": true,
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecated": true
+    "max_output_tokens": 8192
   },
   "claude-opus-4-1-20250805": {
     "format": "anthropic",
@@ -1913,20 +1913,20 @@
     "output_cost_per_mil_tokens": 0.59,
     "displayName": "Qwen3-32B",
     "reasoning": true,
+    "experimental": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 40960,
-    "experimental": true
+    "max_output_tokens": 40960
   },
   "moonshotai/kimi-k2-instruct-0905": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.0,
-    "output_cost_per_mil_tokens": 3.0,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Kimi K2 0905",
+    "experimental": true,
     "max_input_tokens": 262144,
-    "max_output_tokens": 16384,
-    "experimental": true
+    "max_output_tokens": 16384
   },
   "qwen-2.5-32b": {
     "format": "openai",
@@ -4150,7 +4150,7 @@
   "grok-code-fast": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
@@ -4160,7 +4160,7 @@
   "grok-code-fast-1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
@@ -4170,11 +4170,287 @@
   "grok-code-fast-1-0825": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.19999999999999998,
+    "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
     "max_input_tokens": 256000,
     "max_output_tokens": 256000
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-coder-v2-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "max_input_tokens": 65536,
+    "max_output_tokens": 65536
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-r1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 8,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 20480
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-r1-0528": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 8,
+    "max_input_tokens": 160000,
+    "max_output_tokens": 160000
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-r1-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.55,
+    "output_cost_per_mil_tokens": 2.19,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 20480
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-v3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-v3-0324": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 163840,
+    "max_output_tokens": 163840
+  },
+  "fireworks_ai/accounts/fireworks/models/deepseek-v3p1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.56,
+    "output_cost_per_mil_tokens": 1.68,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192
+  },
+  "fireworks_ai/accounts/fireworks/models/firefunction-v2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 8192,
+    "max_output_tokens": 8192
+  },
+  "fireworks_ai/accounts/fireworks/models/glm-4p5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.55,
+    "output_cost_per_mil_tokens": 2.19,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 96000
+  },
+  "fireworks_ai/accounts/fireworks/models/glm-4p5-air": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 96000
+  },
+  "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "fireworks_ai/accounts/fireworks/models/gpt-oss-20b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "fireworks_ai/accounts/fireworks/models/kimi-k2-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.5,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 3,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p1-8b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p2-11b-vision-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p2-1b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p2-3b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama-v3p2-90b-vision-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384
+  },
+  "fireworks_ai/accounts/fireworks/models/llama4-maverick-instruct-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "fireworks_ai/accounts/fireworks/models/llama4-scout-instruct-basic": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
+  "fireworks_ai/accounts/fireworks/models/mixtral-8x22b-instruct-hf": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "max_input_tokens": 65536,
+    "max_output_tokens": 65536
+  },
+  "fireworks_ai/accounts/fireworks/models/qwen2-72b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768
+  },
+  "fireworks_ai/accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "max_input_tokens": 4096,
+    "max_output_tokens": 4096
+  },
+  "fireworks_ai/accounts/fireworks/models/yi-large": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 3,
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768
+  },
+  "fireworks_ai/nomic-ai/nomic-embed-text-v1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.008,
+    "max_input_tokens": 8192
+  },
+  "fireworks_ai/nomic-ai/nomic-embed-text-v1.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.008,
+    "max_input_tokens": 8192
+  },
+  "fireworks_ai/thenlper/gte-base": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.008,
+    "max_input_tokens": 512
+  },
+  "fireworks_ai/thenlper/gte-large": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.016,
+    "max_input_tokens": 512
+  },
+  "fireworks_ai/WhereIsAI/UAE-Large-V1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.016,
+    "max_input_tokens": 512
+  },
+  "fireworks-ai-4.1b-to-16b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2
+  },
+  "fireworks-ai-56b-to-176b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2
+  },
+  "fireworks-ai-above-16b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9
+  },
+  "fireworks-ai-default": {
+    "format": "openai",
+    "flavor": "chat"
+  },
+  "fireworks-ai-embedding-150m-to-350m": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.016
+  },
+  "fireworks-ai-embedding-up-to-150m": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.008
+  },
+  "fireworks-ai-moe-up-to-56b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 0.5
+  },
+  "fireworks-ai-up-to-4b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2
   }
 }

@@ -1867,11 +1867,9 @@ async function fetchOpenAI(
   }
 
   // this is done by the data plane, but repeated here in the event someone did attempt to use our braintrust params directly in the ai proxy
-  try {
-    for (const key of Object.keys(braintrustModelParamsSchema.shape)) {
-      delete bodyData?.[key];
-    }
-  } catch {}
+  for (const key of Object.keys(braintrustModelParamsSchema.shape)) {
+    delete bodyData?.[key];
+  }
 
   let fullURL: URL | null | undefined = undefined;
   let bearerToken: string | null | undefined = undefined;

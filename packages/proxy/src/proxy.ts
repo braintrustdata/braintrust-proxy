@@ -4,6 +4,7 @@ import {
   type MessageRoleType as MessageRole,
   ResponseFormat as responseFormatSchema,
   ObjectReferenceType,
+  BraintrustModelParams as braintrustModelParamsSchema,
 } from "./generated_types";
 import { Attributes } from "@opentelemetry/api";
 import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
@@ -1863,6 +1864,11 @@ async function fetchOpenAI(
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
+  }
+
+  // this is done by the data plane, but repeated here in the event someone did attempt to use our braintrust params directly in the ai proxy
+  for (const key of Object.keys(braintrustModelParamsSchema.shape)) {
+    delete bodyData?.[key];
   }
 
   let fullURL: URL | null | undefined = undefined;

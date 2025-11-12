@@ -601,6 +601,12 @@
         "properties": {
           "use_cache": {
             "type": "boolean"
+          },
+          "reasoning_enabled": {
+            "type": "boolean"
+          },
+          "reasoning_budget": {
+            "type": "number"
           }
         }
       },
@@ -3472,6 +3478,12 @@
               "use_cache": {
                 "type": "boolean"
               },
+              "reasoning_enabled": {
+                "type": "boolean"
+              },
+              "reasoning_budget": {
+                "type": "number"
+              },
               "temperature": {
                 "type": "number"
               },
@@ -3612,6 +3624,12 @@
               "use_cache": {
                 "type": "boolean"
               },
+              "reasoning_enabled": {
+                "type": "boolean"
+              },
+              "reasoning_budget": {
+                "type": "number"
+              },
               "max_tokens": {
                 "type": "number"
               },
@@ -3630,12 +3648,6 @@
                   "type": "string"
                 }
               },
-              "reasoning_enabled": {
-                "type": "boolean"
-              },
-              "reasoning_budget": {
-                "type": "number"
-              },
               "max_tokens_to_sample": {
                 "type": "number",
                 "description": "This is a legacy parameter that should not be used."
@@ -3653,6 +3665,12 @@
             "properties": {
               "use_cache": {
                 "type": "boolean"
+              },
+              "reasoning_enabled": {
+                "type": "boolean"
+              },
+              "reasoning_budget": {
+                "type": "number"
               },
               "temperature": {
                 "type": "number"
@@ -3676,6 +3694,12 @@
               "use_cache": {
                 "type": "boolean"
               },
+              "reasoning_enabled": {
+                "type": "boolean"
+              },
+              "reasoning_budget": {
+                "type": "number"
+              },
               "temperature": {
                 "type": "number"
               },
@@ -3691,6 +3715,12 @@
             "properties": {
               "use_cache": {
                 "type": "boolean"
+              },
+              "reasoning_enabled": {
+                "type": "boolean"
+              },
+              "reasoning_budget": {
+                "type": "number"
               }
             },
             "additionalProperties": {},
@@ -4684,6 +4714,13 @@
               ]
             },
             "description": "The remote eval sources to use for the project"
+          },
+          "disable_realtime_queries": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "If true, disable real-time queries for this project. This can improve query performance for high-volume logs."
           }
         }
       },
@@ -4841,25 +4878,6 @@
               "type": {
                 "type": "string",
                 "enum": [
-                  "completion"
-                ]
-              },
-              "content": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "type",
-              "content"
-            ],
-            "title": "completion"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
                   "chat"
                 ]
               },
@@ -4878,6 +4896,25 @@
               "messages"
             ],
             "title": "chat"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "completion"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "content"
+            ],
+            "title": "completion"
           }
         ]
       },
@@ -4889,25 +4926,6 @@
               "type": {
                 "type": "string",
                 "enum": [
-                  "completion"
-                ]
-              },
-              "content": {
-                "type": "string"
-              }
-            },
-            "required": [
-              "type",
-              "content"
-            ],
-            "title": "completion"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "type": {
-                "type": "string",
-                "enum": [
                   "chat"
                 ]
               },
@@ -4926,6 +4944,25 @@
               "messages"
             ],
             "title": "chat"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "completion"
+                ]
+              },
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "content"
+            ],
+            "title": "completion"
           },
           {
             "type": "null"
@@ -6094,7 +6131,8 @@
               "scorers",
               "logs",
               "agents",
-              "monitor"
+              "monitor",
+              "for_review"
             ],
             "description": "Type of object that the view corresponds to."
           },
@@ -6489,6 +6527,16 @@
                     "type": "null"
                   }
                 ]
+              },
+              "queryShape": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "traces",
+                  "spans"
+                ]
               }
             },
             "title": "TableViewOptions"
@@ -6510,7 +6558,7 @@
     "license": {
       "name": "Apache 2.0"
     },
-    "x-internal-git-sha": "8932323b183fd4833c9e8ae867e78cb0f739cddc"
+    "x-internal-git-sha": "93e76a7bcdf0f874a1827af017d26ac37995a47b"
   },
   "paths": {},
   "webhooks": {}

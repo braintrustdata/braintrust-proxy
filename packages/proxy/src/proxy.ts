@@ -1866,8 +1866,6 @@ async function fetchOpenAI(
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
   }
 
-  debugger;
-
   // this is done by the data plane, but repeated here in the event someone did attempt to use our braintrust params directly in the ai proxy
   for (const key of Object.keys(braintrustModelParamsSchema.shape)) {
     delete bodyData?.[key];

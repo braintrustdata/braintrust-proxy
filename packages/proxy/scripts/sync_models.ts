@@ -1199,6 +1199,16 @@ async function addModelsCommand(argv: any) {
         modelDetail.litellm_provider,
       );
 
+      if (argv.filter) {
+        const lowerFilter = argv.filter.toLowerCase();
+        if (
+          !translatedModelName.toLowerCase().includes(lowerFilter) &&
+          !remoteModelName.toLowerCase().includes(lowerFilter)
+        ) {
+          continue;
+        }
+      }
+
       if (!localModelNames.has(translatedModelName)) {
         missingInLocal.push({
           remoteModelName,
@@ -1414,6 +1424,11 @@ async function main() {
             alias: "p",
             type: "string",
             description: "Filter models by a specific provider for adding",
+          })
+          .option("filter", {
+            alias: "f",
+            type: "string",
+            description: "Filter models by name substring (e.g., 'gpt-5')",
           })
           .option("write", {
             type: "boolean",

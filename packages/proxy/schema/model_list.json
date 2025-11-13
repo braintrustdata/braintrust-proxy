@@ -1067,42 +1067,42 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "reasoning": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "OpenAI GPT-OSS (120B)"
+    "displayName": "OpenAI GPT-OSS (120B)",
+    "reasoning": true
   },
   "openai/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "reasoning": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.5,
-    "displayName": "OpenAI GPT-OSS (20B)"
+    "displayName": "OpenAI GPT-OSS (20B)",
+    "reasoning": true
   },
   "accounts/fireworks/models/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "reasoning": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "displayName": "OpenAI GPT-OSS (120B)"
+    "displayName": "OpenAI GPT-OSS (120B)",
+    "reasoning": true
   },
   "accounts/fireworks/models/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "reasoning": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "displayName": "OpenAI GPT-OSS (20B)"
+    "displayName": "OpenAI GPT-OSS (20B)",
+    "reasoning": true
   },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "reasoning": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 0.69,
-    "displayName": "OpenAI GPT-OSS (120B)"
+    "displayName": "OpenAI GPT-OSS (120B)",
+    "reasoning": true
   },
   "meta/llama-2-70b-chat": {
     "format": "openai",
@@ -4459,5 +4459,71 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2
+  },
+  "gpt-5-chat": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5.1-2025-11-13": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5.1-chat-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
+  },
+  "gpt-5.1-codex": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
+  },
+  "gpt-5.1-codex-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 2,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
   }
 }

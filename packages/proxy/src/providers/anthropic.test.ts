@@ -471,7 +471,7 @@ it("should handle file content parts with PDF data", async () => {
         },
       ],
       stream: false,
-      max_tokens: 150,
+      max_tokens: 1000,
     },
   });
 
@@ -494,7 +494,7 @@ it("should handle file content parts with image data", async () => {
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: "claude-3-7-sonnet-latest",
       messages: [
         {
           role: "user",
@@ -514,7 +514,7 @@ it("should handle file content parts with image data", async () => {
         },
       ],
       stream: false,
-      max_tokens: 150,
+      max_tokens: 1000,
     },
   });
 

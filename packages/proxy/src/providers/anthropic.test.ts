@@ -471,7 +471,6 @@ it("should handle file content parts with PDF data", async () => {
         },
       ],
       stream: false,
-      max_tokens: 1000,
     },
   });
 
@@ -514,7 +513,6 @@ it("should handle file content parts with image data", async () => {
         },
       ],
       stream: false,
-      max_tokens: 1000,
     },
   });
 

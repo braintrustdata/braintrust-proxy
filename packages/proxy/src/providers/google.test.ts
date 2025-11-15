@@ -2051,7 +2051,6 @@ describe("file content part handling", () => {
           },
         ],
         stream: false,
-        max_tokens: 1000,
       },
     });
 
@@ -2091,12 +2090,12 @@ describe("file content part handling", () => {
           },
         ],
         stream: false,
-        max_tokens: 1000,
       },
     });
 
     const response = json();
     expect(response).toBeTruthy();
+    console.log(response.choices);
     expect(response.choices[0].message.role).toBe("assistant");
     expect(response.choices[0].message.content).toBeTruthy();
     expect(typeof response.choices[0].message.content).toBe("string");
@@ -2134,7 +2133,6 @@ describe("file content part handling", () => {
           },
         ],
         stream: false,
-        max_tokens: 1000,
       },
     });
 

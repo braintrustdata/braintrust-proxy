@@ -66,7 +66,18 @@ const openAIContentPartToGooglePart = async (
     case "text":
       return { text: part.text };
     case "image_url":
-      const media = part.image_url.url;
+    case "file": {
+      // Both image_url and file parts contain media that needs to be converted
+      let media: string;
+      if (part.type === "image_url") {
+        media = part.image_url.url;
+      } else {
+        if (!part.file?.file_data) {
+          throw new Error("File part missing file_data");
+        }
+        media = part.file.file_data;
+      }
+
       const { media_type: mimeType, data } = await convertMediaToBase64({
         media,
         allowedMediaTypes: GEMINI_ALLOWED_MEDIA_TYPES,
@@ -79,24 +90,7 @@ const openAIContentPartToGooglePart = async (
           data,
         },
       };
-    case "file":
-      if (!part.file?.file_data) {
-        throw new Error("File part missing file_data");
-      }
-      const fileMedia = part.file.file_data;
-      const { media_type: fileMimeType, data: fileData } =
-        await convertMediaToBase64({
-          media: fileMedia,
-          allowedMediaTypes: GEMINI_ALLOWED_MEDIA_TYPES,
-          maxMediaBytes: null,
-        });
-
-      return {
-        inlineData: {
-          mimeType: fileMimeType,
-          data: fileData,
-        },
-      };
+    }
     default:
       const _exhaustive: never = part;
       throw new Error(`Unsupported content type: ${_exhaustive}`);

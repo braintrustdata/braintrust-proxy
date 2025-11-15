@@ -1,4 +1,7 @@
-import type { ChatCompletionMessageParamType as Message } from "../generated_types";
+import type {
+  ChatCompletionContentPartType,
+  ChatCompletionMessageParamType as Message,
+} from "../generated_types";
 
 import { finishReasonSchema } from "../../types/google";
 import type {
@@ -29,51 +32,76 @@ import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
 import * as dereferenceJsonSchema from "dereference-json-schema";
 const deref = dereferenceJsonSchema.dereferenceSync;
 
-async function makeGoogleMediaBlock(media: string): Promise<Part> {
-  const { media_type: mimeType, data } = await convertMediaToBase64({
-    media,
-    allowedMediaTypes: [
-      "image/png",
-      "image/jpeg",
-      "image/webp",
-      "image/heic",
-      "image/heif",
-      "video/mp4",
-      "video/webm",
-      "video/mpeg",
-      "video/quicktime",
-      "video/x-msvideo",
-      "audio/mpeg",
-      "audio/mp4",
-      "audio/wav",
-      "audio/webm",
-      "application/pdf",
-    ],
-    maxMediaBytes: null,
-  });
-
-  return {
-    inlineData: {
-      mimeType,
-      data,
-    },
-  };
-}
-
 export async function openAIContentToGoogleContent(
   content: Message["content"],
 ): Promise<Part[]> {
   if (typeof content === "string") {
     return [{ text: content }];
   }
-  return Promise.all(
-    content?.map(async (part) =>
-      part.type === "text"
-        ? { text: part.text }
-        : await makeGoogleMediaBlock(part.image_url.url),
-    ) ?? [],
-  );
+  return Promise.all(content?.map(openAIContentPartToGooglePart) ?? []);
 }
+
+const GEMINI_ALLOWED_MEDIA_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+  "video/mp4",
+  "video/webm",
+  "video/mpeg",
+  "video/quicktime",
+  "video/x-msvideo",
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/wav",
+  "audio/webm",
+  "application/pdf",
+];
+
+const openAIContentPartToGooglePart = async (
+  part: ChatCompletionContentPartType,
+): Promise<Part> => {
+  switch (part.type) {
+    case "text":
+      return { text: part.text };
+    case "image_url":
+      const media = part.image_url.url;
+      const { media_type: mimeType, data } = await convertMediaToBase64({
+        media,
+        allowedMediaTypes: GEMINI_ALLOWED_MEDIA_TYPES,
+        maxMediaBytes: null,
+      });
+
+      return {
+        inlineData: {
+          mimeType,
+          data,
+        },
+      };
+    case "file":
+      if (!part.file?.file_data) {
+        throw new Error("File part missing file_data");
+      }
+      const fileMedia = part.file.file_data;
+      const { media_type: fileMimeType, data: fileData } =
+        await convertMediaToBase64({
+          media: fileMedia,
+          allowedMediaTypes: GEMINI_ALLOWED_MEDIA_TYPES,
+          maxMediaBytes: null,
+        });
+
+      return {
+        inlineData: {
+          mimeType: fileMimeType,
+          data: fileData,
+        },
+      };
+    default:
+      const _exhaustive: never = part;
+      throw new Error(`Unsupported content type: ${_exhaustive}`);
+  }
+};
 
 export async function openAIMessagesToGoogleMessages(
   messages: Message[],

@@ -1,4 +1,4 @@
-// Auto-generated file (internal git SHA 93e76a7bcdf0f874a1827af017d26ac37995a47b) -- do not modify
+// Auto-generated file (internal git SHA a69076dbaad62aa4a4d4acfe927e50538ead758b) -- do not modify
 
 import { z } from "zod";
 
@@ -250,9 +250,23 @@ export const ChatCompletionContentPartImageWithTitle = z.object({
 export type ChatCompletionContentPartImageWithTitleType = z.infer<
   typeof ChatCompletionContentPartImageWithTitle
 >;
+export const ChatCompletionContentPartFileFile = z
+  .object({ file_data: z.string(), filename: z.string(), file_id: z.string() })
+  .partial();
+export type ChatCompletionContentPartFileFileType = z.infer<
+  typeof ChatCompletionContentPartFileFile
+>;
+export const ChatCompletionContentPartFileWithTitle = z.object({
+  file: ChatCompletionContentPartFileFile,
+  type: z.literal("file"),
+});
+export type ChatCompletionContentPartFileWithTitleType = z.infer<
+  typeof ChatCompletionContentPartFileWithTitle
+>;
 export const ChatCompletionContentPart = z.union([
   ChatCompletionContentPartTextWithTitle,
   ChatCompletionContentPartImageWithTitle,
+  ChatCompletionContentPartFileWithTitle,
 ]);
 export type ChatCompletionContentPartType = z.infer<
   typeof ChatCompletionContentPart
@@ -450,6 +464,8 @@ export const DatasetEvent = z.object({
   root_span_id: z.string(),
   is_root: z.union([z.boolean(), z.null()]).optional(),
   origin: ObjectReferenceNullish.optional(),
+  comments: z.union([z.array(z.unknown()), z.null()]).optional(),
+  audit_data: z.union([z.array(z.unknown()), z.null()]).optional(),
 });
 export type DatasetEventType = z.infer<typeof DatasetEvent>;
 export const EnvVar = z.object({
@@ -555,6 +571,8 @@ export const ExperimentEvent = z.object({
   span_attributes: SpanAttributes.optional(),
   is_root: z.union([z.boolean(), z.null()]).optional(),
   origin: ObjectReferenceNullish.optional(),
+  comments: z.union([z.array(z.unknown()), z.null()]).optional(),
+  audit_data: z.union([z.array(z.unknown()), z.null()]).optional(),
 });
 export type ExperimentEventType = z.infer<typeof ExperimentEvent>;
 export const ExtendedSavedFunctionId = z.union([
@@ -1176,6 +1194,9 @@ export const ProjectLogsEvent = z.object({
   is_root: z.union([z.boolean(), z.null()]).optional(),
   span_attributes: SpanAttributes.optional(),
   origin: ObjectReferenceNullish.optional(),
+  comments: z.union([z.array(z.unknown()), z.null()]).optional(),
+  audit_data: z.union([z.array(z.unknown()), z.null()]).optional(),
+  _async_scoring_state: z.unknown().optional(),
 });
 export type ProjectLogsEventType = z.infer<typeof ProjectLogsEvent>;
 export const ProjectScoreType = z.enum([

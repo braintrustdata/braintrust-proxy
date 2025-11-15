@@ -11,7 +11,8 @@ repos:
         exclude: >
           (?x)^(
               .*\.(json|prisma|svg)|
-              .*pnpm-lock.yaml
+              .*pnpm-lock.yaml|
+              .*.test.ts
           )$
         args: ["-L rouge,coo,couldn,unsecure,afterall"]
   - repo: https://github.com/rbubley/mirrors-prettier

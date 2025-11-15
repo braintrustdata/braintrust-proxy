@@ -6,13 +6,14 @@ import {
 import {
   Base64ImageSource,
   CacheControlEphemeral,
-  DocumentBlockParam,
-  ImageBlockParam,
   MessageCreateParams,
   MessageCreateParamsBase,
   ThinkingConfigParam,
 } from "@anthropic-ai/sdk/resources/messages";
-import { type ChatCompletionMessageParamType as Message } from "../generated_types";
+import {
+  ChatCompletionContentPartType,
+  type ChatCompletionMessageParamType as Message,
+} from "../generated_types";
 import {
   OpenAICompletionUsage,
   OpenAIChatCompletion,
@@ -510,41 +511,6 @@ function anthropicFinishReason(
   }
 }
 
-export async function makeAnthropicMediaBlock(
-  media: string,
-): Promise<ImageBlockParam | DocumentBlockParam> {
-  const { media_type, data } = await convertMediaToBase64({
-    media,
-    allowedMediaTypes: [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "application/pdf",
-    ],
-    maxMediaBytes: 5 * 1024 * 1024,
-  });
-  if (media_type === "application/pdf") {
-    return {
-      type: "document",
-      source: {
-        type: "base64",
-        media_type,
-        data,
-      },
-    };
-  } else {
-    return {
-      type: "image",
-      source: {
-        type: "base64",
-        media_type: media_type as Base64ImageSource["media_type"],
-        data,
-      },
-    };
-  }
-}
-
 export function extractCacheControl(
   part: unknown,
 ): CacheControlEphemeral | undefined {
@@ -566,14 +532,67 @@ export async function openAIContentToAnthropicContent(
     }
   }
   return Promise.all(
-    (content ?? []).map(async (part) => ({
-      ...(part.type === "text"
-        ? part
-        : await makeAnthropicMediaBlock(part.image_url.url)),
-      cache_control: extractCacheControl(part),
-    })),
+    (content ?? []).map(openAIContentPartToAnthropicContentPart),
   );
 }
+
+const openAIContentPartToAnthropicContentPart = async (
+  part: ChatCompletionContentPartType,
+): Promise<Exclude<MessageParam["content"], string>[number]> => {
+  switch (part.type) {
+    case "text":
+      return { type: "text", text: part.text };
+    case "image_url":
+    case "file": {
+      // Both image_url and file parts contain media that needs to be converted
+      let media: string;
+      if (part.type === "image_url") {
+        media = part.image_url.url;
+      } else {
+        if (!part.file?.file_data) {
+          throw new Error("File part missing file_data");
+        }
+        media = part.file.file_data;
+      }
+
+      const { media_type, data } = await convertMediaToBase64({
+        media,
+        allowedMediaTypes: [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+          "application/pdf",
+        ],
+        maxMediaBytes: 5 * 1024 * 1024,
+      });
+
+      if (media_type === "application/pdf") {
+        return {
+          type: "document",
+          source: {
+            type: "base64",
+            media_type,
+            data,
+          },
+        };
+      } else {
+        return {
+          type: "image",
+          source: {
+            type: "base64",
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            media_type: media_type as Base64ImageSource["media_type"],
+            data,
+          },
+        };
+      }
+    }
+    default:
+      const _exhaustiveCheck: never = part;
+      throw new Error(`Unsupported content type: ${_exhaustiveCheck}`);
+  }
+};
 
 export function openAIToolMessageToAnthropicToolCall(
   toolCall: ChatCompletionToolMessageParam,

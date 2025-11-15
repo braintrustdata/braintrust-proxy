@@ -18,6 +18,7 @@ import {
 import {
   type MessageRoleType as MessageRole,
   type ChatCompletionMessageParamType as OaiMessage,
+  type ChatCompletionContentPartType,
   ResponseFormatJsonSchema as responseFormatJsonSchemaSchema,
   ChatCompletionTool as chatCompletionToolSchema,
 } from "../generated_types";
@@ -385,39 +386,63 @@ export async function fetchBedrockAnthropic({
   };
 }
 
-async function mediaBlock(media: string): Promise<ContentBlock> {
-  const { media_type, data } = await convertMediaToBase64({
-    media,
-    allowedMediaTypes: [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-      "application/pdf",
-    ],
-    maxMediaBytes: 5 * 1024 * 1024,
-  });
-  if (media_type === "application/pdf") {
-    return {
-      document: {
-        format: "pdf",
-        name: "document",
-        source: {
-          bytes: new Uint8Array(Buffer.from(data, "base64")),
-        },
-      },
-    };
-  } else {
-    return {
-      image: {
-        format: media_type.replace("image/", "") as ImageFormat,
-        source: {
-          bytes: new Uint8Array(Buffer.from(data, "base64")),
-        },
-      },
-    };
+const openAIContentPartToBedrockContentBlock = async (
+  part: ChatCompletionContentPartType,
+): Promise<ContentBlock> => {
+  switch (part.type) {
+    case "text":
+      return part;
+    case "image_url":
+    case "file": {
+      // Both image_url and file parts contain media that needs to be converted
+      let media: string;
+      if (part.type === "image_url") {
+        media = part.image_url.url;
+      } else {
+        if (!part.file?.file_data) {
+          throw new Error("File part missing file_data");
+        }
+        media = part.file.file_data;
+      }
+      const { media_type, data } = await convertMediaToBase64({
+        media,
+        allowedMediaTypes: [
+          "image/jpeg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+          "application/pdf",
+        ],
+        maxMediaBytes: 5 * 1024 * 1024,
+      });
+
+      if (media_type === "application/pdf") {
+        return {
+          document: {
+            format: "pdf",
+            name: "document",
+            source: {
+              bytes: new Uint8Array(Buffer.from(data, "base64")),
+            },
+          },
+        };
+      } else {
+        return {
+          image: {
+            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+            format: media_type.replace("image/", "") as ImageFormat,
+            source: {
+              bytes: new Uint8Array(Buffer.from(data, "base64")),
+            },
+          },
+        };
+      }
+    }
+    default:
+      const _exhaustiveCheck: never = part;
+      throw new Error(`Unsupported content type: ${_exhaustiveCheck}`);
   }
-}
+};
 
 export async function translateContent(
   content: OaiMessage["content"],
@@ -426,9 +451,7 @@ export async function translateContent(
     return [{ text: content }];
   }
   return await Promise.all(
-    content?.map(async (part) =>
-      part.type === "text" ? part : await mediaBlock(part.image_url.url),
-    ) ?? [],
+    content?.map(openAIContentPartToBedrockContentBlock) ?? [],
   );
 }
 

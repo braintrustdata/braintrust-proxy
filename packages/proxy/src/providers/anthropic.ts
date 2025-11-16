@@ -532,7 +532,10 @@ export async function openAIContentToAnthropicContent(
     }
   }
   return Promise.all(
-    (content ?? []).map(openAIContentPartToAnthropicContentPart),
+    (content ?? []).map(async (part) => ({
+      ...(await openAIContentPartToAnthropicContentPart(part)),
+      cache_control: extractCacheControl(part),
+    })),
   );
 }
 

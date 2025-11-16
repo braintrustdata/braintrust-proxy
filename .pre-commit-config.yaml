@@ -12,7 +12,7 @@ repos:
           (?x)^(
               .*\.(json|prisma|svg)|
               .*pnpm-lock.yaml|
-              .*.test.ts
+              .*fixtures.ts
           )$
         args: ["-L rouge,coo,couldn,unsecure,afterall"]
   - repo: https://github.com/rbubley/mirrors-prettier

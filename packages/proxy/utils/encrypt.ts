@@ -100,7 +100,8 @@ export async function encryptMessage(
   );
 
   return {
-    iv: arrayBufferToBase64(new Uint8Array(iv)),
+    // TypeScript 5.9.3: Uint8Array.buffer is ArrayBufferLike, need explicit conversion
+    iv: arrayBufferToBase64(iv.buffer as ArrayBuffer),
     data: arrayBufferToBase64(decoded),
   };
 }

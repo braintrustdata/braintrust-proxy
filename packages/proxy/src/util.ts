@@ -1,5 +1,6 @@
 import contentDisposition from "content-disposition";
 export interface ModelResponse {
+  // TypeScript 5.9.3: Use ReadableStream<Uint8Array> - pipeThrough results are cast
   stream: ReadableStream<Uint8Array> | null;
   response: Response;
 }

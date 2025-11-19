@@ -456,8 +456,16 @@ for (const model of [
       });
 
       // Parse and validate the response content
-      const messageContent = response.choices[0]?.message?.content;
-      if (messageContent) {
+      const choice = response.choices[0];
+      const messageContent =
+        choice &&
+        "message" in choice &&
+        typeof choice.message === "object" &&
+        choice.message !== null &&
+        "content" in choice.message
+          ? (choice.message as { content?: unknown }).content
+          : undefined;
+      if (messageContent && typeof messageContent === "string") {
         const parsed = JSON.parse(messageContent);
         expect(parsed).toHaveProperty("name");
         expect(parsed).toHaveProperty("addresses");

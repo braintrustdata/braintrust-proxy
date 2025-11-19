@@ -60,9 +60,8 @@ export function makeTempCredentialsJwt({
 
   // Generate 256-bit key since our cache uses AES-256.
   const keyLengthBytes = 256 / 8;
-  const cacheEncryptionKey = arrayBufferToBase64(
-    crypto.getRandomValues(new Uint8Array(keyLengthBytes)),
-  );
+  const randomValues = crypto.getRandomValues(new Uint8Array(keyLengthBytes));
+  const cacheEncryptionKey = arrayBufferToBase64(randomValues.buffer);
 
   // The partial payload is missing timestamps (`iat`, `exp`). They will be
   // populated at signing time with the `mutatePayload` option.

@@ -19,7 +19,7 @@ import { z } from "zod";
 
 // Integration tests that actually call the Google API
 for (const model of [
-  "gemini-2.5-flash-preview-05-20",
+  "gemini-2.5-flash",
   // TODO: re-enable when we have a working CI/CD solution
   // "publishers/google/models/gemini-2.5-flash-preview-05-20",
 ]) {
@@ -279,7 +279,7 @@ for (const model of [
           },
         ],
         created: expect.any(Number),
-        model: "gemini-2.5-flash-preview-05-20",
+        model: "gemini-2.5-flash",
         object: "chat.completion",
         usage: {
           prompt_tokens: expect.any(Number),
@@ -378,7 +378,7 @@ for (const model of [
           },
         ],
         created: expect.any(Number),
-        model: "gemini-2.5-flash-preview-05-20",
+        model: "gemini-2.5-flash",
         object: "chat.completion",
         usage: {
           prompt_tokens: expect.any(Number),

@@ -2029,7 +2029,7 @@ describe("file content part handling", () => {
       OpenAIChatCompletionChunk
     >({
       body: {
-        model: "gemini-2.5-flash-preview-05-20",
+        model: "gemini-2.5-flash",
         messages: [
           {
             role: "user",
@@ -2054,6 +2054,11 @@ describe("file content part handling", () => {
 
     const response = json();
     expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
     expect(response.choices[0].message.role).toBe("assistant");
     expect(response.choices[0].message.content).toBeTruthy();
     expect(typeof response.choices[0].message.content).toBe("string");
@@ -2065,7 +2070,7 @@ describe("file content part handling", () => {
       OpenAIChatCompletionChunk
     >({
       body: {
-        model: "gemini-2.5-flash-preview-05-20",
+        model: "gemini-2.5-flash",
         messages: [
           {
             role: "user",
@@ -2090,7 +2095,11 @@ describe("file content part handling", () => {
 
     const response = json();
     expect(response).toBeTruthy();
-    console.log(response.choices);
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
     expect(response.choices[0].message.role).toBe("assistant");
     expect(response.choices[0].message.content).toBeTruthy();
     expect(typeof response.choices[0].message.content).toBe("string");
@@ -2102,7 +2111,7 @@ describe("file content part handling", () => {
       OpenAIChatCompletionChunk
     >({
       body: {
-        model: "gemini-2.5-flash-preview-05-20",
+        model: "gemini-2.5-flash",
         messages: [
           {
             role: "user",
@@ -2133,6 +2142,11 @@ describe("file content part handling", () => {
 
     const response = json();
     expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
     expect(response.choices[0].message.role).toBe("assistant");
     expect(response.choices[0].message.content).toBeTruthy();
   });

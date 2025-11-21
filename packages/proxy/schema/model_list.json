@@ -2273,6 +2273,19 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Llama 3.1 8B"
   },
+  "gemini-3-pro-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "displayName": "Gemini 3 Pro (Preview)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
   "gemini-2.5-flash": {
     "format": "google",
     "flavor": "chat",
@@ -2323,6 +2336,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2337,6 +2351,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2351,6 +2366,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2365,6 +2381,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2379,6 +2396,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2422,7 +2440,8 @@
     "experimental": true,
     "parent": "gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "deprecated": true
   },
   "gemini-2.5-flash-lite": {
     "format": "google",
@@ -2671,6 +2690,56 @@
     "deprecated": true,
     "max_input_tokens": 32760,
     "max_output_tokens": 8192
+  },
+  "grok-4-1-fast-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Grok 4.1 Fast",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-1-fast-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "parent": "grok-4-1-fast-reasoning-latest",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-1-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "parent": "grok-4-1-fast",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-1-fast-non-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Grok 4.1 Fast (Non-Reasoning)",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
+  },
+  "grok-4-1-fast-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "parent": "grok-4-1-fast-non-reasoning-latest",
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000
   },
   "grok-4-fast-reasoning": {
     "format": "openai",
@@ -3968,13 +4037,15 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
@@ -4010,6 +4081,7 @@
     "multimodal": true,
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash"
   },
   "publishers/google/models/gemini-2.5-flash-preview-04-17": {
@@ -4019,6 +4091,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "reasoning": true,
+    "deprecated": true,
     "reasoning_budget": true,
     "parent": "publishers/google/models/gemini-2.5-flash"
   },
@@ -4046,7 +4119,8 @@
     "experimental": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -4067,7 +4141,8 @@
     "multimodal": true,
     "displayName": "Gemini 2.0 Flash Thinking Mode",
     "experimental": true,
-    "parent": "publishers/google/models/gemini-2.0-flash"
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "deprecated": true
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     "format": "openai",
@@ -4478,6 +4553,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
@@ -4500,6 +4576,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1 chat",
     "reasoning": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 16384
@@ -4511,6 +4588,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1 Codex",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
@@ -4522,6 +4600,7 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "GPT-5.1 Codex Mini",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000

@@ -4025,6 +4025,7 @@
     "multimodal": true,
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash"
   },
   "publishers/google/models/gemini-2.5-flash-preview-04-17": {
@@ -4034,6 +4035,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "reasoning": true,
+    "deprecated": true,
     "reasoning_budget": true,
     "parent": "publishers/google/models/gemini-2.5-flash"
   },

@@ -2366,6 +2366,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2380,6 +2381,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2394,6 +2396,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
+    "deprecated": true,
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2437,7 +2440,8 @@
     "experimental": true,
     "parent": "gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "deprecated": true
   },
   "gemini-2.5-flash-lite": {
     "format": "google",
@@ -3983,13 +3987,15 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
@@ -4063,7 +4069,8 @@
     "experimental": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "deprecated": true
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -4084,7 +4091,8 @@
     "multimodal": true,
     "displayName": "Gemini 2.0 Flash Thinking Mode",
     "experimental": true,
-    "parent": "publishers/google/models/gemini-2.0-flash"
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "deprecated": true
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     "format": "openai",

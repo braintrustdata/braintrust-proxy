@@ -4503,6 +4503,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT 5.1",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
@@ -4525,6 +4526,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1 chat",
     "reasoning": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 16384
@@ -4536,6 +4538,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1 Codex",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
@@ -4547,6 +4550,7 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "GPT-5.1 Codex Mini",
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000

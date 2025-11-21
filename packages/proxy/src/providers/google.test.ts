@@ -18,11 +18,7 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
 
 // Integration tests that actually call the Google API
-for (const model of [
-  "gemini-2.5-flash",
-  // TODO: re-enable when we have a working CI/CD solution
-  // "publishers/google/models/gemini-2.5-flash-preview-05-20",
-]) {
+for (const model of ["gemini-2.5-flash"]) {
   describe(model, () => {
     it("should accept and should not return reasoning/thinking params and detail streaming", async () => {
       const { events } = await callProxyV1<

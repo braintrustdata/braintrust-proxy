@@ -5,6 +5,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import { IMAGE_DATA_URL, PDF_DATA_URL } from "./fixtures";
 
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<
@@ -440,4 +441,79 @@ it("should avoid anthropic-beta headers for vertex calls", async () => {
     "calculate",
   );
   expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
+});
+
+it("should handle file content parts with PDF data", async () => {
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "What's in this document?",
+            },
+            {
+              type: "file",
+              file: {
+                file_data: PDF_DATA_URL,
+                filename: "test.pdf",
+              },
+            },
+          ],
+        },
+      ],
+      stream: false,
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+
+  console.log(response);
+
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.content).toBeTruthy();
+  expect(typeof response!.choices[0].message.content).toBe("string");
+});
+
+it("should handle file content parts with image data", async () => {
+  const { json } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Describe this image.",
+            },
+            {
+              type: "file",
+              file: {
+                file_data: IMAGE_DATA_URL,
+                filename: "test.png",
+              },
+            },
+          ],
+        },
+      ],
+      stream: false,
+    },
+  });
+
+  const response = json();
+  expect(response).toBeTruthy();
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.content).toBeTruthy();
+  expect(typeof response!.choices[0].message.content).toBe("string");
 });

@@ -21,9 +21,10 @@ export function makeWavFile(
       byte_order: "little",
       bits_per_sample: 16,
     };
+    // TypeScript 5.9.3: Int16Array<ArrayBuffer> is compatible with ArrayBufferLike
     buffers = buffers.map((buffer) =>
       floatTo16BitPCM(new Float32Array(buffer)),
-    );
+    ) as unknown as ArrayBufferLike[];
   }
 
   const dataLength = buffers.reduce((sum, b) => sum + b.byteLength, 0);
@@ -57,7 +58,8 @@ export function makeWavFile(
     ...buffers,
   ];
 
-  return new Blob(blobParts, { type: "audio/wav" });
+  // TypeScript 5.9.3: BlobPart accepts ArrayBufferLike, but type checking is stricter
+  return new Blob(blobParts as BlobPart[], { type: "audio/wav" });
 }
 
 function wavFormatCode(format: PcmAudioFormat) {
@@ -134,7 +136,7 @@ export function makeMp3File(
     bitrate,
   );
 
-  const blobParts: ArrayBuffer[] = [];
+  const blobParts: BlobPart[] = [];
 
   for (const buffer of buffers) {
     const int16Buffer =
@@ -143,11 +145,13 @@ export function makeMp3File(
         : floatTo16BitPCM(new Float32Array(buffer));
     const encoded = encoder.encodeBuffer(int16Buffer);
     if (encoded.length) {
-      blobParts.push(encoded);
+      // TypeScript 5.9.3: Uint8Array<ArrayBufferLike> is compatible with BlobPart
+      blobParts.push(encoded as BlobPart);
     }
   }
 
-  blobParts.push(encoder.flush());
+  // TypeScript 5.9.3: encoder.flush() returns Uint8Array<ArrayBufferLike> which is compatible with BlobPart
+  blobParts.push(encoder.flush() as BlobPart);
 
   return new Blob(blobParts, { type: "audio/mpeg" });
 }

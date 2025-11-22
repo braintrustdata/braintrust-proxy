@@ -394,7 +394,7 @@ JSON array only:`;
         const allGrokModels = [...grokModels, ...newModelNames];
         if (
           parsedOrder.length === allGrokModels.length &&
-          parsedOrder.every((name) => allGrokModels.includes(name)) &&
+          parsedOrder.every((name: string) => allGrokModels.includes(name)) &&
           allGrokModels.every((name) => parsedOrder.includes(name))
         ) {
           console.log("✅ Claude Code provided optimal Grok ordering");
@@ -408,7 +408,7 @@ JSON array only:`;
       } catch (parseError) {
         console.warn(
           "Failed to parse Claude's JSON response:",
-          parseError.message,
+          parseError instanceof Error ? parseError.message : String(parseError),
         );
       }
     } else {
@@ -420,7 +420,10 @@ JSON array only:`;
     );
     return getFallbackCompleteOrdering(existingModelNames, newModelNames);
   } catch (error) {
-    console.warn("Failed to get ordering from Claude:", error.message);
+    console.warn(
+      "Failed to get ordering from Claude:",
+      error instanceof Error ? error.message : String(error),
+    );
     return getFallbackCompleteOrdering(existingModelNames, newModelNames);
   }
 }

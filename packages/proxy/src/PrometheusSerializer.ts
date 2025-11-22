@@ -32,7 +32,7 @@ import {
   Histogram,
 } from "@opentelemetry/sdk-metrics";
 import { hrTimeToMilliseconds } from "@opentelemetry/core";
-import { IResource } from "@opentelemetry/resources";
+import { Resource } from "@opentelemetry/resources";
 
 type PrometheusDataTypeLiteral =
   | "counter"
@@ -217,7 +217,16 @@ export class PrometheusSerializer {
     }
     const dataPointType = metricData.dataPointType;
 
-    name = enforcePrometheusNamingConvention(name, metricData.descriptor.type);
+    // Get instrument type from the metric data point type
+    const instrumentType =
+      metricData.dataPointType === DataPointType.SUM && metricData.isMonotonic
+        ? InstrumentType.COUNTER
+        : metricData.dataPointType === DataPointType.SUM
+          ? InstrumentType.UP_DOWN_COUNTER
+          : metricData.dataPointType === DataPointType.GAUGE
+            ? InstrumentType.GAUGE
+            : InstrumentType.HISTOGRAM;
+    name = enforcePrometheusNamingConvention(name, instrumentType);
 
     const help = `# HELP ${name} ${escapeString(
       metricData.descriptor.description || "description missing",
@@ -233,11 +242,7 @@ export class PrometheusSerializer {
       case DataPointType.GAUGE: {
         results = metricData.dataPoints
           .map((it) =>
-            this._serializeSingularDataPoint(
-              name,
-              metricData.descriptor.type,
-              it,
-            ),
+            this._serializeSingularDataPoint(name, instrumentType, it),
           )
           .join("");
         break;
@@ -245,11 +250,7 @@ export class PrometheusSerializer {
       case DataPointType.HISTOGRAM: {
         results = metricData.dataPoints
           .map((it) =>
-            this._serializeHistogramDataPoint(
-              name,
-              metricData.descriptor.type,
-              it,
-            ),
+            this._serializeHistogramDataPoint(name, instrumentType, it),
           )
           .join("");
         break;
@@ -343,7 +344,7 @@ export class PrometheusSerializer {
     return results;
   }
 
-  protected _serializeResource(resource: IResource): string {
+  protected _serializeResource(resource: Resource): string {
     const name = "target_info";
     const help = `# HELP ${name} Target metadata`;
     const type = `# TYPE ${name} gauge`;

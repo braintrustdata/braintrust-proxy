@@ -142,6 +142,7 @@ export const CACHE_HEADER = "x-bt-use-cache";
 export const CACHE_TTL_HEADER = "x-bt-cache-ttl";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 export const ORG_NAME_HEADER = "x-bt-org-name";
+export const PROJECT_ID_HEADER = "x-bt-project-id";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 
@@ -219,6 +220,7 @@ export async function proxyV1({
     authToken: string,
     model: string | null,
     org_name?: string,
+    project_id?: string,
   ) => Promise<APISecret[]>;
   cacheGet: (encryptionKey: string, key: string) => Promise<string | null>;
   cachePut: (
@@ -293,6 +295,8 @@ export async function proxyV1({
   );
 
   let orgName: string | undefined = proxyHeaders[ORG_NAME_HEADER] ?? undefined;
+  const projectId: string | undefined =
+    proxyHeaders[PROJECT_ID_HEADER] ?? undefined;
 
   const pieces = url
     .split("/")
@@ -614,6 +618,7 @@ export async function proxyV1({
           cachedAuthToken || authToken,
           model,
           orgName,
+          projectId,
         );
         logHistogram?.({
           name: "aiproxy.secrets_fetch_time_ms",

@@ -124,7 +124,17 @@ export function makeFetchApiSecrets({
     authToken: string,
     model: string | null,
     org_name?: string,
+    project_id?: string,
   ): Promise<APISecret[]> => {
+    // Project-level secrets are not supported on the edge proxy since they are
+    // stored in the data plane
+    if (project_id) {
+      throw new Error(
+        "Project-level AI provider secrets are not supported on the edge proxy. " +
+          "Please use the hosted API proxy or remove the x-bt-project-id header.",
+      );
+    }
+
     // First try to decode & verify as JWT. We gate this on Braintrust JWT
     // format, not just any JWT, in case a future model provider uses JWT as
     // the auth token.

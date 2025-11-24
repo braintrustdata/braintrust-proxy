@@ -3304,7 +3304,7 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
   },
-  "us.anthropic.claude-opus-4-5-20251101": {
+  "us.anthropic.claude-opus-4-5-20251101-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -3318,7 +3318,7 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
-  "anthropic.claude-opus-4-5-20251101": {
+  "anthropic.claude-opus-4-5-20251101-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,

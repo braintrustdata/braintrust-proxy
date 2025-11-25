@@ -5,6 +5,9 @@ const config = {
   test: {
     exclude: ["**/node_modules/**"],
     testTimeout: 30_000,
+    chaiConfig: {
+      truncateThreshold: 10000,
+    },
   },
 };
 export default config;

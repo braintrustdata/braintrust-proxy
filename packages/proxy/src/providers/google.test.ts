@@ -16,6 +16,7 @@ import {
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
+import { IMAGE_DATA_URL, PDF_DATA_URL } from "./fixtures";
 
 // Integration tests that actually call the Google API
 for (const model of [
@@ -2018,5 +2019,135 @@ describe("fromOpenAPIToJSONSchema", () => {
     expect(result.properties.name).toEqual({ type: "string" });
     expect(result.properties.age).toEqual({ type: "number" });
     expect(result.required).toEqual(["name"]);
+  });
+});
+
+describe("file content part handling", () => {
+  it("should handle file content parts with PDF data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What's in this document?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: PDF_DATA_URL,
+                  filename: "test.pdf",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle file content parts with image data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Describe this image.",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: IMAGE_DATA_URL,
+                  filename: "test.png",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle mixed content with file and image_url parts", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "Compare these two images.",
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: IMAGE_DATA_URL,
+                },
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: IMAGE_DATA_URL,
+                  filename: "test.png",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
   });
 });

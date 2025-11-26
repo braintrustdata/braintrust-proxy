@@ -803,9 +803,46 @@
           },
           {
             "$ref": "#/components/schemas/ChatCompletionContentPartImageWithTitle"
+          },
+          {
+            "$ref": "#/components/schemas/ChatCompletionContentPartFileWithTitle"
           }
         ],
         "title": "chat_completion_content_part"
+      },
+      "ChatCompletionContentPartFileFile": {
+        "type": "object",
+        "properties": {
+          "file_data": {
+            "type": "string"
+          },
+          "filename": {
+            "type": "string"
+          },
+          "file_id": {
+            "type": "string",
+            "title": "The ID of an uploaded file to use as input."
+          }
+        }
+      },
+      "ChatCompletionContentPartFileWithTitle": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "$ref": "#/components/schemas/ChatCompletionContentPartFileFile"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "file"
+            ]
+          }
+        },
+        "required": [
+          "file",
+          "type"
+        ],
+        "title": "file"
       },
       "ChatCompletionContentPartImageWithTitle": {
         "type": "object",
@@ -1759,6 +1796,22 @@
           },
           "origin": {
             "$ref": "#/components/schemas/ObjectReferenceNullish"
+          },
+          "comments": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of comments attached to this event"
+          },
+          "audit_data": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of audit entries attached to this event"
           }
         },
         "required": [
@@ -2136,6 +2189,22 @@
           },
           "origin": {
             "$ref": "#/components/schemas/ObjectReferenceNullish"
+          },
+          "comments": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of comments attached to this event"
+          },
+          "audit_data": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of audit entries attached to this event"
           }
         },
         "required": [
@@ -4461,6 +4530,25 @@
           },
           "origin": {
             "$ref": "#/components/schemas/ObjectReferenceNullish"
+          },
+          "comments": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of comments attached to this event"
+          },
+          "audit_data": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {},
+            "description": "Optional list of audit entries attached to this event"
+          },
+          "_async_scoring_state": {
+            "description": "The async scoring state for this event"
           }
         },
         "required": [
@@ -6558,7 +6646,7 @@
     "license": {
       "name": "Apache 2.0"
     },
-    "x-internal-git-sha": "93e76a7bcdf0f874a1827af017d26ac37995a47b"
+    "x-internal-git-sha": "e6490ffb3d42f5dbc59d748bb5016f6d8f11cac2"
   },
   "paths": {},
   "webhooks": {}

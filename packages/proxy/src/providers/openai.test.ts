@@ -421,6 +421,78 @@ describe("request/response checking", () => {
       },
     ]);
   });
+
+  it("should convert minimal to low reasoning_effort for gpt-5.1 models", async () => {
+    const calls: InterceptedCall[] = [];
+    server.use(
+      http.post(
+        "https://api.openai.com/v1/chat/completions",
+        async ({ request: req }) => {
+          const request: InterceptedRequest = {
+            method: req.method,
+            url: req.url,
+            body: await req.json(),
+          };
+
+          // Mock a successful response
+          const response: InterceptedResponse = {
+            status: 200,
+            body: {
+              id: "chatcmpl-test",
+              object: "chat.completion",
+              created: 1234567890,
+              model: "gpt-5.1",
+              choices: [
+                {
+                  index: 0,
+                  message: {
+                    role: "assistant",
+                    content: "Test response",
+                    refusal: null,
+                  },
+                  finish_reason: "stop",
+                },
+              ],
+              usage: {
+                prompt_tokens: 10,
+                completion_tokens: 5,
+                total_tokens: 15,
+              },
+            },
+          };
+
+          calls.push({ request, response });
+
+          return HttpResponse.json(response.body, {
+            status: response.status,
+          });
+        },
+      ),
+    );
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-5.1",
+        reasoning_effort: "minimal",
+        stream: false,
+        messages: [
+          {
+            role: "user",
+            content: "Hello",
+          },
+        ],
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(calls.length).toBe(1);
+    expect(calls[0].request.body).toMatchObject({
+      model: "gpt-5.1",
+      reasoning_effort: "low", // minimal should be converted to low for gpt-5.1
+    });
+  });
 });
 
 const mockBase64Data = "AF1231KF==";

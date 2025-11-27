@@ -1480,6 +1480,156 @@ describe("googleCompletionToOpenAICompletion", () => {
       max_depth: 3,
     });
   });
+
+  it("should handle inlineData (image) in response", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                inlineData: {
+                  mimeType: "image/png",
+                  data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata: {
+        promptTokenCount: 10,
+        candidatesTokenCount: 100,
+        totalTokenCount: 110,
+      },
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-3-pro-image-preview",
+      geminiResponse,
+    );
+
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message.role).toBe("assistant");
+    expect(result.choices[0].message.content).toEqual([
+      {
+        type: "image_url",
+        image_url: {
+          url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+        },
+      },
+    ]);
+    expect(result.choices[0].finish_reason).toBe("stop");
+  });
+
+  it("should handle mixed text and inlineData in response", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                text: "Here is the generated image:",
+              },
+              {
+                inlineData: {
+                  mimeType: "image/jpeg",
+                  data: "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/2gAIAQEAAAAAN//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIQAAAA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAxAAAAAf/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPwB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwA//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwA//9k=",
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-3-pro-image-preview",
+      geminiResponse,
+    );
+
+    expect(result.choices[0].message.content).toEqual([
+      {
+        type: "text",
+        text: "Here is the generated image:",
+      },
+      {
+        type: "image_url",
+        image_url: {
+          url: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/2gAIAQEAAAAAN//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIQAAAA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAxAAAAAf/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPwB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwA//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwA//9k=",
+        },
+      },
+    ]);
+  });
+
+  it("should handle snake_case inline_data in response", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                inline_data: {
+                  mime_type: "image/png",
+                  data: "dGVzdA==",
+                },
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-3-pro-image-preview",
+      geminiResponse,
+    );
+
+    expect(result.choices[0].message.content).toEqual([
+      {
+        type: "image_url",
+        image_url: {
+          url: "data:image/png;base64,dGVzdA==",
+        },
+      },
+    ]);
+  });
+
+  it("should return string content for text-only responses (backwards compatibility)", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiResponse: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                text: "Hello, world!",
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.0-flash",
+      geminiResponse,
+    );
+
+    // Text-only responses should return string for backwards compatibility
+    expect(result.choices[0].message.content).toBe("Hello, world!");
+  });
 });
 
 describe("googleEventToOpenAIChatEvent", () => {

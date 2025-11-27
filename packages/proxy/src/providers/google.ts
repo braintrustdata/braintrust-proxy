@@ -320,6 +320,75 @@ const geminiUsageToOpenAIUsage = (
   return usage;
 };
 
+function convertGeminiPartsToOpenAIContent(
+  parts?: Part[] | null,
+):
+  | string
+  | Array<{ type: string; text?: string; image_url?: { url: string } }> {
+  if (!parts || parts.length === 0) {
+    return "";
+  }
+
+  const contentParts: Array<{
+    type: string;
+    text?: string;
+    image_url?: { url: string };
+  }> = [];
+  let hasNonTextContent = false;
+
+  for (const part of parts) {
+    // Skip thought parts - they're handled separately as reasoning
+    if ((part as any).thought) {
+      continue;
+    }
+
+    // Skip function calls - they're handled separately as tool_calls
+    if (part.functionCall || (part as any).function_call) {
+      continue;
+    }
+
+    if (part.text !== undefined && part.text !== null) {
+      contentParts.push({
+        type: "text",
+        text: part.text,
+      });
+    } else if (part.inlineData || (part as any).inline_data) {
+      hasNonTextContent = true;
+      const inlineData = part.inlineData || (part as any).inline_data;
+      const data = inlineData.data;
+      const mimeType = inlineData.mimeType || inlineData.mime_type;
+
+      if (typeof data === "string" && mimeType) {
+        const dataUrl = data.startsWith("data:")
+          ? data
+          : `data:${mimeType};base64,${data}`;
+        contentParts.push({
+          type: "image_url",
+          image_url: {
+            url: dataUrl,
+          },
+        });
+      }
+    }
+  }
+
+  // If only text content (single part), return as string for backwards compatibility
+  if (
+    !hasNonTextContent &&
+    contentParts.length === 1 &&
+    contentParts[0].type === "text"
+  ) {
+    return contentParts[0].text ?? "";
+  }
+
+  // If no content parts, return empty string
+  if (contentParts.length === 0) {
+    return "";
+  }
+
+  return contentParts;
+}
+
 export function googleCompletionToOpenAICompletion(
   model: string,
   data: GenerateContentResponse,
@@ -328,8 +397,8 @@ export function googleCompletionToOpenAICompletion(
   const completion: OpenAIChatCompletion = {
     id: uuidv4(),
     choices: (data.candidates || []).map((candidate) => {
-      const firstText = candidate.content?.parts?.find(
-        (part) => part.text !== undefined && !part.thought,
+      const content = convertGeminiPartsToOpenAIContent(
+        candidate.content?.parts,
       );
       const firstThought = candidate.content?.parts?.find(
         (part) => part.text !== undefined && part.thought,
@@ -360,7 +429,7 @@ export function googleCompletionToOpenAICompletion(
         index: "index" in candidate ? candidate.index : 0,
         message: {
           role: "assistant",
-          content: firstText?.text ?? "",
+          content,
           tool_calls: toolCalls.length > 0 ? toolCalls : undefined,
           refusal: null,
           ...(firstThought && {

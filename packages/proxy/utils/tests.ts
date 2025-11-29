@@ -4,6 +4,7 @@ import { TextDecoder } from "util";
 import { Buffer } from "node:buffer";
 import { proxyV1 } from "../src/proxy";
 import { getModelEndpointTypes } from "@schema";
+import type { APISecret } from "@schema";
 import { createParser, ParsedEvent, ParseEvent } from "eventsource-parser";
 
 export function createResponseStream(): [
@@ -54,6 +55,7 @@ export const getKnownApiSecrets: Parameters<
   useCache: boolean,
   authToken: string,
   model: string | null,
+  _org_name?: string,
 ) => {
   const endpointTypes = model && getModelEndpointTypes(model);
   if (!endpointTypes?.length) throw new Error(`Unknown model: ${model}`);
@@ -123,7 +125,9 @@ export const getKnownApiSecrets: Parameters<
         excludeDefaultModels: true,
       },
     },
-  ].filter((secret) => !!secret.secret && endpointTypes.includes(secret.type));
+  ].filter(
+    (secret) => !!secret.secret && endpointTypes.includes(secret.type),
+  ) as APISecret[];
 };
 
 export async function callProxyV1<Input extends object, Output extends object>({

@@ -454,6 +454,7 @@ export async function proxyV1({
   let spanType: SpanType | undefined = undefined;
   const isStreaming = !!bodyData?.stream;
 
+  // TypeScript 5.9.3: Use ReadableStream<Uint8Array> - we'll cast pipeThrough results
   let stream: ReadableStream<Uint8Array> | null = null;
   if (readFromCache) {
     const cached = await cacheGet(encryptionKey, cacheKey);
@@ -1412,7 +1413,7 @@ async function fetchModelLoop(
     }
   }
 
-  let stream = proxyResponse.stream;
+  let stream: ReadableStream<Uint8Array> | null = proxyResponse.stream;
   if (!proxyResponse.response.ok) {
     logHistogram?.({
       name: "endpoint_failures",
@@ -1444,7 +1445,8 @@ async function fetchModelLoop(
         controller.terminate();
       },
     });
-    stream = stream.pipeThrough(timingStream);
+    stream =
+      (stream.pipeThrough(timingStream) as ReadableStream<Uint8Array>) || null;
   }
   return {
     modelResponse: {
@@ -1790,7 +1792,7 @@ async function fetchOpenAIResponsesTranslate({
     body: JSON.stringify(responsesRequestFromChatCompletionsRequest(body)),
     signal,
   });
-  let stream = response.body;
+  let stream: ReadableStream<Uint8Array> | null = response.body;
   if (response.ok && stream) {
     const oaiResponse: OpenAIResponse = await collectStream(stream);
     if (oaiResponse.error) {
@@ -1809,7 +1811,11 @@ async function fetchOpenAIResponsesTranslate({
     if (body.stream) {
       // Fake stream for now, since it looks like the entire text output is sent in one chunk,
       // so we don't see any UX improvement.
-      stream = stream.pipeThrough(makeFakeOpenAIStreamTransformer());
+      // TypeScript 5.9.3: pipeThrough returns ReadableStream<Uint8Array<ArrayBufferLike>>
+      // but we need ReadableStream<Uint8Array<ArrayBuffer>>, so we cast it
+      stream = stream.pipeThrough(
+        makeFakeOpenAIStreamTransformer(),
+      ) as ReadableStream<Uint8Array>;
     }
   }
   return {
@@ -2144,10 +2150,11 @@ async function fetchOpenAI(
         },
   );
 
-  let stream = proxyResponse.body;
+  let stream: ReadableStream<Uint8Array> | null =
+    proxyResponse.body as ReadableStream<Uint8Array> | null;
   if (isManagedStructuredOutput && stream) {
     if (bodyData?.stream) {
-      stream = stream.pipeThrough(
+      const transformedStream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const chunk: ChatCompletionChunk = JSON.parse(data);
           const choice = chunk.choices[0];
@@ -2171,34 +2178,43 @@ async function fetchOpenAI(
           };
         }),
       );
+      // TypeScript 5.9.3: pipeThrough returns ReadableStream<Uint8Array<ArrayBufferLike>>
+      // but we need ReadableStream<Uint8Array<ArrayBuffer>>, so we cast it
+      stream = (transformedStream as ReadableStream<Uint8Array>) || null;
     } else {
       const chunks: Uint8Array[] = [];
-      stream = stream.pipeThrough(
-        new TransformStream({
-          transform(chunk, _controller) {
-            chunks.push(chunk);
-          },
-          flush(controller) {
-            const data: ChatCompletion = JSON.parse(flattenChunks(chunks));
-            const choice = data.choices[0];
-            const toolCall = choice.message.tool_calls![0];
-            if (toolCall.type === "function") {
-              choice.message.content = toolCall.function.arguments;
-            }
-            choice.finish_reason = "stop";
-            delete choice.message.tool_calls;
-            controller.enqueue(new TextEncoder().encode(JSON.stringify(data)));
-            controller.terminate();
-          },
-        }),
-      );
+      stream =
+        (stream.pipeThrough(
+          new TransformStream({
+            transform(chunk, _controller) {
+              chunks.push(chunk);
+            },
+            flush(controller) {
+              const data: ChatCompletion = JSON.parse(flattenChunks(chunks));
+              const choice = data.choices[0];
+              const toolCall = choice.message.tool_calls![0];
+              if (toolCall.type === "function") {
+                choice.message.content = toolCall.function.arguments;
+              }
+              choice.finish_reason = "stop";
+              delete choice.message.tool_calls;
+              controller.enqueue(
+                new TextEncoder().encode(JSON.stringify(data)),
+              );
+              controller.terminate();
+            },
+          }),
+        ) as ReadableStream<Uint8Array>) || null;
     }
   }
 
   if (secret.type === "mistral" && stream && bodyData?.stream) {
-    stream = stream.pipeThrough(
-      createEventStreamTransformer(transformMistralThinkingChunks()),
-    );
+    // TypeScript 5.9.3: pipeThrough returns ReadableStream<Uint8Array<ArrayBufferLike>>
+    // but we need ReadableStream<Uint8Array<ArrayBuffer>>, so we cast it
+    stream =
+      (stream.pipeThrough(
+        createEventStreamTransformer(transformMistralThinkingChunks()),
+      ) as ReadableStream<Uint8Array>) || null;
   }
 
   return {

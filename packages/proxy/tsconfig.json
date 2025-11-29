@@ -3,8 +3,10 @@
     "declaration": true,
     "lib": ["es2015", "dom"],
     "target": "ES2018",
+    "module": "esnext",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "jsx": "react",
     "baseUrl": ".",
     "paths": {
       "@lib/*": ["src/*"],
@@ -13,7 +15,8 @@
       "@types": ["types/index"]
     },
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["."],
   "exclude": ["node_modules/**", "**/dist/**"]

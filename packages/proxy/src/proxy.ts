@@ -2037,6 +2037,14 @@ async function fetchOpenAI(
     delete bodyData.temperature;
     delete bodyData.parallel_tool_calls;
 
+    // gpt-5.1 models don't support "minimal" reasoning_effort, so convert to "low"
+    if (
+      bodyData?.model?.toLowerCase().includes("gpt-5.1") &&
+      bodyData?.reasoning_effort === "minimal"
+    ) {
+      bodyData.reasoning_effort = "low";
+    }
+
     // Only remove system messages for old O1 models.
     if (
       bodyData?.messages &&

@@ -392,6 +392,7 @@ export const OpenAIParamsToGoogleParams: {
   top_p: "topP",
   stop: "stopSequences",
   max_tokens: "maxOutputTokens",
+  max_completion_tokens: null,
   frequency_penalty: null,
   presence_penalty: null,
   tool_choice: null,

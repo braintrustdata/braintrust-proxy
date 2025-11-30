@@ -25,9 +25,11 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           temperature: 0.7,
+          maxOutputTokens: 100,
         },
       });
     });
@@ -50,9 +52,11 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           topP: 0.9,
+          maxOutputTokens: 100,
         },
       });
     });
@@ -74,7 +78,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           maxOutputTokens: 500,
         },
@@ -98,7 +103,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           maxOutputTokens: 750,
         },
@@ -122,7 +128,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           topP: 0.85,
         },
@@ -146,7 +153,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           topK: 40,
         },
@@ -173,7 +181,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           temperature: 0.7,
           topP: 0.9,
@@ -201,9 +210,11 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Write a story" }] }],
         generationConfig: {
           stopSequences: ["END", "\n\n"],
+          maxOutputTokens: 500,
         },
       });
     });
@@ -226,9 +237,11 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Write a story" }] }],
         generationConfig: {
           stopSequences: ["DONE"],
+          maxOutputTokens: 500,
         },
       });
     });
@@ -253,7 +266,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           temperature: 0.5,
           topP: 0.8,
@@ -284,13 +298,16 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
         contents: [
           {
             role: "user",
             parts: [{ text: "What is the capital of France?" }],
           },
         ],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
       });
     });
 
@@ -317,7 +334,7 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
         systemInstruction: {
           parts: [
             { text: "You are a pirate. Always respond in pirate speak." },
@@ -329,6 +346,9 @@ describe("Google parameter translation (captureOnly)", () => {
             parts: [{ text: "Tell me about the weather." }],
           },
         ],
+        generationConfig: {
+          maxOutputTokens: 150,
+        },
       });
     });
 
@@ -353,7 +373,7 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
         contents: [
           { role: "user", parts: [{ text: "Hi, my name is Alice." }] },
           {
@@ -365,6 +385,9 @@ describe("Google parameter translation (captureOnly)", () => {
             parts: [{ text: "What did I just tell you my name was?" }],
           },
         ],
+        generationConfig: {
+          maxOutputTokens: 200,
+        },
       });
     });
   });
@@ -398,11 +421,26 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_weather",
+                description: "Get weather",
+                parameters: { type: "object", properties: {} },
+              },
+            ],
+          },
+        ],
         tool_config: {
           function_calling_config: {
             mode: "AUTO",
           },
+        },
+        generationConfig: {
+          maxOutputTokens: 100,
         },
       });
     });
@@ -435,11 +473,26 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_weather",
+                description: "Get weather",
+                parameters: { type: "object", properties: {} },
+              },
+            ],
+          },
+        ],
         tool_config: {
           function_calling_config: {
             mode: "ANY",
           },
+        },
+        generationConfig: {
+          maxOutputTokens: 100,
         },
       });
     });
@@ -472,11 +525,26 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_weather",
+                description: "Get weather",
+                parameters: { type: "object", properties: {} },
+              },
+            ],
+          },
+        ],
         tool_config: {
           function_calling_config: {
             mode: "NONE",
           },
+        },
+        generationConfig: {
+          maxOutputTokens: 100,
         },
       });
     });
@@ -520,12 +588,32 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_weather",
+                description: "Get weather",
+                parameters: { type: "object", properties: {} },
+              },
+              {
+                name: "get_time",
+                description: "Get time",
+                parameters: { type: "object", properties: {} },
+              },
+            ],
+          },
+        ],
         tool_config: {
           function_calling_config: {
             mode: "ANY",
             allowed_function_names: ["get_weather"],
           },
+        },
+        generationConfig: {
+          maxOutputTokens: 100,
         },
       });
     });
@@ -576,7 +664,13 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "What is the weather like in Paris, France?" }],
+          },
+        ],
         tools: [
           {
             function_declarations: [
@@ -602,6 +696,9 @@ describe("Google parameter translation (captureOnly)", () => {
             ],
           },
         ],
+        generationConfig: {
+          maxOutputTokens: 500,
+        },
       });
     });
 
@@ -668,39 +765,64 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const contents = body.contents as Array<Record<string, unknown>>;
-
-      expect(contents).toHaveLength(3);
-      expect(contents[0]).toMatchObject({
-        role: "user",
-        parts: [{ text: "What is 127 multiplied by 49?" }],
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "What is 127 multiplied by 49?" }],
+          },
+          {
+            role: "model",
+            parts: [
+              {
+                functionCall: {
+                  name: "call_123",
+                  args: { operation: "multiply", a: 127, b: 49 },
+                },
+              },
+            ],
+          },
+          {
+            role: "user",
+            parts: [
+              {
+                functionResponse: {
+                  name: "call_123",
+                  response: {
+                    content: "6223",
+                    name: "call_123",
+                  },
+                },
+              },
+            ],
+          },
+        ],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "calculate",
+                description: "Perform a mathematical calculation",
+                parameters: {
+                  type: "object",
+                  properties: {
+                    operation: {
+                      type: "string",
+                      enum: ["add", "subtract", "multiply", "divide"],
+                    },
+                    a: { type: "number" },
+                    b: { type: "number" },
+                  },
+                  required: ["operation", "a", "b"],
+                },
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 500,
+        },
       });
-
-      const assistantContent = contents[1];
-      expect(assistantContent.role).toBe("model");
-      expect(assistantContent.parts).toMatchObject([
-        {
-          functionCall: {
-            name: "call_123",
-            args: { operation: "multiply", a: 127, b: 49 },
-          },
-        },
-      ]);
-
-      const toolContent = contents[2];
-      expect(toolContent.role).toBe("user");
-      expect(toolContent.parts).toMatchObject([
-        {
-          functionResponse: {
-            name: "call_123",
-            response: {
-              content: "6223",
-              name: "call_123",
-            },
-          },
-        },
-      ]);
     });
   });
 
@@ -725,9 +847,16 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "Return a JSON object with name and age" }],
+          },
+        ],
         generationConfig: {
           response_mime_type: "application/json",
+          maxOutputTokens: 200,
         },
       });
     });
@@ -775,7 +904,18 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        systemInstruction: {
+          parts: [
+            { text: "You extract structured information from user queries." },
+          ],
+        },
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: "Alice is 30 years old and lives in New York." }],
+          },
+        ],
         generationConfig: {
           response_mime_type: "application/json",
           response_schema: {
@@ -787,6 +927,7 @@ describe("Google parameter translation (captureOnly)", () => {
             },
             required: ["name", "age", "city"],
           },
+          maxOutputTokens: 300,
         },
       });
     });
@@ -825,19 +966,24 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const contents = body.contents as Array<Record<string, unknown>>;
-      const parts = contents[0].parts as Array<Record<string, unknown>>;
-
-      expect(parts).toHaveLength(2);
-      expect(parts[0]).toMatchObject({
-        inlineData: {
-          mimeType: "image/png",
-          data: fakeBase64,
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                inlineData: {
+                  mimeType: "image/png",
+                  data: fakeBase64,
+                },
+              },
+              { text: "What color is this image?" },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 150,
         },
-      });
-      expect(parts[1]).toMatchObject({
-        text: "What color is this image?",
       });
     });
   });
@@ -861,10 +1007,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const generationConfig = body.generationConfig as Record<string, unknown>;
-      expect(generationConfig).not.toHaveProperty("frequency_penalty");
-      expect(generationConfig).not.toHaveProperty("frequencyPenalty");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
     });
 
     it("should not pass presence_penalty to Google", async () => {
@@ -885,10 +1033,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const generationConfig = body.generationConfig as Record<string, unknown>;
-      expect(generationConfig).not.toHaveProperty("presence_penalty");
-      expect(generationConfig).not.toHaveProperty("presencePenalty");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
     });
   });
 
@@ -912,6 +1062,12 @@ describe("Google parameter translation (captureOnly)", () => {
       expect(requests).toHaveLength(1);
       expect(requests[0].url).toContain("streamGenerateContent");
       expect(requests[0].url).toContain("alt=sse");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Count from 1 to 10" }] }],
+        generationConfig: {
+          maxOutputTokens: 200,
+        },
+      });
     });
 
     it("should use generateContent endpoint for non-streaming", async () => {
@@ -933,6 +1089,158 @@ describe("Google parameter translation (captureOnly)", () => {
       expect(requests).toHaveLength(1);
       expect(requests[0].url).toContain("generateContent");
       expect(requests[0].url).not.toContain("streamGenerateContent");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
+    });
+
+    it("should translate params correctly for streaming with temperature", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [{ role: "user", content: "Tell me a story" }],
+          temperature: 0.8,
+          top_p: 0.95,
+          max_tokens: 500,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Tell me a story" }] }],
+        generationConfig: {
+          temperature: 0.8,
+          topP: 0.95,
+          maxOutputTokens: 500,
+        },
+      });
+    });
+
+    it("should translate system message correctly for streaming", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [
+            { role: "system", content: "You are a helpful assistant." },
+            { role: "user", content: "Hello" },
+          ],
+          max_tokens: 100,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      expect(requests[0].body).toEqual({
+        systemInstruction: {
+          parts: [{ text: "You are a helpful assistant." }],
+        },
+        contents: [{ role: "user", parts: [{ text: "Hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
+    });
+
+    it("should translate tools correctly for streaming", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [{ role: "user", content: "What time is it?" }],
+          tools: [
+            {
+              type: "function",
+              function: {
+                name: "get_time",
+                description: "Get the current time",
+                parameters: { type: "object", properties: {} },
+              },
+            },
+          ],
+          tool_choice: "auto",
+          max_tokens: 100,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "What time is it?" }] }],
+        tools: [
+          {
+            function_declarations: [
+              {
+                name: "get_time",
+                description: "Get the current time",
+                parameters: { type: "object", properties: {} },
+              },
+            ],
+          },
+        ],
+        tool_config: {
+          function_calling_config: {
+            mode: "AUTO",
+          },
+        },
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
+    });
+
+    it("should translate reasoning params correctly for streaming", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [{ role: "user", content: "Think step by step" }],
+          reasoning_budget: 4096,
+          max_tokens: 1000,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Think step by step" }] }],
+        generationConfig: {
+          maxOutputTokens: 1000,
+          thinkingConfig: {
+            includeThoughts: true,
+            thinkingBudget: 4096,
+          },
+        },
+      });
     });
   });
 
@@ -954,7 +1262,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           maxOutputTokens: 500,
         },
@@ -979,7 +1288,8 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           maxOutputTokens: 500,
         },
@@ -1006,9 +1316,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body;
-      expect(body).not.toHaveProperty("seed");
-      expect(body.generationConfig).not.toHaveProperty("seed");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
     });
   });
 
@@ -1031,14 +1344,14 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
-        generationConfig: {
-          thinkingConfig: {
-            includeThoughts: true,
-            thinkingBudget: expect.any(Number),
-          },
-        },
-      });
+      const body = requests[0].body as Record<string, unknown>;
+      const generationConfig = body.generationConfig as Record<string, unknown>;
+      const thinkingConfig = generationConfig.thinkingConfig as Record<
+        string,
+        unknown
+      >;
+      expect(thinkingConfig.includeThoughts).toBe(true);
+      expect(typeof thinkingConfig.thinkingBudget).toBe("number");
     });
 
     it("should translate reasoning_budget to thinkingConfig", async () => {
@@ -1059,8 +1372,10 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Think about this" }] }],
         generationConfig: {
+          maxOutputTokens: 1000,
           thinkingConfig: {
             includeThoughts: true,
             thinkingBudget: 2048,
@@ -1087,8 +1402,10 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
+          maxOutputTokens: 100,
           thinkingConfig: {
             thinkingBudget: 0,
           },
@@ -1114,8 +1431,10 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      expect(requests[0].body).toMatchObject({
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
+          maxOutputTokens: 100,
           thinkingConfig: {
             thinkingBudget: 0,
           },
@@ -1143,10 +1462,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body;
-      expect(body).not.toHaveProperty("n");
-      expect(body.generationConfig).toMatchObject({
-        candidateCount: 3,
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+          candidateCount: 3,
+        },
       });
     });
   });
@@ -1171,11 +1492,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body;
-      expect(body).not.toHaveProperty("logprobs");
-      expect(body).not.toHaveProperty("top_logprobs");
-      expect(body.generationConfig).not.toHaveProperty("logprobs");
-      expect(body.generationConfig).not.toHaveProperty("top_logprobs");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
     });
 
     it("should not pass user to Google", async () => {
@@ -1196,9 +1518,12 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body;
-      expect(body).not.toHaveProperty("user");
-      expect(body.generationConfig).not.toHaveProperty("user");
+      expect(requests[0].body).toEqual({
+        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+        generationConfig: {
+          maxOutputTokens: 100,
+        },
+      });
     });
   });
 
@@ -1236,19 +1561,24 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const contents = body.contents as Array<Record<string, unknown>>;
-      const parts = (contents[0] as any).parts;
-
-      expect(parts).toHaveLength(2);
-      expect(parts[0]).toMatchObject({
-        inlineData: {
-          mimeType: "application/pdf",
-          data: fakePdfBase64,
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                inlineData: {
+                  mimeType: "application/pdf",
+                  data: fakePdfBase64,
+                },
+              },
+              { text: "What is in this document?" },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 200,
         },
-      });
-      expect(parts[1]).toMatchObject({
-        text: "What is in this document?",
       });
     });
   });
@@ -1290,22 +1620,27 @@ describe("Google parameter translation (captureOnly)", () => {
       });
 
       expect(requests).toHaveLength(1);
-      const body = requests[0].body as Record<string, unknown>;
-      const contents = body.contents as Array<Record<string, unknown>>;
-      const parts = (contents[0] as any).parts;
-
-      expect(parts).toHaveLength(3);
-      expect(parts[0]).toMatchObject({
-        text: "First, look at this image:",
-      });
-      expect(parts[1]).toMatchObject({
-        inlineData: {
-          mimeType: "image/png",
-          data: fakeImageBase64,
+      expect(requests[0].body).toEqual({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: "First, look at this image:" },
+              {
+                inlineData: {
+                  mimeType: "image/png",
+                  data: fakeImageBase64,
+                },
+              },
+              {
+                text: "Now describe what you see and explain why it matters.",
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 200,
         },
-      });
-      expect(parts[2]).toMatchObject({
-        text: "Now describe what you see and explain why it matters.",
       });
     });
   });
@@ -1345,34 +1680,34 @@ describe("Google parameter translation (captureOnly)", () => {
 
       expect(requests).toHaveLength(1);
       const body = requests[0].body as Record<string, unknown>;
+      const generationConfig = body.generationConfig as Record<string, unknown>;
+      const thinkingConfig = generationConfig.thinkingConfig as Record<
+        string,
+        unknown
+      >;
+      expect(thinkingConfig.includeThoughts).toBe(true);
+      expect(typeof thinkingConfig.thinkingBudget).toBe("number");
 
-      expect(body.generationConfig).toMatchObject({
-        thinkingConfig: {
-          includeThoughts: true,
-          thinkingBudget: expect.any(Number),
+      expect(body.contents).toEqual([
+        {
+          role: "user",
+          parts: [
+            { text: "What is the pattern in this sequence: 2, 6, 12, 20, 30?" },
+          ],
         },
-      });
-
-      const contents = body.contents as Array<Record<string, unknown>>;
-      expect(contents).toHaveLength(3);
-      expect(contents[0]).toMatchObject({
-        role: "user",
-        parts: [
-          { text: "What is the pattern in this sequence: 2, 6, 12, 20, 30?" },
-        ],
-      });
-      expect(contents[1]).toMatchObject({
-        role: "model",
-        parts: [
-          {
-            text: "The pattern is n*(n+1). Each term is the product of consecutive integers.",
-          },
-        ],
-      });
-      expect(contents[2]).toMatchObject({
-        role: "user",
-        parts: [{ text: "Using that pattern, what is the 10th term?" }],
-      });
+        {
+          role: "model",
+          parts: [
+            {
+              text: "The pattern is n*(n+1). Each term is the product of consecutive integers.",
+            },
+          ],
+        },
+        {
+          role: "user",
+          parts: [{ text: "Using that pattern, what is the 10th term?" }],
+        },
+      ]);
     });
 
     it("should translate reasoning/thought signatures from previous turns", async () => {
@@ -1416,36 +1751,38 @@ describe("Google parameter translation (captureOnly)", () => {
 
       expect(requests).toHaveLength(1);
       const body = requests[0].body as Record<string, unknown>;
-
-      expect(body.generationConfig).toMatchObject({
-        thinkingConfig: {
-          includeThoughts: true,
-          thinkingBudget: expect.any(Number),
-        },
-      });
+      const generationConfig = body.generationConfig as Record<string, unknown>;
+      const thinkingConfig = generationConfig.thinkingConfig as Record<
+        string,
+        unknown
+      >;
+      expect(thinkingConfig.includeThoughts).toBe(true);
+      expect(typeof thinkingConfig.thinkingBudget).toBe("number");
 
       const contents = body.contents as Array<Record<string, unknown>>;
       expect(contents).toHaveLength(3);
 
-      expect(contents[0]).toMatchObject({
+      expect(contents[0]).toEqual({
         role: "user",
         parts: [
           { text: "What is the pattern in this sequence: 2, 6, 12, 20, 30?" },
         ],
       });
 
-      const assistantContent = contents[1] as any;
-      expect(assistantContent.role).toBe("model");
-      expect(assistantContent.parts).toHaveLength(2);
-      expect(assistantContent.parts[0]).toMatchObject({
-        text: "Let me analyze the differences: 6-2=4, 12-6=6, 20-12=8, 30-20=10. The differences increase by 2 each time. This suggests a quadratic pattern. If I try n*(n+1): 1*2=2, 2*3=6, 3*4=12, 4*5=20, 5*6=30. Yes, this matches!",
-        thought: true,
-      });
-      expect(assistantContent.parts[1]).toMatchObject({
-        text: "The pattern is n*(n+1). Each term is the product of consecutive integers.",
+      expect(contents[1]).toEqual({
+        role: "model",
+        parts: [
+          {
+            text: "Let me analyze the differences: 6-2=4, 12-6=6, 20-12=8, 30-20=10. The differences increase by 2 each time. This suggests a quadratic pattern. If I try n*(n+1): 1*2=2, 2*3=6, 3*4=12, 4*5=20, 5*6=30. Yes, this matches!",
+            thought: true,
+          },
+          {
+            text: "The pattern is n*(n+1). Each term is the product of consecutive integers.",
+          },
+        ],
       });
 
-      expect(contents[2]).toMatchObject({
+      expect(contents[2]).toEqual({
         role: "user",
         parts: [{ text: "Using that pattern, what is the 10th term?" }],
       });
@@ -1494,23 +1831,24 @@ describe("Google parameter translation (captureOnly)", () => {
 
       expect(requests).toHaveLength(1);
       const body = requests[0].body as Record<string, unknown>;
-
       const contents = body.contents as Array<Record<string, unknown>>;
       expect(contents).toHaveLength(3);
 
-      const assistantContent = contents[1] as any;
-      expect(assistantContent.role).toBe("model");
-      expect(assistantContent.parts).toHaveLength(3);
-      expect(assistantContent.parts[0]).toMatchObject({
-        text: "First, I need to convert 15% to a decimal: 15/100 = 0.15",
-        thought: true,
-      });
-      expect(assistantContent.parts[1]).toMatchObject({
-        text: "Now multiply: 0.15 × 80 = 12",
-        thought: true,
-      });
-      expect(assistantContent.parts[2]).toMatchObject({
-        text: "15% of 80 is 12.",
+      expect(contents[1]).toEqual({
+        role: "model",
+        parts: [
+          {
+            text: "First, I need to convert 15% to a decimal: 15/100 = 0.15",
+            thought: true,
+          },
+          {
+            text: "Now multiply: 0.15 × 80 = 12",
+            thought: true,
+          },
+          {
+            text: "15% of 80 is 12.",
+          },
+        ],
       });
     });
 
@@ -1588,51 +1926,76 @@ describe("Google parameter translation (captureOnly)", () => {
       expect(requests).toHaveLength(1);
       const body = requests[0].body as Record<string, unknown>;
 
-      expect(body.generationConfig).toMatchObject({
+      expect(body.generationConfig).toEqual({
+        maxOutputTokens: 1000,
         thinkingConfig: {
           includeThoughts: true,
           thinkingBudget: 2048,
         },
       });
 
-      const contents = body.contents as Array<Record<string, unknown>>;
-      expect(contents).toHaveLength(5);
-
-      expect(contents[0]).toMatchObject({
-        role: "user",
-        parts: [{ text: "Calculate 127 * 49 for me" }],
-      });
-
-      expect((contents[1] as any).role).toBe("model");
-      expect((contents[1] as any).parts[0]).toMatchObject({
-        functionCall: {
-          name: "call_calc_1",
-          args: { operation: "multiply", a: 127, b: 49 },
+      expect(body.contents).toEqual([
+        {
+          role: "user",
+          parts: [{ text: "Calculate 127 * 49 for me" }],
         },
-      });
-
-      expect((contents[2] as any).role).toBe("user");
-      expect((contents[2] as any).parts[0]).toMatchObject({
-        functionResponse: {
-          name: "call_calc_1",
-          response: {
-            content: "6223",
-            name: "call_calc_1",
-          },
+        {
+          role: "model",
+          parts: [
+            {
+              functionCall: {
+                name: "call_calc_1",
+                args: { operation: "multiply", a: 127, b: 49 },
+              },
+            },
+          ],
         },
-      });
+        {
+          role: "user",
+          parts: [
+            {
+              functionResponse: {
+                name: "call_calc_1",
+                response: {
+                  content: "6223",
+                  name: "call_calc_1",
+                },
+              },
+            },
+          ],
+        },
+        {
+          role: "model",
+          parts: [{ text: "The result of 127 × 49 is 6223." }],
+        },
+        {
+          role: "user",
+          parts: [{ text: "Now divide that by 7" }],
+        },
+      ]);
 
-      expect(contents[3]).toMatchObject({
-        role: "model",
-        parts: [{ text: "The result of 127 × 49 is 6223." }],
-      });
-
-      expect(contents[4]).toMatchObject({
-        role: "user",
-        parts: [{ text: "Now divide that by 7" }],
-      });
-
-      expect(body.tools).toBeDefined();
+      expect(body.tools).toEqual([
+        {
+          function_declarations: [
+            {
+              name: "calculate",
+              description: "Perform mathematical calculations",
+              parameters: {
+                type: "object",
+                properties: {
+                  operation: {
+                    type: "string",
+                    enum: ["add", "subtract", "multiply", "divide"],
+                  },
+                  a: { type: "number" },
+                  b: { type: "number" },
+                },
+                required: ["operation", "a", "b"],
+              },
+            },
+          ],
+        },
+      ]);
     });
   });
 });

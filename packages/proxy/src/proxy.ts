@@ -2707,7 +2707,11 @@ async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   return converted;
 }
 
-async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
+async function openAIToolsToGoogleTools(params: {
+  tools?: ChatCompletionCreateParams["tools"];
+  functions?: ChatCompletionCreateParams.Function[];
+  tool_choice?: ChatCompletionCreateParams["tool_choice"];
+}) {
   if (params.tools || params.functions) {
     params.tools =
       params.tools ||

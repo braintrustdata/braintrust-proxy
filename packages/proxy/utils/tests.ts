@@ -2,9 +2,69 @@
 
 import { TextDecoder } from "util";
 import { Buffer } from "node:buffer";
-import { proxyV1 } from "../src/proxy";
+import { proxyV1, FetchFn } from "../src/proxy";
 import { getModelEndpointTypes } from "@schema";
 import { createParser, ParsedEvent, ParseEvent } from "eventsource-parser";
+
+export class CaptureOnlyError extends Error {
+  constructor() {
+    super("Capture only - request not executed");
+    this.name = "CaptureOnlyError";
+  }
+}
+
+export interface CapturedRequest {
+  url: string;
+  method: string;
+  headers: Record<string, string>;
+  body: unknown;
+}
+
+export function createCapturingFetch(options?: { captureOnly?: boolean }): {
+  fetch: FetchFn;
+  requests: CapturedRequest[];
+} {
+  const requests: CapturedRequest[] = [];
+
+  const fetch: FetchFn = async (input, init) => {
+    const url = input instanceof Request ? input.url : input.toString();
+    const method = init?.method || "GET";
+    const headers: Record<string, string> = {};
+
+    if (init?.headers) {
+      if (init.headers instanceof Headers) {
+        init.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+      } else if (Array.isArray(init.headers)) {
+        init.headers.forEach(([key, value]) => {
+          headers[key] = value;
+        });
+      } else {
+        Object.assign(headers, init.headers);
+      }
+    }
+
+    let body: unknown = null;
+    if (init?.body) {
+      try {
+        body = JSON.parse(init.body as string);
+      } catch {
+        body = init.body;
+      }
+    }
+
+    requests.push({ url, method, headers, body });
+
+    if (options?.captureOnly) {
+      throw new CaptureOnlyError();
+    }
+
+    return globalThis.fetch(input, init);
+  };
+
+  return { fetch, requests };
+}
 
 export function createResponseStream(): [
   WritableStream<Uint8Array>,
@@ -129,10 +189,12 @@ export const getKnownApiSecrets: Parameters<
 export async function callProxyV1<Input extends object, Output extends object>({
   body,
   proxyHeaders,
+  fetch,
   ...request
 }: Partial<Omit<Parameters<typeof proxyV1>, "body" | "proxyHeaders">> & {
   body: Input;
   proxyHeaders?: Record<string, string>;
+  fetch?: FetchFn;
 }): Promise<
   ReturnType<typeof createHeaderHandlers> & {
     chunks: Uint8Array[];
@@ -170,11 +232,29 @@ export async function callProxyV1<Input extends object, Output extends object>({
       cachePut: async () => {},
       digest: async (message: string) =>
         Buffer.from(message).toString("base64"),
+      fetch: fetch ?? globalThis.fetch,
       ...request,
       body: requestBody,
     });
 
-    await proxyPromise;
+    try {
+      await proxyPromise;
+    } catch (e) {
+      if (e instanceof CaptureOnlyError) {
+        // Return early with empty response - caller just wanted to capture requests
+        // @ts-expect-error
+        ref.chunks = [];
+        // @ts-expect-error
+        ref.responseText = "";
+        // @ts-expect-error
+        ref.events = () => [];
+        // @ts-expect-error
+        ref.json = () => null;
+        // @ts-expect-error
+        return ref;
+      }
+      throw e;
+    }
 
     const chunks = await Promise.race([chunksPromise, timeoutPromise]);
     const responseText = new TextDecoder().decode(Buffer.concat(chunks));

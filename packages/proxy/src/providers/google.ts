@@ -392,9 +392,16 @@ export const OpenAIParamsToGoogleParams: {
   top_p: "topP",
   stop: "stopSequences",
   max_tokens: "maxOutputTokens",
+  max_completion_tokens: null,
   frequency_penalty: null,
   presence_penalty: null,
   tool_choice: null,
+  tools: null,
+  functions: null,
+  logprobs: null,
+  top_logprobs: null,
+  n: "candidateCount",
+  user: null,
 };
 
 // because GenAI sdk doesn't provide a convenient API equivalent type
@@ -416,14 +423,17 @@ export const openaiParamsToGeminiMessageParams = (
     ...(cleanOpenAIParams(openai) as any),
   };
 
-  const maxTokens =
-    openai.max_completion_tokens !== undefined ||
-    openai.max_tokens !== undefined
-      ? Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
-        1024
-      : undefined;
+  let maxTokens = gemini.maxOutputTokens;
+  if (isEmpty(maxTokens)) {
+    maxTokens =
+      openai.max_completion_tokens !== undefined ||
+      openai.max_tokens !== undefined
+        ? Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+          1024
+        : undefined;
 
-  gemini.maxOutputTokens = maxTokens;
+    gemini.maxOutputTokens = maxTokens;
+  }
 
   if (
     openai.reasoning_effort !== undefined ||

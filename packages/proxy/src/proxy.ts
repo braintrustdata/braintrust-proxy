@@ -118,6 +118,8 @@ export type LogHistogramFn = (args: {
   attributes?: Attributes;
 }) => void;
 
+export type FetchFn = typeof globalThis.fetch;
+
 type CachedMetadata = {
   cached_at: Date;
   ttl: number;
@@ -206,6 +208,7 @@ export async function proxyV1({
   decompressFetch = false,
   spanLogger,
   signal,
+  fetch = globalThis.fetch,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -233,6 +236,7 @@ export async function proxyV1({
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
   signal?: AbortSignal;
+  fetch?: FetchFn;
 }): Promise<void> {
   // totalCalls will be updated with model attributes after model extraction
 
@@ -640,6 +644,7 @@ export async function proxyV1({
       cachePut,
       model,
       signal,
+      fetch,
     );
     stream = proxyStream;
 
@@ -1159,7 +1164,8 @@ async function fetchModelLoop(
     ttl_seconds?: number,
   ) => Promise<void>,
   model: string | null,
-  signal?: AbortSignal,
+  signal: AbortSignal | undefined,
+  fetch: FetchFn,
 ): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   // model is now passed as a parameter
 
@@ -1246,6 +1252,7 @@ async function fetchModelLoop(
         cacheGet,
         cachePut,
         signal,
+        fetch,
       );
       secretName = secret.name;
       // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
@@ -1489,7 +1496,8 @@ async function fetchModel(
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>,
-  signal?: AbortSignal,
+  signal: AbortSignal | undefined,
+  fetch: FetchFn,
 ): Promise<ModelResponse> {
   const format = modelSpec?.format ?? "openai";
   switch (format) {
@@ -1526,6 +1534,7 @@ async function fetchModel(
         headers,
         bodyData,
         signal,
+        fetch,
       });
     case "converse":
       console.assert(method === "POST");
@@ -2698,7 +2707,11 @@ async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   return converted;
 }
 
-async function openAIToolsToGoogleTools(params: ChatCompletionCreateParams) {
+async function openAIToolsToGoogleTools(params: {
+  tools?: ChatCompletionCreateParams["tools"];
+  functions?: ChatCompletionCreateParams.Function[];
+  tool_choice?: ChatCompletionCreateParams["tool_choice"];
+}) {
   if (params.tools || params.functions) {
     params.tools =
       params.tools ||
@@ -2819,6 +2832,7 @@ async function fetchGoogleGenerateContent({
   method,
   body,
   signal,
+  fetch,
 }: {
   secret: APISecret;
   model: string;
@@ -2826,6 +2840,7 @@ async function fetchGoogleGenerateContent({
   method: string;
   body: unknown;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   // Hack since Gemini models are not registered with the models/ prefix.
   model = model.replace(/^models\//, "");
@@ -2887,6 +2902,7 @@ async function fetchGoogle({
   headers,
   bodyData,
   signal,
+  fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
@@ -2894,6 +2910,7 @@ async function fetchGoogle({
   headers: Record<string, string>;
   bodyData: null | any;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
@@ -2909,6 +2926,7 @@ async function fetchGoogle({
       method: m[2],
       body: bodyData,
       signal,
+      fetch,
     });
   } else {
     return await fetchGoogleChatCompletions({
@@ -2917,6 +2935,7 @@ async function fetchGoogle({
       headers,
       bodyData,
       signal,
+      fetch,
     });
   }
 }
@@ -2927,12 +2946,14 @@ async function fetchGoogleChatCompletions({
   headers,
   bodyData,
   signal,
+  fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
@@ -2951,7 +2972,7 @@ async function fetchGoogleChatCompletions({
   const content = await openAIMessagesToGoogleMessages(
     oaiMessages.filter((m: any) => m.role !== "system"),
   );
-  const params = Object.fromEntries(
+  const params: Record<string, unknown> = Object.fromEntries(
     Object.entries(translateParams("google", oaiParams))
       .map(([key, value]) => {
         const translatedKey = OpenAIParamsToGoogleParams[key];
@@ -2963,6 +2984,11 @@ async function fetchGoogleChatCompletions({
       })
       .filter(([k, _]) => k !== null),
   );
+
+  // Handle n → candidateCount (filtered by translateParams, so we handle it separately)
+  if (oaiParams.n !== undefined && oaiParams.n !== null) {
+    params.candidateCount = oaiParams.n;
+  }
 
   let fullURL: URL;
   if (secret.type === "google") {
@@ -3023,7 +3049,11 @@ async function fetchGoogleChatCompletions({
         }
       : undefined,
     generationConfig: params,
-    ...(await openAIToolsToGoogleTools(params)),
+    ...(await openAIToolsToGoogleTools({
+      tools: oaiParams.tools,
+      functions: oaiParams.functions,
+      tool_choice: oaiParams.tool_choice,
+    })),
   });
 
   const proxyResponse = await fetch(fullURL.toString(), {

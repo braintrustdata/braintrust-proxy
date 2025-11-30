@@ -2968,7 +2968,7 @@ async function fetchGoogleChatCompletions({
   const content = await openAIMessagesToGoogleMessages(
     oaiMessages.filter((m: any) => m.role !== "system"),
   );
-  const params = Object.fromEntries(
+  const params: Record<string, unknown> = Object.fromEntries(
     Object.entries(translateParams("google", oaiParams))
       .map(([key, value]) => {
         const translatedKey = OpenAIParamsToGoogleParams[key];
@@ -2980,6 +2980,11 @@ async function fetchGoogleChatCompletions({
       })
       .filter(([k, _]) => k !== null),
   );
+
+  // Handle n → candidateCount (filtered by translateParams, so we handle it separately)
+  if (oaiParams.n !== undefined && oaiParams.n !== null) {
+    params.candidateCount = oaiParams.n;
+  }
 
   let fullURL: URL;
   if (secret.type === "google") {
@@ -3040,7 +3045,11 @@ async function fetchGoogleChatCompletions({
         }
       : undefined,
     generationConfig: params,
-    ...(await openAIToolsToGoogleTools(params)),
+    ...(await openAIToolsToGoogleTools({
+      tools: oaiParams.tools,
+      functions: oaiParams.functions,
+      tool_choice: oaiParams.tool_choice,
+    })),
   });
 
   const proxyResponse = await fetch(fullURL.toString(), {

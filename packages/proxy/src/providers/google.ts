@@ -395,6 +395,12 @@ export const OpenAIParamsToGoogleParams: {
   frequency_penalty: null,
   presence_penalty: null,
   tool_choice: null,
+  tools: null,
+  functions: null,
+  logprobs: null,
+  top_logprobs: null,
+  n: "candidateCount",
+  user: null,
 };
 
 // because GenAI sdk doesn't provide a convenient API equivalent type

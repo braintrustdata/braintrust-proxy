@@ -2528,6 +2528,12 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
   },
+  "gemini-3-pro-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3 Pro Image Preview"
+  },
   "gemini-1.5-flash": {
     "format": "google",
     "flavor": "chat",

@@ -1,6 +1,4 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
-import { http, HttpResponse } from "msw";
-import { setupServer } from "msw/node";
+import { describe, expect, it } from "vitest";
 import { callProxyV1 } from "../../utils/tests";
 import {
   OpenAIChatCompletion,
@@ -1484,87 +1482,36 @@ describe("googleCompletionToOpenAICompletion", () => {
     });
   });
 
-  describe("inlineData (image) response handling", () => {
-    const server = setupServer();
-    const originalGeminiKey = process.env.GEMINI_API_KEY;
-
-    beforeAll(() => {
-      process.env.GEMINI_API_KEY = "test-key";
-      server.listen({
-        onUnhandledRequest: "bypass",
-      });
+  it("should handle inlineData (image) in response via callProxyV1", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gemini-3-pro-image-preview",
+        messages: [
+          { role: "user", content: "Generate a small solid red square image" },
+        ],
+        stream: false,
+        responseModalities: ["TEXT", "IMAGE"],
+      } as any,
     });
 
-    afterEach(() => {
-      server.resetHandlers();
-    });
+    const result = json();
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message.role).toBe("assistant");
+    expect(result.choices[0].finish_reason).toBe("stop");
 
-    afterAll(() => {
-      process.env.GEMINI_API_KEY = originalGeminiKey;
-      server.close();
-    });
-
-    // Extract base64 data from the existing fixture
-    const IMAGE_BASE64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
-
-    it("should handle inlineData (image) in response via callProxyV1", async () => {
-      const model = "gemini-2.5-flash";
-
-      server.use(
-        http.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
-          () => {
-            return HttpResponse.json({
-              candidates: [
-                {
-                  content: {
-                    role: "model",
-                    parts: [
-                      {
-                        inlineData: {
-                          mimeType: "image/png",
-                          data: IMAGE_BASE64,
-                        },
-                      },
-                    ],
-                  },
-                  finishReason: "STOP",
-                },
-              ],
-              usageMetadata: {
-                promptTokenCount: 10,
-                candidatesTokenCount: 100,
-                totalTokenCount: 110,
-              },
-            });
-          },
-        ),
+    // Response should contain image content
+    const content = result.choices[0].message.content;
+    expect(Array.isArray(content)).toBe(true);
+    if (Array.isArray(content)) {
+      const imageContent = content.find((part) => part.type === "image_url");
+      expect(imageContent).toBeDefined();
+      expect(imageContent?.image_url?.url).toMatch(
+        /^data:image\/(png|jpeg);base64,/,
       );
-
-      const { json } = await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletion
-      >({
-        body: {
-          model,
-          messages: [{ role: "user", content: "Generate a 1x1 red pixel" }],
-          stream: false,
-        },
-      });
-
-      const result = json();
-      expect(result.choices).toHaveLength(1);
-      expect(result.choices[0].message.role).toBe("assistant");
-      expect(result.choices[0].message.content).toEqual([
-        {
-          type: "image_url",
-          image_url: {
-            url: `data:image/png;base64,${IMAGE_BASE64}`,
-          },
-        },
-      ]);
-      expect(result.choices[0].finish_reason).toBe("stop");
-    });
+    }
   });
 
   it("should handle mixed text and inlineData in response", () => {

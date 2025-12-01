@@ -465,6 +465,7 @@ export const OpenAIParamsToGoogleParams: {
   top_logprobs: null,
   n: "candidateCount",
   user: null,
+  responseModalities: "responseModalities",
 };
 
 // because GenAI sdk doesn't provide a convenient API equivalent type
@@ -507,6 +508,11 @@ export const openaiParamsToGeminiMessageParams = (
       ...openai,
       max_completion_tokens: maxTokens,
     });
+  }
+
+  // Pass through responseModalities for image generation models
+  if ((openai as any).responseModalities) {
+    (gemini as any).responseModalities = (openai as any).responseModalities;
   }
 
   return gemini;

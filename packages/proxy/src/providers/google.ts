@@ -322,18 +322,12 @@ const geminiUsageToOpenAIUsage = (
 
 function convertGeminiPartsToOpenAIContent(
   parts?: Part[] | null,
-):
-  | string
-  | Array<{ type: string; text?: string; image_url?: { url: string } }> {
+): string | ChatCompletionContentPartType[] {
   if (!parts || parts.length === 0) {
     return "";
   }
 
-  const contentParts: Array<{
-    type: string;
-    text?: string;
-    image_url?: { url: string };
-  }> = [];
+  const contentParts: ChatCompletionContentPartType[] = [];
   let hasNonTextContent = false;
 
   for (const part of parts) {

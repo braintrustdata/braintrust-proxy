@@ -1,6 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
+import { setupServer } from "msw/node";
 import { callProxyV1 } from "../../utils/tests";
 import {
+  OpenAIChatCompletion,
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
@@ -1481,51 +1484,91 @@ describe("googleCompletionToOpenAICompletion", () => {
     });
   });
 
-  it("should handle inlineData (image) in response", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const geminiResponse: any = {
-      candidates: [
-        {
-          content: {
-            role: "model",
-            parts: [
-              {
-                inlineData: {
-                  mimeType: "image/png",
-                  data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+  describe("inlineData (image) response handling", () => {
+    const server = setupServer();
+    const originalGeminiKey = process.env.GEMINI_API_KEY;
+
+    beforeAll(() => {
+      process.env.GEMINI_API_KEY = "test-key";
+      server.listen({
+        onUnhandledRequest: "bypass",
+      });
+    });
+
+    afterEach(() => {
+      server.resetHandlers();
+    });
+
+    afterAll(() => {
+      process.env.GEMINI_API_KEY = originalGeminiKey;
+      server.close();
+    });
+
+    // Extract base64 data from the existing fixture
+    const IMAGE_BASE64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
+
+    it("should handle inlineData (image) in response via callProxyV1", async () => {
+      const model = "gemini-2.5-flash";
+
+      server.use(
+        http.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          () => {
+            return HttpResponse.json({
+              candidates: [
+                {
+                  content: {
+                    role: "model",
+                    parts: [
+                      {
+                        inlineData: {
+                          mimeType: "image/png",
+                          data: IMAGE_BASE64,
+                        },
+                      },
+                    ],
+                  },
+                  finishReason: "STOP",
                 },
+              ],
+              usageMetadata: {
+                promptTokenCount: 10,
+                candidatesTokenCount: 100,
+                totalTokenCount: 110,
               },
-            ],
+            });
           },
-          finishReason: "STOP",
-        },
-      ],
-      usageMetadata: {
-        promptTokenCount: 10,
-        candidatesTokenCount: 100,
-        totalTokenCount: 110,
-      },
-    };
+        ),
+      );
 
-    const result = googleCompletionToOpenAICompletion(
-      "gemini-3-pro-image-preview",
-      geminiResponse,
-    );
-
-    expect(result.choices).toHaveLength(1);
-    expect(result.choices[0].message.role).toBe("assistant");
-    expect(result.choices[0].message.content).toEqual([
-      {
-        type: "image_url",
-        image_url: {
-          url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+      const { json } = await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletion
+      >({
+        body: {
+          model,
+          messages: [{ role: "user", content: "Generate a 1x1 red pixel" }],
+          stream: false,
         },
-      },
-    ]);
-    expect(result.choices[0].finish_reason).toBe("stop");
+      });
+
+      const result = json();
+      expect(result.choices).toHaveLength(1);
+      expect(result.choices[0].message.role).toBe("assistant");
+      expect(result.choices[0].message.content).toEqual([
+        {
+          type: "image_url",
+          image_url: {
+            url: `data:image/png;base64,${IMAGE_BASE64}`,
+          },
+        },
+      ]);
+      expect(result.choices[0].finish_reason).toBe("stop");
+    });
   });
 
   it("should handle mixed text and inlineData in response", () => {
+    const imageBase64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const geminiResponse: any = {
       candidates: [
@@ -1538,8 +1581,8 @@ describe("googleCompletionToOpenAICompletion", () => {
               },
               {
                 inlineData: {
-                  mimeType: "image/jpeg",
-                  data: "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/2gAIAQEAAAAAN//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIQAAAA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAxAAAAAf/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPwB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwA//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwA//9k=",
+                  mimeType: "image/png",
+                  data: imageBase64,
                 },
               },
             ],
@@ -1562,13 +1605,14 @@ describe("googleCompletionToOpenAICompletion", () => {
       {
         type: "image_url",
         image_url: {
-          url: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wgARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAn/2gAIAQEAAAAAN//EABQBAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIQAAAA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAxAAAAAf/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPwB//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAgEBPwA//8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAgBAwEBPwA//9k=",
+          url: IMAGE_DATA_URL,
         },
       },
     ]);
   });
 
   it("should handle snake_case inline_data in response", () => {
+    const imageBase64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const geminiResponse: any = {
       candidates: [
@@ -1579,7 +1623,7 @@ describe("googleCompletionToOpenAICompletion", () => {
               {
                 inline_data: {
                   mime_type: "image/png",
-                  data: "dGVzdA==",
+                  data: imageBase64,
                 },
               },
             ],
@@ -1598,7 +1642,7 @@ describe("googleCompletionToOpenAICompletion", () => {
       {
         type: "image_url",
         image_url: {
-          url: "data:image/png;base64,dGVzdA==",
+          url: IMAGE_DATA_URL,
         },
       },
     ]);

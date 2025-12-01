@@ -489,6 +489,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-code-fast": ["xAI"],
   "grok-code-fast-1-0825": ["xAI"],
   "gemini-3-pro-image-preview": ["google"],
+  "publishers/google/models/gemini-3-pro-image-preview": ["vertex"],
   "publishers/google/models/gemini-2.5-pro": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-05-06": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-03-25": ["vertex"],

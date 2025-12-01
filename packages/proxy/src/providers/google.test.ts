@@ -1493,8 +1493,7 @@ describe("googleCompletionToOpenAICompletion", () => {
           { role: "user", content: "Generate a small solid red square image" },
         ],
         stream: false,
-        responseModalities: ["TEXT", "IMAGE"],
-      } as any,
+      },
     });
 
     const result = json();

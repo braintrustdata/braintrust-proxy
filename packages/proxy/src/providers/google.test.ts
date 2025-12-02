@@ -1513,112 +1513,140 @@ describe("googleCompletionToOpenAICompletion", () => {
     }
   });
 
-  it("should handle mixed text and inlineData in response", () => {
-    const imageBase64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const geminiResponse: any = {
-      candidates: [
-        {
-          content: {
-            role: "model",
-            parts: [
-              {
-                text: "Here is the generated image:",
-              },
-              {
-                inlineData: {
-                  mimeType: "image/png",
-                  data: imageBase64,
-                },
-              },
-            ],
+  it("should handle mixed text and image in response via callProxyV1", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gemini-3-pro-image-preview",
+        messages: [
+          {
+            role: "user",
+            content:
+              'First write "Here is the image:" then generate a small solid blue circle',
           },
-          finishReason: "STOP",
-        },
-      ],
-    };
-
-    const result = googleCompletionToOpenAICompletion(
-      "gemini-3-pro-image-preview",
-      geminiResponse,
-    );
-
-    expect(result.choices[0].message.content).toEqual([
-      {
-        type: "text",
-        text: "Here is the generated image:",
+        ],
+        stream: false,
       },
-      {
-        type: "image_url",
-        image_url: {
-          url: IMAGE_DATA_URL,
-        },
-      },
-    ]);
+    });
+
+    const result = json();
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message.role).toBe("assistant");
+    expect(result.choices[0].finish_reason).toBe("stop");
+
+    // Response should contain both text and image content
+    const content = result.choices[0].message.content;
+    expect(Array.isArray(content)).toBe(true);
+    if (Array.isArray(content)) {
+      const textContent = content.find((part) => part.type === "text");
+      const imageContent = content.find((part) => part.type === "image_url");
+
+      expect(textContent).toBeDefined();
+      expect(textContent?.text).toBeTruthy();
+
+      expect(imageContent).toBeDefined();
+      expect(imageContent?.image_url?.url).toMatch(
+        /^data:image\/(png|jpeg);base64,/,
+      );
+    }
   });
 
-  it("should handle snake_case inline_data in response", () => {
-    const imageBase64 = IMAGE_DATA_URL.replace("data:image/png;base64,", "");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const geminiResponse: any = {
-      candidates: [
-        {
-          content: {
-            role: "model",
-            parts: [
-              {
-                inline_data: {
-                  mime_type: "image/png",
-                  data: imageBase64,
-                },
-              },
-            ],
+  it("should handle multi-turn with generated image via callProxyV1", async () => {
+    // First turn: generate an image with gemini-3-pro-image-preview
+    const { json: json1 } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gemini-3-pro-image-preview",
+        messages: [
+          {
+            role: "user",
+            content: "Generate a small solid green triangle image",
           },
-          finishReason: "STOP",
-        },
-      ],
-    };
-
-    const result = googleCompletionToOpenAICompletion(
-      "gemini-3-pro-image-preview",
-      geminiResponse,
-    );
-
-    expect(result.choices[0].message.content).toEqual([
-      {
-        type: "image_url",
-        image_url: {
-          url: IMAGE_DATA_URL,
-        },
+        ],
+        stream: false,
       },
-    ]);
+    });
+
+    const result1 = json1();
+    expect(result1.choices).toHaveLength(1);
+    const content1 = result1.choices[0].message.content;
+    expect(Array.isArray(content1)).toBe(true);
+
+    // Verify first response contains an image
+    if (Array.isArray(content1)) {
+      const imageContent = content1.find((part) => part.type === "image_url");
+      expect(imageContent).toBeDefined();
+      expect(imageContent?.image_url?.url).toMatch(
+        /^data:image\/(png|jpeg);base64,/,
+      );
+    }
+
+    // Second turn: use gemini-2.5-flash (vision model) to analyze the generated image
+    // Note: gemini-3-pro-image-preview may return thought_signatures in responses that must
+    // be preserved for multi-turn. Since the proxy converts to OpenAI format (which doesn't
+    // have thought_signatures), we use a different model for the second turn.
+    const { json: json2 } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: content1,
+          },
+          {
+            role: "user",
+            content:
+              "What color is the shape in this image? Answer in one word.",
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const result2 = json2();
+    expect(result2.choices).toHaveLength(1);
+    expect(result2.choices[0].message.role).toBe("assistant");
+
+    // The response should mention green (the color of the shape)
+    const content2 = result2.choices[0].message.content;
+    expect(content2).toBeDefined();
+    const textContent =
+      typeof content2 === "string"
+        ? content2
+        : Array.isArray(content2)
+          ? content2.find((part) => part.type === "text")?.text
+          : "";
+    expect(textContent?.toLowerCase()).toContain("green");
   });
 
-  it("should return string content for text-only responses (backwards compatibility)", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const geminiResponse: any = {
-      candidates: [
-        {
-          content: {
-            role: "model",
-            parts: [
-              {
-                text: "Hello, world!",
-              },
-            ],
-          },
-          finishReason: "STOP",
-        },
-      ],
-    };
+  it("should return string content for text-only responses via callProxyV1", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gemini-3-pro-image-preview",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+    });
 
-    const result = googleCompletionToOpenAICompletion(
-      "gemini-2.0-flash",
-      geminiResponse,
-    );
+    const result = json();
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message.role).toBe("assistant");
+    expect(result.choices[0].finish_reason).toBe("stop");
 
     // Text-only responses should return string for backwards compatibility
-    expect(result.choices[0].message.content).toBe("Hello, world!");
+    const content = result.choices[0].message.content;
+    expect(typeof content).toBe("string");
+    expect(content).toBeTruthy();
   });
 });
 

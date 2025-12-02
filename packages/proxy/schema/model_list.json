@@ -4688,5 +4688,19 @@
     "reasoning": true,
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
+  },
+  "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.45,
+    "output_cost_per_mil_tokens": 1.8,
+    "displayName": "Qwen3 Coder 480B A35B Instruct"
+  },
+  "accounts/fireworks/models/qwen3-235b-a22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Qwen3 235B A22B"
   }
 }

@@ -2528,6 +2528,16 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
   },
+  "gemini-3-pro-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.0,
+    "output_cost_per_mil_tokens": 12.0,
+    "displayName": "Gemini 3 Pro Image Preview",
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768
+  },
   "gemini-1.5-flash": {
     "format": "google",
     "flavor": "chat",
@@ -3758,6 +3768,16 @@
     "displayName": "Command Light",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096
+  },
+  "publishers/google/models/gemini-3-pro-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.0,
+    "output_cost_per_mil_tokens": 12.0,
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "parent": "gemini-3-pro-image-preview"
   },
   "publishers/google/models/gemini-2.0-flash": {
     "format": "google",

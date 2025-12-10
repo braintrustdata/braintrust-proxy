@@ -1897,7 +1897,11 @@ async function fetchOpenAI(
       ? modelSpec.locations
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
-    const baseURL = api_base || `https://${location}-aiplatform.googleapis.com`;
+    const baseURL =
+      api_base || location === "global"
+        ? `https://aiplatform.googleapis.com`
+        : `https://${location}-aiplatform.googleapis.com`;
+
     if (bodyData?.model?.startsWith("publishers/meta")) {
       // Use the OpenAPI endpoint.
       fullURL = new URL(
@@ -2292,7 +2296,10 @@ async function vertexEndpointInfo({
     ? modelSpec.locations
     : [defaultLocation];
   const location = locations[Math.floor(Math.random() * locations.length)];
-  const apiBase = api_base || `https://${location}-aiplatform.googleapis.com`;
+  const apiBase =
+    api_base || location === "global"
+      ? `https://aiplatform.googleapis.com`
+      : `https://${location}-aiplatform.googleapis.com`;
   const accessToken =
     authType === "access_token" ? secret : await getGoogleAccessToken(secret);
   if (!accessToken) {

@@ -2280,7 +2280,7 @@ interface VertexEndpointInfo {
 }
 
 function getVertexBaseUrl(
-  apiBase: string | undefined,
+  apiBase: string | null | undefined,
   location: string,
 ): string {
   if (apiBase) {

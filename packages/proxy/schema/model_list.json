@@ -3769,6 +3769,20 @@
     "max_input_tokens": 4096,
     "max_output_tokens": 4096
   },
+  "publishers/google/models/gemini-3-pro-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "displayName": "Gemini 3 Pro Preview",
+    "locations": ["global"],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535
+  },
   "publishers/google/models/gemini-3-pro-image-preview": {
     "format": "google",
     "flavor": "chat",
@@ -3777,7 +3791,7 @@
     "output_cost_per_mil_tokens": 12.0,
     "max_input_tokens": 65536,
     "max_output_tokens": 32768,
-    "parent": "gemini-3-pro-image-preview"
+    "displayName": "Gemini 3 Pro Image Preview"
   },
   "publishers/google/models/gemini-2.0-flash": {
     "format": "google",

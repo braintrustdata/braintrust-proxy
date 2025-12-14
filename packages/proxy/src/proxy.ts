@@ -71,7 +71,6 @@ import {
   anthropicCompletionToOpenAICompletion,
   anthropicEventToOpenAIEvent,
   anthropicToolChoiceToOpenAIToolChoice,
-  DEFAULT_ANTHROPIC_MAX_TOKENS,
   flattenAnthropicMessages,
   openAIContentToAnthropicContent,
   openAIToolCallsToAnthropicToolUse,
@@ -1529,6 +1528,7 @@ async function fetchModel(
         bodyData,
         secret,
         signal,
+        fetch,
       });
     case "google":
       console.assert(method === "POST");
@@ -2361,24 +2361,29 @@ async function fetchAnthropicMessages({
   modelSpec,
   body,
   signal,
+  fetch: customFetch = globalThis.fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
   signal?: AbortSignal;
+  fetch?: FetchFn;
 }): Promise<ModelResponse> {
   switch (secret.type) {
     case "anthropic":
-      return await fetch(`${EndpointProviderToBaseURL.anthropic}/messages`, {
-        method: "POST",
-        headers: {
-          "x-api-key": secret.secret,
-          "content-type": "application/json",
-          "anthropic-version": "2023-06-01",
+      return await customFetch(
+        `${EndpointProviderToBaseURL.anthropic}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "x-api-key": secret.secret,
+            "content-type": "application/json",
+            "anthropic-version": "2023-06-01",
+          },
+          body: JSON.stringify(body),
+          signal,
         },
-        body: JSON.stringify(body),
-        signal,
-      }).then((resp) => ({
+      ).then((resp) => ({
         stream: resp.body,
         response: resp,
       }));
@@ -2409,6 +2414,7 @@ async function fetchAnthropic({
   bodyData,
   secret,
   signal,
+  fetch,
 }: {
   url: string;
   modelSpec: ModelSpec | null;
@@ -2416,6 +2422,7 @@ async function fetchAnthropic({
   bodyData: null | any;
   secret: APISecret;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   switch (url) {
     case ANTHROPIC_MESSAGES:
@@ -2425,6 +2432,7 @@ async function fetchAnthropic({
         modelSpec,
         body: bodyData,
         signal,
+        fetch,
       });
     case "/chat/completions":
       return fetchAnthropicChatCompletions({
@@ -2433,6 +2441,7 @@ async function fetchAnthropic({
         bodyData,
         secret,
         signal,
+        fetch,
       });
     default:
       throw new ProxyBadRequestError(`Unsupported Anthropic URL: ${url}`);
@@ -2445,12 +2454,14 @@ async function fetchAnthropicChatCompletions({
   bodyData,
   secret,
   signal,
+  fetch: customFetch = globalThis.fetch,
 }: {
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   secret: APISecret;
   signal?: AbortSignal;
+  fetch?: FetchFn;
 }): Promise<ModelResponse> {
   // https://docs.anthropic.com/claude/reference/complete_post
   let fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
@@ -2522,10 +2533,24 @@ async function fetchAnthropicChatCompletions({
   }
 
   messages = flattenAnthropicMessages(messages);
-  const params: Record<string, unknown> = translateParams(
-    "anthropic",
-    oaiParams,
-  );
+  const params: Record<string, unknown> = translateParams("anthropic", {
+    ...oaiParams,
+    _maxOutputTokens: modelSpec?.max_output_tokens,
+  });
+
+  // Add beta header for 128k output tokens (required when max_tokens > 64000)
+  const maxTokens = params.max_tokens;
+  if (
+    typeof maxTokens === "number" &&
+    maxTokens > 64000 &&
+    secret.type !== "vertex"
+  ) {
+    const existingBeta = headers["anthropic-beta"];
+    const outputBeta = "output-128k-2025-02-19";
+    headers["anthropic-beta"] = existingBeta
+      ? `${existingBeta},${outputBeta}`
+      : outputBeta;
+  }
 
   const stop = z
     .union([z.string(), z.array(z.string())])
@@ -2540,7 +2565,11 @@ async function fetchAnthropicChatCompletions({
   const isFunction = !!params.functions;
   if (params.tools || params.functions) {
     if (secret.type !== "vertex") {
-      headers["anthropic-beta"] = "tools-2024-05-16";
+      const existingBeta = headers["anthropic-beta"];
+      const toolsBeta = "tools-2024-05-16";
+      headers["anthropic-beta"] = existingBeta
+        ? `${existingBeta},${toolsBeta}`
+        : toolsBeta;
     }
 
     params.tools = openAIToolsToAnthropicTools(
@@ -2627,7 +2656,7 @@ async function fetchAnthropicChatCompletions({
     delete params.model;
   }
 
-  const proxyResponse = await fetch(fullURL.toString(), {
+  const proxyResponse = await customFetch(fullURL.toString(), {
     method: "POST",
     headers,
     body: JSON.stringify({

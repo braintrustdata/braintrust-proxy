@@ -703,15 +703,19 @@ export function anthropicToolChoiceToOpenAIToolChoice(
 export const DEFAULT_ANTHROPIC_MAX_TOKENS = 4096;
 
 export function openaiParamsToAnthropicMesssageParams(
-  openai: OpenAIChatCompletionCreateParams,
+  openai: OpenAIChatCompletionCreateParams & { _maxOutputTokens?: number },
 ): MessageCreateParams {
+  const { _maxOutputTokens: maxOutputTokens } = openai;
+
   const anthropic: MessageCreateParams = {
     // TODO: we depend on translateParams to get us half way there
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
     ...(cleanOpenAIParams(openai) as any),
   };
 
   const maxTokens =
     Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+    maxOutputTokens ||
     DEFAULT_ANTHROPIC_MAX_TOKENS;
 
   anthropic.max_tokens = maxTokens;

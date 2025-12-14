@@ -1,5 +1,5 @@
 import { it, expect } from "vitest";
-import { callProxyV1 } from "../../utils/tests";
+import { callProxyV1, createCapturingFetch } from "../../utils/tests";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChunk,
@@ -516,4 +516,27 @@ it("should handle file content parts with image data", async () => {
   expect(response!.choices[0].message.role).toBe("assistant");
   expect(response!.choices[0].message.content).toBeTruthy();
   expect(typeof response!.choices[0].message.content).toBe("string");
+});
+
+it("should use model's max_output_tokens as default when max_tokens not specified", async () => {
+  // This test verifies BRA-3646: when max_tokens is not set, the proxy should
+  // use the model's max_output_tokens from the model spec instead of the
+  // hardcoded 4096 default. claude-sonnet-4-5 has max_output_tokens: 64000.
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-sonnet-4-5",
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+      // Intentionally NOT setting max_tokens - this is the key part of the test.
+      // Previously this would default to 4096.
+      // Now it should use the model's max_output_tokens (64000).
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  // Verify the proxy sent max_tokens: 64000 (from model spec) instead of 4096
+  expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
 });

@@ -5,7 +5,12 @@ import type {
   MessageRoleType as MessageRole,
   ModelParamsType as ModelParams,
 } from "../src/generated_types";
-import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
+import {
+  ModelFormat,
+  ModelEndpointType,
+  ModelSpec,
+  getAvailableModels,
+} from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
@@ -633,6 +638,7 @@ ${content}<|im_end|>`,
 export function translateParams(
   toProvider: ModelFormat,
   params: Record<string, unknown>,
+  modelSpec?: ModelSpec | null,
 ): Record<string, unknown> {
   let translatedParams: Record<string, unknown> = {};
 
@@ -658,10 +664,17 @@ export function translateParams(
   // for now
   const mapper = paramMappers[toProvider];
   if (mapper) {
-    translatedParams = mapper(translatedParams as any) as Record<
-      string,
-      unknown
-    >;
+    if (toProvider === "anthropic") {
+      translatedParams = openaiParamsToAnthropicMesssageParams(
+        translatedParams as any,
+        modelSpec,
+      ) as unknown as Record<string, unknown>;
+    } else {
+      translatedParams = mapper(translatedParams as any) as Record<
+        string,
+        unknown
+      >;
+    }
   }
 
   return translatedParams;

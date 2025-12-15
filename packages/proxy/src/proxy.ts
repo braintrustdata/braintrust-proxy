@@ -2533,16 +2533,20 @@ async function fetchAnthropicChatCompletions({
   }
 
   messages = flattenAnthropicMessages(messages);
-  const params: Record<string, unknown> = translateParams("anthropic", {
-    ...oaiParams,
-    _maxOutputTokens: modelSpec?.max_output_tokens,
-  });
+  const params: Record<string, unknown> = translateParams(
+    "anthropic",
+    oaiParams,
+    modelSpec,
+  );
 
-  // Add beta header for 128k output tokens (required when max_tokens > 64000)
+  // Add beta header for 128k output tokens (only supported by Claude 3.7 Sonnet)
   const maxTokens = params.max_tokens;
+  const modelName = oaiParams.model || "";
+  const isClaude37Sonnet = /^claude-3[.-]7/i.test(modelName);
   if (
     typeof maxTokens === "number" &&
     maxTokens > 64000 &&
+    isClaude37Sonnet &&
     secret.type !== "vertex"
   ) {
     const existingBeta = headers["anthropic-beta"];

@@ -132,10 +132,7 @@ export function cleanOpenAIParams({
   reasoning_effort,
   reasoning_budget,
   reasoning_enabled,
-  _maxOutputTokens,
   ...openai
-}: OpenAIChatCompletionCreateParams & {
-  _maxOutputTokens?: number;
-}): ChatCompletionCreateParams {
+}: OpenAIChatCompletionCreateParams): ChatCompletionCreateParams {
   return openai;
 }

@@ -23,7 +23,8 @@ import type {
   OpenAIChatCompletionCreateParams,
   OpenAICompletionUsage,
 } from "../../types";
-import { getBudgetMultiplier, type ModelSpec } from "../../utils";
+import { getBudgetMultiplier } from "../../utils";
+import type { ModelSpec } from "@schema";
 import { cleanOpenAIParams } from "../../utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds, isEmpty } from "../util";

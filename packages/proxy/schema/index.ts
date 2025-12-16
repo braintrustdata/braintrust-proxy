@@ -66,7 +66,13 @@ export const modelParamToModelParam: {
 };
 
 const paramMappers: Partial<
-  Record<ModelFormat, (params: OpenAIChatCompletionCreateParams) => object>
+  Record<
+    ModelFormat,
+    (
+      params: OpenAIChatCompletionCreateParams,
+      modelSpec?: ModelSpec | null,
+    ) => object
+  >
 > = {
   anthropic: openaiParamsToAnthropicMesssageParams,
   google: openaiParamsToGeminiMessageParams,
@@ -660,21 +666,12 @@ export function translateParams(
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }
 
-  // ideally we should short circuit and just have a master mapper but this avoids scope
-  // for now
   const mapper = paramMappers[toProvider];
   if (mapper) {
-    if (toProvider === "anthropic") {
-      translatedParams = openaiParamsToAnthropicMesssageParams(
-        translatedParams as any,
-        modelSpec,
-      ) as unknown as Record<string, unknown>;
-    } else {
-      translatedParams = mapper(translatedParams as any) as Record<
-        string,
-        unknown
-      >;
-    }
+    translatedParams = mapper(
+      translatedParams as unknown as OpenAIChatCompletionCreateParams,
+      modelSpec,
+    ) as unknown as Record<string, unknown>;
   }
 
   return translatedParams;

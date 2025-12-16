@@ -540,3 +540,37 @@ it("should use model's max_output_tokens as default when max_tokens not specifie
   // Verify the proxy sent max_tokens: 64000 (from model spec) instead of 4096
   expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
 });
+
+it("should return error when non-3.7 model receives max_tokens exceeding its limit", async () => {
+  const { statusCode } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-sonnet-4-5",
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+      max_tokens: 128000,
+    },
+  });
+
+  expect(statusCode).toBeGreaterThanOrEqual(400);
+});
+
+it("should succeed with claude-3-7-sonnet when max_tokens unset (uses 128000 default + beta header)", async () => {
+  const { json, statusCode } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletion
+  >({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [{ role: "user", content: "Say hi" }],
+      stream: false,
+    },
+  });
+
+  expect(statusCode).toBeLessThan(400);
+  expect(json()).toMatchObject({
+    choices: [{ message: { role: "assistant" } }],
+  });
+});

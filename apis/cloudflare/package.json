@@ -18,7 +18,7 @@
     "wrangler": "^4.28.1"
   },
   "dependencies": {
-    "braintrust": "1.0.0",
+    "braintrust": "1.0.3",
     "@braintrust/proxy": "workspace:*",
     "openai": "^6.3.0",
     "@opentelemetry/api": "1.9.0",

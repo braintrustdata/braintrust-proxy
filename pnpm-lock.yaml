@@ -48,8 +48,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@opentelemetry/api@1.9.0)
       braintrust:
-        specifier: 1.0.0
-        version: 1.0.0(zod@3.25.34)
+        specifier: 1.0.3
+        version: 1.0.3(zod@3.25.34)
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -5156,8 +5156,8 @@ packages:
       fill-range: 7.1.1
     dev: true
 
-  /braintrust@1.0.0(zod@3.25.34):
-    resolution: {integrity: sha512-YigO8F32F4l5RoaFlJE72VXWXPMSjqqmaum4BKI94TR7RaywQjirMAU4HtNE7+7NpUhTViLnY4RL2p/JMSH/pg==}
+  /braintrust@1.0.3(zod@3.25.34):
+    resolution: {integrity: sha512-5eZ9klMVQ/1kqVhYmowZDMmTraufp5zxCvC2Trr1lwq1sxoqVjSwvO8uHei4WborVBwLXoguH9pCkJC4LXTx3g==}
     hasBin: true
     peerDependencies:
       zod: 3.25.34
@@ -5181,8 +5181,8 @@ packages:
       mustache: 4.2.0
       pluralize: 8.0.0
       simple-git: 3.27.0
-      slugify: 1.6.6
       source-map: 0.7.6
+      termi-link: 1.1.0
       uuid: 9.0.1
       zod: 3.25.34
       zod-to-json-schema: 3.24.6(zod@3.25.34)
@@ -9760,11 +9760,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /slugify@1.6.6:
-    resolution: {integrity: sha512-h+z7HKHYXj6wJU+AnS/+IH8Uh9fdcX1Lrhg1/VMdf9PwoBQXFcXiAdsy2tSK0P6gKwJLXp02r90ahUCqHk9rrw==}
-    engines: {node: '>=8.0.0'}
-    dev: false
-
   /solid-js@1.9.10:
     resolution: {integrity: sha512-Coz956cos/EPDlhs6+jsdTxKuJDPT7B5SVIWgABwROyxjY7Xbr8wkzD68Et+NxnV7DLJ3nJdAC2r9InuV/4Jew==}
     dependencies:
@@ -10133,6 +10128,11 @@ packages:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
     engines: {node: '>=6'}
     dev: true
+
+  /termi-link@1.1.0:
+    resolution: {integrity: sha512-2qSN6TnomHgVLtk+htSWbaYs4Rd2MH/RU7VpHTy6MBstyNyWbM4yKd1DCYpE3fDg8dmGWojXCngNi/MHCzGuAA==}
+    engines: {node: '>=12'}
+    dev: false
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}

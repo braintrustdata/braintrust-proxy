@@ -557,20 +557,21 @@ it("should return error when non-3.7 model receives max_tokens exceeding its lim
   expect(statusCode).toBeGreaterThanOrEqual(400);
 });
 
-it("should succeed with claude-3-7-sonnet when max_tokens unset (uses 128000 default + beta header)", async () => {
-  const { json, statusCode } = await callProxyV1<
-    OpenAIChatCompletionCreateParams,
-    OpenAIChatCompletion
-  >({
+it("should use 128000 max_tokens and add beta header for claude-3-7-sonnet when unset", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
       model: "claude-3-7-sonnet-latest",
       messages: [{ role: "user", content: "Say hi" }],
       stream: false,
     },
+    fetch,
   });
 
-  expect(statusCode).toBeLessThan(400);
-  expect(json()).toMatchObject({
-    choices: [{ message: { role: "assistant" } }],
-  });
+  expect(requests).toHaveLength(1);
+  expect(requests[0].body).toMatchObject({ max_tokens: 128000 });
+  expect(requests[0].headers["anthropic-beta"]).toContain(
+    "output-128k-2025-02-19",
+  );
 });

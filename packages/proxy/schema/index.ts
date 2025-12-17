@@ -666,6 +666,8 @@ export function translateParams(
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }
 
+  // ideally we should short circuit and just have a master mapper but this avoids scope
+  // for now
   const mapper = paramMappers[toProvider];
   if (mapper) {
     translatedParams = mapper(

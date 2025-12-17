@@ -24,6 +24,7 @@ import type {
   OpenAICompletionUsage,
 } from "../../types";
 import { getBudgetMultiplier } from "../../utils";
+import type { ModelSpec } from "@schema";
 import { cleanOpenAIParams } from "../../utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { getTimestampInSeconds, isEmpty } from "../util";
@@ -480,6 +481,7 @@ type GeminiGenerateContentParams = Omit<GenerateContentParameters, "config"> &
 
 export const openaiParamsToGeminiMessageParams = (
   openai: OpenAIChatCompletionCreateParams,
+  _modelSpec?: ModelSpec | null,
 ): GeminiGenerateContentParams => {
   const gemini: GeminiGenerateContentParams = {
     // TODO: we depend on translateParams to get us half way there

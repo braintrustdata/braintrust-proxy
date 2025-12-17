@@ -5,7 +5,12 @@ import type {
   MessageRoleType as MessageRole,
   ModelParamsType as ModelParams,
 } from "../src/generated_types";
-import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
+import {
+  ModelFormat,
+  ModelEndpointType,
+  ModelSpec,
+  getAvailableModels,
+} from "./models";
 import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
 import { OpenAIChatCompletionCreateParams } from "@types";
 import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
@@ -61,7 +66,13 @@ export const modelParamToModelParam: {
 };
 
 const paramMappers: Partial<
-  Record<ModelFormat, (params: OpenAIChatCompletionCreateParams) => object>
+  Record<
+    ModelFormat,
+    (
+      params: OpenAIChatCompletionCreateParams,
+      modelSpec?: ModelSpec | null,
+    ) => object
+  >
 > = {
   anthropic: openaiParamsToAnthropicMesssageParams,
   google: openaiParamsToGeminiMessageParams,
@@ -491,6 +502,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-code-fast": ["xAI"],
   "grok-code-fast-1-0825": ["xAI"],
   "gemini-3-pro-image-preview": ["google"],
+  "gemini-3-flash-preview": ["google"],
+  "publishers/google/models/gemini-3-pro-preview": ["vertex"],
+  "publishers/google/models/gemini-3-flash-preview": ["vertex"],
   "publishers/google/models/gemini-3-pro-image-preview": ["vertex"],
   "publishers/google/models/gemini-2.5-pro": ["vertex"],
   "publishers/google/models/gemini-2.5-pro-preview-05-06": ["vertex"],
@@ -632,6 +646,7 @@ ${content}<|im_end|>`,
 export function translateParams(
   toProvider: ModelFormat,
   params: Record<string, unknown>,
+  modelSpec?: ModelSpec | null,
 ): Record<string, unknown> {
   let translatedParams: Record<string, unknown> = {};
 
@@ -657,10 +672,10 @@ export function translateParams(
   // for now
   const mapper = paramMappers[toProvider];
   if (mapper) {
-    translatedParams = mapper(translatedParams as any) as Record<
-      string,
-      unknown
-    >;
+    translatedParams = mapper(
+      translatedParams as unknown as OpenAIChatCompletionCreateParams,
+      modelSpec,
+    ) as unknown as Record<string, unknown>;
   }
 
   return translatedParams;

@@ -27,6 +27,7 @@ import {
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources";
+import { ModelSpec } from "@schema";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
@@ -704,14 +705,17 @@ export const DEFAULT_ANTHROPIC_MAX_TOKENS = 4096;
 
 export function openaiParamsToAnthropicMesssageParams(
   openai: OpenAIChatCompletionCreateParams,
+  modelSpec?: ModelSpec | null,
 ): MessageCreateParams {
   const anthropic: MessageCreateParams = {
     // TODO: we depend on translateParams to get us half way there
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-assertions
     ...(cleanOpenAIParams(openai) as any),
   };
 
   const maxTokens =
     Math.max(openai.max_completion_tokens || 0, openai.max_tokens || 0) ||
+    modelSpec?.max_output_tokens ||
     DEFAULT_ANTHROPIC_MAX_TOKENS;
 
   anthropic.max_tokens = maxTokens;

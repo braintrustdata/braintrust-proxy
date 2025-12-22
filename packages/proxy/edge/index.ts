@@ -5,7 +5,6 @@ import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
-import { Span } from "braintrust";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -37,7 +36,8 @@ export interface ProxyOpts {
   logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
-  span?: Span;
+  spanId?: string;
+  spanExport?: string;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -290,14 +290,12 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 
     const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
 
-    // Set span headers if a span is available
-    if (opts.span) {
-      const spanId = opts.span.id;
-      if (spanId.trim() !== "") {
-        setHeader("x-bt-span-id", spanId);
-        const spanExport = await opts.span.export();
-        setHeader("x-bt-span-export", spanExport);
-      }
+    // Set span headers if available
+    if (opts.spanId) {
+      setHeader("x-bt-span-id", opts.spanId);
+    }
+    if (opts.spanExport) {
+      setHeader("x-bt-span-export", opts.spanExport);
     }
 
     const cachePut = async (

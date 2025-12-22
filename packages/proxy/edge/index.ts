@@ -3,9 +3,9 @@ import { flushMetrics } from "@lib/metrics";
 import { proxyV1, SpanLogger, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
-import { Meter } from "@opentelemetry/api";
 
 import { APISecret, getModelEndpointTypes } from "@schema";
+import { Span } from "braintrust";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -37,6 +37,7 @@ export interface ProxyOpts {
   logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
+  span?: Span;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -177,7 +178,7 @@ export function makeFetchApiSecrets({
     let lookupFailed = false;
     // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
     // that changes roll out quickly enough too.
-    let ttl = 60;
+    const ttl = 60;
     try {
       const response = await fetch(
         `${opts.braintrustApiUrl || DEFAULT_BRAINTRUST_APP_URL}/api/secret`,
@@ -258,11 +259,11 @@ export function EdgeProxyV1(opts: ProxyOpts) {
 
     // Create an identity TransformStream (a.k.a. a pipe).
     // The readable side will become our new response body.
-    let { readable, writable } = new TransformStream();
+    const { readable, writable } = new TransformStream();
 
     let status = 200;
 
-    let headers: Record<string, string> = opts.cors ? corsHeaders : {};
+    const headers: Record<string, string> = opts.cors ? corsHeaders : {};
 
     const setStatus = (code: number) => {
       status = code;
@@ -288,6 +289,16 @@ export function EdgeProxyV1(opts: ProxyOpts) {
     };
 
     const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+
+    // Set span headers if a span is available
+    if (opts.span) {
+      const spanId = opts.span.id;
+      if (spanId.trim() !== "") {
+        setHeader("x-bt-span-id", spanId);
+        const spanExport = await opts.span.export();
+        setHeader("x-bt-span-export", spanExport);
+      }
+    }
 
     const cachePut = async (
       encryptionKey: string,

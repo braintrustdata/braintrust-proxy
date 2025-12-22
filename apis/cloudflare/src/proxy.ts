@@ -187,6 +187,7 @@ export async function handleProxyV1(
     logHistogram, // Pass logging functions to edge layer
     whitelist,
     spanLogger,
+    span,
   };
 
   const url = new URL(request.url);

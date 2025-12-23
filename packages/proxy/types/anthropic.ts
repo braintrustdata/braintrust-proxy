@@ -51,7 +51,7 @@ const anthropicToolUseContentPartSchema = z.object({
   type: z.literal("tool_use"),
   id: z.string(),
   name: z.string(),
-  input: z.record(z.any()),
+  input: z.record(z.string(), z.unknown()),
   cache_control: cacheControlSchema.optional(),
 });
 
@@ -59,7 +59,7 @@ const anthropicServerToolUseContentPartSchema = z.object({
   type: z.literal("server_tool_use"),
   id: z.string(),
   name: z.enum(["web_search", "code_execution"]),
-  input: z.record(z.any()),
+  input: z.record(z.string(), z.unknown()),
   cache_control: cacheControlSchema.optional(),
 });
 
@@ -129,7 +129,7 @@ const anthropicMCPToolUseContentPartSchema = z.object({
   type: z.literal("mcp_tool_use"),
   id: z.string(),
   name: z.string(),
-  input: z.record(z.any()),
+  input: z.record(z.string(), z.unknown()),
   server_name: z.string(),
   cache_control: cacheControlSchema.nullish(),
 });
@@ -145,7 +145,7 @@ const anthropicMCPToolResultContentPartSchema = z.object({
         type: z.literal("text"),
         text: z.string(),
         // This is a simplification of the strict citation schema
-        citations: z.array(z.record(z.any())).nullish(),
+        citations: z.array(z.record(z.string(), z.unknown())).nullish(),
         cache_control: cacheControlSchema.nullish(),
       }),
     ),

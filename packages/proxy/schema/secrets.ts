@@ -2,12 +2,12 @@ import { z } from "zod";
 import { ModelSchema } from "./models";
 
 export const BaseMetadataSchema = z.strictObject({
-    models: z.array(z.string()).nullish(),
-    customModels: z.record(z.string(), ModelSchema).nullish(),
-    excludeDefaultModels: z.boolean().nullish(),
-    additionalHeaders: z.record(z.string(), z.string()).nullish(),
-    supportsStreaming: z.boolean().prefault(true),
-  });
+  models: z.array(z.string()).nullish(),
+  customModels: z.record(z.string(), ModelSchema).nullish(),
+  excludeDefaultModels: z.boolean().nullish(),
+  additionalHeaders: z.record(z.string(), z.string()).nullish(),
+  supportsStreaming: z.boolean().prefault(true),
+});
 
 export const AzureMetadataSchema = BaseMetadataSchema.extend({
   api_base: z.url(),
@@ -55,88 +55,66 @@ export const DatabricksOAuthSecretSchema = z.object({
 });
 export type DatabricksOAuthSecret = z.infer<typeof DatabricksOAuthSecretSchema>;
 
-export const OpenAIMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        api_base: z.union([
-          z.url().optional(),
-          z.string().length(0),
-          z.null(),
-        ]),
-        organization_id: z.string().nullish(),
-      }).shape
-);
+export const OpenAIMetadataSchema = BaseMetadataSchema.extend({
+  api_base: z.union([z.url().optional(), z.string().length(0), z.null()]),
+  organization_id: z.string().nullish(),
+});
 
-export const MistralMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        api_base: z.union([z.url(), z.string().length(0)]).nullish(),
-      }).shape
-);
+export const MistralMetadataSchema = BaseMetadataSchema.extend({
+  api_base: z.union([z.url(), z.string().length(0)]).nullish(),
+});
 
 const APISecretBaseSchema = z.strictObject({
-    id: z.uuid().nullish(),
-    org_name: z.string().nullish(),
-    name: z.string().nullish(),
-    secret: z.string(),
-    metadata: z.record(z.string(), z.unknown()).nullish(),
-  });
+  id: z.uuid().nullish(),
+  org_name: z.string().nullish(),
+  name: z.string().nullish(),
+  secret: z.string(),
+  metadata: z.record(z.string(), z.unknown()).nullish(),
+});
 
 export const APISecretSchema = z.union([
-  APISecretBaseSchema.extend(
-    z.object({
-              type: z.enum([
-                "perplexity",
-                "anthropic",
-                "google",
-                "replicate",
-                "together",
-                "baseten",
-                "ollama",
-                "groq",
-                "lepton",
-                "fireworks",
-                "cerebras",
-                "xAI",
-                "js",
-              ]),
-              metadata: BaseMetadataSchema.nullish(),
-            }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-              type: z.literal("openai"),
-              metadata: OpenAIMetadataSchema.nullish(),
-            }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-            type: z.literal("azure"),
-            metadata: AzureMetadataSchema.nullish(),
-          }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-            type: z.literal("bedrock"),
-            metadata: BedrockMetadataSchema.nullish(),
-          }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-            type: z.literal("vertex"),
-            metadata: VertexMetadataSchema.nullish(),
-          }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-            type: z.literal("databricks"),
-            metadata: DatabricksMetadataSchema.nullish(),
-          }).shape
-  ),
-  APISecretBaseSchema.extend(
-    z.object({
-            type: z.literal("mistral"),
-            metadata: MistralMetadataSchema.nullish(),
-          }).shape
-  ),
+  APISecretBaseSchema.extend({
+    type: z.enum([
+      "perplexity",
+      "anthropic",
+      "google",
+      "replicate",
+      "together",
+      "baseten",
+      "ollama",
+      "groq",
+      "lepton",
+      "fireworks",
+      "cerebras",
+      "xAI",
+      "js",
+    ]),
+    metadata: BaseMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("openai"),
+    metadata: OpenAIMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("azure"),
+    metadata: AzureMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("bedrock"),
+    metadata: BedrockMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("vertex"),
+    metadata: VertexMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("databricks"),
+    metadata: DatabricksMetadataSchema.nullish(),
+  }),
+  APISecretBaseSchema.extend({
+    type: z.literal("mistral"),
+    metadata: MistralMetadataSchema.nullish(),
+  }),
 ]);
 
 export type APISecret = z.infer<typeof APISecretSchema>;
@@ -148,8 +126,8 @@ export const proxyLoggingParamSchema = z
     compress_audio: z.boolean().prefault(true),
   })
   .refine((data) => data.parent || data.project_name, {
-      error: "Either 'parent' or 'project_name' must be provided"
-})
+    error: "Either 'parent' or 'project_name' must be provided",
+  })
   .describe(
     "If present, proxy will log requests to the given Braintrust project or parent span.",
   );

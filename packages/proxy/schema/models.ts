@@ -87,14 +87,19 @@ export const ModelSchema = z.object({
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
 import modelListJson from "./model_list.json";
-const modelListJsonTyped = z.record(z.string(), ModelSchema).parse(modelListJson);
+const modelListJsonTyped = z
+  .record(z.string(), ModelSchema)
+  .parse(modelListJson);
 
 // Because this file can be included and bundled in various ways, it's important to
 // really inject these variables into the global scope, rather than let the bundler
 // have its way with them.
 declare global {
+  // eslint-disable-next-line no-var
   var _proxy_availableModels: { [name: string]: ModelSpec } | undefined;
+  // eslint-disable-next-line no-var
   var _proxy_cachedModels: { [name: string]: ModelSpec } | null;
+  // eslint-disable-next-line no-var
   var _proxy_cacheTimestamp: number | null;
 }
 
@@ -158,6 +163,7 @@ async function loadModelsFromControlPlane(
         throw new Error(`Failed to fetch models: ${response.statusText}`);
       }
       const data = await response.json();
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
       globalThis._proxy_cachedModels = data as { [name: string]: ModelSpec };
       globalThis._proxy_cacheTimestamp = Date.now();
     } catch (error) {

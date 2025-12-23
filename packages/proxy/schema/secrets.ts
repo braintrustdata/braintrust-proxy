@@ -9,20 +9,18 @@ export const BaseMetadataSchema = z.strictObject({
     supportsStreaming: z.boolean().prefault(true),
   });
 
-export const AzureMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        api_base: z.url(),
-        api_version: z.string().prefault("2023-07-01-preview"),
-        deployment: z.string().nullish(),
-        auth_type: z.enum(["api_key", "entra_api"]).prefault("api_key"),
-        no_named_deployment: z
-          .boolean()
-          .prefault(false)
-          .describe(
-            "If true, the deployment name will not be used in the request path.",
-          ),
-      }).shape
-);
+export const AzureMetadataSchema = BaseMetadataSchema.extend({
+  api_base: z.url(),
+  api_version: z.string().prefault("2023-07-01-preview"),
+  deployment: z.string().nullish(),
+  auth_type: z.enum(["api_key", "entra_api"]).prefault("api_key"),
+  no_named_deployment: z
+    .boolean()
+    .prefault(false)
+    .describe(
+      "If true, the deployment name will not be used in the request path.",
+    ),
+});
 
 export const AzureEntraSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),
@@ -32,30 +30,24 @@ export const AzureEntraSecretSchema = z.object({
 });
 export type AzureEntraSecret = z.infer<typeof AzureEntraSecretSchema>;
 
-export const BedrockMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        region: z.string().min(1, "Region cannot be empty"),
-        access_key: z.string().min(1, "Access key cannot be empty"),
-        session_token: z.string().nullish(),
-        api_base: z.union([z.url(), z.string().length(0)]).nullish(),
-      }).shape
-);
+export const BedrockMetadataSchema = BaseMetadataSchema.extend({
+  region: z.string().min(1, "Region cannot be empty"),
+  access_key: z.string().min(1, "Access key cannot be empty"),
+  session_token: z.string().nullish(),
+  api_base: z.union([z.url(), z.string().length(0)]).nullish(),
+});
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
-export const VertexMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        project: z.string().min(1, "Project cannot be empty"),
-        authType: z.enum(["access_token", "service_account_key"]),
-        api_base: z.union([z.url(), z.string().length(0)]).nullish(),
-      }).shape
-);
+export const VertexMetadataSchema = BaseMetadataSchema.extend({
+  project: z.string().min(1, "Project cannot be empty"),
+  authType: z.enum(["access_token", "service_account_key"]),
+  api_base: z.union([z.url(), z.string().length(0)]).nullish(),
+});
 
-export const DatabricksMetadataSchema = BaseMetadataSchema.extend(
-  z.strictObject({
-        api_base: z.url(),
-        auth_type: z.enum(["pat", "service_principal_oauth"]).prefault("pat"),
-      }).shape
-);
+export const DatabricksMetadataSchema = BaseMetadataSchema.extend({
+  api_base: z.url(),
+  auth_type: z.enum(["pat", "service_principal_oauth"]).prefault("pat"),
+});
 
 export const DatabricksOAuthSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),

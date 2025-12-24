@@ -75,7 +75,7 @@ const liteLLMModelDetailSchema = z
   })
   .passthrough();
 
-const liteLLMModelListSchema = z.record(liteLLMModelDetailSchema);
+const liteLLMModelListSchema = z.record(z.string(), liteLLMModelDetailSchema);
 
 type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
 type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
@@ -114,7 +114,7 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
             if (error instanceof z.ZodError) {
               console.error(
                 "Zod validation errors in remote data:",
-                error.errors,
+                error.issues,
               );
               reject(
                 new Error(
@@ -142,12 +142,12 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
     const localData = JSON.parse(fileContent);
     // Validate local data with the imported ModelSchema
-    return z.record(ModelSchema).parse(localData);
+    return z.record(z.string(), ModelSchema).parse(localData);
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error(
         "Zod validation errors in local model_list.json:",
-        error.errors,
+        error.issues,
       );
       throw new Error("Local model_list.json failed Zod validation.");
     }

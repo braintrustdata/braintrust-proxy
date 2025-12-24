@@ -162,7 +162,7 @@ test("verifyTempCredentials wrong payload type", async () => {
   });
   await expect(
     verifyTempCredentials({ jwt: jwtWrongSchema, cacheGet }),
-  ).rejects.toThrow("invalid_literal");
+  ).rejects.toThrow("invalid_value");
 
   // Non object.
   const jwtWrongType = jwtSign("not an object", "auth token", {

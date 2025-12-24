@@ -690,14 +690,14 @@ export const anthropicSupportedMediaTypes = [
 
 export const anthropicTextBlockSchema = z.object({
   type: z.literal("text").optional(),
-  text: z.string().default(""),
+  text: z.string().prefault(""),
 });
 export const anthropicImageBlockSchema = z.object({
   type: z.literal("image").optional(),
   source: z.object({
     type: z.enum(["base64"]).optional(),
     media_type: z.enum(["image/jpeg", "image/png", "image/gif", "image/webp"]),
-    data: z.string().default(""),
+    data: z.string().prefault(""),
   }),
 });
 const anthropicContentBlockSchema = z.union([
@@ -706,7 +706,7 @@ const anthropicContentBlockSchema = z.union([
 ]);
 const anthropicContentBlocksSchema = z.array(anthropicContentBlockSchema);
 const anthropicContentSchema = z.union([
-  z.string().default(""),
+  z.string().prefault(""),
   anthropicContentBlocksSchema,
 ]);
 

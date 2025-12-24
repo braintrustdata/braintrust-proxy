@@ -26,6 +26,6 @@
     "@opentelemetry/resources": "^2.0.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
     "dotenv": "^16.3.1",
-    "zod": "3.25.34"
+    "zod": "4.2.1"
   }
 }

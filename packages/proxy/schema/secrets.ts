@@ -65,7 +65,7 @@ export const MistralMetadataSchema = BaseMetadataSchema.extend({
 });
 
 const APISecretBaseSchema = z.strictObject({
-  id: z.uuid().nullish(),
+  id: z.string().uuid().nullish(),
   org_name: z.string().nullish(),
   name: z.string().nullish(),
   secret: z.string(),

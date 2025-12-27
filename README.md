@@ -98,9 +98,10 @@ To see docs for how to deploy on various platforms, see the READMEs in the corre
 
 ## Developing
 
-To build the proxy, install [pnpm](https://pnpm.io/installation) and run:
+To build the proxy, install [mise](https://mise.jdx.dev/getting-started.html) and run:
 
 ```bash
+mise install
 pnpm install
 pnpm build
 ```

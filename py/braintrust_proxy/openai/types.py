@@ -1,10 +1,5 @@
 from collections.abc import Iterable
-from typing import (
-    Optional,
-    TypedDict,
-    Union,
-    cast,
-)
+from typing import TypedDict, Union, cast
 
 from openai.types.chat.chat_completion_assistant_message_param import (
     ChatCompletionAssistantMessageParam as BaseChatCompletionAssistantMessageParam,
@@ -15,12 +10,14 @@ from openai.types.chat.chat_completion_message_param import (
 
 
 class Reasoning(TypedDict):
-    id: Optional[str]
-    content: Optional[str]
+    id: str | None
+    content: str | None
 
 
 class ChatCompletionAssistantMessageParam(BaseChatCompletionAssistantMessageParam):
-    reasoning: Optional[Iterable[Reasoning]]
+    reasoning: Iterable[Reasoning] | None
 
 
-ChatCompletionMessageParam = Union[BaseChatCompletionMessageParam, ChatCompletionAssistantMessageParam]
+ChatCompletionMessageParam = Union[
+    BaseChatCompletionMessageParam, ChatCompletionAssistantMessageParam
+]

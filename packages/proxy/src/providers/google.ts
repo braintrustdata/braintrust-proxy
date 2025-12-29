@@ -367,13 +367,10 @@ function convertGeminiPartsToOpenAIContent(
     }
   }
 
-  // If only text content (single part), return as string for backwards compatibility
-  if (
-    !hasNonTextContent &&
-    contentParts.length === 1 &&
-    contentParts[0].type === "text"
-  ) {
-    return contentParts[0].text ?? "";
+  // If only text content (no images), return as string for backwards compatibility
+  // Concatenate all text parts into a single string
+  if (!hasNonTextContent && contentParts.every((p) => p.type === "text")) {
+    return contentParts.map((p) => p.text ?? "").join("");
   }
 
   // If no content parts, return empty string

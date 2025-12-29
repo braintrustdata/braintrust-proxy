@@ -22,7 +22,7 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^2.1.9"
   },
-  "packageManager": "pnpm@9.13.2",
+  "packageManager": "pnpm@10.26.2",
   "resolutions": {
     "zod": "3.25.34"
   }

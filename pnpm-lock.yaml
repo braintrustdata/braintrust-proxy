@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  zod: 3.25.34
+  zod: 4.2.1
 
 importers:
 
@@ -49,16 +49,16 @@ importers:
         version: 2.1.0(@opentelemetry/api@1.9.0)
       braintrust:
         specifier: ^0.3.7
-        version: 0.3.7(zod@3.25.34)
+        version: 0.3.7(zod@4.2.1)
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
       openai:
         specifier: ^6.3.0
-        version: 6.3.0(zod@3.25.34)
+        version: 6.3.0(zod@4.2.1)
       zod:
-        specifier: 3.25.34
-        version: 3.25.34
+        specifier: 4.2.1
+        version: 4.2.1
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20250810.0
@@ -116,7 +116,7 @@ importers:
         version: 4.19.2
       openai:
         specifier: ^4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(zod@4.2.1)
       redis:
         specifier: ^4.6.8
         version: 4.6.8
@@ -256,7 +256,7 @@ importers:
         version: 9.0.2
       openai:
         specifier: 4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(zod@4.2.1)
       openapi-json-schema:
         specifier: ^2.0.0
         version: 2.0.0
@@ -264,8 +264,8 @@ importers:
         specifier: ^9.0.1
         version: 9.0.1
       zod:
-        specifier: 3.25.34
-        version: 3.25.34
+        specifier: 4.2.1
+        version: 4.2.1
     devDependencies:
       '@types/content-disposition':
         specifier: ^0.5.8
@@ -317,7 +317,7 @@ importers:
         version: 17.7.2
       zod-to-json-schema:
         specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.34)
+        version: 3.24.6(zod@4.2.1)
 
 packages:
 
@@ -4561,7 +4561,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.5.22
       '@vue/shared': 3.5.22
-      vue: 3.5.22(typescript@5.5.4)
+      vue: 3.5.22(typescript@5.3.3)
     dev: false
 
   /@vue/shared@3.5.13:
@@ -4572,14 +4572,14 @@ packages:
     resolution: {integrity: sha512-F4yc6palwq3TT0u+FYf0Ns4Tfl9GRFURDN2gWG7L1ecIaS/4fCIuFOjMTnCyjsu/OK6vaDKLCrGAa+KvvH+h4w==}
     dev: false
 
-  /@zodios/core@10.9.6(axios@1.13.1)(zod@3.25.34):
+  /@zodios/core@10.9.6(axios@1.13.1)(zod@4.2.1):
     resolution: {integrity: sha512-aH4rOdb3AcezN7ws8vDgBfGboZMk2JGGzEq/DtW65MhnRxyTGRuLJRWVQ/2KxDgWvV2F5oTkAS+5pnjKbl0n+A==}
     peerDependencies:
       axios: ^0.x || ^1.0.0
-      zod: 3.25.34
+      zod: 4.2.1
     dependencies:
       axios: 1.13.1
-      zod: 3.25.34
+      zod: 4.2.1
     dev: true
 
   /abbrev@1.1.1:
@@ -5086,11 +5086,11 @@ packages:
       fill-range: 7.1.1
     dev: true
 
-  /braintrust@0.3.7(zod@3.25.34):
+  /braintrust@0.3.7(zod@4.2.1):
     resolution: {integrity: sha512-P6nJLgM98IOiBvAsgfUn9dbrLhmTfvED/+2ouacImTgs9adlZoGrIib9BkRAm+keSTfKLBPFqMmUi7QZ4ClemQ==}
     hasBin: true
     peerDependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@next/env': 14.2.3
@@ -5112,8 +5112,8 @@ packages:
       slugify: 1.6.6
       source-map: 0.7.4
       uuid: 9.0.1
-      zod: 3.25.34
-      zod-to-json-schema: 3.23.5(zod@3.25.34)
+      zod: 4.2.1
+      zod-to-json-schema: 3.23.5(zod@4.2.1)
     transitivePeerDependencies:
       - '@aws-sdk/credential-provider-web-identity'
       - supports-color
@@ -8070,7 +8070,7 @@ packages:
       workerd: 1.20251008.0
       ws: 8.18.0
       youch: 4.1.0-beta.10
-      zod: 3.25.34
+      zod: 4.2.1
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -8474,12 +8474,12 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /openai@4.104.0(zod@3.25.34):
+  /openai@4.104.0(zod@4.2.1):
     resolution: {integrity: sha512-p99EFNsA/yX6UhVO93f5kJsDRLAg+CTA2RBqdHK4RtK8u5IJw32Hyb2dTGKbnnFmnuoBv5r7Z2CURI9sGZpSuA==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: 3.25.34
+      zod: 4.2.1
     peerDependenciesMeta:
       ws:
         optional: true
@@ -8493,24 +8493,24 @@ packages:
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
-      zod: 3.25.34
+      zod: 4.2.1
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /openai@6.3.0(zod@3.25.34):
+  /openai@6.3.0(zod@4.2.1):
     resolution: {integrity: sha512-E6vOGtZvdcb4yXQ5jXvDlUG599OhIkb/GjBLZXS+qk0HF+PJReIldEc9hM8Ft81vn+N6dRdFRb7BZNK8bbvXrw==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
-      zod: 3.25.34
+      zod: 4.2.1
     peerDependenciesMeta:
       ws:
         optional: true
       zod:
         optional: true
     dependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dev: false
 
   /openapi-json-schema@2.0.0:
@@ -8527,7 +8527,7 @@ packages:
     dependencies:
       '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
       '@liuli-util/fs-extra': 0.1.0
-      '@zodios/core': 10.9.6(axios@1.13.1)(zod@3.25.34)
+      '@zodios/core': 10.9.6(axios@1.13.1)(zod@4.2.1)
       axios: 1.13.1
       cac: 6.7.14
       handlebars: 4.7.8
@@ -8538,7 +8538,7 @@ packages:
       tanu: 0.1.13
       ts-pattern: 5.8.0
       whence: 2.1.0
-      zod: 3.25.34
+      zod: 4.2.1
     transitivePeerDependencies:
       - debug
       - react
@@ -10002,7 +10002,7 @@ packages:
     peerDependencies:
       vue: '>=3.2.26 < 4'
     dependencies:
-      vue: 3.5.22(typescript@5.5.4)
+      vue: 3.5.22(typescript@5.3.3)
     dev: false
 
   /tailwindcss@3.2.7(postcss@8.4.38):
@@ -11236,21 +11236,21 @@ packages:
       youch-core: 0.3.3
     dev: true
 
-  /zod-to-json-schema@3.23.5(zod@3.25.34):
+  /zod-to-json-schema@3.23.5(zod@4.2.1):
     resolution: {integrity: sha512-5wlSS0bXfF/BrL4jPAbz9da5hDlDptdEppYfe+x4eIJ7jioqKG9uUxOwPzqof09u/XeVdrgFu29lZi+8XNDJtA==}
     peerDependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dev: false
 
-  /zod-to-json-schema@3.24.6(zod@3.25.34):
+  /zod-to-json-schema@3.24.6(zod@4.2.1):
     resolution: {integrity: sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==}
     peerDependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dependencies:
-      zod: 3.25.34
+      zod: 4.2.1
     dev: true
 
-  /zod@3.25.34:
-    resolution: {integrity: sha512-lZHvSc2PpWdcfpHlyB33HA9nqP16GpC9IpiG4lYq9jZCJVLZNnWd6Y1cj79bcLSBKTkxepfpjckPv5Y5VOPlwA==}
+  /zod@4.2.1:
+    resolution: {integrity: sha512-0wZ1IRqGGhMP76gLqz8EyfBXKk0J2qo2+H3fi4mcUP/KtTocoX08nmIAHl1Z2kJIZbZee8KOpBCSNPRgauucjw==}

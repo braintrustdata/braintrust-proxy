@@ -25,8 +25,8 @@ export const pcmAudioFormatSchema = z
   .discriminatedUnion("name", [
     z.object({
       name: z.literal("pcm"),
-      byte_order: z.enum(["little", "big"]).default("little"),
-      number_encoding: z.enum(["int", "float"]).default("int"),
+      byte_order: z.enum(["little", "big"]).prefault("little"),
+      number_encoding: z.enum(["int", "float"]).prefault("int"),
       bits_per_sample: z.union([z.literal(8), z.literal(16)]),
     }),
     z.object({

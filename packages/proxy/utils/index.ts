@@ -18,10 +18,12 @@ export function getCurrentUnixTimestamp(): number {
 }
 
 export const effortToBudgetMultiplier = {
+  none: 0,
   minimal: 0,
   low: 0.2,
   medium: 0.5,
   high: 0.8,
+  xhigh: 1.0,
 } as const;
 
 export const getBudgetMultiplier = (

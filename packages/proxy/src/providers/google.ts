@@ -188,27 +188,27 @@ export async function openAIMessagesToGoogleMessages(
   return sortedContent;
 }
 
-const finishReason = finishReasonSchema.Enum;
+// finishReasonSchema.Enum (v3) is not available in Zod v4; switch on string literals instead
 
 function translateFinishReason(
   reason?: FinishReason | null,
 ): OpenAIChatCompletionChoice["finish_reason"] | null {
   // "length" | "stop" | "tool_calls" | "content_filter" | "function_call"
   switch (reason) {
-    case finishReason.MAX_TOKENS:
+    case "MAX_TOKENS":
       return "length";
-    case finishReason.SAFETY:
-    case finishReason.PROHIBITED_CONTENT:
-    case finishReason.SPII:
-    case finishReason.BLOCKLIST:
+    case "SAFETY":
+    case "PROHIBITED_CONTENT":
+    case "SPII":
+    case "BLOCKLIST":
       return "content_filter";
-    case finishReason.STOP:
+    case "STOP":
       return "stop";
-    case finishReason.RECITATION:
-    case finishReason.LANGUAGE:
-    case finishReason.OTHER:
-    case finishReason.FINISH_REASON_UNSPECIFIED:
-    case finishReason.MALFORMED_FUNCTION_CALL:
+    case "RECITATION":
+    case "LANGUAGE":
+    case "OTHER":
+    case "FINISH_REASON_UNSPECIFIED":
+    case "MALFORMED_FUNCTION_CALL":
       return "content_filter";
     case undefined:
     default:
@@ -367,13 +367,10 @@ function convertGeminiPartsToOpenAIContent(
     }
   }
 
-  // If only text content (single part), return as string for backwards compatibility
-  if (
-    !hasNonTextContent &&
-    contentParts.length === 1 &&
-    contentParts[0].type === "text"
-  ) {
-    return contentParts[0].text ?? "";
+  // If only text content (no images), return as string for backwards compatibility
+  // Concatenate all text parts into a single string
+  if (!hasNonTextContent && contentParts.every((p) => p.type === "text")) {
+    return contentParts.map((p) => p.text ?? "").join("");
   }
 
   // If no content parts, return empty string

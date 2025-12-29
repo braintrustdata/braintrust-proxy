@@ -266,6 +266,9 @@ importers:
       zod:
         specifier: 3.25.34
         version: 3.25.34
+      zod-to-json-schema:
+        specifier: ^3.25.0
+        version: 3.25.1(zod@3.25.34)
     devDependencies:
       '@types/content-disposition':
         specifier: ^0.5.8
@@ -315,9 +318,6 @@ importers:
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
-      zod-to-json-schema:
-        specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.34)
 
 packages:
 
@@ -4561,7 +4561,7 @@ packages:
     dependencies:
       '@vue/compiler-ssr': 3.5.22
       '@vue/shared': 3.5.22
-      vue: 3.5.22(typescript@5.5.4)
+      vue: 3.5.22(typescript@5.3.3)
     dev: false
 
   /@vue/shared@3.5.13:
@@ -10002,7 +10002,7 @@ packages:
     peerDependencies:
       vue: '>=3.2.26 < 4'
     dependencies:
-      vue: 3.5.22(typescript@5.5.4)
+      vue: 3.5.22(typescript@5.3.3)
     dev: false
 
   /tailwindcss@3.2.7(postcss@8.4.38):
@@ -11244,13 +11244,13 @@ packages:
       zod: 3.25.34
     dev: false
 
-  /zod-to-json-schema@3.24.6(zod@3.25.34):
-    resolution: {integrity: sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==}
+  /zod-to-json-schema@3.25.1(zod@3.25.34):
+    resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
     peerDependencies:
       zod: 3.25.34
     dependencies:
       zod: 3.25.34
-    dev: true
+    dev: false
 
   /zod@3.25.34:
     resolution: {integrity: sha512-lZHvSc2PpWdcfpHlyB33HA9nqP16GpC9IpiG4lYq9jZCJVLZNnWd6Y1cj79bcLSBKTkxepfpjckPv5Y5VOPlwA==}

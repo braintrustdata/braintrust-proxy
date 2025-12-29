@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 import { AzureEntraSecretSchema } from "@braintrust/proxy/schema";
 
 const azureEntraResponseSchema = z.union([

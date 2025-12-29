@@ -1,7 +1,7 @@
 import fs from "fs";
 import https from "https";
 import path from "path";
-import { z } from "zod";
+import { z } from "zod/v3";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";

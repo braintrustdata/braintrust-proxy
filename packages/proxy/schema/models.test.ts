@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import raw_models from "./model_list.json";
 import { ModelSchema } from "./models";
-import { z } from "zod";
+import { z } from "zod/v3";
 
 it("parse model list", () => {
   const models = z.record(z.unknown()).parse(raw_models);

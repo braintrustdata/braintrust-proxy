@@ -1,3 +1,14 @@
 packages:
-  - "apis/*"
-  - "packages/*"
+  - apis/*
+  - packages/*
+
+ignoredBuiltDependencies:
+  - "@parcel/watcher"
+  - bufferutil
+  - es5-ext
+  - esbuild
+  - msw
+  - protobufjs
+  - sharp
+  - utf-8-validate
+  - workerd

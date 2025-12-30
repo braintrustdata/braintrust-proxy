@@ -1,5 +1,5 @@
 import { AttachmentReference } from "@lib/generated_types";
-import { z } from "zod";
+import { z } from "zod/v3";
 
 export const finishReasonSchema = z.enum([
   "FINISH_REASON_UNSPECIFIED",

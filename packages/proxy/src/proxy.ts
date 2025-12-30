@@ -65,7 +65,7 @@ import {
   parseOpenAIStream,
   verifyTempCredentials,
 } from "utils";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { nowMs } from "./metrics";
 import {
   anthropicCompletionToOpenAICompletion,

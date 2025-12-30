@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 import { _urljoin } from "../src/util";
 
 export const PromptInputs = ["chat", "completion"] as const;

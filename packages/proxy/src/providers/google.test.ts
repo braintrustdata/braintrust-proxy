@@ -16,7 +16,7 @@ import {
   googleEventToOpenAIChatEvent,
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { IMAGE_DATA_URL, PDF_DATA_URL } from "./fixtures";
 
 // Integration tests that actually call the Google API

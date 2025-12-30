@@ -31,7 +31,7 @@ import { ModelSpec } from "@schema";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { getTimestampInSeconds, isEmpty, isObject } from "../util";
 import { convertMediaToBase64 } from "./util";
 

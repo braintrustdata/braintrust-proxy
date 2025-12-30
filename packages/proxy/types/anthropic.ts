@@ -1,5 +1,5 @@
 import { AttachmentReference as attachmentReferenceSchema } from "../src/generated_types";
-import { z } from "zod";
+import { z } from "zod/v3";
 
 const cacheControlSchema = z.object({
   type: z.enum(["ephemeral"]),

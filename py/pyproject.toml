@@ -1,7 +1,7 @@
 [project]
 name = "braintrust-proxy"
-version = "0.1.0"
+version = "0.2.0"
 description = "Provides Python types, Pydantic models, and helpers to extend the OpenAI client for the Braintrust proxy, improving developer experience, typechecking, and editor integration."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["openai>=1.79.0", "pydantic>=2.11.4"]

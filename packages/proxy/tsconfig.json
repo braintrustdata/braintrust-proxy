@@ -9,7 +9,9 @@
       "@lib/*": ["./src/*"],
       "@schema": ["./schema/index"],
       "@schema/*": ["./schema/*"],
-      "@types": ["./types/index"]
+      "@types": ["./types/index"],
+      "utils": ["./utils/index"],
+      "utils/*": ["./utils/*"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

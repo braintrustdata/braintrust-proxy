@@ -133,7 +133,7 @@ export const defaultModelParamSettings: {
   openai: {
     temperature: undefined,
     max_tokens: undefined,
-    top_p: 1,
+    top_p: undefined,
     frequency_penalty: 0,
     presence_penalty: 0,
     response_format: null,
@@ -145,7 +145,7 @@ export const defaultModelParamSettings: {
   anthropic: {
     temperature: undefined,
     max_tokens: undefined,
-    top_p: 0.7,
+    top_p: undefined,
     top_k: undefined,
     use_cache: true,
     reasoning_enabled: false,
@@ -155,7 +155,7 @@ export const defaultModelParamSettings: {
   google: {
     temperature: undefined,
     maxOutputTokens: undefined,
-    topP: 0.7,
+    topP: undefined,
     topK: undefined,
     use_cache: true,
     reasoning_enabled: false,
@@ -170,7 +170,7 @@ export const defaultModelParamSettings: {
   converse: {
     temperature: undefined,
     max_tokens: undefined,
-    top_p: 0.9,
+    top_p: undefined,
     use_cache: true,
   },
 };
@@ -663,7 +663,10 @@ export function translateParams(
 
     const hasDefaultParam =
       translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider]?.[translatedKey] !== undefined;
+      Object.prototype.hasOwnProperty.call(
+        defaultModelParamSettings[toProvider] ?? {},
+        translatedKey,
+      );
 
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }

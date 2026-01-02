@@ -22,13 +22,13 @@ export function isCryptoAvailable(): boolean {
   return ret;
 }
 
-export function base64ToArrayBuffer(base64: string) {
+export function base64ToArrayBuffer(base64: string): ArrayBuffer {
   var binaryString = atob(base64);
   var bytes = new Uint8Array(binaryString.length);
   for (var i = 0; i < binaryString.length; i++) {
     bytes[i] = binaryString.charCodeAt(i);
   }
-  return bytes.buffer;
+  return bytes.buffer as ArrayBuffer;
 }
 
 export function arrayBufferToBase64(buffer: ArrayBuffer) {

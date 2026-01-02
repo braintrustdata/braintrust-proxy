@@ -663,7 +663,10 @@ export function translateParams(
 
     const hasDefaultParam =
       translatedKey !== undefined &&
-      defaultModelParamSettings[toProvider]?.[translatedKey] !== undefined;
+      Object.prototype.hasOwnProperty.call(
+        defaultModelParamSettings[toProvider] ?? {},
+        translatedKey,
+      );
 
     translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
   }

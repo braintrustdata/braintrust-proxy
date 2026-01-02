@@ -115,6 +115,8 @@ export async function handleProxyV1(
 
   let spanLogger: SpanLogger | undefined;
   let span: Span | undefined;
+  let spanId: string | undefined;
+  let spanExport: string | undefined;
   const parentHeader = request.headers.get(BT_PARENT);
   if (parentHeader) {
     let parent;
@@ -147,6 +149,14 @@ export async function handleProxyV1(
       parent: parent.toStr(),
     });
     spanLogger = makeProxySpanLogger(span, ctx.waitUntil.bind(ctx));
+
+    // Extract span ID and export for response headers
+    spanId = span.id;
+    if (spanId.trim() !== "") {
+      spanExport = await span.export();
+    } else {
+      spanId = undefined;
+    }
   }
 
   const opts: ProxyOpts = {
@@ -187,6 +197,8 @@ export async function handleProxyV1(
     logHistogram, // Pass logging functions to edge layer
     whitelist,
     spanLogger,
+    spanId,
+    spanExport,
   };
 
   const url = new URL(request.url);

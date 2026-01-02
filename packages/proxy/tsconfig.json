@@ -5,7 +5,6 @@
     "target": "ES2018",
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
     "paths": {
       "@lib/*": ["src/*"],
       "@schema": ["schema/index"],

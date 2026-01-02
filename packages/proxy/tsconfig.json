@@ -6,10 +6,10 @@
     "strict": true,
     "moduleResolution": "node",
     "paths": {
-      "@lib/*": ["src/*"],
-      "@schema": ["schema/index"],
-      "@schema/*": ["schema/*"],
-      "@types": ["types/index"]
+      "@lib/*": ["./src/*"],
+      "@schema": ["./schema/index"],
+      "@schema/*": ["./schema/*"],
+      "@types": ["./types/index"]
     },
     "resolveJsonModule": true,
     "esModuleInterop": true

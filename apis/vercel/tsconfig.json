@@ -19,13 +19,13 @@
     "jsx": "preserve",
     "paths": {
       "@lib/*": [
-        "lib/*"
+        "./lib/*"
       ],
       "@components": [
-        "components/index"
+        "./components/index"
       ],
       "@components/*": [
-        "components/*"
+        "./components/*"
       ],
       "#/*": [
         "./*"

@@ -2750,11 +2750,13 @@
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Grok 4.1 Fast",
     "max_input_tokens": 2000000,
-    "max_output_tokens": 2000000
+    "max_output_tokens": 2000000,
+    "multimodal": true
   },
   "grok-4-1-fast-reasoning": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2765,6 +2767,7 @@
   "grok-4-1-fast": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2775,6 +2778,7 @@
   "grok-4-1-fast-non-reasoning-latest": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2785,6 +2789,7 @@
   "grok-4-1-fast-non-reasoning": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2795,6 +2800,7 @@
   "grok-4-fast-reasoning": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2805,6 +2811,7 @@
   "grok-4-fast-reasoning-latest": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2815,6 +2822,7 @@
   "grok-4-fast-non-reasoning": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2825,6 +2833,7 @@
   "grok-4-fast-non-reasoning-latest": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
@@ -2835,6 +2844,7 @@
   "grok-4": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Grok 4",
@@ -2844,6 +2854,7 @@
   "grok-4-latest": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "parent": "grok-4",
@@ -2853,6 +2864,7 @@
   "grok-4-0709": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "parent": "grok-4",

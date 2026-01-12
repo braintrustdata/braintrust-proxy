@@ -4775,5 +4775,24 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Qwen3 235B A22B"
+  },
+  "accounts/fireworks/models/deepseek-v3p2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.56,
+    "output_cost_per_mil_tokens": 1.68,
+    "displayName": "DeepSeek V3 P2",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192
+  },
+  "accounts/fireworks/models/kimi-k2-thinking": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Kimi K2 Thinking",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   }
 }

@@ -368,6 +368,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen2-vl-72b-instruct": ["fireworks"],
   "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": ["fireworks"],
   "accounts/fireworks/models/qwen3-235b-a22b": ["fireworks"],
+  "accounts/fireworks/models/deepseek-v3p2": ["fireworks"],
+  "accounts/fireworks/models/kimi-k2-thinking": ["fireworks"],
   "accounts/fireworks/models/mistral-small-24b-instruct-2501": ["fireworks"],
   "accounts/fireworks/models/mixtral-8x7b-instruct": ["fireworks"],
   "accounts/fireworks/models/phi-3-vision-128k-instruct": ["fireworks"],

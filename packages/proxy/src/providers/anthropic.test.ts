@@ -10,6 +10,7 @@ import {
   PDF_DATA_URL,
   TEXT_DATA_URL,
   MD_DATA_URL,
+  CSV_DATA_URL,
   AUDIO_DATA_URL,
   VIDEO_DATA_URL,
 } from "../../tests/fixtures/base64";
@@ -670,6 +671,52 @@ it("should convert markdown file to Anthropic PlainTextSource document", async (
     },
   });
   expect(typeof messages[0].content[1].source.data).toBe("string");
+});
+
+it("should convert CSV file to Anthropic PlainTextSource document", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "List all the muppets in this CSV file",
+            },
+            {
+              type: "file",
+              file: {
+                file_data: CSV_DATA_URL,
+                filename: "muppets.csv",
+              },
+            },
+          ],
+        },
+      ],
+      stream: false,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  const messages = requests[0].body.messages;
+  expect(messages).toHaveLength(1);
+  expect(messages[0].content).toHaveLength(2);
+  expect(messages[0].content[0]).toMatchObject({ type: "text" });
+  expect(messages[0].content[1]).toMatchObject({
+    type: "document",
+    source: {
+      type: "text",
+      media_type: "text/plain",
+    },
+  });
+  expect(typeof messages[0].content[1].source.data).toBe("string");
+  expect(messages[0].content[1].source.data).toContain("Kermit");
+  expect(messages[0].content[1].source.data).toContain("Miss Piggy");
 });
 
 it("should handle file content parts with plain text data", async () => {

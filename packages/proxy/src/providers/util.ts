@@ -3,10 +3,50 @@ import { arrayBufferToBase64 } from "utils";
 const base64MediaPattern =
   /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/]+={0,2})$/;
 
-interface MediaBlock {
+export interface MediaBlock {
   media_type: string;
   data: string;
 }
+
+const TEXT_BASED_APPLICATION_TYPES = [
+  "application/json",
+  "application/xml",
+  "application/javascript",
+  "application/yaml",
+  "application/x-yaml",
+];
+
+const TEXT_BASED_TEXT_TYPES = [
+  "text/plain",
+  "text/markdown",
+  "text/html",
+  "text/css",
+  "text/csv",
+  "text/javascript",
+  "text/xml",
+  "text/yaml",
+];
+
+export function isTextBasedMediaType(mediaType: string): boolean {
+  return (
+    mediaType.startsWith("text/") ||
+    TEXT_BASED_APPLICATION_TYPES.includes(mediaType)
+  );
+}
+
+export const ANTHROPIC_IMAGE_MEDIA_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+];
+
+export const ANTHROPIC_ALLOWED_MEDIA_TYPES = [
+  ...ANTHROPIC_IMAGE_MEDIA_TYPES,
+  "application/pdf",
+  ...TEXT_BASED_APPLICATION_TYPES,
+  ...TEXT_BASED_TEXT_TYPES,
+];
 
 export function convertBase64Media(media: string): MediaBlock | null {
   const match = media.match(base64MediaPattern);

@@ -33,7 +33,11 @@ import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { getTimestampInSeconds, isEmpty, isObject } from "../util";
-import { convertMediaToBase64 } from "./util";
+import {
+  ANTHROPIC_IMAGE_MEDIA_TYPES,
+  convertMediaToBase64,
+  isTextBasedMediaType,
+} from "./util";
 
 /*
 Example events:
@@ -561,15 +565,7 @@ const openAIContentPartToAnthropicContentPart = async (
 
       const { media_type, data } = await convertMediaToBase64({
         media,
-        allowedMediaTypes: [
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-          "application/pdf",
-          "text/plain",
-          "text/markdown",
-        ],
+        allowedMediaTypes: null,
         maxMediaBytes: 5 * 1024 * 1024,
       });
 
@@ -582,10 +578,7 @@ const openAIContentPartToAnthropicContentPart = async (
             data,
           },
         };
-      } else if (
-        media_type === "text/plain" ||
-        media_type === "text/markdown"
-      ) {
+      } else if (isTextBasedMediaType(media_type)) {
         const textContent = Buffer.from(data, "base64").toString("utf-8");
         return {
           type: "document",
@@ -595,7 +588,7 @@ const openAIContentPartToAnthropicContentPart = async (
             data: textContent,
           },
         };
-      } else {
+      } else if (ANTHROPIC_IMAGE_MEDIA_TYPES.includes(media_type)) {
         return {
           type: "image",
           source: {
@@ -605,6 +598,16 @@ const openAIContentPartToAnthropicContentPart = async (
             data,
           },
         };
+      } else {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        return {
+          type: "document",
+          source: {
+            type: "base64",
+            media_type,
+            data,
+          },
+        } as any;
       }
     }
     default:

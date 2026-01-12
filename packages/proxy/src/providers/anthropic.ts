@@ -567,6 +567,8 @@ const openAIContentPartToAnthropicContentPart = async (
           "image/gif",
           "image/webp",
           "application/pdf",
+          "text/plain",
+          "text/markdown",
         ],
         maxMediaBytes: 5 * 1024 * 1024,
       });
@@ -578,6 +580,19 @@ const openAIContentPartToAnthropicContentPart = async (
             type: "base64",
             media_type,
             data,
+          },
+        };
+      } else if (
+        media_type === "text/plain" ||
+        media_type === "text/markdown"
+      ) {
+        const textContent = Buffer.from(data, "base64").toString("utf-8");
+        return {
+          type: "document",
+          source: {
+            type: "text",
+            media_type: "text/plain",
+            data: textContent,
           },
         };
       } else {

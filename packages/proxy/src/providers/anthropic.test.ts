@@ -583,6 +583,95 @@ it("should use 128000 max_tokens and add beta header for claude-3-7-sonnet when 
   );
 });
 
+it("should convert plain text file to Anthropic PlainTextSource document", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "What's in this text file?",
+            },
+            {
+              type: "file",
+              file: {
+                file_data: TEXT_DATA_URL,
+                filename: "test.txt",
+              },
+            },
+          ],
+        },
+      ],
+      stream: false,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  const messages = requests[0].body.messages;
+  expect(messages).toHaveLength(1);
+  expect(messages[0].content).toHaveLength(2);
+  expect(messages[0].content[0]).toMatchObject({ type: "text" });
+  expect(messages[0].content[1]).toMatchObject({
+    type: "document",
+    source: {
+      type: "text",
+      media_type: "text/plain",
+    },
+  });
+  expect(typeof messages[0].content[1].source.data).toBe("string");
+  expect(messages[0].content[1].source.data).toContain("Hello");
+});
+
+it("should convert markdown file to Anthropic PlainTextSource document", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-3-7-sonnet-latest",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "What's in this markdown file?",
+            },
+            {
+              type: "file",
+              file: {
+                file_data: MD_DATA_URL,
+                filename: "test.md",
+              },
+            },
+          ],
+        },
+      ],
+      stream: false,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  const messages = requests[0].body.messages;
+  expect(messages).toHaveLength(1);
+  expect(messages[0].content).toHaveLength(2);
+  expect(messages[0].content[0]).toMatchObject({ type: "text" });
+  expect(messages[0].content[1]).toMatchObject({
+    type: "document",
+    source: {
+      type: "text",
+      media_type: "text/plain",
+    },
+  });
+  expect(typeof messages[0].content[1].source.data).toBe("string");
+});
+
 it("should handle file content parts with plain text data", async () => {
   const { json } = await callProxyV1<
     OpenAIChatCompletionCreateParams,
@@ -614,14 +703,9 @@ it("should handle file content parts with plain text data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-
-  try {
-    expect(response!.choices[0].message.role).toBe("assistant");
-    expect(response!.choices[0].message.content).toBeTruthy();
-    expect(typeof response!.choices[0].message.content).toBe("string");
-  } catch (error) {
-    console.log("known bug, skipping");
-  }
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.content).toBeTruthy();
+  expect(typeof response!.choices[0].message.content).toBe("string");
 });
 
 it("should handle file content parts with markdown data", async () => {
@@ -655,13 +739,9 @@ it("should handle file content parts with markdown data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-  try {
-    expect(response!.choices[0].message.role).toBe("assistant");
-    expect(response!.choices[0].message.content).toBeTruthy();
-    expect(typeof response!.choices[0].message.content).toBe("string");
-  } catch (error) {
-    console.log("TODO maybe we can use plain text workaround?, skipping");
-  }
+  expect(response!.choices[0].message.role).toBe("assistant");
+  expect(response!.choices[0].message.content).toBeTruthy();
+  expect(typeof response!.choices[0].message.content).toBe("string");
 });
 
 describe("unsupported media types", () => {

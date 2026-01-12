@@ -17,7 +17,14 @@ import {
 } from "./google";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
-import { IMAGE_DATA_URL, PDF_DATA_URL } from "./fixtures";
+import {
+  IMAGE_DATA_URL,
+  PDF_DATA_URL,
+  AUDIO_DATA_URL,
+  VIDEO_DATA_URL,
+  TEXT_DATA_URL,
+  MD_DATA_URL,
+} from "../../tests/fixtures/base64";
 
 // Integration tests that actually call the Google API
 for (const model of [
@@ -2317,5 +2324,169 @@ describe("file content part handling", () => {
     expect(response.choices[0].message).toBeDefined();
     expect(response.choices[0].message.role).toBe("assistant");
     expect(response.choices[0].message.content).toBeTruthy();
+  });
+
+  it("should handle file content parts with audio data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What's in this audio file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: AUDIO_DATA_URL,
+                  filename: "test.wav",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle file content parts with video data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What's in this video file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: VIDEO_DATA_URL,
+                  filename: "test.mp4",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle file content parts with plain text data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What's in this text file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: TEXT_DATA_URL,
+                  filename: "test.txt",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle file content parts with markdown data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What's in this markdown file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: MD_DATA_URL,
+                  filename: "test.md",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
   });
 });

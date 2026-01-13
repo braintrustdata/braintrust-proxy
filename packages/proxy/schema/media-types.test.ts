@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   isMediaTypeSupported,
+  getSupportedMediaTypes,
   isImageMediaType,
   isTextBasedMediaType,
   getAvailableModels,
   type ModelFormat,
-  type ModelSpec,
 } from "./index";
 
 describe("media-types helpers for playground file upload validation", () => {
@@ -69,7 +69,7 @@ describe("media-types helpers for playground file upload validation", () => {
     function canUploadFile(
       file: { name: string; type: string },
       modelName: string,
-    ): { allowed: boolean; reason?: string } {
+    ): { allowed: boolean; reason?: string; allowedTypes?: Set<string> } {
       const format = getModelFormat(modelName);
       if (!format) {
         return { allowed: false, reason: `Unknown model: ${modelName}` };
@@ -79,21 +79,24 @@ describe("media-types helpers for playground file upload validation", () => {
         return { allowed: false, reason: "File has no MIME type" };
       }
 
-      const supported = isMediaTypeSupported(file.type, format);
-      if (!supported) {
+      const allowedTypes = getSupportedMediaTypes(format);
+
+      if (!allowedTypes.has(file.type)) {
         return {
           allowed: false,
           reason: `${file.type} is not supported by ${format} models`,
+          allowedTypes,
         };
       }
 
-      return { allowed: true };
+      return { allowed: true, allowedTypes };
     }
 
     it("should allow PDF upload when using gpt-5-mini (openai format)", () => {
       const pdfFile = { name: "document.pdf", type: "application/pdf" };
       const result = canUploadFile(pdfFile, "gpt-5-mini");
       expect(result.allowed).toBe(true);
+      expect(result.allowedTypes?.has("application/pdf")).toBe(true);
     });
 
     it("should reject video upload when using gpt-5-mini (openai format)", () => {
@@ -101,18 +104,22 @@ describe("media-types helpers for playground file upload validation", () => {
       const result = canUploadFile(videoFile, "gpt-5-mini");
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain("not supported by openai");
+      expect(result.allowedTypes?.has("video/mp4")).toBe(false);
     });
 
     it("should allow video upload when using gemini-2.0-flash (google format)", () => {
       const videoFile = { name: "video.mp4", type: "video/mp4" };
       const result = canUploadFile(videoFile, "gemini-2.0-flash");
       expect(result.allowed).toBe(true);
+      expect(result.allowedTypes?.has("video/mp4")).toBe(true);
+      expect(result.allowedTypes?.has("audio/mp3")).toBe(true);
     });
 
     it("should allow text/markdown upload for claude-sonnet-4-5 (anthropic format)", () => {
       const markdownFile = { name: "readme.md", type: "text/markdown" };
       const result = canUploadFile(markdownFile, "claude-sonnet-4-5");
       expect(result.allowed).toBe(true);
+      expect(result.allowedTypes?.has("text/markdown")).toBe(true);
     });
 
     it("should reject text/markdown upload for gpt-5-mini (openai format)", () => {
@@ -120,6 +127,7 @@ describe("media-types helpers for playground file upload validation", () => {
       const result = canUploadFile(markdownFile, "gpt-5-mini");
       expect(result.allowed).toBe(false);
       expect(result.reason).toContain("text/markdown is not supported");
+      expect(result.allowedTypes?.has("text/markdown")).toBe(false);
     });
 
     it("should handle unknown models gracefully", () => {
@@ -127,6 +135,19 @@ describe("media-types helpers for playground file upload validation", () => {
       const result = canUploadFile(pdfFile, "nonexistent-model");
       expect(result.allowed).toBe(false);
       expect(result.reason).toBe("Unknown model: nonexistent-model");
+      expect(result.allowedTypes).toBeUndefined();
+    });
+
+    it("should provide allowedTypes for building file input accept attribute", () => {
+      const result = canUploadFile(
+        { name: "any.txt", type: "text/plain" },
+        "gemini-2.0-flash",
+      );
+      expect(result.allowedTypes).toBeDefined();
+      const acceptAttribute = [...result.allowedTypes!].join(",");
+      expect(acceptAttribute).toContain("image/jpeg");
+      expect(acceptAttribute).toContain("application/pdf");
+      expect(acceptAttribute).toContain("video/mp4");
     });
   });
 
@@ -142,6 +163,55 @@ describe("media-types helpers for playground file upload validation", () => {
       expect(isImageMediaType("application/pdf")).toBe(false);
       expect(isImageMediaType("text/plain")).toBe(false);
       expect(isImageMediaType("video/mp4")).toBe(false);
+    });
+  });
+
+  describe("getSupportedMediaTypes - returns a Set of supported media types", () => {
+    it("should return a Set of supported media types for openai format", () => {
+      const supported = getSupportedMediaTypes("openai");
+
+      expect(supported).toBeInstanceOf(Set);
+      expect(supported.has("application/pdf")).toBe(true);
+      expect(supported.has("image/heic")).toBe(true);
+      expect(supported.has("image/jpeg")).toBe(false);
+      expect(supported.has("text/plain")).toBe(false);
+    });
+
+    it("should return a Set of supported media types for google format", () => {
+      const supported = getSupportedMediaTypes("google");
+
+      expect(supported.has("application/pdf")).toBe(true);
+      expect(supported.has("image/jpeg")).toBe(true);
+      expect(supported.has("image/png")).toBe(true);
+      expect(supported.has("text/plain")).toBe(true);
+      expect(supported.has("audio/mp3")).toBe(true);
+      expect(supported.has("video/mp4")).toBe(true);
+    });
+
+    it("should return empty Set for js/window formats", () => {
+      const jsSupported = getSupportedMediaTypes("js");
+      const windowSupported = getSupportedMediaTypes("window");
+
+      expect(jsSupported.size).toBe(0);
+      expect(windowSupported.size).toBe(0);
+    });
+
+    it("can be used to show users what file types are allowed", () => {
+      const format: ModelFormat = "anthropic";
+      const supported = getSupportedMediaTypes(format);
+
+      expect(supported.has("application/pdf")).toBe(true);
+      expect(supported.has("text/plain")).toBe(true);
+      expect(supported.has("application/json")).toBe(true);
+      expect(supported.has("video/mp4")).toBe(false);
+    });
+
+    it("can be spread into an array for building accept attributes", () => {
+      const supported = getSupportedMediaTypes("google");
+      const acceptAttribute = [...supported].join(",");
+
+      expect(acceptAttribute).toContain("image/jpeg");
+      expect(acceptAttribute).toContain("application/pdf");
     });
   });
 

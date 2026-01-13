@@ -90,7 +90,7 @@ const toMediaTypeSupport = (
   );
 };
 
-const ModelFormatMediaTypes: {
+export const ModelFormatMediaTypes: {
   [format in ModelFormat]: MediaTypeSupport;
 } = {
   openai: {
@@ -132,22 +132,33 @@ const ModelFormatMediaTypes: {
 /**
  * Overrides for specific models to support additional media types.
  */
-const ModelMediaTypeOverrides: {
+export const ModelMediaTypeOverrides: {
   [model in ModelName]?: MediaTypeSupport;
 } = {
   // will be useful for gpt-audio
 };
 
-export function isMediaTypeSupported(
-  mediaType: string,
+export function getSupportedMediaTypes(
   format: ModelFormat,
   model?: ModelName,
-): boolean {
+): Set<string> {
   const baseSupport = { ...ModelFormatMediaTypes[format] };
 
   if (model && ModelMediaTypeOverrides[model]) {
     Object.assign(baseSupport, ModelMediaTypeOverrides[model]);
   }
 
-  return baseSupport[mediaType as SupportedMediaType] === true;
+  return new Set(
+    Object.entries(baseSupport)
+      .filter(([_, supported]) => supported)
+      .map(([type]) => type),
+  );
+}
+
+export function isMediaTypeSupported(
+  mediaType: string,
+  format: ModelFormat,
+  model?: ModelName,
+): boolean {
+  return getSupportedMediaTypes(format, model).has(mediaType);
 }

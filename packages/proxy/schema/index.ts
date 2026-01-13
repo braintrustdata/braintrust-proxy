@@ -30,6 +30,9 @@ export {
   isImageMediaType,
   isTextBasedMediaType,
   isMediaTypeSupported,
+  getSupportedMediaTypes,
+  ModelFormatMediaTypes,
+  ModelMediaTypeOverrides,
   type TextBasedTextType,
   type ImageMediaType,
 } from "./media-types";

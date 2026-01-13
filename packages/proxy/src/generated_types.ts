@@ -143,7 +143,11 @@ export const AsyncScoringState = z.union([
 ]);
 export type AsyncScoringStateType = z.infer<typeof AsyncScoringState>;
 export const AsyncScoringControl = z.union([
-  z.object({ kind: z.literal("score_update"), token: z.string() }),
+  z.object({
+    kind: z.literal("score_update"),
+    token: z.string().optional(),
+    triggered_xact_id: z.string().optional(),
+  }),
   z.object({ kind: z.literal("state_override"), state: AsyncScoringState }),
   z.object({ kind: z.literal("state_force_reselect") }),
   z.object({ kind: z.literal("state_enabled_force_rescore") }),

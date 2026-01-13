@@ -27,6 +27,7 @@ import {
   VIDEO_DATA_URL,
   TEXT_DATA_URL,
   MD_DATA_URL,
+  CSV_DATA_URL,
 } from "../../tests/fixtures/base64";
 
 it("should deny reasoning_effort for unsupported models non-streaming", async () => {
@@ -623,6 +624,47 @@ describe("file content parts", () => {
     expect(response.error!.type).toBe("invalid_request_error");
     expect(response.error!.message).toContain(
       "unsupported MIME type 'text/markdown'",
+    );
+  });
+
+  it("should return error for CSV file content (unsupported)", async () => {
+    const { statusCode, json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What muppets are in this CSV file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: CSV_DATA_URL,
+                  filename: "muppets.csv",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(statusCode).toBe(400);
+    const response = json() as { error?: { type?: string; message?: string } };
+    expect(response.error).toBeDefined();
+    expect(response.error!.type).toBe("invalid_request_error");
+    expect(response.error!.message).toContain(
+      "unsupported MIME type 'text/csv'",
     );
   });
 

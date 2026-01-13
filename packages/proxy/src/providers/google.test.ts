@@ -24,6 +24,7 @@ import {
   VIDEO_DATA_URL,
   TEXT_DATA_URL,
   MD_DATA_URL,
+  CSV_DATA_URL,
 } from "../../tests/fixtures/base64";
 
 // Integration tests that actually call the Google API
@@ -2469,6 +2470,47 @@ describe("file content part handling", () => {
                 file: {
                   file_data: MD_DATA_URL,
                   filename: "test.md",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+    });
+
+    const response = json();
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices).toBeDefined();
+    expect(Array.isArray(response.choices)).toBe(true);
+    expect(response.choices.length).toBeGreaterThan(0);
+    expect(response.choices[0].message).toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+    expect(typeof response.choices[0].message.content).toBe("string");
+  });
+
+  it("should handle file content parts with muppets CSV data", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gemini-2.5-flash",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "List the first 3 muppet names from this CSV file",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: CSV_DATA_URL,
+                  filename: "muppets.csv",
                 },
               },
             ],

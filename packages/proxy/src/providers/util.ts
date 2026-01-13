@@ -34,15 +34,15 @@ export function isTextBasedMediaType(mediaType: string): boolean {
   );
 }
 
-export const ANTHROPIC_IMAGE_MEDIA_TYPES = [
+export const IMAGE_MEDIA_TYPES = [
   "image/jpeg",
   "image/png",
   "image/gif",
   "image/webp",
 ];
 
-export const ANTHROPIC_ALLOWED_MEDIA_TYPES = [
-  ...ANTHROPIC_IMAGE_MEDIA_TYPES,
+export const ALLOWED_MEDIA_TYPES = [
+  ...IMAGE_MEDIA_TYPES,
   "application/pdf",
   ...TEXT_BASED_APPLICATION_TYPES,
   ...TEXT_BASED_TEXT_TYPES,

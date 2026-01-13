@@ -34,7 +34,7 @@ import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { getTimestampInSeconds, isEmpty, isObject } from "../util";
 import {
-  ANTHROPIC_IMAGE_MEDIA_TYPES,
+  IMAGE_MEDIA_TYPES,
   convertMediaToBase64,
   isTextBasedMediaType,
 } from "./util";
@@ -588,7 +588,7 @@ const openAIContentPartToAnthropicContentPart = async (
             data: textContent,
           },
         };
-      } else if (ANTHROPIC_IMAGE_MEDIA_TYPES.includes(media_type)) {
+      } else if (IMAGE_MEDIA_TYPES.includes(media_type)) {
         return {
           type: "image",
           source: {

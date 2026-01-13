@@ -828,7 +828,7 @@ describe("unsupported media types", () => {
       error: {
         type: "invalid_request_error",
         message: expect.stringMatching(
-          /media_type.*should be 'image\/jpeg', 'image\/png', 'image\/gif' or 'image\/webp'/,
+          /media_type.*should be 'application\/pdf'/,
         ),
       },
     });
@@ -870,7 +870,7 @@ describe("unsupported media types", () => {
       error: {
         type: "invalid_request_error",
         message: expect.stringMatching(
-          /media_type.*should be 'image\/jpeg', 'image\/png', 'image\/gif' or 'image\/webp'/,
+          /media_type.*should be 'application\/pdf'/,
         ),
       },
     });

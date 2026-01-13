@@ -8,46 +8,6 @@ export interface MediaBlock {
   data: string;
 }
 
-const TEXT_BASED_APPLICATION_TYPES = [
-  "application/json",
-  "application/xml",
-  "application/javascript",
-  "application/yaml",
-  "application/x-yaml",
-];
-
-const TEXT_BASED_TEXT_TYPES = [
-  "text/plain",
-  "text/markdown",
-  "text/html",
-  "text/css",
-  "text/csv",
-  "text/javascript",
-  "text/xml",
-  "text/yaml",
-];
-
-export function isTextBasedMediaType(mediaType: string): boolean {
-  return (
-    mediaType.startsWith("text/") ||
-    TEXT_BASED_APPLICATION_TYPES.includes(mediaType)
-  );
-}
-
-export const IMAGE_MEDIA_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-];
-
-export const ALLOWED_MEDIA_TYPES = [
-  ...IMAGE_MEDIA_TYPES,
-  "application/pdf",
-  ...TEXT_BASED_APPLICATION_TYPES,
-  ...TEXT_BASED_TEXT_TYPES,
-];
-
 export function convertBase64Media(media: string): MediaBlock | null {
   const match = media.match(base64MediaPattern);
   if (!match) {

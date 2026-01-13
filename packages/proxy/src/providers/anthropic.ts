@@ -27,17 +27,13 @@ import {
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources";
-import { ModelSpec } from "@schema";
+import { ModelSpec, isImageMediaType, isTextBasedMediaType } from "@schema";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 import { getTimestampInSeconds, isEmpty, isObject } from "../util";
-import {
-  IMAGE_MEDIA_TYPES,
-  convertMediaToBase64,
-  isTextBasedMediaType,
-} from "./util";
+import { convertMediaToBase64 } from "./util";
 
 /*
 Example events:
@@ -588,13 +584,12 @@ const openAIContentPartToAnthropicContentPart = async (
             data: textContent,
           },
         };
-      } else if (IMAGE_MEDIA_TYPES.includes(media_type)) {
+      } else if (isImageMediaType(media_type)) {
         return {
           type: "image",
           source: {
             type: "base64",
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            media_type: media_type as Base64ImageSource["media_type"],
+            media_type,
             data,
           },
         };

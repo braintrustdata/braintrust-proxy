@@ -42,24 +42,6 @@ export async function openAIContentToGoogleContent(
   return Promise.all(content?.map(openAIContentPartToGooglePart) ?? []);
 }
 
-const GEMINI_ALLOWED_MEDIA_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-  "video/mp4",
-  "video/webm",
-  "video/mpeg",
-  "video/quicktime",
-  "video/x-msvideo",
-  "audio/mpeg",
-  "audio/mp4",
-  "audio/wav",
-  "audio/webm",
-  "application/pdf",
-];
-
 const openAIContentPartToGooglePart = async (
   part: ChatCompletionContentPartType,
 ): Promise<Part> => {
@@ -68,7 +50,6 @@ const openAIContentPartToGooglePart = async (
       return { text: part.text };
     case "image_url":
     case "file": {
-      // Both image_url and file parts contain media that needs to be converted
       let media: string;
       if (part.type === "image_url") {
         media = part.image_url.url;
@@ -81,7 +62,7 @@ const openAIContentPartToGooglePart = async (
 
       const { media_type: mimeType, data } = await convertMediaToBase64({
         media,
-        allowedMediaTypes: GEMINI_ALLOWED_MEDIA_TYPES,
+        allowedMediaTypes: null,
         maxMediaBytes: null,
       });
 

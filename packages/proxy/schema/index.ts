@@ -26,6 +26,14 @@ export {
 } from "./audio";
 export * from "./openai-realtime";
 
+export {
+  isImageMediaType,
+  isTextBasedMediaType,
+  isMediaTypeSupported,
+  type TextBasedTextType,
+  type ImageMediaType,
+} from "./media-types";
+
 export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;
 } = {
@@ -685,110 +693,6 @@ export function translateParams(
   }
 
   return translatedParams;
-}
-
-export const SupportedMediaTypes = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp",
-  "image/heic",
-  "image/heif",
-  "application/pdf",
-  "text/plain",
-  "text/markdown",
-  "text/csv",
-  "text/html",
-  "audio/wav",
-  "audio/mp3",
-  "audio/mpeg",
-  "audio/mp4",
-  "audio/webm",
-  "video/mp4",
-  "video/webm",
-  "video/mpeg",
-  "video/quicktime",
-] as const;
-
-export type SupportedMediaType = (typeof SupportedMediaTypes)[number];
-
-export type MediaTypeSupport = {
-  [mediaType in SupportedMediaType]?: boolean;
-};
-
-export const ModelFormatMediaTypes: {
-  [format in ModelFormat]: MediaTypeSupport;
-} = {
-  openai: {
-    "image/jpeg": true,
-    "image/png": true,
-    "image/gif": true,
-    "image/webp": true,
-    "application/pdf": true,
-  },
-  anthropic: {
-    "image/jpeg": true,
-    "image/png": true,
-    "image/gif": true,
-    "image/webp": true,
-    "application/pdf": true,
-    "text/plain": true,
-    "text/markdown": true,
-    "text/csv": true,
-    "text/html": true,
-  },
-  google: {
-    "image/jpeg": true,
-    "image/png": true,
-    "image/webp": true,
-    "image/heic": true,
-    "image/heif": true,
-    "application/pdf": true,
-    "audio/wav": true,
-    "audio/mp3": true,
-    "audio/mpeg": true,
-    "audio/mp4": true,
-    "audio/webm": true,
-    "video/mp4": true,
-    "video/webm": true,
-    "video/mpeg": true,
-    "video/quicktime": true,
-  },
-  converse: {
-    "image/jpeg": true,
-    "image/png": true,
-    "image/gif": true,
-    "image/webp": true,
-    "application/pdf": true,
-  },
-  js: {},
-  window: {},
-};
-
-export const ModelMediaTypeOverrides: {
-  [model in ModelName]?: MediaTypeSupport;
-} = {};
-
-export function getMediaTypeSupport(
-  format: ModelFormat,
-  model?: ModelName,
-): MediaTypeSupport {
-  const baseSupport = { ...ModelFormatMediaTypes[format] };
-
-  if (model && ModelMediaTypeOverrides[model]) {
-    Object.assign(baseSupport, ModelMediaTypeOverrides[model]);
-  }
-
-  return baseSupport;
-}
-
-export function isMediaTypeSupported(
-  mediaType: string,
-  format: ModelFormat,
-  model?: ModelName,
-): boolean {
-  const support = getMediaTypeSupport(format, model);
-  return support[mediaType as SupportedMediaType] === true;
 }
 
 export const anthropicSupportedMediaTypes = [

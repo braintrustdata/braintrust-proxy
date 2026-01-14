@@ -8,6 +8,7 @@ import type {
 import {
   ModelFormat,
   ModelEndpointType,
+  type ModelName,
   ModelSpec,
   getAvailableModels,
 } from "./models";
@@ -24,6 +25,17 @@ export {
   type Mp3Bitrate,
 } from "./audio";
 export * from "./openai-realtime";
+
+export {
+  isImageMediaType,
+  isTextBasedMediaType,
+  isMediaTypeSupported,
+  getSupportedMediaTypes,
+  ModelFormatMediaTypes,
+  ModelMediaTypeOverrides,
+  type TextBasedTextType,
+  type ImageMediaType,
+} from "./media-types";
 
 export const MessageTypeToMessageType: {
   [messageType in MessageRole]: MessageRole | undefined;

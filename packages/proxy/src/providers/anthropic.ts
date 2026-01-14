@@ -27,7 +27,7 @@ import {
   ChatCompletionTool,
   ChatCompletionToolMessageParam,
 } from "openai/resources";
-import { ModelSpec } from "@schema";
+import { ModelSpec, isImageMediaType, isTextBasedMediaType } from "@schema";
 import { getBudgetMultiplier } from "utils";
 import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
@@ -561,13 +561,7 @@ const openAIContentPartToAnthropicContentPart = async (
 
       const { media_type, data } = await convertMediaToBase64({
         media,
-        allowedMediaTypes: [
-          "image/jpeg",
-          "image/png",
-          "image/gif",
-          "image/webp",
-          "application/pdf",
-        ],
+        allowedMediaTypes: null,
         maxMediaBytes: 5 * 1024 * 1024,
       });
 
@@ -580,16 +574,35 @@ const openAIContentPartToAnthropicContentPart = async (
             data,
           },
         };
-      } else {
+      } else if (isTextBasedMediaType(media_type)) {
+        const textContent = Buffer.from(data, "base64").toString("utf-8");
+        return {
+          type: "document",
+          source: {
+            type: "text",
+            media_type: "text/plain",
+            data: textContent,
+          },
+        };
+      } else if (isImageMediaType(media_type)) {
         return {
           type: "image",
           source: {
             type: "base64",
-            // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-            media_type: media_type as Base64ImageSource["media_type"],
+            media_type,
             data,
           },
         };
+      } else {
+        // eslint-disable-next-line @typescript-eslint/consistent-type-assertions, @typescript-eslint/no-explicit-any
+        return {
+          type: "document",
+          source: {
+            type: "base64",
+            media_type,
+            data,
+          },
+        } as any;
       }
     }
     default:

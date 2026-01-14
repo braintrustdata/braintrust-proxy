@@ -89,6 +89,8 @@ export type ModelSpec = z.infer<typeof ModelSchema>;
 import modelListJson from "./model_list.json";
 const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);
 
+export type ModelName = keyof typeof modelListJson;
+
 // Because this file can be included and bundled in various ways, it's important to
 // really inject these variables into the global scope, rather than let the bundler
 // have its way with them.

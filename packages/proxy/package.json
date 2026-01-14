@@ -100,7 +100,7 @@
     "zod-to-json-schema": "^3.24.6"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
+    "@anthropic-ai/sdk": "^0.71.2",
     "@aws-sdk/client-bedrock-runtime": "^3.806.0",
     "@breezystack/lamejs": "^1.2.7",
     "@openapi-contrib/json-schema-to-openapi-schema": "^4.2.0",

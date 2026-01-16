@@ -575,3 +575,33 @@ it("should use 128000 max_tokens and add beta header for claude-3-7-sonnet when 
     "output-128k-2025-02-19",
   );
 });
+
+it("should translate json_object response format to tool-based structured output", async () => {
+  // This test verifies BRA-3896: json_object response format should be translated
+  // to a tool-based workaround for Anthropic, similar to how json_schema is handled.
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-3-haiku-20240307",
+      messages: [{ role: "user", content: "Return JSON" }],
+      response_format: { type: "json_object" },
+      stream: false,
+      max_tokens: 150,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  // Verify the proxy created a tool with generic object schema
+  expect(requests[0].body).toMatchObject({
+    tools: [
+      {
+        name: "json",
+        description: "Output the result in JSON format",
+        input_schema: { type: "object" },
+      },
+    ],
+    tool_choice: { type: "tool", name: "json" },
+  });
+});

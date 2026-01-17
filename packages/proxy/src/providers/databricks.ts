@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v3";
 import { DatabricksOAuthSecretSchema } from "@braintrust/proxy/schema";
 
 const databricksOAuthResponseSchema = z.union([

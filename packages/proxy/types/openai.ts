@@ -1,6 +1,6 @@
 import { ChatCompletionMessageParam as chatCompletionMessageParamSchema } from "../src/generated_types";
 
-import { z } from "zod";
+import { z } from "zod/v3";
 
 import {
   ChatCompletion,

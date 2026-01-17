@@ -25,10 +25,10 @@ importers:
         version: 2.5.6
       vite-tsconfig-paths:
         specifier: ^4.3.2
-        version: 4.3.2(typescript@5.5.4)
+        version: 4.3.2(typescript@5.5.4)(vite@5.4.19(@types/node@20.10.5))
       vitest:
         specifier: ^2.1.9
-        version: 2.1.9(@types/node@20.10.5)(msw@2.8.4)
+        version: 2.1.9(@types/node@20.10.5)(msw@2.8.4(@types/node@20.10.5)(typescript@5.5.4))
 
   apis/cloudflare:
     dependencies:
@@ -49,13 +49,13 @@ importers:
         version: 2.1.0(@opentelemetry/api@1.9.0)
       braintrust:
         specifier: ^0.3.7
-        version: 0.3.7(zod@3.25.34)
+        version: 0.3.7(@aws-sdk/credential-provider-web-identity@3.817.0)(zod@3.25.34)
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
       openai:
         specifier: ^6.3.0
-        version: 6.3.0(zod@3.25.34)
+        version: 6.3.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(zod@3.25.34)
       zod:
         specifier: 3.25.34
         version: 3.25.34
@@ -68,13 +68,13 @@ importers:
         version: 3.0.12
       tsup:
         specifier: ^8.4.0
-        version: 8.4.0(typescript@5.3.3)
+        version: 8.4.0(postcss@8.5.6)(typescript@5.3.3)
       typescript:
         specifier: ^5.0.4
         version: 5.3.3
       wrangler:
         specifier: ^4.28.1
-        version: 4.42.2(@cloudflare/workers-types@4.20251011.0)
+        version: 4.42.2(@cloudflare/workers-types@4.20251011.0)(bufferutil@4.0.8)(utf-8-validate@5.0.10)
 
   apis/node:
     dependencies:
@@ -86,7 +86,7 @@ importers:
         version: 2.32.0
       ai:
         specifier: 2.2.22
-        version: 2.2.22(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22)
+        version: 2.2.22(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22(typescript@5.3.3))
       aws-lambda:
         specifier: ^1.0.7
         version: 1.0.7
@@ -116,7 +116,7 @@ importers:
         version: 4.19.2
       openai:
         specifier: ^4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(zod@3.25.34)
       redis:
         specifier: ^4.6.8
         version: 4.6.8
@@ -159,13 +159,13 @@ importers:
         version: 0.4.3
       '@vercel/examples-ui':
         specifier: ^1.0.5
-        version: 1.0.5(next@14.2.34)(react-dom@18.3.1)(react@18.3.1)
+        version: 1.0.5(next@14.2.34(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@vercel/kv':
         specifier: ^0.2.2
         version: 0.2.2
       next:
         specifier: 14.2.34
-        version: 14.2.34(react-dom@18.3.1)(react@18.3.1)
+        version: 14.2.34(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: latest
         version: 18.3.1
@@ -232,7 +232,7 @@ importers:
         version: 2.1.0(@opentelemetry/api@1.9.0)
       ai:
         specifier: 2.2.37
-        version: 2.2.37(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22)
+        version: 2.2.37(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22(typescript@5.5.4))
       cache-control-parser:
         specifier: ^2.0.6
         version: 2.0.6
@@ -256,7 +256,7 @@ importers:
         version: 9.0.2
       openai:
         specifier: 4.104.0
-        version: 4.104.0(zod@3.25.34)
+        version: 4.104.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(zod@3.25.34)
       openapi-json-schema:
         specifier: ^2.0.0
         version: 2.0.0
@@ -266,6 +266,9 @@ importers:
       zod:
         specifier: 3.25.34
         version: 3.25.34
+      zod-to-json-schema:
+        specifier: ^3.25.0
+        version: 3.25.1(zod@3.25.34)
     devDependencies:
       '@types/content-disposition':
         specifier: ^0.5.8
@@ -284,7 +287,7 @@ importers:
         version: 17.0.33
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.21.0
-        version: 8.21.0(@typescript-eslint/parser@8.46.2)(eslint@8.57.1)(typescript@5.5.4)
+        version: 8.21.0(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.5.4))(eslint@8.57.1)(typescript@5.5.4)
       esbuild:
         specifier: ^0.27.0
         version: 0.27.0
@@ -302,22 +305,19 @@ importers:
         version: 0.35.4
       tsup:
         specifier: ^8.5.1
-        version: 8.5.1(typescript@5.5.4)
+        version: 8.5.1(postcss@8.5.6)(typescript@5.5.4)
       typescript:
         specifier: 5.5.4
         version: 5.5.4
       vite-tsconfig-paths:
         specifier: ^4.3.2
-        version: 4.3.2(typescript@5.5.4)
+        version: 4.3.2(typescript@5.5.4)(vite@5.4.19(@types/node@20.10.5))
       vitest:
         specifier: ^2.1.9
-        version: 2.1.9(@types/node@20.10.5)(msw@2.8.4)
+        version: 2.1.9(@types/node@20.10.5)(msw@2.8.4(@types/node@20.10.5)(typescript@5.5.4))
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
-      zod-to-json-schema:
-        specifier: ^3.24.6
-        version: 3.24.6(zod@3.25.34)
 
 packages:
 
@@ -6139,8 +6139,8 @@ packages:
     peerDependencies:
       zod: 3.25.34
 
-  zod-to-json-schema@3.24.6:
-    resolution: {integrity: sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==}
+  zod-to-json-schema@3.25.1:
+    resolution: {integrity: sha512-pM/SU9d3YAggzi6MtR4h7ruuQlqKtad8e9S0fmxcMi+ueAK5Korys/aWcV9LIIHTVbj01NdzxcnXSN+O74ZIVA==}
     peerDependencies:
       zod: 3.25.34
 
@@ -6739,6 +6739,7 @@ snapshots:
   '@cloudflare/unenv-preset@2.7.7(unenv@2.0.0-rc.21)(workerd@1.20251008.0)':
     dependencies:
       unenv: 2.0.0-rc.21
+    optionalDependencies:
       workerd: 1.20251008.0
 
   '@cloudflare/workerd-darwin-64@1.20251008.0':
@@ -7205,24 +7206,26 @@ snapshots:
     dependencies:
       '@inquirer/core': 10.1.13(@types/node@20.10.5)
       '@inquirer/type': 3.0.7(@types/node@20.10.5)
+    optionalDependencies:
       '@types/node': 20.10.5
 
   '@inquirer/core@10.1.13(@types/node@20.10.5)':
     dependencies:
       '@inquirer/figures': 1.0.12
       '@inquirer/type': 3.0.7(@types/node@20.10.5)
-      '@types/node': 20.10.5
       ansi-escapes: 4.3.2
       cli-width: 4.1.0
       mute-stream: 2.0.0
       signal-exit: 4.1.0
       wrap-ansi: 6.2.0
       yoctocolors-cjs: 2.1.2
+    optionalDependencies:
+      '@types/node': 20.10.5
 
   '@inquirer/figures@1.0.12': {}
 
   '@inquirer/type@3.0.7(@types/node@20.10.5)':
-    dependencies:
+    optionalDependencies:
       '@types/node': 20.10.5
 
   '@isaacs/cliui@8.0.2':
@@ -8152,7 +8155,7 @@ snapshots:
     dependencies:
       '@types/yargs-parser': 21.0.3
 
-  '@typescript-eslint/eslint-plugin@8.21.0(@typescript-eslint/parser@8.46.2)(eslint@8.57.1)(typescript@5.5.4)':
+  '@typescript-eslint/eslint-plugin@8.21.0(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.5.4))(eslint@8.57.1)(typescript@5.5.4)':
     dependencies:
       '@eslint-community/regexpp': 4.10.0
       '@typescript-eslint/parser': 8.46.2(eslint@8.57.1)(typescript@5.5.4)
@@ -8177,6 +8180,7 @@ snapshots:
       '@typescript-eslint/visitor-keys': 6.14.0
       debug: 4.4.0
       eslint: 8.56.0
+    optionalDependencies:
       typescript: 4.7.4
     transitivePeerDependencies:
       - supports-color
@@ -8249,6 +8253,7 @@ snapshots:
       is-glob: 4.0.3
       semver: 7.7.1
       ts-api-utils: 1.0.3(typescript@4.7.4)
+    optionalDependencies:
       typescript: 4.7.4
     transitivePeerDependencies:
       - supports-color
@@ -8263,6 +8268,7 @@ snapshots:
       minimatch: 9.0.5
       semver: 7.7.1
       ts-api-utils: 1.4.3(typescript@5.4.5)
+    optionalDependencies:
       typescript: 5.4.5
     transitivePeerDependencies:
       - supports-color
@@ -8350,16 +8356,18 @@ snapshots:
     dependencies:
       crypto-js: 4.2.0
 
-  '@vercel/examples-ui@1.0.5(next@14.2.34)(react-dom@18.3.1)(react@18.3.1)':
+  '@vercel/examples-ui@1.0.5(next@14.2.34(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@swc/helpers': 0.4.14
       clsx: 1.2.1
-      next: 14.2.34(react-dom@18.3.1)(react@18.3.1)
+      next: 14.2.34(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       sugar-high: 0.4.7
 
-  '@vercel/functions@1.5.0': {}
+  '@vercel/functions@1.5.0(@aws-sdk/credential-provider-web-identity@3.817.0)':
+    optionalDependencies:
+      '@aws-sdk/credential-provider-web-identity': 3.817.0
 
   '@vercel/kv@0.2.2':
     dependencies:
@@ -8374,11 +8382,12 @@ snapshots:
       chai: 5.1.2
       tinyrainbow: 1.2.0
 
-  '@vitest/mocker@2.1.9(msw@2.8.4)(vite@5.4.19)':
+  '@vitest/mocker@2.1.9(msw@2.8.4(@types/node@20.10.5)(typescript@5.5.4))(vite@5.4.19(@types/node@20.10.5))':
     dependencies:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.17
+    optionalDependencies:
       msw: 2.8.4(@types/node@20.10.5)(typescript@5.5.4)
       vite: 5.4.19(@types/node@20.10.5)
 
@@ -8483,7 +8492,13 @@ snapshots:
       '@vue/shared': 3.5.22
       csstype: 3.1.3
 
-  '@vue/server-renderer@3.5.22(vue@3.5.22)':
+  '@vue/server-renderer@3.5.22(vue@3.5.22(typescript@5.3.3))':
+    dependencies:
+      '@vue/compiler-ssr': 3.5.22
+      '@vue/shared': 3.5.22
+      vue: 3.5.22(typescript@5.3.3)
+
+  '@vue/server-renderer@3.5.22(vue@3.5.22(typescript@5.5.4))':
     dependencies:
       '@vue/compiler-ssr': 3.5.22
       '@vue/shared': 3.5.22
@@ -8533,36 +8548,38 @@ snapshots:
     dependencies:
       humanize-ms: 1.2.1
 
-  ai@2.2.22(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22):
+  ai@2.2.22(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22(typescript@5.3.3)):
     dependencies:
       eventsource-parser: 1.0.0
       nanoid: 3.3.6
-      react: 18.3.1
-      solid-js: 1.9.10
       solid-swr-store: 0.10.7(solid-js@1.9.10)(swr-store@0.10.6)
       sswr: 2.0.0(svelte@4.2.20)
-      svelte: 4.2.20
       swr: 2.2.0(react@18.3.1)
       swr-store: 0.10.6
-      swrv: 1.0.4(vue@3.5.22)
+      swrv: 1.0.4(vue@3.5.22(typescript@5.3.3))
+    optionalDependencies:
+      react: 18.3.1
+      solid-js: 1.9.10
+      svelte: 4.2.20
       vue: 3.5.22(typescript@5.3.3)
 
-  ai@2.2.37(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22):
+  ai@2.2.37(react@18.3.1)(solid-js@1.9.10)(svelte@4.2.20)(vue@3.5.22(typescript@5.5.4)):
     dependencies:
       eventsource-parser: 1.0.0
       nanoid: 3.3.6
-      react: 18.3.1
-      solid-js: 1.9.10
       solid-swr-store: 0.10.7(solid-js@1.9.10)(swr-store@0.10.6)
       sswr: 2.0.0(svelte@4.2.20)
-      svelte: 4.2.20
       swr: 2.2.0(react@18.3.1)
       swr-store: 0.10.6
-      swrv: 1.0.4(vue@3.5.22)
+      swrv: 1.0.4(vue@3.5.22(typescript@5.5.4))
+    optionalDependencies:
+      react: 18.3.1
+      solid-js: 1.9.10
+      svelte: 4.2.20
       vue: 3.5.22(typescript@5.5.4)
 
   ajv-draft-04@1.0.0(ajv@8.17.1):
-    dependencies:
+    optionalDependencies:
       ajv: 8.17.1
 
   ajv@6.12.6:
@@ -8806,11 +8823,11 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  braintrust@0.3.7(zod@3.25.34):
+  braintrust@0.3.7(@aws-sdk/credential-provider-web-identity@3.817.0)(zod@3.25.34):
     dependencies:
       '@ai-sdk/provider': 1.1.3
       '@next/env': 14.2.3
-      '@vercel/functions': 1.5.0
+      '@vercel/functions': 1.5.0(@aws-sdk/credential-provider-web-identity@3.817.0)
       argparse: 2.0.1
       chalk: 4.1.2
       cli-progress: 3.12.0
@@ -9146,6 +9163,7 @@ snapshots:
   debug@3.2.7(supports-color@5.5.0):
     dependencies:
       ms: 2.1.3
+    optionalDependencies:
       supports-color: 5.5.0
 
   debug@4.3.4:
@@ -9546,11 +9564,12 @@ snapshots:
       '@typescript-eslint/parser': 6.14.0(eslint@8.56.0)(typescript@4.7.4)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.56.0)
       eslint-plugin-react: 7.33.2(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.0(eslint@8.56.0)
+    optionalDependencies:
       typescript: 4.7.4
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
@@ -9570,13 +9589,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       debug: 4.4.0
       enhanced-resolve: 5.15.0
       eslint: 8.56.0
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.2
       is-core-module: 2.13.1
@@ -9587,19 +9606,19 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.0(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-module-utils@2.8.0(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
-      '@typescript-eslint/parser': 6.14.0(eslint@8.56.0)(typescript@4.7.4)
       debug: 3.2.7(supports-color@5.5.0)
+    optionalDependencies:
+      '@typescript-eslint/parser': 6.14.0(eslint@8.56.0)(typescript@4.7.4)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
-      '@typescript-eslint/parser': 6.14.0(eslint@8.56.0)(typescript@4.7.4)
       array-includes: 3.1.7
       array.prototype.findlastindex: 1.2.3
       array.prototype.flat: 1.3.2
@@ -9608,7 +9627,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.14.0)(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-module-utils: 2.8.0(@typescript-eslint/parser@6.14.0(eslint@8.56.0)(typescript@4.7.4))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       hasown: 2.0.0
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -9618,6 +9637,8 @@ snapshots:
       object.values: 1.1.7
       semver: 6.3.1
       tsconfig-paths: 3.15.0
+    optionalDependencies:
+      '@typescript-eslint/parser': 6.14.0(eslint@8.56.0)(typescript@4.7.4)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -9931,7 +9952,7 @@ snapshots:
       reusify: 1.1.0
 
   fdir@6.4.3(picomatch@4.0.2):
-    dependencies:
+    optionalDependencies:
       picomatch: 4.0.2
 
   file-entry-cache@6.0.1:
@@ -10657,7 +10678,7 @@ snapshots:
 
   mimic-fn@2.1.0: {}
 
-  miniflare@4.20251008.0:
+  miniflare@4.20251008.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       acorn: 8.14.0
@@ -10668,7 +10689,7 @@ snapshots:
       stoppable: 1.1.0
       undici: 7.14.0
       workerd: 1.20251008.0
-      ws: 8.18.0
+      ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       youch: 4.1.0-beta.10
       zod: 3.25.34
     transitivePeerDependencies:
@@ -10725,8 +10746,9 @@ snapshots:
       picocolors: 1.1.1
       strict-event-emitter: 0.5.1
       type-fest: 4.41.0
-      typescript: 5.5.4
       yargs: 17.7.2
+    optionalDependencies:
+      typescript: 5.5.4
     transitivePeerDependencies:
       - '@types/node'
 
@@ -10764,7 +10786,7 @@ snapshots:
 
   next-tick@1.1.0: {}
 
-  next@14.2.34(react-dom@18.3.1)(react@18.3.1):
+  next@14.2.34(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 14.2.34
       '@swc/helpers': 0.5.5
@@ -10785,6 +10807,7 @@ snapshots:
       '@next/swc-win32-arm64-msvc': 14.2.33
       '@next/swc-win32-ia32-msvc': 14.2.33
       '@next/swc-win32-x64-msvc': 14.2.33
+      '@opentelemetry/api': 1.9.0
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
@@ -10908,7 +10931,7 @@ snapshots:
     dependencies:
       mimic-fn: 2.1.0
 
-  openai@4.104.0(zod@3.25.34):
+  openai@4.104.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(zod@3.25.34):
     dependencies:
       '@types/node': 18.19.123
       '@types/node-fetch': 2.6.13
@@ -10917,12 +10940,15 @@ snapshots:
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
       node-fetch: 2.7.0
+    optionalDependencies:
+      ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       zod: 3.25.34
     transitivePeerDependencies:
       - encoding
 
-  openai@6.3.0(zod@3.25.34):
-    dependencies:
+  openai@6.3.0(ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10))(zod@3.25.34):
+    optionalDependencies:
+      ws: 8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       zod: 3.25.34
 
   openapi-json-schema@2.0.0: {}
@@ -11020,9 +11046,10 @@ snapshots:
   pastable@2.2.1(react@18.3.1):
     dependencies:
       '@babel/core': 7.28.3
-      react: 18.3.1
       ts-toolbelt: 9.6.0
       type-fest: 3.13.1
+    optionalDependencies:
+      react: 18.3.1
     transitivePeerDependencies:
       - supports-color
 
@@ -11115,12 +11142,15 @@ snapshots:
   postcss-load-config@3.1.4(postcss@8.4.38):
     dependencies:
       lilconfig: 2.1.0
-      postcss: 8.4.38
       yaml: 1.10.2
+    optionalDependencies:
+      postcss: 8.4.38
 
-  postcss-load-config@6.0.1:
+  postcss-load-config@6.0.1(postcss@8.5.6):
     dependencies:
       lilconfig: 3.1.3
+    optionalDependencies:
+      postcss: 8.5.6
 
   postcss-nested@6.0.0(postcss@8.4.38):
     dependencies:
@@ -11832,7 +11862,11 @@ snapshots:
 
   swrev@4.0.0: {}
 
-  swrv@1.0.4(vue@3.5.22):
+  swrv@1.0.4(vue@3.5.22(typescript@5.3.3)):
+    dependencies:
+      vue: 3.5.22(typescript@5.3.3)
+
+  swrv@1.0.4(vue@3.5.22(typescript@5.5.4)):
     dependencies:
       vue: 3.5.22(typescript@5.5.4)
 
@@ -11950,7 +11984,7 @@ snapshots:
   ts-toolbelt@9.6.0: {}
 
   tsconfck@3.1.4(typescript@5.5.4):
-    dependencies:
+    optionalDependencies:
       typescript: 5.5.4
 
   tsconfig-paths@3.15.0:
@@ -11964,7 +11998,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.4.0(typescript@5.3.3):
+  tsup@8.4.0(postcss@8.5.6)(typescript@5.3.3):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.25.9)
       cac: 6.7.14
@@ -11974,7 +12008,7 @@ snapshots:
       esbuild: 0.25.9
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1
+      postcss-load-config: 6.0.1(postcss@8.5.6)
       resolve-from: 5.0.0
       rollup: 4.35.0
       source-map: 0.8.0-beta.0
@@ -11982,6 +12016,8 @@ snapshots:
       tinyexec: 0.3.2
       tinyglobby: 0.2.12
       tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.6
       typescript: 5.3.3
     transitivePeerDependencies:
       - jiti
@@ -11989,7 +12025,7 @@ snapshots:
       - tsx
       - yaml
 
-  tsup@8.5.1(typescript@5.5.4):
+  tsup@8.5.1(postcss@8.5.6)(typescript@5.5.4):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.0)
       cac: 6.7.14
@@ -12000,7 +12036,7 @@ snapshots:
       fix-dts-default-cjs-exports: 1.0.1
       joycon: 3.1.1
       picocolors: 1.1.1
-      postcss-load-config: 6.0.1
+      postcss-load-config: 6.0.1(postcss@8.5.6)
       resolve-from: 5.0.0
       rollup: 4.46.4
       source-map: 0.7.6
@@ -12008,6 +12044,8 @@ snapshots:
       tinyexec: 0.3.2
       tinyglobby: 0.2.12
       tree-kill: 1.2.2
+    optionalDependencies:
+      postcss: 8.5.6
       typescript: 5.5.4
     transitivePeerDependencies:
       - jiti
@@ -12236,29 +12274,30 @@ snapshots:
       - supports-color
       - terser
 
-  vite-tsconfig-paths@4.3.2(typescript@5.5.4):
+  vite-tsconfig-paths@4.3.2(typescript@5.5.4)(vite@5.4.19(@types/node@20.10.5)):
     dependencies:
       debug: 4.3.7
       globrex: 0.1.2
       tsconfck: 3.1.4(typescript@5.5.4)
+    optionalDependencies:
+      vite: 5.4.19(@types/node@20.10.5)
     transitivePeerDependencies:
       - supports-color
       - typescript
 
   vite@5.4.19(@types/node@20.10.5):
     dependencies:
-      '@types/node': 20.10.5
       esbuild: 0.21.5
       postcss: 8.5.6
       rollup: 4.46.4
     optionalDependencies:
+      '@types/node': 20.10.5
       fsevents: 2.3.3
 
-  vitest@2.1.9(@types/node@20.10.5)(msw@2.8.4):
+  vitest@2.1.9(@types/node@20.10.5)(msw@2.8.4(@types/node@20.10.5)(typescript@5.5.4)):
     dependencies:
-      '@types/node': 20.10.5
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(msw@2.8.4)(vite@5.4.19)
+      '@vitest/mocker': 2.1.9(msw@2.8.4(@types/node@20.10.5)(typescript@5.5.4))(vite@5.4.19(@types/node@20.10.5))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9
@@ -12277,6 +12316,8 @@ snapshots:
       vite: 5.4.19(@types/node@20.10.5)
       vite-node: 2.1.9(@types/node@20.10.5)
       why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/node': 20.10.5
     transitivePeerDependencies:
       - less
       - lightningcss
@@ -12293,8 +12334,9 @@ snapshots:
       '@vue/compiler-dom': 3.5.22
       '@vue/compiler-sfc': 3.5.22
       '@vue/runtime-dom': 3.5.22
-      '@vue/server-renderer': 3.5.22(vue@3.5.22)
+      '@vue/server-renderer': 3.5.22(vue@3.5.22(typescript@5.3.3))
       '@vue/shared': 3.5.22
+    optionalDependencies:
       typescript: 5.3.3
 
   vue@3.5.22(typescript@5.5.4):
@@ -12302,8 +12344,9 @@ snapshots:
       '@vue/compiler-dom': 3.5.22
       '@vue/compiler-sfc': 3.5.22
       '@vue/runtime-dom': 3.5.22
-      '@vue/server-renderer': 3.5.22(vue@3.5.22)
+      '@vue/server-renderer': 3.5.22(vue@3.5.22(typescript@5.5.4))
       '@vue/shared': 3.5.22
+    optionalDependencies:
       typescript: 5.5.4
 
   watchpack@2.4.0:
@@ -12413,18 +12456,18 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20251008.0
       '@cloudflare/workerd-windows-64': 1.20251008.0
 
-  wrangler@4.42.2(@cloudflare/workers-types@4.20251011.0):
+  wrangler@4.42.2(@cloudflare/workers-types@4.20251011.0)(bufferutil@4.0.8)(utf-8-validate@5.0.10):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.7.7(unenv@2.0.0-rc.21)(workerd@1.20251008.0)
-      '@cloudflare/workers-types': 4.20251011.0
       blake3-wasm: 2.1.5
       esbuild: 0.25.4
-      miniflare: 4.20251008.0
+      miniflare: 4.20251008.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.21
       workerd: 1.20251008.0
     optionalDependencies:
+      '@cloudflare/workers-types': 4.20251011.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
@@ -12456,7 +12499,10 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.18.0: {}
+  ws@8.18.0(bufferutil@4.0.8)(utf-8-validate@5.0.10):
+    optionalDependencies:
+      bufferutil: 4.0.8
+      utf-8-validate: 5.0.10
 
   xml2js@0.5.0:
     dependencies:
@@ -12535,7 +12581,7 @@ snapshots:
     dependencies:
       zod: 3.25.34
 
-  zod-to-json-schema@3.24.6(zod@3.25.34):
+  zod-to-json-schema@3.25.1(zod@3.25.34):
     dependencies:
       zod: 3.25.34
 

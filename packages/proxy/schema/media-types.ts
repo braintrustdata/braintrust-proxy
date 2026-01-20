@@ -96,7 +96,7 @@ export const ModelFormatMediaTypes: {
   openai: {
     ...toMediaTypeSupport(
       IMAGE_MEDIA_TYPES.filter(
-        (type) => type.endsWith("heic") || type.endsWith("heif"),
+        (type) => !(type.endsWith("heic") || type.endsWith("heif")),
       ),
     ),
     ...toMediaTypeSupport(DOCUMENT_MEDIA_TYPES),
@@ -104,7 +104,7 @@ export const ModelFormatMediaTypes: {
   anthropic: {
     ...toMediaTypeSupport(
       IMAGE_MEDIA_TYPES.filter(
-        (type) => type.endsWith("heic") || type.endsWith("heif"),
+        (type) => !(type.endsWith("heic") || type.endsWith("heif")),
       ),
     ),
     ...toMediaTypeSupport(TEXT_BASED_TEXT_TYPES),
@@ -120,7 +120,7 @@ export const ModelFormatMediaTypes: {
   converse: {
     ...toMediaTypeSupport(
       IMAGE_MEDIA_TYPES.filter(
-        (type) => type.endsWith("heic") || type.endsWith("heif"),
+        (type) => !(type.endsWith("heic") || type.endsWith("heif")),
       ),
     ),
     ...toMediaTypeSupport(DOCUMENT_MEDIA_TYPES),

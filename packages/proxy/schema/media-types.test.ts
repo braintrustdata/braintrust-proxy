@@ -28,9 +28,9 @@ describe("media-types helpers for playground file upload validation", () => {
       expect(isMediaTypeSupported("image/webp", "google")).toBe(true);
       expect(isMediaTypeSupported("image/heic", "google")).toBe(true);
 
-      expect(isMediaTypeSupported("image/jpeg", "openai")).toBe(false);
-      expect(isMediaTypeSupported("image/heic", "openai")).toBe(true);
-      expect(isMediaTypeSupported("image/heif", "openai")).toBe(true);
+      expect(isMediaTypeSupported("image/jpeg", "openai")).toBe(true);
+      expect(isMediaTypeSupported("image/heic", "openai")).toBe(false);
+      expect(isMediaTypeSupported("image/heif", "openai")).toBe(false);
     });
 
     it("should allow text-based files only for anthropic and google", () => {
@@ -172,8 +172,8 @@ describe("media-types helpers for playground file upload validation", () => {
 
       expect(supported).toBeInstanceOf(Set);
       expect(supported.has("application/pdf")).toBe(true);
-      expect(supported.has("image/heic")).toBe(true);
-      expect(supported.has("image/jpeg")).toBe(false);
+      expect(supported.has("image/heic")).toBe(false);
+      expect(supported.has("image/jpeg")).toBe(true);
       expect(supported.has("text/plain")).toBe(false);
     });
 

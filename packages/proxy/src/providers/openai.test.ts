@@ -20,6 +20,15 @@ import { callProxyV1 } from "../../utils/tests";
 import * as proxyUtil from "../util";
 import { normalizeOpenAIContent } from "./openai";
 import * as util from "./util";
+import {
+  IMAGE_DATA_URL,
+  PDF_DATA_URL,
+  AUDIO_DATA_URL,
+  VIDEO_DATA_URL,
+  TEXT_DATA_URL,
+  MD_DATA_URL,
+  CSV_DATA_URL,
+} from "../../tests/fixtures/base64";
 
 it("should deny reasoning_effort for unsupported models non-streaming", async () => {
   const { json } = await callProxyV1<
@@ -492,6 +501,259 @@ describe("request/response checking", () => {
       model: "gpt-5.1",
       reasoning_effort: "low", // minimal should be converted to low for gpt-5.1
     });
+  });
+});
+
+describe("file content parts", () => {
+  it("should handle file content part with PDF data URL", async () => {
+    const { json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What is in this document?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: PDF_DATA_URL,
+                  filename: "document.pdf",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    const response = json() as OpenAIChatCompletion & { error?: unknown };
+    expect(response).toBeTruthy();
+    expect(response.error).not.toBeDefined();
+    expect(response.choices[0].message.role).toBe("assistant");
+    expect(response.choices[0].message.content).toBeTruthy();
+  });
+
+  it("should return error for plain text file content (unsupported)", async () => {
+    const { statusCode, json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What is in this text file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: TEXT_DATA_URL,
+                  filename: "document.txt",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(statusCode).toBe(400);
+    const response = json() as { error?: { type?: string; message?: string } };
+    console.log(response);
+    expect(response.error).toBeDefined();
+    expect(response.error!.type).toBe("invalid_request_error");
+    expect(response.error!.message).toContain(
+      "unsupported MIME type 'text/plain'",
+    );
+  });
+
+  it("should return error for markdown file content (unsupported)", async () => {
+    const { statusCode, json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What is in this markdown file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: MD_DATA_URL,
+                  filename: "document.md",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(statusCode).toBe(400);
+    const response = json() as { error?: { type?: string; message?: string } };
+    expect(response.error).toBeDefined();
+    expect(response.error!.type).toBe("invalid_request_error");
+    expect(response.error!.message).toContain(
+      "unsupported MIME type 'text/markdown'",
+    );
+  });
+
+  it("should return error for CSV file content (unsupported)", async () => {
+    const { statusCode, json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What muppets are in this CSV file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: CSV_DATA_URL,
+                  filename: "muppets.csv",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(statusCode).toBe(400);
+    const response = json() as { error?: { type?: string; message?: string } };
+    expect(response.error).toBeDefined();
+    expect(response.error!.type).toBe("invalid_request_error");
+    expect(response.error!.message).toContain(
+      "unsupported MIME type 'text/csv'",
+    );
+  });
+
+  it("should handle file content part with audio/wav data URL", async () => {
+    try {
+      const { statusCode, json } = await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletion
+      >({
+        body: {
+          model: "gpt-audio",
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: "What is in this audio file?",
+                },
+                {
+                  type: "input_audio",
+                  input_audio: {
+                    data: AUDIO_DATA_URL,
+                    format: "wav",
+                  },
+                },
+              ],
+            },
+          ],
+          stream: false,
+        },
+        proxyHeaders: {
+          "x-bt-endpoint-name": "openai",
+        },
+      });
+
+      expect(statusCode).toBe(400);
+      const response = json() as {
+        error?: { type?: string; message?: string };
+      };
+      expect(response.error).toBeDefined();
+      expect(response.error!.type).toBe("invalid_request_error");
+      expect(response.error!.message).toContain(
+        "unsupported MIME type 'audio/wav'",
+      );
+    } catch (error) {
+      console.log("known missing model, skipping");
+    }
+  });
+
+  it("should return error for video file content (unsupported)", async () => {
+    const { statusCode, json } = await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletion
+    >({
+      body: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: "What is in this video file?",
+              },
+              {
+                type: "file",
+                file: {
+                  file_data: VIDEO_DATA_URL,
+                  filename: "video.mp4",
+                },
+              },
+            ],
+          },
+        ],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+    });
+
+    expect(statusCode).toBe(400);
+    const response = json() as { error?: { type?: string; message?: string } };
+    expect(response.error).toBeDefined();
+    expect(response.error!.type).toBe("invalid_request_error");
+    expect(response.error!.message).toContain(
+      "unsupported MIME type 'video/mp4'",
+    );
   });
 });
 

@@ -4806,5 +4806,14 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
+  },
+  "accounts/fireworks/models/qwen3-30b-a3b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Qwen3 30B A3B",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
   }
 }

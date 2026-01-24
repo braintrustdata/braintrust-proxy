@@ -292,6 +292,7 @@
           "reasoning_effort": {
             "type": "string",
             "enum": [
+              "none",
               "minimal",
               "low",
               "medium",
@@ -425,8 +426,7 @@
               }
             },
             "required": [
-              "kind",
-              "token"
+              "kind"
             ]
           },
           {
@@ -474,6 +474,110 @@
             "required": [
               "kind"
             ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "trigger_functions"
+                ]
+              },
+              "triggered_functions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "function_id": {},
+                    "scope": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "span"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "trace"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "type"
+                          ]
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "scope"
+                  ]
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "kind",
+              "triggered_functions"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "complete_triggered_functions"
+                ]
+              },
+              "function_ids": {
+                "type": "array",
+                "items": {},
+                "minItems": 1
+              },
+              "triggered_xact_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "kind",
+              "function_ids",
+              "triggered_xact_id"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "mark_attempt_failed"
+                ]
+              },
+              "function_ids": {
+                "type": "array",
+                "items": {},
+                "minItems": 1
+              }
+            },
+            "required": [
+              "kind",
+              "function_ids"
+            ]
           }
         ]
       },
@@ -493,14 +597,22 @@
               },
               "function_ids": {
                 "type": "array",
-                "items": {},
-                "minItems": 1
+                "items": {}
               },
               "skip_logging": {
                 "type": [
                   "boolean",
                   "null"
                 ]
+              },
+              "triggered_functions": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/TriggeredFunctionState"
+                }
               }
             },
             "required": [
@@ -562,6 +674,88 @@
         "required": [
           "upload_status"
         ]
+      },
+      "BatchedFacetData": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "batched_facet"
+            ]
+          },
+          "preprocessor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NullableSavedFunctionId"
+              },
+              {
+                "description": "The preprocessor function to use for facet extraction. If not provided, the project default preprocessor will be used, falling back to the global 'thread' preprocessor."
+              }
+            ]
+          },
+          "facets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the facet"
+                },
+                "prompt": {
+                  "type": "string",
+                  "description": "The prompt to use for LLM extraction. The preprocessed text will be provided as context."
+                },
+                "model": {
+                  "type": "string",
+                  "description": "The model to use for facet extraction"
+                },
+                "embedding_model": {
+                  "type": "string",
+                  "description": "The embedding model to use for vectorizing facet results."
+                },
+                "no_match_pattern": {
+                  "type": "string",
+                  "description": "Regex pattern to identify outputs that do not match the facet. If the output matches, the facet will be saved as 'no_match'"
+                }
+              },
+              "required": [
+                "name",
+                "prompt"
+              ]
+            }
+          },
+          "topic_maps": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "function_name": {
+                  "type": "string",
+                  "description": "The name of the topic map function"
+                },
+                "topic_map_id": {
+                  "type": "string",
+                  "description": "The id of the topic map function"
+                },
+                "topic_map_data": {
+                  "$ref": "#/components/schemas/TopicMapData"
+                }
+              },
+              "required": [
+                "function_name",
+                "topic_map_data"
+              ]
+            },
+            "description": "Topic maps that depend on facets in this batch, keyed by source facet name"
+          }
+        },
+        "required": [
+          "type",
+          "facets"
+        ],
+        "title": "batched_facet"
       },
       "BraintrustAttachmentReference": {
         "type": "object",
@@ -1539,7 +1733,9 @@
                 "type": "string",
                 "enum": [
                   "node",
-                  "python"
+                  "python",
+                  "browser",
+                  "quickjs"
                 ]
               },
               "version": {
@@ -1705,12 +1901,17 @@
             ],
             "additionalProperties": {},
             "description": "User-controlled metadata about the dataset"
+          },
+          "url_slug": {
+            "type": "string",
+            "description": "URL slug for the dataset. used to construct dataset URLs"
           }
         },
         "required": [
           "id",
           "project_id",
-          "name"
+          "name",
+          "url_slug"
         ]
       },
       "DatasetEvent": {
@@ -1781,7 +1982,7 @@
           },
           "span_id": {
             "type": "string",
-            "description": "A unique identifier used to link different dataset events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+            "description": "A unique identifier used to link different dataset events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full details on tracing"
           },
           "root_span_id": {
             "type": "string",
@@ -1812,6 +2013,73 @@
             ],
             "items": {},
             "description": "Optional list of audit entries attached to this event"
+          },
+          "facets": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "Facets for categorization (dictionary from facet id to value)"
+          },
+          "classifications": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Stable classification identifier"
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional confidence score for the classification"
+                  },
+                  "metadata": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {},
+                    "description": "Optional metadata associated with the classification"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "classifier",
+                      "topic_map"
+                    ],
+                    "description": "Optional classification source type"
+                  },
+                  "function_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional function id that produced the classification"
+                  },
+                  "topic_map_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional topic map id that produced the classification"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "description": "Classifications for this event (dictionary from classification name to items)"
           }
         },
         "required": [
@@ -1865,6 +2133,30 @@
             ],
             "format": "date-time",
             "description": "Date the environment variable was last used"
+          },
+          "metadata": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "Optional metadata associated with the environment variable when managed via the function secrets API"
+          },
+          "secret_type": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Optional classification for the secret (for example, the AI provider name)"
+          },
+          "secret_category": {
+            "type": "string",
+            "enum": [
+              "env_var",
+              "ai_provider"
+            ],
+            "default": "env_var",
+            "description": "The category of the secret: env_var for regular environment variables, ai_provider for AI provider API keys"
           }
         },
         "required": [
@@ -1873,6 +2165,150 @@
           "object_id",
           "name"
         ]
+      },
+      "EvalStatusPage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the eval status page"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the eval status page belongs under"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the eval status page"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of eval status page creation"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of eval status page deletion, or null if the eval status page is still active"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the eval status page"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the eval status page"
+          },
+          "logo_url": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "URL of the logo to display on the page"
+          },
+          "theme": {
+            "$ref": "#/components/schemas/EvalStatusPageTheme"
+          },
+          "config": {
+            "$ref": "#/components/schemas/EvalStatusPageConfig"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "theme",
+          "config"
+        ],
+        "description": "A public eval status page that displays aggregate experiment results"
+      },
+      "EvalStatusPageConfig": {
+        "type": "object",
+        "properties": {
+          "score_columns": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The score columns to display on the page"
+          },
+          "metric_columns": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string"
+            },
+            "description": "The metric columns to display on the page"
+          },
+          "grouping_field": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The metadata field to use for grouping experiments (model)"
+          },
+          "filter": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "BTQL filter to apply to experiment data"
+          },
+          "sort_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Field to sort results by (format: 'score:<name>' or 'metric:<name>')"
+          },
+          "sort_order": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "description": "Sort order (ascending or descending)"
+          },
+          "api_key": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The API key used for fetching experiment data"
+          }
+        },
+        "description": "Configuration for what data to display"
+      },
+      "EvalStatusPageTheme": {
+        "type": "string",
+        "enum": [
+          "light",
+          "dark"
+        ],
+        "description": "The theme for the page"
       },
       "Experiment": {
         "type": "object",
@@ -2161,7 +2597,7 @@
           },
           "span_id": {
             "type": "string",
-            "description": "A unique identifier used to link different experiment events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+            "description": "A unique identifier used to link different experiment events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full details on tracing"
           },
           "span_parents": {
             "type": [
@@ -2205,6 +2641,73 @@
             ],
             "items": {},
             "description": "Optional list of audit entries attached to this event"
+          },
+          "facets": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "Facets for categorization (dictionary from facet id to value)"
+          },
+          "classifications": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Stable classification identifier"
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional confidence score for the classification"
+                  },
+                  "metadata": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {},
+                    "description": "Optional metadata associated with the classification"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "classifier",
+                      "topic_map"
+                    ],
+                    "description": "Optional classification source type"
+                  },
+                  "function_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional function id that produced the classification"
+                  },
+                  "topic_map_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional topic map id that produced the classification"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "description": "Classifications for this event (dictionary from classification name to items)"
           }
         },
         "required": [
@@ -2249,6 +2752,9 @@
               },
               "name": {
                 "type": "string"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
               }
             },
             "required": [
@@ -2313,6 +2819,48 @@
           "content_type",
           "url"
         ]
+      },
+      "FacetData": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "facet"
+            ]
+          },
+          "preprocessor": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NullableSavedFunctionId"
+              },
+              {
+                "description": "The preprocessor function to use for facet extraction. If not provided, the project default preprocessor will be used, falling back to the global 'thread' preprocessor."
+              }
+            ]
+          },
+          "prompt": {
+            "type": "string",
+            "description": "The prompt to use for LLM extraction. The preprocessed text will be provided as context."
+          },
+          "model": {
+            "type": "string",
+            "description": "The model to use for facet extraction"
+          },
+          "embedding_model": {
+            "type": "string",
+            "description": "The embedding model to use for vectorizing facet results."
+          },
+          "no_match_pattern": {
+            "type": "string",
+            "description": "Regex pattern to identify outputs that do not match the facet. If the output matches, the facet will be saved as 'no_match'"
+          }
+        },
+        "required": [
+          "type",
+          "prompt"
+        ],
+        "title": "facet"
       },
       "Function": {
         "type": "object",
@@ -2516,7 +3064,9 @@
                             "type": "string",
                             "enum": [
                               "node",
-                              "python"
+                              "python",
+                              "browser",
+                              "quickjs"
                             ]
                           },
                           "version": {
@@ -2530,6 +3080,10 @@
                       },
                       "code": {
                         "type": "string"
+                      },
+                      "code_hash": {
+                        "type": "string",
+                        "description": "SHA256 hash of the code, computed at save time"
                       }
                     },
                     "required": [
@@ -2591,6 +3145,17 @@
               },
               "name": {
                 "type": "string"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
+              },
+              "config": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {},
+                "description": "Configuration options to pass to the global function (e.g., for preprocessor customization)"
               }
             },
             "required": [
@@ -2598,6 +3163,22 @@
               "name"
             ],
             "title": "global"
+          },
+          {
+            "$ref": "#/components/schemas/FacetData"
+          },
+          {
+            "$ref": "#/components/schemas/BatchedFacetData"
+          },
+          {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TopicMapData"
+              },
+              {
+                "title": "topic_map"
+              }
+            ]
           }
         ]
       },
@@ -2607,7 +3188,8 @@
           "llm",
           "code",
           "global",
-          "graph"
+          "graph",
+          "topic_map"
         ]
       },
       "FunctionId": {
@@ -2659,6 +3241,9 @@
               "global_function": {
                 "type": "string",
                 "description": "The name of the global function. Currently, the global namespace includes the functions in autoevals"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
               }
             },
             "required": [
@@ -2700,7 +3285,9 @@
                     "type": "string",
                     "enum": [
                       "node",
-                      "python"
+                      "python",
+                      "browser",
+                      "quickjs"
                     ]
                   },
                   "version": {
@@ -2797,7 +3384,11 @@
           "tool",
           "scorer",
           "task",
-          "agent"
+          "workflow",
+          "custom_view",
+          "preprocessor",
+          "facet",
+          "classifier"
         ]
       },
       "FunctionOutputType": {
@@ -2805,6 +3396,8 @@
         "enum": [
           "completion",
           "score",
+          "facet",
+          "tag",
           "any"
         ]
       },
@@ -2814,8 +3407,15 @@
           "llm",
           "scorer",
           "task",
-          "tool"
-        ]
+          "tool",
+          "custom_view",
+          "preprocessor",
+          "facet",
+          "classifier",
+          "tag"
+        ],
+        "default": "scorer",
+        "description": "The type of global function. Defaults to 'scorer'."
       },
       "FunctionTypeEnumNullish": {
         "type": [
@@ -2826,7 +3426,12 @@
           "llm",
           "scorer",
           "task",
-          "tool"
+          "tool",
+          "custom_view",
+          "preprocessor",
+          "facet",
+          "classifier",
+          "tag"
         ]
       },
       "GitMetadataSettings": {
@@ -3389,6 +3994,30 @@
         ],
         "description": "A group is a collection of users which can be assigned an ACL\n\nGroups can consist of individual users, as well as a set of groups they inherit from"
       },
+      "GroupScope": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "group"
+            ]
+          },
+          "group_by": {
+            "type": "string",
+            "description": "Field path to group by, e.g. metadata.session_id"
+          },
+          "idle_seconds": {
+            "type": "number",
+            "description": "Optional: trigger after this many seconds of inactivity"
+          }
+        },
+        "required": [
+          "type",
+          "group_by"
+        ],
+        "description": "Process spans/traces grouped by a field (e.g., session_id)"
+      },
       "IfExists": {
         "type": "string",
         "enum": [
@@ -3455,6 +4084,27 @@
                   "null"
                 ],
                 "description": "If true, throw an error if one of the variables in the prompt is not present in the input"
+              },
+              "mcp_auth": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "oauth_token": {
+                      "type": "string",
+                      "description": "The OAuth token to use"
+                    }
+                  }
+                },
+                "description": "Map of MCP server URL to auth credentials"
+              },
+              "overrides": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": {},
+                "description": "Partial function definition to merge with the function being invoked. Fields are validated against the function type's schema at runtime. For facets: { preprocessor?, prompt?, model? }. For prompts: { model?, ... }."
               }
             }
           }
@@ -3526,6 +4176,66 @@
           }
         ],
         "description": "Options for tracing the function call"
+      },
+      "MCPServer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the MCP server"
+          },
+          "project_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the project that the MCP server belongs under"
+          },
+          "user_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Identifies the user who created the MCP server"
+          },
+          "created": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of MCP server creation"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time",
+            "description": "Date of MCP server deletion, or null if the MCP server is still active"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the MCP server. Within a project, MCP server names are unique"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the MCP server"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL of the MCP server endpoint"
+          }
+        },
+        "required": [
+          "id",
+          "project_id",
+          "name",
+          "url"
+        ]
       },
       "MessageRole": {
         "type": "string",
@@ -3669,6 +4379,7 @@
               "reasoning_effort": {
                 "type": "string",
                 "enum": [
+                  "none",
                   "minimal",
                   "low",
                   "medium",
@@ -3797,6 +4508,55 @@
           }
         ]
       },
+      "NullableSavedFunctionId": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "function"
+                ]
+              },
+              "id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "id"
+            ],
+            "title": "function"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "global"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
+              }
+            },
+            "required": [
+              "type",
+              "name"
+            ],
+            "title": "global"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "description": "Default preprocessor for this project. When set, functions that use preprocessors will use this instead of their built-in default."
+      },
       "ObjectReference": {
         "type": "object",
         "properties": {
@@ -3909,7 +4669,7 @@
             "items": {
               "$ref": "#/components/schemas/SavedFunctionId"
             },
-            "description": "The list of scorers to use for online scoring"
+            "description": "The list of functions to run for online scoring. Can include scorers, facets, or other function types."
           },
           "btql_filter": {
             "type": [
@@ -3923,7 +4683,7 @@
               "boolean",
               "null"
             ],
-            "description": "Whether to trigger online scoring on the root span of each trace"
+            "description": "Whether to trigger online scoring on the root span of each trace. Only applies when scope is 'span' or unset."
           },
           "apply_to_span_names": {
             "type": [
@@ -3933,7 +4693,7 @@
             "items": {
               "type": "string"
             },
-            "description": "Trigger online scoring on any spans with a name in this list"
+            "description": "Trigger online scoring on any spans with a name in this list. Only applies when scope is 'span' or unset."
           },
           "skip_logging": {
             "type": [
@@ -3941,6 +4701,23 @@
               "null"
             ],
             "description": "Whether to skip adding scorer spans when computing scores"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SpanScope"
+              },
+              {
+                "$ref": "#/components/schemas/TraceScope"
+              },
+              {
+                "$ref": "#/components/schemas/GroupScope"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The scope at which to run the functions. Defaults to span-level execution. Trace/group scope requires all functions to be facets."
           }
         },
         "required": [
@@ -4028,6 +4805,13 @@
           "name": {
             "type": "string",
             "description": "Name of the project"
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Textual description of the project"
           },
           "created": {
             "type": [
@@ -4145,6 +4929,35 @@
                         "required": [
                           "type",
                           "url"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "slack"
+                            ],
+                            "description": "The type of action to take"
+                          },
+                          "workspace_id": {
+                            "type": "string",
+                            "description": "The Slack workspace ID to post to"
+                          },
+                          "channel": {
+                            "type": "string",
+                            "description": "The Slack channel ID to post to"
+                          },
+                          "message_template": {
+                            "type": "string",
+                            "description": "Custom message template for the alert"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "workspace_id",
+                          "channel"
                         ]
                       }
                     ],
@@ -4306,6 +5119,83 @@
                   "event_type",
                   "object_type",
                   "retention_days"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "event_type": {
+                    "type": "string",
+                    "enum": [
+                      "environment_update"
+                    ],
+                    "description": "The type of automation."
+                  },
+                  "environment_filter": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Optional list of environment slugs to filter by"
+                  },
+                  "action": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "webhook"
+                            ],
+                            "description": "The type of action to take"
+                          },
+                          "url": {
+                            "type": "string",
+                            "description": "The webhook URL to send the request to"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "url"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "slack"
+                            ],
+                            "description": "The type of action to take"
+                          },
+                          "workspace_id": {
+                            "type": "string",
+                            "description": "The Slack workspace ID to post to"
+                          },
+                          "channel": {
+                            "type": "string",
+                            "description": "The Slack channel ID to post to"
+                          },
+                          "message_template": {
+                            "type": "string",
+                            "description": "Custom message template for the alert"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "workspace_id",
+                          "channel"
+                        ]
+                      }
+                    ],
+                    "description": "The action to take when the automation rule is triggered"
+                  }
+                },
+                "required": [
+                  "event_type",
+                  "action"
                 ]
               }
             ],
@@ -4502,7 +5392,7 @@
           },
           "span_id": {
             "type": "string",
-            "description": "A unique identifier used to link different project logs events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/guides/tracing) for full details on tracing"
+            "description": "A unique identifier used to link different project logs events together as part of a full trace. See the [tracing guide](https://www.braintrust.dev/docs/instrument) for full details on tracing"
           },
           "span_parents": {
             "type": [
@@ -4549,6 +5439,73 @@
           },
           "_async_scoring_state": {
             "description": "The async scoring state for this event"
+          },
+          "facets": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {},
+            "description": "Facets for categorization (dictionary from facet id to value)"
+          },
+          "classifications": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Stable classification identifier"
+                  },
+                  "confidence": {
+                    "type": [
+                      "number",
+                      "null"
+                    ],
+                    "description": "Optional confidence score for the classification"
+                  },
+                  "metadata": {
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {},
+                    "description": "Optional metadata associated with the classification"
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "classifier",
+                      "topic_map"
+                    ],
+                    "description": "Optional classification source type"
+                  },
+                  "function_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional function id that produced the classification"
+                  },
+                  "topic_map_id": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "description": "Optional topic map id that produced the classification"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            },
+            "description": "Classifications for this event (dictionary from classification name to items)"
           }
         },
         "required": [
@@ -4809,6 +5766,9 @@
               "null"
             ],
             "description": "If true, disable real-time queries for this project. This can improve query performance for high-volume logs."
+          },
+          "default_preprocessor": {
+            "$ref": "#/components/schemas/NullableSavedFunctionId"
           }
         }
       },
@@ -5078,6 +6038,92 @@
               "$ref": "#/components/schemas/SavedFunctionId"
             }
           },
+          "template_format": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "mustache",
+              "nunjucks",
+              "none"
+            ]
+          },
+          "mcp": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "id"
+                      ]
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "is_disabled": {
+                      "type": "boolean"
+                    },
+                    "enabled_tools": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "If omitted, all tools are enabled"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "id"
+                  ],
+                  "title": "MCP server id. This is used for project-level MCP server definitions."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "url"
+                      ]
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "is_disabled": {
+                      "type": "boolean"
+                    },
+                    "enabled_tools": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "If omitted, all tools are enabled"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "url"
+                  ],
+                  "title": "MCP server url. This is used for inline definitions of MCP servers."
+                }
+              ]
+            }
+          },
           "origin": {
             "type": [
               "object",
@@ -5119,6 +6165,92 @@
             ],
             "items": {
               "$ref": "#/components/schemas/SavedFunctionId"
+            }
+          },
+          "template_format": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "mustache",
+              "nunjucks",
+              "none"
+            ]
+          },
+          "mcp": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "id"
+                      ]
+                    },
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "is_disabled": {
+                      "type": "boolean"
+                    },
+                    "enabled_tools": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "If omitted, all tools are enabled"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "id"
+                  ],
+                  "title": "MCP server id. This is used for project-level MCP server definitions."
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "url"
+                      ]
+                    },
+                    "url": {
+                      "type": "string"
+                    },
+                    "is_disabled": {
+                      "type": "boolean"
+                    },
+                    "enabled_tools": {
+                      "type": [
+                        "array",
+                        "null"
+                      ],
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "If omitted, all tools are enabled"
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "url"
+                  ],
+                  "title": "MCP server url. This is used for inline definitions of MCP servers."
+                }
+              ]
             }
           },
           "origin": {
@@ -5193,13 +6325,24 @@
               "type": "number",
               "minimum": 0,
               "maximum": 1
-            }
+            },
+            "description": "Map of choices to scores (0-1). Used by scorers."
+          },
+          "choice": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of valid choices without score mapping. Used by classifiers that deposit output to tags."
+          },
+          "allow_no_match": {
+            "type": "boolean",
+            "description": "If true, adds a 'No match' option. When selected, no tag is deposited."
           }
         },
         "required": [
           "type",
-          "use_cot",
-          "choice_scores"
+          "use_cot"
         ]
       },
       "PromptSessionEvent": {
@@ -5786,6 +6929,18 @@
               "type": "string"
             },
             "description": "Optional tags that will be added to the experiment."
+          },
+          "mcp_auth": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "oauth_token": {
+                  "type": "string",
+                  "description": "The OAuth token to use"
+                }
+              }
+            }
           }
         },
         "required": [
@@ -5827,6 +6982,9 @@
               },
               "name": {
                 "type": "string"
+              },
+              "function_type": {
+                "$ref": "#/components/schemas/FunctionTypeEnum"
               }
             },
             "required": [
@@ -5984,6 +7142,21 @@
           "url"
         ]
       },
+      "SpanScope": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "span"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "description": "Process individual spans"
+      },
       "SpanType": {
         "type": [
           "string",
@@ -5995,7 +7168,11 @@
           "function",
           "eval",
           "task",
-          "tool"
+          "tool",
+          "automation",
+          "facet",
+          "preprocessor",
+          "classifier"
         ],
         "description": "Type of the span, for display purposes only"
       },
@@ -6081,7 +7258,9 @@
         ],
         "enum": [
           "auto",
-          "parallel"
+          "parallel",
+          "json",
+          "text"
         ],
         "description": "The mode format of the returned value (defaults to 'auto')"
       },
@@ -6122,6 +7301,361 @@
         "required": [
           "type",
           "function"
+        ]
+      },
+      "TopicMapData": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "topic_map"
+            ]
+          },
+          "source_facet": {
+            "type": "string",
+            "description": "The facet field name to use as input for classification"
+          },
+          "embedding_model": {
+            "type": "string",
+            "description": "The embedding model to use for embedding facet values"
+          },
+          "bundle_uri": {
+            "type": "string",
+            "description": "S3 URI of the topic map bundle (centroids, names, MLP model)"
+          },
+          "distance_threshold": {
+            "type": "number",
+            "description": "Maximum distance to nearest centroid. If exceeded, returns no_match."
+          },
+          "report": {
+            "$ref": "#/components/schemas/TopicMapReport"
+          }
+        },
+        "required": [
+          "type",
+          "source_facet",
+          "embedding_model",
+          "bundle_uri"
+        ]
+      },
+      "TopicMapReport": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "number",
+            "enum": [
+              1
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "settings": {
+            "type": "object",
+            "properties": {
+              "algorithm": {
+                "type": "string",
+                "enum": [
+                  "hdbscan",
+                  "kmeans",
+                  "hierarchical"
+                ]
+              },
+              "dimensionReduction": {
+                "type": "string",
+                "enum": [
+                  "umap",
+                  "pca",
+                  "none"
+                ]
+              },
+              "vectorField": {
+                "type": "string"
+              },
+              "embeddingModel": {
+                "type": "string"
+              },
+              "nClusters": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "umapDimensions": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "minClusterSize": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "minSamples": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "algorithm",
+              "dimensionReduction",
+              "vectorField",
+              "embeddingModel"
+            ]
+          },
+          "querySettings": {
+            "type": "object",
+            "properties": {
+              "hierarchyThreshold": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "autoNaming": {
+                "type": "boolean"
+              },
+              "skipCache": {
+                "type": "boolean"
+              },
+              "vizMode": {
+                "type": "string",
+                "enum": [
+                  "bar",
+                  "scatter"
+                ]
+              },
+              "namingModel": {
+                "type": "string"
+              }
+            }
+          },
+          "clusters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "clusterId": {
+                  "type": "number"
+                },
+                "count": {
+                  "type": "number"
+                },
+                "sampleTexts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "samples": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "text": {
+                        "type": "string"
+                      },
+                      "root_span_id": {
+                        "type": "string"
+                      },
+                      "span_id": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "text",
+                      "root_span_id",
+                      "span_id"
+                    ]
+                  }
+                },
+                "name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "keywords": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "centroid": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                "children": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": {}
+                  }
+                },
+                "parentId": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "isLeaf": {
+                  "type": "boolean"
+                },
+                "depth": {
+                  "type": "number"
+                }
+              },
+              "required": [
+                "clusterId",
+                "count",
+                "sampleTexts",
+                "samples"
+              ]
+            }
+          },
+          "embeddingPoints": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "x": {
+                  "type": "number"
+                },
+                "y": {
+                  "type": "number"
+                },
+                "cluster": {
+                  "type": "number"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "x",
+                "y",
+                "cluster"
+              ]
+            }
+          }
+        },
+        "required": [
+          "version",
+          "settings",
+          "querySettings",
+          "clusters"
+        ],
+        "description": "Saved clustering report for UI rehydration"
+      },
+      "TraceScope": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "trace"
+            ]
+          },
+          "idle_seconds": {
+            "type": "number",
+            "description": "Consider trace complete after this many seconds of inactivity (default: 30)"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "description": "Process entire traces (all spans sharing the same root_span_id)"
+      },
+      "TriggeredFunctionState": {
+        "type": "object",
+        "properties": {
+          "triggered_xact_id": {
+            "type": "string",
+            "description": "The xact_id when this function was triggered"
+          },
+          "completed_xact_id": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "The xact_id when this function completed (matches triggered_xact_id if done)"
+          },
+          "attempts": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0,
+            "description": "Number of execution attempts (for retry tracking)"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "span"
+                    ]
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "trace"
+                    ]
+                  }
+                },
+                "required": [
+                  "type"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "group"
+                    ]
+                  },
+                  "key": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "type",
+                  "key",
+                  "value"
+                ]
+              }
+            ],
+            "description": "The scope of data this function operates on"
+          }
+        },
+        "required": [
+          "triggered_xact_id",
+          "scope"
         ]
       },
       "UploadStatus": {
@@ -6217,10 +7751,12 @@
               "prompts",
               "tools",
               "scorers",
+              "classifiers",
               "logs",
-              "agents",
               "monitor",
-              "for_review"
+              "for_review_project_log",
+              "for_review_experiments",
+              "for_review_datasets"
             ],
             "description": "Type of object that the view corresponds to."
           },
@@ -6396,6 +7932,12 @@
                     ]
                   }
                 }
+              },
+              "freezeColumns": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               }
             },
             "required": [
@@ -6625,6 +8167,12 @@
                   "traces",
                   "spans"
                 ]
+              },
+              "freezeColumns": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               }
             },
             "title": "TableViewOptions"
@@ -6646,7 +8194,7 @@
     "license": {
       "name": "Apache 2.0"
     },
-    "x-internal-git-sha": "e6490ffb3d42f5dbc59d748bb5016f6d8f11cac2"
+    "x-internal-git-sha": "8d646d224cde97509b18183554516d018f4c0e84"
   },
   "paths": {},
   "webhooks": {}

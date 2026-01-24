@@ -24,8 +24,7 @@ import {
 } from "../generated_types";
 import {
   APISecret,
-  BedrockMetadata,
-  BedrockMetadataSchema,
+  BedrockMetadataSchemaWithAuth,
   MessageTypeToMessageType,
 } from "@schema";
 import { OpenAIChatCompletion, OpenAIChatCompletionChunk } from "@types";
@@ -121,7 +120,7 @@ export async function fetchBedrockAnthropicMessages({
     auth_type = "iam_credentials",
     access_key: accessKeyId,
     session_token: sessionToken,
-  } = BedrockMetadataSchema.parse(metadata);
+  } = BedrockMetadataSchemaWithAuth.parse(metadata);
   const { model, stream, ...rest } = z
     .object({
       model: z.string(),
@@ -216,7 +215,7 @@ export async function fetchBedrockAnthropic({
     throw new Error("Bedrock: expected model");
   }
 
-  const metadata = secret.metadata as BedrockMetadata;
+  const metadata = BedrockMetadataSchemaWithAuth.parse(secret.metadata);
   const auth_type = metadata.auth_type ?? "iam_credentials";
 
   const input = {
@@ -559,7 +558,7 @@ export async function fetchConverse({
     throw new Error("Bedrock: expected model");
   }
 
-  const metadata = secret.metadata as BedrockMetadata;
+  const metadata = BedrockMetadataSchemaWithAuth.parse(secret.metadata);
   const auth_type = metadata.auth_type ?? "iam_credentials";
 
   let messages: Array<BedrockMessage> | undefined = undefined;

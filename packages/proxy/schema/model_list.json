@@ -1,4 +1,11 @@
 {
+  "brain-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Brain",
+    "reasoning": true
+  },
   "gpt-5-mini": {
     "format": "openai",
     "flavor": "chat",

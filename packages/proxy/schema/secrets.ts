@@ -9,6 +9,7 @@ export const BaseMetadataSchema = z
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),
     brain_model: z.string().nullish(),
+    brain_system_prompt: z.string().nullish(),
   })
   .strict();
 

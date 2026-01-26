@@ -1181,10 +1181,46 @@ async function fetchModelLoop(
     secrets.length > 0 && secrets[0].metadata?.brain_model
       ? String(secrets[0].metadata.brain_model)
       : null;
+  const brainSystemPromptContent =
+    secrets.length > 0 && secrets[0].metadata?.brain_system_prompt
+      ? String(secrets[0].metadata.brain_system_prompt)
+      : null;
+
   if (brainModelOverride) {
     model = brainModelOverride;
     if (bodyData && typeof bodyData === "object" && "model" in bodyData) {
       bodyData = { ...bodyData, model: brainModelOverride };
+
+      // Inject Brain system prompt for chat completions (if provided)
+      if (brainSystemPromptContent && Array.isArray(bodyData.messages)) {
+        const brainSystemPrompt = {
+          role: "system",
+          content: brainSystemPromptContent,
+        };
+        const existingMessages = bodyData.messages;
+        const hasSystemMessage =
+          existingMessages.length > 0 && existingMessages[0]?.role === "system";
+        if (hasSystemMessage) {
+          // Prepend Brain context to existing system message
+          const existingSystem = existingMessages[0];
+          bodyData = {
+            ...bodyData,
+            messages: [
+              {
+                ...existingSystem,
+                content: `${brainSystemPromptContent}\n\n${existingSystem.content ?? ""}`,
+              },
+              ...existingMessages.slice(1),
+            ],
+          };
+        } else {
+          // Add system message at the beginning
+          bodyData = {
+            ...bodyData,
+            messages: [brainSystemPrompt, ...existingMessages],
+          };
+        }
+      }
     }
   }
 

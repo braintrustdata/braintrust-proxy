@@ -1175,6 +1175,19 @@ async function fetchModelLoop(
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
+
+  // Check if the first secret has a brain_model override (used for Brain model routing)
+  const brainModelOverride =
+    secrets.length > 0 && secrets[0].metadata?.brain_model
+      ? String(secrets[0].metadata.brain_model)
+      : null;
+  if (brainModelOverride) {
+    model = brainModelOverride;
+    if (bodyData && typeof bodyData === "object" && "model" in bodyData) {
+      bodyData = { ...bodyData, model: brainModelOverride };
+    }
+  }
+
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse: ModelResponse | null = null;
   let secretName: string | null | undefined = null;

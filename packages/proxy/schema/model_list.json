@@ -4518,7 +4518,7 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.1,
-    "displayName": "Kimi K2 P5",
+    "displayName": "Kimi K2.5",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },

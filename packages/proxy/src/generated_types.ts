@@ -267,6 +267,7 @@ export const TopicMapReport = z.object({
   clusters: z.array(
     z.object({
       clusterId: z.number(),
+      parentClusterId: z.union([z.number(), z.null()]).optional(),
       count: z.number(),
       sampleTexts: z.array(z.string()),
       samples: z.array(
@@ -281,7 +282,6 @@ export const TopicMapReport = z.object({
       description: z.string().optional(),
       keywords: z.array(z.string()).optional(),
       centroid: z.array(z.number()).optional(),
-      children: z.array(z.object({}).partial().passthrough()).optional(),
       parentId: z.union([z.number(), z.null()]).optional(),
       isLeaf: z.boolean().optional(),
       depth: z.number().optional(),

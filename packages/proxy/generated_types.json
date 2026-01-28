@@ -7496,12 +7496,11 @@
                     "type": "number"
                   }
                 },
-                "children": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "additionalProperties": {}
-                  }
+                "parentClusterId": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
                 },
                 "parentId": {
                   "type": [

@@ -70,6 +70,10 @@ export const ModelSchema = z.object({
     .describe(
       "Discourage the use of the model (we will hide the model in the UI).",
     ),
+  deprecationDate: z
+    .string()
+    .nullish()
+    .describe("Date after which the model will be treated as deprecated"),
   parent: z.string().nullish().describe("The model was replaced this model."),
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
   locations: z.array(z.string()).nullish(),
@@ -102,7 +106,9 @@ declare global {
 
 // This function will always return at least the static model list,
 export function getAvailableModels(): { [name: string]: ModelSpec } {
-  return globalThis._proxy_availableModels ?? modelListJsonTyped;
+  return markModelsPastDeprecationDate(
+    globalThis._proxy_availableModels ?? modelListJsonTyped,
+  );
 }
 
 // This function will reach out to the control plane and update the
@@ -179,4 +185,20 @@ async function loadModelsFromControlPlane(
     // Clear the promise so future requests can proceed
     _loadModelsPromise = null;
   }
+}
+
+export function markModelsPastDeprecationDate(models: {
+  [name: string]: ModelSpec;
+}): { [name: string]: ModelSpec } {
+  for (let modelName of Object.keys(models)) {
+    const { deprecationDate } = models[modelName];
+    if (
+      deprecationDate &&
+      Date.parse(deprecationDate) &&
+      new Date() > new Date(deprecationDate)
+    ) {
+      models[modelName].deprecated = true;
+    }
+  }
+  return models;
 }

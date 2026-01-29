@@ -37,7 +37,10 @@ export type AzureEntraSecret = z.infer<typeof AzureEntraSecretSchema>;
 export const BedrockMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     region: z.string().min(1, "Region cannot be empty"),
-    access_key: z.string().min(1, "Access key cannot be empty"),
+    auth_type: z
+      .enum(["iam_credentials", "api_key"])
+      .default("iam_credentials"),
+    access_key: z.string().nullish(),
     session_token: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),

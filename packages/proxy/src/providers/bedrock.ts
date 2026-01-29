@@ -5,15 +5,15 @@ import {
   ConverseCommand,
   ConverseCommandOutput,
   ConverseStreamCommand,
-  ConverseStreamOutput,
   ImageFormat,
   InferenceConfiguration,
   InvokeModelCommand,
   InvokeModelWithResponseStreamCommand,
-  ResponseStream,
   StopReason,
   SystemContentBlock,
   ToolConfiguration,
+  ConverseStreamOutput,
+  ResponseStream,
 } from "@aws-sdk/client-bedrock-runtime";
 import {
   type MessageRoleType as MessageRole,

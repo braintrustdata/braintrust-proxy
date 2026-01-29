@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import { it } from "vitest";
 import raw_models from "./model_list.json";
-import { ModelSchema } from "./models";
+import { markModelsPastDeprecationDate, ModelSchema } from "./models";
 import { z } from "zod";
 
 it("parse model list", () => {
@@ -13,4 +13,61 @@ it("parse model list", () => {
     }
     expect(result.success).toBe(true);
   }
+});
+
+it("Marks models as deprecated once deprecation date has been reached", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      multimodal: true,
+      input_cost_per_mil_tokens: 0.8,
+      output_cost_per_mil_tokens: 4,
+      input_cache_read_cost_per_mil_tokens: 0.08,
+      input_cache_write_cost_per_mil_tokens: 1,
+      parent: "claude-3-5-haiku-latest",
+      max_input_tokens: 200000,
+      max_output_tokens: 8192,
+      deprecationDate: "10 Jan 2026 00:00:01 GMT",
+    },
+  });
+  expect(result["testModel"].deprecated).toBe(true);
+});
+
+it("Does not deprecate models if deprecation date has not yet passed", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      multimodal: true,
+      input_cost_per_mil_tokens: 0.8,
+      output_cost_per_mil_tokens: 4,
+      input_cache_read_cost_per_mil_tokens: 0.08,
+      input_cache_write_cost_per_mil_tokens: 1,
+      parent: "claude-3-5-haiku-latest",
+      max_input_tokens: 200000,
+      max_output_tokens: 8192,
+      deprecationDate: "10 Jan 3026 00:00:01 GMT",
+    },
+  });
+  expect(result["testModel"].deprecated).toBe(undefined);
+});
+
+it("Ignores malformed deprecation dates", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      multimodal: true,
+      input_cost_per_mil_tokens: 0.8,
+      output_cost_per_mil_tokens: 4,
+      input_cache_read_cost_per_mil_tokens: 0.08,
+      input_cache_write_cost_per_mil_tokens: 1,
+      parent: "claude-3-5-haiku-latest",
+      max_input_tokens: 200000,
+      max_output_tokens: 8192,
+      deprecationDate: "not a date",
+    },
+  });
+  expect(result["testModel"].deprecated).toBe(undefined);
 });

@@ -466,6 +466,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "fireworks_ai/accounts/fireworks/models/glm-4p5-air": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
+  "accounts/fireworks/models/kimi-k2p5": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": [
     "fireworks",

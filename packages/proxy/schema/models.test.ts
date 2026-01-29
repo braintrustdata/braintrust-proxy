@@ -35,6 +35,10 @@ it("Marks models as deprecated once deprecation date has been reached", () => {
 });
 
 it("Does not deprecate models if deprecation date has not yet passed", () => {
+  const now = new Date();
+  const oneYearFromNow = new Date(
+    now.setFullYear(now.getFullYear() + 1),
+  ).toDateString();
   const result = markModelsPastDeprecationDate({
     testModel: {
       format: "anthropic",
@@ -47,7 +51,7 @@ it("Does not deprecate models if deprecation date has not yet passed", () => {
       parent: "claude-3-5-haiku-latest",
       max_input_tokens: 200000,
       max_output_tokens: 8192,
-      deprecationDate: "10 Jan 3026 00:00:01 GMT",
+      deprecationDate: oneYearFromNow,
     },
   });
   expect(result["testModel"].deprecated).toBe(undefined);

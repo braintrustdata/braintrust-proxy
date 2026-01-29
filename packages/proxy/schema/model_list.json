@@ -827,7 +827,7 @@
     "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 128000,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "claude-3-7-sonnet-20250219": {
     "format": "anthropic",
@@ -842,7 +842,7 @@
     "parent": "claude-3-7-sonnet-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "claude-haiku-4-5": {
     "format": "anthropic",
@@ -879,7 +879,7 @@
     "displayName": "Claude 3.5 Haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "claude-3-5-haiku-20241022": {
     "format": "anthropic",
@@ -892,7 +892,7 @@
     "parent": "claude-3-5-haiku-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "claude-3-5-sonnet-latest": {
     "format": "anthropic",
@@ -2511,7 +2511,7 @@
     "displayName": "Gemini 2.0 Flash Latest",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192,
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "gemini-2.0-flash-001": {
     "format": "google",
@@ -2523,7 +2523,7 @@
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192,
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "gemini-2.0-flash-lite": {
     "format": "google",
@@ -2535,7 +2535,7 @@
     "displayName": "Gemini 2.0 Flash-Lite",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192,
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "gemini-2.0-flash-lite-001": {
     "format": "google",
@@ -2547,7 +2547,7 @@
     "parent": "gemini-2.0-flash-lite",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192,
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "gemini-3-pro-image-preview": {
     "format": "google",
@@ -3206,7 +3206,7 @@
     "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "us.anthropic.claude-3-7-sonnet-20250219-v1:0": {
     "format": "anthropic",
@@ -3222,7 +3222,7 @@
     "parent": "anthropic.claude-3-7-sonnet-20250219-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "anthropic.claude-haiku-4-5-20251001-v1:0": {
     "format": "anthropic",
@@ -3260,7 +3260,7 @@
     "displayName": "Claude 3.5 Haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "us.anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
@@ -3274,7 +3274,7 @@
     "parent": "anthropic.claude-3-5-haiku-20241022-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     "format": "anthropic",
@@ -3851,7 +3851,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Gemini 2.0 Flash",
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "publishers/google/models/gemini-2.0-flash-001": {
     "format": "google",
@@ -3860,7 +3860,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "parent": "publishers/google/models/gemini-2.0-flash",
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "publishers/google/models/gemini-2.0-flash-lite": {
     "format": "google",
@@ -3869,7 +3869,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "publishers/google/models/gemini-2.0-flash-lite-001": {
     "format": "google",
@@ -3878,7 +3878,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "parent": "publishers/google/models/gemini-2.0-flash-lite",
-    "deprecationDate": "31 March 2026 00:00:01 GMT"
+    "deprecationDate": "2026-03-31"
   },
   "publishers/google/models/gemini-1.5-pro": {
     "format": "google",
@@ -3994,7 +3994,7 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
     "format": "anthropic",
@@ -4006,7 +4006,7 @@
     "reasoning_budget": true,
     "experimental": true,
     "parent": "publishers/anthropic/models/claude-3-7-sonnet",
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "publishers/anthropic/models/claude-haiku-4-5": {
     "format": "anthropic",
@@ -4043,7 +4043,7 @@
     "displayName": "Claude 3.5 Haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-5-haiku@20241022": {
     "format": "anthropic",
@@ -4056,7 +4056,7 @@
     "parent": "publishers/anthropic/models/claude-3-5-haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-5-sonnet-v2": {
     "format": "anthropic",
@@ -4362,7 +4362,7 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecationDate": "19 Feb 2026 00:00:01 GMT"
+    "deprecationDate": "2026-02-19"
   },
   "databricks-meta-llama-3-3-70b-instruct": {
     "format": "openai",

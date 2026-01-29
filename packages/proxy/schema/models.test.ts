@@ -28,7 +28,7 @@ it("Marks models as deprecated once deprecation date has been reached", () => {
       parent: "claude-3-5-haiku-latest",
       max_input_tokens: 200000,
       max_output_tokens: 8192,
-      deprecationDate: "10 Jan 2026 00:00:01 GMT",
+      deprecationDate: "2026-01-10",
     },
   });
   expect(result["testModel"].deprecated).toBe(true);

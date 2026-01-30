@@ -34,14 +34,30 @@ export const AzureEntraSecretSchema = z.object({
 });
 export type AzureEntraSecret = z.infer<typeof AzureEntraSecretSchema>;
 
-export const BedrockMetadataSchema = BaseMetadataSchema.merge(
+const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
   z.object({
     region: z.string().min(1, "Region cannot be empty"),
-    access_key: z.string().min(1, "Access key cannot be empty"),
+    auth_type: z
+      .enum(["iam_credentials", "api_key"])
+      .default("iam_credentials"),
+    access_key: z.string().nullish(),
     session_token: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).strict();
+export const BedrockMetadataSchema = BedrockMetadataSchemaBase;
+export const BedrockMetadataSchemaWithAuth =
+  BedrockMetadataSchemaBase.superRefine((data, ctx) => {
+    if ((data.auth_type ?? "iam_credentials") === "iam_credentials") {
+      if (!data.access_key) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Access key is required for IAM credentials",
+          path: ["access_key"],
+        });
+      }
+    }
+  });
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
 export const VertexMetadataSchema = BaseMetadataSchema.merge(

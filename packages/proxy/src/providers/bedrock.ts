@@ -24,8 +24,7 @@ import {
 } from "../generated_types";
 import {
   APISecret,
-  BedrockMetadata,
-  BedrockMetadataSchema,
+  BedrockMetadataSchemaWithAuth,
   MessageTypeToMessageType,
 } from "@schema";
 import { OpenAIChatCompletion, OpenAIChatCompletionChunk } from "@types";
@@ -118,9 +117,10 @@ export async function fetchBedrockAnthropicMessages({
 }): Promise<ModelResponse> {
   const {
     region,
+    auth_type = "iam_credentials",
     access_key: accessKeyId,
     session_token: sessionToken,
-  } = BedrockMetadataSchema.parse(metadata);
+  } = BedrockMetadataSchemaWithAuth.parse(metadata);
   const { model, stream, ...rest } = z
     .object({
       model: z.string(),
@@ -128,6 +128,7 @@ export async function fetchBedrockAnthropicMessages({
     })
     .passthrough()
     .parse(body);
+
   const brc = new BedrockRuntimeClient({
     endpoint:
       type === "bedrock" &&
@@ -137,11 +138,18 @@ export async function fetchBedrockAnthropicMessages({
         ? metadata.api_base
         : undefined,
     region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey: secret,
-      ...(sessionToken ? { sessionToken } : {}),
-    },
+    ...(auth_type === "api_key"
+      ? {
+          token: { token: secret },
+          authSchemePreference: ["httpBearerAuth"],
+        }
+      : {
+          credentials: {
+            accessKeyId: accessKeyId!,
+            secretAccessKey: secret,
+            ...(sessionToken ? { sessionToken } : {}),
+          },
+        }),
   });
   const input = {
     contentType: "application/json",
@@ -207,22 +215,8 @@ export async function fetchBedrockAnthropic({
     throw new Error("Bedrock: expected model");
   }
 
-  const metadata = secret.metadata as BedrockMetadata;
-
-  const brt = new BedrockRuntimeClient({
-    endpoint:
-      metadata.api_base && metadata.api_base.length > 0
-        ? metadata.api_base
-        : undefined,
-    region: metadata.region,
-    credentials: {
-      accessKeyId: metadata.access_key,
-      secretAccessKey: secret.secret,
-      ...(metadata.session_token
-        ? { sessionToken: metadata.session_token }
-        : {}),
-    },
-  });
+  const metadata = BedrockMetadataSchemaWithAuth.parse(secret.metadata);
+  const auth_type = metadata.auth_type ?? "iam_credentials";
 
   const input = {
     body: new TextEncoder().encode(
@@ -237,6 +231,28 @@ export async function fetchBedrockAnthropic({
 
   const httpResponse = new Response(null, {
     status: 200,
+  });
+
+  const brt = new BedrockRuntimeClient({
+    endpoint:
+      metadata.api_base && metadata.api_base.length > 0
+        ? metadata.api_base
+        : undefined,
+    region: metadata.region,
+    ...(auth_type === "api_key"
+      ? {
+          token: { token: secret.secret },
+          authSchemePreference: ["httpBearerAuth"],
+        }
+      : {
+          credentials: {
+            accessKeyId: metadata.access_key!,
+            secretAccessKey: secret.secret,
+            ...(metadata.session_token
+              ? { sessionToken: metadata.session_token }
+              : {}),
+          },
+        }),
   });
 
   let usage: Partial<CompletionUsage> = {};
@@ -542,22 +558,8 @@ export async function fetchConverse({
     throw new Error("Bedrock: expected model");
   }
 
-  const metadata = secret.metadata as BedrockMetadata;
-
-  const brt = new BedrockRuntimeClient({
-    endpoint:
-      metadata.api_base && metadata.api_base.length > 0
-        ? metadata.api_base
-        : undefined,
-    region: metadata.region,
-    credentials: {
-      accessKeyId: metadata.access_key,
-      secretAccessKey: secret.secret,
-      ...(metadata.session_token
-        ? { sessionToken: metadata.session_token }
-        : {}),
-    },
-  });
+  const metadata = BedrockMetadataSchemaWithAuth.parse(secret.metadata);
+  const auth_type = metadata.auth_type ?? "iam_credentials";
 
   let messages: Array<BedrockMessage> | undefined = undefined;
   let system: SystemContentBlock[] | undefined = undefined;
@@ -672,6 +674,28 @@ export async function fetchConverse({
 
   const httpResponse = new Response(null, {
     status: 200,
+  });
+
+  const brt = new BedrockRuntimeClient({
+    endpoint:
+      metadata.api_base && metadata.api_base.length > 0
+        ? metadata.api_base
+        : undefined,
+    region: metadata.region,
+    ...(auth_type === "api_key"
+      ? {
+          token: { token: secret.secret },
+          authSchemePreference: ["httpBearerAuth"],
+        }
+      : {
+          credentials: {
+            accessKeyId: metadata.access_key!,
+            secretAccessKey: secret.secret,
+            ...(metadata.session_token
+              ? { sessionToken: metadata.session_token }
+              : {}),
+          },
+        }),
   });
 
   let responseStream;

@@ -4512,6 +4512,17 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
+  "accounts/fireworks/models/kimi-k2p5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "reasoning": true,
+    "displayName": "Kimi K2.5",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
   "fireworks_ai/accounts/fireworks/models/kimi-k2-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -4787,6 +4798,15 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Qwen3 235B A22B"
+  },
+  "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Qwen3 235B A22B Instruct 2507",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 16384
   },
   "accounts/fireworks/models/deepseek-v3p2": {
     "format": "openai",

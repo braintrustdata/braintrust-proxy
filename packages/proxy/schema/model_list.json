@@ -33,7 +33,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-2025-08-07": {

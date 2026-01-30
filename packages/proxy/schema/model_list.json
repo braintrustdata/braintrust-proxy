@@ -8,7 +8,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5 mini",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-mini-2025-08-07": {
@@ -21,7 +21,7 @@
     "displayName": "GPT-5 mini (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-mini",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5": {
@@ -46,7 +46,7 @@
     "displayName": "GPT-5 (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-pro": {
@@ -57,7 +57,7 @@
     "output_cost_per_mil_tokens": 120,
     "displayName": "GPT-5 Pro",
     "reasoning": true,
-    "max_input_tokens": 128000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 272000
   },
   "gpt-5-pro-2025-10-06": {
@@ -68,7 +68,7 @@
     "output_cost_per_mil_tokens": 120,
     "reasoning": true,
     "parent": "gpt-5-pro",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 272000
   },
   "gpt-5-codex": {
@@ -80,7 +80,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano": {
@@ -92,7 +92,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.005,
     "displayName": "GPT-5 nano",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano-2025-08-07": {
@@ -105,7 +105,7 @@
     "displayName": "GPT-5 nano (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-nano",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000
   },
   "gpt-5-chat-latest": {
@@ -117,7 +117,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
-    "max_input_tokens": 128000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 16384
   },
   "gpt-4o": {

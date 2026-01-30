@@ -836,7 +836,7 @@
     "reasoning_budget": true,
     "deprecation_date": "2025-06-01",
     "max_input_tokens": 200000,
-    "max_output_tokens": 64000
+    "max_output_tokens": 128000
   },
   "claude-3-7-sonnet-20250219": {
     "format": "anthropic",
@@ -851,7 +851,7 @@
     "deprecation_date": "2026-02-19",
     "parent": "claude-3-7-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 64000
+    "max_output_tokens": 128000
   },
   "claude-haiku-4-5": {
     "format": "anthropic",

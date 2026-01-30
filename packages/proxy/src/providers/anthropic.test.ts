@@ -565,7 +565,7 @@ it("should return error when non-3.7 model receives max_tokens exceeding its lim
   expect(statusCode).toBeGreaterThanOrEqual(400);
 });
 
-it("should use 64000 max_tokens and add beta header for claude-3-7-sonnet when unset", async () => {
+it("should use 128000 max_tokens and add beta header for claude-3-7-sonnet when unset", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
@@ -578,7 +578,7 @@ it("should use 64000 max_tokens and add beta header for claude-3-7-sonnet when u
   });
 
   expect(requests).toHaveLength(1);
-  expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
+  expect(requests[0].body).toMatchObject({ max_tokens: 128000 });
   expect(requests[0].headers["anthropic-beta"]).toContain(
     "output-128k-2025-02-19",
   );

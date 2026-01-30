@@ -28,7 +28,7 @@ it("Marks models as deprecated once deprecation date has been reached", () => {
       parent: "claude-3-5-haiku-latest",
       max_input_tokens: 200000,
       max_output_tokens: 8192,
-      deprecationDate: "2026-01-10",
+      deprecation_date: "2026-01-10",
     },
   });
   expect(result["testModel"].deprecated).toBe(true);
@@ -51,7 +51,7 @@ it("Does not deprecate models if deprecation date has not yet passed", () => {
       parent: "claude-3-5-haiku-latest",
       max_input_tokens: 200000,
       max_output_tokens: 8192,
-      deprecationDate: oneYearFromNow,
+      deprecation_date: oneYearFromNow,
     },
   });
   expect(result["testModel"].deprecated).toBe(undefined);
@@ -70,7 +70,7 @@ it("Ignores malformed deprecation dates", () => {
       parent: "claude-3-5-haiku-latest",
       max_input_tokens: 200000,
       max_output_tokens: 8192,
-      deprecationDate: "not a date",
+      deprecation_date: "not a date",
     },
   });
   expect(result["testModel"].deprecated).toBe(undefined);

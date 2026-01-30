@@ -70,7 +70,7 @@ export const ModelSchema = z.object({
     .describe(
       "Discourage the use of the model (we will hide the model in the UI).",
     ),
-  deprecationDate: z
+  deprecation_date: z
     .string()
     .nullish()
     .describe("Date after which the model will be treated as deprecated"),
@@ -191,11 +191,11 @@ export function markModelsPastDeprecationDate(models: {
   [name: string]: ModelSpec;
 }): { [name: string]: ModelSpec } {
   for (let modelName of Object.keys(models)) {
-    const { deprecationDate } = models[modelName];
+    const { deprecation_date } = models[modelName];
     if (
-      deprecationDate &&
-      Date.parse(deprecationDate) &&
-      new Date() > new Date(deprecationDate)
+      deprecation_date &&
+      Date.parse(deprecation_date) &&
+      new Date() > new Date(deprecation_date)
     ) {
       models[modelName].deprecated = true;
     }

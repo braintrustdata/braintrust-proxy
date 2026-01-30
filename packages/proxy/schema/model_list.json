@@ -8,7 +8,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-mini-2025-08-07": {
@@ -21,7 +21,7 @@
     "displayName": "GPT-5 mini (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-mini",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5": {
@@ -33,7 +33,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-2025-08-07": {
@@ -46,7 +46,7 @@
     "displayName": "GPT-5 (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-pro": {
@@ -57,7 +57,7 @@
     "output_cost_per_mil_tokens": 120,
     "displayName": "GPT-5 Pro",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000
   },
   "gpt-5-pro-2025-10-06": {
@@ -68,7 +68,7 @@
     "output_cost_per_mil_tokens": 120,
     "reasoning": true,
     "parent": "gpt-5-pro",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000
   },
   "gpt-5-codex": {
@@ -80,7 +80,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano": {
@@ -92,7 +92,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.005,
     "displayName": "GPT-5 nano",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano-2025-08-07": {
@@ -105,7 +105,7 @@
     "displayName": "GPT-5 nano (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-nano",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-chat-latest": {
@@ -117,8 +117,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
-    "max_input_tokens": 400000,
-    "max_output_tokens": 128000
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
   },
   "gpt-4o": {
     "format": "openai",
@@ -384,6 +384,7 @@
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 1.5,
     "reasoning": true,
+    "deprecation_date": "2025-10-27",
     "parent": "o1-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 65536
@@ -463,6 +464,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
     "experimental": true,
+    "deprecation_date": "2026-03-26",
     "parent": "gpt-4",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096
@@ -473,6 +475,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
     "experimental": true,
+    "deprecation_date": "2026-03-26",
     "parent": "gpt-4",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096
@@ -482,6 +485,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
+    "deprecation_date": "2025-06-06",
     "parent": "gpt-4",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096
@@ -515,6 +519,7 @@
     "output_cost_per_mil_tokens": 150,
     "input_cache_read_cost_per_mil_tokens": 37.5,
     "experimental": true,
+    "deprecation_date": "2025-07-14",
     "parent": "gpt-4.5-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384
@@ -606,8 +611,8 @@
   "gpt-3.5-turbo": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 2,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
     "displayName": "GPT 3.5T",
     "deprecated": true,
     "max_input_tokens": 16385,
@@ -628,6 +633,7 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "GPT 3.5T 1106",
     "deprecated": true,
+    "deprecation_date": "2026-09-28",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096
   },
@@ -689,6 +695,7 @@
     "output_cost_per_mil_tokens": 30,
     "displayName": "GPT 4 Vision-Preview",
     "deprecated": true,
+    "deprecation_date": "2024-12-06",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096
   },
@@ -700,6 +707,7 @@
     "output_cost_per_mil_tokens": 30,
     "displayName": "GPT 4 1106 Vision-Preview",
     "deprecated": true,
+    "deprecation_date": "2024-12-06",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096
   },
@@ -798,7 +806,8 @@
     "displayName": "Claude 4 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "deprecation_date": "2026-05-14",
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000
   },
   "claude-4-sonnet-20250514": {
@@ -811,7 +820,7 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 4 Sonnet (old naming format)",
     "deprecated": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000
   },
   "claude-3-7-sonnet-latest": {
@@ -825,9 +834,9 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2025-06-01",
     "max_input_tokens": 200000,
-    "max_output_tokens": 128000,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 64000
   },
   "claude-3-7-sonnet-20250219": {
     "format": "anthropic",
@@ -839,10 +848,10 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-02-19",
     "parent": "claude-3-7-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 128000,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 64000
   },
   "claude-haiku-4-5": {
     "format": "anthropic",
@@ -877,9 +886,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 3.5 Haiku",
+    "deprecation_date": "2025-10-01",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "claude-3-5-haiku-20241022": {
     "format": "anthropic",
@@ -889,10 +898,10 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.08,
     "input_cache_write_cost_per_mil_tokens": 1,
+    "deprecation_date": "2025-10-01",
     "parent": "claude-3-5-haiku-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "claude-3-5-sonnet-latest": {
     "format": "anthropic",
@@ -904,6 +913,7 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3.5 Sonnet",
     "deprecated": true,
+    "deprecation_date": "2025-06-01",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
@@ -916,6 +926,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "deprecated": true,
+    "deprecation_date": "2025-10-01",
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
@@ -929,6 +940,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "deprecated": true,
+    "deprecation_date": "2025-06-01",
     "parent": "claude-3-5-sonnet-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
@@ -956,8 +968,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "reasoning": true,
-    "parent": "claude-opus-4-5",
     "reasoning_budget": true,
+    "parent": "claude-opus-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -972,6 +984,7 @@
     "displayName": "Claude 4.1 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-08-05",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000
   },
@@ -986,6 +999,7 @@
     "displayName": "Claude 4 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-05-14",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000
   },
@@ -1011,6 +1025,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.5,
     "input_cache_write_cost_per_mil_tokens": 18.75,
     "displayName": "Claude 3 Opus",
+    "deprecation_date": "2025-03-01",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
   },
@@ -1022,6 +1037,7 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.5,
     "input_cache_write_cost_per_mil_tokens": 18.75,
+    "deprecation_date": "2026-05-01",
     "parent": "claude-3-opus-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
@@ -2311,7 +2327,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Gemini 3 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -2337,7 +2353,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -2350,7 +2366,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
@@ -2382,6 +2398,7 @@
     "reasoning_budget": true,
     "experimental": false,
     "deprecated": true,
+    "deprecation_date": "2025-11-18",
     "parent": "gemini-2.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2407,7 +2424,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
@@ -2422,11 +2439,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
     "deprecated": true,
+    "deprecation_date": "2025-12-02",
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2437,11 +2455,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": false,
     "deprecated": true,
+    "deprecation_date": "2025-12-02",
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
@@ -2452,7 +2471,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
     "experimental": true,
     "parent": "gemini-2.5-pro",
@@ -2465,7 +2484,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
@@ -2483,10 +2502,11 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
+    "deprecated": true,
+    "deprecation_date": "2025-11-18",
     "parent": "gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "deprecated": true
+    "max_output_tokens": 65535
   },
   "gemini-2.5-flash-lite": {
     "format": "google",
@@ -2494,7 +2514,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
@@ -2509,9 +2529,9 @@
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "Gemini 2.0 Flash Latest",
+    "deprecation_date": "2026-03-31",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-03-31"
+    "max_output_tokens": 8192
   },
   "gemini-2.0-flash-001": {
     "format": "google",
@@ -2520,10 +2540,10 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.0375,
+    "deprecation_date": "2026-03-31",
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-03-31"
+    "max_output_tokens": 8192
   },
   "gemini-2.0-flash-lite": {
     "format": "google",
@@ -2533,9 +2553,9 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "displayName": "Gemini 2.0 Flash-Lite",
+    "deprecation_date": "2026-03-31",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-03-31"
+    "max_output_tokens": 8192
   },
   "gemini-2.0-flash-lite-001": {
     "format": "google",
@@ -2544,17 +2564,17 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
+    "deprecation_date": "2026-03-31",
     "parent": "gemini-2.0-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-03-31"
+    "max_output_tokens": 8192
   },
   "gemini-3-pro-image-preview": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2.0,
-    "output_cost_per_mil_tokens": 12.0,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
     "max_input_tokens": 65536,
     "max_output_tokens": 32768
@@ -2566,6 +2586,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 1.5 Flash",
+    "deprecation_date": "2025-09-29",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192
   },
@@ -2575,6 +2596,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
+    "deprecation_date": "2025-09-29",
     "parent": "gemini-1.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -2587,6 +2609,7 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
+    "deprecation_date": "2025-05-24",
     "parent": "gemini-1.5-flash",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192
@@ -2599,6 +2622,7 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
+    "deprecation_date": "2025-09-24",
     "parent": "gemini-1.5-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -2610,6 +2634,7 @@
     "input_cost_per_mil_tokens": 0,
     "output_cost_per_mil_tokens": 0,
     "displayName": "Gemini 1.5 Flash-8B",
+    "deprecation_date": "2025-09-29",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
   },
@@ -2636,6 +2661,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Gemini 1.5 Pro",
+    "deprecation_date": "2025-09-29",
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
   },
@@ -2645,6 +2671,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3.5,
     "output_cost_per_mil_tokens": 1.05,
+    "deprecation_date": "2025-09-29",
     "parent": "gemini-1.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -2655,6 +2682,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "deprecation_date": "2025-05-24",
     "parent": "gemini-1.5-pro",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192
@@ -2665,6 +2693,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "deprecation_date": "2025-09-24",
     "parent": "gemini-1.5-pro",
     "max_input_tokens": 2097152,
     "max_output_tokens": 8192
@@ -2705,6 +2734,7 @@
     "reasoning_budget": true,
     "experimental": true,
     "deprecated": true,
+    "deprecation_date": "2025-12-02",
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536
@@ -2753,13 +2783,13 @@
   "grok-4-1-fast-reasoning-latest": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Grok 4.1 Fast",
     "max_input_tokens": 2000000,
-    "max_output_tokens": 2000000,
-    "multimodal": true
+    "max_output_tokens": 2000000
   },
   "grok-4-1-fast-reasoning": {
     "format": "openai",
@@ -2884,6 +2914,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.75,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -2892,6 +2923,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.75,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -2900,6 +2932,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.75,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -2908,6 +2941,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2917,6 +2951,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2926,6 +2961,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2935,6 +2971,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2944,6 +2981,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2953,6 +2991,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
@@ -2962,6 +3001,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -2970,6 +3010,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -3074,7 +3115,7 @@
     "input_cost_per_mil_tokens": 0.035,
     "output_cost_per_mil_tokens": 0.14,
     "displayName": "Nova Micro",
-    "max_input_tokens": 300000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 10000
   },
   "us.amazon.nova-micro-v1:0": {
@@ -3084,7 +3125,7 @@
     "output_cost_per_mil_tokens": 0.14,
     "displayName": "US Nova Micro",
     "parent": "amazon.nova-micro-v1:0",
-    "max_input_tokens": 300000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 10000
   },
   "amazon.nova-lite-v1:0": {
@@ -3094,7 +3135,7 @@
     "input_cost_per_mil_tokens": 0.06,
     "output_cost_per_mil_tokens": 0.24,
     "displayName": "Nova Lite",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 300000,
     "max_output_tokens": 10000
   },
   "us.amazon.nova-lite-v1:0": {
@@ -3105,7 +3146,7 @@
     "output_cost_per_mil_tokens": 0.24,
     "displayName": "US Nova Lite",
     "parent": "amazon.nova-lite-v1:0",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 300000,
     "max_output_tokens": 10000
   },
   "amazon.titan-text-premier-v1:0": {
@@ -3153,10 +3194,10 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cost_per_mil_tokens": 3.3,
+    "output_cost_per_mil_tokens": 16.5,
+    "input_cache_read_cost_per_mil_tokens": 0.33,
+    "input_cache_write_cost_per_mil_tokens": 4.125,
     "displayName": "US Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
@@ -3175,7 +3216,7 @@
     "displayName": "Claude 4 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000
   },
   "us.anthropic.claude-sonnet-4-20250514-v1:0": {
@@ -3190,7 +3231,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-20250514-v1:0",
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000
   },
   "anthropic.claude-3-7-sonnet-20250219-v1:0": {
@@ -3204,9 +3245,9 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-02-19",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "us.anthropic.claude-3-7-sonnet-20250219-v1:0": {
     "format": "anthropic",
@@ -3219,19 +3260,19 @@
     "displayName": "US Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-02-19",
     "parent": "anthropic.claude-3-7-sonnet-20250219-v1:0",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "anthropic.claude-haiku-4-5-20251001-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.08,
-    "input_cache_write_cost_per_mil_tokens": 1,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 4.5 Haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
@@ -3240,10 +3281,10 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.08,
-    "input_cache_write_cost_per_mil_tokens": 1,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 5.5,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cache_write_cost_per_mil_tokens": 1.375,
     "displayName": "US Claude 4.5 Haiku",
     "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
     "max_input_tokens": 200000,
@@ -3258,9 +3299,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.08,
     "input_cache_write_cost_per_mil_tokens": 1,
     "displayName": "Claude 3.5 Haiku",
+    "deprecation_date": "2026-02-19",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "us.anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
@@ -3271,10 +3312,10 @@
     "input_cache_read_cost_per_mil_tokens": 0.08,
     "input_cache_write_cost_per_mil_tokens": 1,
     "displayName": "US Claude 3.5 Haiku",
+    "deprecation_date": "2026-02-19",
     "parent": "anthropic.claude-3-5-haiku-20241022-v1:0",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "anthropic.claude-3-5-sonnet-20241022-v2:0": {
     "format": "anthropic",
@@ -3307,8 +3348,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3.5 Sonnet v2",
-    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0"
+    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192
   },
   "anthropic.claude-3-5-sonnet-20240620-v1:0": {
     "format": "anthropic",
@@ -3338,7 +3383,9 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "APAC Claude 3.5 Sonnet",
-    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0"
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096
   },
   "eu.anthropic.claude-3-5-sonnet-20240620-v1:0": {
     "format": "anthropic",
@@ -3355,12 +3402,11 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 27.5,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
     "reasoning": true,
-    "display": "US Claude Opus 4.5",
     "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
@@ -3374,7 +3420,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "reasoning": true,
-    "display": "Claude Opus 4.5",
     "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
@@ -3486,7 +3531,9 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "APAC Claude 3 Sonnet",
-    "parent": "anthropic.claude-3-sonnet-20240229-v1:0"
+    "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096
   },
   "eu.anthropic.claude-3-sonnet-20240229-v1:0": {
     "format": "anthropic",
@@ -3527,7 +3574,9 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
     "displayName": "APAC Claude 3 Haiku",
-    "parent": "anthropic.claude-3-haiku-20240307-v1:0"
+    "parent": "anthropic.claude-3-haiku-20240307-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096
   },
   "eu.anthropic.claude-3-haiku-20240307-v1:0": {
     "format": "anthropic",
@@ -3813,10 +3862,12 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "displayName": "Gemini 3 Pro Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "displayName": "Gemini 3 Pro Preview",
-    "locations": ["global"],
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -3827,10 +3878,12 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Gemini 3 Flash Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "displayName": "Gemini 3 Flash Preview",
-    "locations": ["global"],
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -3838,11 +3891,11 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2.0,
-    "output_cost_per_mil_tokens": 12.0,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Gemini 3 Pro Image Preview",
     "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
-    "displayName": "Gemini 3 Pro Image Preview"
+    "max_output_tokens": 32768
   },
   "publishers/google/models/gemini-2.0-flash": {
     "format": "google",
@@ -3851,7 +3904,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Gemini 2.0 Flash",
-    "deprecationDate": "2026-03-31"
+    "deprecation_date": "2026-03-31"
   },
   "publishers/google/models/gemini-2.0-flash-001": {
     "format": "google",
@@ -3859,8 +3912,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "parent": "publishers/google/models/gemini-2.0-flash",
-    "deprecationDate": "2026-03-31"
+    "deprecation_date": "2026-03-31",
+    "parent": "publishers/google/models/gemini-2.0-flash"
   },
   "publishers/google/models/gemini-2.0-flash-lite": {
     "format": "google",
@@ -3869,7 +3922,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
-    "deprecationDate": "2026-03-31"
+    "deprecation_date": "2026-03-31"
   },
   "publishers/google/models/gemini-2.0-flash-lite-001": {
     "format": "google",
@@ -3877,8 +3930,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
-    "parent": "publishers/google/models/gemini-2.0-flash-lite",
-    "deprecationDate": "2026-03-31"
+    "deprecation_date": "2026-03-31",
+    "parent": "publishers/google/models/gemini-2.0-flash-lite"
   },
   "publishers/google/models/gemini-1.5-pro": {
     "format": "google",
@@ -3994,7 +4047,7 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecationDate": "2026-02-19"
+    "deprecation_date": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
     "format": "anthropic",
@@ -4005,8 +4058,8 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
-    "parent": "publishers/anthropic/models/claude-3-7-sonnet",
-    "deprecationDate": "2026-02-19"
+    "deprecation_date": "2026-02-19",
+    "parent": "publishers/anthropic/models/claude-3-7-sonnet"
   },
   "publishers/anthropic/models/claude-haiku-4-5": {
     "format": "anthropic",
@@ -4041,9 +4094,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 3.5 Haiku",
+    "deprecation_date": "2026-02-19",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "publishers/anthropic/models/claude-3-5-haiku@20241022": {
     "format": "anthropic",
@@ -4053,10 +4106,10 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "deprecation_date": "2026-02-19",
     "parent": "publishers/anthropic/models/claude-3-5-haiku",
     "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "deprecationDate": "2026-02-19"
+    "max_output_tokens": 8192
   },
   "publishers/anthropic/models/claude-3-5-sonnet-v2": {
     "format": "anthropic",
@@ -4214,15 +4267,15 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro",
-    "deprecated": true
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-pro"
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-2.5-pro",
-    "deprecated": true
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-pro"
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
@@ -4268,8 +4321,8 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "reasoning": true,
-    "deprecated": true,
     "reasoning_budget": true,
+    "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash"
   },
   "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025": {
@@ -4294,10 +4347,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
+    "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "deprecated": true
+    "max_output_tokens": 65535
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -4318,8 +4371,8 @@
     "multimodal": true,
     "displayName": "Gemini 2.0 Flash Thinking Mode",
     "experimental": true,
-    "parent": "publishers/google/models/gemini-2.0-flash",
-    "deprecated": true
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.0-flash"
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     "format": "openai",
@@ -4362,7 +4415,7 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecationDate": "2026-02-19"
+    "deprecation_date": "2026-02-19"
   },
   "databricks-meta-llama-3-3-70b-instruct": {
     "format": "openai",
@@ -4473,7 +4526,7 @@
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
     "max_input_tokens": 128000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 8192
   },
   "fireworks_ai/accounts/fireworks/models/deepseek-v3-0324": {
     "format": "openai",
@@ -4539,7 +4592,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.5,
     "max_input_tokens": 131072,
-    "max_output_tokens": 131072
+    "max_output_tokens": 16384
   },
   "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": {
     "format": "openai",
@@ -4643,30 +4696,35 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8192
   },
   "fireworks_ai/nomic-ai/nomic-embed-text-v1.5": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8192
   },
   "fireworks_ai/thenlper/gte-base": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512
   },
   "fireworks_ai/thenlper/gte-large": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512
   },
   "fireworks_ai/WhereIsAI/UAE-Large-V1": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512
   },
   "fireworks-ai-4.1b-to-16b": {
@@ -4689,17 +4747,21 @@
   },
   "fireworks-ai-default": {
     "format": "openai",
-    "flavor": "chat"
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0
   },
   "fireworks-ai-embedding-150m-to-350m": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.016
+    "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0
   },
   "fireworks-ai-embedding-up-to-150m": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.008
+    "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0
   },
   "fireworks-ai-moe-up-to-56b": {
     "format": "openai",
@@ -4721,8 +4783,8 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
-    "max_input_tokens": 272000,
-    "max_output_tokens": 128000
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
   },
   "gpt-5.2": {
     "format": "openai",
@@ -4733,7 +4795,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5.1": {

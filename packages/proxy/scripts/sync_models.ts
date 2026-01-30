@@ -58,6 +58,7 @@ const liteLLMModelDetailSchema = z
         "search",
         "ocr",
         "vector_store",
+        "image_edit",
       ])
       .optional(),
     supports_function_calling: z.boolean().optional(),
@@ -357,6 +358,9 @@ function convertRemoteToLocalModel(
   }
   if (remoteModel.max_output_tokens) {
     baseModel.max_output_tokens = remoteModel.max_output_tokens;
+  }
+  if (remoteModel.deprecation_date) {
+    baseModel.deprecation_date = remoteModel.deprecation_date;
   }
 
   return baseModel as ModelSpec;
@@ -1052,6 +1056,58 @@ async function updateModelsCommand(argv: any) {
         }
       };
 
+      const checkAndUpdateDeprecationDate = (
+        localDeprecationDate: string | undefined | null,
+        remoteDeprecationDate: string | undefined,
+      ) => {
+        if (typeof remoteDeprecationDate === "string") {
+          if (
+            localDeprecationDate === null ||
+            typeof localDeprecationDate !== "string" ||
+            localDeprecationDate !== remoteDeprecationDate
+          ) {
+            if (!argv.write && !modelReportedThisIteration) {
+              console.log(
+                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+              );
+              modelReportedThisIteration = true;
+            }
+            if (!argv.write)
+              console.log(
+                `  Deprecation Date Mismatch/Missing: Local: ${
+                  localDeprecationDate ?? "Not available"
+                }, Remote: ${remoteDeprecationDate}`,
+              );
+            discrepanciesFound++;
+            if (argv.write) {
+              (modelInUpdatedList as any)["deprecation_date"] =
+                remoteDeprecationDate;
+              madeChanges = true;
+              if (!modelReportedThisIteration) {
+                console.log(
+                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
+                );
+                modelReportedThisIteration = true;
+              }
+              console.log(
+                `  [WRITE] Updated Deprecation Date to: ${remoteDeprecationDate}`,
+              );
+            }
+          }
+        } else if (typeof localDeprecationDate === "string") {
+          if (!argv.write && !modelReportedThisIteration) {
+            console.log(
+              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+            );
+            modelReportedThisIteration = true;
+          }
+          if (!argv.write)
+            console.log(
+              `  Deprecation Date: Local: ${localDeprecationDate}, Remote: Not available`,
+            );
+        }
+      };
+
       checkAndUpdateCost(
         "Input",
         localInputCost,
@@ -1083,6 +1139,10 @@ async function updateModelsCommand(argv: any) {
       const remoteMaxInputTokens = remoteModelDetail.max_input_tokens;
       const remoteMaxOutputTokens = remoteModelDetail.max_output_tokens;
 
+      // Check and update deprecation date
+      const localDeprecationDate = localModelDetail.deprecation_date;
+      const remoteDeprecationDate = remoteModelDetail.deprecation_date;
+
       checkAndUpdateTokenLimit(
         "Max Input",
         localMaxInputTokens,
@@ -1094,6 +1154,12 @@ async function updateModelsCommand(argv: any) {
         localMaxOutputTokens,
         remoteMaxOutputTokens,
         "max_output_tokens",
+      );
+
+      // Check and update deprecation date
+      checkAndUpdateDeprecationDate(
+        localDeprecationDate,
+        remoteDeprecationDate,
       );
     }
 

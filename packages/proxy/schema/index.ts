@@ -380,6 +380,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen2-vl-72b-instruct": ["fireworks"],
   "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": ["fireworks"],
   "accounts/fireworks/models/qwen3-235b-a22b": ["fireworks"],
+  "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507": ["fireworks"],
   "accounts/fireworks/models/qwen3-30b-a3b": ["fireworks"],
   "accounts/fireworks/models/deepseek-v3p2": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-thinking": ["fireworks"],
@@ -465,6 +466,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "fireworks_ai/accounts/fireworks/models/glm-4p5-air": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
+  "accounts/fireworks/models/kimi-k2p5": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
   "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": [
     "fireworks",

@@ -1176,39 +1176,39 @@ async function fetchModelLoop(
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
 
-  // Check if the first secret has a brain_model override (used for Brain model routing)
-  const brainModelOverride =
-    secrets.length > 0 && secrets[0].metadata?.brain_model
-      ? String(secrets[0].metadata.brain_model)
+  // Check if the first secret has a custom model override (used for model routing)
+  const customModelOverride =
+    secrets.length > 0 && secrets[0].metadata?.custom_model
+      ? String(secrets[0].metadata.custom_model)
       : null;
-  const brainSystemPromptContent =
-    secrets.length > 0 && secrets[0].metadata?.brain_system_prompt
-      ? String(secrets[0].metadata.brain_system_prompt)
+  const customSystemPromptContent =
+    secrets.length > 0 && secrets[0].metadata?.custom_system_prompt
+      ? String(secrets[0].metadata.custom_system_prompt)
       : null;
 
-  if (brainModelOverride) {
-    model = brainModelOverride;
+  if (customModelOverride) {
+    model = customModelOverride;
     if (bodyData && typeof bodyData === "object" && "model" in bodyData) {
-      bodyData = { ...bodyData, model: brainModelOverride };
+      bodyData = { ...bodyData, model: customModelOverride };
 
-      // Inject Brain system prompt for chat completions (if provided)
-      if (brainSystemPromptContent && Array.isArray(bodyData.messages)) {
-        const brainSystemPrompt = {
+      // Inject custom system prompt for chat completions (if provided)
+      if (customSystemPromptContent && Array.isArray(bodyData.messages)) {
+        const customSystemPrompt = {
           role: "system",
-          content: brainSystemPromptContent,
+          content: customSystemPromptContent,
         };
         const existingMessages = bodyData.messages;
         const hasSystemMessage =
           existingMessages.length > 0 && existingMessages[0]?.role === "system";
         if (hasSystemMessage) {
-          // Prepend Brain context to existing system message
+          // Prepend custom context to existing system message
           const existingSystem = existingMessages[0];
           bodyData = {
             ...bodyData,
             messages: [
               {
                 ...existingSystem,
-                content: `${brainSystemPromptContent}\n\n${existingSystem.content ?? ""}`,
+                content: `${customSystemPromptContent}\n\n${existingSystem.content ?? ""}`,
               },
               ...existingMessages.slice(1),
             ],
@@ -1217,7 +1217,7 @@ async function fetchModelLoop(
           // Add system message at the beginning
           bodyData = {
             ...bodyData,
-            messages: [brainSystemPrompt, ...existingMessages],
+            messages: [customSystemPrompt, ...existingMessages],
           };
         }
       }

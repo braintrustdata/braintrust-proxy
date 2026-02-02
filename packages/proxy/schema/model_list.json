@@ -1,4 +1,35 @@
 {
+  "brain-summarizer-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Summarizer",
+    "reasoning": true,
+    "endpoint_types": ["braintrust"]
+  },
+  "brain-agent-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Agent",
+    "reasoning": true,
+    "endpoint_types": ["braintrust"]
+  },
+  "brain-chat-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Chat",
+    "reasoning": true,
+    "endpoint_types": ["braintrust"]
+  },
+  "brain-embedding-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Embedding",
+    "endpoint_types": ["braintrust"]
+  },
   "gpt-5-mini": {
     "format": "openai",
     "flavor": "chat",

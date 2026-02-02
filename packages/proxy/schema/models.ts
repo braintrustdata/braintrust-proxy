@@ -16,6 +16,7 @@ export type ModelFormat = (typeof ModelFormats)[number];
 
 export const ModelEndpointType = [
   "openai",
+  "braintrust",
   "anthropic",
   "google",
   "mistral",

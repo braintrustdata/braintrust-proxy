@@ -594,10 +594,13 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
+  const spec = getAvailableModels()[model];
+  if (spec?.endpoint_types && spec.endpoint_types.length > 0) {
+    return spec.endpoint_types;
+  }
   return (
     AvailableEndpointTypes[model] ||
-    (getAvailableModels()[model] &&
-      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
+    (spec && DefaultEndpointTypes[spec.format]) ||
     []
   );
 }
@@ -629,6 +632,7 @@ export const EndpointProviderToBaseURL: {
   [name in ModelEndpointType]: string | null;
 } = {
   openai: "https://api.openai.com/v1",
+  braintrust: null,
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",

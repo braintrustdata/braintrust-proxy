@@ -23,13 +23,6 @@
     "reasoning": true,
     "endpoint_types": ["braintrust"]
   },
-  "brain-embedding-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": false,
-    "displayName": "Embedding",
-    "endpoint_types": ["braintrust"]
-  },
   "gpt-5-mini": {
     "format": "openai",
     "flavor": "chat",

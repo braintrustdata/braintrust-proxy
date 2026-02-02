@@ -100,6 +100,7 @@ export const APISecretSchema = z.union([
       type: z.enum([
         "perplexity",
         "anthropic",
+        "braintrust",
         "google",
         "replicate",
         "together",

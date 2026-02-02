@@ -594,13 +594,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
-  const spec = getAvailableModels()[model];
-  if (spec?.endpoint_types && spec.endpoint_types.length > 0) {
-    return spec.endpoint_types;
-  }
   return (
     AvailableEndpointTypes[model] ||
-    (spec && DefaultEndpointTypes[spec.format]) ||
+    (getAvailableModels()[model] &&
+      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
     []
   );
 }

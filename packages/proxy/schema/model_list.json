@@ -1,28 +1,4 @@
 {
-  "brain-summarizer-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": false,
-    "displayName": "Summarizer",
-    "reasoning": true,
-    "endpoint_types": ["braintrust"]
-  },
-  "brain-agent-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Agent",
-    "reasoning": true,
-    "endpoint_types": ["braintrust"]
-  },
-  "brain-chat-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Chat",
-    "reasoning": true,
-    "endpoint_types": ["braintrust"]
-  },
   "gpt-5-mini": {
     "format": "openai",
     "flavor": "chat",
@@ -3889,9 +3865,7 @@
     "displayName": "Gemini 3 Pro Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
+    "locations": ["global"],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -3905,9 +3879,7 @@
     "displayName": "Gemini 3 Flash Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
+    "locations": ["global"],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },

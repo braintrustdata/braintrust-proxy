@@ -199,6 +199,7 @@ export async function handleProxyV1(
     spanLogger,
     spanId,
     spanExport,
+    nativeInferenceSecretKey: env.NATIVE_INFERENCE_SECRET_KEY,
   };
 
   const url = new URL(request.url);

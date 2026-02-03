@@ -1180,7 +1180,6 @@ async function fetchModelLoop(
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
 
-  // Check if the first secret has a custom model override (used for model routing)
   const customModelOverride =
     secrets.length > 0 && secrets[0].metadata?.custom_model
       ? String(secrets[0].metadata.custom_model)
@@ -2042,7 +2041,6 @@ async function fetchOpenAI(
         `${baseURL}/serving-endpoints/${bodyData.model}/invocations`,
       );
     } else {
-      // Use custom endpoint_path if specified in metadata (e.g., "" for Baseten which uses api_base as full URL)
       const endpointPath =
         secret.metadata &&
         "endpoint_path" in secret.metadata &&

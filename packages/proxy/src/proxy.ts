@@ -2042,7 +2042,14 @@ async function fetchOpenAI(
         `${baseURL}/serving-endpoints/${bodyData.model}/invocations`,
       );
     } else {
-      fullURL = new URL(baseURL + url);
+      // Use custom endpoint_path if specified in metadata (e.g., "" for Baseten which uses api_base as full URL)
+      const endpointPath =
+        secret.metadata &&
+        "endpoint_path" in secret.metadata &&
+        typeof secret.metadata.endpoint_path === "string"
+          ? secret.metadata.endpoint_path
+          : url;
+      fullURL = new URL(baseURL + endpointPath);
     }
   }
 
@@ -2064,7 +2071,17 @@ async function fetchOpenAI(
   }
 
   headers["host"] = fullURL.host;
-  headers["authorization"] = "Bearer " + bearerToken;
+  // Use custom auth format if specified (e.g., "api_key" for Baseten)
+  const authFormat =
+    secret.metadata &&
+    "auth_format" in secret.metadata &&
+    secret.metadata.auth_format === "api_key"
+      ? "api_key"
+      : "bearer";
+  headers["authorization"] =
+    authFormat === "api_key"
+      ? `Api-Key ${bearerToken}`
+      : `Bearer ${bearerToken}`;
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);

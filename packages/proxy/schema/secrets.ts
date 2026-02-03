@@ -91,6 +91,10 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
       z.null(),
     ]),
     organization_id: z.string().nullish(),
+    // Custom endpoint path to override the default (e.g., "" to use api_base as full URL)
+    endpoint_path: z.string().nullish(),
+    // Auth format for the authorization header (default: "bearer")
+    auth_format: z.enum(["bearer", "api_key"]).nullish(),
   }),
 ).strict();
 

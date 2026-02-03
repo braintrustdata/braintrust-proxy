@@ -327,6 +327,7 @@ export async function proxyV1({
   let bodyData = null;
   if (
     url === "/auto" ||
+    url === "/embeddings" ||
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
@@ -346,6 +347,7 @@ export async function proxyV1({
   if (
     method === "POST" &&
     (url === "/auto" ||
+      url === "/embeddings" ||
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
@@ -1031,7 +1033,9 @@ export async function proxyV1({
                 {
                   const data = dataRaw as CreateEmbeddingResponse;
                   spanLogger?.log({
-                    output: { embedding_length: data.data[0].embedding.length },
+                    output: {
+                      embedding_length: data.data?.[0].embedding.length,
+                    },
                     metrics: {
                       tokens: data.usage?.total_tokens,
                       prompt_tokens: data.usage?.prompt_tokens,

@@ -2143,8 +2143,6 @@ async function fetchOpenAI(
     bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
-  console.log("BODY DATA", bodyData);
-
   if (secret.metadata?.supportsStreaming === false) {
     return fetchOpenAIFakeStream({
       method,

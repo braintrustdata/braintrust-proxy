@@ -267,7 +267,7 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  let useCacheMode = parseEnumHeader(
+  const useCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
@@ -457,7 +457,7 @@ export async function proxyV1({
   // The data key is used as the encryption key, so unless you have the actual incoming data, you can't decrypt the cache.
   const encryptionKey = await digest(`${dataKey}:${authToken}`);
 
-  let startTime = getCurrentUnixTimestamp();
+  const startTime = getCurrentUnixTimestamp();
   let spanType: SpanType | undefined = undefined;
   const isStreaming = !!bodyData?.stream;
 
@@ -500,7 +500,7 @@ export async function proxyV1({
         stream = new ReadableStream<Uint8Array>({
           start(controller) {
             if ("body" in cachedData && cachedData.body) {
-              let splits = cachedData.body.split("\n");
+              const splits = cachedData.body.split("\n");
               for (let i = 0; i < splits.length; i++) {
                 controller.enqueue(
                   new TextEncoder().encode(
@@ -552,7 +552,7 @@ export async function proxyV1({
 
   let responseFailed = false;
 
-  let overridenHeaders: string[] = [];
+  const overridenHeaders: string[] = [];
   const setOverriddenHeader = (name: string, value: string) => {
     overridenHeaders.push(name);
     setHeader(name, value);
@@ -1148,7 +1148,7 @@ const RATE_LIMITING_ERROR_CODES = [
   OVERLOADED_ERROR_CODE,
 ];
 
-let loopIndex = 0;
+const loopIndex = 0;
 async function fetchModelLoop(
   logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
@@ -2122,6 +2122,8 @@ async function fetchOpenAI(
     bodyData.messages = await normalizeOpenAIMessages(bodyData.messages);
   }
 
+  console.log("BODY DATA", bodyData);
+
   if (secret.metadata?.supportsStreaming === false) {
     return fetchOpenAIFakeStream({
       method,
@@ -2731,7 +2733,7 @@ async function fetchAnthropicChatCompletions({
   if (proxyResponse.ok) {
     if (params.stream) {
       let idx = 0;
-      let usage: Partial<CompletionUsage> = {};
+      const usage: Partial<CompletionUsage> = {};
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const ret = anthropicEventToOpenAIEvent(
@@ -2867,7 +2869,7 @@ async function openAIToolsToGoogleTools(params: {
         break;
     }
   }
-  let out = {
+  const out = {
     tools: params.tools
       ? [
           {

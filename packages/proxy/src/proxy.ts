@@ -144,6 +144,7 @@ export const CACHE_TTL_HEADER = "x-bt-cache-ttl";
 export const CREDS_CACHE_HEADER = "x-bt-use-creds-cache";
 export const ORG_NAME_HEADER = "x-bt-org-name";
 export const PROJECT_ID_HEADER = "x-bt-project-id";
+export const USE_GATEWAY_HEADER = "x-bt-use-gateway";
 export const ENDPOINT_NAME_HEADER = "x-bt-endpoint-name";
 export const FORMAT_HEADER = "x-bt-stream-fmt";
 

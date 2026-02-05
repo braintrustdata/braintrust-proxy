@@ -3425,6 +3425,34 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
+  "us.anthropic.claude-opus-4-6-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.6 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000
+  },
+  "anthropic.claude-opus-4-6-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.6 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000
+  },
   "anthropic.claude-opus-4-5-20251101-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -4166,6 +4194,20 @@
     "displayName": "Claude 4 Opus",
     "reasoning": true,
     "reasoning_budget": true
+  },
+  "publishers/anthropic/models/claude-opus-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.6 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000
   },
   "publishers/anthropic/models/claude-opus-4-5@20251101": {
     "format": "anthropic",

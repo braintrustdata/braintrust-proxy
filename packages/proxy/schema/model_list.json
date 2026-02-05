@@ -3433,7 +3433,7 @@
     "output_cost_per_mil_tokens": 25,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Claude 4.6 Opus",
+    "displayName": "US Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,

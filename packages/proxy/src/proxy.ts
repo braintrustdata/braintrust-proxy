@@ -2089,8 +2089,8 @@ async function fetchOpenAI(
     bodyData?.model?.startsWith("o1-pro") ||
     bodyData?.model?.startsWith("o3-pro") ||
     bodyData?.model?.startsWith("gpt-5-pro") ||
-    bodyData?.model?.startsWith("gpt-5-codex") ||
-    bodyData?.model?.startsWith("gpt-5.1")
+    (bodyData?.model?.startsWith("gpt-5") &&
+      bodyData?.model?.includes("-codex"))
   ) {
     return fetchOpenAIResponsesTranslate({
       headers,

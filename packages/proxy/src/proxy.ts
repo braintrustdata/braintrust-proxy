@@ -2609,34 +2609,55 @@ async function fetchAnthropicChatCompletions({
         "Structured output is not supported with tools",
       );
     }
-    params.tools = [
-      {
-        name: "json",
-        description: "Output the result in JSON format",
-        input_schema:
-          parsed.data.type === "json_schema"
-            ? parsed.data.json_schema.schema
-            : { type: "object" },
-      },
-    ];
 
-    const thinkingParamsParsed = z
-      .object({
-        thinking: z.object({
-          type: z.literal("enabled"),
-        }),
-      })
-      .safeParse(params);
+    // Check if model supports native structured outputs (output_config.format)
+    // Models that support it: claude-haiku-4-5, claude-sonnet-4-5, claude-opus-4-5, claude-opus-4-6
+    const modelName = (oaiParams.model as string) || "";
+    const supportsNativeStructuredOutput =
+      modelName.includes("claude-haiku-4-5") ||
+      modelName.includes("claude-sonnet-4-5") ||
+      modelName.includes("claude-opus-4-5") ||
+      modelName.includes("claude-opus-4-6");
 
-    // Claude hack: if thinking is enabled, tool_choice cannot be specified. So
-    // we just omit tool_choice in that case.
-    if (
-      thinkingParamsParsed.success &&
-      thinkingParamsParsed.data.thinking.type === "enabled"
-    ) {
-      delete params.tool_choice;
+    if (supportsNativeStructuredOutput && parsed.data.type === "json_schema") {
+      // Use Anthropic's native output_config.format API for proper strict validation
+      params.output_config = {
+        format: {
+          type: "json_schema",
+          schema: parsed.data.json_schema.schema,
+        },
+      };
     } else {
-      params.tool_choice = { type: "tool", name: "json" };
+      // Fall back to tool-based approach for older models or json_object format
+      params.tools = [
+        {
+          name: "json",
+          description: "Output the result in JSON format",
+          input_schema:
+            parsed.data.type === "json_schema"
+              ? parsed.data.json_schema.schema
+              : { type: "object" },
+        },
+      ];
+
+      const thinkingParamsParsed = z
+        .object({
+          thinking: z.object({
+            type: z.literal("enabled"),
+          }),
+        })
+        .safeParse(params);
+
+      // Claude hack: if thinking is enabled, tool_choice cannot be specified. So
+      // we just omit tool_choice in that case.
+      if (
+        thinkingParamsParsed.success &&
+        thinkingParamsParsed.data.thinking.type === "enabled"
+      ) {
+        delete params.tool_choice;
+      } else {
+        params.tool_choice = { type: "tool", name: "json" };
+      }
     }
   }
 

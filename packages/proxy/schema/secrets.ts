@@ -104,6 +104,12 @@ export const MistralMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).strict();
 
+export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
+  }),
+).strict();
+
 const APISecretBaseSchema = z
   .object({
     id: z.string().uuid().nullish(),
@@ -120,7 +126,6 @@ export const APISecretSchema = z.union([
       type: z.enum([
         "perplexity",
         "anthropic",
-        "braintrust",
         "google",
         "replicate",
         "together",
@@ -134,6 +139,12 @@ export const APISecretSchema = z.union([
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("braintrust"),
+      metadata: BraintrustMetadataSchema.nullish(),
     }),
   ),
   APISecretBaseSchema.merge(

@@ -8,6 +8,8 @@ export const BaseMetadataSchema = z
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),
+    custom_model: z.string().nullish(),
+    custom_system_prompt: z.string().nullish(),
   })
   .strict();
 
@@ -89,10 +91,20 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
       z.null(),
     ]),
     organization_id: z.string().nullish(),
+    // Custom endpoint path to override the default (e.g., "" to use api_base as full URL)
+    endpoint_path: z.string().nullish(),
+    // Auth format for the authorization header (default: "bearer")
+    auth_format: z.enum(["bearer", "api_key"]).nullish(),
   }),
 ).strict();
 
 export const MistralMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
+  }),
+).strict();
+
+export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
@@ -127,6 +139,12 @@ export const APISecretSchema = z.union([
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),
+    }),
+  ),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("braintrust"),
+      metadata: BraintrustMetadataSchema.nullish(),
     }),
   ),
   APISecretBaseSchema.merge(

@@ -92,7 +92,7 @@ export const completionUsageSchema = z.object({
       reasoning_tokens: z.number().optional(),
       rejected_prediction_tokens: z.number().optional(),
     })
-    .optional(),
+    .nullish(),
   prompt_tokens_details: z
     .object({
       audio_tokens: z.number().optional(),
@@ -104,7 +104,7 @@ export const completionUsageSchema = z.object({
           "Extension to support Anthropic `cache_creation_input_tokens`",
         ),
     })
-    .optional(),
+    .nullish(),
 });
 
 export type OpenAICompletionUsage = z.infer<typeof completionUsageSchema>;

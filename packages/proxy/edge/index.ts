@@ -4,7 +4,7 @@ import { proxyV1, SpanLogger, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { APISecret, getModelEndpointTypes } from "@schema";
+import { APISecret, APISecretSchema, getModelEndpointTypes } from "@schema";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -38,6 +38,7 @@ export interface ProxyOpts {
   spanLogger?: SpanLogger;
   spanId?: string;
   spanExport?: string;
+  nativeInferenceSecretKey?: string;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -111,6 +112,10 @@ export async function digestMessage(message: string) {
   const data = encoder.encode(message);
   const hash = await crypto.subtle.digest("SHA-256", data);
   return btoa(String.fromCharCode(...new Uint8Array(hash)));
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
 }
 
 export function makeFetchApiSecrets({
@@ -192,11 +197,57 @@ export function makeFetchApiSecrets({
             model,
             org_name,
             mode: "full",
+            ...(opts.nativeInferenceSecretKey
+              ? { can_execute_native_inference: true }
+              : {}),
           }),
         },
       );
       if (response.ok) {
-        secrets = await response.json();
+        const responseJson: unknown = await response.json();
+        if (
+          isRecord(responseJson) &&
+          responseJson.encrypted === true &&
+          typeof responseJson.iv === "string" &&
+          typeof responseJson.data === "string"
+        ) {
+          if (!opts.nativeInferenceSecretKey) {
+            throw new Error(
+              "Received encrypted response but NATIVE_INFERENCE_SECRET_KEY is not configured",
+            );
+          }
+          const keys = opts.nativeInferenceSecretKey
+            .split(",")
+            .map((k) => k.trim())
+            .filter((k) => k.length > 0);
+          let decrypted: string | null | undefined = null;
+          for (const key of keys) {
+            const encryptionKey = await digestMessage(key);
+            try {
+              decrypted = await decryptMessage(
+                encryptionKey,
+                responseJson.iv,
+                responseJson.data,
+              );
+              if (decrypted) break;
+            } catch {}
+          }
+          if (!decrypted) {
+            throw new Error(
+              "Failed to decrypt native inference response (tried all keys)",
+            );
+          }
+          const parsed: unknown = JSON.parse(decrypted);
+          if (!Array.isArray(parsed)) {
+            throw new Error("Decrypted response is not an array");
+          }
+          secrets = parsed.map((s: unknown) => APISecretSchema.parse(s));
+        } else {
+          if (!Array.isArray(responseJson)) {
+            throw new Error("Response is not an array");
+          }
+          secrets = responseJson.map((s: unknown) => APISecretSchema.parse(s));
+        }
       } else {
         lookupFailed = true;
         console.warn("Failed to lookup api key", await response.text());

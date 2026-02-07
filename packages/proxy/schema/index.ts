@@ -632,6 +632,7 @@ export const EndpointProviderToBaseURL: {
   [name in ModelEndpointType]: string | null;
 } = {
   openai: "https://api.openai.com/v1",
+  braintrust: null,
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",

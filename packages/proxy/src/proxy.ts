@@ -268,7 +268,7 @@ export async function proxyV1({
   }
 
   // Caching is enabled by default, but let the user disable it
-  let useCacheMode = parseEnumHeader(
+  const useCacheMode = parseEnumHeader(
     CACHE_HEADER,
     CACHE_MODES,
     proxyHeaders[CACHE_HEADER],
@@ -328,6 +328,7 @@ export async function proxyV1({
   let bodyData = null;
   if (
     url === "/auto" ||
+    url === "/embeddings" ||
     url === "/chat/completions" ||
     url === "/responses" ||
     url === "/completions" ||
@@ -347,6 +348,7 @@ export async function proxyV1({
   if (
     method === "POST" &&
     (url === "/auto" ||
+      url === "/embeddings" ||
       url === "/chat/completions" ||
       url === "/completions" ||
       url === "/responses" ||
@@ -458,7 +460,7 @@ export async function proxyV1({
   // The data key is used as the encryption key, so unless you have the actual incoming data, you can't decrypt the cache.
   const encryptionKey = await digest(`${dataKey}:${authToken}`);
 
-  let startTime = getCurrentUnixTimestamp();
+  const startTime = getCurrentUnixTimestamp();
   let spanType: SpanType | undefined = undefined;
   const isStreaming = !!bodyData?.stream;
 
@@ -501,7 +503,7 @@ export async function proxyV1({
         stream = new ReadableStream<Uint8Array>({
           start(controller) {
             if ("body" in cachedData && cachedData.body) {
-              let splits = cachedData.body.split("\n");
+              const splits = cachedData.body.split("\n");
               for (let i = 0; i < splits.length; i++) {
                 controller.enqueue(
                   new TextEncoder().encode(
@@ -553,7 +555,7 @@ export async function proxyV1({
 
   let responseFailed = false;
 
-  let overridenHeaders: string[] = [];
+  const overridenHeaders: string[] = [];
   const setOverriddenHeader = (name: string, value: string) => {
     overridenHeaders.push(name);
     setHeader(name, value);
@@ -1032,7 +1034,9 @@ export async function proxyV1({
                 {
                   const data = dataRaw as CreateEmbeddingResponse;
                   spanLogger?.log({
-                    output: { embedding_length: data.data[0].embedding.length },
+                    output: {
+                      embedding_length: data.data?.[0].embedding.length,
+                    },
                     metrics: {
                       tokens: data.usage?.total_tokens,
                       prompt_tokens: data.usage?.prompt_tokens,
@@ -1149,7 +1153,7 @@ const RATE_LIMITING_ERROR_CODES = [
   OVERLOADED_ERROR_CODE,
 ];
 
-let loopIndex = 0;
+const loopIndex = 0;
 async function fetchModelLoop(
   logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
@@ -1176,6 +1180,54 @@ async function fetchModelLoop(
 
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
+
+  const customModelOverride =
+    secrets.length > 0 && secrets[0].metadata?.custom_model
+      ? String(secrets[0].metadata.custom_model)
+      : null;
+  const customSystemPromptContent =
+    secrets.length > 0 && secrets[0].metadata?.custom_system_prompt
+      ? String(secrets[0].metadata.custom_system_prompt)
+      : null;
+
+  if (customModelOverride) {
+    model = customModelOverride;
+    if (bodyData && typeof bodyData === "object" && "model" in bodyData) {
+      bodyData = { ...bodyData, model: customModelOverride };
+
+      // Inject custom system prompt for chat completions (if provided)
+      if (customSystemPromptContent && Array.isArray(bodyData.messages)) {
+        const customSystemPrompt = {
+          role: "system",
+          content: customSystemPromptContent,
+        };
+        const existingMessages = bodyData.messages;
+        const hasSystemMessage =
+          existingMessages.length > 0 && existingMessages[0]?.role === "system";
+        if (hasSystemMessage) {
+          // Prepend custom context to existing system message
+          const existingSystem = existingMessages[0];
+          bodyData = {
+            ...bodyData,
+            messages: [
+              {
+                ...existingSystem,
+                content: `${customSystemPromptContent}\n\n${existingSystem.content ?? ""}`,
+              },
+              ...existingMessages.slice(1),
+            ],
+          };
+        } else {
+          // Add system message at the beginning
+          bodyData = {
+            ...bodyData,
+            messages: [customSystemPrompt, ...existingMessages],
+          };
+        }
+      }
+    }
+  }
+
   const initialIdx = getRandomInt(secrets.length);
   let proxyResponse: ModelResponse | null = null;
   let secretName: string | null | undefined = null;
@@ -1990,7 +2042,13 @@ async function fetchOpenAI(
         `${baseURL}/serving-endpoints/${bodyData.model}/invocations`,
       );
     } else {
-      fullURL = new URL(baseURL + url);
+      const endpointPath =
+        secret.metadata &&
+        "endpoint_path" in secret.metadata &&
+        typeof secret.metadata.endpoint_path === "string"
+          ? secret.metadata.endpoint_path
+          : url;
+      fullURL = new URL(baseURL + endpointPath);
     }
   }
 
@@ -2012,7 +2070,17 @@ async function fetchOpenAI(
   }
 
   headers["host"] = fullURL.host;
-  headers["authorization"] = "Bearer " + bearerToken;
+  // Use custom auth format if specified (e.g., "api_key" for Baseten)
+  const authFormat =
+    secret.metadata &&
+    "auth_format" in secret.metadata &&
+    secret.metadata.auth_format === "api_key"
+      ? "api_key"
+      : "bearer";
+  headers["authorization"] =
+    authFormat === "api_key"
+      ? `Api-Key ${bearerToken}`
+      : `Bearer ${bearerToken}`;
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
@@ -2684,7 +2752,7 @@ async function fetchAnthropicChatCompletions({
   if (proxyResponse.ok) {
     if (params.stream) {
       let idx = 0;
-      let usage: Partial<CompletionUsage> = {};
+      const usage: Partial<CompletionUsage> = {};
       stream = stream.pipeThrough(
         createEventStreamTransformer((data) => {
           const ret = anthropicEventToOpenAIEvent(
@@ -2820,7 +2888,7 @@ async function openAIToolsToGoogleTools(params: {
         break;
     }
   }
-  let out = {
+  const out = {
     tools: params.tools
       ? [
           {

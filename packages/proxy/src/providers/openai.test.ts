@@ -431,11 +431,11 @@ describe("request/response checking", () => {
     ]);
   });
 
-  it("should convert minimal to low reasoning_effort for gpt-5.1 models", async () => {
+  it("should convert minimal to low reasoning_effort for gpt-5.x-codex models", async () => {
     const calls: InterceptedCall[] = [];
     server.use(
       http.post(
-        "https://api.openai.com/v1/chat/completions",
+        "https://api.openai.com/v1/responses",
         async ({ request: req }) => {
           const request: InterceptedRequest = {
             method: req.method,
@@ -443,29 +443,35 @@ describe("request/response checking", () => {
             body: await req.json(),
           };
 
-          // Mock a successful response
+          // Mock a successful responses API response
           const response: InterceptedResponse = {
             status: 200,
             body: {
-              id: "chatcmpl-test",
-              object: "chat.completion",
-              created: 1234567890,
-              model: "gpt-5.1",
-              choices: [
+              id: "resp-test",
+              object: "response",
+              created_at: 1234567890,
+              model: "gpt-5.1-codex",
+              output: [
                 {
-                  index: 0,
-                  message: {
-                    role: "assistant",
-                    content: "Test response",
-                    refusal: null,
-                  },
-                  finish_reason: "stop",
+                  type: "message",
+                  content: [
+                    {
+                      type: "output_text",
+                      text: "Test response",
+                    },
+                  ],
                 },
               ],
               usage: {
-                prompt_tokens: 10,
-                completion_tokens: 5,
+                input_tokens: 10,
+                output_tokens: 5,
                 total_tokens: 15,
+                input_tokens_details: {
+                  cached_tokens: 0,
+                },
+                output_tokens_details: {
+                  reasoning_tokens: 0,
+                },
               },
             },
           };
@@ -481,7 +487,7 @@ describe("request/response checking", () => {
 
     await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
       body: {
-        model: "gpt-5.1",
+        model: "gpt-5.1-codex",
         reasoning_effort: "minimal",
         stream: false,
         messages: [
@@ -497,9 +503,12 @@ describe("request/response checking", () => {
     });
 
     expect(calls.length).toBe(1);
+    // gpt-5.x-codex models are routed to Responses API, which uses reasoning.effort instead of reasoning_effort
     expect(calls[0].request.body).toMatchObject({
-      model: "gpt-5.1",
-      reasoning_effort: "low", // minimal should be converted to low for gpt-5.1
+      model: "gpt-5.1-codex",
+      reasoning: {
+        effort: "low", // minimal should be converted to low for gpt-5.x-codex
+      },
     });
   });
 });

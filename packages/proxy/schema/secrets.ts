@@ -8,8 +8,8 @@ export const BaseMetadataSchema = z
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),
-    custom_model: z.string().nullish(),
-    custom_system_prompt: z.string().nullish(),
+    overrideModel: z.string().nullish(),
+    overrideSystemPrompt: z.string().nullish(),
   })
   .strict();
 

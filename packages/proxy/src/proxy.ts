@@ -1182,12 +1182,12 @@ async function fetchModelLoop(
   const secrets = await getApiSecrets(model);
 
   const customModelOverride =
-    secrets.length > 0 && secrets[0].metadata?.custom_model
-      ? String(secrets[0].metadata.custom_model)
+    secrets.length > 0 && secrets[0].metadata?.overrideModel
+      ? String(secrets[0].metadata.overrideModel)
       : null;
   const customSystemPromptContent =
-    secrets.length > 0 && secrets[0].metadata?.custom_system_prompt
-      ? String(secrets[0].metadata.custom_system_prompt)
+    secrets.length > 0 && secrets[0].metadata?.overrideSystemPrompt
+      ? String(secrets[0].metadata.overrideSystemPrompt)
       : null;
 
   if (customModelOverride) {

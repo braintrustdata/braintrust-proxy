@@ -1724,16 +1724,22 @@ function responsesRequestFromChatCompletionsRequest(
               return {
                 format: response_format,
               };
-            case "json_schema":
-              return {
-                format: {
-                  schema: response_format.json_schema.schema ?? {},
-                  type: "json_schema",
-                  description: response_format.json_schema.description,
-                  name: response_format.json_schema.name,
-                  strict: response_format.json_schema.strict,
-                },
+            case "json_schema": {
+              const format: any = {
+                schema: response_format.json_schema.schema ?? {},
+                type: "json_schema",
               };
+              if (response_format.json_schema.description) {
+                format.description = response_format.json_schema.description;
+              }
+              if (response_format.json_schema.name) {
+                format.name = response_format.json_schema.name;
+              }
+              if (response_format.json_schema.strict !== undefined) {
+                format.strict = response_format.json_schema.strict;
+              }
+              return { format };
+            }
           }
         })()
       : undefined,

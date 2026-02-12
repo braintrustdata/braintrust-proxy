@@ -1952,10 +1952,17 @@ async function fetchOpenAI(
     const location = locations[Math.floor(Math.random() * locations.length)];
     const baseURL = getVertexBaseUrl(api_base, location);
 
-    if (bodyData?.model?.startsWith("publishers/meta")) {
+    if (
+      bodyData?.model?.startsWith("publishers/meta") ||
+      bodyData?.model?.startsWith("publishers/qwen")
+    ) {
       // Use the OpenAPI endpoint.
+      // Meta models use v1beta1, Qwen models use v1
+      const apiVersion = bodyData.model.startsWith("publishers/meta")
+        ? "v1beta1"
+        : "v1";
       fullURL = new URL(
-        `${baseURL}/v1beta1/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
+        `${baseURL}/${apiVersion}/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
       );
       bodyData.model = bodyData.model.replace(
         /^publishers\/(\w+)\/models\//,

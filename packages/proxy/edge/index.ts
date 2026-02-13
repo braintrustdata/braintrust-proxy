@@ -249,8 +249,12 @@ export function makeFetchApiSecrets({
           secrets = responseJson.map((s: unknown) => APISecretSchema.parse(s));
         }
       } else {
+        const responseText = await response.text();
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(responseText);
+        }
         lookupFailed = true;
-        console.warn("Failed to lookup api key", await response.text());
+        console.warn("Failed to lookup api key", responseText);
       }
     } catch (e) {
       lookupFailed = true;

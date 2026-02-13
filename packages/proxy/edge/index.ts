@@ -181,6 +181,7 @@ export function makeFetchApiSecrets({
 
     let secrets: APISecret[] = [];
     let lookupFailed = false;
+    let authorizationError: string | null = null;
     // Only cache API keys for 60 seconds. This reduces the load on the database but ensures
     // that changes roll out quickly enough too.
     const ttl = 60;
@@ -250,15 +251,20 @@ export function makeFetchApiSecrets({
         }
       } else {
         const responseText = await response.text();
-        if (response.status === 401 || response.status === 403) {
-          throw new Error(responseText);
+        if (response.status === 403) {
+          authorizationError = responseText;
+        } else {
+          lookupFailed = true;
+          console.warn("Failed to lookup api key", responseText);
         }
-        lookupFailed = true;
-        console.warn("Failed to lookup api key", responseText);
       }
     } catch (e) {
       lookupFailed = true;
       console.warn("Failed to lookup api key. Falling back to provided key", e);
+    }
+
+    if (authorizationError) {
+      throw new Error(authorizationError);
     }
 
     if (lookupFailed) {

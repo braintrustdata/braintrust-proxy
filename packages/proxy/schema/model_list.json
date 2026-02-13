@@ -862,6 +862,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -873,6 +875,8 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "reasoning": true,
+    "reasoning_budget": true,
     "parent": "claude-haiku-4-5-latest",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
@@ -3288,6 +3292,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -3300,6 +3306,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "input_cache_write_cost_per_mil_tokens": 1.375,
     "displayName": "US Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
     "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
@@ -4108,6 +4116,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -4119,6 +4129,8 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "reasoning": true,
+    "reasoning_budget": true,
     "parent": "publishers/anthropic/models/claude-haiku-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000

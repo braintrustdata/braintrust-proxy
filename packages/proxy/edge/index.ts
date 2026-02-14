@@ -264,7 +264,7 @@ export function makeFetchApiSecrets({
     }
 
     if (authorizationError) {
-      throw new Error(authorizationError);
+      throw Object.assign(new Error(authorizationError), { status: 403 });
     }
 
     if (lookupFailed) {

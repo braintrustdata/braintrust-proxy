@@ -217,6 +217,70 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
   });
 });
 
+it("forwards x-bt-org-name for braintrust secrets", async () => {
+  const calls: Array<{ orgName: string | null }> = [];
+  const server = setupServer(
+    http.post(
+      "https://braintrust.example.com/chat/completions",
+      async ({ request: req }) => {
+        calls.push({
+          orgName: req.headers.get("x-bt-org-name"),
+        });
+        return HttpResponse.json({
+          id: "chatcmpl-braintrust-test",
+          object: "chat.completion",
+          created: Math.floor(Date.now() / 1000),
+          model: "gpt-4o-mini",
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: "assistant",
+                content: "ok",
+              },
+              finish_reason: "stop",
+            },
+          ],
+        });
+      },
+    ),
+  );
+
+  server.listen({
+    onUnhandledRequest: () => {
+      throw new Error("Unexpected request");
+    },
+  });
+  try {
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: "hello" }],
+        stream: false,
+      },
+      proxyHeaders: {
+        "x-bt-org-name": "header-org",
+      },
+      getApiSecrets: async () => [
+        {
+          type: "braintrust",
+          secret: "dummy-secret",
+          metadata: { api_base: "https://braintrust.example.com" },
+        },
+      ],
+    });
+  } finally {
+    server.resetHandlers();
+    server.close();
+  }
+
+  expect(calls.length).toBe(1);
+  expect(calls[0].orgName).toBe("header-org");
+});
+
 type InterceptedRequest = {
   method: string;
   url: string;

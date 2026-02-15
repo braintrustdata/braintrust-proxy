@@ -376,14 +376,26 @@ export async function proxyV1({
     baseAttributes.org_name = orgName;
   }
 
-  // Record total calls with model attributes
-  logHistogram?.({
-    name: "aiproxy.requests",
-    value: 1,
-    attributes: baseAttributes,
-  });
+  let requestLogged = false;
+  const logRequest = () => {
+    if (requestLogged) {
+      return;
+    }
+
+    logHistogram?.({
+      name: "aiproxy.requests",
+      value: 1,
+      attributes: baseAttributes,
+    });
+    requestLogged = true;
+  };
+
+  if (orgName) {
+    logRequest();
+  }
 
   if (url === "/credentials") {
+    logRequest();
     let readable: ReadableStream | null = null;
     try {
       const key = await makeTempCredentials({
@@ -636,6 +648,7 @@ export async function proxyV1({
         if (secrets.length > 0 && !orgName && secrets[0].org_name) {
           baseAttributes.org_name = secrets[0].org_name;
         }
+        logRequest();
 
         if (endpointName) {
           return secrets.filter((s) => s.name === endpointName);
@@ -1123,6 +1136,7 @@ export async function proxyV1({
     });
   }
 
+  logRequest();
   logHistogram?.({
     name: "aiproxy.requests_completed",
     value: 1,

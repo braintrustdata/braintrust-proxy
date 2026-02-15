@@ -24,6 +24,18 @@ jobs:
           cp wrangler-template.toml wrangler.toml
           sed -i 's/<YOUR_KV_ID>/${{ secrets.CLOUDFLARE_KV_ID }}/g' wrangler.toml
           sed -i 's/<YOUR_METRICS_LICENSE_KEY>/${{ secrets.METRICS_LICENSE_KEY }}/g' wrangler.toml
+      - name: Configure Worker secrets
+        working-directory: apis/cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NATIVE_INFERENCE_SECRET_KEY: ${{ secrets.NATIVE_INFERENCE_SECRET_KEY }}
+        run: |
+          if [ -z "${NATIVE_INFERENCE_SECRET_KEY:-}" ]; then
+            echo "NATIVE_INFERENCE_SECRET_KEY is not set" >&2
+            exit 1
+          fi
+          printf %s "$NATIVE_INFERENCE_SECRET_KEY" | pnpm exec wrangler secret put NATIVE_INFERENCE_SECRET_KEY
       - run: pnpm run deploy
         working-directory: apis/cloudflare
         env:

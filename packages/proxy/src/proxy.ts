@@ -587,6 +587,7 @@ export async function proxyV1({
       url,
       headers,
       bodyData,
+      orgName,
       setOverriddenHeader,
       async (model: string | null) => {
         // First, try to use temp credentials, because then we'll get access
@@ -1160,6 +1161,7 @@ async function fetchModelLoop(
   url: string,
   headers: Record<string, string>,
   bodyData: any | null,
+  orgName: string | undefined,
   setHeader: (name: string, value: string) => void,
   getApiSecrets: (model: string | null) => Promise<APISecret[]>,
   spanLogger: SpanLogger | undefined,
@@ -1297,11 +1299,19 @@ async function fetchModelLoop(
       attributes: loggableInfo,
     });
     try {
+      const forwardedHeaders = { ...headers, ...additionalHeaders };
+      if (secret.type === "braintrust") {
+        const forwardedOrgName = orgName || secret.org_name;
+        if (forwardedOrgName) {
+          forwardedHeaders[ORG_NAME_HEADER] = forwardedOrgName;
+        }
+      }
+
       proxyResponse = await fetchModel(
         modelSpec,
         method,
         endpointUrl,
-        { ...headers, ...additionalHeaders },
+        forwardedHeaders,
         secret,
         bodyData,
         setHeader,

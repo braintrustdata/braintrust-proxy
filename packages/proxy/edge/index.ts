@@ -249,10 +249,22 @@ export function makeFetchApiSecrets({
           secrets = responseJson.map((s: unknown) => APISecretSchema.parse(s));
         }
       } else {
+        const responseText = await response.text();
+        if (response.status === 400) {
+          throw new Error(
+            `Failed to lookup api key: ${response.status}: ${responseText}`,
+          );
+        }
         lookupFailed = true;
-        console.warn("Failed to lookup api key", await response.text());
+        console.warn("Failed to lookup api key", responseText);
       }
     } catch (e) {
+      if (
+        e instanceof Error &&
+        e.message.startsWith("Failed to lookup api key: 400:")
+      ) {
+        throw e;
+      }
       lookupFailed = true;
       console.warn("Failed to lookup api key. Falling back to provided key", e);
     }

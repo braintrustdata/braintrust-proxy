@@ -379,6 +379,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.anthropic.claude-3-7-sonnet-20250219-v1:0": ["bedrock"],
   "anthropic.claude-haiku-4-5-20251001-v1:0": ["bedrock"],
   "us.anthropic.claude-haiku-4-5-20251001-v1:0": ["bedrock"],
+  "amazon-bedrock:global.anthropic.claude-haiku-4-5-20251001-v1:0": ["bedrock"],
   "anthropic.claude-3-5-haiku-20241022-v1:0": ["bedrock"],
   "us.anthropic.claude-3-5-haiku-20241022-v1:0": ["bedrock"],
   "anthropic.claude-3-5-sonnet-20241022-v2:0": ["bedrock"],

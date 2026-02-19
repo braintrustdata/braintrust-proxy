@@ -1501,6 +1501,7 @@ describe("googleCompletionToOpenAICompletion", () => {
           { role: "user", content: "Generate a small solid red square image" },
         ],
         stream: false,
+        responseModalities: ["TEXT", "IMAGE"],
       },
     });
 
@@ -1536,6 +1537,7 @@ describe("googleCompletionToOpenAICompletion", () => {
           },
         ],
         stream: false,
+        responseModalities: ["TEXT", "IMAGE"],
       },
     });
 
@@ -1576,6 +1578,7 @@ describe("googleCompletionToOpenAICompletion", () => {
           },
         ],
         stream: false,
+        responseModalities: ["TEXT", "IMAGE"],
       },
     });
 

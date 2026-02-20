@@ -15,7 +15,7 @@
     "itty-router": "^3.0.12",
     "tsup": "^8.4.0",
     "typescript": "^5.0.4",
-    "wrangler": "^4.28.1"
+    "wrangler": "^4.59.1"
   },
   "dependencies": {
     "braintrust": "^0.3.7",

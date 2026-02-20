@@ -261,8 +261,7 @@ export function makeFetchApiSecrets({
     } catch (e) {
       if (
         e instanceof Error &&
-        (e.message.startsWith("Failed to lookup api key: 400:") ||
-          e.message.startsWith("Failed to lookup api key: 403:"))
+        e.message.startsWith("Failed to lookup api key:")
       ) {
         throw e;
       }

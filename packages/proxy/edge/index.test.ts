@@ -68,4 +68,66 @@ describe("makeFetchApiSecrets", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(getSetCalls()).toBe(0);
   });
+
+  it("accepts embedding custom models from control-plane secrets", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => {
+      return new Response(
+        JSON.stringify([
+          {
+            secret: "provider-secret",
+            type: "openai",
+            metadata: {
+              customModels: {
+                "embedding-model": {
+                  format: "openai",
+                  flavor: "embedding",
+                },
+              },
+            },
+          },
+        ]),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { cache, getSetCalls } = createInMemoryCache();
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const ctx: EdgeContext = {
+      waitUntil(promise) {
+        waitUntilPromises.push(promise);
+      },
+    };
+    const opts: ProxyOpts = {
+      getRelativeURL() {
+        return "/embeddings";
+      },
+      credentialsCache: cache,
+      braintrustApiUrl: "https://example.com",
+    };
+    const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+
+    const secrets = await fetchApiSecrets(true, "org-token", "embedding-model");
+    await Promise.all(waitUntilPromises);
+
+    expect(secrets).toMatchObject([
+      {
+        secret: "provider-secret",
+        type: "openai",
+        metadata: {
+          customModels: {
+            "embedding-model": {
+              format: "openai",
+              flavor: "embedding",
+            },
+          },
+        },
+      },
+    ]);
+    expect(getSetCalls()).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

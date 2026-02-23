@@ -4,6 +4,9 @@ import { _urljoin } from "../src/util";
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
+export const ModelFlavors = ["chat", "completion", "embedding"] as const;
+export type ModelFlavor = (typeof ModelFlavors)[number];
+
 export const ModelFormats = [
   "openai",
   "anthropic",
@@ -40,7 +43,7 @@ export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
-  flavor: z.enum(PromptInputs),
+  flavor: z.enum(ModelFlavors),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),

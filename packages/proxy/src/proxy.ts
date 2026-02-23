@@ -1967,14 +1967,14 @@ async function fetchOpenAI(
 
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
-    const { project, authType, api_base } = VertexMetadataSchema.parse(
-      secret.metadata,
-    );
-    const locations = modelSpec?.locations?.length
-      ? modelSpec.locations
-      : ["us-central1"];
-    const location = locations[Math.floor(Math.random() * locations.length)];
-    const baseURL = getVertexBaseUrl(api_base, location);
+    const { project, location, authType, api_base } =
+      VertexMetadataSchema.parse(secret.metadata);
+    const resolvedLocation = resolveVertexLocation({
+      metadataLocation: location,
+      modelSpec,
+      defaultLocation: "us-central1",
+    });
+    const baseURL = getVertexBaseUrl(api_base, resolvedLocation);
 
     if (
       bodyData?.model?.startsWith("publishers/meta") ||
@@ -1986,7 +1986,7 @@ async function fetchOpenAI(
         ? "v1beta1"
         : "v1";
       fullURL = new URL(
-        `${baseURL}/${apiVersion}/projects/${project}/locations/${location}/endpoints/openapi/chat/completions`,
+        `${baseURL}/${apiVersion}/projects/${project}/locations/${resolvedLocation}/endpoints/openapi/chat/completions`,
       );
       bodyData.model = bodyData.model.replace(
         /^publishers\/(\w+)\/models\//,
@@ -1995,7 +1995,7 @@ async function fetchOpenAI(
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
-        `${baseURL}/v1/projects/${project}/locations/${location}/${
+        `${baseURL}/v1/projects/${project}/locations/${resolvedLocation}/${
           bodyData.model
         }:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
@@ -2392,6 +2392,24 @@ function getVertexBaseUrl(
     : `https://${location}-aiplatform.googleapis.com`;
 }
 
+function resolveVertexLocation({
+  metadataLocation,
+  modelSpec,
+  defaultLocation,
+}: {
+  metadataLocation: string | null | undefined;
+  modelSpec: ModelSpec | null;
+  defaultLocation: string;
+}): string {
+  if (metadataLocation) {
+    return metadataLocation;
+  }
+  const locations = modelSpec?.locations?.length
+    ? modelSpec.locations
+    : [defaultLocation];
+  return locations[Math.floor(Math.random() * locations.length)];
+}
+
 async function vertexEndpointInfo({
   secret: { secret, metadata },
   modelSpec,
@@ -2401,19 +2419,21 @@ async function vertexEndpointInfo({
   modelSpec: ModelSpec | null;
   defaultLocation: string;
 }): Promise<VertexEndpointInfo> {
-  const { project, authType, api_base } = VertexMetadataSchema.parse(metadata);
-  const locations = modelSpec?.locations?.length
-    ? modelSpec.locations
-    : [defaultLocation];
-  const location = locations[Math.floor(Math.random() * locations.length)];
-  const apiBase = getVertexBaseUrl(api_base, location);
+  const { project, location, authType, api_base } =
+    VertexMetadataSchema.parse(metadata);
+  const resolvedLocation = resolveVertexLocation({
+    metadataLocation: location,
+    modelSpec,
+    defaultLocation,
+  });
+  const apiBase = getVertexBaseUrl(api_base, resolvedLocation);
   const accessToken =
     authType === "access_token" ? secret : await getGoogleAccessToken(secret);
   if (!accessToken) {
     throw new Error("Failed to get Google access token");
   }
   return {
-    baseUrl: `${apiBase}/v1/projects/${project}/locations/${location}`,
+    baseUrl: `${apiBase}/v1/projects/${project}/locations/${resolvedLocation}`,
     accessToken,
   };
 }

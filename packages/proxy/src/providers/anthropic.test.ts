@@ -549,6 +549,67 @@ it("should use model's max_output_tokens as default when max_tokens not specifie
   expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
 });
 
+it("should default Vertex Anthropic calls to us-east5 when location is omitted", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "publishers/anthropic/models/claude-sonnet-4",
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "vertex",
+        secret: "test-token",
+        name: "vertex",
+        metadata: {
+          project: "test-project",
+          authType: "access_token",
+          api_base: "",
+          supportsStreaming: true,
+          excludeDefaultModels: false,
+        },
+      },
+    ],
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].url).toContain("/locations/us-east5/");
+});
+
+it("should honor Vertex metadata location for Anthropic calls", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "publishers/anthropic/models/claude-sonnet-4",
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "vertex",
+        secret: "test-token",
+        name: "vertex",
+        metadata: {
+          project: "test-project",
+          location: "us-central1",
+          authType: "access_token",
+          api_base: "",
+          supportsStreaming: true,
+          excludeDefaultModels: false,
+        },
+      },
+    ],
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].url).toContain("/locations/us-central1/");
+});
+
 it("should return error when non-3.7 model receives max_tokens exceeding its limit", async () => {
   const { statusCode } = await callProxyV1<
     OpenAIChatCompletionCreateParams,

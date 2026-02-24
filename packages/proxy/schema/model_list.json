@@ -3381,6 +3381,19 @@
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
+  "amazon-bedrock:global.anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "displayName": "AWS Bedrock Global Claude 4.5 Haiku",
+    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000
+  },
   "anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
     "flavor": "chat",

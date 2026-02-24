@@ -1184,6 +1184,40 @@
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true
   },
+  "qwen-3-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen 3 32B"
+  },
+  "qwen-3-235b-a22b-instruct-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Qwen 3 235B Instruct",
+    "experimental": true,
+    "max_input_tokens": 131000,
+    "max_output_tokens": 8192
+  },
+  "qwen-3-235b-a22b-thinking-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.9,
+    "displayName": "Qwen 3 235B Thinking",
+    "experimental": true,
+    "reasoning": true
+  },
+  "qwen-3-coder-480b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Qwen 3 Coder 480B",
+    "experimental": true
+  },
   "meta/llama-2-70b-chat": {
     "format": "openai",
     "flavor": "chat",

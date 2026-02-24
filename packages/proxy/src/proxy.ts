@@ -152,6 +152,8 @@ export const CACHED_HEADER = "x-bt-cached";
 
 export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
+export const OAI_STAINLESS_METHOD_HEADER = "x-stainless-helper-method";
+
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
 // The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
@@ -474,6 +476,13 @@ export async function proxyV1({
 
   const startTime = getCurrentUnixTimestamp();
   let spanType: SpanType | undefined = undefined;
+  // TEMP: support OAI streaming via oai.beta.chat.completions.stream
+  // openai-node currently overrides the usual stream param to false
+  const isStainlessStream =
+  proxyHeaders[OAI_STAINLESS_METHOD_HEADER] === "stream";
+  if (isStainlessStream && bodyData) {
+    bodyData.stream = true;
+  }
   const isStreaming = !!bodyData?.stream;
 
   let stream: ReadableStream<Uint8Array> | null = null;

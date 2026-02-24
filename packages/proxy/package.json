@@ -109,7 +109,7 @@
     "@opentelemetry/exporter-metrics-otlp-http": "^0.204.0",
     "@opentelemetry/resources": "^2.1.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
-    "ai": "2.2.37",
+    "ai": "5.0.52",
     "cache-control-parser": "^2.0.6",
     "content-disposition": "^0.5.4",
     "date-fns": "^4.1.0",

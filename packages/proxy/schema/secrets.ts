@@ -40,10 +40,11 @@ const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
   z.object({
     region: z.string().min(1, "Region cannot be empty"),
     auth_type: z
-      .enum(["iam_credentials", "api_key"])
+      .enum(["iam_credentials", "api_key", "assume_role"])
       .default("iam_credentials"),
     access_key: z.string().nullish(),
     session_token: z.string().nullish(),
+    external_id: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).strict();

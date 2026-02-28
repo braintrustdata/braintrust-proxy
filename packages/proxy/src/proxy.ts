@@ -1145,7 +1145,8 @@ export async function proxyV1({
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;
-const OVERLOADED_ERROR_CODE = 503;
+// Anthropic uses 529 for overloaded errors, while many providers use 503.
+const OVERLOADED_ERROR_CODES = [503, 529];
 const RATE_LIMIT_MAX_WAIT_MS = 45 * 1000; // Wait up to 45 seconds while retrying
 const BACKOFF_EXPONENT = 2;
 
@@ -1158,14 +1159,14 @@ const TRY_ANOTHER_ENDPOINT_ERROR_CODES = [
   // intelligently, eg if all APIs are rate limited, back off and try something else.
   RATE_LIMIT_ERROR_CODE,
 
-  // 503 is overloaded. We may want to track stats about this and potentially handle more
+  // 503 and 529 is overloaded. We may want to track stats about this and potentially handle more
   // intelligently, eg if all APIs are overloaded, back off and try something else.
-  OVERLOADED_ERROR_CODE,
+  ...OVERLOADED_ERROR_CODES,
 ];
 
 const RATE_LIMITING_ERROR_CODES = [
   RATE_LIMIT_ERROR_CODE,
-  OVERLOADED_ERROR_CODE,
+  ...OVERLOADED_ERROR_CODES,
 ];
 
 const loopIndex = 0;

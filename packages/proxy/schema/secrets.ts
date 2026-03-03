@@ -45,18 +45,36 @@ const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
     access_key: z.string().nullish(),
     session_token: z.string().nullish(),
     external_id: z.string().nullish(),
+    role_arn: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).strict();
 export const BedrockMetadataSchema = BedrockMetadataSchemaBase;
 export const BedrockMetadataSchemaWithAuth =
   BedrockMetadataSchemaBase.superRefine((data, ctx) => {
-    if ((data.auth_type ?? "iam_credentials") === "iam_credentials") {
+    const authType = data.auth_type ?? "iam_credentials";
+    if (authType === "iam_credentials") {
       if (!data.access_key) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Access key is required for IAM credentials",
           path: ["access_key"],
+        });
+      }
+    }
+    if (authType === "assume_role") {
+      if (!data.external_id?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "External ID is required for assume role",
+          path: ["external_id"],
+        });
+      }
+      if (!data.role_arn?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Role ARN is required for assume role",
+          path: ["role_arn"],
         });
       }
     }

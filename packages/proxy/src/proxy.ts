@@ -1922,6 +1922,10 @@ async function fetchOpenAIResponses({
   if ("seed" in body && body.seed !== undefined) {
     delete body.seed;
   }
+  // Strip Braintrust-specific parameters that OpenAI does not accept.
+  if ("span_info" in body) {
+    delete (body as Record<string, unknown>).span_info;
+  }
 
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",

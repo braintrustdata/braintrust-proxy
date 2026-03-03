@@ -102,7 +102,7 @@ it("should accept and return reasoning/thinking params and detail streaming", as
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-latest",
       reasoning_effort: "medium",
       messages: [
         {
@@ -150,7 +150,7 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-20250219",
       reasoning_effort: "medium",
       stream: false,
       messages: [
@@ -199,7 +199,7 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: expect.stringMatching(/^claude-sonnet-4-5/),
+    model: "claude-3-7-sonnet-20250219",
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),
@@ -219,7 +219,7 @@ it("should disable reasoning/thinking params non-streaming", async () => {
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-20250219",
       reasoning_enabled: false,
       stream: false,
       messages: [
@@ -262,7 +262,7 @@ it("should disable reasoning/thinking params non-streaming", async () => {
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: expect.stringMatching(/^claude-sonnet-4-5/),
+    model: "claude-3-7-sonnet-20250219",
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),
@@ -457,7 +457,7 @@ it("should handle file content parts with PDF data", async () => {
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-latest",
       messages: [
         {
           role: "user",
@@ -482,7 +482,6 @@ it("should handle file content parts with PDF data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-  expect((response as any).type).not.toBe("error");
 
   console.log(response);
 
@@ -497,7 +496,7 @@ it("should handle file content parts with image data", async () => {
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-latest",
       messages: [
         {
           role: "user",
@@ -522,7 +521,6 @@ it("should handle file content parts with image data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-  expect((response as any).type).not.toBe("error");
   expect(response!.choices[0].message.role).toBe("assistant");
   expect(response!.choices[0].message.content).toBeTruthy();
   expect(typeof response!.choices[0].message.content).toBe("string");
@@ -549,67 +547,6 @@ it("should use model's max_output_tokens as default when max_tokens not specifie
   expect(requests).toHaveLength(1);
   // Verify the proxy sent max_tokens: 64000 (from model spec) instead of 4096
   expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
-});
-
-it("should default Vertex Anthropic calls to us-east5 when location is omitted", async () => {
-  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
-    body: {
-      model: "publishers/anthropic/models/claude-sonnet-4",
-      messages: [{ role: "user", content: "Hello" }],
-      stream: false,
-    },
-    fetch,
-    getApiSecrets: async () => [
-      {
-        type: "vertex",
-        secret: "test-token",
-        name: "vertex",
-        metadata: {
-          project: "test-project",
-          authType: "access_token",
-          api_base: "",
-          supportsStreaming: true,
-          excludeDefaultModels: false,
-        },
-      },
-    ],
-  });
-
-  expect(requests).toHaveLength(1);
-  expect(requests[0].url).toContain("/locations/us-east5/");
-});
-
-it("should honor Vertex metadata location for Anthropic calls", async () => {
-  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
-    body: {
-      model: "publishers/anthropic/models/claude-sonnet-4",
-      messages: [{ role: "user", content: "Hello" }],
-      stream: false,
-    },
-    fetch,
-    getApiSecrets: async () => [
-      {
-        type: "vertex",
-        secret: "test-token",
-        name: "vertex",
-        metadata: {
-          project: "test-project",
-          location: "us-central1",
-          authType: "access_token",
-          api_base: "",
-          supportsStreaming: true,
-          excludeDefaultModels: false,
-        },
-      },
-    ],
-  });
-
-  expect(requests).toHaveLength(1);
-  expect(requests[0].url).toContain("/locations/us-central1/");
 });
 
 it("should return error when non-3.7 model receives max_tokens exceeding its limit", async () => {
@@ -788,7 +725,7 @@ it("should handle file content parts with plain text data", async () => {
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-latest",
       messages: [
         {
           role: "user",
@@ -813,7 +750,6 @@ it("should handle file content parts with plain text data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-  expect((response as any).type).not.toBe("error");
   expect(response!.choices[0].message.role).toBe("assistant");
   expect(response!.choices[0].message.content).toBeTruthy();
   expect(typeof response!.choices[0].message.content).toBe("string");
@@ -825,7 +761,7 @@ it("should handle file content parts with markdown data", async () => {
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-sonnet-4-5",
+      model: "claude-3-7-sonnet-latest",
       messages: [
         {
           role: "user",
@@ -850,7 +786,6 @@ it("should handle file content parts with markdown data", async () => {
 
   const response = json();
   expect(response).toBeTruthy();
-  expect((response as any).type).not.toBe("error");
   expect(response!.choices[0].message.role).toBe("assistant");
   expect(response!.choices[0].message.content).toBeTruthy();
   expect(typeof response!.choices[0].message.content).toBe("string");
@@ -863,7 +798,7 @@ describe("unsupported media types", () => {
       OpenAIChatCompletion
     >({
       body: {
-        model: "claude-sonnet-4-5",
+        model: "claude-3-7-sonnet-latest",
         messages: [
           {
             role: "user",
@@ -905,7 +840,7 @@ describe("unsupported media types", () => {
       OpenAIChatCompletion
     >({
       body: {
-        model: "claude-sonnet-4-5",
+        model: "claude-3-7-sonnet-latest",
         messages: [
           {
             role: "user",

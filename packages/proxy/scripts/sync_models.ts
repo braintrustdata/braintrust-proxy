@@ -1195,7 +1195,7 @@ async function updateModelsCommand(argv: any) {
 
         await fs.promises.writeFile(
           LOCAL_MODEL_LIST_PATH,
-          JSON.stringify(orderedModelsToWrite, null, 2), // Use the reordered models
+          JSON.stringify(orderedModelsToWrite, null, 2) + "\n", // Use the reordered models
         );
         console.log(
           `\nLocal model_list.json has been updated with new model information (pricing, token limits) and keys ordered according to schema.`,
@@ -1414,7 +1414,7 @@ async function addModelsCommand(argv: any) {
 
       await fs.promises.writeFile(
         LOCAL_MODEL_LIST_PATH,
-        JSON.stringify(orderedModelsToWrite, null, 2),
+        JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
       );
       console.log(
         `\n✅ Successfully added ${missingInLocal.length} models to ${LOCAL_MODEL_LIST_PATH}`,

@@ -65,6 +65,12 @@ export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 export const VertexMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     project: z.string().min(1, "Project cannot be empty"),
+    location: z.preprocess((value) => {
+      if (typeof value === "string" && value.trim() === "") {
+        return undefined;
+      }
+      return value;
+    }, z.string().min(1, "Location cannot be empty").optional()),
     authType: z.enum(["access_token", "service_account_key"]),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),

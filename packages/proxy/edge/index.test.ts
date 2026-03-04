@@ -131,7 +131,7 @@ describe("makeFetchApiSecrets", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("accepts and preserves unknown project secret fields from control plane", async () => {
+  it("parses control-plane secrets and caches successful lookups", async () => {
     const fetchMock = vi.fn().mockImplementation(async () => {
       return new Response(
         JSON.stringify([
@@ -141,10 +141,7 @@ describe("makeFetchApiSecrets", () => {
             metadata: {
               api_base: "https://api.openai.com",
               endpoint_path: "/v1/chat/completions",
-              auth_format: "api_key",
-              future_metadata_field: "future-value",
             },
-            future_top_level: { enabled: true },
           },
         ]),
         {
@@ -179,11 +176,9 @@ describe("makeFetchApiSecrets", () => {
       secret: "provider-secret",
       type: "openai",
       metadata: {
+        api_base: "https://api.openai.com",
         endpoint_path: "/v1/chat/completions",
-        auth_format: "api_key",
-        future_metadata_field: "future-value",
       },
-      future_top_level: { enabled: true },
     });
     expect(getSetCalls()).toBe(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);

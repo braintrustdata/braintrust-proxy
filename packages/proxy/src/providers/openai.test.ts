@@ -16,7 +16,7 @@ import {
   test,
   vi,
 } from "vitest";
-import { callProxyV1 } from "../../utils/tests";
+import { callProxyV1, createCapturingFetch } from "../../utils/tests";
 import * as proxyUtil from "../util";
 import { normalizeOpenAIContent } from "./openai";
 import * as util from "./util";
@@ -279,6 +279,70 @@ it("forwards x-bt-org-name for braintrust secrets", async () => {
 
   expect(calls.length).toBe(1);
   expect(calls[0].orgName).toBe("header-org");
+});
+
+it("falls back to provider base URL when metadata.api_base is not a string", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "provider-secret",
+        metadata: {
+          api_base: { invalid: true } as any,
+        } as any,
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("https://api.openai.com/v1/chat/completions");
+});
+
+it("uses model path for azure when metadata.deployment is non-string", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "azure",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "azure",
+        name: "azure",
+        secret: "provider-secret",
+        metadata: {
+          api_base: "https://azure.example.com",
+          api_version: "2023-07-01-preview",
+          auth_type: "api_key",
+          deployment: 42 as any,
+          no_named_deployment: false,
+        } as any,
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toContain(
+    "/openai/deployments/gpt-4o-mini/chat/completions",
+  );
 });
 
 type InterceptedRequest = {

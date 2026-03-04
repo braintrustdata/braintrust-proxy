@@ -11,7 +11,7 @@ export const BaseMetadataSchema = z
     overrideModel: z.string().nullish(),
     overrideSystemPrompt: z.string().nullish(),
   })
-  .strict();
+  .passthrough();
 
 export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
@@ -26,7 +26,7 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
         "If true, the deployment name will not be used in the request path.",
       ),
   }),
-).strict();
+).passthrough();
 
 export const AzureEntraSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),
@@ -46,7 +46,7 @@ const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
     session_token: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
-).strict();
+).passthrough();
 export const BedrockMetadataSchema = BedrockMetadataSchemaBase;
 export const BedrockMetadataSchemaWithAuth =
   BedrockMetadataSchemaBase.superRefine((data, ctx) => {
@@ -68,14 +68,14 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
     authType: z.enum(["access_token", "service_account_key"]),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
-).strict();
+).passthrough();
 
 export const DatabricksMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string().url(),
     auth_type: z.enum(["pat", "service_principal_oauth"]).default("pat"),
   }),
-).strict();
+).passthrough();
 
 export const DatabricksOAuthSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),
@@ -96,19 +96,19 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
     // Auth format for the authorization header (default: "bearer")
     auth_format: z.enum(["bearer", "api_key"]).nullish(),
   }),
-).strict();
+).passthrough();
 
 export const MistralMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
-).strict();
+).passthrough();
 
 export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
-).strict();
+).passthrough();
 
 const APISecretBaseSchema = z
   .object({
@@ -118,7 +118,7 @@ const APISecretBaseSchema = z
     secret: z.string(),
     metadata: z.record(z.unknown()).nullish(),
   })
-  .strict();
+  .passthrough();
 
 export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(
@@ -140,49 +140,49 @@ export const APISecretSchema = z.union([
       ]),
       metadata: BaseMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("braintrust"),
       metadata: BraintrustMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("openai"),
       metadata: OpenAIMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("azure"),
       metadata: AzureMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("bedrock"),
       metadata: BedrockMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("vertex"),
       metadata: VertexMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("databricks"),
       metadata: DatabricksMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("mistral"),
       metadata: MistralMetadataSchema.nullish(),
     }),
-  ),
+  ).passthrough(),
 ]);
 
 export type APISecret = z.infer<typeof APISecretSchema>;

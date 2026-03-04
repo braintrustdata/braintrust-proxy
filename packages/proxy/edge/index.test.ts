@@ -130,4 +130,62 @@ describe("makeFetchApiSecrets", () => {
     expect(getSetCalls()).toBe(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("accepts and preserves unknown project secret fields from control plane", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => {
+      return new Response(
+        JSON.stringify([
+          {
+            secret: "provider-secret",
+            type: "openai",
+            metadata: {
+              api_base: "https://api.openai.com",
+              endpoint_path: "/v1/chat/completions",
+              auth_format: "api_key",
+              future_metadata_field: "future-value",
+            },
+            future_top_level: { enabled: true },
+          },
+        ]),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { cache, getSetCalls } = createInMemoryCache();
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const ctx: EdgeContext = {
+      waitUntil(promise) {
+        waitUntilPromises.push(promise);
+      },
+    };
+    const opts: ProxyOpts = {
+      getRelativeURL() {
+        return "/chat/completions";
+      },
+      credentialsCache: cache,
+      braintrustApiUrl: "https://example.com",
+    };
+    const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+
+    const secrets = await fetchApiSecrets(true, "org-token", null);
+    await Promise.all(waitUntilPromises);
+
+    expect(secrets).toHaveLength(1);
+    expect(secrets[0]).toMatchObject({
+      secret: "provider-secret",
+      type: "openai",
+      metadata: {
+        endpoint_path: "/v1/chat/completions",
+        auth_format: "api_key",
+        future_metadata_field: "future-value",
+      },
+      future_top_level: { enabled: true },
+    });
+    expect(getSetCalls()).toBe(1);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

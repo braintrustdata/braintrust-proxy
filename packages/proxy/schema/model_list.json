@@ -8,7 +8,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-mini-2025-08-07": {
@@ -21,7 +21,7 @@
     "displayName": "GPT-5 mini (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-mini",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5": {
@@ -33,7 +33,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-2025-08-07": {
@@ -46,7 +46,7 @@
     "displayName": "GPT-5 (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-pro": {
@@ -57,7 +57,7 @@
     "output_cost_per_mil_tokens": 120,
     "displayName": "GPT-5 Pro",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000
   },
   "gpt-5-pro-2025-10-06": {
@@ -68,7 +68,7 @@
     "output_cost_per_mil_tokens": 120,
     "reasoning": true,
     "parent": "gpt-5-pro",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000
   },
   "gpt-5-codex": {
@@ -80,7 +80,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano": {
@@ -92,7 +92,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.005,
     "displayName": "GPT-5 nano",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-nano-2025-08-07": {
@@ -105,7 +105,7 @@
     "displayName": "GPT-5 nano (2025-08-07)",
     "reasoning": true,
     "parent": "gpt-5-nano",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
   "gpt-5-chat-latest": {
@@ -117,7 +117,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 16384
   },
   "gpt-4o": {
@@ -850,7 +850,7 @@
     "reasoning_budget": true,
     "deprecation_date": "2025-06-01",
     "max_input_tokens": 200000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 64000
   },
   "claude-3-7-sonnet-20250219": {
     "format": "anthropic",
@@ -865,7 +865,7 @@
     "deprecation_date": "2026-02-19",
     "parent": "claude-3-7-sonnet-latest",
     "max_input_tokens": 200000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 64000
   },
   "claude-haiku-4-5": {
     "format": "anthropic",
@@ -974,7 +974,7 @@
     "displayName": "Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000
   },
   "claude-opus-4-5": {
@@ -2389,6 +2389,7 @@
     "displayName": "Gemini 3 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-03-26",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -2587,7 +2588,7 @@
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "Gemini 2.0 Flash Latest",
-    "deprecation_date": "2026-03-31",
+    "deprecation_date": "2026-06-01",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
   },
@@ -2598,7 +2599,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.0375,
-    "deprecation_date": "2026-03-31",
+    "deprecation_date": "2026-06-01",
     "parent": "gemini-2.0-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -2611,7 +2612,7 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "displayName": "Gemini 2.0 Flash-Lite",
-    "deprecation_date": "2026-03-31",
+    "deprecation_date": "2026-06-01",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
   },
@@ -2622,7 +2623,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
-    "deprecation_date": "2026-03-31",
+    "deprecation_date": "2026-06-01",
     "parent": "gemini-2.0-flash-lite",
     "max_input_tokens": 1048576,
     "max_output_tokens": 8192
@@ -3001,6 +3002,7 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -3021,6 +3023,7 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -3098,6 +3101,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
+    "deprecation_date": "2026-02-28",
     "parent": "grok-2-vision",
     "max_input_tokens": 32768,
     "max_output_tokens": 32768
@@ -3417,7 +3421,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3.5 Sonnet v2",
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 8192
   },
   "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
@@ -3452,8 +3456,10 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3.5 Sonnet",
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 4096
   },
   "us.anthropic.claude-3-5-sonnet-20240620-v1:0": {
@@ -3462,6 +3468,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "US Claude 3.5 Sonnet",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 200000,
@@ -3473,6 +3481,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3.5 Sonnet",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 200000,
@@ -3484,6 +3494,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "EU Claude 3.5 Sonnet",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 200000,
@@ -3607,6 +3619,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
     "displayName": "Claude 3 Opus",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
@@ -3617,6 +3631,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.5,
+    "input_cache_write_cost_per_mil_tokens": 18.75,
     "displayName": "US Claude 3 Opus",
     "parent": "anthropic.claude-3-opus-20240229-v1:0",
     "max_input_tokens": 200000,
@@ -3628,6 +3644,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3 Sonnet",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
@@ -3638,6 +3656,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "US Claude 3 Sonnet",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
@@ -3649,6 +3669,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3 Sonnet",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
@@ -3660,6 +3682,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "EU Claude 3 Sonnet",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
@@ -3671,6 +3695,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "Claude 3 Haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096
@@ -3681,6 +3707,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "US Claude 3 Haiku",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
@@ -3692,6 +3720,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "APAC Claude 3 Haiku",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
@@ -3703,6 +3733,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "EU Claude 3 Haiku",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
@@ -4012,7 +4044,9 @@
     "displayName": "Gemini 3 Pro Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "locations": ["global"],
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -4026,7 +4060,9 @@
     "displayName": "Gemini 3 Flash Preview",
     "reasoning": true,
     "reasoning_budget": true,
-    "locations": ["global"],
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -4765,8 +4801,8 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.1,
-    "reasoning": true,
     "displayName": "Kimi K2.5",
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
@@ -5070,9 +5106,12 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Qwen3 235B A22B Instruct 2507",
+    "locations": [
+      "global",
+      "us-south1"
+    ],
     "max_input_tokens": 262144,
-    "max_output_tokens": 16384,
-    "locations": ["global", "us-south1"]
+    "max_output_tokens": 16384
   },
   "accounts/fireworks/models/deepseek-v3p2": {
     "format": "openai",

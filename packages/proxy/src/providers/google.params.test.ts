@@ -2041,3 +2041,187 @@ describe("Vertex Gemini routing (captureOnly)", () => {
     expect(requests[0].url).not.toContain(":rawPredict");
   });
 });
+
+describe("Vertex location resolution (captureOnly)", () => {
+  it("should default Vertex Google calls to us-central1 when location is omitted", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-1.0-pro",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/us-central1/");
+  });
+
+  it("should honor Vertex metadata location for Google calls", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-1.0-pro",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            location: "us-east5",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/us-east5/");
+  });
+
+  it("should prioritize model locations over Vertex metadata location for Google calls", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-2.5-flash",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            location: "us-east5",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+            customModels: {
+              "publishers/google/models/gemini-2.5-flash": {
+                format: "openai",
+                flavor: "chat",
+                locations: ["europe-west4"],
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/europe-west4/");
+  });
+
+  it("should keep metadata location precedence when model locations are not set", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-2.5-flash",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            location: "us-east5",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+            customModels: {
+              "publishers/google/models/gemini-2.5-flash": {
+                format: "openai",
+                flavor: "chat",
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/us-east5/");
+  });
+
+  it("should treat blank metadata location as omitted for Google calls", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-1.0-pro",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            location: "   ",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/us-central1/");
+  });
+});

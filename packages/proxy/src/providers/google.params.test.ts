@@ -2190,4 +2190,38 @@ describe("Vertex location resolution (captureOnly)", () => {
     expect(requests).toHaveLength(1);
     expect(requests[0].url).toContain("/locations/us-east5/");
   });
+
+  it("should treat blank metadata location as omitted for Google calls", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<
+      OpenAIChatCompletionCreateParams,
+      OpenAIChatCompletionChunk
+    >({
+      body: {
+        model: "publishers/google/models/gemini-1.0-pro",
+        messages: [{ role: "user", content: "Say hello" }],
+        stream: false,
+      },
+      fetch,
+      getApiSecrets: async () => [
+        {
+          type: "vertex",
+          secret: "test-token",
+          name: "vertex",
+          metadata: {
+            project: "test-project",
+            location: "   ",
+            authType: "access_token",
+            api_base: "",
+            supportsStreaming: true,
+            excludeDefaultModels: false,
+          },
+        },
+      ],
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].url).toContain("/locations/us-central1/");
+  });
 });

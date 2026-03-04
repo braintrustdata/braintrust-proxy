@@ -1595,6 +1595,7 @@ async function fetchModel(
         cacheGet,
         cachePut,
         signal,
+        fetch,
       );
     case "anthropic":
       console.assert(method === "POST");
@@ -1952,6 +1953,7 @@ async function fetchOpenAI(
     ttl_seconds?: number,
   ) => Promise<void>,
   signal?: AbortSignal,
+  fetch: FetchFn = globalThis.fetch,
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
@@ -1967,6 +1969,17 @@ async function fetchOpenAI(
 
   if (secret.type === "vertex") {
     console.assert(url === "/chat/completions");
+    // Google models should be handled by the provider directly.
+    if (bodyData?.model?.startsWith("publishers/google/models/")) {
+      return fetchGoogleChatCompletions({
+        secret,
+        modelSpec,
+        headers,
+        bodyData,
+        signal,
+        fetch,
+      });
+    }
     const { project, authType, api_base } = VertexMetadataSchema.parse(
       secret.metadata,
     );

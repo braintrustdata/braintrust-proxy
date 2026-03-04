@@ -1993,7 +1993,6 @@ async function fetchOpenAI(
       ? modelSpec.locations
       : ["us-central1"];
     const location = locations[Math.floor(Math.random() * locations.length)];
-    console.log("vertex location", location);
     const baseURL = getVertexBaseUrl(api_base, location);
 
     if (
@@ -2012,7 +2011,6 @@ async function fetchOpenAI(
         /^publishers\/(\w+)\/models\//,
         "$1/",
       );
-      console.log("vertex fullURL", fullURL.toString());
     } else {
       // Use standard endpoint with RawPredict/StreamRawPredict.
       fullURL = new URL(
@@ -2021,7 +2019,6 @@ async function fetchOpenAI(
         }:${bodyData.stream ? "streamRawPredict" : "rawPredict"}`,
       );
       bodyData.model = bodyData.model.replace(/^publishers\/\w+\/models\//, "");
-      console.log("vertex fullURL", fullURL.toString());
     }
     if (authType === "access_token") {
       bearerToken = secret.secret;
@@ -2443,7 +2440,6 @@ async function vertexEndpointInfo({
     ? modelSpec.locations
     : [defaultLocation];
   const location = locations[Math.floor(Math.random() * locations.length)];
-  console.log("vertex location", location);
   const apiBase = getVertexBaseUrl(api_base, location);
   const accessToken =
     authType === "access_token" ? secret : await getGoogleAccessToken(secret);
@@ -2451,7 +2447,6 @@ async function vertexEndpointInfo({
     throw new Error("Failed to get Google access token");
   }
   const baseUrl = `${apiBase}/v1/projects/${project}/locations/${location}`;
-  console.log("vertex baseUrl", baseUrl);
   return {
     baseUrl,
     accessToken,
@@ -3256,10 +3251,6 @@ async function fetchGoogleChatCompletions({
       tool_choice: oaiParams.tool_choice,
     })),
   });
-
-  if (secret.type === "vertex") {
-    console.log("vertex fullURL", fullURL.toString());
-  }
 
   const proxyResponse = await fetch(fullURL.toString(), {
     method: "POST",

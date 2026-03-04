@@ -1306,6 +1306,7 @@ async function fetchModelLoop(
     const additionalHeaders = secret.metadata?.additionalHeaders || {};
 
     let errorHttpCode = undefined;
+    let errorUpstreamUrl: string | undefined = undefined;
     let errorHttpHeaders = new Headers();
     logHistogram?.({
       name: "endpoint_calls",
@@ -1354,6 +1355,7 @@ async function fetchModelLoop(
         // Then mark this as an error response, and fall through to the error handling logic.
       ) {
         errorHttpCode = proxyResponse.response.status;
+        errorUpstreamUrl = proxyResponse.response.url || undefined;
         errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
@@ -1465,10 +1467,11 @@ async function fetchModelLoop(
       };
     } else {
       console.warn(
-        `Received retryable error ${errorHttpCode} for ${endpointUrl}. Will try the next endpoint`,
+        `Received retryable error ${errorHttpCode} for ${endpointUrl}. Upstream URL: ${errorUpstreamUrl ?? "unknown"}. Will try the next endpoint`,
         {
           errorHttpCode,
           endpointUrl,
+          upstreamUrl: errorUpstreamUrl,
         },
       );
       spanLogger?.reportProgress(`Retrying (${++retries})...`);

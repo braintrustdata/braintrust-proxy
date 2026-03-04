@@ -90,6 +90,7 @@ export const ModelSchema = z.object({
     .number()
     .nullish()
     .describe("The model supports a maximum output token limit."),
+  available_providers: z.array(z.enum(ModelEndpointType)).nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;

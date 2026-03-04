@@ -1465,8 +1465,11 @@ async function fetchModelLoop(
       };
     } else {
       console.warn(
-        "Received retryable error. Will try the next endpoint",
-        errorHttpCode,
+        `Received retryable error ${errorHttpCode} for ${endpointUrl}. Will try the next endpoint`,
+        {
+          errorHttpCode,
+          endpointUrl,
+        },
       );
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }

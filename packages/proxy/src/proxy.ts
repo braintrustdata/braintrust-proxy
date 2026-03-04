@@ -1306,7 +1306,6 @@ async function fetchModelLoop(
     const additionalHeaders = secret.metadata?.additionalHeaders || {};
 
     let errorHttpCode = undefined;
-    let errorUpstreamUrl: string | undefined = undefined;
     let errorHttpHeaders = new Headers();
     logHistogram?.({
       name: "endpoint_calls",
@@ -1355,7 +1354,6 @@ async function fetchModelLoop(
         // Then mark this as an error response, and fall through to the error handling logic.
       ) {
         errorHttpCode = proxyResponse.response.status;
-        errorUpstreamUrl = proxyResponse.response.url || undefined;
         errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
@@ -1467,12 +1465,8 @@ async function fetchModelLoop(
       };
     } else {
       console.warn(
-        `Received retryable error ${errorHttpCode} for ${endpointUrl}. Upstream URL: ${errorUpstreamUrl ?? "unknown"}. Will try the next endpoint`,
-        {
-          errorHttpCode,
-          endpointUrl,
-          upstreamUrl: errorUpstreamUrl,
-        },
+        "Received retryable error. Will try the next endpoint",
+        errorHttpCode,
       );
       spanLogger?.reportProgress(`Retrying (${++retries})...`);
     }
@@ -2278,9 +2272,6 @@ async function fetchOpenAI(
           signal,
         },
   );
-  if (secret.type === "vertex") {
-    logVertexNonOkResponse(proxyResponse);
-  }
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {
@@ -2414,18 +2405,6 @@ function getVertexBaseUrl(
     : `https://${location}-aiplatform.googleapis.com`;
 }
 
-function logVertexNonOkResponse(response: Response) {
-  if (response.ok) {
-    return;
-  }
-  console.error("vertex_non_ok", {
-    status: response.status,
-    url: response.url || undefined,
-    contentType: response.headers.get("content-type") || undefined,
-    contentLength: response.headers.get("content-length") || undefined,
-  });
-}
-
 async function vertexEndpointInfo({
   secret: { secret, metadata },
   modelSpec,
@@ -2446,9 +2425,8 @@ async function vertexEndpointInfo({
   if (!accessToken) {
     throw new Error("Failed to get Google access token");
   }
-  const baseUrl = `${apiBase}/v1/projects/${project}/locations/${location}`;
   return {
-    baseUrl,
+    baseUrl: `${apiBase}/v1/projects/${project}/locations/${location}`,
     accessToken,
   };
 }
@@ -2813,9 +2791,6 @@ async function fetchAnthropicChatCompletions({
     keepalive: true,
     signal,
   });
-  if (secret.type === "vertex") {
-    logVertexNonOkResponse(proxyResponse);
-  }
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {
@@ -3259,9 +3234,6 @@ async function fetchGoogleChatCompletions({
     keepalive: true,
     signal,
   });
-  if (secret.type === "vertex") {
-    logVertexNonOkResponse(proxyResponse);
-  }
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {

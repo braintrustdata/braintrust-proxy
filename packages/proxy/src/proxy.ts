@@ -2415,6 +2415,7 @@ function resolveVertexLocation({
   modelSpec: ModelSpec | null;
   defaultLocation: string;
 }): string {
+  // Precedence: custom model locations > secret metadata location > default.
   if (modelSpec?.locations?.length) {
     return modelSpec.locations[
       Math.floor(Math.random() * modelSpec.locations.length)

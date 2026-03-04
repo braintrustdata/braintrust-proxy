@@ -2415,13 +2415,15 @@ function resolveVertexLocation({
   modelSpec: ModelSpec | null;
   defaultLocation: string;
 }): string {
+  if (modelSpec?.locations?.length) {
+    return modelSpec.locations[
+      Math.floor(Math.random() * modelSpec.locations.length)
+    ];
+  }
   if (metadataLocation) {
     return metadataLocation;
   }
-  const locations = modelSpec?.locations?.length
-    ? modelSpec.locations
-    : [defaultLocation];
-  return locations[Math.floor(Math.random() * locations.length)];
+  return defaultLocation;
 }
 
 async function vertexEndpointInfo({

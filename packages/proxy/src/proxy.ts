@@ -2268,6 +2268,9 @@ async function fetchOpenAI(
           signal,
         },
   );
+  if (secret.type === "vertex") {
+    logVertexNonOkResponse(proxyResponse);
+  }
 
   let stream = proxyResponse.body;
   if (isManagedStructuredOutput && stream) {
@@ -2399,6 +2402,18 @@ function getVertexBaseUrl(
   return location === "global"
     ? "https://aiplatform.googleapis.com"
     : `https://${location}-aiplatform.googleapis.com`;
+}
+
+function logVertexNonOkResponse(response: Response) {
+  if (response.ok) {
+    return;
+  }
+  console.error("vertex_non_ok", {
+    status: response.status,
+    url: response.url || undefined,
+    contentType: response.headers.get("content-type") || undefined,
+    contentLength: response.headers.get("content-length") || undefined,
+  });
 }
 
 async function vertexEndpointInfo({
@@ -2790,6 +2805,9 @@ async function fetchAnthropicChatCompletions({
     keepalive: true,
     signal,
   });
+  if (secret.type === "vertex") {
+    logVertexNonOkResponse(proxyResponse);
+  }
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {
@@ -3233,6 +3251,9 @@ async function fetchGoogleChatCompletions({
     keepalive: true,
     signal,
   });
+  if (secret.type === "vertex") {
+    logVertexNonOkResponse(proxyResponse);
+  }
 
   let stream = proxyResponse.body || createEmptyReadableStream();
   if (proxyResponse.ok) {

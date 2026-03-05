@@ -642,7 +642,7 @@ it("should use 64000 max_tokens and avoid 128k beta header for claude-3-7-sonnet
 
   expect(requests).toHaveLength(1);
   expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
-  expect(requests[0].headers["anthropic-beta"]).not.toContain(
+  expect(requests[0].headers["anthropic-beta"] || "").not.toContain(
     "output-128k-2025-02-19",
   );
 });

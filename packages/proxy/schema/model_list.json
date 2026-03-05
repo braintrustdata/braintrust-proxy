@@ -5022,6 +5022,51 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2
   },
+  "gpt-5.4": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "displayName": "GPT-5.4",
+    "reasoning": true,
+    "max_input_tokens": 272000
+  },
+  "gpt-5.4-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 30,
+    "output_cost_per_mil_tokens": 180,
+    "displayName": "GPT-5.4 Pro",
+    "reasoning": true,
+    "max_input_tokens": 272000
+  },
+  "gpt-5.3-chat-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.75,
+    "output_cost_per_mil_tokens": 14,
+    "input_cache_read_cost_per_mil_tokens": 0.175,
+    "displayName": "GPT-5.3 chat",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
+  },
+  "gpt-5.2-chat-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.75,
+    "output_cost_per_mil_tokens": 14,
+    "input_cache_read_cost_per_mil_tokens": 0.175,
+    "displayName": "GPT-5.2 chat",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384
+  },
   "gpt-5-chat": {
     "format": "openai",
     "flavor": "chat",

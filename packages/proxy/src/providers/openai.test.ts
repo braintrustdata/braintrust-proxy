@@ -576,7 +576,7 @@ describe("request/response checking", () => {
     });
   });
 
-  it("should route gpt-5.3/5.4 model families to Responses API", async () => {
+  it("should route gpt-5.3+ model families to Responses API", async () => {
     const calls: InterceptedCall[] = [];
     server.use(
       http.post(
@@ -632,7 +632,7 @@ describe("request/response checking", () => {
 
     await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
       body: {
-        model: "gpt-5.3-mini",
+        model: "gpt-5.3-chat-latest",
         reasoning_effort: "high",
         stream: false,
         messages: [{ role: "user", content: "Hello from 5.3" }],
@@ -651,10 +651,10 @@ describe("request/response checking", () => {
 
     await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
       body: {
-        model: "gpt-5.4",
+        model: "gpt-5.5-chat-latest",
         reasoning_effort: "medium",
         stream: false,
-        messages: [{ role: "user", content: "Hello from 5.4" }],
+        messages: [{ role: "user", content: "Hello from 5.5" }],
       },
       proxyHeaders: {
         "x-bt-endpoint-name": "openai",
@@ -670,25 +670,25 @@ describe("request/response checking", () => {
 
     expect(calls.length).toBe(2);
     expect(calls[0].request.body).toMatchObject({
-      model: "gpt-5.3-mini",
+      model: "gpt-5.3-chat-latest",
       reasoning: {
         effort: "high",
       },
     });
     expect(calls[1].request.body).toMatchObject({
-      model: "gpt-5.4",
+      model: "gpt-5.5-chat-latest",
       reasoning: {
         effort: "medium",
       },
     });
   });
 
-  it("should not route matching gpt-5.4 models to OpenAI Responses for azure endpoint", async () => {
+  it("should not route matching gpt-5.3+ models to OpenAI Responses for azure endpoint", async () => {
     const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
     await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
       body: {
-        model: "gpt-5.4",
+        model: "gpt-5.5-chat-latest",
         reasoning_effort: "medium",
         stream: false,
         messages: [{ role: "user", content: "Hello from azure" }],

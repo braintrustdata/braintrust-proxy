@@ -2198,13 +2198,17 @@ async function fetchOpenAI(
     });
   }
 
-  if (
-    bodyData?.model?.startsWith("o1-pro") ||
-    bodyData?.model?.startsWith("o3-pro") ||
-    bodyData?.model?.startsWith("gpt-5-pro") ||
-    (bodyData?.model?.startsWith("gpt-5") &&
-      bodyData?.model?.includes("-codex"))
-  ) {
+  const shouldRouteChatToResponses =
+    secret.type === "openai" &&
+    (bodyData?.model?.startsWith("o1-pro") ||
+      bodyData?.model?.startsWith("o3-pro") ||
+      bodyData?.model?.startsWith("gpt-5-pro") ||
+      bodyData?.model?.startsWith("gpt-5.3") ||
+      bodyData?.model?.startsWith("gpt-5.4") ||
+      (bodyData?.model?.startsWith("gpt-5") &&
+        bodyData?.model?.includes("-codex")));
+
+  if (shouldRouteChatToResponses) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,

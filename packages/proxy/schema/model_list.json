@@ -5090,6 +5090,17 @@
     "max_input_tokens": 272000,
     "max_output_tokens": 128000
   },
+  "gpt-5.2-2025-12-11": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.75,
+    "output_cost_per_mil_tokens": 14,
+    "input_cache_read_cost_per_mil_tokens": 0.175,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000
+  },
   "gpt-5.1": {
     "format": "openai",
     "flavor": "chat",

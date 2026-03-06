@@ -2198,13 +2198,20 @@ async function fetchOpenAI(
     });
   }
 
-  if (
-    bodyData?.model?.startsWith("o1-pro") ||
-    bodyData?.model?.startsWith("o3-pro") ||
-    bodyData?.model?.startsWith("gpt-5-pro") ||
-    (bodyData?.model?.startsWith("gpt-5") &&
-      bodyData?.model?.includes("-codex"))
-  ) {
+  const gpt5MinorMatch = bodyData?.model?.match(/^gpt-5\.(\d+)(?:\D|$)/i);
+  const isGpt53OrHigher =
+    gpt5MinorMatch !== null && Number(gpt5MinorMatch[1]) >= 3;
+
+  const shouldRouteChatToResponses =
+    secret.type === "openai" &&
+    (bodyData?.model?.startsWith("o1-pro") ||
+      bodyData?.model?.startsWith("o3-pro") ||
+      bodyData?.model?.startsWith("gpt-5-pro") ||
+      isGpt53OrHigher ||
+      (bodyData?.model?.startsWith("gpt-5") &&
+        bodyData?.model?.includes("-codex")));
+
+  if (shouldRouteChatToResponses) {
     return fetchOpenAIResponsesTranslate({
       headers,
       body: bodyData,

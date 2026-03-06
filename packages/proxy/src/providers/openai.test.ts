@@ -16,7 +16,7 @@ import {
   test,
   vi,
 } from "vitest";
-import { callProxyV1 } from "../../utils/tests";
+import { callProxyV1, createCapturingFetch } from "../../utils/tests";
 import * as proxyUtil from "../util";
 import { normalizeOpenAIContent } from "./openai";
 import * as util from "./util";
@@ -574,6 +574,149 @@ describe("request/response checking", () => {
         effort: "low", // minimal should be converted to low for gpt-5.x-codex
       },
     });
+  });
+
+  it("should route gpt-5.3+ model families to Responses API", async () => {
+    const calls: InterceptedCall[] = [];
+    server.use(
+      http.post(
+        "https://api.openai.com/v1/responses",
+        async ({ request: req }) => {
+          const request: InterceptedRequest = {
+            method: req.method,
+            url: req.url,
+            body: await req.json(),
+          };
+
+          const requestBody = request.body as Record<string, unknown>;
+          const response: InterceptedResponse = {
+            status: 200,
+            body: {
+              id: "resp-test",
+              object: "response",
+              created_at: 1234567890,
+              model: requestBody.model,
+              output: [
+                {
+                  type: "message",
+                  content: [
+                    {
+                      type: "output_text",
+                      text: "Test response",
+                    },
+                  ],
+                },
+              ],
+              usage: {
+                input_tokens: 10,
+                output_tokens: 5,
+                total_tokens: 15,
+                input_tokens_details: {
+                  cached_tokens: 0,
+                },
+                output_tokens_details: {
+                  reasoning_tokens: 0,
+                },
+              },
+            },
+          };
+
+          calls.push({ request, response });
+
+          return HttpResponse.json(response.body, {
+            status: response.status,
+          });
+        },
+      ),
+    );
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-5.3-chat-latest",
+        reasoning_effort: "high",
+        stream: false,
+        messages: [{ role: "user", content: "Hello from 5.3" }],
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+      getApiSecrets: async () => [
+        {
+          type: "openai",
+          secret: "openai-secret",
+          name: "openai",
+        },
+      ],
+    });
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-5.5-chat-latest",
+        reasoning_effort: "medium",
+        stream: false,
+        messages: [{ role: "user", content: "Hello from 5.5" }],
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "openai",
+      },
+      getApiSecrets: async () => [
+        {
+          type: "openai",
+          secret: "openai-secret",
+          name: "openai",
+        },
+      ],
+    });
+
+    expect(calls.length).toBe(2);
+    expect(calls[0].request.body).toMatchObject({
+      model: "gpt-5.3-chat-latest",
+      reasoning: {
+        effort: "high",
+      },
+    });
+    expect(calls[1].request.body).toMatchObject({
+      model: "gpt-5.5-chat-latest",
+      reasoning: {
+        effort: "medium",
+      },
+    });
+  });
+
+  it("should not route matching gpt-5.3+ models to OpenAI Responses for azure endpoint", async () => {
+    const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-5.5-chat-latest",
+        reasoning_effort: "medium",
+        stream: false,
+        messages: [{ role: "user", content: "Hello from azure" }],
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "azure",
+      },
+      getApiSecrets: async () => [
+        {
+          type: "azure",
+          secret: "azure-secret",
+          name: "azure",
+          metadata: {
+            api_base: "https://azure.example.com",
+            deployment: "gpt-5",
+            api_version: "2025-01-01-preview",
+            supportsStreaming: true,
+            no_named_deployment: false,
+          },
+        },
+      ],
+      fetch,
+    });
+
+    expect(requests.length).toBe(1);
+    expect(requests[0].url).toContain("azure.example.com");
+    expect(requests[0].url).toContain("/chat/completions");
+    expect(requests[0].url).not.toBe("https://api.openai.com/v1/responses");
   });
 });
 

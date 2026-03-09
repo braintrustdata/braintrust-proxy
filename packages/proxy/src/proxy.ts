@@ -2022,11 +2022,13 @@ async function fetchOpenAI(
       bearerToken = await getGoogleAccessToken(secret.secret);
     }
   } else {
-    let baseURL =
-      (secret.metadata &&
-        "api_base" in secret.metadata &&
-        secret.metadata.api_base) ||
-      EndpointProviderToBaseURL[secret.type];
+    const metadataApiBase =
+      secret.metadata &&
+      "api_base" in secret.metadata &&
+      typeof secret.metadata.api_base === "string"
+        ? secret.metadata.api_base
+        : undefined;
+    let baseURL = metadataApiBase || EndpointProviderToBaseURL[secret.type];
     if (baseURL === null) {
       throw new ProxyBadRequestError(
         `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
@@ -2034,14 +2036,28 @@ async function fetchOpenAI(
     }
 
     if (secret.type === "azure" && !secret.metadata?.no_named_deployment) {
-      if (secret.metadata?.deployment) {
+      const deployment =
+        typeof secret.metadata?.deployment === "string"
+          ? secret.metadata.deployment
+          : null;
+      if (deployment) {
         baseURL = _urljoin(
           baseURL,
           "openai/deployments",
-          encodeURIComponent(secret.metadata.deployment),
+          encodeURIComponent(deployment),
         );
       } else if (bodyData?.model || bodyData?.engine) {
-        const model = bodyData.model || bodyData.engine;
+        const model =
+          typeof bodyData?.model === "string"
+            ? bodyData.model
+            : typeof bodyData?.engine === "string"
+              ? bodyData.engine
+              : null;
+        if (!model) {
+          throw new ProxyBadRequestError(
+            `Azure provider ${secret.id} must have a deployment or model specified`,
+          );
+        }
         baseURL = _urljoin(
           baseURL,
           "openai/deployments",
@@ -2053,7 +2069,14 @@ async function fetchOpenAI(
         );
       }
     } else if (secret.type === "lepton") {
-      baseURL = baseURL.replace("<model>", bodyData.model);
+      const model =
+        typeof bodyData?.model === "string" ? bodyData.model : undefined;
+      if (!model) {
+        throw new ProxyBadRequestError(
+          `Lepton provider ${secret.id} must have a model specified`,
+        );
+      }
+      baseURL = baseURL.replace("<model>", model);
     }
 
     if (secret.type === "azure" && secret.metadata?.auth_type === "entra_api") {

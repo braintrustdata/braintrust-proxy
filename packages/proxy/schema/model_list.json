@@ -5033,6 +5033,18 @@
     "reasoning": true,
     "max_input_tokens": 272000
   },
+  "gpt-5.4-2026-03-05": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "displayName": "GPT-5.4 (2026-03-05)",
+    "reasoning": true,
+    "parent": "gpt-5.4",
+    "max_input_tokens": 272000
+  },
   "gpt-5.4-pro": {
     "format": "openai",
     "flavor": "chat",

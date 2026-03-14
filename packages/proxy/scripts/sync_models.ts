@@ -6,7 +6,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
-import { ModelSchema, ModelSpec } from "../schema/models";
+import { ModelEndpointType, ModelSchema, ModelSpec } from "../schema/models";
 
 const execAsync = promisify(exec);
 
@@ -59,6 +59,7 @@ const liteLLMModelDetailSchema = z
         "ocr",
         "vector_store",
         "image_edit",
+        "realtime",
       ])
       .optional(),
     supports_function_calling: z.boolean().optional(),
@@ -159,8 +160,19 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
 }
 
 function translateToBraintrust(modelName: string, provider?: string): string {
-  if (provider === "xai" && modelName.startsWith("xai/")) {
-    return modelName.substring(4); // "xai/"
+  for (const p of [
+    "gemini",
+    "xai",
+    "groq",
+    "together_ai",
+    "cerebras",
+    "mistral",
+    "perplexity",
+    "databricks",
+  ]) {
+    if (provider === p && modelName.startsWith(p + "/")) {
+      return modelName.substring(p.length + 1);
+    }
   }
 
   if (provider === "gemini") {
@@ -169,9 +181,6 @@ function translateToBraintrust(modelName: string, provider?: string): string {
     }
     if (modelName.startsWith("gemini/gemma-")) {
       return "google/" + modelName.substring(7);
-    }
-    if (modelName.startsWith("gemini/")) {
-      return modelName.substring(7);
     }
   }
 
@@ -200,7 +209,7 @@ function getProviderMappingForModel(
       return ["anthropic"];
     }
     if (lowerProvider === "openai" || lowerProvider.includes("openai")) {
-      return ["openai"];
+      return ["openai", "azure"];
     }
     if (
       lowerProvider === "google" ||
@@ -231,6 +240,12 @@ function getProviderMappingForModel(
     ) {
       return ["perplexity"];
     }
+    if (
+      lowerProvider === "databricks" ||
+      lowerProvider.includes("databricks")
+    ) {
+      return ["databricks"];
+    }
     if (lowerProvider === "lepton" || lowerProvider.includes("lepton")) {
       return ["lepton"];
     }
@@ -239,6 +254,12 @@ function getProviderMappingForModel(
     }
     if (lowerProvider === "baseten" || lowerProvider.includes("baseten")) {
       return ["baseten"];
+    }
+    if (lowerProvider === "bedrock" || lowerProvider.includes("bedrock")) {
+      return ["bedrock"];
+    }
+    if (lowerProvider === "vertex_ai" || lowerProvider.includes("vertex")) {
+      return ["vertex"];
     }
 
     return [];
@@ -361,6 +382,12 @@ function convertRemoteToLocalModel(
   }
   if (remoteModel.deprecation_date) {
     baseModel.deprecation_date = remoteModel.deprecation_date;
+  }
+
+  const providers = getProviderMappingForModel(remoteModelName, remoteModel);
+  if (providers.length > 0) {
+    baseModel.available_providers =
+      providers as ModelSpec["available_providers"];
   }
 
   return baseModel as ModelSpec;
@@ -1161,6 +1188,36 @@ async function updateModelsCommand(argv: any) {
         localDeprecationDate,
         remoteDeprecationDate,
       );
+
+      // Set available_providers from remote
+      const remoteProviders = getProviderMappingForModel(
+        originalRemoteModelName,
+        remoteModelDetail,
+      );
+      if (remoteProviders.length > 0) {
+        const currentProviders = (modelInUpdatedList as any)
+          .available_providers;
+        const same =
+          Array.isArray(currentProviders) &&
+          currentProviders.length === remoteProviders.length &&
+          currentProviders.every(
+            (p: string, i: number) => p === remoteProviders[i],
+          );
+        if (!same) {
+          (modelInUpdatedList as any).available_providers = remoteProviders;
+          discrepanciesFound++;
+          madeChanges = true;
+          if (!modelReportedThisIteration) {
+            console.log(
+              `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
+            );
+            modelReportedThisIteration = true;
+          }
+          console.log(
+            `  [WRITE] Updated available_providers to: ${JSON.stringify(remoteProviders)}`,
+          );
+        }
+      }
     }
 
     if (argv.write) {
@@ -1331,9 +1388,9 @@ async function addModelsCommand(argv: any) {
 
     // Convert remote models to local format
     const modelsToAdd = missingInLocal.map(
-      ({ translatedName, remoteModel }) => ({
+      ({ remoteModelName, translatedName, remoteModel }) => ({
         name: translatedName,
-        model: convertRemoteToLocalModel(translatedName, remoteModel),
+        model: convertRemoteToLocalModel(remoteModelName, remoteModel),
       }),
     );
 

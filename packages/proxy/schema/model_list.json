@@ -3286,7 +3286,7 @@
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192,
     "available_providers": [
-      "vertex"
+      "google"
     ]
   },
   "gemini-1.5-flash-latest": {
@@ -3535,7 +3535,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-1-fast-reasoning": {
@@ -3549,7 +3549,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-1-fast": {
@@ -3563,7 +3563,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-1-fast-non-reasoning-latest": {
@@ -3577,7 +3577,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-1-fast-non-reasoning": {
@@ -3591,7 +3591,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-fast-reasoning": {
@@ -3605,7 +3605,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-fast-reasoning-latest": {
@@ -3630,7 +3630,7 @@
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-fast-non-reasoning-latest": {
@@ -3654,7 +3654,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-latest": {
@@ -3667,7 +3667,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-4-0709": {
@@ -3680,7 +3680,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3": {
@@ -3692,7 +3692,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-latest": {
@@ -3704,7 +3704,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-beta": {
@@ -3716,7 +3716,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini": {
@@ -3730,7 +3730,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini-latest": {
@@ -3743,7 +3743,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini-beta": {
@@ -3757,7 +3757,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini-fast": {
@@ -3770,7 +3770,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini-fast-latest": {
@@ -3783,7 +3783,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-mini-fast-beta": {
@@ -3796,7 +3796,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-fast-beta": {
@@ -3808,7 +3808,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-3-fast-latest": {
@@ -3820,7 +3820,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2-vision": {
@@ -3833,7 +3833,7 @@
     "max_input_tokens": 32768,
     "max_output_tokens": 32768,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2-vision-latest": {
@@ -3846,7 +3846,7 @@
     "max_input_tokens": 32768,
     "max_output_tokens": 32768,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2-vision-1212": {
@@ -3860,7 +3860,7 @@
     "max_input_tokens": 32768,
     "max_output_tokens": 32768,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2": {
@@ -3872,7 +3872,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2-latest": {
@@ -3884,7 +3884,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-2-1212": {
@@ -3896,7 +3896,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-vision-beta": {
@@ -3908,7 +3908,7 @@
     "max_input_tokens": 8192,
     "max_output_tokens": 8192,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-beta": {
@@ -3919,7 +3919,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "amazon.nova-pro-v1:0": {
@@ -5716,7 +5716,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-code-fast-1": {
@@ -5729,7 +5729,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "grok-code-fast-1-0825": {
@@ -5742,7 +5742,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI"
+      "xai"
     ]
   },
   "fireworks_ai/accounts/fireworks/models/deepseek-coder-v2-instruct": {

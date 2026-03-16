@@ -203,7 +203,7 @@ function getProviderMappingForModel(
 
     // Map provider names to our endpoint types
     if (lowerProvider === "xai" || lowerProvider.includes("xai")) {
-      return ["xAI"];
+      return ["xai"];
     }
     if (lowerProvider === "anthropic" || lowerProvider.includes("anthropic")) {
       return ["anthropic"];

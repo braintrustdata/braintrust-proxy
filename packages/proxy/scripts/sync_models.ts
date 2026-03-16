@@ -191,6 +191,27 @@ function translateToBraintrust(modelName: string, provider?: string): string {
   return modelName;
 }
 
+function matchesProviderFilter(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+  providerFilter?: string,
+): boolean {
+  if (!providerFilter) {
+    return true;
+  }
+
+  const lowerFilter = providerFilter.toLowerCase();
+  const modelProvider = remoteModel.litellm_provider?.toLowerCase();
+  const modelNamePart = remoteModelName.split("/")[0].toLowerCase();
+
+  return (
+    modelProvider?.includes(lowerFilter) ||
+    modelNamePart.includes(lowerFilter) ||
+    modelProvider === lowerFilter ||
+    modelNamePart === lowerFilter
+  );
+}
+
 function getProviderMappingForModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
@@ -310,18 +331,8 @@ function resolveRemoteModels(
   for (const remoteModelName of sortedNames) {
     const remoteModel = remoteModels[remoteModelName];
 
-    if (providerFilter) {
-      const lowerFilter = providerFilter.toLowerCase();
-      const modelProvider = remoteModel.litellm_provider?.toLowerCase();
-      const modelNamePart = remoteModelName.split("/")[0].toLowerCase();
-      if (
-        !modelProvider?.includes(lowerFilter) &&
-        !modelNamePart.includes(lowerFilter) &&
-        modelProvider !== lowerFilter &&
-        modelNamePart !== lowerFilter
-      ) {
-        continue;
-      }
+    if (!matchesProviderFilter(remoteModelName, remoteModel, providerFilter)) {
+      continue;
     }
 
     const translatedName = translateToBraintrust(
@@ -749,8 +760,15 @@ async function findMissingCommand(argv: any) {
     const localModelNames = new Set(Object.keys(localModels));
     const missingInLocal: string[] = [];
     const consideredRemoteModels: LiteLLMModelList = {};
+    const filteredRemoteModels: LiteLLMModelList = {};
 
-    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
+    for (const [remoteModelName, remoteModel] of Object.entries(remoteModels)) {
+      if (matchesProviderFilter(remoteModelName, remoteModel, argv.provider)) {
+        filteredRemoteModels[remoteModelName] = remoteModel;
+      }
+    }
+
+    const resolvedRemote = resolveRemoteModels(filteredRemoteModels);
 
     for (const [translatedName, { remoteModelName, remoteModel }] of resolvedRemote) {
       consideredRemoteModels[remoteModelName] = remoteModel;
@@ -775,8 +793,8 @@ async function findMissingCommand(argv: any) {
         [provider: string]: { totalRemote: number; missingInLocal: number };
       } = {};
 
-      for (const modelName in consideredRemoteModels) {
-        const modelDetail = consideredRemoteModels[modelName];
+      for (const modelName in filteredRemoteModels) {
+        const modelDetail = filteredRemoteModels[modelName];
         const provider = modelDetail.litellm_provider || "Unknown Provider";
         if (!providerSummary[provider]) {
           providerSummary[provider] = { totalRemote: 0, missingInLocal: 0 };

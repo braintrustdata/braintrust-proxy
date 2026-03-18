@@ -6215,7 +6215,8 @@
     "displayName": "GPT-5.4 (2026-03-05)",
     "reasoning": true,
     "parent": "gpt-5.4",
-    "max_input_tokens": 272000
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000
   },
   "gpt-5.4-pro": {
     "format": "openai",

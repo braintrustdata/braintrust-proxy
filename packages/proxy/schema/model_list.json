@@ -6182,7 +6182,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -6198,7 +6198,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",

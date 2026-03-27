@@ -475,6 +475,7 @@ export async function proxyV1({
   const startTime = getCurrentUnixTimestamp();
   let spanType: SpanType | undefined = undefined;
   const isStreaming = !!bodyData?.stream;
+  let responseCacheControl: string | undefined;
 
   let stream: ReadableStream<Uint8Array> | null = null;
   if (readFromCache) {
@@ -498,7 +499,8 @@ export async function proxyV1({
           setHeader(name, value);
         }
         setHeader(CACHED_HEADER, "HIT");
-        setHeader("cache-control", `max-age=${responseMaxAge}`);
+        responseCacheControl = `max-age=${responseMaxAge}`;
+        setHeader("cache-control", responseCacheControl);
         setHeader("age", `${age}`);
 
         spanType = guessSpanType(url, bodyData?.model);
@@ -710,7 +712,8 @@ export async function proxyV1({
     }
     setHeader(CACHED_HEADER, "MISS");
     if (writeToCache) {
-      setHeader("cache-control", `max-age=${cacheTTL}`);
+      responseCacheControl = `max-age=${cacheTTL}`;
+      setHeader("cache-control", responseCacheControl);
       setHeader("age", "0");
     }
 
@@ -743,6 +746,14 @@ export async function proxyV1({
 
       stream = stream.pipeThrough(cacheStream);
     }
+  }
+
+  if (stream && isStreaming) {
+    responseCacheControl = appendCacheControlDirective(
+      responseCacheControl,
+      "no-transform",
+    );
+    setHeader("cache-control", responseCacheControl);
   }
 
   if (stream) {
@@ -2806,6 +2817,13 @@ async function fetchAnthropicChatCompletions({
     }
   }
 
+  if (secret.type === "anthropic" && params.stream === true) {
+    // Cloudflare Workers auto-negotiates compression on subrequests. For SSE,
+    // force identity encoding so the Anthropic stream is transformed and
+    // forwarded incrementally instead of being buffered behind compression.
+    headers["accept-encoding"] = "identity";
+  }
+
   if (secret.type === "bedrock") {
     return fetchBedrockAnthropic({
       secret,
@@ -3428,6 +3446,23 @@ export function createEventStreamTransformer(
   });
 }
 // --------------------------------------------------
+
+function appendCacheControlDirective(
+  value: string | undefined,
+  directive: string,
+): string {
+  const normalizedDirective = directive.toLowerCase();
+  const existingDirectives = value
+    ?.split(",")
+    .map((part) => part.trim().toLowerCase())
+    .filter((part) => part.length > 0);
+
+  if (existingDirectives?.includes(normalizedDirective)) {
+    return value!;
+  }
+
+  return value ? `${value}, ${directive}` : directive;
+}
 
 function parseEnumHeader<T>(
   headerName: string,

@@ -1,5 +1,6 @@
 import { it, expect, describe } from "vitest";
 import { callProxyV1, createCapturingFetch } from "../../utils/tests";
+import { FetchFn } from "../proxy";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChunk,
@@ -49,6 +50,100 @@ it("should convert OpenAI streaming request to Anthropic and back", async () => 
     (event) => event.data.choices[0]?.delta?.content !== undefined,
   );
   expect(hasContent).toBe(true);
+});
+
+it("should request identity encoding for streaming Anthropic chat completions", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-3-haiku-20240307",
+      messages: [{ role: "user", content: "Stream a short response." }],
+      stream: true,
+      max_tokens: 32,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].headers["accept-encoding"]).toBe("identity");
+});
+
+it("should mark streaming responses as no-transform", async () => {
+  const encoder = new TextEncoder();
+  const anthropicEvents = [
+    {
+      type: "message_start",
+      message: {
+        id: "msg_test",
+        type: "message",
+        role: "assistant",
+        content: [],
+        model: "claude-3-haiku-20240307",
+        stop_reason: null,
+        stop_sequence: null,
+        usage: { input_tokens: 4, output_tokens: 0 },
+      },
+    },
+    {
+      type: "content_block_start",
+      index: 0,
+      content_block: { type: "text", text: "" },
+    },
+    {
+      type: "content_block_delta",
+      index: 0,
+      delta: { type: "text_delta", text: "hello" },
+    },
+    {
+      type: "message_delta",
+      delta: { stop_reason: "end_turn", stop_sequence: null },
+      usage: { output_tokens: 1 },
+    },
+  ];
+  const fetch: FetchFn = async () =>
+    new Response(
+      new ReadableStream({
+        start(controller) {
+          for (const event of anthropicEvents) {
+            controller.enqueue(
+              encoder.encode(`data: ${JSON.stringify(event)}\n\n`),
+            );
+          }
+          controller.close();
+        },
+      }),
+      {
+        headers: {
+          "content-type": "text/event-stream; charset=utf-8",
+        },
+      },
+    );
+
+  const { headers, events } = await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
+  >({
+    body: {
+      model: "claude-3-haiku-20240307",
+      messages: [{ role: "user", content: "Say hello." }],
+      stream: true,
+      max_tokens: 32,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "anthropic",
+        secret: "test-secret",
+        name: "anthropic",
+      },
+    ],
+  });
+
+  expect(headers["cache-control"]).toContain("no-transform");
+  expect(
+    events().some((event) => event.data.choices[0]?.delta?.content === "hello"),
+  ).toBe(true);
 });
 
 it("should convert OpenAI non-streaming request to Anthropic and back", async () => {

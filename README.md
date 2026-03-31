@@ -101,6 +101,6 @@ To see docs for how to deploy on various platforms, see the READMEs in the corre
 To build the proxy, install [pnpm](https://pnpm.io/installation) and run:
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
 ```

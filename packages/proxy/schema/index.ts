@@ -604,6 +604,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "Qwen3-Coder-480B-A35B-Instruct": ["baseten"],
   "moonshotai/Kimi-K2-Instruct": ["baseten"],
   "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
+  "publishers/moonshotai/models/kimi-k2.5": ["azure"],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

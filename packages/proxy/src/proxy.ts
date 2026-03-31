@@ -1292,8 +1292,10 @@ async function fetchModelLoop(
     }
 
     const spanType = guessSpanType(endpointUrl, bodyData?.model);
-    if (spanLogger && spanType) {
+    if (spanType) {
       setSpanType(spanType);
+    }
+    if (spanLogger && spanType) {
       spanLogger.setName(spanTypeToName(spanType));
       logSpanInputs(bodyData, spanLogger, spanType);
     }

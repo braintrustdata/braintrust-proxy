@@ -5855,6 +5855,18 @@
       "fireworks"
     ]
   },
+    "fireworks_ai/accounts/fireworks/models/glm-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3.2,
+    "max_input_tokens": 202752,
+    "max_output_tokens": 128000,
+    "reasoning": true,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
@@ -6013,7 +6025,7 @@
       "fireworks"
     ]
   },
-  "fireworks_ai/accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
+    "fireworks_ai/accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,

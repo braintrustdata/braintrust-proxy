@@ -5855,7 +5855,7 @@
       "fireworks"
     ]
   },
-    "fireworks_ai/accounts/fireworks/models/glm-5": {
+  "fireworks_ai/accounts/fireworks/models/glm-5": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,

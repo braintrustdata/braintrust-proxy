@@ -399,11 +399,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         logHistogram: opts.logHistogram,
         spanLogger: opts.spanLogger,
       });
-
-      // Flush metrics after the response
-      if (opts.meterProvider) {
-        ctx.waitUntil(flushMetrics(opts.meterProvider));
-      }
     } catch (e) {
       return new Response(`${e}`, {
         status: 400,
@@ -411,7 +406,18 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       });
     }
 
-    return new Response(readable, {
+    const meterProvider = opts.meterProvider;
+    const responseBody = meterProvider
+      ? readable.pipeThrough(
+          new TransformStream<Uint8Array, Uint8Array>({
+            flush() {
+              ctx.waitUntil(flushMetrics(meterProvider));
+            },
+          }),
+        )
+      : readable;
+
+    return new Response(responseBody, {
       status,
       headers,
     });

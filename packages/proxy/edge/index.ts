@@ -406,11 +406,12 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       });
     }
 
-    const responseBody = opts.meterProvider
+    const meterProvider = opts.meterProvider;
+    const responseBody = meterProvider
       ? readable.pipeThrough(
           new TransformStream<Uint8Array, Uint8Array>({
             flush() {
-              ctx.waitUntil(flushMetrics(opts.meterProvider));
+              ctx.waitUntil(flushMetrics(meterProvider));
             },
           }),
         )

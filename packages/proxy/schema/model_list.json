@@ -6189,6 +6189,23 @@
       "azure"
     ]
   },
+  "gpt-5.4-mini-2026-03-17": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.75,
+    "output_cost_per_mil_tokens": 4.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "GPT-5.4 mini (2026-03-17)",
+    "reasoning": true,
+    "parent": "gpt-5.4-mini",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-5.4-nano": {
     "format": "openai",
     "flavor": "chat",

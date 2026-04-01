@@ -6486,5 +6486,15 @@
     "displayName": "Qwen3 30B A3B",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
+  },
+  "publishers/moonshotai/models/kimi-k2.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Kimi K2.5",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 65535
   }
 }

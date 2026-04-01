@@ -32,7 +32,7 @@ To build the proxy, you'll need to install [pnpm](https://pnpm.io/installation),
 [repository's root](../..), run:
 
 ```bash copy
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
 ```
 

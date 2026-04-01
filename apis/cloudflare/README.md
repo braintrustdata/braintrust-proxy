@@ -15,7 +15,7 @@ By default, the worker uses the local `@braintrust/proxy` package, which you nee
 [repository's root](../..), run:
 
 ```bash copy
-pnpm install
+pnpm install --frozen-lockfile
 pnpm build
 ```
 

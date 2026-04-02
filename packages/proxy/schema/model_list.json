@@ -6532,5 +6532,29 @@
     "displayName": "Kimi K2.5",
     "max_input_tokens": 256000,
     "max_output_tokens": 65535
+  },
+  "fireworks_ai/accounts/fireworks/models/glm-4p7": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.2,
+    "displayName": "GLM-4.7",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "fireworks_ai/accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0.52,
+    "displayName": "Qwen3 VL 30B A3B Instruct",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "fireworks"
+    ]
   }
 }

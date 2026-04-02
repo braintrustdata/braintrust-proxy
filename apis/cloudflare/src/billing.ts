@@ -3,6 +3,10 @@ import { type BillingEvent } from "@braintrust/proxy";
 const DEFAULT_BILLING_TELEMETRY_URL =
   "https://api.braintrust.dev/billing/telemetry/ingest";
 
+function isBrainModel(model: string): boolean {
+  return model.startsWith("brain-");
+}
+
 function buildPayloadEvent(event: BillingEvent) {
   if (!event.org_id) {
     console.warn("billing event skipped: missing org_id");
@@ -10,6 +14,10 @@ function buildPayloadEvent(event: BillingEvent) {
   }
   if (!event.model) {
     console.warn("billing event skipped: missing model");
+    return null;
+  }
+  // Skip non-brain models since braintrust only hosts brain models.
+  if (!isBrainModel(event.model)) {
     return null;
   }
   if (!event.resolved_model) {

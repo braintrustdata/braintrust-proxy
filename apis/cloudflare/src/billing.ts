@@ -8,16 +8,17 @@ function isBrainModel(model: string): boolean {
 }
 
 function buildPayloadEvent(event: BillingEvent) {
-  if (!event.org_id) {
-    console.warn("billing event skipped: missing org_id");
-    return null;
-  }
   if (!event.model) {
     console.warn("billing event skipped: missing model");
     return null;
   }
   // Skip non-brain models since braintrust only hosts brain models.
   if (!isBrainModel(event.model)) {
+    return null;
+  }
+
+  if (!event.org_id) {
+    console.warn("billing event skipped: missing org_id");
     return null;
   }
   if (!event.resolved_model) {

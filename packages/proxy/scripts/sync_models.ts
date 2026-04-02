@@ -191,6 +191,27 @@ function translateToBraintrust(modelName: string, provider?: string): string {
   return modelName;
 }
 
+function matchesProviderFilter(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+  providerFilter?: string,
+): boolean {
+  if (!providerFilter) {
+    return true;
+  }
+
+  const lowerFilter = providerFilter.toLowerCase();
+  const modelProvider = remoteModel.litellm_provider?.toLowerCase();
+  const modelNamePart = remoteModelName.split("/")[0].toLowerCase();
+
+  return (
+    modelProvider?.includes(lowerFilter) ||
+    modelNamePart.includes(lowerFilter) ||
+    modelProvider === lowerFilter ||
+    modelNamePart === lowerFilter
+  );
+}
+
 function getProviderMappingForModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
@@ -277,6 +298,72 @@ function getProviderMappingForModel(
 
   if (result.length === 0) {
     console.warn(`Unknown provider: ${provider} for model ${remoteModelName}`);
+  }
+
+  return result;
+}
+
+type ResolvedRemoteEntry = {
+  remoteModelName: string;
+  remoteModel: LiteLLMModelDetail;
+  mergedProviders: string[];
+};
+
+// Deduplicate remote models by their translated (local) name.
+// When multiple remote names translate to the same local name, the model data
+// from the first entry is kept and providers from all entries are merged.
+function resolveRemoteModels(
+  remoteModels: LiteLLMModelList,
+  providerFilter?: string,
+): Map<string, ResolvedRemoteEntry> {
+  const result = new Map<string, ResolvedRemoteEntry>();
+
+  // Sort by provider then model name so collision resolution is deterministic
+  // regardless of JSON key order. The alphabetically earliest provider wins as
+  // the primary entry (its model data is kept); remaining entries only contribute
+  // their providers to the merged list.
+  const sortedNames = Object.keys(remoteModels).sort((a, b) => {
+    const pa = remoteModels[a].litellm_provider ?? "";
+    const pb = remoteModels[b].litellm_provider ?? "";
+    return pa !== pb ? pa.localeCompare(pb) : a.localeCompare(b);
+  });
+
+  for (const remoteModelName of sortedNames) {
+    const remoteModel = remoteModels[remoteModelName];
+
+    if (!matchesProviderFilter(remoteModelName, remoteModel, providerFilter)) {
+      continue;
+    }
+
+    const translatedName = translateToBraintrust(
+      remoteModelName,
+      remoteModel.litellm_provider,
+    );
+    const providers = getProviderMappingForModel(remoteModelName, remoteModel);
+
+    if (result.has(translatedName)) {
+      const existing = result.get(translatedName)!;
+      const newProviders = providers.filter(
+        (p) => !existing.mergedProviders.includes(p),
+      );
+      const mergedProviders = [...existing.mergedProviders, ...newProviders];
+      if (newProviders.length > 0) {
+        console.warn(
+          `⚠️  Collision: "${remoteModelName}" and "${existing.remoteModelName}" both translate to "${translatedName}" — merging providers: ${JSON.stringify(mergedProviders)}`,
+        );
+      } else {
+        console.warn(
+          `⚠️  Collision: "${remoteModelName}" and "${existing.remoteModelName}" both translate to "${translatedName}" — same providers, keeping first entry`,
+        );
+      }
+      result.set(translatedName, { ...existing, mergedProviders });
+    } else {
+      result.set(translatedName, {
+        remoteModelName,
+        remoteModel,
+        mergedProviders: providers,
+      });
+    }
   }
 
   return result;
@@ -677,47 +764,30 @@ async function findMissingCommand(argv: any) {
     const localModelNames = new Set(Object.keys(localModels));
     const missingInLocal: string[] = [];
     const consideredRemoteModels: LiteLLMModelList = {};
+    const filteredRemoteModels: LiteLLMModelList = {};
 
-    for (const remoteModelName in remoteModels) {
-      const modelDetail = remoteModels[remoteModelName];
-
-      if (argv.provider) {
-        const lowerArgProvider = argv.provider.toLowerCase();
-        const modelProvider = modelDetail.litellm_provider?.toLowerCase();
-        const modelNameProviderPart = remoteModelName
-          .split("/")[0]
-          .toLowerCase();
-
-        if (
-          !modelProvider?.includes(lowerArgProvider) &&
-          !modelNameProviderPart.includes(lowerArgProvider) &&
-          !(modelProvider === lowerArgProvider) &&
-          !(modelNameProviderPart === lowerArgProvider)
-        ) {
-          continue;
-        }
+    for (const [remoteModelName, remoteModel] of Object.entries(remoteModels)) {
+      if (matchesProviderFilter(remoteModelName, remoteModel, argv.provider)) {
+        filteredRemoteModels[remoteModelName] = remoteModel;
       }
-      consideredRemoteModels[remoteModelName] = modelDetail;
     }
 
-    const remoteModelNamesFiltered = new Set(
-      Object.keys(consideredRemoteModels),
-    );
+    const resolvedRemote = resolveRemoteModels(filteredRemoteModels);
 
-    for (const modelName of remoteModelNamesFiltered) {
-      const translatedModelName = translateToBraintrust(
-        modelName,
-        consideredRemoteModels[modelName]?.litellm_provider,
-      );
+    for (const [
+      translatedName,
+      { remoteModelName, remoteModel },
+    ] of resolvedRemote) {
+      consideredRemoteModels[remoteModelName] = remoteModel;
       if (argv.provider) {
         console.log(
-          `[DEBUG] Remote: ${modelName} (Provider: ${
-            consideredRemoteModels[modelName]?.litellm_provider || "N/A"
-          }) -> Translated: ${translatedModelName}`,
+          `[DEBUG] Remote: ${remoteModelName} (Provider: ${
+            remoteModel.litellm_provider || "N/A"
+          }) -> Translated: ${translatedName}`,
         );
       }
-      if (!localModelNames.has(translatedModelName)) {
-        missingInLocal.push(modelName);
+      if (!localModelNames.has(translatedName)) {
+        missingInLocal.push(remoteModelName);
       }
     }
 
@@ -730,8 +800,8 @@ async function findMissingCommand(argv: any) {
         [provider: string]: { totalRemote: number; missingInLocal: number };
       } = {};
 
-      for (const modelName in consideredRemoteModels) {
-        const modelDetail = consideredRemoteModels[modelName];
+      for (const modelName in filteredRemoteModels) {
+        const modelDetail = filteredRemoteModels[modelName];
         const provider = modelDetail.litellm_provider || "Unknown Provider";
         if (!providerSummary[provider]) {
           providerSummary[provider] = { totalRemote: 0, missingInLocal: 0 };
@@ -886,61 +956,37 @@ async function updateModelsCommand(argv: any) {
       localModelDetail: LocalModelDetail;
       remoteModelName: string;
       remoteModelDetail: LiteLLMModelDetail;
+      mergedProviders: string[];
     }> = [];
 
+    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
+
     if (argv.provider) {
-      const lowerArgProvider = argv.provider.toLowerCase();
-      for (const remoteModelName in remoteModels) {
-        const remoteModelDetail = remoteModels[remoteModelName];
-        const modelProvider = remoteModelDetail.litellm_provider?.toLowerCase();
-        const modelNameProviderPart = remoteModelName
-          .split("/")[0]
-          .toLowerCase();
-
-        const matchesProviderFilter =
-          modelProvider?.includes(lowerArgProvider) ||
-          modelNameProviderPart.includes(lowerArgProvider) ||
-          modelProvider === lowerArgProvider ||
-          modelNameProviderPart === lowerArgProvider;
-
-        if (matchesProviderFilter) {
-          const translatedRemoteModelName = translateToBraintrust(
+      for (const [
+        translatedRemoteModelName,
+        { remoteModelName, remoteModel: remoteModelDetail, mergedProviders },
+      ] of resolvedRemote) {
+        if (localModels[translatedRemoteModelName]) {
+          modelsToCompare.push({
+            localModelName: translatedRemoteModelName,
+            localModelDetail: localModels[translatedRemoteModelName],
             remoteModelName,
-            remoteModelDetail.litellm_provider,
-          );
-          if (localModels[translatedRemoteModelName]) {
-            modelsToCompare.push({
-              localModelName: translatedRemoteModelName,
-              localModelDetail: localModels[translatedRemoteModelName],
-              remoteModelName: remoteModelName,
-              remoteModelDetail: remoteModelDetail,
-            });
-          }
+            remoteModelDetail,
+            mergedProviders,
+          });
         }
       }
     } else {
       for (const localModelName in localModels) {
         const localModelDetail = localModels[localModelName];
-        let foundRemoteDetail: LiteLLMModelDetail | undefined = undefined;
-        let originalRemoteModelNameForLoop: string | undefined = undefined;
-        for (const rName in remoteModels) {
-          const rDetail = remoteModels[rName];
-          const translatedName = translateToBraintrust(
-            rName,
-            rDetail.litellm_provider,
-          );
-          if (translatedName === localModelName) {
-            foundRemoteDetail = rDetail;
-            originalRemoteModelNameForLoop = rName;
-            break;
-          }
-        }
-        if (foundRemoteDetail && originalRemoteModelNameForLoop) {
+        const resolvedEntry = resolvedRemote.get(localModelName);
+        if (resolvedEntry) {
           modelsToCompare.push({
-            localModelName: localModelName,
-            localModelDetail: localModelDetail,
-            remoteModelName: originalRemoteModelNameForLoop,
-            remoteModelDetail: foundRemoteDetail,
+            localModelName,
+            localModelDetail,
+            remoteModelName: resolvedEntry.remoteModelName,
+            remoteModelDetail: resolvedEntry.remoteModel,
+            mergedProviders: resolvedEntry.mergedProviders,
           });
         }
       }
@@ -952,6 +998,7 @@ async function updateModelsCommand(argv: any) {
         localModelDetail,
         remoteModelName: originalRemoteModelName,
         remoteModelDetail,
+        mergedProviders,
       } = item;
       const modelInUpdatedList = updatedLocalModels[localModelName];
 
@@ -1189,11 +1236,8 @@ async function updateModelsCommand(argv: any) {
         remoteDeprecationDate,
       );
 
-      // Set available_providers from remote
-      const remoteProviders = getProviderMappingForModel(
-        originalRemoteModelName,
-        remoteModelDetail,
-      );
+      // Set available_providers from remote (using merged providers across all colliding remote entries)
+      const remoteProviders = mergedProviders;
       if (remoteProviders.length > 0) {
         const currentProviders = (modelInUpdatedList as any)
           .available_providers;
@@ -1294,34 +1338,15 @@ async function addModelsCommand(argv: any) {
       remoteModelName: string;
       translatedName: string;
       remoteModel: LiteLLMModelDetail;
+      mergedProviders: string[];
     }> = [];
 
-    // Find missing models
-    for (const remoteModelName in remoteModels) {
-      const modelDetail = remoteModels[remoteModelName];
-
-      if (argv.provider) {
-        const lowerArgProvider = argv.provider.toLowerCase();
-        const modelProvider = modelDetail.litellm_provider?.toLowerCase();
-        const modelNameProviderPart = remoteModelName
-          .split("/")[0]
-          .toLowerCase();
-
-        if (
-          !modelProvider?.includes(lowerArgProvider) &&
-          !modelNameProviderPart.includes(lowerArgProvider) &&
-          !(modelProvider === lowerArgProvider) &&
-          !(modelNameProviderPart === lowerArgProvider)
-        ) {
-          continue;
-        }
-      }
-
-      const translatedModelName = translateToBraintrust(
-        remoteModelName,
-        modelDetail.litellm_provider,
-      );
-
+    // Find missing models, deduplicating by translated name and merging providers
+    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
+    for (const [
+      translatedModelName,
+      { remoteModelName, remoteModel: modelDetail, mergedProviders },
+    ] of resolvedRemote) {
       if (argv.filter) {
         const lowerFilter = argv.filter.toLowerCase();
         if (
@@ -1337,6 +1362,7 @@ async function addModelsCommand(argv: any) {
           remoteModelName,
           translatedName: translatedModelName,
           remoteModel: modelDetail,
+          mergedProviders,
         });
       }
     }
@@ -1388,19 +1414,24 @@ async function addModelsCommand(argv: any) {
 
     // Convert remote models to local format
     const modelsToAdd = missingInLocal.map(
-      ({ remoteModelName, translatedName, remoteModel }) => ({
-        name: translatedName,
-        model: convertRemoteToLocalModel(remoteModelName, remoteModel),
-      }),
+      ({ remoteModelName, translatedName, remoteModel, mergedProviders }) => {
+        const model = convertRemoteToLocalModel(remoteModelName, remoteModel);
+        // Override with merged providers (may include providers from colliding remote entries)
+        if (mergedProviders.length > 0) {
+          model.available_providers =
+            mergedProviders as ModelSpec["available_providers"];
+        }
+        return { name: translatedName, model };
+      },
     );
 
     const newModelNames = modelsToAdd.map((m) => m.name);
 
     // Prepare provider mapping data
     const providerMappingData = missingInLocal.map(
-      ({ translatedName, remoteModel }) => ({
+      ({ translatedName, remoteModel, mergedProviders }) => ({
         name: translatedName,
-        providers: getProviderMappingForModel(translatedName, remoteModel),
+        providers: mergedProviders,
         remoteModel: remoteModel,
       }),
     );

@@ -588,6 +588,10 @@ export async function proxyV1({
   }
 
   let responseFailed = false;
+  let isNativeInference = false;
+  let secretName: string | null | undefined = undefined;
+  let proxyResponse: Response | undefined = undefined;
+  let proxyStream: ReadableStream<Uint8Array> | null = null;
 
   const overridenHeaders: string[] = [];
   const setOverriddenHeader = (name: string, value: string) => {
@@ -612,10 +616,7 @@ export async function proxyV1({
       );
     }
 
-    const {
-      modelResponse: { response: proxyResponse, stream: proxyStream },
-      secretName,
-    } = await fetchModelLoop(
+    const fetchResult = await fetchModelLoop(
       logHistogram,
       method,
       url,
@@ -690,6 +691,10 @@ export async function proxyV1({
       signal,
       fetch,
     );
+    proxyResponse = fetchResult.modelResponse.response;
+    proxyStream = fetchResult.modelResponse.stream;
+    secretName = fetchResult.secretName;
+    isNativeInference = fetchResult.isNativeInference;
     stream = proxyStream;
 
     if (!proxyResponse.ok) {
@@ -1153,7 +1158,7 @@ export async function proxyV1({
               event_name: "NativeInferenceTokenUsageEvent",
               auth_token: authToken,
               org_id: billingOrgId,
-              isNativeInference: nativeInferenceSecret !== undefined,
+              isNativeInference,
               model,
               resolved_model: resolvedModel,
               org_name: resolvedOrgName,
@@ -1279,7 +1284,11 @@ async function fetchModelLoop(
   model: string | null,
   signal: AbortSignal | undefined,
   fetch: FetchFn,
-): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
+): Promise<{
+  modelResponse: ModelResponse;
+  secretName?: string | null;
+  isNativeInference: boolean;
+}> {
   // model is now passed as a parameter
 
   // TODO: Make this smarter. For now, just pick a random one.
@@ -1634,6 +1643,7 @@ async function fetchModelLoop(
       response: proxyResponse.response,
     },
     secretName,
+    isNativeInference: nativeInferenceSecret !== undefined,
   };
 }
 

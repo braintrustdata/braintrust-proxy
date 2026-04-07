@@ -102,6 +102,7 @@ import {
   flattenChunksArray,
   getRandomInt,
   isEmpty,
+  isNativeInferenceSecret,
   isObject,
   ModelResponse,
   parseAuthHeader,
@@ -194,6 +195,7 @@ export type BillingEvent = {
   event_name: "NativeInferenceTokenUsageEvent";
   auth_token: string;
   org_id?: string;
+  isNativeInference?: boolean;
   model?: string | null;
   resolved_model?: string | null;
   org_name?: string;
@@ -1151,6 +1153,7 @@ export async function proxyV1({
               event_name: "NativeInferenceTokenUsageEvent",
               auth_token: authToken,
               org_id: billingOrgId,
+              isNativeInference: nativeInferenceSecret !== undefined,
               model,
               resolved_model: resolvedModel,
               org_name: resolvedOrgName,
@@ -1330,6 +1333,10 @@ async function fetchModelLoop(
   }
 
   const initialIdx = getRandomInt(secrets.length);
+  const nativeInferenceSecret =
+    model === null || model === undefined
+      ? undefined
+      : secrets.find((secret) => isNativeInferenceSecret(secret, model));
   let proxyResponse: ModelResponse | null = null;
   let secretName: string | null | undefined = null;
   let lastException = null;

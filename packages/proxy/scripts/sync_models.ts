@@ -6,7 +6,12 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
-import { ModelEndpointType, ModelSchema, ModelSpec } from "../schema/models";
+import { ModelSchema, ModelSpec } from "../schema/models";
+import {
+  fetchVertexSupportedRegions,
+  GOOGLE_VERTEX_LOCATIONS_URL,
+  syncVertexSupportedRegions,
+} from "./sync_vertex_regions";
 
 const execAsync = promisify(exec);
 
@@ -1264,6 +1269,33 @@ async function updateModelsCommand(argv: any) {
       }
     }
 
+    const shouldSyncVertexRegions = Object.values(updatedLocalModels).some(
+      (model) => model.available_providers?.includes("vertex"),
+    );
+
+    if (shouldSyncVertexRegions) {
+      console.log(
+        `\nFetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
+      );
+      const supportedRegionsByModel = await fetchVertexSupportedRegions();
+      const updatedVertexModels = syncVertexSupportedRegions(
+        updatedLocalModels,
+        supportedRegionsByModel,
+      );
+      if (updatedVertexModels.size > 0) {
+        discrepanciesFound += updatedVertexModels.size;
+        madeChanges = true;
+        for (const [modelName, supportedRegions] of updatedVertexModels) {
+          const regions = supportedRegions.length
+            ? supportedRegions.join(", ")
+            : "(cleared)";
+          console.log(
+            `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+          );
+        }
+      }
+    }
+
     if (argv.write) {
       if (madeChanges) {
         // Reorder keys according to ModelSchema before writing
@@ -1468,6 +1500,29 @@ async function addModelsCommand(argv: any) {
           updatedModels[modelName] = modelToAdd.model;
           console.log(`Added ${modelName}`);
         }
+      }
+    }
+
+    const shouldSyncVertexRegions = Object.values(updatedModels).some((model) =>
+      model.available_providers?.includes("vertex"),
+    );
+
+    if (shouldSyncVertexRegions) {
+      console.log(
+        `\nFetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
+      );
+      const supportedRegionsByModel = await fetchVertexSupportedRegions();
+      const updatedVertexModels = syncVertexSupportedRegions(
+        updatedModels,
+        supportedRegionsByModel,
+      );
+      for (const [modelName, supportedRegions] of updatedVertexModels) {
+        const regions = supportedRegions.length
+          ? supportedRegions.join(", ")
+          : "(cleared)";
+        console.log(
+          `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+        );
       }
     }
 

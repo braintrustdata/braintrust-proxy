@@ -7,6 +7,7 @@ import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import { ModelSchema, ModelSpec } from "../schema/models";
+import { shouldIncludeModelForSync } from "./model_sync_filters";
 import {
   fetchVertexSupportedRegions,
   GOOGLE_VERTEX_LOCATIONS_URL,
@@ -767,6 +768,9 @@ async function findMissingCommand(argv: any) {
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     const localModelNames = new Set(Object.keys(localModels));
+    const filterRegex = argv.filter
+      ? new RegExp(String(argv.filter), "i")
+      : null;
     const missingInLocal: string[] = [];
     const consideredRemoteModels: LiteLLMModelList = {};
     const filteredRemoteModels: LiteLLMModelList = {};
@@ -783,6 +787,18 @@ async function findMissingCommand(argv: any) {
       translatedName,
       { remoteModelName, remoteModel },
     ] of resolvedRemote) {
+      if (
+        !shouldIncludeModelForSync({
+          provider: argv.provider,
+          remoteProvider: remoteModel.litellm_provider,
+          filterRegex,
+          majorOnly: argv.majorOnly,
+          translatedModelName: translatedName,
+          remoteModelName,
+        })
+      ) {
+        continue;
+      }
       consideredRemoteModels[remoteModelName] = remoteModel;
       if (argv.provider) {
         console.log(
@@ -1366,6 +1382,9 @@ async function addModelsCommand(argv: any) {
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     const localModelNames = new Set(Object.keys(localModels));
+    const filterRegex = argv.filter
+      ? new RegExp(String(argv.filter), "i")
+      : null;
     const missingInLocal: Array<{
       remoteModelName: string;
       translatedName: string;
@@ -1379,14 +1398,17 @@ async function addModelsCommand(argv: any) {
       translatedModelName,
       { remoteModelName, remoteModel: modelDetail, mergedProviders },
     ] of resolvedRemote) {
-      if (argv.filter) {
-        const lowerFilter = argv.filter.toLowerCase();
-        if (
-          !translatedModelName.toLowerCase().includes(lowerFilter) &&
-          !remoteModelName.toLowerCase().includes(lowerFilter)
-        ) {
-          continue;
-        }
+      if (
+        !shouldIncludeModelForSync({
+          provider: argv.provider,
+          remoteProvider: modelDetail.litellm_provider,
+          filterRegex,
+          majorOnly: argv.majorOnly,
+          translatedModelName,
+          remoteModelName,
+        })
+      ) {
+        continue;
       }
 
       if (!localModelNames.has(translatedModelName)) {
@@ -1597,6 +1619,18 @@ async function main() {
             alias: "p",
             type: "string",
             description: "Filter models by a specific provider",
+          })
+          .option("filter", {
+            alias: "f",
+            type: "string",
+            description:
+              "Filter models by regular expression against local or remote model name (e.g., '^gpt-5$')",
+          })
+          .option("majorOnly", {
+            type: "boolean",
+            description:
+              "Apply provider-specific major-release presets for openai, anthropic, google, and vertex",
+            default: false,
           });
       },
       async (argv) => {
@@ -1637,7 +1671,14 @@ async function main() {
           .option("filter", {
             alias: "f",
             type: "string",
-            description: "Filter models by name substring (e.g., 'gpt-5')",
+            description:
+              "Filter models by regular expression against local or remote model name (e.g., '^gpt-5$')",
+          })
+          .option("majorOnly", {
+            type: "boolean",
+            description:
+              "Apply provider-specific major-release presets for openai, anthropic, google, and vertex",
+            default: false,
           })
           .option("write", {
             type: "boolean",

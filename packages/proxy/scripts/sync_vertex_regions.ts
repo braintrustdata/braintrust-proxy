@@ -40,12 +40,14 @@ function fetchText(url: string): Promise<string> {
   });
 }
 
-function stripPublisherGooglePrefix(modelName: string): string {
-  return modelName.replace(/^publishers\/google\/models\//, "");
+function normalizeVertexGoogleModelName(modelName: string): string {
+  return modelName
+    .replace(/^publishers\/google\/models\//, "")
+    .replace(/^vertex_ai\//, "");
 }
 
 function isVertexGoogleModel(modelName: string, model?: ModelSpec): boolean {
-  const normalizedName = stripPublisherGooglePrefix(modelName);
+  const normalizedName = normalizeVertexGoogleModelName(modelName);
   const isGoogleModel = normalizedName.startsWith("gemini");
   const hasVertexProvider =
     model?.available_providers?.includes("vertex") ||
@@ -160,7 +162,7 @@ export function syncVertexSupportedRegions<T extends Record<string, ModelSpec>>(
       continue;
     }
 
-    const normalizedName = stripPublisherGooglePrefix(modelName);
+    const normalizedName = normalizeVertexGoogleModelName(modelName);
     const supportedRegions = supportedRegionsByModel.get(normalizedName);
     const currentRegions = model.supported_regions;
 

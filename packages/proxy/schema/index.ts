@@ -447,6 +447,19 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "gemini-flash-latest": ["google"],
+  "gemini-flash-lite-latest": ["google"],
+  "gemini-pro-latest": ["google"],
+  "gpt-5.2-pro-2025-12-11": ["openai", "azure"],
+  "gpt-5.4-pro-2026-03-05": ["openai", "azure"],
+  "vertex_ai/gemini-3-flash-preview": ["vertex"],
+  "vertex_ai/gemini-3-pro-preview": ["vertex"],
+  "vertex_ai/gemini-3.1-pro-preview": ["vertex"],
+  "vertex_ai/gemini-3.1-pro-preview-customtools": ["vertex"],
+  "vertex_ai/gemini-2.5-flash-image": ["vertex"],
+  "vertex_ai/gemini-3-pro-image-preview": ["vertex"],
+  "vertex_ai/gemini-3.1-flash-image-preview": ["vertex"],
+  "vertex_ai/gemini-3.1-flash-lite-preview": ["vertex"],
   "fireworks-ai-4.1b-to-16b": ["fireworks"],
   "fireworks-ai-56b-to-176b": ["fireworks"],
   "fireworks-ai-above-16b": ["fireworks"],
@@ -607,7 +620,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
   "publishers/moonshotai/models/kimi-k2.5": ["azure"],
   "fireworks_ai/accounts/fireworks/models/glm-4p7": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": ["fireworks"]
+  "fireworks_ai/accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": [
+    "fireworks",
+  ],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

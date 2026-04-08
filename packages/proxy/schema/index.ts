@@ -427,6 +427,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "amazon.nova-pro-v1:0": ["bedrock"],
   "amazon.nova-lite-v1:0": ["bedrock"],
   "amazon.nova-micro-v1:0": ["bedrock"],
+  "grok-4.20-0309-reasoning": ["xAI"],
+  "grok-4.20-0309-non-reasoning": ["xAI"],
   "grok-4-1-fast": ["xAI"],
   "grok-4-1-fast-reasoning": ["xAI"],
   "grok-4-1-fast-reasoning-latest": ["xAI"],

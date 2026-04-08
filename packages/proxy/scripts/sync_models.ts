@@ -6,7 +6,12 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
-import { ModelEndpointType, ModelSchema, ModelSpec } from "../schema/models";
+import { ModelSchema, ModelSpec } from "../schema/models";
+import {
+  fetchVertexSupportedRegions,
+  GOOGLE_VERTEX_LOCATIONS_URL,
+  syncVertexSupportedRegions,
+} from "./sync_vertex_regions";
 
 const execAsync = promisify(exec);
 
@@ -1264,6 +1269,38 @@ async function updateModelsCommand(argv: any) {
       }
     }
 
+    // Only sync Vertex regions for models that were actually in scope for this
+    // run (i.e. the provider-filtered set), not the entire local model list.
+    // This prevents `update-models --provider openai` from touching unrelated
+    // Vertex Gemini entries.
+    const modelsInScope = modelsToCompare.map((item) => item.localModelName);
+    const shouldSyncVertexRegions = modelsInScope.some((name) =>
+      updatedLocalModels[name]?.available_providers?.includes("vertex"),
+    );
+
+    if (shouldSyncVertexRegions) {
+      console.log(
+        `\nFetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
+      );
+      const supportedRegionsByModel = await fetchVertexSupportedRegions();
+      const updatedVertexModels = syncVertexSupportedRegions(
+        updatedLocalModels,
+        supportedRegionsByModel,
+      );
+      if (updatedVertexModels.size > 0) {
+        discrepanciesFound += updatedVertexModels.size;
+        madeChanges = true;
+        for (const [modelName, supportedRegions] of updatedVertexModels) {
+          const regions = supportedRegions.length
+            ? supportedRegions.join(", ")
+            : "(cleared)";
+          console.log(
+            `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+          );
+        }
+      }
+    }
+
     if (argv.write) {
       if (madeChanges) {
         // Reorder keys according to ModelSchema before writing
@@ -1468,6 +1505,32 @@ async function addModelsCommand(argv: any) {
           updatedModels[modelName] = modelToAdd.model;
           console.log(`Added ${modelName}`);
         }
+      }
+    }
+
+    // Only sync Vertex regions for the newly added models, not all pre-existing
+    // models in updatedModels. This prevents `add-models -p openai` from
+    // rewriting unrelated pre-existing Vertex Gemini records.
+    const shouldSyncVertexRegions = modelsToAdd.some((m) =>
+      m.model.available_providers?.includes("vertex"),
+    );
+
+    if (shouldSyncVertexRegions) {
+      console.log(
+        `\nFetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
+      );
+      const supportedRegionsByModel = await fetchVertexSupportedRegions();
+      const updatedVertexModels = syncVertexSupportedRegions(
+        updatedModels,
+        supportedRegionsByModel,
+      );
+      for (const [modelName, supportedRegions] of updatedVertexModels) {
+        const regions = supportedRegions.length
+          ? supportedRegions.join(", ")
+          : "(cleared)";
+        console.log(
+          `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+        );
       }
     }
 

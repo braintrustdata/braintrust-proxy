@@ -671,6 +671,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
+    "deprecation_date": "2026-03-26",
     "parent": "gpt-4",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
@@ -1046,7 +1047,7 @@
     "displayName": "Claude 4.6 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
       "anthropic"
@@ -2923,6 +2924,9 @@
     "displayName": "Gemini 3.1 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -2957,6 +2961,9 @@
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -2992,6 +2999,9 @@
     "displayName": "Gemini 3 Flash (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3009,6 +3019,32 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global",
+      "asia-northeast1",
+      "asia-northeast3",
+      "asia-south1",
+      "asia-southeast1",
+      "australia-southeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west2",
+      "europe-west3",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "southamerica-east1",
+      "us-central1",
+      "us-east1",
+      "us-east4",
+      "us-east5",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3026,6 +3062,25 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global",
+      "asia-northeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "us-central1",
+      "us-east1",
+      "us-east4",
+      "us-east5",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3044,6 +3099,9 @@
     "reasoning_budget": true,
     "experimental": false,
     "parent": "gemini-2.5-flash",
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3171,6 +3229,9 @@
     "reasoning_budget": true,
     "experimental": true,
     "parent": "gemini-2.5-flash-lite",
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3208,6 +3269,23 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
+    "supported_regions": [
+      "global",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "us-central1",
+      "us-east1",
+      "us-east4",
+      "us-east5",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3286,6 +3364,9 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
+    "supported_regions": [
+      "global"
+    ],
     "max_input_tokens": 65536,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -4068,7 +4149,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
       "bedrock"
@@ -4085,7 +4166,7 @@
     "displayName": "Claude 4.6 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
       "bedrock"
@@ -5903,9 +5984,9 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 3.2,
+    "reasoning": true,
     "max_input_tokens": 202752,
     "max_output_tokens": 128000,
-    "reasoning": true,
     "available_providers": [
       "fireworks"
     ]
@@ -6213,7 +6294,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -6246,7 +6327,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -6264,7 +6345,11 @@
     "reasoning": true,
     "parent": "gpt-5.4",
     "max_input_tokens": 1050000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
   },
   "gpt-5.4-pro": {
     "format": "openai",
@@ -6550,9 +6635,10 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.2,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "GLM-4.7",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 202800,
+    "max_output_tokens": 202800,
     "available_providers": [
       "fireworks"
     ]
@@ -6560,11 +6646,11 @@
   "fireworks_ai/accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.13,
-    "output_cost_per_mil_tokens": 0.52,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "displayName": "Qwen3 VL 30B A3B Instruct",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 32000,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "fireworks"
     ]

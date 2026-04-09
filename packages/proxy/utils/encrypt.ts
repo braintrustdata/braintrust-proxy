@@ -1,8 +1,6 @@
 import { z } from "zod";
 
 let _issuedCryptoSubtleWarning = false;
-const textDecoder = new TextDecoder();
-const textEncoder = new TextEncoder();
 const MAX_IMPORTED_KEY_CACHE_SIZE = 1024;
 const importedEncryptionKeys = new Map<string, Promise<CryptoKey>>();
 
@@ -111,7 +109,7 @@ export async function decryptMessage(
     base64ToBytes(message),
   );
 
-  return textDecoder.decode(decoded);
+  return new TextDecoder().decode(decoded);
 }
 
 export const encryptedMessageSchema = z.strictObject({
@@ -133,7 +131,7 @@ export async function encryptMessage(
       iv,
     },
     await getImportedEncryptionKey(keyString),
-    textEncoder.encode(message),
+    new TextEncoder().encode(message),
   );
 
   return {

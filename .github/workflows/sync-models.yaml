@@ -1,0 +1,108 @@
+name: Sync models (temporary)
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: sync-models
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: chore/sync-models
+      COMMIT_MESSAGE: "chore: sync models"
+      PR_TITLE: "chore: sync models"
+      PR_BODY: "Temporary automated sync of new models from the upstream LiteLLM catalog."
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get bot token
+        id: bot-token
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ secrets.GH_BOT_APP_ID }}
+          private-key: ${{ secrets.GH_BOT_APP_PRIVATE_KEY }}
+          owner: braintrustdata
+          repositories: braintrust-proxy
+
+      - name: Sync model list
+        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts add-models --write
+
+      - name: Check expected files only
+        id: changes
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/(index\.ts|model_list\.json)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build proxy package
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        run: pnpm --filter @braintrust/proxy run build
+
+      - name: Validate model schema
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts
+
+      - name: Create PR
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ steps.bot-token.outputs.token }}
+          base: main
+          branch: ${{ env.BRANCH_NAME }}
+          commit-message: ${{ env.COMMIT_MESSAGE }}
+          title: ${{ env.PR_TITLE }}
+          body: ${{ env.PR_BODY }}
+          labels: auto-sync
+          signoff: false
+          committer: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
+          author: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"

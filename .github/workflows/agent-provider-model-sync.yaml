@@ -1,0 +1,209 @@
+name: Agent provider model sync
+
+on:
+  schedule:
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: agent-provider-model-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      BRANCH_NAME: chore/agent-provider-model-sync
+      COMMIT_MESSAGE: "chore: experimental provider-direct model sync"
+      PR_TITLE: "chore: experimental provider-direct model sync"
+      PR_BODY: "Experimental automated sync that attempts to update the proxy model catalog from official provider sources directly."
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get bot token
+        id: bot-token
+        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
+        with:
+          app-id: ${{ secrets.GH_BOT_APP_ID }}
+          private-key: ${{ secrets.GH_BOT_APP_PRIVATE_KEY }}
+          owner: braintrustdata
+          repositories: braintrust-proxy
+
+      - name: Summarize current provider inventory
+        id: provider-inventory
+        run: |
+          node -e 'const fs=require("fs"); const p="packages/proxy/schema/model_list.json"; const data=JSON.parse(fs.readFileSync(p,"utf8")); const providers=[...new Set(Object.values(data).flatMap(v=>Array.isArray(v.available_providers)?v.available_providers:[]))].sort(); fs.appendFileSync(process.env.GITHUB_OUTPUT, `providers=${providers.join(",")}\ncount=${providers.length}\n`);'
+
+      - name: Attempt provider-direct sync with Claude Code
+        uses: anthropics/claude-code-action@de8e0b9c42c6cb58e904c857f164aa072244c1ac # beta
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ steps.bot-token.outputs.token }}
+          show_full_output: "true"
+          display_report: "true"
+          timeout_minutes: "25"
+          direct_prompt: |
+            # Goal
+
+            Update the Braintrust proxy model catalog from official provider sources directly instead of relying on LiteLLM as the source of truth.
+
+            # Files to inspect first
+
+            - `packages/proxy/scripts/sync_models.ts`
+            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/schema/index.ts`
+            - `packages/proxy/schema/models.ts`
+            - `.github/workflows/sync-models.yaml`
+            - `.github/workflows/agent-provider-model-sync.yaml`
+
+            # Current provider inventory
+
+            The current provider inventory in `packages/proxy/schema/model_list.json` has ${{ steps.provider-inventory.outputs.count }} providers:
+
+            `${{ steps.provider-inventory.outputs.providers }}`
+
+            Use this as the baseline coverage to preserve and improve.
+
+            # Scope
+
+            - Primary focus: attempt direct official-source collection for `openai`, `anthropic`, `google`, `xAI`, and `bedrock`.
+            - Secondary focus: verify or improve other providers already present in the catalog if you can find a reliable official source during this run.
+            - Experimental discovery: do one bounded search for provider families not already in the current provider inventory.
+
+            # Process
+
+            1. Inspect the local schema, model list, and sync script to understand current naming, ordering, and provider mapping conventions.
+            2. Prioritize the primary providers first.
+            3. For each provider, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
+            4. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation or pricing pages.
+            5. For xAI, use public xAI documentation and pricing pages first. Treat authenticated API access as optional and do not depend on it for this workflow.
+            6. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
+            7. Compare the official source to the current Braintrust catalog and make only high-confidence updates.
+            8. Preserve existing manually curated fields unless you can verify a direct replacement from an official source.
+            9. After covering the primary providers, optionally verify additional currently supported providers if reliable official sources are available in this run.
+            10. Do one experimental search for new provider families not in the current inventory.
+            11. Only treat a new provider family as actionable if all of the following are true:
+               - there is a clearly official source
+               - the source exposes stable public model identifiers
+               - the source provides enough trustworthy metadata to add or map models safely
+               - the provider can be represented by the existing proxy schema and endpoint model without broad code changes
+            12. If the new provider search is inconclusive, do not add the provider and do not guess.
+
+            # Good outcomes
+
+            - Add a newly released official model for an existing provider with verified identifiers and metadata.
+            - Update pricing, token limits, or deprecation dates when the official source clearly changed.
+            - Improve provider mappings for an existing model when the official source makes the mapping unambiguous.
+
+            # Bad outcomes
+
+            - Inventing prices, token limits, capabilities, or providers.
+            - Adding a new provider family that would require unsupported schema or endpoint-type changes in this workflow.
+            - Deleting or renaming models based on weak evidence.
+            - Making broad code or workflow changes instead of narrow catalog updates.
+
+            # Allowed edits
+
+            Keep edits as narrow as possible. You may change only:
+
+            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/schema/index.ts`
+
+            Do not edit workflow files, tests, package manifests, scripts, or unrelated source files as part of the nightly run.
+
+            # Constraints
+
+            - Do not use third-party aggregators as the source of truth.
+            - Do not invent values, defaults, or placeholder models.
+            - If a provider cannot be queried reliably in this run, skip it and leave existing data unchanged.
+            - Prefer additive updates and verified metadata updates.
+            - Preserve file formatting and ordering conventions already used in the repo.
+            - If a source is ambiguous about a rename versus a new model, keep the existing entry and avoid destructive changes.
+            - Avoid deletions unless the provider clearly documents deprecation or removal and the evidence is strong.
+
+            # Validation
+
+            If you make changes, run:
+
+            - `pnpm --filter @braintrust/proxy run build`
+            - `pnpm exec vitest run packages/proxy/schema/models.test.ts`
+
+            Only finish after validation passes, or leave no changes if you cannot validate.
+
+            # Output expectations
+
+            - Leave your edits in the working tree for the workflow to turn them into a PR.
+            - Do not create commits or open a PR yourself.
+            - If you cannot make trustworthy updates, leave the working tree unchanged.
+
+      - name: Check expected files only
+        id: changes
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/(index\.ts|model_list\.json)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ steps.bot-token.outputs.token }}
+          base: main
+          branch: ${{ env.BRANCH_NAME }}
+          commit-message: ${{ env.COMMIT_MESSAGE }}
+          title: ${{ env.PR_TITLE }}
+          body: ${{ env.PR_BODY }}
+          labels: auto-sync,experimental
+          signoff: false
+          committer: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
+          author: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"

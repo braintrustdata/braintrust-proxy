@@ -66,19 +66,19 @@ jobs:
 
             The current provider inventory in `packages/proxy/schema/model_list.json` is:
 
-            - `anthropic` — pricing: `https://docs.anthropic.com/en/docs/about-claude/pricing`
-            - `azure` — pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
-            - `bedrock` — pricing: `https://aws.amazon.com/bedrock/pricing/`
-            - `cerebras` — pricing: `https://www.cerebras.ai/pricing`
-            - `databricks` — model docs: `https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis`
-            - `fireworks` — pricing: `https://fireworks.ai/pricing`
-            - `google` — pricing: `https://ai.google.dev/pricing`
-            - `groq` — pricing: `https://groq.com/pricing`
-            - `mistral` — pricing: `https://mistral.ai/pricing`
-            - `openai` — pricing: `https://platform.openai.com/docs/pricing/`
-            - `perplexity` — pricing: `https://docs.perplexity.ai/guides/pricing`
-            - `together` — pricing: `https://www.together.ai/pricing`
-            - `vertex` — pricing: `https://cloud.google.com/vertex-ai/pricing`
+            - `anthropic` — models and pricing: `https://docs.anthropic.com/en/docs/about-claude/models/all-models`
+            - `azure` — models: `https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models` ; pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
+            - `bedrock` — models: `https://docs.aws.amazon.com/en_us/bedrock/latest/userguide/foundation-models-reference.html` ; pricing: `https://aws.amazon.com/bedrock/pricing/`
+            - `cerebras` — models: `https://inference-docs.cerebras.ai/models/overview` ; pricing: `https://inference-docs.cerebras.ai/support/pricing`
+            - `databricks` — models: `https://docs.databricks.com/aws/en/machine-learning/model-serving/foundation-model-overview`
+            - `fireworks` — models: `https://docs.fireworks.ai/models/overview` ; pricing: `https://fireworks.ai/pricing`
+            - `google` — models: `https://ai.google.dev/gemini-api/docs/models/gemini` ; pricing: `https://ai.google.dev/pricing`
+            - `groq` — models and pricing: `https://console.groq.com/docs/models`
+            - `mistral` — models: `https://docs.mistral.ai/getting-started/models`
+            - `openai` — models: `https://platform.openai.com/docs/models/compare` ; pricing: `https://platform.openai.com/docs/pricing/`
+            - `perplexity` — models and pricing: `https://docs.perplexity.ai/docs/agent-api/models`
+            - `together` — models and pricing: `https://docs.together.ai/docs/serverless-models`
+            - `vertex` — models: `https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/available-models` ; pricing: `https://cloud.google.com/vertex-ai/generative-ai/pricing`
             - `xAI` — models and pricing: `https://docs.x.ai/developers/models`
 
             Use this as the baseline coverage to preserve and improve.
@@ -97,13 +97,19 @@ jobs:
 
             1. Inspect the local schema, model list, and sync script to understand current naming, ordering, and provider mapping conventions.
             2. For each provider you inspect, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
-            3. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation or pricing pages.
-            4. For xAI, use public xAI documentation and pricing pages first. Treat authenticated API access as optional and do not depend on it for this workflow.
-            5. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
-            6. Compare the official source to the current Braintrust catalog and identify only high-confidence gaps.
-            7. Look for missing local models within already-supported provider families.
-            8. Separately, do one bounded search for likely new provider families not in the current inventory.
-            9. If the new provider-family search is inconclusive, do not create an issue and do not guess.
+            3. Search explicitly for both:
+               - models that exist in official provider docs or official APIs but appear to be missing locally
+               - local models that appear stale, deprecated, missing pricing, missing token limits, or incorrectly mapped
+            4. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation.
+            5. For pricing, use this rule consistently: if the model page already includes pricing, use that; otherwise use the provider pricing page; otherwise skip pricing for that provider instead of guessing.
+            6. For Mistral specifically, prefer the official models index for model discovery and API-style names, then follow the linked model detail pages when available because those pages are often more model-specific about pricing than the generic AI Studio pricing page. Do not infer model IDs from a generic pricing page by itself.
+            7. For xAI, use public xAI documentation first. Treat authenticated API access as optional and do not depend on it for this workflow.
+            8. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
+            9. For Databricks specifically, rely on official Databricks model docs for model discovery. If you cannot find a stable public model-specific pricing source during this run, skip Databricks pricing gaps instead of guessing from generic product pricing pages.
+            10. Compare the official source to the current Braintrust catalog and identify only high-confidence gaps.
+            11. Look for missing local models within already-supported provider families.
+            12. Separately, do one bounded search for likely new provider families not in the current inventory.
+            13. If the new provider-family search is inconclusive, do not create an issue and do not guess.
 
             # Model discovery versus pricing discovery
 

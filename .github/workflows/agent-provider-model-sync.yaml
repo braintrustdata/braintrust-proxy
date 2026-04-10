@@ -1,4 +1,4 @@
-name: Agent provider model sync
+name: Agent provider model gap audit
 
 on:
   schedule:
@@ -10,49 +10,19 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  issues: write
   id-token: write
 
 jobs:
   sync:
     runs-on: ubuntu-latest
-    env:
-      BRANCH_NAME: chore/agent-provider-model-sync
-      COMMIT_MESSAGE: "chore: experimental provider-direct model sync"
-      PR_TITLE: "chore: experimental provider-direct model sync"
-      PR_BODY: "Experimental automated sync that attempts to update the proxy model catalog from official provider sources directly."
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version: 20
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
-        with:
-          version: 10.33.0
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Get bot token
         id: bot-token
@@ -63,27 +33,25 @@ jobs:
           owner: braintrustdata
           repositories: braintrust-proxy
 
-      - name: Summarize current provider inventory
-        id: provider-inventory
-        run: |
-          node -e 'const fs=require("fs"); const p="packages/proxy/schema/model_list.json"; const data=JSON.parse(fs.readFileSync(p,"utf8")); const providers=[...new Set(Object.values(data).flatMap(v=>Array.isArray(v.available_providers)?v.available_providers:[]))].sort(); fs.appendFileSync(process.env.GITHUB_OUTPUT, `providers=${providers.join(",")}\ncount=${providers.length}\n`);'
-
       - name: Attempt provider-direct sync with Claude Code
         uses: anthropics/claude-code-action@de8e0b9c42c6cb58e904c857f164aa072244c1ac # beta
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ steps.bot-token.outputs.token }}
           show_full_output: "true"
           display_report: "true"
           timeout_minutes: "25"
+          claude_args: |
+            --model claude-opus-4-6
+            --max-turns 200
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue"
+            --disallowedTools "Bash,Edit,MultiEdit,Write,Replace,NotebookEditCell,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
           direct_prompt: |
             # Goal
 
-            Update the Braintrust proxy model catalog from official provider sources directly instead of relying on LiteLLM as the source of truth.
+            Find gaps in the Braintrust proxy model catalog by comparing it to official provider sources directly instead of relying on LiteLLM as the source of truth.
 
             # Files to inspect first
 
@@ -96,114 +64,115 @@ jobs:
 
             # Current provider inventory
 
-            The current provider inventory in `packages/proxy/schema/model_list.json` has ${{ steps.provider-inventory.outputs.count }} providers:
+            The current provider inventory in `packages/proxy/schema/model_list.json` is:
 
-            `${{ steps.provider-inventory.outputs.providers }}`
+            - `anthropic` — pricing: `https://docs.anthropic.com/en/docs/about-claude/pricing`
+            - `azure` — pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
+            - `bedrock` — pricing: `https://aws.amazon.com/bedrock/pricing/`
+            - `cerebras` — pricing: `https://www.cerebras.ai/pricing`
+            - `databricks` — model docs: `https://docs.databricks.com/aws/en/machine-learning/foundation-model-apis`
+            - `fireworks` — pricing: `https://fireworks.ai/pricing`
+            - `google` — pricing: `https://ai.google.dev/pricing`
+            - `groq` — pricing: `https://groq.com/pricing`
+            - `mistral` — pricing: `https://mistral.ai/pricing`
+            - `openai` — pricing: `https://platform.openai.com/docs/pricing/`
+            - `perplexity` — pricing: `https://docs.perplexity.ai/guides/pricing`
+            - `together` — pricing: `https://www.together.ai/pricing`
+            - `vertex` — pricing: `https://cloud.google.com/vertex-ai/pricing`
+            - `xAI` — models and pricing: `https://docs.x.ai/developers/models`
 
             Use this as the baseline coverage to preserve and improve.
+            Treat these URLs as starting points, not immutable truth. Re-check the current official source before making changes if a linked page redirects or has been reorganized.
 
             # Scope
 
-            - Primary focus: attempt direct official-source collection for `openai`, `anthropic`, `google`, `xAI`, and `bedrock`.
-            - Secondary focus: verify or improve other providers already present in the catalog if you can find a reliable official source during this run.
-            - Experimental discovery: do one bounded search for provider families not already in the current provider inventory.
+            - Find high-confidence gaps across providers already present in the current inventory if you can find reliable official sources during this run.
+            - Search explicitly for both:
+              - models that are missing locally within already-supported provider families
+              - likely new provider families that are not represented in the current provider inventory
+            - Do one bounded search for provider families not already in the current provider inventory.
+            - This is an issue-finding workflow, not an editing workflow.
 
             # Process
 
             1. Inspect the local schema, model list, and sync script to understand current naming, ordering, and provider mapping conventions.
-            2. Prioritize the primary providers first.
-            3. For each provider, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
-            4. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation or pricing pages.
-            5. For xAI, use public xAI documentation and pricing pages first. Treat authenticated API access as optional and do not depend on it for this workflow.
-            6. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
-            7. Compare the official source to the current Braintrust catalog and make only high-confidence updates.
-            8. Preserve existing manually curated fields unless you can verify a direct replacement from an official source.
-            9. After covering the primary providers, optionally verify additional currently supported providers if reliable official sources are available in this run.
-            10. Do one experimental search for new provider families not in the current inventory.
-            11. Only treat a new provider family as actionable if all of the following are true:
-               - there is a clearly official source
-               - the source exposes stable public model identifiers
-               - the source provides enough trustworthy metadata to add or map models safely
-               - the provider can be represented by the existing proxy schema and endpoint model without broad code changes
-            12. If the new provider search is inconclusive, do not add the provider and do not guess.
+            2. For each provider you inspect, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
+            3. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation or pricing pages.
+            4. For xAI, use public xAI documentation and pricing pages first. Treat authenticated API access as optional and do not depend on it for this workflow.
+            5. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
+            6. Compare the official source to the current Braintrust catalog and identify only high-confidence gaps.
+            7. Look for missing local models within already-supported provider families.
+            8. Separately, do one bounded search for likely new provider families not in the current inventory.
+            9. If the new provider-family search is inconclusive, do not create an issue and do not guess.
+
+            # Model discovery versus pricing discovery
+
+            - Treat model discovery and pricing discovery as separate tasks.
+            - Only report a missing or renamed model when you have an official model identifier from official model docs or an official API surface.
+            - Only report pricing drift or missing pricing when you have an official pricing source for that exact model or an unambiguous official pricing table that maps cleanly to that model.
+            - Do not infer model existence from a pricing page alone.
+            - Do not infer pricing from a model documentation page alone unless the pricing is explicitly stated there.
+
+            # Pricing normalization rules
+
+            - Prefer standard public on-demand pricing when multiple tiers exist.
+            - Ignore free tiers, temporary preview promos, enterprise contract pricing, provisioned throughput pricing, reserved capacity pricing, and batch pricing unless the existing schema explicitly models them.
+            - If pricing varies by region, use the most general public default or global standard presentation. If there is no obvious default, skip the pricing update.
+            - If pricing varies by prompt length, cache mode, or modality in a way that does not map cleanly to the existing schema, avoid partial updates unless the mapping is unambiguous.
+
+            # Platform versus provider rules
+
+            - Distinguish between the company that created a model and the platform that serves access to it.
+            - `azure`, `bedrock`, and `vertex` can offer access to models made by other companies.
+            - A model showing up on Azure, Bedrock, or Vertex does not automatically mean the local provider mapping is wrong.
+            - Only report a provider-mapping gap when official docs make it clear that the current local mapping is incomplete or incorrect under this repo's existing conventions.
 
             # Good outcomes
 
-            - Add a newly released official model for an existing provider with verified identifiers and metadata.
-            - Update pricing, token limits, or deprecation dates when the official source clearly changed.
-            - Improve provider mappings for an existing model when the official source makes the mapping unambiguous.
+            - Create a focused issue for a newly released official model missing from an existing provider family.
+            - Create a focused issue for missing or stale pricing, token limits, or deprecation metadata when the official source clearly changed.
+            - Create a focused issue for provider-mapping gaps when the relationship is unambiguous.
+            - Create a focused issue for a likely new provider family when support appears missing.
 
             # Bad outcomes
 
             - Inventing prices, token limits, capabilities, or providers.
-            - Adding a new provider family that would require unsupported schema or endpoint-type changes in this workflow.
-            - Deleting or renaming models based on weak evidence.
-            - Making broad code or workflow changes instead of narrow catalog updates.
+            - Opening vague issues without a concrete model, pricing, or provider-support gap.
+            - Opening duplicate issues for the same gap.
+            - Reporting weakly evidenced renames or provider-family additions.
 
-            # Allowed edits
+            # Allowed actions
 
-            Keep edits as narrow as possible. You may change only:
-
-            - `packages/proxy/schema/model_list.json`
-            - `packages/proxy/schema/index.ts`
-
-            Do not edit workflow files, tests, package manifests, scripts, or unrelated source files as part of the nightly run.
+            - Read local files in this repository.
+            - Use official web sources to verify model and pricing information.
+            - Search for existing GitHub issues in this repository.
+            - Create GitHub issues in this repository for high-confidence non-duplicate gaps.
 
             # Constraints
 
             - Do not use third-party aggregators as the source of truth.
             - Do not invent values, defaults, or placeholder models.
-            - If a provider cannot be queried reliably in this run, skip it and leave existing data unchanged.
-            - Prefer additive updates and verified metadata updates.
-            - Preserve file formatting and ordering conventions already used in the repo.
-            - If a source is ambiguous about a rename versus a new model, keep the existing entry and avoid destructive changes.
-            - Avoid deletions unless the provider clearly documents deprecation or removal and the evidence is strong.
+            - If a provider cannot be queried reliably in this run, skip it.
+            - If a source is ambiguous about a rename versus a new model, do not create an issue unless the gap itself is still concrete.
+            - Before creating an issue, search for an equivalent open issue in this repository and do not create duplicates.
+            - Create at most 5 issues in a single run.
+            - Create at most one issue per distinct gap in a single run.
+            - Only create issues for concrete, actionable gaps.
 
-            # Validation
+            # Issue requirements
 
-            If you make changes, run:
+            If you create an issue:
 
-            - `pnpm --filter @braintrust/proxy run build`
-            - `pnpm exec vitest run packages/proxy/schema/models.test.ts`
-
-            Only finish after validation passes, or leave no changes if you cannot validate.
+            - Prefix the title with `[BOT ISSUE] `
+            - Make the title specific to the gap
+            - Include the official source URLs you used
+            - Mention the local files you inspected when reaching that conclusion
+            - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
+            - Explain why the gap is high confidence
+            - Keep the issue concise and actionable
 
             # Output expectations
 
-            - Leave your edits in the working tree for the workflow to turn them into a PR.
-            - Do not create commits or open a PR yourself.
-            - If you cannot make trustworthy updates, leave the working tree unchanged.
-
-      - name: Check expected files only
-        id: changes
-        run: |
-          set -euo pipefail
-
-          if [ -z "$(git status --short)" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/(index\.ts|model_list\.json)$' || true)
-          if [ -n "$unexpected" ]; then
-            echo "Unexpected files modified:"
-            echo "$unexpected"
-            exit 1
-          fi
-
-          echo "changed=true" >> "$GITHUB_OUTPUT"
-
-      - name: Create PR
-        if: ${{ steps.changes.outputs.changed == 'true' }}
-        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
-        with:
-          token: ${{ steps.bot-token.outputs.token }}
-          base: main
-          branch: ${{ env.BRANCH_NAME }}
-          commit-message: ${{ env.COMMIT_MESSAGE }}
-          title: ${{ env.PR_TITLE }}
-          body: ${{ env.PR_BODY }}
-          labels: auto-sync,experimental
-          signoff: false
-          committer: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
-          author: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
+            - Do not edit files.
+            - Do not create commits or open pull requests.
+            - If there are no high-confidence non-duplicate gaps, do nothing.

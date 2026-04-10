@@ -53,15 +53,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Get bot token
-        id: bot-token
-        uses: actions/create-github-app-token@d72941d797fd3113feb6b93fd0dec494b13a2547 # v1.12.0
-        with:
-          app-id: ${{ secrets.GH_BOT_APP_ID }}
-          private-key: ${{ secrets.GH_BOT_APP_PRIVATE_KEY }}
-          owner: braintrustdata
-          repositories: braintrust-proxy
-
       - name: Update model list
         run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts update-models --write
 
@@ -96,7 +87,7 @@ jobs:
         if: ${{ steps.changes.outputs.changed == 'true' }}
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
-          token: ${{ steps.bot-token.outputs.token }}
+          token: ${{ github.token }}
           base: main
           branch: ${{ env.BRANCH_NAME }}
           commit-message: ${{ env.COMMIT_MESSAGE }}
@@ -104,5 +95,3 @@ jobs:
           body: ${{ env.PR_BODY }}
           labels: auto-sync
           signoff: false
-          committer: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"
-          author: "braintrust-bot[bot] <215900051+${{ steps.bot-token.outputs.app-slug }}[bot]@users.noreply.github.com>"

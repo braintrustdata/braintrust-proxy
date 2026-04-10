@@ -1,0 +1,174 @@
+name: Agent provider model gap audit
+
+on:
+  schedule:
+    - cron: "30 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: agent-provider-model-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Attempt provider-direct sync with Claude Code
+        uses: anthropics/claude-code-action@de8e0b9c42c6cb58e904c857f164aa072244c1ac # beta
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          show_full_output: "true"
+          display_report: "true"
+          timeout_minutes: "25"
+          claude_args: |
+            --model claude-opus-4-6
+            --max-turns 200
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue"
+            --disallowedTools "Bash,Edit,MultiEdit,Write,Replace,NotebookEditCell,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+          direct_prompt: |
+            # Goal
+
+            Find gaps in the Braintrust proxy model catalog by comparing it to official provider sources directly instead of relying on LiteLLM as the source of truth.
+
+            # Files to inspect first
+
+            - `packages/proxy/scripts/sync_models.ts`
+            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/schema/index.ts`
+            - `packages/proxy/schema/models.ts`
+            - `.github/workflows/sync-models.yaml`
+            - `.github/workflows/agent-provider-model-sync.yaml`
+
+            # Current provider inventory
+
+            The current provider inventory in `packages/proxy/schema/model_list.json` is:
+
+            - `anthropic` — models and pricing: `https://docs.anthropic.com/en/docs/about-claude/models/all-models`
+            - `azure` — models: `https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models` ; pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
+            - `bedrock` — models: `https://docs.aws.amazon.com/en_us/bedrock/latest/userguide/foundation-models-reference.html` ; pricing: `https://aws.amazon.com/bedrock/pricing/`
+            - `cerebras` — models: `https://inference-docs.cerebras.ai/models/overview` ; pricing: `https://inference-docs.cerebras.ai/support/pricing`
+            - `databricks` — models: `https://docs.databricks.com/aws/en/machine-learning/model-serving/foundation-model-overview`
+            - `fireworks` — models: `https://docs.fireworks.ai/models/overview` ; pricing: `https://fireworks.ai/pricing`
+            - `google` — models: `https://ai.google.dev/gemini-api/docs/models/gemini` ; pricing: `https://ai.google.dev/pricing`
+            - `groq` — models and pricing: `https://console.groq.com/docs/models`
+            - `mistral` — models: `https://docs.mistral.ai/getting-started/models`
+            - `openai` — models: `https://platform.openai.com/docs/models/compare` ; pricing: `https://platform.openai.com/docs/pricing/`
+            - `perplexity` — models and pricing: `https://docs.perplexity.ai/docs/agent-api/models`
+            - `together` — models and pricing: `https://docs.together.ai/docs/serverless-models`
+            - `vertex` — models: `https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/available-models` ; pricing: `https://cloud.google.com/vertex-ai/generative-ai/pricing`
+            - `xAI` — models and pricing: `https://docs.x.ai/developers/models`
+
+            Use this as the baseline coverage to preserve and improve.
+            Treat these URLs as starting points, not immutable truth. Re-check the current official source before making changes if a linked page redirects or has been reorganized.
+
+            # Scope
+
+            - Find high-confidence gaps across providers already present in the current inventory if you can find reliable official sources during this run.
+            - Search explicitly for both:
+              - models that are missing locally within already-supported provider families
+              - likely new provider families that are not represented in the current provider inventory
+            - Do one bounded search for provider families not already in the current provider inventory.
+            - This is an issue-finding workflow, not an editing workflow.
+
+            # Process
+
+            1. Inspect the local schema, model list, and sync script to understand current naming, ordering, and provider mapping conventions.
+            2. For each provider you inspect, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
+            3. Search explicitly for both:
+               - models that exist in official provider docs or official APIs but appear to be missing locally
+               - local models that appear stale, deprecated, missing pricing, missing token limits, or incorrectly mapped
+            4. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation.
+            5. For pricing, use this rule consistently: if the model page already includes pricing, use that; otherwise use the provider pricing page; otherwise skip pricing for that provider instead of guessing.
+            6. For Mistral specifically, prefer the official models index for model discovery and API-style names, then follow the linked model detail pages when available because those pages are often more model-specific about pricing than the generic AI Studio pricing page. Do not infer model IDs from a generic pricing page by itself.
+            7. For xAI, use public xAI documentation first. Treat authenticated API access as optional and do not depend on it for this workflow.
+            8. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
+            9. For Databricks specifically, rely on official Databricks model docs for model discovery. If you cannot find a stable public model-specific pricing source during this run, skip Databricks pricing gaps instead of guessing from generic product pricing pages.
+            10. Compare the official source to the current Braintrust catalog and identify only high-confidence gaps.
+            11. Look for missing local models within already-supported provider families.
+            12. Separately, do one bounded search for likely new provider families not in the current inventory.
+            13. If the new provider-family search is inconclusive, do not create an issue and do not guess.
+
+            # Model discovery versus pricing discovery
+
+            - Treat model discovery and pricing discovery as separate tasks.
+            - Only report a missing or renamed model when you have an official model identifier from official model docs or an official API surface.
+            - Only report pricing drift or missing pricing when you have an official pricing source for that exact model or an unambiguous official pricing table that maps cleanly to that model.
+            - Do not infer model existence from a pricing page alone.
+            - Do not infer pricing from a model documentation page alone unless the pricing is explicitly stated there.
+
+            # Pricing normalization rules
+
+            - Prefer standard public on-demand pricing when multiple tiers exist.
+            - Ignore free tiers, temporary preview promos, enterprise contract pricing, provisioned throughput pricing, reserved capacity pricing, and batch pricing unless the existing schema explicitly models them.
+            - If pricing varies by region, use the most general public default or global standard presentation. If there is no obvious default, skip the pricing update.
+            - If pricing varies by prompt length, cache mode, or modality in a way that does not map cleanly to the existing schema, avoid partial updates unless the mapping is unambiguous.
+
+            # Platform versus provider rules
+
+            - Distinguish between the company that created a model and the platform that serves access to it.
+            - `azure`, `bedrock`, and `vertex` can offer access to models made by other companies.
+            - A model showing up on Azure, Bedrock, or Vertex does not automatically mean the local provider mapping is wrong.
+            - Only report a provider-mapping gap when official docs make it clear that the current local mapping is incomplete or incorrect under this repo's existing conventions.
+
+            # Good outcomes
+
+            - Create a focused issue for a newly released official model missing from an existing provider family.
+            - Create a focused issue for missing or stale pricing, token limits, or deprecation metadata when the official source clearly changed.
+            - Create a focused issue for provider-mapping gaps when the relationship is unambiguous.
+            - Create a focused issue for a likely new provider family when support appears missing.
+
+            # Bad outcomes
+
+            - Inventing prices, token limits, capabilities, or providers.
+            - Opening vague issues without a concrete model, pricing, or provider-support gap.
+            - Opening duplicate issues for the same gap.
+            - Reporting weakly evidenced renames or provider-family additions.
+
+            # Allowed actions
+
+            - Read local files in this repository.
+            - Use official web sources to verify model and pricing information.
+            - Search for existing GitHub issues in this repository.
+            - Create GitHub issues in this repository for high-confidence non-duplicate gaps.
+
+            # Constraints
+
+            - Do not use third-party aggregators as the source of truth.
+            - Do not invent values, defaults, or placeholder models.
+            - If a provider cannot be queried reliably in this run, skip it.
+            - If a source is ambiguous about a rename versus a new model, do not create an issue unless the gap itself is still concrete.
+            - Before creating an issue, search for an equivalent open issue in this repository and do not create duplicates.
+            - Create at most 5 issues in a single run.
+            - Create at most one issue per distinct gap in a single run.
+            - Only create issues for concrete, actionable gaps.
+
+            # Issue requirements
+
+            If you create an issue:
+
+            - Prefix the title with `[BOT ISSUE] `
+            - Make the title specific to the gap
+            - Include the official source URLs you used
+            - Mention the local files you inspected when reaching that conclusion
+            - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
+            - Explain why the gap is high confidence
+            - Keep the issue concise and actionable
+
+            # Output expectations
+
+            - Do not edit files.
+            - Do not create commits or open pull requests.
+            - If there are no high-confidence non-duplicate gaps, do nothing.

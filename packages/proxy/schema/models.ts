@@ -81,6 +81,10 @@ export const ModelSchema = z.object({
   parent: z.string().nullish().describe("The model was replaced this model."),
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
   locations: z.array(z.string()).nullish(),
+  supported_regions: z
+    .array(z.string())
+    .nullish()
+    .describe("Documented supported regions for the model on the provider."),
   description: z.string().nullish(),
   max_input_tokens: z
     .number()

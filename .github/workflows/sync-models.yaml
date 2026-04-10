@@ -1,4 +1,4 @@
-name: Sync models (temporary)
+name: Update models (temporary)
 
 on:
   schedule:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: sync-models
+  group: update-models
   cancel-in-progress: false
 
 permissions:
@@ -17,10 +17,10 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
-      BRANCH_NAME: chore/sync-models
-      COMMIT_MESSAGE: "chore: sync models"
-      PR_TITLE: "chore: sync models"
-      PR_BODY: "Temporary automated sync of new models from the upstream LiteLLM catalog."
+      BRANCH_NAME: chore/update-models
+      COMMIT_MESSAGE: "chore: update models"
+      PR_TITLE: "chore: update models"
+      PR_BODY: "Temporary automated refresh of existing model metadata from the upstream LiteLLM catalog."
 
     steps:
       - name: Checkout repository
@@ -62,8 +62,8 @@ jobs:
           owner: braintrustdata
           repositories: braintrust-proxy
 
-      - name: Sync model list
-        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts add-models --write
+      - name: Update model list
+        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts update-models --write
 
       - name: Check expected files only
         id: changes
@@ -75,7 +75,7 @@ jobs:
             exit 0
           fi
 
-          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/(index\.ts|model_list\.json)$' || true)
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/model_list\.json$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected files modified:"
             echo "$unexpected"

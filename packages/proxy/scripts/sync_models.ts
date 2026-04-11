@@ -1295,7 +1295,7 @@ async function updateModelsCommand(argv: any) {
             ? supportedRegions.join(", ")
             : "(cleared)";
           console.log(
-            `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+            `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating locations for ${modelName}: ${regions}`,
           );
         }
       }
@@ -1529,7 +1529,7 @@ async function addModelsCommand(argv: any) {
           ? supportedRegions.join(", ")
           : "(cleared)";
         console.log(
-          `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating supported_regions for ${modelName}: ${regions}`,
+          `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} Updating locations for ${modelName}: ${regions}`,
         );
       }
     }

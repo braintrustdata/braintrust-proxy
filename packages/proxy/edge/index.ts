@@ -250,7 +250,7 @@ export function makeFetchApiSecrets({
         }
       } else {
         const responseText = await response.text();
-        if (response.status === 400) {
+        if (response.status === 400 || response.status === 403) {
           throw new Error(
             `Failed to lookup api key: ${response.status}: ${responseText}`,
           );
@@ -261,7 +261,7 @@ export function makeFetchApiSecrets({
     } catch (e) {
       if (
         e instanceof Error &&
-        e.message.startsWith("Failed to lookup api key: 400:")
+        e.message.startsWith("Failed to lookup api key:")
       ) {
         throw e;
       }

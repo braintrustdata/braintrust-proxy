@@ -28,12 +28,10 @@ head_sampling_rate = 0.2
 # You should not need to edit this
 BRAINTRUST_APP_URL = "https://www.braintrust.dev"
 METRICS_LICENSE_KEY="<YOUR_METRICS_LICENSE_KEY>"
-BILLING_TELEMETRY_URL="https://api.braintrust.dev/billing/telemetry/ingest"
 
 [env.staging.vars]
 BRAINTRUST_APP_URL = "https://www.braintrust.dev"
 METRICS_LICENSE_KEY="<YOUR_METRICS_LICENSE_KEY>"
-BILLING_TELEMETRY_URL="https://api.braintrust.dev/billing/telemetry/ingest"
 
 [env.staging]
 kv_namespaces = [

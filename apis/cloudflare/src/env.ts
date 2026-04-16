@@ -4,7 +4,6 @@ declare global {
     BRAINTRUST_APP_URL: string;
     WHITELISTED_ORIGINS?: string;
     METRICS_LICENSE_KEY?: string;
-    BILLING_TELEMETRY_URL?: string;
     NATIVE_INFERENCE_SECRET_KEY?: string;
   }
 }

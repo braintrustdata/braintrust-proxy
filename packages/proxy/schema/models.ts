@@ -80,8 +80,7 @@ export const ModelSchema = z.object({
     .describe("Date after which the model will be treated as deprecated"),
   parent: z.string().nullish().describe("The model was replaced this model."),
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
-  locations: z.array(z.string()).nullish(),
-  supported_regions: z
+  locations: z
     .array(z.string())
     .nullish()
     .describe("Documented supported regions for the model on the provider."),

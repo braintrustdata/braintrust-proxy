@@ -2941,9 +2941,6 @@
     "displayName": "Gemini 3.1 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -2978,9 +2975,6 @@
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -3016,9 +3010,6 @@
     "displayName": "Gemini 3 Flash (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3036,32 +3027,6 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global",
-      "asia-northeast1",
-      "asia-northeast3",
-      "asia-south1",
-      "asia-southeast1",
-      "australia-southeast1",
-      "europe-central2",
-      "europe-north1",
-      "europe-southwest1",
-      "europe-west1",
-      "europe-west2",
-      "europe-west3",
-      "europe-west4",
-      "europe-west8",
-      "europe-west9",
-      "northamerica-northeast1",
-      "southamerica-east1",
-      "us-central1",
-      "us-east1",
-      "us-east4",
-      "us-east5",
-      "us-south1",
-      "us-west1",
-      "us-west4"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3079,25 +3044,6 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global",
-      "asia-northeast1",
-      "europe-central2",
-      "europe-north1",
-      "europe-southwest1",
-      "europe-west1",
-      "europe-west4",
-      "europe-west8",
-      "europe-west9",
-      "northamerica-northeast1",
-      "us-central1",
-      "us-east1",
-      "us-east4",
-      "us-east5",
-      "us-south1",
-      "us-west1",
-      "us-west4"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3116,9 +3062,6 @@
     "reasoning_budget": true,
     "experimental": false,
     "parent": "gemini-2.5-flash",
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3246,9 +3189,6 @@
     "reasoning_budget": true,
     "experimental": true,
     "parent": "gemini-2.5-flash-lite",
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3286,23 +3226,6 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global",
-      "europe-central2",
-      "europe-north1",
-      "europe-southwest1",
-      "europe-west1",
-      "europe-west4",
-      "europe-west8",
-      "europe-west9",
-      "us-central1",
-      "us-east1",
-      "us-east4",
-      "us-east5",
-      "us-south1",
-      "us-west1",
-      "us-west4"
-    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -3381,9 +3304,6 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
-    "supported_regions": [
-      "global"
-    ],
     "max_input_tokens": 65536,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -5215,6 +5135,9 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 65536,
     "max_output_tokens": 32768
   },
@@ -5326,6 +5249,12 @@
     "displayName": "Claude 4.6 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -5337,7 +5266,13 @@
     "output_cost_per_mil_tokens": 15,
     "displayName": "Claude 4.5 Sonnet",
     "reasoning": true,
-    "reasoning_budget": true
+    "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-sonnet-4-5@20250929": {
     "format": "anthropic",
@@ -5348,7 +5283,13 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
-    "parent": "publishers/anthropic/models/claude-sonnet-4-5"
+    "parent": "publishers/anthropic/models/claude-sonnet-4-5",
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-sonnet-4": {
     "format": "anthropic",
@@ -5358,7 +5299,13 @@
     "output_cost_per_mil_tokens": 15,
     "displayName": "Claude 4 Sonnet",
     "reasoning": true,
-    "reasoning_budget": true
+    "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-east1",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-sonnet-4@20250514": {
     "format": "anthropic",
@@ -5369,7 +5316,13 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
-    "parent": "publishers/anthropic/models/claude-sonnet-4"
+    "parent": "publishers/anthropic/models/claude-sonnet-4",
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-east1",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-3-7-sonnet": {
     "format": "anthropic",
@@ -5380,7 +5333,12 @@
     "displayName": "Claude 3.7 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-02-19"
+    "deprecation_date": "2026-02-19",
+    "locations": [
+      "global",
+      "us-east5",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
     "format": "anthropic",
@@ -5392,7 +5350,12 @@
     "reasoning_budget": true,
     "experimental": true,
     "deprecation_date": "2026-02-19",
-    "parent": "publishers/anthropic/models/claude-3-7-sonnet"
+    "parent": "publishers/anthropic/models/claude-3-7-sonnet",
+    "locations": [
+      "global",
+      "us-east5",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-haiku-4-5": {
     "format": "anthropic",
@@ -5405,6 +5368,12 @@
     "displayName": "Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-east1",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -5419,6 +5388,12 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "publishers/anthropic/models/claude-haiku-4-5",
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-east1",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -5432,6 +5407,10 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "Claude 3.5 Haiku",
     "deprecation_date": "2026-02-19",
+    "locations": [
+      "us-east5",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
@@ -5445,6 +5424,10 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "deprecation_date": "2026-02-19",
     "parent": "publishers/anthropic/models/claude-3-5-haiku",
+    "locations": [
+      "us-east5",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
@@ -5488,7 +5471,11 @@
     "output_cost_per_mil_tokens": 75,
     "displayName": "Claude 4 Opus",
     "reasoning": true,
-    "reasoning_budget": true
+    "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5"
+    ]
   },
   "publishers/anthropic/models/claude-opus-4-6": {
     "format": "anthropic",
@@ -5501,6 +5488,12 @@
     "displayName": "Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },
@@ -5529,6 +5522,12 @@
     "displayName": "Claude 4.5 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
   },
@@ -5543,6 +5542,10 @@
     "displayName": "Claude 4.1 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-east5"
+    ],
     "max_input_tokens": 200000,
     "max_output_tokens": 32000
   },
@@ -5554,7 +5557,11 @@
     "output_cost_per_mil_tokens": 75,
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "publishers/anthropic/models/claude-opus-4"
+    "parent": "publishers/anthropic/models/claude-opus-4",
+    "locations": [
+      "global",
+      "us-east5"
+    ]
   },
   "publishers/anthropic/models/claude-3-opus": {
     "format": "anthropic",
@@ -5578,7 +5585,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
-    "displayName": "Claude 3 Haiku"
+    "displayName": "Claude 3 Haiku",
+    "locations": [
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ]
   },
   "publishers/anthropic/models/claude-3-haiku@20240307": {
     "format": "anthropic",
@@ -5586,7 +5598,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.25,
-    "parent": "publishers/anthropic/models/claude-3-haiku"
+    "parent": "publishers/anthropic/models/claude-3-haiku",
+    "locations": [
+      "us-east5",
+      "asia-southeast1",
+      "europe-west1"
+    ]
   },
   "publishers/meta/models/llama-3.1-401b-instruct-maas": {
     "format": "openai",
@@ -5600,7 +5617,11 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "displayName": "Mistral Large (24.11)"
+    "displayName": "Mistral Large (24.11)",
+    "locations": [
+      "us-central1",
+      "europe-west4"
+    ]
   },
   "publishers/mistralai/models/mistral-nemo": {
     "format": "openai",
@@ -5614,7 +5635,11 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Codestral (25.01)"
+    "displayName": "Codestral (25.01)",
+    "locations": [
+      "us-central1",
+      "europe-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro": {
     "format": "google",
@@ -5625,6 +5650,25 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -5633,14 +5677,52 @@
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
@@ -5648,7 +5730,26 @@
     "multimodal": true,
     "displayName": "Gemini 2.5 Pro Experimental",
     "experimental": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash": {
     "format": "google",
@@ -5659,6 +5760,32 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "asia-northeast3",
+      "asia-south1",
+      "asia-southeast1",
+      "australia-southeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west2",
+      "europe-west3",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "southamerica-east1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -5668,7 +5795,10 @@
     "multimodal": true,
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "locations": [
+      "global"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-preview-05-20": {
     "format": "google",
@@ -5677,7 +5807,33 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "asia-northeast3",
+      "asia-south1",
+      "asia-southeast1",
+      "australia-southeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west2",
+      "europe-west3",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "southamerica-east1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-preview-04-17": {
     "format": "google",
@@ -5688,7 +5844,33 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "asia-northeast1",
+      "asia-northeast3",
+      "asia-south1",
+      "asia-southeast1",
+      "australia-southeast1",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west2",
+      "europe-west3",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "northamerica-northeast1",
+      "southamerica-east1",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025": {
     "format": "google",
@@ -5700,6 +5882,9 @@
     "reasoning_budget": true,
     "experimental": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
+    "locations": [
+      "global"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -5714,6 +5899,23 @@
     "experimental": true,
     "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -5727,6 +5929,23 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
+    "locations": [
+      "global",
+      "us-central1",
+      "us-east5",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "europe-west9",
+      "us-east1",
+      "us-east4",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
@@ -5743,7 +5962,10 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Llama 3.3 70B Instruct",
-    "experimental": true
+    "experimental": true,
+    "locations": [
+      "us-central1"
+    ]
   },
   "publishers/meta/models/llama-3.2-90b-vision-instruct-maas": {
     "format": "openai",

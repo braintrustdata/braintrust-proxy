@@ -1,5 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { parseFileMetadataFromUrl, _urljoin } from "./util";
+import { type APISecret } from "@schema";
+import {
+  isNativeInferenceSecret,
+  parseFileMetadataFromUrl,
+  _urljoin,
+} from "./util";
 
 describe("parseFileMetadataFromUrl", () => {
   test("handles basic URLs", () => {
@@ -221,4 +226,77 @@ test("_urljoin", () => {
   );
   expect(_urljoin()).toBe("");
   expect(_urljoin("a")).toBe("a");
+});
+
+describe("isNativeInferenceSecret", () => {
+  test("treats braintrust secrets without custom models as non-native", () => {
+    const secret: APISecret = {
+      type: "braintrust",
+      secret: "test-secret",
+      metadata: {
+        api_base: "http://localhost:8001/native-inference-test",
+      },
+    };
+
+    expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(false);
+  });
+
+  test("treats custom model secrets as native inference only for matching models with braintrust endpoint_type", () => {
+    const secret: APISecret = {
+      type: "openai",
+      secret: "test-secret",
+      metadata: {
+        customModels: {
+          "brain-test-native-1": {
+            format: "openai",
+            flavor: "chat",
+            endpoint_types: ["braintrust"],
+          },
+        },
+      },
+    };
+
+    expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(true);
+    expect(isNativeInferenceSecret(secret, "brain-test-native-2")).toBe(false);
+  });
+
+  test("treats custom model secrets without braintrust endpoint_type as non-native", () => {
+    const secret: APISecret = {
+      type: "openai",
+      secret: "test-secret",
+      metadata: {
+        customModels: {
+          "custom-model": {
+            format: "openai",
+            flavor: "chat",
+          },
+        },
+      },
+    };
+
+    expect(isNativeInferenceSecret(secret, "custom-model")).toBe(false);
+  });
+
+  test("treats non-braintrust secrets without matching custom models as non-native", () => {
+    const secret: APISecret = {
+      type: "openai",
+      secret: "test-secret",
+      metadata: {
+        api_base: "https://api.openai.com/v1",
+      },
+    };
+
+    expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(false);
+  });
+
+  test("returns false when the model is missing", () => {
+    const secret: APISecret = {
+      type: "braintrust",
+      secret: "test-secret",
+      metadata: null,
+    };
+
+    expect(isNativeInferenceSecret(secret, null)).toBe(false);
+    expect(isNativeInferenceSecret(secret, undefined)).toBe(false);
+  });
 });

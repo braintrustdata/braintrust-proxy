@@ -1,4 +1,5 @@
 import contentDisposition from "content-disposition";
+import { type APISecret } from "@schema";
 export interface ModelResponse {
   stream: ReadableStream<Uint8Array> | null;
   response: Response;
@@ -77,6 +78,38 @@ export function flattenChunks(allChunks: Uint8Array[]) {
 
 export function isEmpty(a: any): a is null | undefined {
   return a === undefined || a === null;
+}
+
+export const NATIVE_INFERENCE_ENDPOINT = "braintrust";
+
+export function isNativeInferenceSecret(
+  secret: APISecret,
+  model: string | null | undefined,
+): boolean {
+  if (model === null || model === undefined) {
+    return false;
+  }
+
+  const customModels = secret.metadata?.customModels;
+  if (
+    customModels === null ||
+    customModels === undefined ||
+    typeof customModels !== "object" ||
+    Array.isArray(customModels) ||
+    !(model in customModels)
+  ) {
+    return false;
+  }
+
+  const spec = customModels[model];
+  return (
+    spec !== null &&
+    typeof spec === "object" &&
+    !Array.isArray(spec) &&
+    "endpoint_types" in spec &&
+    Array.isArray(spec.endpoint_types) &&
+    spec.endpoint_types.includes(NATIVE_INFERENCE_ENDPOINT)
+  );
 }
 
 export function getRandomInt(max: number) {

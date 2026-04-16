@@ -1,6 +1,6 @@
 import { DEFAULT_BRAINTRUST_APP_URL } from "@lib/constants";
 import { flushMetrics } from "@lib/metrics";
-import { proxyV1, SpanLogger, LogHistogramFn, BillingEvent } from "@lib/proxy";
+import { proxyV1, SpanLogger, LogHistogramFn } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
@@ -36,8 +36,6 @@ export interface ProxyOpts {
   logHistogram?: LogHistogramFn;
   whitelist?: (string | RegExp)[];
   spanLogger?: SpanLogger;
-  billingOrgId?: string;
-  onBillingEvent?: (event: BillingEvent) => void;
   spanId?: string;
   spanExport?: string;
   nativeInferenceSecretKey?: string;
@@ -400,8 +398,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         digest: digestMessage,
         logHistogram: opts.logHistogram,
         spanLogger: opts.spanLogger,
-        billingOrgId: opts.billingOrgId,
-        onBillingEvent: opts.onBillingEvent,
       });
     } catch (e) {
       return new Response(`${e}`, {

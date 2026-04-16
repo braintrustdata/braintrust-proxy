@@ -102,7 +102,6 @@ import {
   flattenChunksArray,
   getRandomInt,
   isEmpty,
-  isNativeInferenceSecret,
   isObject,
   ModelResponse,
   parseAuthHeader,
@@ -191,20 +190,6 @@ export interface SpanLogger {
   reportProgress: (progress: string) => void;
 }
 
-export type BillingEvent = {
-  event_name: "NativeInferenceTokenUsageEvent";
-  auth_token: string;
-  org_id?: string;
-  isNativeInference?: boolean;
-  model?: string | null;
-  resolved_model?: string | null;
-  org_name?: string;
-  input_tokens?: number;
-  output_tokens?: number;
-  cached_input_tokens?: number;
-  cache_write_input_tokens?: number;
-};
-
 // This is an isomorphic implementation of proxyV1, which is used by both edge functions
 // in CloudFlare and by the node proxy (locally and in lambda).
 export async function proxyV1({
@@ -223,8 +208,6 @@ export async function proxyV1({
   cacheKeyOptions = {},
   decompressFetch = false,
   spanLogger,
-  billingOrgId,
-  onBillingEvent,
   signal,
   fetch = globalThis.fetch,
 }: {
@@ -254,8 +237,6 @@ export async function proxyV1({
   cacheKeyOptions?: CacheKeyOptions;
   decompressFetch?: boolean;
   spanLogger?: SpanLogger;
-  billingOrgId?: string;
-  onBillingEvent?: (event: BillingEvent) => void;
   signal?: AbortSignal;
   fetch?: FetchFn;
 }): Promise<void> {
@@ -318,7 +299,6 @@ export async function proxyV1({
   );
 
   let orgName: string | undefined = proxyHeaders[ORG_NAME_HEADER] ?? undefined;
-  let resolvedOrgName: string | undefined = orgName;
   const projectId: string | undefined =
     proxyHeaders[PROJECT_ID_HEADER] ?? undefined;
 
@@ -588,10 +568,6 @@ export async function proxyV1({
   }
 
   let responseFailed = false;
-  let isNativeInference = false;
-  let secretName: string | null | undefined = undefined;
-  let proxyResponse: Response | undefined = undefined;
-  let proxyStream: ReadableStream<Uint8Array> | null = null;
 
   const overridenHeaders: string[] = [];
   const setOverriddenHeader = (name: string, value: string) => {
@@ -616,7 +592,10 @@ export async function proxyV1({
       );
     }
 
-    const fetchResult = await fetchModelLoop(
+    const {
+      modelResponse: { response: proxyResponse, stream: proxyStream },
+      secretName,
+    } = await fetchModelLoop(
       logHistogram,
       method,
       url,
@@ -670,7 +649,6 @@ export async function proxyV1({
 
         if (secrets.length > 0 && !orgName && secrets[0].org_name) {
           baseAttributes.org_name = secrets[0].org_name;
-          resolvedOrgName = secrets[0].org_name;
         }
         logRequest();
 
@@ -691,10 +669,6 @@ export async function proxyV1({
       signal,
       fetch,
     );
-    proxyResponse = fetchResult.modelResponse.response;
-    proxyStream = fetchResult.modelResponse.stream;
-    secretName = fetchResult.secretName;
-    isNativeInference = fetchResult.isNativeInference;
     stream = proxyStream;
 
     if (!proxyResponse.ok) {
@@ -785,11 +759,6 @@ export async function proxyV1({
   if (stream) {
     let first = true;
     const allChunks: Uint8Array[] = [];
-    let resolvedModel: string | undefined = undefined;
-    let inputTokens: number | undefined = undefined;
-    let outputTokens: number | undefined = undefined;
-    let cachedInputTokens: number | undefined = undefined;
-    let cacheWriteInputTokens: number | undefined = undefined;
 
     // These parameters are for the streaming case
     let reasoning: OpenAIReasoning[] | undefined = undefined;
@@ -818,20 +787,10 @@ export async function proxyV1({
                 | OpenAIChatCompletionChunk
                 | undefined;
               if (result) {
-                if (typeof result.model === "string" && result.model) {
-                  resolvedModel = result.model;
-                }
                 const extendedUsage = completionUsageSchema.safeParse(
                   result.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
-                    extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
                   spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
@@ -1019,20 +978,10 @@ export async function proxyV1({
               case "chat":
               case "completion": {
                 const data = dataRaw as ChatCompletion;
-                if (typeof data.model === "string" && data.model) {
-                  resolvedModel = data.model;
-                }
                 const extendedUsage = completionUsageSchema.safeParse(
                   data.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
-                    extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
                   spanLogger?.log({
                     output: data.choices,
                     metrics: {
@@ -1092,15 +1041,6 @@ export async function proxyV1({
               }
               case "response": {
                 const data = dataRaw as OpenAIResponse;
-                if (typeof data.model === "string" && data.model) {
-                  resolvedModel = data.model;
-                }
-                if (data.usage) {
-                  inputTokens = data.usage.input_tokens;
-                  outputTokens = data.usage.output_tokens;
-                  cachedInputTokens =
-                    data.usage.input_tokens_details?.cached_tokens;
-                }
                 spanLogger?.log({
                   output: data.output,
                   metrics: {
@@ -1149,28 +1089,6 @@ export async function proxyV1({
         });
 
         spanLogger?.end();
-        if (!responseFailed) {
-          try {
-            if (typeof onBillingEvent !== "function") {
-              return;
-            }
-            onBillingEvent({
-              event_name: "NativeInferenceTokenUsageEvent",
-              auth_token: authToken,
-              org_id: billingOrgId,
-              isNativeInference,
-              model,
-              resolved_model: resolvedModel,
-              org_name: resolvedOrgName,
-              input_tokens: inputTokens,
-              output_tokens: outputTokens,
-              cached_input_tokens: cachedInputTokens,
-              cache_write_input_tokens: cacheWriteInputTokens,
-            });
-          } catch (error) {
-            console.warn("billing callback failed", error);
-          }
-        }
         controller.terminate();
       },
     });
@@ -1284,11 +1202,7 @@ async function fetchModelLoop(
   model: string | null,
   signal: AbortSignal | undefined,
   fetch: FetchFn,
-): Promise<{
-  modelResponse: ModelResponse;
-  secretName?: string | null;
-  isNativeInference: boolean;
-}> {
+): Promise<{ modelResponse: ModelResponse; secretName?: string | null }> {
   // model is now passed as a parameter
 
   // TODO: Make this smarter. For now, just pick a random one.
@@ -1342,10 +1256,6 @@ async function fetchModelLoop(
   }
 
   const initialIdx = getRandomInt(secrets.length);
-  const nativeInferenceSecret =
-    model === null || model === undefined
-      ? undefined
-      : secrets.find((secret) => isNativeInferenceSecret(secret, model));
   let proxyResponse: ModelResponse | null = null;
   let secretName: string | null | undefined = null;
   let lastException = null;
@@ -1643,7 +1553,6 @@ async function fetchModelLoop(
       response: proxyResponse.response,
     },
     secretName,
-    isNativeInference: nativeInferenceSecret !== undefined,
   };
 }
 

@@ -229,7 +229,7 @@ test("_urljoin", () => {
 });
 
 describe("isNativeInferenceSecret", () => {
-  test("treats braintrust secrets without custom models as native inference", () => {
+  test("treats braintrust secrets without custom models as non-native", () => {
     const secret: APISecret = {
       type: "braintrust",
       secret: "test-secret",
@@ -238,10 +238,10 @@ describe("isNativeInferenceSecret", () => {
       },
     };
 
-    expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(true);
+    expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(false);
   });
 
-  test("treats custom model secrets as native inference only for matching models", () => {
+  test("treats custom model secrets as native inference only for matching models with braintrust endpoint_type", () => {
     const secret: APISecret = {
       type: "openai",
       secret: "test-secret",
@@ -250,6 +250,7 @@ describe("isNativeInferenceSecret", () => {
           "brain-test-native-1": {
             format: "openai",
             flavor: "chat",
+            endpoint_types: ["braintrust"],
           },
         },
       },
@@ -257,6 +258,23 @@ describe("isNativeInferenceSecret", () => {
 
     expect(isNativeInferenceSecret(secret, "brain-test-native-1")).toBe(true);
     expect(isNativeInferenceSecret(secret, "brain-test-native-2")).toBe(false);
+  });
+
+  test("treats custom model secrets without braintrust endpoint_type as non-native", () => {
+    const secret: APISecret = {
+      type: "openai",
+      secret: "test-secret",
+      metadata: {
+        customModels: {
+          "custom-model": {
+            format: "openai",
+            flavor: "chat",
+          },
+        },
+      },
+    };
+
+    expect(isNativeInferenceSecret(secret, "custom-model")).toBe(false);
   });
 
   test("treats non-braintrust secrets without matching custom models as non-native", () => {

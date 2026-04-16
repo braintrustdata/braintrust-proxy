@@ -80,6 +80,8 @@ export function isEmpty(a: any): a is null | undefined {
   return a === undefined || a === null;
 }
 
+export const NATIVE_INFERENCE_ENDPOINT = "braintrust";
+
 export function isNativeInferenceSecret(
   secret: APISecret,
   model: string | null | undefined,
@@ -93,12 +95,21 @@ export function isNativeInferenceSecret(
     customModels === null ||
     customModels === undefined ||
     typeof customModels !== "object" ||
-    Array.isArray(customModels)
+    Array.isArray(customModels) ||
+    !(model in customModels)
   ) {
-    return secret.type === "braintrust";
+    return false;
   }
 
-  return Object.prototype.hasOwnProperty.call(customModels, model);
+  const spec = customModels[model];
+  return (
+    spec !== null &&
+    typeof spec === "object" &&
+    !Array.isArray(spec) &&
+    "endpoint_types" in spec &&
+    Array.isArray(spec.endpoint_types) &&
+    spec.endpoint_types.includes(NATIVE_INFERENCE_ENDPOINT)
+  );
 }
 
 export function getRandomInt(max: number) {

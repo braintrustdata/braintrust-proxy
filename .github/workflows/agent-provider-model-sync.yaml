@@ -24,9 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Attempt provider-direct sync with Claude Code
-        uses: anthropics/claude-code-action@de8e0b9c42c6cb58e904c857f164aa072244c1ac # beta
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
@@ -38,7 +36,7 @@ jobs:
             --max-turns 200
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue"
             --disallowedTools "Bash,Edit,MultiEdit,Write,Replace,NotebookEditCell,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
-          direct_prompt: |
+          prompt: |
             # Goal
 
             Find gaps in the Braintrust proxy model catalog by comparing it to official provider sources directly instead of relying on LiteLLM as the source of truth.

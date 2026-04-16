@@ -3641,6 +3641,32 @@
       "vertex"
     ]
   },
+  "grok-4.20-0309-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.0,
+    "output_cost_per_mil_tokens": 6.0,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+    "grok-4.20-0309-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.0,
+    "output_cost_per_mil_tokens": 6.0,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "max_input_tokens": 2000000,
+    "max_output_tokens": 2000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "grok-4-1-fast-reasoning-latest": {
     "format": "openai",
     "flavor": "chat",

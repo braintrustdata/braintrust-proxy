@@ -19,6 +19,7 @@ import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 import { Meter, Attributes, Histogram } from "@opentelemetry/api";
+import { sendBillingTelemetryEvent } from "./billing";
 
 export type LogHistogramFn = (args: {
   name: string;
@@ -117,6 +118,30 @@ export async function handleProxyV1(
   let span: Span | undefined;
   let spanId: string | undefined;
   let spanExport: string | undefined;
+  let billingOrgId: string | undefined;
+  const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
+  const apiKey =
+    parseAuthHeader({
+      authorization: request.headers.get("authorization") ?? undefined,
+    }) ?? undefined;
+
+  const getLoginState = async () =>
+    cachedLogin({
+      appUrl: braintrustAppUrl(env).toString(),
+      apiKey,
+      orgName,
+      cache: credentialsCache,
+    });
+
+  if (apiKey) {
+    try {
+      const loginState = await getLoginState();
+      billingOrgId = loginState.orgId ?? undefined;
+    } catch (error) {
+      console.warn("Failed to resolve billing org id", error);
+    }
+  }
+
   const parentHeader = request.headers.get(BT_PARENT);
   if (parentHeader) {
     let parent;
@@ -131,19 +156,11 @@ export async function handleProxyV1(
       );
     }
 
-    const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
-    const apiKey =
-      parseAuthHeader({
-        authorization: request.headers.get("authorization") ?? undefined,
-      }) ?? undefined;
+    const loginState = await getLoginState();
+    billingOrgId = loginState.orgId ?? undefined;
 
     span = startSpan({
-      state: await cachedLogin({
-        appUrl: braintrustAppUrl(env).toString(),
-        apiKey,
-        orgName,
-        cache: credentialsCache,
-      }),
+      state: loginState,
       type: "llm",
       name: "LLM",
       parent: parent.toStr(),
@@ -199,6 +216,17 @@ export async function handleProxyV1(
     spanLogger,
     spanId,
     spanExport,
+    billingOrgId,
+    onBillingEvent: (event) => {
+      ctx.waitUntil(
+        sendBillingTelemetryEvent({
+          telemetryUrl: env.BILLING_TELEMETRY_URL,
+          event,
+        }).catch((error) => {
+          console.warn("billing waitUntil task failed", error);
+        }),
+      );
+    },
     nativeInferenceSecretKey: env.NATIVE_INFERENCE_SECRET_KEY,
   };
 

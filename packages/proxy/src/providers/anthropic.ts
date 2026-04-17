@@ -716,6 +716,26 @@ export function anthropicToolChoiceToOpenAIToolChoice(
 
 export const DEFAULT_ANTHROPIC_MAX_TOKENS = 4096;
 
+const CLAUDE_OPUS_4_7_MODELS = new Set([
+  "claude-opus-4-7",
+  "anthropic.claude-opus-4-7",
+  "publishers/anthropic/models/claude-opus-4-7",
+]);
+
+export function omitUnsupportedAnthropicParams(params: {
+  model?: unknown;
+  temperature?: unknown;
+}): void {
+  if (
+    typeof params.model !== "string" ||
+    !CLAUDE_OPUS_4_7_MODELS.has(params.model)
+  ) {
+    return;
+  }
+
+  delete params.temperature;
+}
+
 export function openaiParamsToAnthropicMesssageParams(
   openai: OpenAIChatCompletionCreateParams,
   modelSpec?: ModelSpec | null,
@@ -759,6 +779,7 @@ export function openaiParamsToAnthropicMesssageParams(
     }
   }
 
+  omitUnsupportedAnthropicParams(anthropic);
   return anthropic;
 }
 

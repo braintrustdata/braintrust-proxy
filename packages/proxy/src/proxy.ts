@@ -76,6 +76,7 @@ import {
   openAIToolCallsToAnthropicToolUse,
   openAIToolMessageToAnthropicToolCall,
   openAIToolsToAnthropicTools,
+  omitUnsupportedAnthropicParams,
   upgradeAnthropicContentMessage,
 } from "./providers/anthropic";
 import { getAzureEntraAccessToken } from "./providers/azure";
@@ -2641,6 +2642,8 @@ async function fetchAnthropicMessages({
   signal?: AbortSignal;
   fetch?: FetchFn;
 }): Promise<ModelResponse> {
+  body = omitUnsupportedAnthropicBodyParams(body);
+
   switch (secret.type) {
     case "anthropic":
       return await customFetch(
@@ -2677,6 +2680,16 @@ async function fetchAnthropicMessages({
         `Unsupported Anthropic secret type: ${secret.type}`,
       );
   }
+}
+
+function omitUnsupportedAnthropicBodyParams(body: unknown): unknown {
+  if (body === null || typeof body !== "object" || Array.isArray(body)) {
+    return body;
+  }
+
+  const params = Object.fromEntries(Object.entries(body));
+  omitUnsupportedAnthropicParams(params);
+  return params;
 }
 
 async function fetchAnthropic({

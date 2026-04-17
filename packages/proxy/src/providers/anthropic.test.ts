@@ -6,6 +6,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import { omitUnsupportedAnthropicParams } from "./anthropic";
 import {
   IMAGE_DATA_URL,
   PDF_DATA_URL,
@@ -644,6 +645,37 @@ it("should use model's max_output_tokens as default when max_tokens not specifie
   expect(requests).toHaveLength(1);
   // Verify the proxy sent max_tokens: 64000 (from model spec) instead of 4096
   expect(requests[0].body).toMatchObject({ max_tokens: 64000 });
+});
+
+it("should omit temperature for Claude Opus 4.7 chat completions", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "claude-opus-4-7",
+      messages: [{ role: "user", content: "Hello" }],
+      temperature: 0.7,
+      reasoning_enabled: true,
+      stream: false,
+    },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].body).not.toHaveProperty("temperature");
+});
+
+it("should omit temperature for Claude Opus 4.7 messages params", () => {
+  const params = {
+    model: "claude-opus-4-7",
+    max_tokens: 128,
+    temperature: 0.7,
+    stream: false,
+  };
+
+  omitUnsupportedAnthropicParams(params);
+
+  expect(params).not.toHaveProperty("temperature");
 });
 
 it("should default Vertex Anthropic calls to us-east5 when location is omitted", async () => {

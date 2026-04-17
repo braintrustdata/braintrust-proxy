@@ -270,6 +270,26 @@ Object.entries(examples).forEach(([example, { openai, ...providers }]) => {
   });
 });
 
+describe("model-specific Anthropic params", () => {
+  it("omits temperature for Claude Opus 4.7", () => {
+    const result = translateParams("anthropic", {
+      model: "claude-opus-4-7",
+      messages: [{ role: "user", content: "Hello" }],
+      temperature: 0.7,
+      reasoning_enabled: true,
+      max_tokens: 4096,
+    });
+
+    expect(result).not.toHaveProperty("temperature");
+    expect(result).toMatchObject({
+      model: "claude-opus-4-7",
+      thinking: {
+        type: "enabled",
+      },
+    });
+  });
+});
+
 describe("APISecretSchema compatibility", () => {
   it("accepts and preserves unknown metadata keys", () => {
     const parsed = APISecretSchema.parse({

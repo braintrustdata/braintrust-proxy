@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
-import { normalizeLocalModels } from "./sync_models";
+import {
+  normalizeLocalModels,
+  normalizeProviderMappingContent,
+} from "./sync_models";
 
 const canonicalFireworksModel = {
   format: "openai",
@@ -62,6 +65,14 @@ describe("sync_models", () => {
     ]);
     expect(models["accounts/fireworks/models/glm-4p5-air"]).toEqual(
       canonicalFireworksModel,
+    );
+  });
+
+  it("normalizes provider mapping files to a single trailing newline", () => {
+    const schemaContent = `export const MODEL_PROVIDER_MAPPING = {\n  "moonshotai/Kimi-K2.5": ["baseten"],\n};\n\n\n`;
+
+    expect(normalizeProviderMappingContent(schemaContent)).toBe(
+      `export const MODEL_PROVIDER_MAPPING = {\n  "moonshotai/Kimi-K2.5": ["baseten"],\n};\n`,
     );
   });
 });

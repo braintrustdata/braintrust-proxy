@@ -379,7 +379,7 @@ function findProviderMappingEntryRange(
   return undefined;
 }
 
-function normalizeProviderMappingContent(schemaContent: string): string {
+export function normalizeProviderMappingContent(schemaContent: string): string {
   const lines = schemaContent.split("\n");
   const normalizedLines: string[] = [];
   const seenCanonicalKeys = new Set<string>();
@@ -419,7 +419,18 @@ function normalizeProviderMappingContent(schemaContent: string): string {
     seenCanonicalKeys.add(canonicalKey);
   }
 
-  return normalizedLines.join("\n");
+  while (
+    normalizedLines.length > 0 &&
+    normalizedLines[normalizedLines.length - 1].trim() === ""
+  ) {
+    normalizedLines.pop();
+  }
+
+  if (normalizedLines.length === 0) {
+    return "";
+  }
+
+  return `${normalizedLines.join("\n")}\n`;
 }
 
 async function normalizeProviderMappingsFile(): Promise<void> {

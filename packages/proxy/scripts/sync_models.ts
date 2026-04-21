@@ -7,6 +7,7 @@ import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import { ModelSchema, ModelSpec } from "../schema/models";
+import { AISecretTypes, CloudSecretTypes } from "../schema";
 import {
   fetchVertexSupportedRegions,
   GOOGLE_VERTEX_LOCATIONS_URL,
@@ -96,6 +97,10 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
 const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
+const SUPPORTED_PROVIDER_TYPES = new Set([
+  ...Object.values(AISecretTypes),
+  ...Object.values(CloudSecretTypes),
+]);
 
 async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
   return new Promise((resolve, reject) => {
@@ -320,6 +325,7 @@ type ResolvedRemoteEntry = {
 function resolveRemoteModels(
   remoteModels: LiteLLMModelList,
   providerFilter?: string,
+  options?: { providersFilter?: Set<string> },
 ): Map<string, ResolvedRemoteEntry> {
   const result = new Map<string, ResolvedRemoteEntry>();
 
@@ -345,6 +351,13 @@ function resolveRemoteModels(
       remoteModel.litellm_provider,
     );
     const providers = getProviderMappingForModel(remoteModelName, remoteModel);
+
+    if (
+      options?.providersFilter &&
+      !providers.some((provider) => options.providersFilter!.has(provider))
+    ) {
+      continue;
+    }
 
     if (result.has(translatedName)) {
       const existing = result.get(translatedName)!;
@@ -1378,8 +1391,10 @@ async function addModelsCommand(argv: any) {
       mergedProviders: string[];
     }> = [];
 
-    // Find missing models, deduplicating by translated name and merging providers
-    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
+    // add-models should only consider providers currently supported in app.
+    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider, {
+      providersFilter: SUPPORTED_PROVIDER_TYPES,
+    });
     for (const [
       translatedModelName,
       { remoteModelName, remoteModel: modelDetail, mergedProviders },

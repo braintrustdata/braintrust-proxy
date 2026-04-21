@@ -681,9 +681,10 @@ it("should omit temperature for Claude Opus 4.7 messages params", () => {
 it("should default Vertex Anthropic calls to us-east5 when location is omitted", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
+  // Use a model with no locations set so the default location is used.
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "publishers/anthropic/models/claude-sonnet-4",
+      model: "publishers/anthropic/models/claude-3-5-sonnet",
       messages: [{ role: "user", content: "Hello" }],
       stream: false,
     },
@@ -711,9 +712,10 @@ it("should default Vertex Anthropic calls to us-east5 when location is omitted",
 it("should honor Vertex metadata location for Anthropic calls", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
+  // Use a model with no locations set so metadata.location is respected.
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "publishers/anthropic/models/claude-sonnet-4",
+      model: "publishers/anthropic/models/claude-3-5-sonnet",
       messages: [{ role: "user", content: "Hello" }],
       stream: false,
     },

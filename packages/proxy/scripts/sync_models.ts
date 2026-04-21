@@ -6,6 +6,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { exec, spawn } from "child_process";
 import { promisify } from "util";
+import { pathToFileURL } from "url";
 import { ModelSchema, ModelSpec } from "../schema/models";
 import {
   canonicalizeLocalModelName,
@@ -262,7 +263,7 @@ function mergeLocalModelDetails(
   };
 }
 
-function normalizeLocalModels(localModels: LocalModelList): {
+export function normalizeLocalModels(localModels: LocalModelList): {
   models: LocalModelList;
   renamedKeys: Array<{ from: string; to: string }>;
 } {
@@ -283,10 +284,21 @@ function normalizeLocalModels(localModels: LocalModelList): {
       continue;
     }
 
-    normalizedModels[canonicalName] =
-      canonicalName === modelName
-        ? mergeLocalModelDetails(model, existing)
-        : mergeLocalModelDetails(existing, model);
+    const hasCanonicalSource = Object.prototype.hasOwnProperty.call(
+      localModels,
+      canonicalName,
+    );
+
+    if (canonicalName === modelName) {
+      normalizedModels[canonicalName] = model;
+      continue;
+    }
+
+    if (hasCanonicalSource) {
+      continue;
+    }
+
+    normalizedModels[canonicalName] = mergeLocalModelDetails(existing, model);
   }
 
   const orderedModels: LocalModelList = {};
@@ -1636,4 +1648,7 @@ async function main() {
     .strict().argv;
 }
 
-void main();
+const entryPointPath = process.argv[1];
+if (entryPointPath && import.meta.url === pathToFileURL(entryPointPath).href) {
+  void main();
+}

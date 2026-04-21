@@ -8,9 +8,16 @@ import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import { ModelSchema, ModelSpec } from "../schema/models";
 import {
+  canonicalizeLocalModelName,
+  getEquivalentLocalModelNames,
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
+import {
+  getFallbackCompleteOrdering,
+  getProviderMappingForModel,
+  matchesProviderFilter,
+} from "./sync_model_catalog";
 import {
   fetchVertexSupportedRegions,
   GOOGLE_VERTEX_LOCATIONS_URL,
@@ -168,118 +175,6 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
   }
 }
 
-function matchesProviderFilter(
-  remoteModelName: string,
-  remoteModel: LiteLLMModelDetail,
-  providerFilter?: string,
-): boolean {
-  if (!providerFilter) {
-    return true;
-  }
-
-  const lowerFilter = providerFilter.toLowerCase();
-  const modelProvider = remoteModel.litellm_provider?.toLowerCase();
-  const modelNamePart = remoteModelName.split("/")[0].toLowerCase();
-
-  return (
-    modelProvider?.includes(lowerFilter) ||
-    modelNamePart.includes(lowerFilter) ||
-    modelProvider === lowerFilter ||
-    modelNamePart === lowerFilter
-  );
-}
-
-function getProviderMappingForModel(
-  remoteModelName: string,
-  remoteModel: LiteLLMModelDetail,
-): string[] {
-  // Helper function to map provider name to endpoint type
-  const mapProviderName = (providerName: string | undefined): string[] => {
-    if (!providerName) return [];
-
-    const lowerProvider = providerName.toLowerCase();
-
-    // Map provider names to our endpoint types
-    if (lowerProvider === "xai" || lowerProvider.includes("xai")) {
-      return ["xAI"];
-    }
-    if (lowerProvider === "anthropic" || lowerProvider.includes("anthropic")) {
-      return ["anthropic"];
-    }
-    if (lowerProvider === "openai" || lowerProvider.includes("openai")) {
-      return ["openai", "azure"];
-    }
-    if (
-      lowerProvider === "google" ||
-      lowerProvider === "gemini" ||
-      lowerProvider.includes("google") ||
-      lowerProvider.includes("gemini")
-    ) {
-      return ["google"];
-    }
-    if (lowerProvider === "mistral" || lowerProvider.includes("mistral")) {
-      return ["mistral"];
-    }
-    if (lowerProvider === "together" || lowerProvider.includes("together")) {
-      return ["together"];
-    }
-    if (lowerProvider === "groq" || lowerProvider.includes("groq")) {
-      return ["groq"];
-    }
-    if (lowerProvider === "replicate" || lowerProvider.includes("replicate")) {
-      return ["replicate"];
-    }
-    if (lowerProvider === "fireworks" || lowerProvider.includes("fireworks")) {
-      return ["fireworks"];
-    }
-    if (
-      lowerProvider === "perplexity" ||
-      lowerProvider.includes("perplexity")
-    ) {
-      return ["perplexity"];
-    }
-    if (
-      lowerProvider === "databricks" ||
-      lowerProvider.includes("databricks")
-    ) {
-      return ["databricks"];
-    }
-    if (lowerProvider === "lepton" || lowerProvider.includes("lepton")) {
-      return ["lepton"];
-    }
-    if (lowerProvider === "cerebras" || lowerProvider.includes("cerebras")) {
-      return ["cerebras"];
-    }
-    if (lowerProvider === "baseten" || lowerProvider.includes("baseten")) {
-      return ["baseten"];
-    }
-    if (lowerProvider === "bedrock" || lowerProvider.includes("bedrock")) {
-      return ["bedrock"];
-    }
-    if (lowerProvider === "vertex_ai" || lowerProvider.includes("vertex")) {
-      return ["vertex"];
-    }
-
-    return [];
-  };
-
-  // Try litellm_provider first
-  const provider = remoteModel.litellm_provider;
-  let result = mapProviderName(provider);
-
-  // If no match, try model name prefix as fallback
-  if (result.length === 0) {
-    const modelNameProviderPart = remoteModelName.split("/")[0];
-    result = mapProviderName(modelNameProviderPart);
-  }
-
-  if (result.length === 0) {
-    console.warn(`Unknown provider: ${provider} for model ${remoteModelName}`);
-  }
-
-  return result;
-}
-
 type ResolvedRemoteEntry = {
   remoteModelName: string;
   remoteModel: LiteLLMModelDetail;
@@ -357,40 +252,246 @@ function resolveRemoteModels(
   return result;
 }
 
+function mergeLocalModelDetails(
+  primary: LocalModelDetail,
+  secondary: LocalModelDetail,
+): LocalModelDetail {
+  return {
+    ...secondary,
+    ...primary,
+  };
+}
+
+function normalizeLocalModels(localModels: LocalModelList): {
+  models: LocalModelList;
+  renamedKeys: Array<{ from: string; to: string }>;
+} {
+  const normalizedModels: LocalModelList = {};
+  const orderedNames: string[] = [];
+  const renamedKeys: Array<{ from: string; to: string }> = [];
+
+  for (const [modelName, model] of Object.entries(localModels)) {
+    const canonicalName = canonicalizeLocalModelName(modelName);
+    if (canonicalName !== modelName) {
+      renamedKeys.push({ from: modelName, to: canonicalName });
+    }
+
+    const existing = normalizedModels[canonicalName];
+    if (!existing) {
+      normalizedModels[canonicalName] = model;
+      orderedNames.push(canonicalName);
+      continue;
+    }
+
+    normalizedModels[canonicalName] =
+      canonicalName === modelName
+        ? mergeLocalModelDetails(model, existing)
+        : mergeLocalModelDetails(existing, model);
+  }
+
+  const orderedModels: LocalModelList = {};
+  for (const modelName of orderedNames) {
+    orderedModels[modelName] = normalizedModels[modelName];
+  }
+
+  return {
+    models: orderedModels,
+    renamedKeys,
+  };
+}
+
+function reorderModelProperties(localModels: LocalModelList): LocalModelList {
+  const orderedModelsToWrite: LocalModelList = {};
+  const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
+
+  for (const modelName in localModels) {
+    const originalModel = localModels[modelName];
+    const orderedModel: Partial<ModelSpec> = {};
+
+    for (const key of schemaKeys) {
+      if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+        (orderedModel as any)[key] = originalModel[key];
+      }
+    }
+
+    for (const key in originalModel) {
+      if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
+        if (!schemaKeys.includes(key as keyof ModelSpec)) {
+          (orderedModel as any)[key] = (originalModel as any)[key];
+        }
+      }
+    }
+
+    orderedModelsToWrite[modelName] = orderedModel as ModelSpec;
+  }
+
+  return orderedModelsToWrite;
+}
+
+async function writeLocalModels(localModels: LocalModelList): Promise<void> {
+  const orderedModelsToWrite = reorderModelProperties(localModels);
+  await fs.promises.writeFile(
+    LOCAL_MODEL_LIST_PATH,
+    JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
+  );
+}
+
+type ProviderMappingEntryRange = {
+  start: number;
+  end: number;
+};
+
+function isProviderMappingEntryEnd(line: string): boolean {
+  return /\],(?:\s*\/\/.*)?$/.test(line.trim());
+}
+
+function findProviderMappingEntryRange(
+  lines: string[],
+  modelName: string,
+): ProviderMappingEntryRange | undefined {
+  const entryPrefix = `  "${modelName}":`;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!lines[i].startsWith(entryPrefix)) {
+      continue;
+    }
+
+    let end = i;
+    while (end < lines.length && !isProviderMappingEntryEnd(lines[end])) {
+      end += 1;
+    }
+
+    return { start: i, end };
+  }
+
+  return undefined;
+}
+
+function normalizeProviderMappingContent(schemaContent: string): string {
+  const lines = schemaContent.split("\n");
+  const normalizedLines: string[] = [];
+  const seenCanonicalKeys = new Set<string>();
+
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/^  "([^"]+)":/);
+    if (!match) {
+      if (lines[i].trim() === "],") {
+        continue;
+      }
+
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    const originalKey = match[1];
+    const canonicalKey = canonicalizeLocalModelName(originalKey);
+    const entryLines = [lines[i]];
+
+    while (
+      i + 1 < lines.length &&
+      !isProviderMappingEntryEnd(entryLines[entryLines.length - 1])
+    ) {
+      i += 1;
+      entryLines.push(lines[i]);
+    }
+
+    if (seenCanonicalKeys.has(canonicalKey)) {
+      continue;
+    }
+
+    if (canonicalKey !== originalKey) {
+      entryLines[0] = entryLines[0].replace(originalKey, canonicalKey);
+    }
+
+    normalizedLines.push(...entryLines);
+    seenCanonicalKeys.add(canonicalKey);
+  }
+
+  return normalizedLines.join("\n");
+}
+
+async function normalizeProviderMappingsFile(): Promise<void> {
+  const schemaContent = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const normalizedContent = normalizeProviderMappingContent(schemaContent);
+
+  if (normalizedContent !== schemaContent) {
+    await fs.promises.writeFile(SCHEMA_INDEX_PATH, normalizedContent);
+  }
+}
+
 async function updateProviderMapping(
   newModels: Array<{
     name: string;
     providers: string[];
     remoteModel: LiteLLMModelDetail;
   }>,
+  completeModelOrder?: string[],
 ): Promise<void> {
   try {
     const schemaContent = await fs.promises.readFile(
       SCHEMA_INDEX_PATH,
       "utf-8",
     );
+    const normalizedContent = normalizeProviderMappingContent(schemaContent);
+    const lines = normalizedContent.split("\n");
+    let changed = normalizedContent !== schemaContent;
 
-    // Generate new entries for the models
-    const newEntries = newModels.map(
-      ({ name, providers }) => `  "${name}": ${JSON.stringify(providers)},`,
-    );
+    for (const { name, providers } of newModels) {
+      if (findProviderMappingEntryRange(lines, name)) {
+        continue;
+      }
 
-    // Find the line with "grok-beta": ["xAI"], and insert after it
-    const grokBetaLine = schemaContent.indexOf('"grok-beta": ["xAI"],');
-    if (grokBetaLine !== -1) {
-      const lineEnd = schemaContent.indexOf("\n", grokBetaLine);
-      const beforeInsertion = schemaContent.substring(0, lineEnd + 1);
-      const afterInsertion = schemaContent.substring(lineEnd + 1);
+      const newEntry = `  "${name}": ${JSON.stringify(providers)},`;
+      let insertionIndex = -1;
 
-      const updatedSchemaContent =
-        beforeInsertion + newEntries.join("\n") + "\n" + afterInsertion;
+      if (completeModelOrder) {
+        const modelPosition = completeModelOrder.indexOf(name);
+        if (modelPosition !== -1) {
+          for (let i = modelPosition - 1; i >= 0; i--) {
+            const range = findProviderMappingEntryRange(
+              lines,
+              completeModelOrder[i],
+            );
+            if (range) {
+              insertionIndex = range.end + 1;
+              break;
+            }
+          }
 
-      await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedSchemaContent);
+          if (insertionIndex === -1) {
+            for (
+              let i = modelPosition + 1;
+              i < completeModelOrder.length;
+              i++
+            ) {
+              const range = findProviderMappingEntryRange(
+                lines,
+                completeModelOrder[i],
+              );
+              if (range) {
+                insertionIndex = range.start;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      if (insertionIndex === -1) {
+        const closingBraceIndex = lines.lastIndexOf("};");
+        insertionIndex =
+          closingBraceIndex === -1 ? lines.length : closingBraceIndex;
+      }
+
+      lines.splice(insertionIndex, 0, newEntry);
+      changed = true;
+    }
+
+    if (changed) {
+      await fs.promises.writeFile(SCHEMA_INDEX_PATH, `${lines.join("\n")}\n`);
       console.log(
         `✅ Updated provider mappings for ${newModels.length} models in schema/index.ts`,
       );
-    } else {
-      console.warn("Could not find grok-beta entry to use as insertion point");
     }
   } catch (error) {
     console.error("Failed to update provider mappings:", error);
@@ -615,130 +716,6 @@ function rebuildCompleteModelList(
   return result;
 }
 
-function getFallbackCompleteOrdering(
-  existingModelNames: string[],
-  newModelNames: string[],
-): string[] {
-  // Create a complete list by intelligently inserting new models into existing order
-  const allModels = [...existingModelNames];
-
-  // Sort new models by their logical order first
-  const sortedNewModels = newModelNames.sort((a, b) => {
-    // Extract version numbers and variants for grok models
-    const aMatch = a.match(/grok-(\d+)(?:-(.+))?/);
-    const bMatch = b.match(/grok-(\d+)(?:-(.+))?/);
-
-    if (aMatch && bMatch) {
-      const aVersion = parseInt(aMatch[1]);
-      const bVersion = parseInt(bMatch[1]);
-
-      // Sort by version number (higher first)
-      if (aVersion !== bVersion) {
-        return bVersion - aVersion;
-      }
-
-      // Same version, sort by variant
-      const aVariant = aMatch[2] || "";
-      const bVariant = bMatch[2] || "";
-
-      // Base model first, then latest, then others
-      const variantOrder = [
-        "",
-        "latest",
-        "beta",
-        "mini",
-        "mini-latest",
-        "mini-beta",
-        "mini-fast",
-        "mini-fast-latest",
-        "mini-fast-beta",
-        "fast-beta",
-        "fast-latest",
-      ];
-      const aIndex = variantOrder.indexOf(aVariant);
-      const bIndex = variantOrder.indexOf(bVariant);
-
-      if (aIndex !== -1 && bIndex !== -1) {
-        return aIndex - bIndex;
-      }
-
-      return aVariant.localeCompare(bVariant);
-    }
-
-    // Fallback to alphabetical
-    return a.localeCompare(b);
-  });
-
-  // Insert each new model at the appropriate position
-  for (const newModel of sortedNewModels) {
-    const insertionIndex = findInsertionIndex(allModels, newModel);
-    allModels.splice(insertionIndex, 0, newModel);
-  }
-
-  return allModels;
-}
-
-function findInsertionIndex(
-  existingModels: string[],
-  newModel: string,
-): number {
-  // For grok models, find the right position based on version and variant
-  const newMatch = newModel.match(/grok-(\d+)(?:-(.+))?/);
-  if (!newMatch) {
-    // Non-grok model, add at end
-    return existingModels.length;
-  }
-
-  const newVersion = parseInt(newMatch[1]);
-  const newVariant = newMatch[2] || "";
-
-  // Find insertion point by comparing with existing models
-  for (let i = 0; i < existingModels.length; i++) {
-    const existingModel = existingModels[i];
-    const existingMatch = existingModel.match(/grok-(\d+)(?:-(.+))?/);
-
-    if (existingMatch) {
-      const existingVersion = parseInt(existingMatch[1]);
-      const existingVariant = existingMatch[2] || "";
-
-      // Insert before models with lower version numbers
-      if (newVersion > existingVersion) {
-        return i;
-      }
-
-      // Same version - check variant ordering
-      if (newVersion === existingVersion) {
-        const variantOrder = [
-          "",
-          "latest",
-          "beta",
-          "mini",
-          "mini-latest",
-          "mini-beta",
-          "mini-fast",
-          "mini-fast-latest",
-          "mini-fast-beta",
-          "fast-beta",
-          "fast-latest",
-        ];
-        const newVariantIndex = variantOrder.indexOf(newVariant);
-        const existingVariantIndex = variantOrder.indexOf(existingVariant);
-
-        if (newVariantIndex !== -1 && existingVariantIndex !== -1) {
-          if (newVariantIndex < existingVariantIndex) {
-            return i;
-          }
-        } else if (newVariant.localeCompare(existingVariant) < 0) {
-          return i;
-        }
-      }
-    }
-  }
-
-  // If we didn't find a position, add at the end
-  return existingModels.length;
-}
-
 async function findMissingCommand(argv: any) {
   try {
     console.log("Fetching remote models from:", REMOTE_MODEL_URL);
@@ -746,7 +723,9 @@ async function findMissingCommand(argv: any) {
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
-    const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     const localModelNames = new Set(Object.keys(localModels));
@@ -925,7 +904,10 @@ async function updateModelsCommand(argv: any) {
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
     console.log("Reading local models for model update...");
-    const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+    const normalizedLocalData = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    );
+    const localModels = normalizedLocalData.models;
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     const updatedLocalModels = JSON.parse(
@@ -1286,38 +1268,8 @@ async function updateModelsCommand(argv: any) {
 
     if (argv.write) {
       if (madeChanges) {
-        // Reorder keys according to ModelSchema before writing
-        const orderedModelsToWrite: LocalModelList = {};
-        const schemaKeys = Object.keys(ModelSchema.shape) as Array<
-          keyof ModelSpec
-        >;
-
-        for (const modelName in updatedLocalModels) {
-          const originalModel = updatedLocalModels[modelName];
-          const orderedModel: Partial<ModelSpec> = {};
-
-          // Add schema keys in their defined order
-          for (const key of schemaKeys) {
-            if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
-              (orderedModel as any)[key] = originalModel[key];
-            }
-          }
-
-          // Add any other keys not in ModelSchema (e.g., from passthrough or custom additions)
-          for (const key in originalModel) {
-            if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
-              if (!schemaKeys.includes(key as keyof ModelSpec)) {
-                (orderedModel as any)[key] = (originalModel as any)[key];
-              }
-            }
-          }
-          orderedModelsToWrite[modelName] = orderedModel as ModelSpec;
-        }
-
-        await fs.promises.writeFile(
-          LOCAL_MODEL_LIST_PATH,
-          JSON.stringify(orderedModelsToWrite, null, 2) + "\n", // Use the reordered models
-        );
+        await writeLocalModels(updatedLocalModels);
+        await normalizeProviderMappingsFile();
         console.log(
           `\nLocal model_list.json has been updated with new model information (pricing, token limits) and keys ordered according to schema.`,
         );
@@ -1350,7 +1302,10 @@ async function addModelsCommand(argv: any) {
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
-    const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+    const normalizedLocalData = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    );
+    const localModels = normalizedLocalData.models;
     console.log(`Read ${Object.keys(localModels).length} local models.`);
 
     const localModelNames = new Set(Object.keys(localModels));
@@ -1377,7 +1332,9 @@ async function addModelsCommand(argv: any) {
         }
       }
 
-      if (!localModelNames.has(translatedModelName)) {
+      const equivalentLocalNames =
+        getEquivalentLocalModelNames(translatedModelName);
+      if (!equivalentLocalNames.some((name) => localModelNames.has(name))) {
         missingInLocal.push({
           remoteModelName,
           translatedName: translatedModelName,
@@ -1418,7 +1375,10 @@ async function addModelsCommand(argv: any) {
           console.log(
             `Found ${missingProviderMappings.length} models missing provider mappings`,
           );
-          await updateProviderMapping(missingProviderMappings);
+          await updateProviderMapping(
+            missingProviderMappings,
+            Object.keys(localModels),
+          );
         } else {
           console.log("All models have provider mappings");
         }
@@ -1518,45 +1478,14 @@ async function addModelsCommand(argv: any) {
     }
 
     if (argv.write) {
-      // Reorder keys according to ModelSchema and write
-      const orderedModelsToWrite: LocalModelList = {};
-      const schemaKeys = Object.keys(ModelSchema.shape) as Array<
-        keyof ModelSpec
-      >;
-
-      for (const modelName in updatedModels) {
-        const originalModel = updatedModels[modelName];
-        const orderedModel: Partial<ModelSpec> = {};
-
-        // Add schema keys in their defined order
-        for (const key of schemaKeys) {
-          if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
-            (orderedModel as any)[key] = originalModel[key];
-          }
-        }
-
-        // Add any other keys not in ModelSchema
-        for (const key in originalModel) {
-          if (Object.prototype.hasOwnProperty.call(originalModel, key)) {
-            if (!schemaKeys.includes(key as keyof ModelSpec)) {
-              (orderedModel as any)[key] = (originalModel as any)[key];
-            }
-          }
-        }
-        orderedModelsToWrite[modelName] = orderedModel as ModelSpec;
-      }
-
-      await fs.promises.writeFile(
-        LOCAL_MODEL_LIST_PATH,
-        JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
-      );
+      await writeLocalModels(updatedModels);
       console.log(
         `\n✅ Successfully added ${missingInLocal.length} models to ${LOCAL_MODEL_LIST_PATH}`,
       );
 
       // Update provider mappings in schema/index.ts
       console.log("\nUpdating provider mappings...");
-      await updateProviderMapping(providerMappingData);
+      await updateProviderMapping(providerMappingData, completeModelOrder);
     } else {
       console.log(`\n📋 To actually add these models, run with --write flag`);
       console.log(
@@ -1571,8 +1500,59 @@ async function addModelsCommand(argv: any) {
   }
 }
 
+async function normalizeLocalModelsCommand(argv: any) {
+  try {
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const normalizedLocalData = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    );
+    const renamedKeys = normalizedLocalData.renamedKeys;
+
+    if (renamedKeys.length === 0) {
+      console.log("No local model keys needed normalization.");
+      if (argv.write) {
+        await normalizeProviderMappingsFile();
+      }
+      return;
+    }
+
+    console.log(`Found ${renamedKeys.length} local model keys to normalize:`);
+    for (const { from, to } of renamedKeys) {
+      console.log(`  ${from} -> ${to}`);
+    }
+
+    if (!argv.write) {
+      console.log(
+        "\n📋 To actually rewrite the local catalog, run with --write flag",
+      );
+      return;
+    }
+
+    await writeLocalModels(normalizedLocalData.models);
+    await normalizeProviderMappingsFile();
+    console.log(`\n✅ Normalized ${renamedKeys.length} local model keys.`);
+  } catch (error) {
+    console.error("Error during normalize-local-models command:", error);
+    process.exit(1);
+  }
+}
+
 async function main() {
   await yargs(hideBin(process.argv))
+    .command(
+      "normalize-local-models",
+      "Normalize legacy local model ids to their canonical form",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description: "Write normalized local model ids back to disk",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await normalizeLocalModelsCommand(argv);
+      },
+    )
     .command(
       "find-missing",
       "Find models in the remote list that are missing locally",

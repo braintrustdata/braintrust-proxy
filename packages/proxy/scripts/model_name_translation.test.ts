@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  canonicalizeLocalModelName,
+  getEquivalentLocalModelNames,
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
@@ -57,5 +59,23 @@ describe("translateToBraintrust", () => {
     expect(
       isSupportedTranslatedModelName("deepseek-ai/DeepSeek-V3-0324", "baseten"),
     ).toBe(true);
+  });
+
+  it("canonicalizes legacy Fireworks local keys", () => {
+    expect(
+      canonicalizeLocalModelName(
+        "fireworks_ai/accounts/fireworks/models/glm-4p5",
+      ),
+    ).toBe("accounts/fireworks/models/glm-4p5");
+  });
+
+  it("returns equivalent Fireworks local keys", () => {
+    expect(
+      getEquivalentLocalModelNames("accounts/fireworks/models/glm-4p5"),
+    ).toEqual([
+      "accounts/fireworks/models/glm-4p5",
+      "fireworks_ai/accounts/fireworks/models/glm-4p5",
+      "fireworks/accounts/fireworks/models/glm-4p5",
+    ]);
   });
 });

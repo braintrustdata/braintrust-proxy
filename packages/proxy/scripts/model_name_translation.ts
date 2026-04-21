@@ -39,6 +39,31 @@ export function translateToBraintrust(
   return modelName;
 }
 
+export function canonicalizeLocalModelName(modelName: string): string {
+  if (modelName.startsWith("fireworks_ai/accounts/fireworks/models/")) {
+    return modelName.substring("fireworks_ai/".length);
+  }
+
+  if (modelName.startsWith("fireworks/accounts/fireworks/models/")) {
+    return modelName.substring("fireworks/".length);
+  }
+
+  return modelName;
+}
+
+export function getEquivalentLocalModelNames(modelName: string): string[] {
+  const canonicalName = canonicalizeLocalModelName(modelName);
+  if (!canonicalName.startsWith("accounts/fireworks/models/")) {
+    return [canonicalName];
+  }
+
+  return [
+    canonicalName,
+    `fireworks_ai/${canonicalName}`,
+    `fireworks/${canonicalName}`,
+  ];
+}
+
 export function isSupportedTranslatedModelName(
   modelName: string,
   provider?: string,

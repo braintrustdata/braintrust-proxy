@@ -9,6 +9,7 @@ const PREFIXED_PROVIDERS = new Set([
   "databricks",
   "fireworks",
   "fireworks_ai",
+  "baseten",
 ]);
 
 export function translateToBraintrust(

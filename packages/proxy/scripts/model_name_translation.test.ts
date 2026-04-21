@@ -23,6 +23,12 @@ describe("translateToBraintrust", () => {
     ).toBe("accounts/fireworks/models/qwen3-next-80b-a3b-instruct");
   });
 
+  it("strips baseten prefixes from Baseten model ids", () => {
+    expect(
+      translateToBraintrust("baseten/deepseek-ai/DeepSeek-V3-0324", "baseten"),
+    ).toBe("deepseek-ai/DeepSeek-V3-0324");
+  });
+
   it("rejects the Fireworks provider root path", () => {
     expect(
       isSupportedTranslatedModelName(
@@ -44,6 +50,12 @@ describe("translateToBraintrust", () => {
         "accounts/fireworks/models/llama4-maverick-instruct-basic",
         "fireworks_ai",
       ),
+    ).toBe(true);
+  });
+
+  it("accepts concrete Baseten model ids after prefix stripping", () => {
+    expect(
+      isSupportedTranslatedModelName("deepseek-ai/DeepSeek-V3-0324", "baseten"),
     ).toBe(true);
   });
 });

@@ -8,7 +8,7 @@ on:
       providers:
         description: "Space-separated provider allowlist"
         required: false
-        default: "fireworks openai anthropic"
+        default: "fireworks openai anthropic baseten"
 
 concurrency:
   group: sync-models
@@ -22,7 +22,7 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
-      DEFAULT_PROVIDERS: "fireworks openai anthropic"
+      DEFAULT_PROVIDERS: "fireworks openai anthropic baseten"
       BRANCH_NAME: chore/sync-new-models
       COMMIT_MESSAGE: "chore: sync new models"
       PR_TITLE: "chore: sync new models"

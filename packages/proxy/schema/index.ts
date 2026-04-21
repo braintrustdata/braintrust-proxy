@@ -457,55 +457,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "fireworks-ai-moe-up-to-56b": ["fireworks"],
   "fireworks-ai-up-to-4b": ["fireworks"],
   "fireworks_ai/WhereIsAI/UAE-Large-V1": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-coder-v2-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/deepseek-r1": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-r1-0528": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-r1-basic": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-v3": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-v3-0324": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/deepseek-v3p1": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/firefunction-v2": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/glm-4p5": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/glm-5": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/glm-4p5-air": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
   "accounts/fireworks/models/kimi-k2p5": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p1-405b-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p1-8b-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p2-11b-vision-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p2-1b-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p2-3b-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama-v3p2-90b-vision-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama4-maverick-instruct-basic": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/llama4-scout-instruct-basic": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/mixtral-8x22b-instruct-hf": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/qwen2-72b-instruct": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/qwen2p5-coder-32b-instruct": [
-    "fireworks",
-  ],
-  "fireworks_ai/accounts/fireworks/models/yi-large": ["fireworks"],
   "fireworks_ai/nomic-ai/nomic-embed-text-v1": ["fireworks"],
   "fireworks_ai/nomic-ai/nomic-embed-text-v1.5": ["fireworks"],
   "fireworks_ai/thenlper/gte-base": ["fireworks"],
@@ -608,10 +560,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "moonshotai/Kimi-K2-Instruct": ["baseten"],
   "deepseek-ai/DeepSeek-V3-0324": ["baseten"],
   "publishers/moonshotai/models/kimi-k2.5": ["azure"],
-  "fireworks_ai/accounts/fireworks/models/glm-4p7": ["fireworks"],
-  "fireworks_ai/accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": [
-    "fireworks",
-  ],
 };
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {

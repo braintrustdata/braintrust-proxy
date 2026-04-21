@@ -826,23 +826,31 @@ export async function proxyV1({
                   result.usage,
                 );
                 if (extendedUsage.success) {
+                  const legacyPromptCacheMetrics = getLegacyPromptCacheMetrics(
+                    result.usage,
+                  );
                   inputTokens = extendedUsage.data.prompt_tokens;
                   outputTokens = extendedUsage.data.completion_tokens;
                   cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens ??
+                    legacyPromptCacheMetrics.cachedInputTokens;
                   cacheWriteInputTokens =
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens ??
+                    legacyPromptCacheMetrics.cacheWriteInputTokens;
                   spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
                       prompt_tokens: extendedUsage.data.prompt_tokens,
                       completion_tokens: extendedUsage.data.completion_tokens,
                       prompt_cached_tokens:
-                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cached_tokens ??
+                        legacyPromptCacheMetrics.cachedInputTokens,
                       prompt_cache_creation_tokens:
                         extendedUsage.data.prompt_tokens_details
-                          ?.cache_creation_tokens,
+                          ?.cache_creation_tokens ??
+                        legacyPromptCacheMetrics.cacheWriteInputTokens,
                       completion_reasoning_tokens:
                         extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
@@ -864,6 +872,7 @@ export async function proxyV1({
                     name: "aiproxy.prompt_cached_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                      legacyPromptCacheMetrics.cachedInputTokens ||
                       0,
                     attributes: baseAttributes,
                   });
@@ -871,7 +880,9 @@ export async function proxyV1({
                     name: "aiproxy.prompt_cache_creation_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details
-                        ?.cache_creation_tokens || 0,
+                        ?.cache_creation_tokens ||
+                      legacyPromptCacheMetrics.cacheWriteInputTokens ||
+                      0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
@@ -1027,13 +1038,18 @@ export async function proxyV1({
                   data.usage,
                 );
                 if (extendedUsage.success) {
+                  const legacyPromptCacheMetrics = getLegacyPromptCacheMetrics(
+                    data.usage,
+                  );
                   inputTokens = extendedUsage.data.prompt_tokens;
                   outputTokens = extendedUsage.data.completion_tokens;
                   cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens ??
+                    legacyPromptCacheMetrics.cachedInputTokens;
                   cacheWriteInputTokens =
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens ??
+                    legacyPromptCacheMetrics.cacheWriteInputTokens;
                   spanLogger?.log({
                     output: data.choices,
                     metrics: {
@@ -1041,10 +1057,13 @@ export async function proxyV1({
                       prompt_tokens: extendedUsage.data.prompt_tokens,
                       completion_tokens: extendedUsage.data.completion_tokens,
                       prompt_cached_tokens:
-                        extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                        extendedUsage.data.prompt_tokens_details
+                          ?.cached_tokens ??
+                        legacyPromptCacheMetrics.cachedInputTokens,
                       prompt_cache_creation_tokens:
                         extendedUsage.data.prompt_tokens_details
-                          ?.cache_creation_tokens,
+                          ?.cache_creation_tokens ??
+                        legacyPromptCacheMetrics.cacheWriteInputTokens,
                       completion_reasoning_tokens:
                         extendedUsage.data.completion_tokens_details
                           ?.reasoning_tokens,
@@ -1066,6 +1085,7 @@ export async function proxyV1({
                     name: "aiproxy.prompt_cached_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details?.cached_tokens ||
+                      legacyPromptCacheMetrics.cachedInputTokens ||
                       0,
                     attributes: baseAttributes,
                   });
@@ -1073,7 +1093,9 @@ export async function proxyV1({
                     name: "aiproxy.prompt_cache_creation_tokens",
                     value:
                       extendedUsage.data.prompt_tokens_details
-                        ?.cache_creation_tokens || 0,
+                        ?.cache_creation_tokens ||
+                      legacyPromptCacheMetrics.cacheWriteInputTokens ||
+                      0,
                     attributes: baseAttributes,
                   });
                   logHistogram?.({
@@ -1119,6 +1141,12 @@ export async function proxyV1({
               case "embedding":
                 {
                   const data = dataRaw as CreateEmbeddingResponse;
+                  if (typeof data.model === "string" && data.model) {
+                    resolvedModel = data.model;
+                  }
+                  if (data.usage) {
+                    inputTokens = data.usage.prompt_tokens;
+                  }
                   spanLogger?.log({
                     output: {
                       embedding_length: data.data?.[0].embedding.length,
@@ -1295,6 +1323,7 @@ async function fetchModelLoop(
   // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
 
+  const requestedModel = model;
   const customModelOverride =
     secrets.length > 0 && secrets[0].metadata?.overrideModel
       ? String(secrets[0].metadata.overrideModel)
@@ -1344,9 +1373,11 @@ async function fetchModelLoop(
 
   const initialIdx = getRandomInt(secrets.length);
   const nativeInferenceSecret =
-    model === null || model === undefined
+    requestedModel === null || requestedModel === undefined
       ? undefined
-      : secrets.find((secret) => isNativeInferenceSecret(secret, model));
+      : secrets.find((secret) =>
+          isNativeInferenceSecret(secret, requestedModel),
+        );
   let proxyResponse: ModelResponse | null = null;
   let secretName: string | null | undefined = null;
   let lastException = null;
@@ -1878,6 +1909,29 @@ function chatCompletionFromResponse(response: OpenAIResponse): ChatCompletion {
           },
         }
       : undefined,
+  };
+}
+
+function getLegacyPromptCacheMetrics(usage: unknown): {
+  cachedInputTokens?: number;
+  cacheWriteInputTokens?: number;
+} {
+  if (!isObject(usage)) {
+    return {};
+  }
+
+  const cachedInputTokens =
+    typeof usage.prompt_cached_tokens === "number"
+      ? usage.prompt_cached_tokens
+      : undefined;
+  const cacheWriteInputTokens =
+    typeof usage.prompt_cache_creation_tokens === "number"
+      ? usage.prompt_cache_creation_tokens
+      : undefined;
+
+  return {
+    cachedInputTokens,
+    cacheWriteInputTokens,
   };
 }
 

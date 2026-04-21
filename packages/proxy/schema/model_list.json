@@ -1535,12 +1535,7 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "OpenAI GPT-OSS (120B)",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "reasoning": true
   },
   "accounts/fireworks/models/gpt-oss-20b": {
     "format": "openai",
@@ -1548,12 +1543,7 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "OpenAI GPT-OSS (20B)",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "reasoning": true
   },
   "gpt-oss-120b": {
     "format": "openai",
@@ -1920,91 +1910,6 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "DeepSeek LLM Chat (67B)"
   },
-  "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.45,
-    "output_cost_per_mil_tokens": 1.8,
-    "displayName": "Qwen3 Coder 480B A35B Instruct"
-  },
-  "Qwen3-Coder-480B-A35B-Instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.38,
-    "output_cost_per_mil_tokens": 1.53,
-    "displayName": "Qwen3 Coder 480B A35B Instruct"
-  },
-  "accounts/fireworks/models/qwen3-235b-a22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 0.88,
-    "displayName": "Qwen3 235B A22B"
-  },
-  "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 0.88,
-    "displayName": "Qwen3 235B A22B Instruct 2507",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 16384
-  },
-  "publishers/qwen/models/qwen3-235b-a22b-instruct-2507-maas": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 0.88,
-    "displayName": "Qwen3 235B A22B Instruct 2507",
-    "locations": [
-      "global",
-      "us-south1"
-    ],
-    "max_input_tokens": 262144,
-    "max_output_tokens": 16384
-  },
-  "qwen/qwen3-32b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.29,
-    "output_cost_per_mil_tokens": 0.59,
-    "displayName": "Qwen3-32B",
-    "reasoning": true,
-    "experimental": true,
-    "max_input_tokens": 131000,
-    "max_output_tokens": 131000,
-    "available_providers": [
-      "groq"
-    ]
-  },
-  "accounts/fireworks/models/qwen3-30b-a3b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Qwen3 30B A3B",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072
-  },
-  "accounts/fireworks/models/qwen3-vl-30b-a3b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Qwen3 VL 30B A3B Instruct",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 262144,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/qwen2p5-72b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Qwen2.5 72B Instruct"
-  },
   "Qwen/Qwen2.5-72B-Instruct-Turbo": {
     "format": "openai",
     "flavor": "chat",
@@ -2014,41 +1919,6 @@
     "available_providers": [
       "together"
     ]
-  },
-  "accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Qwen2.5 Coder 32B Instruct",
-    "max_input_tokens": 4096,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "qwen-2.5-32b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.79,
-    "output_cost_per_mil_tokens": 0.79,
-    "displayName": "Qwen 2.5 32B Instruct 128k",
-    "experimental": true
-  },
-  "qwen-2.5-coder-32b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.79,
-    "output_cost_per_mil_tokens": 0.79,
-    "displayName": "Qwen 2.5 Coder 32B Instruct 128k",
-    "experimental": true
-  },
-  "Qwen/Qwen2.5-Coder-32B-Instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 0.8,
-    "displayName": "Qwen 2.5 Coder 32B Instruct"
   },
   "Qwen/Qwen2.5-7B-Instruct-Turbo": {
     "format": "openai",
@@ -2060,30 +1930,19 @@
       "together"
     ]
   },
-  "accounts/fireworks/models/qwen2-72b-instruct": {
+  "Qwen/Qwen2.5-Coder-32B-Instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "max_input_tokens": 32768,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "fireworks"
-    ]
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen 2.5 Coder 32B Instruct"
   },
-  "accounts/fireworks/models/qwen2-vl-72b-instruct": {
+  "Qwen/QwQ-32B": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Qwen2 VL 72B Instruct"
-  },
-  "Qwen/Qwen2-72B-Instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Qwen 2 Instruct (72B)"
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 0.8,
+    "displayName": "Qwen QwQ 32B"
   },
   "Qwen/Qwen2-VL-72B-Instruct": {
     "format": "openai",
@@ -2092,28 +1951,12 @@
     "output_cost_per_mil_tokens": 1.2,
     "displayName": "Qwen-2VL (72B) Instruct"
   },
-  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+  "Qwen/Qwen2-72B-Instruct": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Qwen QwQ 32B Preview",
-    "deprecated": true
-  },
-  "qwen-qwq-32b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.29,
-    "output_cost_per_mil_tokens": 0.39,
-    "displayName": "Qwen QwQ 32B (Preview) 128k",
-    "experimental": true
-  },
-  "Qwen/QwQ-32B": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 0.8,
-    "displayName": "Qwen QwQ 32B"
+    "displayName": "Qwen 2 Instruct (72B)"
   },
   "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": {
     "format": "openai",
@@ -2710,6 +2553,20 @@
     "displayName": "DeepSeek R1 Distill Qwen 32B 128k",
     "experimental": true
   },
+  "qwen/qwen3-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.29,
+    "output_cost_per_mil_tokens": 0.59,
+    "displayName": "Qwen3-32B",
+    "reasoning": true,
+    "experimental": true,
+    "max_input_tokens": 131000,
+    "max_output_tokens": 131000,
+    "available_providers": [
+      "groq"
+    ]
+  },
   "moonshotai/kimi-k2-instruct-0905": {
     "format": "openai",
     "flavor": "chat",
@@ -2723,6 +2580,30 @@
     "available_providers": [
       "groq"
     ]
+  },
+  "qwen-2.5-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.79,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Qwen 2.5 32B Instruct 128k",
+    "experimental": true
+  },
+  "qwen-2.5-coder-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.79,
+    "output_cost_per_mil_tokens": 0.79,
+    "displayName": "Qwen 2.5 Coder 32B Instruct 128k",
+    "experimental": true
+  },
+  "qwen-qwq-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.29,
+    "output_cost_per_mil_tokens": 0.39,
+    "displayName": "Qwen QwQ 32B (Preview) 128k",
+    "experimental": true
   },
   "gemma-7b-it": {
     "format": "openai",
@@ -2871,24 +2752,14 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
-    "displayName": "Llama 4 Maverick Instruct (Basic)",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 4 Maverick Instruct (Basic)"
   },
   "accounts/fireworks/models/llama4-scout-instruct-basic": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Llama 4 Scout Instruct (Basic)",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 4 Scout Instruct (Basic)"
   },
   "accounts/fireworks/models/llama-v3p3-70b-instruct": {
     "format": "openai",
@@ -2903,12 +2774,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Llama 3.2 90B Vision Instruct",
-    "max_input_tokens": 16384,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 3.2 90B Vision Instruct"
   },
   "accounts/fireworks/models/llama-v3p2-11b-vision-instruct": {
     "format": "openai",
@@ -2916,36 +2782,21 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.18,
-    "displayName": "Llama 3.2 11B Vision Instruct",
-    "max_input_tokens": 16384,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 3.2 11B Vision Instruct"
   },
   "accounts/fireworks/models/llama-v3p2-3b-instruct": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "displayName": "Llama 3.2 3B Instruct",
-    "max_input_tokens": 16384,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 3.2 3B Instruct"
   },
   "accounts/fireworks/models/llama-v3p1-405b-instruct": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 3,
-    "displayName": "Llama 3.1 405B Instruct",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 3.1 405B Instruct"
   },
   "accounts/fireworks/models/llama-v3p1-405b-instruct-long": {
     "format": "openai",
@@ -2966,12 +2817,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
-    "displayName": "Llama 3.1 8B Instruct",
-    "max_input_tokens": 16384,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "Llama 3.1 8B Instruct"
   },
   "accounts/fireworks/models/mistral-small-24b-instruct-2501": {
     "format": "openai",
@@ -3007,48 +2853,42 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "DeepSeek V3",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "DeepSeek V3"
   },
   "accounts/fireworks/models/deepseek-v3-0324": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "DeepSeek V3 03-24",
-    "max_input_tokens": 163840,
-    "max_output_tokens": 163840,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "DeepSeek V3 03-24"
   },
   "accounts/fireworks/models/deepseek-r1": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 8,
-    "displayName": "DeepSeek R1 (Fast)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 20480,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "DeepSeek R1 (Fast)"
   },
   "accounts/fireworks/models/deepseek-r1-basic": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.55,
     "output_cost_per_mil_tokens": 2.19,
-    "displayName": "DeepSeek R1 Basic",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 20480,
-    "available_providers": [
-      "fireworks"
-    ]
+    "displayName": "DeepSeek R1 Basic"
+  },
+  "accounts/fireworks/models/qwen2p5-72b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2.5 72B Instruct"
+  },
+  "accounts/fireworks/models/qwen2p5-coder-32b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2.5 Coder 32B Instruct"
   },
   "accounts/fireworks/models/qwq-32b": {
     "format": "openai",
@@ -3056,6 +2896,21 @@
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Qwen QwQ 32B"
+  },
+  "accounts/fireworks/models/qwen2-vl-72b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen2 VL 72B Instruct"
+  },
+  "accounts/fireworks/models/qwen-qwq-32b-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.9,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Qwen QwQ 32B Preview",
+    "deprecated": true
   },
   "llama3.3-70b": {
     "format": "openai",
@@ -5970,6 +5825,13 @@
       "databricks"
     ]
   },
+  "Qwen3-Coder-480B-A35B-Instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.38,
+    "output_cost_per_mil_tokens": 1.53,
+    "displayName": "Qwen3 Coder 480B A35B Instruct"
+  },
   "moonshotai/Kimi-K2-Instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -6031,84 +5893,6 @@
       "xAI"
     ]
   },
-  "accounts/fireworks/models/deepseek-coder-v2-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.2,
-    "output_cost_per_mil_tokens": 1.2,
-    "max_input_tokens": 65536,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/deepseek-r1-0528": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 8,
-    "max_input_tokens": 160000,
-    "max_output_tokens": 160000,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/deepseek-v3p1": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.56,
-    "output_cost_per_mil_tokens": 1.68,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/firefunction-v2": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.9,
-    "output_cost_per_mil_tokens": 0.9,
-    "max_input_tokens": 8192,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/glm-4p5": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.55,
-    "output_cost_per_mil_tokens": 2.19,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 96000,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/glm-4p5-air": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 0.88,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 96000,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/glm-5": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 3.2,
-    "reasoning": true,
-    "max_input_tokens": 202752,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",
     "flavor": "chat",
@@ -6119,50 +5903,6 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
-  },
-  "accounts/fireworks/models/kimi-k2-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/llama-v3p2-1b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.1,
-    "max_input_tokens": 16384,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/mixtral-8x22b-instruct-hf": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.2,
-    "output_cost_per_mil_tokens": 1.2,
-    "max_input_tokens": 65536,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
-  "accounts/fireworks/models/yi-large": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 3,
-    "max_input_tokens": 32768,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "fireworks"
-    ]
   },
   "fireworks_ai/nomic-ai/nomic-embed-text-v1": {
     "format": "openai",
@@ -6573,6 +6313,42 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.45,
+    "output_cost_per_mil_tokens": 1.8,
+    "displayName": "Qwen3 Coder 480B A35B Instruct"
+  },
+  "accounts/fireworks/models/qwen3-235b-a22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Qwen3 235B A22B"
+  },
+  "accounts/fireworks/models/qwen3-235b-a22b-instruct-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Qwen3 235B A22B Instruct 2507",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 16384
+  },
+  "publishers/qwen/models/qwen3-235b-a22b-instruct-2507-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
+    "displayName": "Qwen3 235B A22B Instruct 2507",
+    "locations": [
+      "global",
+      "us-south1"
+    ],
+    "max_input_tokens": 262144,
+    "max_output_tokens": 16384
+  },
   "accounts/fireworks/models/deepseek-v3p2": {
     "format": "openai",
     "flavor": "chat",
@@ -6592,6 +6368,15 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 131072
   },
+  "accounts/fireworks/models/qwen3-30b-a3b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Qwen3 30B A3B",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072
+  },
   "publishers/moonshotai/models/kimi-k2.5": {
     "format": "openai",
     "flavor": "chat",
@@ -6601,18 +6386,5 @@
     "displayName": "Kimi K2.5",
     "max_input_tokens": 256000,
     "max_output_tokens": 65535
-  },
-  "accounts/fireworks/models/glm-4p7": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.2,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "displayName": "GLM-4.7",
-    "max_input_tokens": 202800,
-    "max_output_tokens": 202800,
-    "available_providers": [
-      "fireworks"
-    ]
   }
 }

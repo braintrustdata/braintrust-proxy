@@ -2233,6 +2233,13 @@ async function fetchOpenAI(
     delete bodyData["stream_options"];
   }
 
+  if (secret.type === "fireworks" && typeof bodyData.model === "string") {
+    // Strip LiteLLM-style "fireworks_ai/" prefix before forwarding; Fireworks'
+    // native API only recognizes ids like "accounts/fireworks/models/glm-5".
+    // Catalog entries sourced from LiteLLM keep the prefix (see sync_models.ts).
+    bodyData.model = bodyData.model.replace(/^fireworks_ai\//, "");
+  }
+
   if (
     secret.type === "mistral" ||
     secret.type === "databricks" ||

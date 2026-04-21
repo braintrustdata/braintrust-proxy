@@ -8,6 +8,10 @@ import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import { ModelSchema, ModelSpec } from "../schema/models";
 import {
+  isSupportedTranslatedModelName,
+  translateToBraintrust,
+} from "./model_name_translation";
+import {
   fetchVertexSupportedRegions,
   GOOGLE_VERTEX_LOCATIONS_URL,
   syncVertexSupportedRegions,
@@ -164,38 +168,6 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
   }
 }
 
-function translateToBraintrust(modelName: string, provider?: string): string {
-  for (const p of [
-    "gemini",
-    "xai",
-    "groq",
-    "together_ai",
-    "cerebras",
-    "mistral",
-    "perplexity",
-    "databricks",
-  ]) {
-    if (provider === p && modelName.startsWith(p + "/")) {
-      return modelName.substring(p.length + 1);
-    }
-  }
-
-  if (provider === "gemini") {
-    if (modelName.startsWith("gemini/gemini-gemma-")) {
-      return "google/" + modelName.substring(14);
-    }
-    if (modelName.startsWith("gemini/gemma-")) {
-      return "google/" + modelName.substring(7);
-    }
-  }
-
-  if (modelName.startsWith("google/")) {
-    return modelName;
-  }
-
-  return modelName;
-}
-
 function matchesProviderFilter(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
@@ -344,6 +316,17 @@ function resolveRemoteModels(
       remoteModelName,
       remoteModel.litellm_provider,
     );
+    if (
+      !isSupportedTranslatedModelName(
+        translatedName,
+        remoteModel.litellm_provider,
+      )
+    ) {
+      console.warn(
+        `Skipping unsupported remote model: "${remoteModelName}" -> "${translatedName}"`,
+      );
+      continue;
+    }
     const providers = getProviderMappingForModel(remoteModelName, remoteModel);
 
     if (result.has(translatedName)) {

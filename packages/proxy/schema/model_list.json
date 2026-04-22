@@ -3528,8 +3528,9 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 3,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Qwen3.6 Plus",
     "available_providers": [
       "fireworks"
     ]
@@ -9078,6 +9079,7 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.26,
+    "displayName": "GLM 5.1",
     "reasoning": true,
     "max_input_tokens": 202752,
     "max_output_tokens": 128000,

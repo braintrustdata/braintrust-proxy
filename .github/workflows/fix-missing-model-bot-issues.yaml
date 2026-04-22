@@ -29,6 +29,8 @@ permissions:
 jobs:
   fix:
     runs-on: ubuntu-latest
+    env:
+      BLOCKED_LABEL: autofix-blocked
 
     steps:
       - name: Select issue
@@ -41,6 +43,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const manualIssueNumber = (process.env.MANUAL_ISSUE_NUMBER || "").trim();
+            const blockedLabel = process.env.BLOCKED_LABEL;
             const botIssuePattern = /^\[(?:BOT ISSUE|Bot Issue)\]/i;
 
             async function getIssue(issueNumber) {
@@ -101,7 +104,12 @@ jobs:
               if (
                 context.eventName === "schedule" &&
                 manualIssueNumber.length === 0 &&
-                (await hasOpenPullRequest(branchName))
+                ((await hasOpenPullRequest(branchName)) ||
+                  issue.labels?.some((label) =>
+                    typeof label === "string"
+                      ? label === blockedLabel
+                      : label?.name === blockedLabel,
+                  ))
               ) {
                 continue;
               }
@@ -261,11 +269,24 @@ jobs:
         if: steps.pr.outputs.pull-request-url != ''
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           PULL_REQUEST_URL: ${{ steps.pr.outputs.pull-request-url }}
           RESULT_MESSAGE: ${{ steps.result.outputs.message }}
         with:
           script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: Number(process.env.ISSUE_NUMBER),
+                name: process.env.BLOCKED_LABEL,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -277,10 +298,23 @@ jobs:
         if: steps.result.outputs.action == 'already_present' || steps.result.outputs.action == 'deprecated'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           RESULT_MESSAGE: ${{ steps.result.outputs.message }}
         with:
           script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: Number(process.env.ISSUE_NUMBER),
+                name: process.env.BLOCKED_LABEL,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -298,10 +332,40 @@ jobs:
         if: steps.result.outputs.action == 'unsupported'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           RESULT_MESSAGE: ${{ steps.result.outputs.comment_body }}
         with:
           script: |
+            async function ensureLabel() {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: process.env.BLOCKED_LABEL,
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: process.env.BLOCKED_LABEL,
+                  color: "BFDADC",
+                  description:
+                    "Bot issue is blocked until metadata or source information is updated.",
+                });
+              }
+            }
+
+            await ensureLabel();
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              labels: [process.env.BLOCKED_LABEL],
+            });
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,

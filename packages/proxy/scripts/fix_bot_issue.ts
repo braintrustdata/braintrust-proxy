@@ -46,6 +46,8 @@ const fixResultSchema = z.object({
   added_models: z.array(z.string()),
   updated_models: z.array(z.string()),
   comment_body: z.string().optional(),
+  source_urls: z.array(z.string().url()).optional(),
+  verification_summary: z.string().optional(),
 });
 
 type PartialModelSpec = z.infer<typeof partialModelSchema>;
@@ -161,6 +163,111 @@ function extractOfficialSourceUrls(body: string): string[] {
   }
 
   return extractUrls(officialSourceSection);
+}
+
+function getVerificationSourceUrls(
+  parsedIssue: ParsedIssue,
+  body: string,
+): string[] {
+  return Array.from(
+    new Set([
+      ...(parsedIssue.metadata?.source_urls ?? []),
+      ...extractOfficialSourceUrls(body),
+    ]),
+  );
+}
+
+function buildVerificationSummary(args: {
+  sourceUrls: string[];
+  models: Array<{ name: string; model: ModelSpec }>;
+}): string | undefined {
+  if (args.sourceUrls.length === 0 && args.models.length === 0) {
+    return undefined;
+  }
+
+  const lines: string[] = [];
+  if (args.sourceUrls.length > 0) {
+    lines.push(`Verification sources: ${args.sourceUrls.join(", ")}`);
+  }
+
+  if (args.models.length > 0) {
+    lines.push("Verified metadata applied:");
+    for (const { name, model } of args.models) {
+      const details: string[] = [];
+      details.push(`format=${model.format}`);
+      details.push(`flavor=${model.flavor}`);
+      if (model.displayName) {
+        details.push(`displayName=${model.displayName}`);
+      }
+      if (model.parent) {
+        details.push(`parent=${model.parent}`);
+      }
+      if (model.max_input_tokens !== undefined) {
+        details.push(`max_input_tokens=${model.max_input_tokens}`);
+      } else {
+        details.push("max_input_tokens=not provided");
+      }
+      if (model.max_output_tokens !== undefined) {
+        details.push(`max_output_tokens=${model.max_output_tokens}`);
+      } else if (model.flavor === "embedding") {
+        details.push("max_output_tokens=n/a");
+      } else {
+        details.push("max_output_tokens=not provided");
+      }
+      if (
+        model.input_cost_per_mil_tokens !== undefined ||
+        model.output_cost_per_mil_tokens !== undefined
+      ) {
+        details.push(
+          `pricing(input/output per 1M)=${model.input_cost_per_mil_tokens ?? "?"}/${model.output_cost_per_mil_tokens ?? "?"}`,
+        );
+      } else {
+        details.push("pricing=not provided");
+      }
+      if (model.input_cache_read_cost_per_mil_tokens !== undefined) {
+        details.push(
+          `input_cache_read_cost_per_mil_tokens=${model.input_cache_read_cost_per_mil_tokens}`,
+        );
+      }
+      if (model.input_cache_write_cost_per_mil_tokens !== undefined) {
+        details.push(
+          `input_cache_write_cost_per_mil_tokens=${model.input_cache_write_cost_per_mil_tokens}`,
+        );
+      }
+      if (model.available_providers && model.available_providers.length > 0) {
+        details.push(`providers=${model.available_providers.join("|")}`);
+      } else {
+        details.push("providers=not provided");
+      }
+      if (model.endpoint_types && model.endpoint_types.length > 0) {
+        details.push(`endpoint_types=${model.endpoint_types.join("|")}`);
+      }
+      if (model.locations && model.locations.length > 0) {
+        details.push(`locations=${model.locations.join("|")}`);
+      }
+      if (model.supported_regions && model.supported_regions.length > 0) {
+        details.push(`supported_regions=${model.supported_regions.join("|")}`);
+      }
+      if (model.reasoning !== undefined) {
+        details.push(`reasoning=${String(model.reasoning)}`);
+      }
+      if (model.reasoning_budget !== undefined) {
+        details.push(`reasoning_budget=${String(model.reasoning_budget)}`);
+      }
+      if (model.multimodal !== undefined) {
+        details.push(`multimodal=${String(model.multimodal)}`);
+      }
+      if (model.deprecated !== undefined) {
+        details.push(`deprecated=${String(model.deprecated)}`);
+      }
+      if (model.deprecation_date) {
+        details.push(`deprecation_date=${model.deprecation_date}`);
+      }
+      lines.push(`- \`${name}\`: ${details.join(", ")}`);
+    }
+  }
+
+  return lines.join("\n");
 }
 
 function buildUnsupportedTicketComment(args: {
@@ -996,6 +1103,7 @@ async function resolveIssueCommand(argv: {
   const issueKind = getIssueKind(parsedIssue.metadata);
   const targetModels = uniqueModels(parsedIssue.models);
   const primaryModel = targetModels[0];
+  const sourceUrls = getVerificationSourceUrls(parsedIssue, body);
 
   if (!parsedIssue.provider || targetModels.length === 0) {
     await writeResult(argv.resultPath, {
@@ -1005,6 +1113,7 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
     });
     return;
   }
@@ -1022,6 +1131,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
     });
     return;
   }
@@ -1036,6 +1150,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
       comment_body: buildUnsupportedTicketComment({
         message,
         provider: parsedIssue.provider,
@@ -1065,6 +1184,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
     });
     return;
   }
@@ -1084,6 +1208,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
       comment_body: buildUnsupportedTicketComment({
         message,
         provider: parsedIssue.provider,
@@ -1117,6 +1246,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
       comment_body: buildUnsupportedTicketComment({
         message,
         provider: parsedIssue.provider,
@@ -1146,6 +1280,11 @@ async function resolveIssueCommand(argv: {
       changed_models: [],
       added_models: [],
       updated_models: [],
+      source_urls: sourceUrls,
+      verification_summary: buildVerificationSummary({
+        sourceUrls,
+        models: [],
+      }),
     });
     return;
   }
@@ -1201,6 +1340,11 @@ async function resolveIssueCommand(argv: {
     changed_models: changedModelEntries.map((entry) => entry.name),
     added_models: addedModels,
     updated_models: updatedModelNames,
+    source_urls: sourceUrls,
+    verification_summary: buildVerificationSummary({
+      sourceUrls,
+      models: changedModelEntries,
+    }),
   });
 
   for (const model of changedModelEntries) {

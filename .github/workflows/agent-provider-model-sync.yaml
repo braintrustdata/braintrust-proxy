@@ -163,7 +163,9 @@ jobs:
             - Mention the local files you inspected when reaching that conclusion
             - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
             - Explain why the gap is high confidence
-            - Assume the downstream `fix-missing-model-bot-issues` job prefers a complete metadata block and may only do a limited AI-assisted official-source retry when fields are missing, so include every verified field needed to write the model entry directly from the issue.
+            - This workflow should find broad, high-confidence issues; the downstream `fix-missing-model-bot-issues` job is responsible for doing model-by-model verification and producing a complete, current catalog entry.
+            - Even so, include every verified field you already have that would help the downstream fix job write the model entry directly from the issue.
+            - Add a short verification note that links the exact official source URLs to the fields you verified, and call out fields that were not published or not applicable instead of guessing.
             - Include a machine-readable metadata block immediately before the closing summary using this exact marker and a JSON code fence:
               `<!-- fix-bot-issue-metadata -->`
               followed by:

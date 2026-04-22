@@ -212,6 +212,8 @@ jobs:
             core.setOutput("added_models", (result.added_models || []).join(", "));
             core.setOutput("updated_models", (result.updated_models || []).join(", "));
             core.setOutput("comment_body", result.comment_body || result.message);
+            core.setOutput("source_urls", (result.source_urls || []).join(", "));
+            core.setOutput("verification_summary", result.verification_summary || "");
 
       - name: Enrich missing metadata with Claude Code
         if: steps.result_initial.outputs.action == 'unsupported'
@@ -230,7 +232,7 @@ jobs:
           prompt: |
             # Goal
 
-            Create an enriched copy of the selected bot issue body so the downstream resolver can retry with verified metadata.
+            Create an enriched copy of the selected bot issue body so the downstream resolver can retry with the fullest verified model metadata available from official provider sources.
 
             # Inputs
 
@@ -251,10 +253,20 @@ jobs:
 
             1. Read the original issue body file.
             2. Use the official source URLs already on the issue first.
-            3. If needed, search additional official provider docs or official provider API references to verify the missing metadata.
-            4. Match local catalog conventions for format, flavor, provider mapping, pricing fields, token limits, deprecation metadata, and locations when required.
-            5. If you can verify enough metadata to let the resolver proceed safely, append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
-            6. If you cannot verify enough metadata, write the original issue body unchanged to the enriched output file.
+            3. If needed, search additional official provider docs or official provider API references to verify the model metadata.
+            4. Build the most complete verified catalog payload you can for each model, not just the initially missing field. Verify and include all relevant fields that official sources support, such as:
+               - format and flavor
+               - display name and parent/replacement relationships
+               - available providers and provider mapping
+               - all applicable token limits and context limits
+               - all applicable pricing fields in the local schema
+               - deprecation/retirement status and dates
+               - reasoning, multimodal, and other capability flags when they map cleanly to the local schema
+               - locations and supported regions when required
+            5. Match local catalog conventions and style in `model_list.json` and `index.ts`, using neighboring entries as the reference for how a complete, up-to-date spec should look.
+            6. If a field is not published, not applicable, or cannot be verified confidently, do not guess it. Call that out explicitly in the verification note.
+            7. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
+            8. If you cannot verify enough metadata to let the resolver proceed safely, write the original issue body unchanged to the enriched output file.
 
             # Constraints
 
@@ -262,6 +274,7 @@ jobs:
             - Do not create or update GitHub issues, comments, or pull requests.
             - Do not invent values or use third-party aggregators as the source of truth.
             - Prefer a fully populated `model_specs` map for multi-model issues.
+            - The goal is to make the downstream fix step produce a complete, current model entry, not a minimal patch.
             - The output file must contain the full issue body text, not just the JSON block.
 
       - name: Ensure enriched body file exists
@@ -311,6 +324,8 @@ jobs:
             core.setOutput("added_models", (result.added_models || []).join(", "));
             core.setOutput("updated_models", (result.updated_models || []).join(", "));
             core.setOutput("comment_body", result.comment_body || result.message);
+            core.setOutput("source_urls", (result.source_urls || []).join(", "));
+            core.setOutput("verification_summary", result.verification_summary || "");
 
       - name: Check expected files only
         id: changes
@@ -361,6 +376,9 @@ jobs:
             Changed models: `${{ steps.result.outputs.changed_models }}`
             Added models: `${{ steps.result.outputs.added_models }}`
             Updated models: `${{ steps.result.outputs.updated_models }}`
+            Verification sources: ${{ steps.result.outputs.source_urls }}
+
+            ${{ steps.result.outputs.verification_summary }}
           labels: auto-sync
           signoff: false
 
@@ -372,6 +390,7 @@ jobs:
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           PULL_REQUEST_URL: ${{ steps.pr.outputs.pull-request-url }}
           RESULT_MESSAGE: ${{ steps.result.outputs.message }}
+          VERIFICATION_SUMMARY: ${{ steps.result.outputs.verification_summary }}
         with:
           script: |
             try {
@@ -390,7 +409,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number(process.env.ISSUE_NUMBER),
-              body: `${process.env.RESULT_MESSAGE}\n\nOpened ${process.env.PULL_REQUEST_URL} to apply the catalog update.`,
+              body: `${process.env.RESULT_MESSAGE}\n\n${process.env.VERIFICATION_SUMMARY}\n\nOpened ${process.env.PULL_REQUEST_URL} to apply the catalog update.`,
             });
 
       - name: Close already resolved issue
@@ -400,6 +419,7 @@ jobs:
           BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
           ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           RESULT_MESSAGE: ${{ steps.result.outputs.message }}
+          VERIFICATION_SUMMARY: ${{ steps.result.outputs.verification_summary }}
         with:
           script: |
             try {
@@ -418,7 +438,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: Number(process.env.ISSUE_NUMBER),
-              body: process.env.RESULT_MESSAGE,
+              body: `${process.env.RESULT_MESSAGE}\n\n${process.env.VERIFICATION_SUMMARY}`,
             });
             await github.rest.issues.update({
               owner: context.repo.owner,

@@ -1,11 +1,9 @@
-import fs from "fs";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
   getUpdatedAvailableProviders,
   normalizeLocalModels,
   normalizeProviderMappingContent,
-  updateProviderMapping,
 } from "./sync_models";
 
 const canonicalFireworksModel = {
@@ -27,10 +25,6 @@ const legacyFireworksModel = {
 } satisfies ModelSpec;
 
 describe("sync_models", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it("keeps the canonical Fireworks payload when collapsing legacy aliases", () => {
     const normalizedVariants = [
       normalizeLocalModels({
@@ -93,28 +87,5 @@ describe("sync_models", () => {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
-  });
-
-  it("writes provider arrays in index.ts with a space after each comma", async () => {
-    const readFileSpy = vi
-      .spyOn(fs.promises, "readFile")
-      .mockResolvedValue(`export const AvailableEndpointTypes = {\n};\n`);
-    const writeFileSpy = vi
-      .spyOn(fs.promises, "writeFile")
-      .mockResolvedValue(undefined);
-
-    await updateProviderMapping([
-      {
-        name: "accounts/fireworks/models/qwen3p6-plus",
-        providers: ["fireworks", "openai"],
-        remoteModel: {},
-      },
-    ]);
-
-    expect(readFileSpy).toHaveBeenCalled();
-    expect(writeFileSpy).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.stringContaining(`["fireworks", "openai"]`),
-    );
   });
 });

@@ -460,7 +460,7 @@ async function normalizeProviderMappingsFile(): Promise<void> {
   }
 }
 
-async function updateProviderMapping(
+export async function updateProviderMapping(
   newModels: Array<{
     name: string;
     providers: string[];
@@ -482,7 +482,7 @@ async function updateProviderMapping(
         continue;
       }
 
-      const newEntry = `  "${name}": ${JSON.stringify(providers)},`;
+      const newEntry = `  "${name}": ${JSON.stringify(providers).replace(",", ", ")},`;
       let insertionIndex = -1;
 
       if (completeModelOrder) {

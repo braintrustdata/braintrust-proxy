@@ -42,12 +42,26 @@ const fixResultSchema = z.object({
   message: z.string(),
   provider: z.string().optional(),
   model: z.string().optional(),
+  pr_title: z.string().optional(),
   changed_models: z.array(z.string()),
   added_models: z.array(z.string()),
   updated_models: z.array(z.string()),
   comment_body: z.string().optional(),
   source_urls: z.array(z.string().url()).optional(),
   verification_summary: z.string().optional(),
+  verification_rows: z
+    .array(
+      z.object({
+        model: z.string(),
+        format: z.string(),
+        flavor: z.string(),
+        providers: z.string(),
+        token_limits: z.string(),
+        pricing: z.string(),
+        lifecycle: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 type PartialModelSpec = z.infer<typeof partialModelSchema>;
@@ -141,6 +155,62 @@ function uniqueModels(models: string[]): string[] {
 
 function formatModelList(models: string[]): string {
   return models.map((model) => `\`${model}\``).join(", ");
+}
+
+function summarizeModelsForTitle(models: string[]): string {
+  if (models.length === 0) {
+    return "model catalog";
+  }
+  if (models.length === 1) {
+    return models[0];
+  }
+  if (models.length === 2) {
+    return `${models[0]} and ${models[1]}`;
+  }
+  return `${models[0]} +${models.length - 1} more`;
+}
+
+function providerDisplayName(provider?: string): string {
+  if (!provider) {
+    return "model";
+  }
+
+  const names: Record<string, string> = {
+    anthropic: "Anthropic",
+    azure: "Azure",
+    bedrock: "Bedrock",
+    cerebras: "Cerebras",
+    databricks: "Databricks",
+    fireworks: "Fireworks",
+    google: "Google",
+    groq: "Groq",
+    mistral: "Mistral",
+    openai: "OpenAI",
+    perplexity: "Perplexity",
+    together: "Together",
+    vertex: "Vertex",
+    xai: "xAI",
+  };
+
+  return names[provider] ?? provider;
+}
+
+function buildChangeTitle(args: {
+  provider?: string;
+  addedModels: string[];
+  updatedModels: string[];
+}): string {
+  const provider = providerDisplayName(args.provider);
+  if (args.addedModels.length > 0 && args.updatedModels.length === 0) {
+    return `fix: add ${provider} models ${summarizeModelsForTitle(args.addedModels)}`;
+  }
+  if (args.updatedModels.length > 0 && args.addedModels.length === 0) {
+    return `fix: update ${provider} model metadata for ${summarizeModelsForTitle(args.updatedModels)}`;
+  }
+  return `fix: update ${provider} model catalog for ${summarizeModelsForTitle([
+    ...args.addedModels,
+    ...args.updatedModels,
+  ])}`;
 }
 
 function extractUrls(text: string): string[] {
@@ -268,6 +338,84 @@ function buildVerificationSummary(args: {
   }
 
   return lines.join("\n");
+}
+
+function buildVerificationRows(
+  models: Array<{ name: string; model: ModelSpec }>,
+): Array<{
+  model: string;
+  format: string;
+  flavor: string;
+  providers: string;
+  token_limits: string;
+  pricing: string;
+  lifecycle: string;
+}> {
+  return models.map(({ name, model }) => {
+    const providers =
+      model.available_providers && model.available_providers.length > 0
+        ? model.available_providers.join(", ")
+        : model.endpoint_types && model.endpoint_types.length > 0
+          ? model.endpoint_types.join(", ")
+          : "n/a";
+
+    const tokenLimits = [
+      `input=${model.max_input_tokens ?? "n/a"}`,
+      model.max_output_tokens !== undefined
+        ? `output=${model.max_output_tokens}`
+        : model.flavor === "embedding"
+          ? "output=n/a"
+          : "output=not provided",
+    ].join(", ");
+
+    const pricingParts: string[] = [];
+    if (
+      model.input_cost_per_mil_tokens !== undefined ||
+      model.output_cost_per_mil_tokens !== undefined
+    ) {
+      pricingParts.push(
+        `in/out=${model.input_cost_per_mil_tokens ?? "?"}/${model.output_cost_per_mil_tokens ?? "?"} per 1M`,
+      );
+    }
+    if (model.input_cache_read_cost_per_mil_tokens !== undefined) {
+      pricingParts.push(
+        `cache read=${model.input_cache_read_cost_per_mil_tokens} per 1M`,
+      );
+    }
+    if (model.input_cache_write_cost_per_mil_tokens !== undefined) {
+      pricingParts.push(
+        `cache write=${model.input_cache_write_cost_per_mil_tokens} per 1M`,
+      );
+    }
+
+    const lifecycleParts: string[] = [];
+    if (model.parent) {
+      lifecycleParts.push(`parent=${model.parent}`);
+    }
+    if (model.deprecated !== undefined) {
+      lifecycleParts.push(`deprecated=${String(model.deprecated)}`);
+    }
+    if (model.deprecation_date) {
+      lifecycleParts.push(`date=${model.deprecation_date}`);
+    }
+    if (model.multimodal !== undefined) {
+      lifecycleParts.push(`multimodal=${String(model.multimodal)}`);
+    }
+    if (model.reasoning !== undefined) {
+      lifecycleParts.push(`reasoning=${String(model.reasoning)}`);
+    }
+
+    return {
+      model: name,
+      format: model.format,
+      flavor: model.flavor,
+      providers,
+      token_limits: tokenLimits,
+      pricing: pricingParts.length > 0 ? pricingParts.join("; ") : "n/a",
+      lifecycle:
+        lifecycleParts.length > 0 ? lifecycleParts.join("; ") : "active",
+    };
+  });
 }
 
 function buildUnsupportedTicketComment(args: {
@@ -1168,9 +1316,12 @@ async function resolveIssueCommand(argv: {
 
   const modelsToEvaluate =
     issueKind === "stale_metadata" ? existingModels : missingModels;
-  const deprecatedModels = modelsToEvaluate.filter((model) =>
-    shouldCloseAsDeprecated(parsedIssue, model, localModels),
-  );
+  const deprecatedModels =
+    issueKind === "missing_model"
+      ? modelsToEvaluate.filter((model) =>
+          shouldCloseAsDeprecated(parsedIssue, model, localModels),
+        )
+      : [];
   const modelsToResolve = modelsToEvaluate.filter(
     (model) => !deprecatedModels.includes(model),
   );
@@ -1337,6 +1488,11 @@ async function resolveIssueCommand(argv: {
       .join(" "),
     provider: parsedIssue.provider,
     model: primaryModel,
+    pr_title: buildChangeTitle({
+      provider: parsedIssue.provider,
+      addedModels,
+      updatedModels: updatedModelNames,
+    }),
     changed_models: changedModelEntries.map((entry) => entry.name),
     added_models: addedModels,
     updated_models: updatedModelNames,
@@ -1345,6 +1501,7 @@ async function resolveIssueCommand(argv: {
       sourceUrls,
       models: changedModelEntries,
     }),
+    verification_rows: buildVerificationRows(changedModelEntries),
   });
 
   for (const model of changedModelEntries) {

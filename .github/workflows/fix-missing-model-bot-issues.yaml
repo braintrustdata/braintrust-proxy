@@ -208,6 +208,7 @@ jobs:
             core.setOutput("message", result.message);
             core.setOutput("provider", result.provider || "");
             core.setOutput("model", result.model || "");
+            core.setOutput("pr_title", result.pr_title || "");
             core.setOutput("changed_models", (result.changed_models || []).join(", "));
             core.setOutput("added_models", (result.added_models || []).join(", "));
             core.setOutput("updated_models", (result.updated_models || []).join(", "));
@@ -311,21 +312,65 @@ jobs:
         with:
           script: |
             const fs = require("fs");
+            const escapeCell = (value) =>
+              String(value ?? "n/a").replace(/\|/g, "\\|").replace(/\n/g, "<br>");
+            const codeList = (items) =>
+              items && items.length > 0
+                ? items.map((item) => `\`${item}\``).join("<br>")
+                : "None";
+            const sourceLinks = (items) =>
+              items && items.length > 0
+                ? items.map((item, index) => `[${index + 1}](${item})`).join("<br>")
+                : "None";
             const resultPath = fs.existsSync(process.env.RETRY_RESULT_PATH)
               ? process.env.RETRY_RESULT_PATH
               : process.env.INITIAL_RESULT_PATH;
             const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
+            const summaryTable = [
+              "| Field | Value |",
+              "| --- | --- |",
+              `| Provider | ${escapeCell(result.provider || "n/a")} |`,
+              `| Primary model | ${escapeCell(result.model || "n/a")} |`,
+              `| Changed models | ${codeList(result.changed_models || [])} |`,
+              `| Added models | ${codeList(result.added_models || [])} |`,
+              `| Updated models | ${codeList(result.updated_models || [])} |`,
+              `| Verification sources | ${sourceLinks(result.source_urls || [])} |`,
+            ].join("\n");
+            const verificationRows = result.verification_rows || [];
+            const verificationTable =
+              verificationRows.length > 0
+                ? [
+                    "| Model | Providers | Format | Flavor | Token limits | Pricing | Lifecycle |",
+                    "| --- | --- | --- | --- | --- | --- | --- |",
+                    ...verificationRows.map((row) =>
+                      [
+                        row.model,
+                        row.providers,
+                        row.format,
+                        row.flavor,
+                        row.token_limits,
+                        row.pricing,
+                        row.lifecycle,
+                      ]
+                        .map((value) => escapeCell(value))
+                        .join(" | "),
+                    ).map((row) => `| ${row} |`),
+                  ].join("\n")
+                : "No per-model verification rows were generated.";
 
             core.setOutput("action", result.action);
             core.setOutput("message", result.message);
             core.setOutput("provider", result.provider || "");
             core.setOutput("model", result.model || "");
+            core.setOutput("pr_title", result.pr_title || "");
             core.setOutput("changed_models", (result.changed_models || []).join(", "));
             core.setOutput("added_models", (result.added_models || []).join(", "));
             core.setOutput("updated_models", (result.updated_models || []).join(", "));
             core.setOutput("comment_body", result.comment_body || result.message);
             core.setOutput("source_urls", (result.source_urls || []).join(", "));
             core.setOutput("verification_summary", result.verification_summary || "");
+            core.setOutput("pr_summary_table", summaryTable);
+            core.setOutput("pr_verification_table", verificationTable);
 
       - name: Check expected files only
         id: changes
@@ -363,22 +408,22 @@ jobs:
           token: ${{ github.token }}
           base: main
           branch: ${{ steps.issue.outputs.branch }}
-          commit-message: "fix: auto-resolve #${{ steps.issue.outputs.number }}"
-          title: "fix: auto-resolve #${{ steps.issue.outputs.number }}"
+          commit-message: "${{ steps.result.outputs.pr_title }}"
+          title: "${{ steps.result.outputs.pr_title }}"
           body: |
-            Automatically generated fix for #${{ steps.issue.outputs.number }}.
+            ${{ steps.result.outputs.pr_title }}
 
             Closes #${{ steps.issue.outputs.number }}
 
             Source issue: ${{ steps.issue.outputs.url }}
-            Provider: `${{ steps.result.outputs.provider }}`
-            Model: `${{ steps.result.outputs.model }}`
-            Changed models: `${{ steps.result.outputs.changed_models }}`
-            Added models: `${{ steps.result.outputs.added_models }}`
-            Updated models: `${{ steps.result.outputs.updated_models }}`
-            Verification sources: ${{ steps.result.outputs.source_urls }}
 
-            ${{ steps.result.outputs.verification_summary }}
+            **Summary**
+
+            ${{ steps.result.outputs.pr_summary_table }}
+
+            **Verified metadata**
+
+            ${{ steps.result.outputs.pr_verification_table }}
           labels: auto-sync
           signoff: false
 

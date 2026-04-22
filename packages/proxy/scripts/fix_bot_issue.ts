@@ -1,0 +1,1155 @@
+import fs from "fs";
+import path from "path";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+import { z } from "zod";
+import {
+  fetchVertexSupportedRegions,
+  GOOGLE_VERTEX_LOCATIONS_URL,
+  syncVertexSupportedRegions,
+} from "./sync_vertex_regions";
+import {
+  type ModelEndpointType,
+  type ModelFormat,
+  ModelSchema,
+  type ModelSpec,
+} from "../schema/models";
+
+const partialModelSchema = ModelSchema.partial();
+const issueMetadataSchema = z.object({
+  kind: z.enum(["missing_model", "stale_metadata"]).optional(),
+  provider: z.string().optional(),
+  model: z.string().optional(),
+  models: z.array(z.string()).optional(),
+  status: z
+    .enum([
+      "active",
+      "preview",
+      "deprecated",
+      "retired",
+      "replaced",
+      "old",
+      "unknown",
+    ])
+    .optional(),
+  deprecation_date: z.string().optional(),
+  model_spec: partialModelSchema.optional(),
+  model_specs: z.record(partialModelSchema).optional(),
+  source_urls: z.array(z.string().url()).optional(),
+});
+const fixResultSchema = z.object({
+  action: z.enum(["added", "already_present", "deprecated", "unsupported"]),
+  message: z.string(),
+  provider: z.string().optional(),
+  model: z.string().optional(),
+  added_models: z.array(z.string()),
+  comment_body: z.string().optional(),
+});
+
+type PartialModelSpec = z.infer<typeof partialModelSchema>;
+type IssueMetadata = z.infer<typeof issueMetadataSchema>;
+type FixResult = z.infer<typeof fixResultSchema>;
+type LocalModelList = Record<string, ModelSpec>;
+type ParsedIssue = {
+  provider: string | null;
+  models: string[];
+  metadata: IssueMetadata | null;
+  aliasTargets: Record<string, string>;
+};
+
+const LOCAL_MODEL_LIST_PATH = path.resolve(
+  __dirname,
+  "../schema/model_list.json",
+);
+const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
+const DATE_SUFFIX_PATTERN = /^(.*)-(\d{4}-\d{2}-\d{2})$/;
+const PROVIDER_CAPTURE_GROUP =
+  "(OpenAI|Anthropic|Azure|Google|Vertex|AWS Bedrock|Bedrock|Groq|Mistral|xAI|Together|Fireworks|Databricks|Cerebras|Perplexity)";
+const BOT_ISSUE_TITLE_PATTERN = new RegExp(
+  `^\\[(?:BOT ISSUE|Bot Issue)\\]\\s+Missing\\s+${PROVIDER_CAPTURE_GROUP}\\s+(\\S+)\\s+model$`,
+  "i",
+);
+const BOT_ISSUE_MULTI_MODEL_PARENS_PATTERN = new RegExp(
+  `^\\[(?:BOT ISSUE|Bot Issue)\\]\\s+Missing\\s+${PROVIDER_CAPTURE_GROUP}\\s+.+\\(([^)]+)\\)\\s*$`,
+  "i",
+);
+const BOT_ISSUE_MULTI_MODEL_COLON_PATTERN = new RegExp(
+  `^\\[(?:BOT ISSUE|Bot Issue)\\]\\s+Missing\\s+${PROVIDER_CAPTURE_GROUP}\\s+[^:]+:\\s+(.+)$`,
+  "i",
+);
+const ISSUE_METADATA_MARKER = "<!-- fix-bot-issue-metadata -->";
+
+const DEFAULT_ENDPOINT_TYPES: Record<
+  ModelFormat,
+  readonly ModelEndpointType[]
+> = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  js: ["js"],
+  window: ["js"],
+  converse: ["bedrock"],
+};
+
+function errorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
+}
+
+function normalizeProvider(provider?: string): string | null {
+  if (!provider) {
+    return null;
+  }
+
+  const normalized = provider.trim().toLowerCase();
+  if (normalized === "aws bedrock") {
+    return "bedrock";
+  }
+  if (normalized === "xai") {
+    return "xai";
+  }
+  if (
+    [
+      "anthropic",
+      "azure",
+      "bedrock",
+      "cerebras",
+      "databricks",
+      "fireworks",
+      "google",
+      "groq",
+      "mistral",
+      "openai",
+      "perplexity",
+      "together",
+      "vertex",
+    ].includes(normalized)
+  ) {
+    return normalized;
+  }
+
+  return null;
+}
+
+function normalizeModelId(model: string): string {
+  return model.trim().replace(/^`|`$/g, "").trim();
+}
+
+function uniqueModels(models: string[]): string[] {
+  return Array.from(
+    new Set(
+      models
+        .map((model) => normalizeModelId(model))
+        .filter((model) => model.length > 0),
+    ),
+  );
+}
+
+function formatModelList(models: string[]): string {
+  return models.map((model) => `\`${model}\``).join(", ");
+}
+
+function extractUrls(text: string): string[] {
+  return Array.from(
+    new Set(
+      Array.from(text.matchAll(/https?:\/\/[^\s)<>"`]+/g), (match) =>
+        match[0].replace(/[.,]$/, ""),
+      ),
+    ),
+  );
+}
+
+function extractOfficialSourceUrls(body: string): string[] {
+  const officialSourceSection = body.match(
+    /## Official source\s*([\s\S]*?)(?:\n## |\s*$)/i,
+  )?.[1];
+
+  if (!officialSourceSection) {
+    return extractUrls(body);
+  }
+
+  return extractUrls(officialSourceSection);
+}
+
+function buildUnsupportedTicketComment(args: {
+  message: string;
+  provider: string;
+  targetModels: string[];
+  body: string;
+}): string {
+  const sourceUrls = extractOfficialSourceUrls(args.body);
+  const commentSections = [
+    "Autofix could not safely resolve this ticket.",
+    "",
+    args.message,
+    "",
+    "Verified information from this run:",
+    `- Provider: \`${args.provider}\``,
+    `- Parsed models: ${formatModelList(args.targetModels)}`,
+  ];
+
+  if (sourceUrls.length > 0) {
+    commentSections.push(
+      `- Official source URLs already on the ticket: ${sourceUrls.join(", ")}`,
+    );
+  }
+
+  if (
+    args.provider === "xai" &&
+    args.targetModels.every((model) => model.startsWith("grok-4.20"))
+  ) {
+    commentSections.push(
+      "- Public xAI docs verify the Grok 4.20 family and published pricing/context-window information, but this ticket still lacks verified per-model token-limit fields the fixer can write safely.",
+    );
+  }
+
+  commentSections.push(
+    "",
+    "This fixer does not consult LiteLLM; it only uses the issue metadata and the existing local catalog.",
+    "",
+    "To make autofix work on a future run, add the machine-readable metadata block described in the workflow prompt and include any verified fields you have for:",
+    "- `model_spec` for single-model issues or `model_specs` for multi-model issues",
+    "- `max_input_tokens`",
+    "- `max_output_tokens`",
+    "- `available_providers`",
+    "- `locations` when the provider/model requires explicit location metadata",
+  );
+
+  return commentSections.join("\n");
+}
+
+function sortLocations(values: string[]): string[] {
+  return Array.from(new Set(values)).sort((left, right) => {
+    if (left === "global" && right !== "global") {
+      return -1;
+    }
+    if (left !== "global" && right === "global") {
+      return 1;
+    }
+    return left.localeCompare(right);
+  });
+}
+
+function isPastDate(value?: string): boolean {
+  if (!value) {
+    return false;
+  }
+  const timestamp = Date.parse(value);
+  if (Number.isNaN(timestamp)) {
+    return false;
+  }
+  return timestamp < Date.now();
+}
+
+async function readLocalModels(filePath: string): Promise<LocalModelList> {
+  const fileContent = await fs.promises.readFile(filePath, "utf-8");
+  return z.record(ModelSchema).parse(JSON.parse(fileContent));
+}
+
+function providersForName(providerName?: string): ModelEndpointType[] {
+  const normalized = normalizeProvider(providerName);
+  if (!normalized) {
+    return [];
+  }
+
+  if (normalized === "xai") {
+    return ["xAI"];
+  }
+  if (normalized === "openai") {
+    return ["openai", "azure"];
+  }
+  if (normalized === "google") {
+    return ["google"];
+  }
+  if (normalized === "vertex") {
+    return ["vertex"];
+  }
+
+  const singleProviderMap: Record<string, ModelEndpointType> = {
+    anthropic: "anthropic",
+    azure: "azure",
+    bedrock: "bedrock",
+    cerebras: "cerebras",
+    databricks: "databricks",
+    fireworks: "fireworks",
+    groq: "groq",
+    mistral: "mistral",
+    perplexity: "perplexity",
+    together: "together",
+  };
+
+  const endpointType = singleProviderMap[normalized];
+  if (endpointType) {
+    return [endpointType];
+  }
+
+  return [];
+}
+
+function getSnapshotParent(modelName: string): string | null {
+  const match = modelName.match(DATE_SUFFIX_PATTERN);
+  if (!match) {
+    return null;
+  }
+  return match[1];
+}
+
+function formatDisplayToken(token: string): string {
+  if (token.toLowerCase() === "gpt") {
+    return "GPT";
+  }
+  if (token.toLowerCase() === "ai") {
+    return "AI";
+  }
+  if (token.toLowerCase() === "api") {
+    return "API";
+  }
+  if (token.length === 0) {
+    return token;
+  }
+  return token[0].toUpperCase() + token.slice(1);
+}
+
+function buildDisplayName(modelName: string): string | undefined {
+  const snapshotParent = getSnapshotParent(modelName);
+  const baseName = snapshotParent ?? modelName;
+  const baseLeafParts = baseName.split("/");
+  const baseLeaf = baseLeafParts[baseLeafParts.length - 1];
+  if (!baseLeaf) {
+    return undefined;
+  }
+
+  const pieces = baseLeaf.split("-").filter(Boolean);
+  if (pieces.length === 0) {
+    return undefined;
+  }
+
+  let formattedName = "";
+  if (pieces[0].toLowerCase() === "gpt" && pieces[1]) {
+    const remaining = pieces.slice(2).map(formatDisplayToken);
+    formattedName = [`GPT-${pieces[1]}`, ...remaining].join(" ");
+  } else {
+    formattedName = pieces.map(formatDisplayToken).join(" ");
+  }
+
+  if (!snapshotParent) {
+    return formattedName;
+  }
+
+  const snapshotMatch = modelName.match(DATE_SUFFIX_PATTERN);
+  if (!snapshotMatch) {
+    return formattedName;
+  }
+
+  return `${formattedName} (${snapshotMatch[2]})`;
+}
+
+function deriveInsertionPrefixes(modelName: string): string[] {
+  const prefixes: string[] = [];
+  let current = getSnapshotParent(modelName) ?? modelName;
+
+  while (current.length > 0) {
+    if (!prefixes.includes(current)) {
+      prefixes.push(current);
+    }
+
+    const slashIndex = current.lastIndexOf("/");
+    const dashIndex = current.lastIndexOf("-");
+    if (dashIndex > slashIndex) {
+      current = current.slice(0, dashIndex);
+      continue;
+    }
+    if (slashIndex >= 0) {
+      const withoutSlash = current.slice(0, slashIndex);
+      if (!withoutSlash) {
+        break;
+      }
+      current = withoutSlash;
+      continue;
+    }
+    break;
+  }
+
+  return prefixes;
+}
+
+function insertionIndex(orderedNames: string[], modelName: string): number {
+  const prefixes = deriveInsertionPrefixes(modelName);
+  let lastMatch = -1;
+
+  for (let index = 0; index < orderedNames.length; index += 1) {
+    const existingName = orderedNames[index];
+    if (prefixes.some((prefix) => existingName.startsWith(prefix))) {
+      lastMatch = index;
+    }
+  }
+
+  if (lastMatch >= 0) {
+    return lastMatch + 1;
+  }
+
+  return orderedNames.length;
+}
+
+function serializeModel(model: ModelSpec): Record<string, unknown> {
+  const serialized: Record<string, unknown> = {
+    format: model.format,
+    flavor: model.flavor,
+  };
+
+  const optionalFields: Array<[string, unknown]> = [
+    ["multimodal", model.multimodal],
+    ["input_cost_per_token", model.input_cost_per_token],
+    ["output_cost_per_token", model.output_cost_per_token],
+    ["input_cost_per_mil_tokens", model.input_cost_per_mil_tokens],
+    ["output_cost_per_mil_tokens", model.output_cost_per_mil_tokens],
+    [
+      "input_cache_read_cost_per_mil_tokens",
+      model.input_cache_read_cost_per_mil_tokens,
+    ],
+    [
+      "input_cache_write_cost_per_mil_tokens",
+      model.input_cache_write_cost_per_mil_tokens,
+    ],
+    ["displayName", model.displayName],
+    ["o1_like", model.o1_like],
+    ["reasoning", model.reasoning],
+    ["reasoning_budget", model.reasoning_budget],
+    ["experimental", model.experimental],
+    ["deprecated", model.deprecated],
+    ["deprecation_date", model.deprecation_date],
+    ["parent", model.parent],
+    ["endpoint_types", model.endpoint_types],
+    ["locations", model.locations],
+    ["supported_regions", model.supported_regions],
+    ["description", model.description],
+    ["max_input_tokens", model.max_input_tokens],
+    ["max_output_tokens", model.max_output_tokens],
+    ["available_providers", model.available_providers],
+  ];
+
+  for (const [key, value] of optionalFields) {
+    if (value !== undefined && value !== null) {
+      serialized[key] = value;
+    }
+  }
+
+  return serialized;
+}
+
+async function writeLocalModels(localModels: LocalModelList): Promise<void> {
+  const orderedModels: Record<string, Record<string, unknown>> = {};
+  for (const [modelName, model] of Object.entries(localModels)) {
+    orderedModels[modelName] = serializeModel(model);
+  }
+  await fs.promises.writeFile(
+    LOCAL_MODEL_LIST_PATH,
+    JSON.stringify(orderedModels, null, 2) + "\n",
+  );
+}
+
+function arraysEqual(
+  left: readonly ModelEndpointType[],
+  right: readonly ModelEndpointType[],
+): boolean {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  for (let index = 0; index < left.length; index += 1) {
+    if (left[index] !== right[index]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function endpointOverridesForModels(
+  modelsToAdd: Array<{ name: string; model: ModelSpec }>,
+): Record<string, readonly ModelEndpointType[]> {
+  const overrides: Record<string, readonly ModelEndpointType[]> = {};
+
+  for (const { name, model } of modelsToAdd) {
+    if (!model.available_providers || model.available_providers.length === 0) {
+      continue;
+    }
+
+    const defaults = DEFAULT_ENDPOINT_TYPES[model.format];
+    if (!arraysEqual(model.available_providers, defaults)) {
+      overrides[name] = model.available_providers;
+    }
+  }
+
+  return overrides;
+}
+
+function escapeForRegex(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function updateAvailableEndpointTypes(
+  overrides: Record<string, readonly ModelEndpointType[]>,
+): Promise<void> {
+  const names = Object.keys(overrides);
+  if (names.length === 0) {
+    return;
+  }
+
+  const content = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const startMarker =
+    "export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {";
+  const startIndex = content.indexOf(startMarker);
+  if (startIndex < 0) {
+    throw new Error("Could not find AvailableEndpointTypes in schema/index.ts");
+  }
+
+  const objectStartIndex = content.indexOf(
+    "{",
+    startIndex + startMarker.length - 1,
+  );
+  const objectEndIndex = content.indexOf("\n};", objectStartIndex);
+  if (objectStartIndex < 0 || objectEndIndex < 0) {
+    throw new Error("Could not locate AvailableEndpointTypes object bounds");
+  }
+
+  let objectBody = content.slice(objectStartIndex + 1, objectEndIndex);
+
+  for (const name of names) {
+    const linePattern = new RegExp(
+      `^\\s*"${escapeForRegex(name)}": .*?,\\n?`,
+      "m",
+    );
+    objectBody = objectBody.replace(linePattern, "");
+  }
+
+  const newLines = names.map(
+    (name) => `  "${name}": ${JSON.stringify(overrides[name])},`,
+  );
+  const trimmedBody = objectBody.trimEnd();
+  const normalizedBody =
+    trimmedBody.length === 0
+      ? "\n" + newLines.join("\n") + "\n"
+      : trimmedBody + "\n" + newLines.join("\n") + "\n";
+
+  const updatedContent =
+    content.slice(0, objectStartIndex + 1) +
+    normalizedBody +
+    content.slice(objectEndIndex);
+
+  await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedContent);
+}
+
+function insertModels(
+  localModels: LocalModelList,
+  modelsToAdd: Array<{ name: string; model: ModelSpec }>,
+): LocalModelList {
+  const orderedEntries = Object.entries(localModels);
+
+  for (const modelToAdd of modelsToAdd) {
+    const currentNames = orderedEntries.map(([name]) => name);
+    const index = insertionIndex(currentNames, modelToAdd.name);
+    orderedEntries.splice(index, 0, [modelToAdd.name, modelToAdd.model]);
+  }
+
+  const updatedModels: LocalModelList = {};
+  for (const [name, model] of orderedEntries) {
+    updatedModels[name] = model;
+  }
+
+  return updatedModels;
+}
+
+function parseAliasTargets(body: string): Record<string, string> {
+  const aliasTargets: Record<string, string> = {};
+
+  for (const match of body.matchAll(
+    /^\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|$/gm,
+  )) {
+    const alias = normalizeModelId(match[1]);
+    const target = normalizeModelId(match[2]);
+    if (alias.length > 0 && target.length > 0) {
+      aliasTargets[alias] = target;
+    }
+  }
+
+  return aliasTargets;
+}
+
+function parseGapSectionModels(body: string): string[] {
+  const gapMatch = body.match(/## Gap\s*([\s\S]*?)(?:\n## |\s*$)/i);
+  if (!gapMatch?.[1]) {
+    return [];
+  }
+
+  return uniqueModels(
+    Array.from(
+      gapMatch[1].matchAll(/^\s*-\s+`([^`]+)`\s*$/gm),
+      (match) => match[1],
+    ),
+  );
+}
+
+function parseIssueMetadata(body: string): IssueMetadata | null {
+  const candidateBlocks: string[] = [];
+  const markerIndex = body.indexOf(ISSUE_METADATA_MARKER);
+  if (markerIndex >= 0) {
+    const markerSlice = body.slice(markerIndex);
+    const markedMatch = markerSlice.match(/```json\s*([\s\S]*?)```/i);
+    if (markedMatch?.[1]) {
+      candidateBlocks.push(markedMatch[1]);
+    }
+  }
+
+  for (const match of body.matchAll(/```json\s*([\s\S]*?)```/gi)) {
+    if (match[1]) {
+      candidateBlocks.push(match[1]);
+    }
+  }
+
+  for (const block of candidateBlocks) {
+    try {
+      return issueMetadataSchema.parse(JSON.parse(block));
+    } catch (_error) {
+      continue;
+    }
+  }
+
+  return null;
+}
+
+function parseIssueTitle(title: string): {
+  provider: string | null;
+  models: string[];
+} {
+  const singleMatch = title.match(BOT_ISSUE_TITLE_PATTERN);
+  if (singleMatch) {
+    return {
+      provider: normalizeProvider(singleMatch[1]),
+      models: uniqueModels([singleMatch[2]]),
+    };
+  }
+
+  const parensMatch = title.match(BOT_ISSUE_MULTI_MODEL_PARENS_PATTERN);
+  if (parensMatch) {
+    return {
+      provider: normalizeProvider(parensMatch[1]),
+      models: uniqueModels(parensMatch[2].split(",")),
+    };
+  }
+
+  const colonMatch = title.match(BOT_ISSUE_MULTI_MODEL_COLON_PATTERN);
+  if (colonMatch) {
+    return {
+      provider: normalizeProvider(colonMatch[1]),
+      models: uniqueModels(colonMatch[2].split(",")),
+    };
+  }
+
+  return { provider: null, models: [] };
+}
+
+function parseIssue(title: string, body: string): ParsedIssue {
+  const metadata = parseIssueMetadata(body);
+  const titleData = parseIssueTitle(title);
+  const aliasTargets = parseAliasTargets(body);
+  const metadataModels = uniqueModels([
+    ...(metadata?.model ? [metadata.model] : []),
+    ...(metadata?.models ?? []),
+  ]);
+  const bodyModels =
+    Object.keys(aliasTargets).length > 0
+      ? uniqueModels(Object.keys(aliasTargets))
+      : parseGapSectionModels(body);
+
+  const metadataProvider = normalizeProvider(metadata?.provider);
+
+  return {
+    provider: metadataProvider ?? titleData.provider,
+    models:
+      metadataModels.length > 0
+        ? metadataModels
+        : titleData.models.length > 0
+          ? titleData.models
+          : bodyModels,
+    metadata,
+    aliasTargets,
+  };
+}
+
+function getModelSpecPatch(
+  metadata: IssueMetadata | null,
+  targetModel: string,
+): PartialModelSpec | undefined {
+  return metadata?.model_specs?.[targetModel] ?? metadata?.model_spec;
+}
+
+function inferFormat(
+  provider: string,
+  modelName: string,
+  metadataSpec?: PartialModelSpec,
+): ModelFormat | null {
+  if (metadataSpec?.format) {
+    return metadataSpec.format;
+  }
+
+  if (provider === "anthropic") {
+    return "anthropic";
+  }
+  if (provider === "google") {
+    return "google";
+  }
+  if (provider === "bedrock") {
+    return "converse";
+  }
+  if (provider === "vertex") {
+    if (modelName.startsWith("publishers/google/models/")) {
+      return "google";
+    }
+    return "openai";
+  }
+  if (
+    [
+      "azure",
+      "cerebras",
+      "databricks",
+      "fireworks",
+      "groq",
+      "mistral",
+      "openai",
+      "perplexity",
+      "together",
+      "xai",
+    ].includes(provider)
+  ) {
+    return "openai";
+  }
+
+  return null;
+}
+
+function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
+  if (!patch) {
+    return;
+  }
+
+  if (patch.format) {
+    model.format = patch.format;
+  }
+  if (patch.flavor) {
+    model.flavor = patch.flavor;
+  }
+  if (patch.multimodal !== undefined) {
+    model.multimodal = patch.multimodal;
+  }
+  if (patch.input_cost_per_token !== undefined) {
+    model.input_cost_per_token = patch.input_cost_per_token;
+  }
+  if (patch.output_cost_per_token !== undefined) {
+    model.output_cost_per_token = patch.output_cost_per_token;
+  }
+  if (patch.input_cost_per_mil_tokens !== undefined) {
+    model.input_cost_per_mil_tokens = patch.input_cost_per_mil_tokens;
+  }
+  if (patch.output_cost_per_mil_tokens !== undefined) {
+    model.output_cost_per_mil_tokens = patch.output_cost_per_mil_tokens;
+  }
+  if (patch.input_cache_read_cost_per_mil_tokens !== undefined) {
+    model.input_cache_read_cost_per_mil_tokens =
+      patch.input_cache_read_cost_per_mil_tokens;
+  }
+  if (patch.input_cache_write_cost_per_mil_tokens !== undefined) {
+    model.input_cache_write_cost_per_mil_tokens =
+      patch.input_cache_write_cost_per_mil_tokens;
+  }
+  if (patch.displayName !== undefined) {
+    model.displayName = patch.displayName;
+  }
+  if (patch.o1_like !== undefined) {
+    model.o1_like = patch.o1_like;
+  }
+  if (patch.reasoning !== undefined) {
+    model.reasoning = patch.reasoning;
+  }
+  if (patch.reasoning_budget !== undefined) {
+    model.reasoning_budget = patch.reasoning_budget;
+  }
+  if (patch.experimental !== undefined) {
+    model.experimental = patch.experimental;
+  }
+  if (patch.deprecated !== undefined) {
+    model.deprecated = patch.deprecated;
+  }
+  if (patch.deprecation_date !== undefined) {
+    model.deprecation_date = patch.deprecation_date;
+  }
+  if (patch.parent !== undefined) {
+    model.parent = patch.parent;
+  }
+  if (patch.endpoint_types !== undefined) {
+    model.endpoint_types = [...patch.endpoint_types];
+  }
+  if (patch.locations !== undefined) {
+    model.locations = sortLocations(patch.locations);
+  }
+  if (patch.supported_regions !== undefined) {
+    model.supported_regions = sortLocations(patch.supported_regions);
+  }
+  if (patch.description !== undefined) {
+    model.description = patch.description;
+  }
+  if (patch.max_input_tokens !== undefined) {
+    model.max_input_tokens = patch.max_input_tokens;
+  }
+  if (patch.max_output_tokens !== undefined) {
+    model.max_output_tokens = patch.max_output_tokens;
+  }
+  if (patch.available_providers !== undefined) {
+    model.available_providers = [...patch.available_providers];
+  }
+}
+
+function buildManualModelSpec(
+  provider: string,
+  modelName: string,
+  metadata: IssueMetadata | null,
+): ModelSpec {
+  const modelSpecPatch = getModelSpecPatch(metadata, modelName);
+  const format = inferFormat(provider, modelName, modelSpecPatch);
+  if (!format) {
+    throw new Error(`Could not determine format for ${modelName}`);
+  }
+
+  const model: ModelSpec = {
+    format,
+    flavor: modelSpecPatch?.flavor ?? "chat",
+  };
+
+  const fallbackProviders = providersForName(provider);
+  if (fallbackProviders.length > 0) {
+    model.available_providers = fallbackProviders;
+  }
+
+  const parent = getSnapshotParent(modelName);
+  if (parent) {
+    model.parent = parent;
+  }
+
+  const displayName = buildDisplayName(modelName);
+  if (displayName) {
+    model.displayName = displayName;
+  }
+
+  applyModelSpecPatch(model, modelSpecPatch);
+  return model;
+}
+
+function cloneLocalModel(model: ModelSpec): ModelSpec {
+  return ModelSchema.parse(serializeModel(model));
+}
+
+function shouldCloseAsDeprecated(
+  parsedIssue: ParsedIssue,
+  targetModel: string,
+  localModels: LocalModelList,
+): boolean {
+  const metadata = parsedIssue.metadata;
+  const aliasSource = parsedIssue.aliasTargets[targetModel];
+  const aliasedModel =
+    aliasSource && localModels[aliasSource] ? localModels[aliasSource] : null;
+  const modelSpecPatch = getModelSpecPatch(metadata, targetModel);
+
+  if (
+    metadata?.status === "deprecated" ||
+    metadata?.status === "retired" ||
+    metadata?.status === "replaced" ||
+    metadata?.status === "old"
+  ) {
+    return true;
+  }
+
+  if (modelSpecPatch?.deprecated) {
+    return true;
+  }
+
+  if (isPastDate(metadata?.deprecation_date)) {
+    return true;
+  }
+
+  if (isPastDate(modelSpecPatch?.deprecation_date)) {
+    return true;
+  }
+
+  if (isPastDate(aliasedModel?.deprecation_date)) {
+    return true;
+  }
+
+  return false;
+}
+
+function requiresExplicitLocations(
+  provider: string,
+  modelName: string,
+): boolean {
+  return provider === "vertex" || modelName.startsWith("publishers/");
+}
+
+function ensureRequiredModelMetadata(
+  provider: string,
+  modelName: string,
+  model: ModelSpec,
+): void {
+  if (
+    model.max_input_tokens === undefined &&
+    model.max_output_tokens === undefined
+  ) {
+    throw new Error(
+      `Refusing to add ${modelName} without verified token limits in the issue metadata`,
+    );
+  }
+
+  if (
+    requiresExplicitLocations(provider, modelName) &&
+    (!model.locations || model.locations.length === 0)
+  ) {
+    throw new Error(
+      `Refusing to add ${modelName} without explicit location metadata`,
+    );
+  }
+}
+
+function buildModelsForIssue(
+  parsedIssue: ParsedIssue,
+  targetModel: string,
+  localModels: LocalModelList,
+): Array<{ name: string; model: ModelSpec }> {
+  if (!parsedIssue.provider) {
+    return [];
+  }
+
+  const aliasSource = parsedIssue.aliasTargets[targetModel];
+  if (aliasSource && localModels[aliasSource]) {
+    const model = cloneLocalModel(localModels[aliasSource]);
+    return [{ name: targetModel, model }];
+  }
+
+  const model = buildManualModelSpec(
+    parsedIssue.provider,
+    targetModel,
+    parsedIssue.metadata,
+  );
+  ensureRequiredModelMetadata(parsedIssue.provider, targetModel, model);
+  return [{ name: targetModel, model }];
+}
+
+async function writeResult(
+  resultPath: string | undefined,
+  result: FixResult,
+): Promise<void> {
+  if (!resultPath) {
+    return;
+  }
+
+  await fs.promises.writeFile(
+    resultPath,
+    JSON.stringify(fixResultSchema.parse(result), null, 2) + "\n",
+  );
+}
+
+async function resolveIssueCommand(argv: {
+  title: string;
+  bodyFile: string;
+  write: boolean;
+  resultPath?: string;
+}): Promise<void> {
+  const body = await fs.promises.readFile(argv.bodyFile, "utf-8");
+  const parsedIssue = parseIssue(argv.title, body);
+  const targetModels = uniqueModels(parsedIssue.models);
+  const primaryModel = targetModels[0];
+
+  if (!parsedIssue.provider || targetModels.length === 0) {
+    await writeResult(argv.resultPath, {
+      action: "unsupported",
+      message:
+        "Autofix skipped because the issue body/title did not contain parseable bot metadata for a missing model.",
+      added_models: [],
+    });
+    return;
+  }
+
+  const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+  const alreadyPresentModels = targetModels.filter(
+    (model) => !!localModels[model],
+  );
+  const missingModels = targetModels.filter((model) => !localModels[model]);
+
+  if (missingModels.length === 0) {
+    await writeResult(argv.resultPath, {
+      action: "already_present",
+      message: `Closing this bot issue because ${formatModelList(targetModels)} ${targetModels.length === 1 ? "is" : "are"} already present in \`packages/proxy/schema/model_list.json\`.`,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      added_models: [],
+    });
+    return;
+  }
+
+  const deprecatedModels = missingModels.filter((model) =>
+    shouldCloseAsDeprecated(parsedIssue, model, localModels),
+  );
+  const modelsToResolve = missingModels.filter(
+    (model) => !deprecatedModels.includes(model),
+  );
+
+  if (modelsToResolve.length === 0) {
+    await writeResult(argv.resultPath, {
+      action: "deprecated",
+      message: `Closing this bot issue because ${formatModelList(missingModels)} ${missingModels.length === 1 ? "is" : "are"} already deprecated, retired, or too old to add to the active model catalog.`,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      added_models: [],
+    });
+    return;
+  }
+
+  let builtModelEntries: Array<{ name: string; model: ModelSpec }>;
+  try {
+    builtModelEntries = modelsToResolve.flatMap((targetModel) =>
+      buildModelsForIssue(parsedIssue, targetModel, localModels),
+    );
+  } catch (error) {
+    const message = `Autofix skipped because the issue does not yet contain enough verified metadata to safely add ${formatModelList(modelsToResolve)}. ${errorMessage(error)}`;
+    await writeResult(argv.resultPath, {
+      action: "unsupported",
+      message,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      added_models: [],
+      comment_body: buildUnsupportedTicketComment({
+        message,
+        provider: parsedIssue.provider,
+        targetModels,
+        body,
+      }),
+    });
+    return;
+  }
+
+  const modelsToAdd = uniqueModels(
+    builtModelEntries.map((entry) => entry.name),
+  ).map((name) => {
+    const entry = builtModelEntries.find(
+      (candidate) => candidate.name === name,
+    );
+    if (!entry) {
+      throw new Error(`Could not build model payload for ${name}`);
+    }
+    return entry;
+  });
+
+  if (modelsToAdd.length === 0) {
+    const message = `Autofix skipped because no resolvable model payload could be built for ${formatModelList(modelsToResolve)}.`;
+    await writeResult(argv.resultPath, {
+      action: "unsupported",
+      message,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      added_models: [],
+      comment_body: buildUnsupportedTicketComment({
+        message,
+        provider: parsedIssue.provider,
+        targetModels,
+        body,
+      }),
+    });
+    return;
+  }
+
+  const updatedModels = insertModels(localModels, modelsToAdd);
+  const needsVertexSync = modelsToAdd.some((entry) =>
+    entry.model.available_providers?.includes("vertex"),
+  );
+
+  if (needsVertexSync) {
+    console.log(
+      `Fetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
+    );
+    const supportedRegionsByModel = await fetchVertexSupportedRegions();
+    syncVertexSupportedRegions(updatedModels, supportedRegionsByModel);
+  }
+
+  if (argv.write) {
+    await writeLocalModels(updatedModels);
+    await updateAvailableEndpointTypes(endpointOverridesForModels(modelsToAdd));
+  }
+
+  await writeResult(argv.resultPath, {
+    action: "added",
+    message: [
+      `Prepared catalog updates for ${formatModelList(modelsToAdd.map((entry) => entry.name))}.`,
+      alreadyPresentModels.length > 0
+        ? `Already present: ${formatModelList(alreadyPresentModels)}.`
+        : "",
+      deprecatedModels.length > 0
+        ? `Skipped deprecated/old models: ${formatModelList(deprecatedModels)}.`
+        : "",
+    ]
+      .filter((line) => line.length > 0)
+      .join(" "),
+    provider: parsedIssue.provider,
+    model: primaryModel,
+    added_models: modelsToAdd.map((entry) => entry.name),
+  });
+
+  for (const model of modelsToAdd) {
+    console.log(`${argv.write ? "Added" : "Would add"} ${model.name}`);
+  }
+}
+
+async function main(): Promise<void> {
+  await yargs(hideBin(process.argv))
+    .command(
+      "resolve-issue",
+      "Resolve a bot issue body into either a close action or a model catalog update",
+      (builder) =>
+        builder
+          .option("title", {
+            type: "string",
+            demandOption: true,
+            description: "GitHub issue title",
+          })
+          .option("body-file", {
+            type: "string",
+            demandOption: true,
+            description: "Path to a file containing the GitHub issue body",
+          })
+          .option("result-path", {
+            type: "string",
+            description: "Where to write the structured resolution result",
+          })
+          .option("write", {
+            type: "boolean",
+            default: false,
+            description: "Write the updated model list to disk when needed",
+          }),
+      async (argv) => {
+        await resolveIssueCommand({
+          title: argv.title,
+          bodyFile: argv.bodyFile,
+          write: argv.write,
+          resultPath: argv.resultPath,
+        });
+      },
+    )
+    .demandCommand(1)
+    .strict()
+    .help()
+    .parseAsync();
+}
+
+void main().catch((error: unknown) => {
+  console.error(errorMessage(error));
+  process.exit(1);
+});

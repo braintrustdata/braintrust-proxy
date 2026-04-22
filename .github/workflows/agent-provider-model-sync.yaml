@@ -163,6 +163,31 @@ jobs:
             - Mention the local files you inspected when reaching that conclusion
             - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
             - Explain why the gap is high confidence
+            - Assume the downstream `fix-bot-issues` job does **not** consult LiteLLM. It only trusts the issue metadata plus the local catalog, so include every verified field needed to write the model entry directly from the issue.
+            - Include a machine-readable metadata block immediately before the closing summary using this exact marker and a JSON code fence:
+              `<!-- fix-bot-issue-metadata -->`
+              followed by:
+              ```json
+              {
+                "kind": "missing_model",
+                "provider": "vertex",
+                "models": ["publishers/google/models/gemini-3.1-pro-preview"],
+                "status": "active",
+                "model_specs": {
+                  "publishers/google/models/gemini-3.1-pro-preview": {
+                    "format": "google",
+                    "flavor": "chat",
+                    "available_providers": ["vertex"],
+                    "locations": ["global"],
+                    "max_input_tokens": 1048576,
+                    "max_output_tokens": 65536
+                  }
+                },
+                "source_urls": ["https://example.com"]
+              }
+              ```
+            - For a single-model issue you may include either `model_spec` or `model_specs`. For a multi-model issue, include `models` and `model_specs`, with one fully populated spec per model id.
+            - Populate `model_spec`/`model_specs` with the exact token limits, pricing fields, provider list, deprecation metadata, and location information you can verify from official sources. Do not guess. If the model requires explicit location metadata, include it there.
             - Keep the issue concise and actionable
 
             # Output expectations

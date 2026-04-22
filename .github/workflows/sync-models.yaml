@@ -8,7 +8,7 @@ on:
       providers:
         description: "Space-separated provider allowlist"
         required: false
-        default: "fireworks openai anthropic baseten"
+        default: "fireworks openai anthropic baseten xai"
 
 concurrency:
   group: sync-models
@@ -22,11 +22,11 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
-      DEFAULT_PROVIDERS: "fireworks openai anthropic baseten"
+      DEFAULT_PROVIDERS: "fireworks openai anthropic baseten xai"
       BRANCH_NAME: chore/sync-new-models
       COMMIT_MESSAGE: "chore: sync new models"
       PR_TITLE: "chore: sync new models"
-      PR_BODY: "Automated addition of newly available models from the approved provider allowlist."
+      PR_BODY: "Automated sync of model metadata and newly available models from the approved provider allowlist."
 
     steps:
       - name: Checkout repository
@@ -59,7 +59,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Add new models for selected providers
+      - name: Sync selected providers
         run: |
           set -euo pipefail
 
@@ -71,6 +71,7 @@ jobs:
           echo "Syncing providers: $providers"
 
           for provider in $providers; do
+            pnpm dlx tsx packages/proxy/scripts/sync_models.ts update-models --provider "$provider" --write
             pnpm dlx tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
           done
 

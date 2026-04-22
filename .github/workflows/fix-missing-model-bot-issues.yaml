@@ -1,0 +1,374 @@
+name: Fix missing model bot issues
+
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Specific issue number to fix"
+        required: false
+        type: string
+      debug_enabled:
+        description: "Reserved for parity with other workflows"
+        required: false
+        default: false
+        type: boolean
+  issues:
+    types: [opened, reopened, edited]
+
+concurrency:
+  group: fix-missing-model-bot-issues
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    env:
+      BLOCKED_LABEL: autofix-blocked
+
+    steps:
+      - name: Select issue
+        id: issue
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          MANUAL_ISSUE_NUMBER: ${{ inputs.issue_number || '' }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const manualIssueNumber = (process.env.MANUAL_ISSUE_NUMBER || "").trim();
+            const blockedLabel = process.env.BLOCKED_LABEL;
+            const botIssuePattern = /^\[(?:BOT ISSUE|Bot Issue)\]/i;
+
+            async function getIssue(issueNumber) {
+              const { data } = await github.rest.issues.get({
+                owner,
+                repo,
+                issue_number: issueNumber,
+              });
+              if (data.pull_request) {
+                throw new Error(`#${issueNumber} is a pull request, not an issue`);
+              }
+              return data;
+            }
+
+            async function hasOpenPullRequest(branchName) {
+              const { data } = await github.rest.pulls.list({
+                owner,
+                repo,
+                state: "open",
+                head: `${owner}:${branchName}`,
+                per_page: 1,
+              });
+              return data.length > 0;
+            }
+
+            let candidates = [];
+
+            if (context.eventName === "issues") {
+              candidates = [context.payload.issue];
+            } else if (manualIssueNumber.length > 0) {
+              const issueNumber = Number.parseInt(manualIssueNumber, 10);
+              if (!Number.isInteger(issueNumber)) {
+                throw new Error(`Invalid issue number: ${manualIssueNumber}`);
+              }
+              candidates = [await getIssue(issueNumber)];
+            } else {
+              const issues = await github.paginate(github.rest.issues.listForRepo, {
+                owner,
+                repo,
+                state: "open",
+                per_page: 100,
+              });
+              candidates = issues
+                .filter((issue) => !issue.pull_request && botIssuePattern.test(issue.title))
+                .sort(
+                  (a, b) =>
+                    new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
+                );
+            }
+
+            let selected = null;
+            for (const issue of candidates) {
+              if (!botIssuePattern.test(issue.title)) {
+                continue;
+              }
+
+              const branchName = `chore/autofix-issue-${issue.number}`;
+              if (
+                context.eventName === "schedule" &&
+                manualIssueNumber.length === 0 &&
+                ((await hasOpenPullRequest(branchName)) ||
+                  issue.labels?.some((label) =>
+                    typeof label === "string"
+                      ? label === blockedLabel
+                      : label?.name === blockedLabel,
+                  ))
+              ) {
+                continue;
+              }
+
+              selected = { issue, branchName };
+              break;
+            }
+
+            if (!selected) {
+              core.setOutput("found", "false");
+              await core.summary
+                .addHeading("Fix missing model bot issues")
+                .addRaw("No eligible bot issues found.")
+                .write();
+              return;
+            }
+
+            core.setOutput("found", "true");
+            core.setOutput("number", String(selected.issue.number));
+            core.setOutput("title", selected.issue.title);
+            core.setOutput("body", selected.issue.body ?? "");
+            core.setOutput("url", selected.issue.html_url);
+            core.setOutput("branch", selected.branchName);
+
+      - name: Checkout repository
+        if: steps.issue.outputs.found == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        if: steps.issue.outputs.found == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        if: steps.issue.outputs.found == 'true'
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Get pnpm store directory
+        if: steps.issue.outputs.found == 'true'
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        if: steps.issue.outputs.found == 'true'
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        if: steps.issue.outputs.found == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Write issue body to file
+        if: steps.issue.outputs.found == 'true'
+        env:
+          ISSUE_BODY: ${{ steps.issue.outputs.body }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md"
+
+      - name: Apply fix
+        if: steps.issue.outputs.found == 'true'
+        id: fix
+        env:
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+        run: |
+          set -euo pipefail
+
+          pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            --title "$ISSUE_TITLE" \
+            --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
+            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.json" \
+            --write
+
+      - name: Read fix result
+        id: result
+        if: steps.issue.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.json
+        with:
+          script: |
+            const fs = require("fs");
+            const resultPath = process.env.RESULT_PATH;
+            const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
+
+            core.setOutput("action", result.action);
+            core.setOutput("message", result.message);
+            core.setOutput("provider", result.provider || "");
+            core.setOutput("model", result.model || "");
+            core.setOutput("changed_models", (result.changed_models || []).join(", "));
+            core.setOutput("added_models", (result.added_models || []).join(", "));
+            core.setOutput("updated_models", (result.updated_models || []).join(", "));
+            core.setOutput("comment_body", result.comment_body || result.message);
+
+      - name: Check expected files only
+        id: changes
+        if: steps.result.outputs.action == 'changed'
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build proxy package
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
+        run: pnpm --filter @braintrust/proxy run build
+
+      - name: Validate model schema
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts
+
+      - name: Create PR
+        id: pr
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ github.token }}
+          base: main
+          branch: ${{ steps.issue.outputs.branch }}
+          commit-message: "fix: auto-resolve #${{ steps.issue.outputs.number }}"
+          title: "fix: auto-resolve #${{ steps.issue.outputs.number }}"
+          body: |
+            Automatically generated fix for #${{ steps.issue.outputs.number }}.
+
+            Closes #${{ steps.issue.outputs.number }}
+
+            Source issue: ${{ steps.issue.outputs.url }}
+            Provider: `${{ steps.result.outputs.provider }}`
+            Model: `${{ steps.result.outputs.model }}`
+            Changed models: `${{ steps.result.outputs.changed_models }}`
+            Added models: `${{ steps.result.outputs.added_models }}`
+            Updated models: `${{ steps.result.outputs.updated_models }}`
+          labels: auto-sync
+          signoff: false
+
+      - name: Comment on fix PR
+        if: steps.pr.outputs.pull-request-url != ''
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          PULL_REQUEST_URL: ${{ steps.pr.outputs.pull-request-url }}
+          RESULT_MESSAGE: ${{ steps.result.outputs.message }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: Number(process.env.ISSUE_NUMBER),
+                name: process.env.BLOCKED_LABEL,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body: `${process.env.RESULT_MESSAGE}\n\nOpened ${process.env.PULL_REQUEST_URL} to apply the catalog update.`,
+            });
+
+      - name: Close already resolved issue
+        if: steps.result.outputs.action == 'already_present' || steps.result.outputs.action == 'deprecated'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          RESULT_MESSAGE: ${{ steps.result.outputs.message }}
+        with:
+          script: |
+            try {
+              await github.rest.issues.removeLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: Number(process.env.ISSUE_NUMBER),
+                name: process.env.BLOCKED_LABEL,
+              });
+            } catch (error) {
+              if (error.status !== 404) {
+                throw error;
+              }
+            }
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body: process.env.RESULT_MESSAGE,
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              state: "closed",
+            });
+
+      - name: Comment on unsupported issue
+        if: steps.result.outputs.action == 'unsupported'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
+          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
+          RESULT_MESSAGE: ${{ steps.result.outputs.comment_body }}
+        with:
+          script: |
+            async function ensureLabel() {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: process.env.BLOCKED_LABEL,
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: process.env.BLOCKED_LABEL,
+                  color: "BFDADC",
+                  description:
+                    "Bot issue is blocked until metadata or source information is updated.",
+                });
+              }
+            }
+
+            await ensureLabel();
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              labels: [process.env.BLOCKED_LABEL],
+            });
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.ISSUE_NUMBER),
+              body: process.env.RESULT_MESSAGE,
+            });

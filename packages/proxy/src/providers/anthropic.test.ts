@@ -17,13 +17,15 @@ import {
   VIDEO_DATA_URL,
 } from "../../tests/fixtures/base64";
 
+const ANTHROPIC_LIVE_TEST_MODEL = "claude-sonnet-4-20250514";
+
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<
     OpenAIChatCompletionCreateParams,
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },
@@ -58,7 +60,7 @@ it("should request identity encoding for streaming Anthropic chat completions", 
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [{ role: "user", content: "Stream a short response." }],
       stream: true,
       max_tokens: 32,
@@ -80,7 +82,7 @@ it("should mark streaming responses as no-transform", async () => {
         type: "message",
         role: "assistant",
         content: [],
-        model: "claude-3-haiku-20240307",
+        model: ANTHROPIC_LIVE_TEST_MODEL,
         stop_reason: null,
         stop_sequence: null,
         usage: { input_tokens: 4, output_tokens: 0 },
@@ -126,7 +128,7 @@ it("should mark streaming responses as no-transform", async () => {
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [{ role: "user", content: "Say hello." }],
       stream: true,
       max_tokens: 32,
@@ -153,7 +155,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [
         { role: "system", content: "You are a helpful assistant." },
         { role: "user", content: "Tell me a short joke about programming." },
@@ -178,7 +180,7 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: "claude-3-haiku-20240307",
+    model: ANTHROPIC_LIVE_TEST_MODEL,
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),
@@ -378,7 +380,7 @@ it("should handle max_tokens stop reason correctly with tool calls", async () =>
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [
         {
           role: "user",
@@ -432,7 +434,7 @@ it("should handle tool_use stop reason correctly with sufficient tokens", async 
     OpenAIChatCompletion
   >({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [
         {
           role: "user",
@@ -1076,7 +1078,7 @@ it("should translate json_object response format to tool-based structured output
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-haiku-20240307",
+      model: ANTHROPIC_LIVE_TEST_MODEL,
       messages: [{ role: "user", content: "Return JSON" }],
       response_format: { type: "json_object" },
       stream: false,

@@ -1,12 +1,17 @@
-name: Update models (temporary)
+name: Sync new models
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 */4 * * *"
   workflow_dispatch:
+    inputs:
+      providers:
+        description: "Space-separated provider allowlist"
+        required: false
+        default: "fireworks openai anthropic baseten xai"
 
 concurrency:
-  group: update-models
+  group: sync-models
   cancel-in-progress: false
 
 permissions:
@@ -17,10 +22,11 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
-      BRANCH_NAME: chore/update-models
-      COMMIT_MESSAGE: "chore: update models"
-      PR_TITLE: "chore: update models"
-      PR_BODY: "Temporary automated refresh of existing model metadata from the upstream LiteLLM catalog."
+      DEFAULT_PROVIDERS: "fireworks openai anthropic baseten xai"
+      BRANCH_NAME: chore/sync-new-models
+      COMMIT_MESSAGE: "chore: sync new models"
+      PR_TITLE: "chore: sync new models"
+      PR_BODY: "Automated sync of model metadata and newly available models from the approved provider allowlist."
 
     steps:
       - name: Checkout repository
@@ -53,8 +59,21 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Update model list
-        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts update-models --write
+      - name: Sync selected providers
+        run: |
+          set -euo pipefail
+
+          providers="${{ github.event.inputs.providers }}"
+          if [ -z "$providers" ]; then
+            providers="${DEFAULT_PROVIDERS}"
+          fi
+
+          echo "Syncing providers: $providers"
+
+          for provider in $providers; do
+            pnpm dlx tsx packages/proxy/scripts/sync_models.ts update-models --provider "$provider" --write
+            pnpm dlx tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
+          done
 
       - name: Check expected files only
         id: changes
@@ -66,7 +85,7 @@ jobs:
             exit 0
           fi
 
-          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^packages/proxy/schema/model_list\.json$' || true)
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
           if [ -n "$unexpected" ]; then
             echo "Unexpected files modified:"
             echo "$unexpected"
@@ -81,7 +100,7 @@ jobs:
 
       - name: Validate model schema
         if: ${{ steps.changes.outputs.changed == 'true' }}
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts
 
       - name: Create PR
         if: ${{ steps.changes.outputs.changed == 'true' }}

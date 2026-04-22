@@ -79,18 +79,6 @@ const BOT_ISSUE_MULTI_MODEL_COLON_PATTERN = new RegExp(
 );
 const ISSUE_METADATA_MARKER = "<!-- fix-bot-issue-metadata -->";
 
-const DEFAULT_ENDPOINT_TYPES: Record<
-  ModelFormat,
-  readonly ModelEndpointType[]
-> = {
-  openai: ["openai", "azure"],
-  anthropic: ["anthropic"],
-  google: ["google"],
-  js: ["js"],
-  window: ["js"],
-  converse: ["bedrock"],
-};
-
 function errorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -394,46 +382,21 @@ function insertionIndex(orderedNames: string[], modelName: string): number {
 }
 
 function serializeModel(model: ModelSpec): Record<string, unknown> {
-  const serialized: Record<string, unknown> = {
-    format: model.format,
-    flavor: model.flavor,
-  };
+  const serialized: Record<string, unknown> = {};
+  const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
-  const optionalFields: Array<[string, unknown]> = [
-    ["multimodal", model.multimodal],
-    ["input_cost_per_token", model.input_cost_per_token],
-    ["output_cost_per_token", model.output_cost_per_token],
-    ["input_cost_per_mil_tokens", model.input_cost_per_mil_tokens],
-    ["output_cost_per_mil_tokens", model.output_cost_per_mil_tokens],
-    [
-      "input_cache_read_cost_per_mil_tokens",
-      model.input_cache_read_cost_per_mil_tokens,
-    ],
-    [
-      "input_cache_write_cost_per_mil_tokens",
-      model.input_cache_write_cost_per_mil_tokens,
-    ],
-    ["displayName", model.displayName],
-    ["o1_like", model.o1_like],
-    ["reasoning", model.reasoning],
-    ["reasoning_budget", model.reasoning_budget],
-    ["experimental", model.experimental],
-    ["deprecated", model.deprecated],
-    ["deprecation_date", model.deprecation_date],
-    ["parent", model.parent],
-    ["endpoint_types", model.endpoint_types],
-    ["locations", model.locations],
-    ["supported_regions", model.supported_regions],
-    ["description", model.description],
-    ["max_input_tokens", model.max_input_tokens],
-    ["max_output_tokens", model.max_output_tokens],
-    ["available_providers", model.available_providers],
-  ];
-
-  for (const [key, value] of optionalFields) {
+  for (const key of schemaKeys) {
+    const value = model[key];
     if (value !== undefined && value !== null) {
       serialized[key] = value;
     }
+  }
+
+  for (const [key, value] of Object.entries(model)) {
+    if (key in serialized || value === undefined || value === null) {
+      continue;
+    }
+    serialized[key] = value;
   }
 
   return serialized;
@@ -450,40 +413,19 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
   );
 }
 
-function arraysEqual(
-  left: readonly ModelEndpointType[],
-  right: readonly ModelEndpointType[],
-): boolean {
-  if (left.length !== right.length) {
-    return false;
-  }
-
-  for (let index = 0; index < left.length; index += 1) {
-    if (left[index] !== right[index]) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-function endpointOverridesForModels(
+function providerMappingsForModels(
   modelsToAdd: Array<{ name: string; model: ModelSpec }>,
 ): Record<string, readonly ModelEndpointType[]> {
-  const overrides: Record<string, readonly ModelEndpointType[]> = {};
+  const mappings: Record<string, readonly ModelEndpointType[]> = {};
 
   for (const { name, model } of modelsToAdd) {
     if (!model.available_providers || model.available_providers.length === 0) {
       continue;
     }
-
-    const defaults = DEFAULT_ENDPOINT_TYPES[model.format];
-    if (!arraysEqual(model.available_providers, defaults)) {
-      overrides[name] = model.available_providers;
-    }
+    mappings[name] = model.available_providers;
   }
 
-  return overrides;
+  return mappings;
 }
 
 function escapeForRegex(text: string): string {
@@ -491,9 +433,9 @@ function escapeForRegex(text: string): string {
 }
 
 async function updateAvailableEndpointTypes(
-  overrides: Record<string, readonly ModelEndpointType[]>,
+  mappings: Record<string, readonly ModelEndpointType[]>,
 ): Promise<void> {
-  const names = Object.keys(overrides);
+  const names = Object.keys(mappings);
   if (names.length === 0) {
     return;
   }
@@ -506,10 +448,7 @@ async function updateAvailableEndpointTypes(
     throw new Error("Could not find AvailableEndpointTypes in schema/index.ts");
   }
 
-  const objectStartIndex = content.indexOf(
-    "{",
-    startIndex + startMarker.length - 1,
-  );
+  const objectStartIndex = startIndex + startMarker.length - 1;
   const objectEndIndex = content.indexOf("\n};", objectStartIndex);
   if (objectStartIndex < 0 || objectEndIndex < 0) {
     throw new Error("Could not locate AvailableEndpointTypes object bounds");
@@ -526,13 +465,24 @@ async function updateAvailableEndpointTypes(
   }
 
   const newLines = names.map(
-    (name) => `  "${name}": ${JSON.stringify(overrides[name])},`,
+    (name) => `  "${name}": ${JSON.stringify(mappings[name])},`,
   );
-  const trimmedBody = objectBody.trimEnd();
-  const normalizedBody =
-    trimmedBody.length === 0
-      ? "\n" + newLines.join("\n") + "\n"
-      : trimmedBody + "\n" + newLines.join("\n") + "\n";
+  const trimmedBody = objectBody.replace(/^\n/, "").trimEnd();
+  const insertionAnchor = '  "grok-beta": ["xAI"],';
+  let normalizedBody = trimmedBody.length === 0 ? "" : trimmedBody;
+
+  if (normalizedBody.includes(insertionAnchor)) {
+    normalizedBody = normalizedBody.replace(
+      insertionAnchor,
+      `${insertionAnchor}\n${newLines.join("\n")}`,
+    );
+  } else if (normalizedBody.length > 0) {
+    normalizedBody = `${normalizedBody}\n${newLines.join("\n")}`;
+  } else {
+    normalizedBody = newLines.join("\n");
+  }
+
+  normalizedBody = `\n${normalizedBody}`;
 
   const updatedContent =
     content.slice(0, objectStartIndex + 1) +
@@ -1082,7 +1032,7 @@ async function resolveIssueCommand(argv: {
 
   if (argv.write) {
     await writeLocalModels(updatedModels);
-    await updateAvailableEndpointTypes(endpointOverridesForModels(modelsToAdd));
+    await updateAvailableEndpointTypes(providerMappingsForModels(modelsToAdd));
   }
 
   await writeResult(argv.resultPath, {

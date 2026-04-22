@@ -2,7 +2,7 @@ name: Sync new models
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */4 * * *"
   workflow_dispatch:
     inputs:
       providers:

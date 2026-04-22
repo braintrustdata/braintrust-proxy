@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
+  getUpdatedAvailableProviders,
   normalizeLocalModels,
   normalizeProviderMappingContent,
 } from "./sync_models";
@@ -74,5 +75,17 @@ describe("sync_models", () => {
     expect(normalizeProviderMappingContent(schemaContent)).toBe(
       `export const MODEL_PROVIDER_MAPPING = {\n  "moonshotai/Kimi-K2.5": ["baseten"],\n};\n`,
     );
+  });
+
+  it("preserves existing providers during provider-filtered updates", () => {
+    expect(
+      getUpdatedAvailableProviders(["groq", "together"], ["baseten"], true),
+    ).toEqual(["groq", "together", "baseten"]);
+  });
+
+  it("uses the remote providers for unfiltered updates", () => {
+    expect(
+      getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
+    ).toEqual(["baseten"]);
   });
 });

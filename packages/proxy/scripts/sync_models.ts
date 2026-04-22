@@ -263,6 +263,24 @@ function mergeLocalModelDetails(
   };
 }
 
+export function getUpdatedAvailableProviders(
+  currentProviders: string[] | undefined,
+  remoteProviders: string[],
+  providerFilterApplied: boolean,
+): string[] {
+  if (!providerFilterApplied) {
+    return remoteProviders;
+  }
+
+  const mergedProviders = [...(currentProviders ?? [])];
+  for (const provider of remoteProviders) {
+    if (!mergedProviders.includes(provider)) {
+      mergedProviders.push(provider);
+    }
+  }
+  return mergedProviders;
+}
+
 export function normalizeLocalModels(localModels: LocalModelList): {
   models: LocalModelList;
   renamedKeys: Array<{ from: string; to: string }>;
@@ -1230,7 +1248,13 @@ async function updateModelsCommand(argv: any) {
       );
 
       // Set available_providers from remote (using merged providers across all colliding remote entries)
-      const remoteProviders = mergedProviders;
+      const remoteProviders = getUpdatedAvailableProviders(
+        Array.isArray(modelInUpdatedList.available_providers)
+          ? modelInUpdatedList.available_providers
+          : undefined,
+        mergedProviders,
+        Boolean(argv.provider),
+      );
       if (remoteProviders.length > 0) {
         const currentProviders = (modelInUpdatedList as any)
           .available_providers;

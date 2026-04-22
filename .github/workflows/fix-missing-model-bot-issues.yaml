@@ -357,6 +357,24 @@ jobs:
                     ).map((row) => `| ${row} |`),
                   ].join("\n")
                 : "No per-model verification rows were generated.";
+            const liteLLMRows = result.litellm_comparison_rows || [];
+            const liteLLMTable =
+              liteLLMRows.length > 0
+                ? [
+                    "| Model | sync_models source models | Status | Details |",
+                    "| --- | --- | --- | --- |",
+                    ...liteLLMRows.map((row) =>
+                      [
+                        row.model,
+                        row.litellm_models,
+                        row.status,
+                        row.details,
+                      ]
+                        .map((value) => escapeCell(value))
+                        .join(" | "),
+                    ).map((row) => `| ${row} |`),
+                  ].join("\n")
+                : "No sync_models discrepancies were noted.";
 
             core.setOutput("action", result.action);
             core.setOutput("message", result.message);
@@ -371,6 +389,12 @@ jobs:
             core.setOutput("verification_summary", result.verification_summary || "");
             core.setOutput("pr_summary_table", summaryTable);
             core.setOutput("pr_verification_table", verificationTable);
+            core.setOutput(
+              "litellm_comparison_summary",
+              result.litellm_comparison_summary ||
+                "sync_models cross-check was not needed for this result.",
+            );
+            core.setOutput("pr_litellm_table", liteLLMTable);
 
       - name: Check expected files only
         id: changes
@@ -424,6 +448,12 @@ jobs:
             **Verified metadata**
 
             ${{ steps.result.outputs.pr_verification_table }}
+
+            **sync_models cross-check**
+
+            ${{ steps.result.outputs.litellm_comparison_summary }}
+
+            ${{ steps.result.outputs.pr_litellm_table }}
           labels: auto-sync
           signoff: false
 

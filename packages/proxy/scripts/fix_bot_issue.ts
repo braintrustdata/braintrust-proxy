@@ -1,4 +1,5 @@
 import fs from "fs";
+import https from "https";
 import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -8,6 +9,10 @@ import {
   GOOGLE_VERTEX_LOCATIONS_URL,
   syncVertexSupportedRegions,
 } from "./sync_vertex_regions";
+import {
+  isSupportedTranslatedModelName,
+  translateToBraintrust,
+} from "./model_name_translation";
 import {
   type ModelEndpointType,
   type ModelFormat,
@@ -62,6 +67,17 @@ const fixResultSchema = z.object({
       }),
     )
     .optional(),
+  litellm_comparison_summary: z.string().optional(),
+  litellm_comparison_rows: z
+    .array(
+      z.object({
+        model: z.string(),
+        litellm_models: z.string(),
+        status: z.string(),
+        details: z.string(),
+      }),
+    )
+    .optional(),
 });
 
 type PartialModelSpec = z.infer<typeof partialModelSchema>;
@@ -74,12 +90,50 @@ type ParsedIssue = {
   metadata: IssueMetadata | null;
   aliasTargets: Record<string, string>;
 };
+const liteLLMModelDetailSchema = z
+  .object({
+    max_tokens: z.union([z.number(), z.string()]).optional(),
+    max_input_tokens: z
+      .preprocess(
+        (value) => (typeof value === "string" ? parseInt(value, 10) : value),
+        z.number().optional(),
+      )
+      .optional(),
+    max_output_tokens: z
+      .preprocess(
+        (value) => (typeof value === "string" ? parseInt(value, 10) : value),
+        z.number().optional(),
+      )
+      .optional(),
+    input_cost_per_token: z.number().optional(),
+    output_cost_per_token: z.number().optional(),
+    input_cost_per_mil_tokens: z.number().optional(),
+    output_cost_per_mil_tokens: z.number().optional(),
+    cache_creation_input_token_cost: z.number().optional(),
+    cache_read_input_token_cost: z.number().optional(),
+    litellm_provider: z.string().optional(),
+    deprecation_date: z.string().optional(),
+  })
+  .passthrough();
+const liteLLMModelListSchema = z.record(liteLLMModelDetailSchema);
+
+type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
+type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
+type LiteLLMComparisonRow = NonNullable<
+  FixResult["litellm_comparison_rows"]
+>[number];
+type LiteLLMResolvedModel = {
+  remoteModelNames: string[];
+  remoteModel: LiteLLMModelDetail;
+};
 
 const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
   "../schema/model_list.json",
 );
 const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
+const LITELLM_REMOTE_MODEL_URL =
+  "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 const DATE_SUFFIX_PATTERN = /^(.*)-(\d{4}-\d{2}-\d{2})$/;
 const PROVIDER_CAPTURE_GROUP =
   "(OpenAI|Anthropic|Azure|Google|Vertex|AWS Bedrock|Bedrock|Groq|Mistral|xAI|Together|Fireworks|Databricks|Cerebras|Perplexity)";
@@ -416,6 +470,290 @@ function buildVerificationRows(
         lifecycleParts.length > 0 ? lifecycleParts.join("; ") : "active",
     };
   });
+}
+
+async function fetchLiteLLMModels(): Promise<LiteLLMModelList> {
+  return await new Promise((resolve, reject) => {
+    https
+      .get(LITELLM_REMOTE_MODEL_URL, (response) => {
+        let data = "";
+        response.on("data", (chunk) => {
+          data += chunk;
+        });
+        response.on("end", () => {
+          try {
+            const parsed = JSON.parse(data);
+            if (
+              parsed &&
+              typeof parsed === "object" &&
+              !Array.isArray(parsed) &&
+              "sample_spec" in parsed
+            ) {
+              const withoutSampleSpec = { ...parsed };
+              delete withoutSampleSpec.sample_spec;
+              resolve(liteLLMModelListSchema.parse(withoutSampleSpec));
+              return;
+            }
+
+            resolve(liteLLMModelListSchema.parse(parsed));
+          } catch (error) {
+            reject(
+              new Error(
+                `Failed to parse sync_models reference catalog: ${errorMessage(error)}`,
+              ),
+            );
+          }
+        });
+      })
+      .on("error", (error) => {
+        reject(
+          new Error(
+            `Failed to fetch sync_models reference catalog: ${errorMessage(error)}`,
+          ),
+        );
+      });
+  });
+}
+
+function resolveLiteLLMModels(
+  remoteModels: LiteLLMModelList,
+): Map<string, LiteLLMResolvedModel> {
+  const resolved = new Map<string, LiteLLMResolvedModel>();
+  const sortedNames = Object.keys(remoteModels).sort((left, right) => {
+    const leftProvider = remoteModels[left]?.litellm_provider ?? "";
+    const rightProvider = remoteModels[right]?.litellm_provider ?? "";
+    return leftProvider !== rightProvider
+      ? leftProvider.localeCompare(rightProvider)
+      : left.localeCompare(right);
+  });
+
+  for (const remoteModelName of sortedNames) {
+    const remoteModel = remoteModels[remoteModelName];
+    const translatedName = translateToBraintrust(
+      remoteModelName,
+      remoteModel.litellm_provider,
+    );
+    if (
+      !isSupportedTranslatedModelName(
+        translatedName,
+        remoteModel.litellm_provider,
+      )
+    ) {
+      continue;
+    }
+
+    const existing = resolved.get(translatedName);
+    if (!existing) {
+      resolved.set(translatedName, {
+        remoteModelNames: [remoteModelName],
+        remoteModel,
+      });
+      continue;
+    }
+
+    if (!existing.remoteModelNames.includes(remoteModelName)) {
+      existing.remoteModelNames.push(remoteModelName);
+    }
+  }
+
+  return resolved;
+}
+
+function roundLiteLLMCostPerMillion(
+  costPerToken: number | undefined,
+): number | undefined {
+  if (costPerToken === undefined) {
+    return undefined;
+  }
+
+  return Number((costPerToken * 1_000_000).toFixed(8));
+}
+
+function getLiteLLMInputCostPerMillion(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return (
+    remoteModel.input_cost_per_mil_tokens ??
+    roundLiteLLMCostPerMillion(remoteModel.input_cost_per_token)
+  );
+}
+
+function getLiteLLMOutputCostPerMillion(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return (
+    remoteModel.output_cost_per_mil_tokens ??
+    roundLiteLLMCostPerMillion(remoteModel.output_cost_per_token)
+  );
+}
+
+function getLiteLLMCacheReadCostPerMillion(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return roundLiteLLMCostPerMillion(remoteModel.cache_read_input_token_cost);
+}
+
+function getLiteLLMCacheWriteCostPerMillion(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return roundLiteLLMCostPerMillion(
+    remoteModel.cache_creation_input_token_cost,
+  );
+}
+
+function getLiteLLMMaxInputTokens(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return remoteModel.max_input_tokens ?? remoteModel.max_tokens;
+}
+
+function getLiteLLMMaxOutputTokens(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  return remoteModel.max_output_tokens;
+}
+
+function sameNumber(
+  left: number | undefined | null,
+  right: number | undefined | null,
+): boolean {
+  if (left === undefined || left === null) {
+    return right === undefined || right === null;
+  }
+  if (right === undefined || right === null) {
+    return false;
+  }
+  return Math.abs(left - right) < 1e-9;
+}
+
+function compareLiteLLMField(args: {
+  field: string;
+  localValue: number | string | undefined | null;
+  litellmValue: number | string | undefined | null;
+}): string | null {
+  const { field, localValue, litellmValue } = args;
+  const localMissing = localValue === undefined || localValue === null;
+  const litellmMissing = litellmValue === undefined || litellmValue === null;
+
+  if (localMissing && litellmMissing) {
+    return null;
+  }
+
+  if (typeof localValue === "number" || typeof litellmValue === "number") {
+    if (
+      sameNumber(
+        typeof localValue === "number" ? localValue : undefined,
+        typeof litellmValue === "number" ? litellmValue : undefined,
+      )
+    ) {
+      return null;
+    }
+  } else if (localValue === litellmValue) {
+    return null;
+  }
+
+  return `${field}: provider=${localMissing ? "n/a" : String(localValue)}, sync_models=${litellmMissing ? "n/a" : String(litellmValue)}`;
+}
+
+async function buildLiteLLMComparison(args: {
+  models: Array<{ name: string; model: ModelSpec }>;
+}): Promise<{
+  summary?: string;
+  rows?: LiteLLMComparisonRow[];
+}> {
+  if (args.models.length === 0) {
+    return {};
+  }
+
+  try {
+    const remoteModels = await fetchLiteLLMModels();
+    const resolvedRemoteModels = resolveLiteLLMModels(remoteModels);
+    const rows: LiteLLMComparisonRow[] = [];
+
+    for (const { name, model } of args.models) {
+      const remoteEntry = resolvedRemoteModels.get(name);
+      if (!remoteEntry) {
+        rows.push({
+          model: name,
+          litellm_models: "None",
+          status: "missing in sync_models",
+          details:
+            "No translated sync_models reference entry matched this model name.",
+        });
+        continue;
+      }
+
+      const differences = [
+        compareLiteLLMField({
+          field: "max_input_tokens",
+          localValue: model.max_input_tokens,
+          litellmValue: getLiteLLMMaxInputTokens(remoteEntry.remoteModel),
+        }),
+        compareLiteLLMField({
+          field: "max_output_tokens",
+          localValue: model.max_output_tokens,
+          litellmValue: getLiteLLMMaxOutputTokens(remoteEntry.remoteModel),
+        }),
+        compareLiteLLMField({
+          field: "input_cost_per_mil_tokens",
+          localValue: model.input_cost_per_mil_tokens,
+          litellmValue: getLiteLLMInputCostPerMillion(remoteEntry.remoteModel),
+        }),
+        compareLiteLLMField({
+          field: "output_cost_per_mil_tokens",
+          localValue: model.output_cost_per_mil_tokens,
+          litellmValue: getLiteLLMOutputCostPerMillion(remoteEntry.remoteModel),
+        }),
+        compareLiteLLMField({
+          field: "input_cache_read_cost_per_mil_tokens",
+          localValue: model.input_cache_read_cost_per_mil_tokens,
+          litellmValue: getLiteLLMCacheReadCostPerMillion(
+            remoteEntry.remoteModel,
+          ),
+        }),
+        compareLiteLLMField({
+          field: "input_cache_write_cost_per_mil_tokens",
+          localValue: model.input_cache_write_cost_per_mil_tokens,
+          litellmValue: getLiteLLMCacheWriteCostPerMillion(
+            remoteEntry.remoteModel,
+          ),
+        }),
+        compareLiteLLMField({
+          field: "deprecation_date",
+          localValue: model.deprecation_date,
+          litellmValue: remoteEntry.remoteModel.deprecation_date,
+        }),
+      ].filter((difference): difference is string => difference !== null);
+
+      if (differences.length === 0) {
+        continue;
+      }
+
+      rows.push({
+        model: name,
+        litellm_models: remoteEntry.remoteModelNames.join(", "),
+        status: "differs",
+        details: differences.join("; "),
+      });
+    }
+
+    if (rows.length === 0) {
+      return {
+        summary:
+          "sync_models cross-check found no pricing/token discrepancies for the changed models.",
+      };
+    }
+
+    return {
+      summary:
+        "sync_models cross-check found differences. Official provider verification was used for the applied values, and sync_models discrepancies are listed below for review.",
+      rows,
+    };
+  } catch (error) {
+    return {
+      summary: `sync_models cross-check could not be completed: ${errorMessage(error)}`,
+    };
+  }
 }
 
 function buildUnsupportedTicketComment(args: {
@@ -1467,6 +1805,10 @@ async function resolveIssueCommand(argv: {
     );
   }
 
+  const liteLLMComparison = await buildLiteLLMComparison({
+    models: changedModelEntries,
+  });
+
   await writeResult(argv.resultPath, {
     action: "changed",
     message: [
@@ -1502,6 +1844,8 @@ async function resolveIssueCommand(argv: {
       models: changedModelEntries,
     }),
     verification_rows: buildVerificationRows(changedModelEntries),
+    litellm_comparison_summary: liteLLMComparison.summary,
+    litellm_comparison_rows: liteLLMComparison.rows,
   });
 
   for (const model of changedModelEntries) {

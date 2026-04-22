@@ -178,9 +178,9 @@ jobs:
           set -euo pipefail
           printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md"
 
-      - name: Apply fix
+      - name: Apply fix from issue body
         if: steps.issue.outputs.found == 'true'
-        id: fix
+        id: fix_initial
         env:
           ISSUE_TITLE: ${{ steps.issue.outputs.title }}
         run: |
@@ -189,19 +189,118 @@ jobs:
           pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
             --title "$ISSUE_TITLE" \
             --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
-            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.json" \
+            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.initial.json" \
             --write
 
-      - name: Read fix result
-        id: result
+      - name: Read initial fix result
+        id: result_initial
         if: steps.issue.outputs.found == 'true'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.json
+          RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.initial.json
         with:
           script: |
             const fs = require("fs");
             const resultPath = process.env.RESULT_PATH;
+            const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
+
+            core.setOutput("action", result.action);
+            core.setOutput("message", result.message);
+            core.setOutput("provider", result.provider || "");
+            core.setOutput("model", result.model || "");
+            core.setOutput("changed_models", (result.changed_models || []).join(", "));
+            core.setOutput("added_models", (result.added_models || []).join(", "));
+            core.setOutput("updated_models", (result.updated_models || []).join(", "));
+            core.setOutput("comment_body", result.comment_body || result.message);
+
+      - name: Enrich missing metadata with Claude Code
+        if: steps.result_initial.outputs.action == 'unsupported'
+        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          show_full_output: "true"
+          display_report: "true"
+          timeout_minutes: "15"
+          claude_args: |
+            --model claude-opus-4-6
+            --max-turns 80
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
+            --disallowedTools "Bash,MultiEdit,Replace,NotebookEditCell,mcp__github__create_issue,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+          prompt: |
+            # Goal
+
+            Create an enriched copy of the selected bot issue body so the downstream resolver can retry with verified metadata.
+
+            # Inputs
+
+            - Issue title: `${{ steps.issue.outputs.title }}`
+            - Issue URL: `${{ steps.issue.outputs.url }}`
+            - Original issue body file: `${{ runner.temp }}/fix-missing-model-bot-issue-body.md`
+            - Output enriched body file: `${{ runner.temp }}/fix-missing-model-bot-issue-body.enriched.md`
+            - Initial resolver result: `${{ steps.result_initial.outputs.message }}`
+
+            # Local files to inspect first
+
+            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/schema/index.ts`
+            - `packages/proxy/schema/models.ts`
+            - `packages/proxy/scripts/fix_bot_issue.ts`
+
+            # What to do
+
+            1. Read the original issue body file.
+            2. Use the official source URLs already on the issue first.
+            3. If needed, search additional official provider docs or official provider API references to verify the missing metadata.
+            4. Match local catalog conventions for format, flavor, provider mapping, pricing fields, token limits, deprecation metadata, and locations when required.
+            5. If you can verify enough metadata to let the resolver proceed safely, append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
+            6. If you cannot verify enough metadata, write the original issue body unchanged to the enriched output file.
+
+            # Constraints
+
+            - Do not edit repository files.
+            - Do not create or update GitHub issues, comments, or pull requests.
+            - Do not invent values or use third-party aggregators as the source of truth.
+            - Prefer a fully populated `model_specs` map for multi-model issues.
+            - The output file must contain the full issue body text, not just the JSON block.
+
+      - name: Ensure enriched body file exists
+        if: steps.result_initial.outputs.action == 'unsupported'
+        run: |
+          set -euo pipefail
+          if [ ! -f "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md" ]; then
+            cp \
+              "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
+              "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md"
+          fi
+
+      - name: Re-apply fix from enriched issue body
+        if: steps.result_initial.outputs.action == 'unsupported'
+        id: fix_retry
+        env:
+          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+        run: |
+          set -euo pipefail
+
+          pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            --title "$ISSUE_TITLE" \
+            --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md" \
+            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.retry.json" \
+            --write
+
+      - name: Read final fix result
+        id: result
+        if: steps.issue.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          INITIAL_RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.initial.json
+          RETRY_RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.retry.json
+        with:
+          script: |
+            const fs = require("fs");
+            const resultPath = fs.existsSync(process.env.RETRY_RESULT_PATH)
+              ? process.env.RETRY_RESULT_PATH
+              : process.env.INITIAL_RESULT_PATH;
             const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
 
             core.setOutput("action", result.action);

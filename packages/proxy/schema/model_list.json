@@ -1445,6 +1445,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "input_cache_write_cost_per_mil_tokens": 0.3,
     "displayName": "Claude 3 Haiku",
+    "deprecated": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
     "available_providers": [

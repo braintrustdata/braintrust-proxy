@@ -1,4 +1,4 @@
-name: Fix bot model issues
+name: Fix missing model bot issues
 
 on:
   schedule:
@@ -18,7 +18,7 @@ on:
     types: [opened, reopened, edited]
 
 concurrency:
-  group: fix-bot-issues
+  group: fix-missing-model-bot-issues
   cancel-in-progress: false
 
 permissions:
@@ -113,7 +113,7 @@ jobs:
             if (!selected) {
               core.setOutput("found", "false");
               await core.summary
-                .addHeading("Fix bot model issues")
+                .addHeading("Fix missing model bot issues")
                 .addRaw("No eligible bot issues found.")
                 .write();
               return;
@@ -168,7 +168,7 @@ jobs:
           ISSUE_BODY: ${{ steps.issue.outputs.body }}
         run: |
           set -euo pipefail
-          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/fix-bot-issue-body.md"
+          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md"
 
       - name: Apply fix
         if: steps.issue.outputs.found == 'true'
@@ -180,8 +180,8 @@ jobs:
 
           pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
             --title "$ISSUE_TITLE" \
-            --body-file "$RUNNER_TEMP/fix-bot-issue-body.md" \
-            --result-path "$RUNNER_TEMP/fix-bot-issue-result.json" \
+            --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
+            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.json" \
             --write
 
       - name: Read fix result
@@ -189,7 +189,7 @@ jobs:
         if: steps.issue.outputs.found == 'true'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          RESULT_PATH: ${{ runner.temp }}/fix-bot-issue-result.json
+          RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.json
         with:
           script: |
             const fs = require("fs");
@@ -200,12 +200,14 @@ jobs:
             core.setOutput("message", result.message);
             core.setOutput("provider", result.provider || "");
             core.setOutput("model", result.model || "");
+            core.setOutput("changed_models", (result.changed_models || []).join(", "));
             core.setOutput("added_models", (result.added_models || []).join(", "));
+            core.setOutput("updated_models", (result.updated_models || []).join(", "));
             core.setOutput("comment_body", result.comment_body || result.message);
 
       - name: Check expected files only
         id: changes
-        if: steps.result.outputs.action == 'added'
+        if: steps.result.outputs.action == 'changed'
         run: |
           set -euo pipefail
 
@@ -224,16 +226,16 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Build proxy package
-        if: steps.result.outputs.action == 'added' && steps.changes.outputs.changed == 'true'
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
         run: pnpm --filter @braintrust/proxy run build
 
       - name: Validate model schema
-        if: steps.result.outputs.action == 'added' && steps.changes.outputs.changed == 'true'
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts
 
       - name: Create PR
         id: pr
-        if: steps.result.outputs.action == 'added' && steps.changes.outputs.changed == 'true'
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           token: ${{ github.token }}
@@ -249,7 +251,9 @@ jobs:
             Source issue: ${{ steps.issue.outputs.url }}
             Provider: `${{ steps.result.outputs.provider }}`
             Model: `${{ steps.result.outputs.model }}`
+            Changed models: `${{ steps.result.outputs.changed_models }}`
             Added models: `${{ steps.result.outputs.added_models }}`
+            Updated models: `${{ steps.result.outputs.updated_models }}`
           labels: auto-sync
           signoff: false
 

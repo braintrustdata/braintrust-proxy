@@ -38,11 +38,13 @@ const issueMetadataSchema = z.object({
   source_urls: z.array(z.string().url()).optional(),
 });
 const fixResultSchema = z.object({
-  action: z.enum(["added", "already_present", "deprecated", "unsupported"]),
+  action: z.enum(["changed", "already_present", "deprecated", "unsupported"]),
   message: z.string(),
   provider: z.string().optional(),
   model: z.string().optional(),
+  changed_models: z.array(z.string()),
   added_models: z.array(z.string()),
+  updated_models: z.array(z.string()),
   comment_body: z.string().optional(),
 });
 
@@ -166,6 +168,7 @@ function buildUnsupportedTicketComment(args: {
   provider: string;
   targetModels: string[];
   body: string;
+  issueKind: "missing_model" | "stale_metadata";
 }): string {
   const sourceUrls = extractOfficialSourceUrls(args.body);
   const commentSections = [
@@ -184,24 +187,15 @@ function buildUnsupportedTicketComment(args: {
     );
   }
 
-  if (
-    args.provider === "xai" &&
-    args.targetModels.every((model) => model.startsWith("grok-4.20"))
-  ) {
-    commentSections.push(
-      "- Public xAI docs verify the Grok 4.20 family and published pricing/context-window information, but this ticket still lacks verified per-model token-limit fields the fixer can write safely.",
-    );
-  }
-
   commentSections.push(
     "",
-    "This fixer does not consult LiteLLM; it only uses the issue metadata and the existing local catalog.",
-    "",
-    "To make autofix work on a future run, add the machine-readable metadata block described in the workflow prompt and include any verified fields you have for:",
+    `To make autofix work on a future run, update the machine-readable metadata block for this ${args.issueKind === "stale_metadata" ? "stale metadata" : "missing model"} issue and include the verified fields needed for the catalog change, such as:`,
     "- `model_spec` for single-model issues or `model_specs` for multi-model issues",
+    "- pricing fields",
     "- `max_input_tokens`",
     "- `max_output_tokens`",
     "- `available_providers`",
+    "- `deprecated` / `deprecation_date`",
     "- `locations` when the provider/model requires explicit location metadata",
   );
 
@@ -455,34 +449,41 @@ async function updateAvailableEndpointTypes(
   }
 
   let objectBody = content.slice(objectStartIndex + 1, objectEndIndex);
+  const missingLines: string[] = [];
 
   for (const name of names) {
     const linePattern = new RegExp(
       `^\\s*"${escapeForRegex(name)}": .*?,\\n?`,
       "m",
     );
-    objectBody = objectBody.replace(linePattern, "");
+    const newLine = `  "${name}": ${JSON.stringify(mappings[name])},`;
+    if (linePattern.test(objectBody)) {
+      objectBody = objectBody.replace(linePattern, `${newLine}\n`);
+      continue;
+    }
+    missingLines.push(newLine);
   }
 
-  const newLines = names.map(
-    (name) => `  "${name}": ${JSON.stringify(mappings[name])},`,
-  );
   const trimmedBody = objectBody.replace(/^\n/, "").trimEnd();
   const insertionAnchor = '  "grok-beta": ["xAI"],';
   let normalizedBody = trimmedBody.length === 0 ? "" : trimmedBody;
 
-  if (normalizedBody.includes(insertionAnchor)) {
+  if (missingLines.length === 0) {
+    normalizedBody = `\n${normalizedBody}`;
+  } else if (normalizedBody.includes(insertionAnchor)) {
     normalizedBody = normalizedBody.replace(
       insertionAnchor,
-      `${insertionAnchor}\n${newLines.join("\n")}`,
+      `${insertionAnchor}\n${missingLines.join("\n")}`,
     );
   } else if (normalizedBody.length > 0) {
-    normalizedBody = `${normalizedBody}\n${newLines.join("\n")}`;
+    normalizedBody = `${normalizedBody}\n${missingLines.join("\n")}`;
   } else {
-    normalizedBody = newLines.join("\n");
+    normalizedBody = missingLines.join("\n");
   }
 
-  normalizedBody = `\n${normalizedBody}`;
+  if (!normalizedBody.startsWith("\n")) {
+    normalizedBody = `\n${normalizedBody}`;
+  }
 
   const updatedContent =
     content.slice(0, objectStartIndex + 1) +
@@ -492,16 +493,25 @@ async function updateAvailableEndpointTypes(
   await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedContent);
 }
 
-function insertModels(
+function applyModelChanges(
   localModels: LocalModelList,
-  modelsToAdd: Array<{ name: string; model: ModelSpec }>,
+  modelsToApply: Array<{ name: string; model: ModelSpec }>,
 ): LocalModelList {
   const orderedEntries = Object.entries(localModels);
 
-  for (const modelToAdd of modelsToAdd) {
+  for (const modelToApply of modelsToApply) {
+    const existingIndex = orderedEntries.findIndex(
+      ([name]) => name === modelToApply.name,
+    );
+
+    if (existingIndex >= 0) {
+      orderedEntries[existingIndex] = [modelToApply.name, modelToApply.model];
+      continue;
+    }
+
     const currentNames = orderedEntries.map(([name]) => name);
-    const index = insertionIndex(currentNames, modelToAdd.name);
-    orderedEntries.splice(index, 0, [modelToAdd.name, modelToAdd.model]);
+    const index = insertionIndex(currentNames, modelToApply.name);
+    orderedEntries.splice(index, 0, [modelToApply.name, modelToApply.model]);
   }
 
   const updatedModels: LocalModelList = {};
@@ -510,6 +520,13 @@ function insertModels(
   }
 
   return updatedModels;
+}
+
+function modelsAreEquivalent(left: ModelSpec, right: ModelSpec): boolean {
+  return (
+    JSON.stringify(serializeModel(left)) ===
+    JSON.stringify(serializeModel(right))
+  );
 }
 
 function parseAliasTargets(body: string): Record<string, string> {
@@ -539,6 +556,12 @@ function parseGapSectionModels(body: string): string[] {
       gapMatch[1].matchAll(/^\s*-\s+`([^`]+)`\s*$/gm),
       (match) => match[1],
     ),
+  );
+}
+
+function parseModelTableModels(body: string): string[] {
+  return uniqueModels(
+    Array.from(body.matchAll(/^\|\s*`([^`]+)`\s*\|.*$/gm), (match) => match[1]),
   );
 }
 
@@ -609,10 +632,11 @@ function parseIssue(title: string, body: string): ParsedIssue {
     ...(metadata?.model ? [metadata.model] : []),
     ...(metadata?.models ?? []),
   ]);
+  const tableModels = parseModelTableModels(body);
   const bodyModels =
     Object.keys(aliasTargets).length > 0
       ? uniqueModels(Object.keys(aliasTargets))
-      : parseGapSectionModels(body);
+      : uniqueModels([...parseGapSectionModels(body), ...tableModels]);
 
   const metadataProvider = normalizeProvider(metadata?.provider);
 
@@ -621,9 +645,9 @@ function parseIssue(title: string, body: string): ParsedIssue {
     models:
       metadataModels.length > 0
         ? metadataModels
-        : titleData.models.length > 0
-          ? titleData.models
-          : bodyModels,
+        : bodyModels.length > 0
+          ? bodyModels
+          : titleData.models,
     metadata,
     aliasTargets,
   };
@@ -634,6 +658,12 @@ function getModelSpecPatch(
   targetModel: string,
 ): PartialModelSpec | undefined {
   return metadata?.model_specs?.[targetModel] ?? metadata?.model_spec;
+}
+
+function getIssueKind(
+  metadata: IssueMetadata | null,
+): "missing_model" | "stale_metadata" {
+  return metadata?.kind ?? "missing_model";
 }
 
 function inferFormat(
@@ -846,7 +876,22 @@ function requiresExplicitLocations(
   return provider === "vertex" || modelName.startsWith("publishers/");
 }
 
-function ensureRequiredModelMetadata(
+function ensureResolvedModelMetadata(
+  provider: string,
+  modelName: string,
+  model: ModelSpec,
+): void {
+  if (
+    requiresExplicitLocations(provider, modelName) &&
+    (!model.locations || model.locations.length === 0)
+  ) {
+    throw new Error(
+      `Refusing to update ${modelName} without explicit location metadata`,
+    );
+  }
+}
+
+function ensureRequiredModelMetadataForAdd(
   provider: string,
   modelName: string,
   model: ModelSpec,
@@ -860,14 +905,29 @@ function ensureRequiredModelMetadata(
     );
   }
 
-  if (
-    requiresExplicitLocations(provider, modelName) &&
-    (!model.locations || model.locations.length === 0)
-  ) {
+  ensureResolvedModelMetadata(provider, modelName, model);
+}
+
+function buildUpdatedLocalModel(
+  parsedIssue: ParsedIssue,
+  targetModel: string,
+  existingModel: ModelSpec,
+): ModelSpec {
+  const modelSpecPatch = getModelSpecPatch(parsedIssue.metadata, targetModel);
+  if (!modelSpecPatch) {
     throw new Error(
-      `Refusing to add ${modelName} without explicit location metadata`,
+      `Refusing to update ${targetModel} without machine-readable metadata describing the change`,
     );
   }
+
+  const updatedModel = cloneLocalModel(existingModel);
+  applyModelSpecPatch(updatedModel, modelSpecPatch);
+  ensureResolvedModelMetadata(
+    parsedIssue.provider ?? "",
+    targetModel,
+    updatedModel,
+  );
+  return updatedModel;
 }
 
 function buildModelsForIssue(
@@ -877,6 +937,23 @@ function buildModelsForIssue(
 ): Array<{ name: string; model: ModelSpec }> {
   if (!parsedIssue.provider) {
     return [];
+  }
+
+  const issueKind = getIssueKind(parsedIssue.metadata);
+  if (issueKind === "stale_metadata") {
+    const existingModel = localModels[targetModel];
+    if (!existingModel) {
+      throw new Error(
+        `Refusing to update ${targetModel} because it is not present in the local catalog`,
+      );
+    }
+
+    return [
+      {
+        name: targetModel,
+        model: buildUpdatedLocalModel(parsedIssue, targetModel, existingModel),
+      },
+    ];
   }
 
   const aliasSource = parsedIssue.aliasTargets[targetModel];
@@ -890,7 +967,7 @@ function buildModelsForIssue(
     targetModel,
     parsedIssue.metadata,
   );
-  ensureRequiredModelMetadata(parsedIssue.provider, targetModel, model);
+  ensureRequiredModelMetadataForAdd(parsedIssue.provider, targetModel, model);
   return [{ name: targetModel, model }];
 }
 
@@ -916,6 +993,7 @@ async function resolveIssueCommand(argv: {
 }): Promise<void> {
   const body = await fs.promises.readFile(argv.bodyFile, "utf-8");
   const parsedIssue = parseIssue(argv.title, body);
+  const issueKind = getIssueKind(parsedIssue.metadata);
   const targetModels = uniqueModels(parsedIssue.models);
   const primaryModel = targetModels[0];
 
@@ -923,43 +1001,70 @@ async function resolveIssueCommand(argv: {
     await writeResult(argv.resultPath, {
       action: "unsupported",
       message:
-        "Autofix skipped because the issue body/title did not contain parseable bot metadata for a missing model.",
+        "Autofix skipped because the issue body/title did not contain parseable bot metadata for a model catalog change.",
+      changed_models: [],
       added_models: [],
+      updated_models: [],
     });
     return;
   }
 
   const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
-  const alreadyPresentModels = targetModels.filter(
-    (model) => !!localModels[model],
-  );
+  const existingModels = targetModels.filter((model) => !!localModels[model]);
   const missingModels = targetModels.filter((model) => !localModels[model]);
 
-  if (missingModels.length === 0) {
+  if (issueKind === "missing_model" && missingModels.length === 0) {
     await writeResult(argv.resultPath, {
       action: "already_present",
       message: `Closing this bot issue because ${formatModelList(targetModels)} ${targetModels.length === 1 ? "is" : "are"} already present in \`packages/proxy/schema/model_list.json\`.`,
       provider: parsedIssue.provider,
       model: primaryModel,
+      changed_models: [],
       added_models: [],
+      updated_models: [],
     });
     return;
   }
 
-  const deprecatedModels = missingModels.filter((model) =>
+  if (issueKind === "stale_metadata" && existingModels.length === 0) {
+    const message = `Autofix skipped because ${formatModelList(targetModels)} ${targetModels.length === 1 ? "is" : "are"} not present in \`packages/proxy/schema/model_list.json\`, so there is no local record to update.`;
+    await writeResult(argv.resultPath, {
+      action: "unsupported",
+      message,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      changed_models: [],
+      added_models: [],
+      updated_models: [],
+      comment_body: buildUnsupportedTicketComment({
+        message,
+        provider: parsedIssue.provider,
+        targetModels,
+        body,
+        issueKind,
+      }),
+    });
+    return;
+  }
+
+  const modelsToEvaluate =
+    issueKind === "stale_metadata" ? existingModels : missingModels;
+  const deprecatedModels = modelsToEvaluate.filter((model) =>
     shouldCloseAsDeprecated(parsedIssue, model, localModels),
   );
-  const modelsToResolve = missingModels.filter(
+  const modelsToResolve = modelsToEvaluate.filter(
     (model) => !deprecatedModels.includes(model),
   );
 
   if (modelsToResolve.length === 0) {
     await writeResult(argv.resultPath, {
       action: "deprecated",
-      message: `Closing this bot issue because ${formatModelList(missingModels)} ${missingModels.length === 1 ? "is" : "are"} already deprecated, retired, or too old to add to the active model catalog.`,
+      message: `Closing this bot issue because ${formatModelList(modelsToEvaluate)} ${modelsToEvaluate.length === 1 ? "is" : "are"} already deprecated, retired, or too old to keep changing in the active model catalog.`,
       provider: parsedIssue.provider,
       model: primaryModel,
+      changed_models: [],
       added_models: [],
+      updated_models: [],
     });
     return;
   }
@@ -970,24 +1075,27 @@ async function resolveIssueCommand(argv: {
       buildModelsForIssue(parsedIssue, targetModel, localModels),
     );
   } catch (error) {
-    const message = `Autofix skipped because the issue does not yet contain enough verified metadata to safely add ${formatModelList(modelsToResolve)}. ${errorMessage(error)}`;
+    const message = `Autofix skipped because the issue does not yet contain enough verified metadata to safely apply catalog changes for ${formatModelList(modelsToResolve)}. ${errorMessage(error)}`;
     await writeResult(argv.resultPath, {
       action: "unsupported",
       message,
       provider: parsedIssue.provider,
       model: primaryModel,
+      changed_models: [],
       added_models: [],
+      updated_models: [],
       comment_body: buildUnsupportedTicketComment({
         message,
         provider: parsedIssue.provider,
         targetModels,
         body,
+        issueKind,
       }),
     });
     return;
   }
 
-  const modelsToAdd = uniqueModels(
+  const modelsToApply = uniqueModels(
     builtModelEntries.map((entry) => entry.name),
   ).map((name) => {
     const entry = builtModelEntries.find(
@@ -999,26 +1107,58 @@ async function resolveIssueCommand(argv: {
     return entry;
   });
 
-  if (modelsToAdd.length === 0) {
+  if (modelsToApply.length === 0) {
     const message = `Autofix skipped because no resolvable model payload could be built for ${formatModelList(modelsToResolve)}.`;
     await writeResult(argv.resultPath, {
       action: "unsupported",
       message,
       provider: parsedIssue.provider,
       model: primaryModel,
+      changed_models: [],
       added_models: [],
+      updated_models: [],
       comment_body: buildUnsupportedTicketComment({
         message,
         provider: parsedIssue.provider,
         targetModels,
         body,
+        issueKind,
       }),
     });
     return;
   }
 
-  const updatedModels = insertModels(localModels, modelsToAdd);
-  const needsVertexSync = modelsToAdd.some((entry) =>
+  const changedModelEntries = modelsToApply.filter((entry) => {
+    const existingModel = localModels[entry.name];
+    if (!existingModel) {
+      return true;
+    }
+
+    return !modelsAreEquivalent(existingModel, entry.model);
+  });
+
+  if (changedModelEntries.length === 0) {
+    await writeResult(argv.resultPath, {
+      action: "already_present",
+      message: `Closing this bot issue because ${formatModelList(modelsToResolve)} ${modelsToResolve.length === 1 ? "is" : "are"} already up to date in the local catalog.`,
+      provider: parsedIssue.provider,
+      model: primaryModel,
+      changed_models: [],
+      added_models: [],
+      updated_models: [],
+    });
+    return;
+  }
+
+  const addedModels = changedModelEntries
+    .filter((entry) => !localModels[entry.name])
+    .map((entry) => entry.name);
+  const updatedModelNames = changedModelEntries
+    .filter((entry) => !!localModels[entry.name])
+    .map((entry) => entry.name);
+
+  const updatedModels = applyModelChanges(localModels, changedModelEntries);
+  const needsVertexSync = changedModelEntries.some((entry) =>
     entry.model.available_providers?.includes("vertex"),
   );
 
@@ -1032,15 +1172,23 @@ async function resolveIssueCommand(argv: {
 
   if (argv.write) {
     await writeLocalModels(updatedModels);
-    await updateAvailableEndpointTypes(providerMappingsForModels(modelsToAdd));
+    await updateAvailableEndpointTypes(
+      providerMappingsForModels(changedModelEntries),
+    );
   }
 
   await writeResult(argv.resultPath, {
-    action: "added",
+    action: "changed",
     message: [
-      `Prepared catalog updates for ${formatModelList(modelsToAdd.map((entry) => entry.name))}.`,
-      alreadyPresentModels.length > 0
-        ? `Already present: ${formatModelList(alreadyPresentModels)}.`
+      `Prepared catalog updates for ${formatModelList(changedModelEntries.map((entry) => entry.name))}.`,
+      addedModels.length > 0
+        ? `Added models: ${formatModelList(addedModels)}.`
+        : "",
+      updatedModelNames.length > 0
+        ? `Updated models: ${formatModelList(updatedModelNames)}.`
+        : "",
+      issueKind === "missing_model" && existingModels.length > 0
+        ? `Already present: ${formatModelList(existingModels)}.`
         : "",
       deprecatedModels.length > 0
         ? `Skipped deprecated/old models: ${formatModelList(deprecatedModels)}.`
@@ -1050,11 +1198,20 @@ async function resolveIssueCommand(argv: {
       .join(" "),
     provider: parsedIssue.provider,
     model: primaryModel,
-    added_models: modelsToAdd.map((entry) => entry.name),
+    changed_models: changedModelEntries.map((entry) => entry.name),
+    added_models: addedModels,
+    updated_models: updatedModelNames,
   });
 
-  for (const model of modelsToAdd) {
-    console.log(`${argv.write ? "Added" : "Would add"} ${model.name}`);
+  for (const model of changedModelEntries) {
+    const verb = localModels[model.name]
+      ? argv.write
+        ? "Updated"
+        : "Would update"
+      : argv.write
+        ? "Added"
+        : "Would add";
+    console.log(`${verb} ${model.name}`);
   }
 }
 

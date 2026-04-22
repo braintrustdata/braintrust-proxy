@@ -4982,7 +4982,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
@@ -6230,6 +6230,76 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "vertex"
+    ]
+  },
+  "gemini-3.1-flash-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Gemini 3.1 Flash Image Preview",
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 2.5 Flash Image",
+    "supported_regions": [
+      "global",
+      "europe-central2",
+      "europe-north1",
+      "europe-southwest1",
+      "europe-west1",
+      "europe-west4",
+      "europe-west8",
+      "us-central1",
+      "us-east1",
+      "us-east4",
+      "us-east5",
+      "us-south1",
+      "us-west1",
+      "us-west4"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
+  "gemini-embedding-2-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "displayName": "Gemini Embedding 2 Preview",
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "google"
+    ]
+  },
+  "gemini-2.5-computer-use-preview-10-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Computer Use Preview",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "google"
     ]
   },
   "grok-4-0709": {

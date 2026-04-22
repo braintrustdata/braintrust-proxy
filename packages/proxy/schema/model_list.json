@@ -3524,6 +3524,16 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/qwen3p6-plus": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 3,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "qwen/qwen3-32b": {
     "format": "openai",
     "flavor": "chat",
@@ -4963,6 +4973,20 @@
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Kimi K2.5",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+    "accounts/fireworks/models/kimi-k2p6": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.16,
+    "displayName": "Kimi K2.6",
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
@@ -9044,6 +9068,19 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/glm-5p1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.4,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "reasoning": true,
+    "max_input_tokens": 202752,
+    "max_output_tokens": 128000,
     "available_providers": [
       "fireworks"
     ]

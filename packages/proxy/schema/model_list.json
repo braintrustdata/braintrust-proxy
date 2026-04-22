@@ -4982,7 +4982,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
@@ -10685,6 +10685,50 @@
     "output_cost_per_mil_tokens": 0.75,
     "available_providers": [
       "baseten"
+    ]
+  },
+  "pplx-embed-v1-0.6b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.004,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Pplx Embed V1 0.6b",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
+  "pplx-embed-v1-4b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Pplx Embed V1 4b",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
+  "pplx-embed-context-v1-0.6b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Pplx Embed Context V1 0.6b",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
+  "pplx-embed-context-v1-4b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Pplx Embed Context V1 4b",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "perplexity"
     ]
   }
 }

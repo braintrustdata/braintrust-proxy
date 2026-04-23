@@ -6949,6 +6949,24 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-sonnet-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.6 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-6",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-sonnet-4-6": {
     "format": "anthropic",
     "flavor": "chat",
@@ -6992,6 +7010,24 @@
     "input_cache_read_cost_per_mil_tokens": 0.33,
     "input_cache_write_cost_per_mil_tokens": 4.125,
     "displayName": "US Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
@@ -7099,6 +7135,24 @@
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "input_cache_write_cost_per_mil_tokens": 1.375,
     "displayName": "US Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Global Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",

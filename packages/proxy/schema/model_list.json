@@ -2591,6 +2591,18 @@
       "perplexity"
     ]
   },
+  "sonar-deep-research": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 8,
+    "displayName": "Sonar Deep Research",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
   "r1-1776": {
     "format": "openai",
     "flavor": "chat",
@@ -4982,7 +4994,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,

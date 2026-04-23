@@ -183,4 +183,56 @@ describe("makeFetchApiSecrets", () => {
     expect(getSetCalls()).toBe(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("preserves empty endpoint_path in control-plane secrets", async () => {
+    const fetchMock = vi.fn().mockImplementation(async () => {
+      return new Response(
+        JSON.stringify([
+          {
+            secret: "provider-secret",
+            type: "openai",
+            metadata: {
+              api_base: "https://api.openai.com",
+              endpoint_path: "",
+            },
+          },
+        ]),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const { cache } = createInMemoryCache();
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const ctx: EdgeContext = {
+      waitUntil(promise) {
+        waitUntilPromises.push(promise);
+      },
+    };
+    const opts: ProxyOpts = {
+      getRelativeURL() {
+        return "/chat/completions";
+      },
+      credentialsCache: cache,
+      braintrustApiUrl: "https://example.com",
+    };
+    const fetchApiSecrets = makeFetchApiSecrets({ ctx, opts });
+
+    const secrets = await fetchApiSecrets(true, "org-token", null);
+    await Promise.all(waitUntilPromises);
+
+    expect(secrets).toHaveLength(1);
+    expect(secrets[0]).toMatchObject({
+      secret: "provider-secret",
+      type: "openai",
+      metadata: {
+        api_base: "https://api.openai.com",
+        endpoint_path: "",
+      },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });

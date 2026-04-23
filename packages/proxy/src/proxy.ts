@@ -2218,7 +2218,8 @@ async function fetchOpenAI(
       const endpointPath =
         secret.metadata &&
         "endpoint_path" in secret.metadata &&
-        typeof secret.metadata.endpoint_path === "string"
+        typeof secret.metadata.endpoint_path === "string" &&
+        secret.metadata.endpoint_path.length > 0
           ? secret.metadata.endpoint_path
           : url;
       fullURL = new URL(baseURL + endpointPath);

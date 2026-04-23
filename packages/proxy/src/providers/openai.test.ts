@@ -310,6 +310,70 @@ it("falls back to provider base URL when metadata.api_base is not a string", asy
   expect(requests[0].url).toBe("https://api.openai.com/v1/chat/completions");
 });
 
+it("uses derived chat endpoint when openai metadata.endpoint_path is empty", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "provider-secret",
+        metadata: {
+          api_base: "https://custom-openai.example.com/v1",
+          endpoint_path: "",
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe(
+    "https://custom-openai.example.com/v1/chat/completions",
+  );
+});
+
+it("uses explicit endpoint override when openai metadata.endpoint_path is non-empty", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "openai",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "provider-secret",
+        metadata: {
+          api_base: "https://custom-openai.example.com",
+          endpoint_path: "/v1/custom/chat/completions",
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe(
+    "https://custom-openai.example.com/v1/custom/chat/completions",
+  );
+});
+
 it("uses model path for azure when metadata.deployment is non-string", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
@@ -343,6 +407,43 @@ it("uses model path for azure when metadata.deployment is non-string", async () 
   expect(requests[0].url).toContain(
     "/openai/deployments/gpt-4o-mini/chat/completions",
   );
+});
+
+it("uses derived azure endpoint when metadata.endpoint_path is empty", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    proxyHeaders: {
+      "x-bt-endpoint-name": "azure",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "azure",
+        name: "azure",
+        secret: "provider-secret",
+        metadata: {
+          api_base: "https://azure.example.com",
+          api_version: "2023-07-01-preview",
+          auth_type: "api_key",
+          deployment: "gpt-4o-mini",
+          endpoint_path: "",
+          no_named_deployment: false,
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toContain(
+    "/openai/deployments/gpt-4o-mini/chat/completions",
+  );
+  expect(requests[0].url).toContain("api-version=2023-07-01-preview");
 });
 
 type InterceptedRequest = {

@@ -15,6 +15,18 @@
     "displayName": "GPT 3.5T",
     "deprecated": true
   },
+  "gpt-5.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "displayName": "GPT 5.5",
+    "reasoning": true,
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-5.4-mini-2026-03-17": {
     "format": "openai",
     "flavor": "chat",

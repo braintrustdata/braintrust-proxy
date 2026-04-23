@@ -1866,7 +1866,6 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 4 Sonnet (old naming format)",
     "deprecated": true,
-    "parent": "claude-sonnet-4-20250514",
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -2264,7 +2263,6 @@
     "input_cache_write_cost_per_mil_tokens": 18.75,
     "displayName": "Claude 4 Opus (old naming format)",
     "deprecated": true,
-    "parent": "claude-opus-4-20250514",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
     "available_providers": [
@@ -7189,7 +7187,6 @@
     "input_cache_write_cost_per_mil_tokens": 6.875,
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -7207,7 +7204,6 @@
     "displayName": "US Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-6-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },

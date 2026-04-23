@@ -184,7 +184,7 @@
     "input_cost_per_mil_tokens": 21,
     "output_cost_per_mil_tokens": 168,
     "reasoning": true,
-    "parent": "gpt-5.2",
+    "parent": "gpt-5.2-pro",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -461,7 +461,6 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
-    "parent": "gpt-5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -478,7 +477,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
-    "parent": "gpt-5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -495,7 +493,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
-    "parent": "gpt-5",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -734,6 +731,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "parent": "gpt-4o-audio-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -746,6 +744,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "parent": "gpt-4o-mini-audio-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -759,6 +758,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "input_cache_read_cost_per_mil_tokens": 0.3,
+    "parent": "gpt-4o-mini-realtime-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -772,6 +772,7 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 2.5,
+    "parent": "gpt-4o-realtime-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -784,6 +785,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "parent": "gpt-4o-mini-transcribe",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -796,6 +798,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "parent": "gpt-4o-mini-tts",
     "available_providers": [
       "openai",
       "azure"
@@ -851,6 +854,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "parent": "gpt-4o-audio-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -864,6 +868,7 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 2.5,
+    "parent": "gpt-4o-realtime-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -904,6 +909,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "parent": "gpt-4o-mini-transcribe",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -916,6 +922,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "parent": "gpt-4o-mini-tts",
     "available_providers": [
       "openai",
       "azure"
@@ -1467,6 +1474,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "parent": "o4-mini-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -1526,6 +1534,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 2.5,
+    "parent": "o3-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -1681,7 +1690,7 @@
     "input_cache_read_cost_per_mil_tokens": 7.5,
     "reasoning": true,
     "experimental": true,
-    "parent": "o1",
+    "parent": "o1-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -9710,6 +9719,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9719,6 +9729,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9728,6 +9739,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9740,6 +9752,7 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "parent": "gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9749,6 +9762,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "high/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9758,6 +9772,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "high/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9767,6 +9782,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "high/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9776,6 +9792,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "low/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9785,6 +9802,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "low/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9794,6 +9812,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "low/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9803,6 +9822,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "medium/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9812,6 +9832,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "medium/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9821,6 +9842,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "medium/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9830,6 +9852,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "standard/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9839,6 +9862,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "standard/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -9848,6 +9872,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "parent": "standard/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
       "azure"
@@ -10347,6 +10372,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "parent": "gpt-audio",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -10371,6 +10397,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
+    "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -10383,6 +10410,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
+    "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -10420,6 +10448,7 @@
     "input_cost_per_mil_tokens": 4,
     "output_cost_per_mil_tokens": 16,
     "input_cache_read_cost_per_mil_tokens": 0.4,
+    "parent": "gpt-realtime",
     "max_input_tokens": 32000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -10446,6 +10475,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "input_cache_read_cost_per_mil_tokens": 0.06,
+    "parent": "gpt-realtime-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -10459,6 +10489,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "input_cache_read_cost_per_mil_tokens": 0.06,
+    "parent": "gpt-realtime-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [

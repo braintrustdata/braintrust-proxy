@@ -57,6 +57,7 @@
     "output_cost_per_mil_tokens": 180,
     "input_cache_read_cost_per_mil_tokens": 3,
     "reasoning": true,
+    "parent": "gpt-5.4-pro",
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -168,6 +169,7 @@
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "reasoning": true,
+    "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -182,6 +184,7 @@
     "input_cost_per_mil_tokens": 21,
     "output_cost_per_mil_tokens": 168,
     "reasoning": true,
+    "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -214,6 +217,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 chat",
     "reasoning": true,
+    "parent": "gpt-5.2",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -230,6 +234,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 Codex",
     "reasoning": true,
+    "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -244,6 +249,7 @@
     "input_cost_per_mil_tokens": 21,
     "output_cost_per_mil_tokens": 168,
     "reasoning": true,
+    "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -259,6 +265,7 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
+    "parent": "gpt-5.1",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -291,6 +298,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5.1 chat",
     "reasoning": true,
+    "parent": "gpt-5.1",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -307,6 +315,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5.1 Codex",
     "reasoning": true,
+    "parent": "gpt-5.1",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -322,6 +331,7 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
+    "parent": "gpt-5.1",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -338,6 +348,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5.1 Codex Mini",
     "reasoning": true,
+    "parent": "gpt-5.1",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -352,6 +363,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "parent": "gpt-5-search-api",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -449,6 +461,7 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "reasoning": true,
+    "parent": "gpt-5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -465,6 +478,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
+    "parent": "gpt-5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -481,6 +495,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
+    "parent": "gpt-5",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -1851,6 +1866,7 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 4 Sonnet (old naming format)",
     "deprecated": true,
+    "parent": "claude-sonnet-4-20250514",
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -1920,7 +1936,7 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "claude-haiku-4-5-latest",
+    "parent": "claude-haiku-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -2068,6 +2084,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "reasoning": true,
+    "parent": "claude-opus-4-7",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2114,6 +2131,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "reasoning": true,
+    "parent": "claude-opus-4-6",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2195,6 +2213,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2026-08-05",
+    "parent": "claude-opus-4-1",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
     "available_providers": [
@@ -2245,6 +2264,7 @@
     "input_cache_write_cost_per_mil_tokens": 18.75,
     "displayName": "Claude 4 Opus (old naming format)",
     "deprecated": true,
+    "parent": "claude-opus-4-20250514",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
     "available_providers": [
@@ -7169,6 +7189,7 @@
     "input_cache_write_cost_per_mil_tokens": 6.875,
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -7186,6 +7207,7 @@
     "displayName": "US Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-6-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },

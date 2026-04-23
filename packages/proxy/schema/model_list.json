@@ -4471,6 +4471,36 @@
       "mistral"
     ]
   },
+  "magistral-medium-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Magistral Medium 2509",
+    "reasoning": true,
+    "parent": "magistral-medium-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-small-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Magistral Small 2509",
+    "reasoning": true,
+    "parent": "magistral-small-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "devstral-small-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -4491,6 +4521,43 @@
     "parent": "devstral-small-latest",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral Medium",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral 2512",
+    "parent": "devstral-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
     "available_providers": [
       "mistral"
     ]
@@ -4638,6 +4705,19 @@
     "output_cost_per_mil_tokens": 0.9,
     "parent": "codestral-latest"
   },
+  "codestral-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral 2508",
+    "parent": "codestral-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "ministral-8b-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -4698,6 +4778,61 @@
     "input_cost_per_mil_tokens": 0.04,
     "output_cost_per_mil_tokens": 0.04,
     "parent": "ministral-3b-latest"
+  },
+  "ministral-14b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-14b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14b 2512",
+    "parent": "ministral-14b-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-8b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Ministral 8b 2512",
+    "parent": "ministral-8b-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-3b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 3b 2512",
+    "parent": "ministral-3b-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
   },
   "mistral-saba-latest": {
     "format": "openai",
@@ -4968,6 +5103,61 @@
     "displayName": "Mistral Saba 24B",
     "experimental": true
   },
+  "mistral-large-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Mistral Large 2512",
+    "parent": "mistral-large-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium 2508",
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small-2603": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Small 2603",
+    "reasoning": true,
+    "parent": "mistral-small-latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small-2506": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Mistral Small 2506",
+    "parent": "mistral-small-latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",
     "flavor": "chat",
@@ -4982,7 +5172,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,

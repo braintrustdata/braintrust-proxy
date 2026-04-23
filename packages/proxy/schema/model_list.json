@@ -2934,6 +2934,23 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Gemma Instruct (2B)"
   },
+  "google/gemma-4-26B-A4B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Gemma 4 26B A4B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "google/gemma-4-31B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 31B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     "format": "openai",
     "flavor": "chat",
@@ -5092,6 +5109,14 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K2.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Kimi K2.6",
     "available_providers": [
       "baseten"
     ]

@@ -4250,6 +4250,21 @@
     "displayName": "Qwen QwQ 32B (Preview) 128k",
     "experimental": true
   },
+  "qwen-3-235b-a22b-instruct-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Qwen 3 235B Instruct",
+    "reasoning": false,
+    "experimental": true,
+    "deprecation_date": "2026-05-27",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "available_providers": [
+      "cerebras"
+    ]
+  },
   "Qwen/QwQ-32B": {
     "format": "openai",
     "flavor": "chat",
@@ -4982,7 +4997,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
@@ -9036,6 +9051,20 @@
     "output_cost_per_mil_tokens": 2.2,
     "available_providers": [
       "baseten"
+    ]
+  },
+  "zai-glm-4.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.25,
+    "output_cost_per_mil_tokens": 2.75,
+    "displayName": "Z.ai GLM 4.7",
+    "reasoning": true,
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "available_providers": [
+      "cerebras"
     ]
   },
   "accounts/fireworks/models/glm-4p5": {

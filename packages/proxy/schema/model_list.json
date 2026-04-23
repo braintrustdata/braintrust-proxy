@@ -2934,6 +2934,23 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Gemma Instruct (2B)"
   },
+  "google/gemma-4-26B-A4B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Gemma 4 26B A4B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "google/gemma-4-31B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 31B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     "format": "openai",
     "flavor": "chat",
@@ -5092,6 +5109,14 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K2.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Kimi K2.6",
     "available_providers": [
       "baseten"
     ]
@@ -7313,6 +7338,8 @@
     "output_cost_per_mil_tokens": 27.5,
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "US Claude 4.5 Opus",
+    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,
@@ -7330,6 +7357,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "US Claude 4.6 Opus",
+    "parent": "anthropic.claude-opus-4-6-v1:0",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,

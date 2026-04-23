@@ -223,6 +223,7 @@ export const DefaultEndpointTypes: {
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-35-turbo": ["azure"],
   "gpt-5.5": ["openai"],
+  "gpt-5.5-pro": ["openai"],
   "gpt-5.4-pro-2026-03-05": ["openai", "azure"],
   "gpt-5.2-pro-2025-12-11": ["openai", "azure"],
   "gpt-5.2-pro": ["openai", "azure"],

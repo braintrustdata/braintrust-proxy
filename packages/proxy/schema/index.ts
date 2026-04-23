@@ -601,6 +601,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "sonar-deep-research": ["perplexity"],
   "fireworks-ai-4.1b-to-16b": ["fireworks"],
   "fireworks-ai-56b-to-176b": ["fireworks"],
   "fireworks-ai-above-16b": ["fireworks"],

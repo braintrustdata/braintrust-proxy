@@ -51,6 +51,8 @@ export const ModelSchema = z.object({
   output_cost_per_mil_tokens: z.number().nullish(),
   input_cache_read_cost_per_mil_tokens: z.number().nullish(),
   input_cache_write_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
   displayName: z
     .string()
     .nullish()

@@ -222,7 +222,8 @@ export const DefaultEndpointTypes: {
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-35-turbo": ["azure"],
-  "gpt-5.5": ["openai","azure"],
+  "gpt-5.5": ["openai", "azure"],
+  "gpt-5.5-pro": ["openai", "azure"],
   "gpt-5.4-pro-2026-03-05": ["openai", "azure"],
   "gpt-5.2-pro-2025-12-11": ["openai", "azure"],
   "gpt-5.2-pro": ["openai", "azure"],
@@ -1098,4 +1099,3 @@ const anthropicContentSchema = z.union([
 
 export type AnthropicImageBlock = z.infer<typeof anthropicImageBlockSchema>;
 export type AnthropicContent = z.infer<typeof anthropicContentSchema>;
-

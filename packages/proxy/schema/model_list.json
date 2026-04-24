@@ -30,6 +30,21 @@
       "azure"
     ]
   },
+    "gpt-5.5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 30,
+    "output_cost_per_mil_tokens": 180,
+    "displayName": "GPT-5.5 Pro",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-5.4-mini-2026-03-17": {
     "format": "openai",
     "flavor": "chat",

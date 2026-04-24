@@ -21,13 +21,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 30,
-    "displayName": "GPT-5.5",
+    "input_cache_read_cost_per_mil_tokens": 0.5,
     "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
-  "gpt-5.5-pro": {
+    "gpt-5.5-pro": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -35,8 +38,11 @@
     "output_cost_per_mil_tokens": 180,
     "displayName": "GPT-5.5 Pro",
     "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-5.4-mini-2026-03-17": {
@@ -2404,9 +2410,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
     "max_input_tokens": 200000,
-    "max_output_tokens": 4096
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "anthropic"
+    ]
   },
   "claude-3-haiku-20240307": {
     "format": "anthropic",
@@ -2418,6 +2431,7 @@
     "input_cache_write_cost_per_mil_tokens": 0.3,
     "displayName": "Claude 3 Haiku",
     "deprecated": true,
+    "deprecation_date": "2026-04-20",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5097,7 +5111,7 @@
       "fireworks"
     ]
   },
-    "accounts/fireworks/models/kimi-k2p6": {
+  "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
@@ -5116,6 +5130,14 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K2.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Kimi K2.6",
     "available_providers": [
       "baseten"
     ]
@@ -6973,6 +6995,24 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-sonnet-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.6 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-6",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-sonnet-4-6": {
     "format": "anthropic",
     "flavor": "chat",
@@ -7016,6 +7056,24 @@
     "input_cache_read_cost_per_mil_tokens": 0.33,
     "input_cache_write_cost_per_mil_tokens": 4.125,
     "displayName": "US Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
@@ -7123,6 +7181,24 @@
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "input_cache_write_cost_per_mil_tokens": 1.375,
     "displayName": "US Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Global Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
@@ -7283,8 +7359,10 @@
     "output_cost_per_mil_tokens": 27.5,
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "US Claude 4.5 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -7302,6 +7380,7 @@
     "displayName": "US Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-6-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },
@@ -7462,6 +7541,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -7477,6 +7558,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "US Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -7493,6 +7576,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -7509,6 +7594,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "EU Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -7525,6 +7612,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "Claude 3 Haiku",
+    "deprecated": true,
+    "deprecation_date": "2026-04-20",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -7540,6 +7629,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "US Claude 3 Haiku",
+    "deprecated": true,
+    "deprecation_date": "2026-04-20",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -7556,6 +7647,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "APAC Claude 3 Haiku",
+    "deprecated": true,
+    "deprecation_date": "2026-04-20",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -7572,6 +7665,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "EU Claude 3 Haiku",
+    "deprecated": true,
+    "deprecation_date": "2026-04-20",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -10656,7 +10751,10 @@
   "omni-moderation-2024-09-26": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10665,7 +10763,10 @@
   "omni-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10731,6 +10832,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10741,6 +10843,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.02,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10751,6 +10854,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10761,6 +10865,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10770,7 +10875,10 @@
   "text-moderation-007": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10779,7 +10887,10 @@
   "text-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10788,7 +10899,10 @@
   "text-moderation-stable": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"

@@ -15,6 +15,21 @@
     "displayName": "GPT 3.5T",
     "deprecated": true
   },
+  "gpt-5.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-5.4-mini-2026-03-17": {
     "format": "openai",
     "flavor": "chat",
@@ -7330,9 +7345,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "input_cache_write_cost_per_mil_tokens": 6.875,
     "displayName": "US Claude 4.5 Opus",
-    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -7348,9 +7363,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "US Claude 4.6 Opus",
-    "parent": "anthropic.claude-opus-4-6-v1:0",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-6-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000
   },
@@ -10721,7 +10736,10 @@
   "omni-moderation-2024-09-26": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10730,7 +10748,10 @@
   "omni-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10796,6 +10817,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10806,6 +10828,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.02,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10816,6 +10839,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10826,6 +10850,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10835,7 +10860,10 @@
   "text-moderation-007": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10844,7 +10872,10 @@
   "text-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10853,7 +10884,10 @@
   "text-moderation-stable": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"

@@ -541,7 +541,10 @@ async function updateProviderMapping(
     }
 
     if (changed) {
-      await fs.promises.writeFile(SCHEMA_INDEX_PATH, `${lines.join("\n")}\n`);
+      await fs.promises.writeFile(
+        SCHEMA_INDEX_PATH,
+        normalizeProviderMappingContent(lines.join("\n")),
+      );
       console.log(
         `✅ Updated provider mappings for ${newModels.length} models in schema/index.ts`,
       );

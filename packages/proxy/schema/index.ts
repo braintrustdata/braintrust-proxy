@@ -1101,4 +1101,3 @@ const anthropicContentSchema = z.union([
 
 export type AnthropicImageBlock = z.infer<typeof anthropicImageBlockSchema>;
 export type AnthropicContent = z.infer<typeof anthropicContentSchema>;
-

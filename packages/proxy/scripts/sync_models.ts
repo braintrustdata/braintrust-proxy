@@ -330,6 +330,51 @@ export function normalizeLocalModels(localModels: LocalModelList): {
   };
 }
 
+function removeZeroValuedSettingsWithChangeFlag(model: LocalModelDetail): {
+  model: LocalModelDetail;
+  changed: boolean;
+} {
+  const sanitizedModel = { ...model };
+  let changed = false;
+
+  for (const [key, value] of Object.entries(sanitizedModel)) {
+    if (value === 0) {
+      Reflect.deleteProperty(sanitizedModel, key);
+      changed = true;
+    }
+  }
+
+  return {
+    model: sanitizedModel,
+    changed,
+  };
+}
+
+export function removeZeroValuedSettings(
+  model: LocalModelDetail,
+): LocalModelDetail {
+  return removeZeroValuedSettingsWithChangeFlag(model).model;
+}
+
+export function sanitizeLocalModelsForWrite(localModels: LocalModelList): {
+  models: LocalModelList;
+  changed: boolean;
+} {
+  const sanitizedModels: LocalModelList = {};
+  let changed = false;
+
+  for (const [modelName, model] of Object.entries(localModels)) {
+    const sanitizedModel = removeZeroValuedSettingsWithChangeFlag(model);
+    sanitizedModels[modelName] = sanitizedModel.model;
+    changed ||= sanitizedModel.changed;
+  }
+
+  return {
+    models: sanitizedModels,
+    changed,
+  };
+}
+
 function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
@@ -359,11 +404,21 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
-  const orderedModelsToWrite = reorderModelProperties(localModels);
+  const orderedModelsToWrite = reorderModelProperties(
+    sanitizeLocalModelsForWrite(localModels).models,
+  );
   await fs.promises.writeFile(
     LOCAL_MODEL_LIST_PATH,
     JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
   );
+}
+
+function getNonZeroNumber(value: number | undefined): number | undefined {
+  if (typeof value !== "number" || value === 0) {
+    return undefined;
+  }
+
+  return value;
 }
 
 type ProviderMappingEntryRange = {
@@ -539,7 +594,7 @@ async function updateProviderMapping(
   }
 }
 
-function convertRemoteToLocalModel(
+export function convertRemoteToLocalModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
 ): ModelSpec {
@@ -564,24 +619,30 @@ function convertRemoteToLocalModel(
   }
 
   // Convert cost information
-  if (remoteModel.input_cost_per_token) {
-    baseModel.input_cost_per_mil_tokens = roundCost(
-      remoteModel.input_cost_per_token,
-    );
+  const inputCostPerToken = getNonZeroNumber(remoteModel.input_cost_per_token);
+  if (inputCostPerToken !== undefined) {
+    baseModel.input_cost_per_mil_tokens = roundCost(inputCostPerToken);
   }
-  if (remoteModel.output_cost_per_token) {
-    baseModel.output_cost_per_mil_tokens = roundCost(
-      remoteModel.output_cost_per_token,
-    );
+  const outputCostPerToken = getNonZeroNumber(
+    remoteModel.output_cost_per_token,
+  );
+  if (outputCostPerToken !== undefined) {
+    baseModel.output_cost_per_mil_tokens = roundCost(outputCostPerToken);
   }
-  if (remoteModel.cache_read_input_token_cost) {
+  const cacheReadInputTokenCost = getNonZeroNumber(
+    remoteModel.cache_read_input_token_cost,
+  );
+  if (cacheReadInputTokenCost !== undefined) {
     baseModel.input_cache_read_cost_per_mil_tokens = roundCost(
-      remoteModel.cache_read_input_token_cost,
+      cacheReadInputTokenCost,
     );
   }
-  if (remoteModel.cache_creation_input_token_cost) {
+  const cacheCreationInputTokenCost = getNonZeroNumber(
+    remoteModel.cache_creation_input_token_cost,
+  );
+  if (cacheCreationInputTokenCost !== undefined) {
     baseModel.input_cache_write_cost_per_mil_tokens = roundCost(
-      remoteModel.cache_creation_input_token_cost,
+      cacheCreationInputTokenCost,
     );
   }
   // Note: output_reasoning_cost_per_mil_tokens may not be in ModelSpec yet,
@@ -591,11 +652,13 @@ function convertRemoteToLocalModel(
   // }
 
   // Add token limits
-  if (remoteModel.max_input_tokens) {
-    baseModel.max_input_tokens = remoteModel.max_input_tokens;
+  const maxInputTokens = getNonZeroNumber(remoteModel.max_input_tokens);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
   }
-  if (remoteModel.max_output_tokens) {
-    baseModel.max_output_tokens = remoteModel.max_output_tokens;
+  const maxOutputTokens = getNonZeroNumber(remoteModel.max_output_tokens);
+  if (maxOutputTokens !== undefined) {
+    baseModel.max_output_tokens = maxOutputTokens;
   }
   if (remoteModel.deprecation_date) {
     baseModel.deprecation_date = remoteModel.deprecation_date;
@@ -1029,14 +1092,52 @@ async function updateModelsCommand(argv: any) {
 
       let modelReportedThisIteration = false;
 
+      const reportModelIfNeeded = () => {
+        if (!modelReportedThisIteration) {
+          console.log(
+            argv.write
+              ? `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`
+              : `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
+          );
+          modelReportedThisIteration = true;
+        }
+      };
+
+      const clearSyncedField = (
+        fieldDescription: string,
+        localValue: number | undefined | null,
+        localFieldName: keyof ModelSpec,
+        remoteDescription: string,
+      ) => {
+        if (localValue === null || typeof localValue !== "number") {
+          return;
+        }
+
+        discrepanciesFound++;
+        if (!argv.write) {
+          reportModelIfNeeded();
+          console.log(
+            `  ${fieldDescription}: Local: ${localValue}, Remote: ${remoteDescription} (would clear local setting)`,
+          );
+          return;
+        }
+
+        reportModelIfNeeded();
+        Reflect.deleteProperty(modelInUpdatedList, localFieldName);
+        madeChanges = true;
+        console.log(`  [WRITE] Cleared ${fieldDescription}`);
+      };
+
       const checkAndUpdateCost = (
         costType: string,
         localCost: number | undefined | null,
         remoteCostPerToken: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
-        if (typeof remoteCostPerToken === "number") {
-          const remoteCostPerMil = remoteCostPerToken * 1_000_000;
+        const normalizedRemoteCostPerToken =
+          getNonZeroNumber(remoteCostPerToken);
+        if (normalizedRemoteCostPerToken !== undefined) {
+          const remoteCostPerMil = normalizedRemoteCostPerToken * 1_000_000;
           const roundedRemoteCostPerMil = parseFloat(
             remoteCostPerMil.toFixed(8),
           );
@@ -1046,45 +1147,37 @@ async function updateModelsCommand(argv: any) {
             typeof localCost !== "number" ||
             Math.abs(localCost - remoteCostPerMil) > 1e-9
           ) {
-            if (!argv.write && !modelReportedThisIteration) {
-              console.log(
-                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-              );
-              modelReportedThisIteration = true;
-            }
-            if (!argv.write)
+            if (!argv.write) {
+              reportModelIfNeeded();
               console.log(
                 `  ${costType} Cost Mismatch/Missing: Local: ${
                   localCost ?? "Not available"
-                }, Remote (calc): ${remoteCostPerMil} (would write: ${roundedRemoteCostPerMil}) (from ${remoteCostPerToken}/token)`,
+                }, Remote (calc): ${remoteCostPerMil} (would write: ${roundedRemoteCostPerMil}) (from ${normalizedRemoteCostPerToken}/token)`,
               );
+            }
             discrepanciesFound++;
             if (argv.write) {
-              (modelInUpdatedList as any)[localFieldName] =
-                roundedRemoteCostPerMil;
+              Reflect.set(
+                modelInUpdatedList,
+                localFieldName,
+                roundedRemoteCostPerMil,
+              );
               madeChanges = true;
-              if (!modelReportedThisIteration) {
-                console.log(
-                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
-                );
-                modelReportedThisIteration = true;
-              }
+              reportModelIfNeeded();
               console.log(
                 `  [WRITE] Updated ${costType} Cost to: ${roundedRemoteCostPerMil}`,
               );
             }
           }
+        } else if (remoteCostPerToken === 0) {
+          clearSyncedField(costType + " Cost", localCost, localFieldName, "0");
         } else if (typeof localCost === "number") {
-          if (!argv.write && !modelReportedThisIteration) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReportedThisIteration = true;
-          }
-          if (!argv.write)
+          if (!argv.write) {
+            reportModelIfNeeded();
             console.log(
               `  ${costType} Cost: Local: ${localCost}, Remote: Not available`,
             );
+          }
         }
       };
 
@@ -1094,50 +1187,49 @@ async function updateModelsCommand(argv: any) {
         remoteLimit: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
-        if (typeof remoteLimit === "number") {
+        const normalizedRemoteLimit = getNonZeroNumber(remoteLimit);
+        if (normalizedRemoteLimit !== undefined) {
           if (
             localLimit === null ||
             typeof localLimit !== "number" ||
-            localLimit !== remoteLimit
+            localLimit !== normalizedRemoteLimit
           ) {
-            if (!argv.write && !modelReportedThisIteration) {
-              console.log(
-                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-              );
-              modelReportedThisIteration = true;
-            }
-            if (!argv.write)
+            if (!argv.write) {
+              reportModelIfNeeded();
               console.log(
                 `  ${limitType} Token Limit Mismatch/Missing: Local: ${
                   localLimit ?? "Not available"
-                }, Remote: ${remoteLimit}`,
+                }, Remote: ${normalizedRemoteLimit}`,
               );
+            }
             discrepanciesFound++;
             if (argv.write) {
-              (modelInUpdatedList as any)[localFieldName] = remoteLimit;
+              Reflect.set(
+                modelInUpdatedList,
+                localFieldName,
+                normalizedRemoteLimit,
+              );
               madeChanges = true;
-              if (!modelReportedThisIteration) {
-                console.log(
-                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
-                );
-                modelReportedThisIteration = true;
-              }
+              reportModelIfNeeded();
               console.log(
-                `  [WRITE] Updated ${limitType} Token Limit to: ${remoteLimit}`,
+                `  [WRITE] Updated ${limitType} Token Limit to: ${normalizedRemoteLimit}`,
               );
             }
           }
+        } else if (remoteLimit === 0) {
+          clearSyncedField(
+            limitType + " Token Limit",
+            localLimit,
+            localFieldName,
+            "0",
+          );
         } else if (typeof localLimit === "number") {
-          if (!argv.write && !modelReportedThisIteration) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReportedThisIteration = true;
-          }
-          if (!argv.write)
+          if (!argv.write) {
+            reportModelIfNeeded();
             console.log(
               `  ${limitType} Token Limit: Local: ${localLimit}, Remote: Not available`,
             );
+          }
         }
       };
 
@@ -1151,45 +1243,35 @@ async function updateModelsCommand(argv: any) {
             typeof localDeprecationDate !== "string" ||
             localDeprecationDate !== remoteDeprecationDate
           ) {
-            if (!argv.write && !modelReportedThisIteration) {
-              console.log(
-                `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-              );
-              modelReportedThisIteration = true;
-            }
-            if (!argv.write)
+            if (!argv.write) {
+              reportModelIfNeeded();
               console.log(
                 `  Deprecation Date Mismatch/Missing: Local: ${
                   localDeprecationDate ?? "Not available"
                 }, Remote: ${remoteDeprecationDate}`,
               );
+            }
             discrepanciesFound++;
             if (argv.write) {
-              (modelInUpdatedList as any)["deprecation_date"] =
-                remoteDeprecationDate;
+              Reflect.set(
+                modelInUpdatedList,
+                "deprecation_date",
+                remoteDeprecationDate,
+              );
               madeChanges = true;
-              if (!modelReportedThisIteration) {
-                console.log(
-                  `\n[WRITE] Updating model for: ${localModelName} (Remote: ${originalRemoteModelName})`,
-                );
-                modelReportedThisIteration = true;
-              }
+              reportModelIfNeeded();
               console.log(
                 `  [WRITE] Updated Deprecation Date to: ${remoteDeprecationDate}`,
               );
             }
           }
         } else if (typeof localDeprecationDate === "string") {
-          if (!argv.write && !modelReportedThisIteration) {
-            console.log(
-              `\nModel: ${localModelName} (Remote: ${originalRemoteModelName})`,
-            );
-            modelReportedThisIteration = true;
-          }
-          if (!argv.write)
+          if (!argv.write) {
+            reportModelIfNeeded();
             console.log(
               `  Deprecation Date: Local: ${localDeprecationDate}, Remote: Not available`,
             );
+          }
         }
       };
 
@@ -1279,6 +1361,12 @@ async function updateModelsCommand(argv: any) {
           );
         }
       }
+    }
+
+    const sanitizedWriteResult =
+      sanitizeLocalModelsForWrite(updatedLocalModels);
+    if (sanitizedWriteResult.changed) {
+      madeChanges = true;
     }
 
     // Only sync Vertex regions for models that were actually in scope for this

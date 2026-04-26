@@ -515,6 +515,10 @@ async function normalizeProviderMappingsFile(): Promise<void> {
   }
 }
 
+export function formatProviderMappingProviders(providers: string[]): string {
+  return `[${providers.map((provider) => JSON.stringify(provider)).join(", ")}]`;
+}
+
 async function updateProviderMapping(
   newModels: Array<{
     name: string;
@@ -537,7 +541,7 @@ async function updateProviderMapping(
         continue;
       }
 
-      const newEntry = `  "${name}": ${JSON.stringify(providers)},`;
+      const newEntry = `  "${name}": ${formatProviderMappingProviders(providers)},`;
       let insertionIndex = -1;
 
       if (completeModelOrder) {

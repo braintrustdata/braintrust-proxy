@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
   convertRemoteToLocalModel,
+  formatProviderMappingProviders,
   getUpdatedAvailableProviders,
   normalizeLocalModels,
   normalizeProviderMappingContent,
@@ -77,6 +78,12 @@ describe("sync_models", () => {
 
     expect(normalizeProviderMappingContent(schemaContent)).toBe(
       `export const MODEL_PROVIDER_MAPPING = {\n  "moonshotai/Kimi-K2.5": ["baseten"],\n};\n`,
+    );
+  });
+
+  it("formats provider arrays with spaces after commas", () => {
+    expect(formatProviderMappingProviders(["openai", "azure"])).toBe(
+      `["openai", "azure"]`,
     );
   });
 

@@ -6,8 +6,6 @@ import {
   getUpdatedAvailableProviders,
   normalizeLocalModels,
   normalizeProviderMappingContent,
-  removeZeroValuedSettings,
-  sanitizeLocalModelsForWrite,
 } from "./sync_models";
 
 const canonicalFireworksModel = {
@@ -97,74 +95,6 @@ describe("sync_models", () => {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
-  });
-
-  it("removes zero-valued settings while preserving false booleans", () => {
-    const model = removeZeroValuedSettings({
-      format: "openai",
-      flavor: "chat",
-      input_cost_per_mil_tokens: 0,
-      max_output_tokens: 0,
-      deprecated: false,
-    });
-
-    expect(model).toEqual({
-      format: "openai",
-      flavor: "chat",
-      deprecated: false,
-    });
-  });
-
-  it("sanitizes models for write without mutating the original catalog", () => {
-    const originalModels = {
-      moderation: {
-        format: "openai",
-        flavor: "chat",
-        input_cost_per_mil_tokens: 0,
-        max_output_tokens: 0,
-      },
-    } satisfies Record<string, ModelSpec>;
-
-    const sanitizedWriteResult = sanitizeLocalModelsForWrite(originalModels);
-
-    expect(sanitizedWriteResult).toEqual({
-      models: {
-        moderation: {
-          format: "openai",
-          flavor: "chat",
-        },
-      },
-      changed: true,
-    });
-    expect(originalModels).toEqual({
-      moderation: {
-        format: "openai",
-        flavor: "chat",
-        input_cost_per_mil_tokens: 0,
-        max_output_tokens: 0,
-      },
-    });
-  });
-
-  it("reports unchanged when sanitization has nothing to remove", () => {
-    const sanitizedWriteResult = sanitizeLocalModelsForWrite({
-      chat: {
-        format: "openai",
-        flavor: "chat",
-        max_input_tokens: 32768,
-      },
-    });
-
-    expect(sanitizedWriteResult).toEqual({
-      models: {
-        chat: {
-          format: "openai",
-          flavor: "chat",
-          max_input_tokens: 32768,
-        },
-      },
-      changed: false,
-    });
   });
 
   it("does not carry zero-valued remote settings into converted models", () => {

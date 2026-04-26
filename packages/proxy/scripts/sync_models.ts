@@ -330,51 +330,6 @@ export function normalizeLocalModels(localModels: LocalModelList): {
   };
 }
 
-function removeZeroValuedSettingsWithChangeFlag(model: LocalModelDetail): {
-  model: LocalModelDetail;
-  changed: boolean;
-} {
-  const sanitizedModel = { ...model };
-  let changed = false;
-
-  for (const [key, value] of Object.entries(sanitizedModel)) {
-    if (value === 0) {
-      Reflect.deleteProperty(sanitizedModel, key);
-      changed = true;
-    }
-  }
-
-  return {
-    model: sanitizedModel,
-    changed,
-  };
-}
-
-export function removeZeroValuedSettings(
-  model: LocalModelDetail,
-): LocalModelDetail {
-  return removeZeroValuedSettingsWithChangeFlag(model).model;
-}
-
-export function sanitizeLocalModelsForWrite(localModels: LocalModelList): {
-  models: LocalModelList;
-  changed: boolean;
-} {
-  const sanitizedModels: LocalModelList = {};
-  let changed = false;
-
-  for (const [modelName, model] of Object.entries(localModels)) {
-    const sanitizedModel = removeZeroValuedSettingsWithChangeFlag(model);
-    sanitizedModels[modelName] = sanitizedModel.model;
-    changed ||= sanitizedModel.changed;
-  }
-
-  return {
-    models: sanitizedModels,
-    changed,
-  };
-}
-
 function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
@@ -404,9 +359,7 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
-  const orderedModelsToWrite = reorderModelProperties(
-    sanitizeLocalModelsForWrite(localModels).models,
-  );
+  const orderedModelsToWrite = reorderModelProperties(localModels);
   await fs.promises.writeFile(
     LOCAL_MODEL_LIST_PATH,
     JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
@@ -1107,31 +1060,6 @@ async function updateModelsCommand(argv: any) {
         }
       };
 
-      const clearSyncedField = (
-        fieldDescription: string,
-        localValue: number | undefined | null,
-        localFieldName: keyof ModelSpec,
-        remoteDescription: string,
-      ) => {
-        if (localValue === null || typeof localValue !== "number") {
-          return;
-        }
-
-        discrepanciesFound++;
-        if (!argv.write) {
-          reportModelIfNeeded();
-          console.log(
-            `  ${fieldDescription}: Local: ${localValue}, Remote: ${remoteDescription} (would clear local setting)`,
-          );
-          return;
-        }
-
-        reportModelIfNeeded();
-        Reflect.deleteProperty(modelInUpdatedList, localFieldName);
-        madeChanges = true;
-        console.log(`  [WRITE] Cleared ${fieldDescription}`);
-      };
-
       const checkAndUpdateCost = (
         costType: string,
         localCost: number | undefined | null,
@@ -1173,8 +1101,6 @@ async function updateModelsCommand(argv: any) {
               );
             }
           }
-        } else if (remoteCostPerToken === 0) {
-          clearSyncedField(costType + " Cost", localCost, localFieldName, "0");
         } else if (typeof localCost === "number") {
           if (!argv.write) {
             reportModelIfNeeded();
@@ -1220,13 +1146,6 @@ async function updateModelsCommand(argv: any) {
               );
             }
           }
-        } else if (remoteLimit === 0) {
-          clearSyncedField(
-            limitType + " Token Limit",
-            localLimit,
-            localFieldName,
-            "0",
-          );
         } else if (typeof localLimit === "number") {
           if (!argv.write) {
             reportModelIfNeeded();
@@ -1365,12 +1284,6 @@ async function updateModelsCommand(argv: any) {
           );
         }
       }
-    }
-
-    const sanitizedWriteResult =
-      sanitizeLocalModelsForWrite(updatedLocalModels);
-    if (sanitizedWriteResult.changed) {
-      madeChanges = true;
     }
 
     // Only sync Vertex regions for models that were actually in scope for this

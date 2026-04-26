@@ -86,7 +86,22 @@
     "displayName": "GPT-5.4 mini (2026-03-17)",
     "reasoning": true,
     "parent": "gpt-5.4-mini",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-5.4-nano-2026-03-17": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "reasoning": true,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -3857,6 +3872,8 @@
   "accounts/fireworks/models/qwen3-reranker-8b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -3888,6 +3905,8 @@
   "accounts/fireworks/models/qwen3-embedding-4b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -3897,6 +3916,8 @@
   "accounts/fireworks/models/qwen3-reranker-4b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -3972,6 +3993,8 @@
   "accounts/fireworks/models/qwen3-embedding-0p6b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -3981,6 +4004,8 @@
   "accounts/fireworks/models/qwen3-reranker-0p6b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -8750,6 +8775,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8192,
     "available_providers": [
       "fireworks"
@@ -8759,6 +8785,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8192,
     "available_providers": [
       "fireworks"
@@ -8768,6 +8795,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512,
     "available_providers": [
       "fireworks"
@@ -8777,6 +8805,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512,
     "available_providers": [
       "fireworks"
@@ -8786,6 +8815,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 512,
     "available_providers": [
       "fireworks"
@@ -8829,6 +8859,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.016,
+    "output_cost_per_mil_tokens": 0,
     "available_providers": [
       "fireworks"
     ]
@@ -8837,6 +8868,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.008,
+    "output_cost_per_mil_tokens": 0,
     "available_providers": [
       "fireworks"
     ]
@@ -9225,6 +9257,8 @@
   "accounts/fireworks/models/fireworks-asr-v2": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -9234,6 +9268,8 @@
   "accounts/fireworks/models/fireworks-asr-large": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -9850,6 +9886,8 @@
   "accounts/fireworks/models/whisper-v3": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -9859,6 +9897,8 @@
   "accounts/fireworks/models/whisper-v3-turbo": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -10871,7 +10911,10 @@
   "omni-moderation-2024-09-26": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10880,7 +10923,10 @@
   "omni-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10946,6 +10992,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10956,6 +11003,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.02,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10966,6 +11014,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10976,6 +11025,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",
@@ -10985,7 +11035,10 @@
   "text-moderation-007": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -10994,7 +11047,10 @@
   "text-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"
@@ -11003,7 +11059,10 @@
   "text-moderation-stable": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0,
+    "output_cost_per_mil_tokens": 0,
     "max_input_tokens": 32768,
+    "max_output_tokens": 0,
     "available_providers": [
       "openai",
       "azure"

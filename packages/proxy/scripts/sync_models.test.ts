@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
+  convertRemoteToLocalModel,
+  formatProviderMappingProviders,
   getUpdatedAvailableProviders,
   normalizeLocalModels,
   normalizeProviderMappingContent,
@@ -77,6 +79,12 @@ describe("sync_models", () => {
     );
   });
 
+  it("formats provider arrays with spaces after commas", () => {
+    expect(formatProviderMappingProviders(["openai", "azure"])).toBe(
+      `["openai", "azure"]`,
+    );
+  });
+
   it("preserves existing providers during provider-filtered updates", () => {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], true),
@@ -87,5 +95,22 @@ describe("sync_models", () => {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
+  });
+
+  it("does not carry zero-valued remote settings into converted models", () => {
+    const convertedModel = convertRemoteToLocalModel("test-model", {
+      input_cost_per_token: 0,
+      output_cost_per_token: 0,
+      cache_read_input_token_cost: 0,
+      cache_creation_input_token_cost: 0,
+      max_input_tokens: 32768,
+      max_output_tokens: 0,
+    });
+
+    expect(convertedModel).toEqual({
+      format: "openai",
+      flavor: "chat",
+      max_input_tokens: 32768,
+    });
   });
 });

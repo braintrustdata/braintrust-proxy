@@ -51,6 +51,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 30,
+    "displayName": "GPT 5.5",
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "reasoning": true,
     "max_input_tokens": 1050000,

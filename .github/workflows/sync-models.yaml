@@ -124,12 +124,15 @@ jobs:
             2. Verify `displayName` and `parent` from official provider documentation or official provider APIs.
             3. Update only `packages/proxy/schema/model_list.json`.
             4. Preserve existing JSON formatting, field order, and neighboring naming conventions.
-            5. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
-            6. Attempt to set `parent` only when the model is clearly not a base model and official sources verify the relationship.
-            7. The main parent case to look for is a model id that contains an embedded date or other explicit version snapshot which points to a stable alias.
-            8. If the model is a location-scoped variant such as `global`, `us`, `eu`, `apac`, or similar and the official source clearly ties it to a non-location parent model, you may set `parent` for that case too.
-            9. Leave `parent` unset for base models or when the relationship cannot be verified confidently from official sources.
-            10. If a field cannot be verified confidently from official sources, leave it unset instead of guessing.
+            5. Only modify `displayName` and `parent`. Do not change pricing, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
+            6. If `displayName` and `parent` are both already acceptable for a changed model, make no edit for that model.
+            7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
+            8. Attempt to set `parent` only when the model is clearly not a base model and official sources verify the relationship.
+            9. Only consider `parent` for one of these cases:
+               - the model id ends with a verifiable snapshot suffix such as `-YYYY-MM-DD`, `-YYYYMMDD`, or `@YYYYMMDD`, and official sources point to a stable alias
+               - the model id starts with a provider-documented location prefix such as `global.`, `us.`, `eu.`, or `apac.`, and official sources point to a non-location parent model
+            10. Leave `parent` unset for base models or when the relationship cannot be verified confidently from official sources.
+            11. If a field cannot be verified confidently from official sources, leave it unset instead of guessing.
 
             # Constraints
 

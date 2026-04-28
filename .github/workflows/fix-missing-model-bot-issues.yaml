@@ -255,7 +255,9 @@ jobs:
             1. Read the original issue body file.
             2. Use the official source URLs already on the issue first.
             3. If needed, search additional official provider docs or official provider API references to verify the model metadata.
-            4. Build the most complete verified catalog payload you can for each model, not just the initially missing field. Verify and include all relevant fields that official sources support, such as:
+            4. Re-verify that each provider/model relationship in the issue is actually on the provider's public shared inference surface. Ignore bring-your-own-model flows, bring-your-own-deployment flows, template galleries, self-hosted guides, private deployments, dedicated deployments, or docs that only explain how a user can deploy their own copy of a model.
+            5. If a provider does not publicly list the model on its general inference or serverless endpoint, do not keep or add that provider relationship in the enriched metadata. For Baseten specifically, ignore custom deployment or template-only Gemma support when re-verifying.
+            6. Build the most complete verified catalog payload you can for each model already targeted by the issue, not just the initially missing field. Verify and include all relevant fields that official sources support, such as:
                - format and flavor
                - display name
                - parent for non-base dated snapshots or location-scoped variants, plus replacement relationships when applicable
@@ -265,11 +267,12 @@ jobs:
                - deprecation/retirement status and dates
                - reasoning, multimodal, and other capability flags when they map cleanly to the local schema
                - locations and supported regions when required
-            5. Match local catalog conventions and style in `model_list.json` and `index.ts`, using neighboring entries as the reference for how a complete, up-to-date spec should look.
-            6. If a field is not published, not applicable, or cannot be verified confidently, do not guess it. Call that out explicitly in the verification note.
-            7. Re-verify the information already present on the issue against official sources, go deeper on token limits and pricing when needed, and add the metadata needed for the retry to resolve cleanly, including `displayName` and `parent` when they are officially verifiable.
-            8. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
-            9. If you cannot verify enough metadata to improve the issue safely, write the original issue body unchanged to the enriched output file.
+            7. Match local catalog conventions and style in `model_list.json` and `index.ts`, using neighboring entries as the reference for how a complete, up-to-date spec should look.
+            8. If a field is not published, not applicable, or cannot be verified confidently, do not guess it. Call that out explicitly in the verification note.
+            9. Re-verify the information already present on the issue against official sources, go deeper on token limits and pricing when needed, and add the metadata needed for the retry to resolve cleanly, including `displayName` and `parent` when they are officially verifiable.
+            10. Stay within the issue's intended scope. Do not broaden the issue to unrelated providers or unrelated models, even if you notice additional gaps while researching.
+            11. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
+            12. If you cannot verify enough metadata to improve the issue safely, write the original issue body unchanged to the enriched output file.
 
             # Constraints
 

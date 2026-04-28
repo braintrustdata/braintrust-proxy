@@ -109,6 +109,14 @@ jobs:
             - Do not infer pricing from a model documentation page alone unless the pricing is explicitly stated there.
             - Do not propose adding a model if official sources show it is likely to deprecate within 90 days.
 
+            # Provider availability rules
+
+            - Only treat a model as available from a provider when official provider documentation or an official provider API shows that exact model on the provider's public shared inference surface.
+            - Accept shared hosted endpoints such as serverless or general inference catalogs when they are clearly provider-managed and generally available.
+            - Ignore bring-your-own-model flows, bring-your-own-deployment flows, template galleries, self-hosted guides, private deployments, dedicated deployments, or docs that only explain how a user can deploy their own copy of a model.
+            - For Baseten specifically, ignore models that only appear in custom deployment or template flows and are not listed on Baseten's general inference endpoint.
+            - Do not open provider-mapping or missing-model issues from custom-deployment-only evidence.
+
             # Pricing normalization rules
 
             - Prefer standard public on-demand pricing when multiple tiers exist.
@@ -125,9 +133,10 @@ jobs:
 
             # Good outcomes
 
-            - Create a focused issue for a newly released official model missing from an existing provider family.
-            - Create a focused issue for missing or stale pricing, token limits, or deprecation metadata when the official source clearly changed.
-            - Create a focused issue for provider-mapping gaps when the relationship is unambiguous.
+            - Create a focused issue for one provider and a small set of newly released official models missing from that provider family.
+            - Create a focused issue for one provider and a small set of existing local models that are missing that provider as an available provider.
+            - Create a focused issue for missing or stale pricing, token limits, or deprecation metadata for one provider and a small set of models when the official source clearly changed.
+            - Create a focused issue for provider-mapping gaps when the relationship is unambiguous and the issue stays narrowly scoped.
             - Create a focused issue for a likely new provider family when support appears missing.
 
             # Bad outcomes
@@ -154,6 +163,14 @@ jobs:
             - Create at most 5 issues in a single run.
             - Create at most one issue per distinct gap in a single run.
             - Only create issues for concrete, actionable gaps.
+            - Each issue must target exactly one provider.
+            - Each issue must fit exactly one shape:
+              1. a few missing models for one provider
+              2. adding one provider to a few existing local models
+              3. one new provider-family support gap
+            - Do not mix missing-model additions with provider-mapping updates in the same issue.
+            - Do not open umbrella issues that sweep up many unrelated models at once.
+            - For model-focused issues, include at most 3 model ids per issue. If you find more than 3 high-confidence models for the same provider, split them into multiple focused issues or pick the highest-confidence subset for this run.
 
             # Issue requirements
 
@@ -161,11 +178,12 @@ jobs:
 
             - Prefix the title with `[BOT ISSUE] `
             - Make the title specific to the gap
+            - Make the title clearly name the single target provider and the specific model or small model set.
             - Include the official source URLs you used
             - Mention the local files you inspected when reaching that conclusion
             - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
             - Explain why the gap is high confidence
-            - This workflow should find broad, high-confidence issues; the downstream `fix-missing-model-bot-issues` job is responsible for doing model-by-model verification and producing a complete, current catalog entry.
+            - This workflow should find narrow, high-confidence issues; the downstream `fix-missing-model-bot-issues` job is responsible for doing model-by-model verification and producing a complete, current catalog entry.
             - Even so, include every verified field you already have that would help the downstream fix job write the model entry directly from the issue.
             - The issue should read like a proposed update to `packages/proxy/schema/model_list.json`, with enough verified detail for the downstream fixer to re-check and then apply the update.
             - Add a short verification note that links the exact official source URLs to the fields you verified, and call out fields that were not published or not applicable instead of guessing.

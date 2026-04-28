@@ -101,6 +101,12 @@ type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
 type LocalModelDetail = ModelSpec; // Use ModelSpec from schema/models.ts
 type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schema/models.ts
 
+export function isSupportedRemoteModel(
+  remoteModel: LiteLLMModelDetail,
+): boolean {
+  return remoteModel.mode !== "embedding";
+}
+
 const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
   "../schema/model_list.json",
@@ -205,6 +211,9 @@ function resolveRemoteModels(
     const remoteModel = remoteModels[remoteModelName];
 
     if (!matchesProviderFilter(remoteModelName, remoteModel, providerFilter)) {
+      continue;
+    }
+    if (!isSupportedRemoteModel(remoteModel)) {
       continue;
     }
 
@@ -775,7 +784,10 @@ async function findMissingCommand(argv: any) {
     const filteredRemoteModels: LiteLLMModelList = {};
 
     for (const [remoteModelName, remoteModel] of Object.entries(remoteModels)) {
-      if (matchesProviderFilter(remoteModelName, remoteModel, argv.provider)) {
+      if (
+        matchesProviderFilter(remoteModelName, remoteModel, argv.provider) &&
+        isSupportedRemoteModel(remoteModel)
+      ) {
         filteredRemoteModels[remoteModelName] = remoteModel;
       }
     }

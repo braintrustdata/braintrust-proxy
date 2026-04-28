@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
   getUpdatedAvailableProviders,
+  isSupportedRemoteModel,
   normalizeLocalModels,
   normalizeProviderMappingContent,
 } from "./sync_models";
@@ -87,5 +88,11 @@ describe("sync_models", () => {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
+  });
+
+  it("filters embedding models out of the playground catalog sync flow", () => {
+    expect(isSupportedRemoteModel({ mode: "embedding" })).toBe(false);
+    expect(isSupportedRemoteModel({ mode: "chat" })).toBe(true);
+    expect(isSupportedRemoteModel({})).toBe(true);
   });
 });

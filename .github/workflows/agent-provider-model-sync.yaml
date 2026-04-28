@@ -77,6 +77,7 @@ jobs:
             4. For pricing: use the model page if pricing is stated there; otherwise use the provider pricing page; otherwise skip pricing for that provider.
             5. Do one bounded search for provider families not already in the current inventory. If inconclusive, do not create an issue.
             6. Do not report models that are deprecated, retired, or have an official retirement date within 90 days of today.
+            7. Do not report embedding models. Embedding models are not supported in the playground and should not be recommended for `packages/proxy/schema/model_list.json`.
 
             **Provider-specific constraints:**
 

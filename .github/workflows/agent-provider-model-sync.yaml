@@ -98,6 +98,7 @@ jobs:
             11. Look for missing local models within already-supported provider families.
             12. Separately, do one bounded search for likely new provider families not in the current inventory.
             13. If the new provider-family search is inconclusive, do not create an issue and do not guess.
+            14. Do not create missing-model issues for models that are already deprecated, retired, replaced, or have an official deprecation/retirement/replacement date within 90 days of the workflow run. Those models are not actionable additions for the active catalog.
 
             # Model discovery versus pricing discovery
 
@@ -106,6 +107,7 @@ jobs:
             - Only report pricing drift or missing pricing when you have an official pricing source for that exact model or an unambiguous official pricing table that maps cleanly to that model.
             - Do not infer model existence from a pricing page alone.
             - Do not infer pricing from a model documentation page alone unless the pricing is explicitly stated there.
+            - Do not propose adding a model if official sources show it is likely to deprecate within 90 days.
 
             # Pricing normalization rules
 
@@ -165,6 +167,7 @@ jobs:
             - Explain why the gap is high confidence
             - This workflow should find broad, high-confidence issues; the downstream `fix-missing-model-bot-issues` job is responsible for doing model-by-model verification and producing a complete, current catalog entry.
             - Even so, include every verified field you already have that would help the downstream fix job write the model entry directly from the issue.
+            - The issue should read like a proposed update to `packages/proxy/schema/model_list.json`, with enough verified detail for the downstream fixer to re-check and then apply the update.
             - Add a short verification note that links the exact official source URLs to the fields you verified, and call out fields that were not published or not applicable instead of guessing.
             - Include a machine-readable metadata block immediately before the closing summary using this exact marker and a JSON code fence:
               `<!-- fix-bot-issue-metadata -->`
@@ -189,7 +192,9 @@ jobs:
               }
               ```
             - For a single-model issue you may include either `model_spec` or `model_specs`. For a multi-model issue, include `models` and `model_specs`, with one fully populated spec per model id.
-            - Populate `model_spec`/`model_specs` with the exact token limits, pricing fields, provider list, deprecation metadata, and location information you can verify from official sources. Do not guess. If the model requires explicit location metadata, include it there.
+            - Populate `model_spec`/`model_specs` with the exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location information you can verify from official sources. Do not guess. If the model requires explicit location metadata, include it there.
+            - Include `parent` only when official sources verify that the model is a non-base variant, such as a dated/versioned snapshot or a location-scoped variant (`global`, `us`, `eu`, `apac`, or similar) with a clear parent relationship. Leave `parent` unset for base models.
+            - Include replacement relationships when official sources explicitly publish them.
             - Keep the issue concise and actionable
 
             # Output expectations

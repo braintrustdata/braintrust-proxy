@@ -233,7 +233,7 @@ jobs:
           prompt: |
             # Goal
 
-            Create an enriched copy of the selected bot issue body so the downstream resolver can retry with the fullest verified model metadata available from official provider sources.
+            Create an enriched copy of the selected bot issue body so the downstream resolver can apply the fullest verified model metadata available from official provider sources.
 
             # Inputs
 
@@ -257,7 +257,8 @@ jobs:
             3. If needed, search additional official provider docs or official provider API references to verify the model metadata.
             4. Build the most complete verified catalog payload you can for each model, not just the initially missing field. Verify and include all relevant fields that official sources support, such as:
                - format and flavor
-               - display name and parent/replacement relationships
+               - display name
+               - parent for non-base dated snapshots or location-scoped variants, plus replacement relationships when applicable
                - available providers and provider mapping
                - all applicable token limits and context limits
                - all applicable pricing fields in the local schema
@@ -266,8 +267,9 @@ jobs:
                - locations and supported regions when required
             5. Match local catalog conventions and style in `model_list.json` and `index.ts`, using neighboring entries as the reference for how a complete, up-to-date spec should look.
             6. If a field is not published, not applicable, or cannot be verified confidently, do not guess it. Call that out explicitly in the verification note.
-            7. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
-            8. If you cannot verify enough metadata to let the resolver proceed safely, write the original issue body unchanged to the enriched output file.
+            7. Re-verify the information already present on the issue against official sources, go deeper on token limits and pricing when needed, and add the metadata needed for the retry to resolve cleanly, including `displayName` and `parent` when they are officially verifiable.
+            8. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
+            9. If you cannot verify enough metadata to improve the issue safely, write the original issue body unchanged to the enriched output file.
 
             # Constraints
 
@@ -340,11 +342,13 @@ jobs:
             const verificationTable =
               verificationRows.length > 0
                 ? [
-                    "| Model | Providers | Format | Flavor | Token limits | Pricing | Lifecycle |",
-                    "| --- | --- | --- | --- | --- | --- | --- |",
+                    "| Model | Display name | Parent | Providers | Format | Flavor | Token limits | Pricing | Lifecycle |",
+                    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
                     ...verificationRows.map((row) =>
                       [
                         row.model,
+                        row.display_name ?? "",
+                        row.parent ?? "",
                         row.providers,
                         row.format,
                         row.flavor,
@@ -361,14 +365,17 @@ jobs:
             const liteLLMTable =
               liteLLMRows.length > 0
                 ? [
-                    "| Model | sync_models source models | Status | Details |",
-                    "| --- | --- | --- | --- |",
+                    "| Model | Field | Proposed update | sync_models | sync_models source models | Why sync_models may be wrong | Official verification |",
+                    "| --- | --- | --- | --- | --- | --- | --- |",
                     ...liteLLMRows.map((row) =>
                       [
                         row.model,
-                        row.litellm_models,
-                        row.status,
-                        row.details,
+                        row.field,
+                        row.proposed_value,
+                        row.sync_models_value,
+                        row.sync_models_models,
+                        row.explanation,
+                        sourceLinks(row.verification_urls || []),
                       ]
                         .map((value) => escapeCell(value))
                         .join(" | "),
@@ -422,7 +429,7 @@ jobs:
 
       - name: Validate model schema
         if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/fix_bot_issue.test.ts packages/proxy/scripts/sync_models.test.ts
 
       - name: Create PR
         id: pr
@@ -449,7 +456,7 @@ jobs:
 
             ${{ steps.result.outputs.pr_verification_table }}
 
-            **sync_models cross-check**
+            **sync_models vs proposed update**
 
             ${{ steps.result.outputs.litellm_comparison_summary }}
 

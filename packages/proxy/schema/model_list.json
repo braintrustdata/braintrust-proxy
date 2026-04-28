@@ -106,8 +106,8 @@
     "output_cost_per_mil_tokens": 1.25,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano (2026-03-17)",
-    "parent": "gpt-5.4-nano",
     "reasoning": true,
+    "parent": "gpt-5.4-nano",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -10240,11 +10240,74 @@
       "azure"
     ]
   },
+  "1024-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Square",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "1024-x-1536/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Portrait",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "1024-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Square (2026-04-21)",
+    "parent": "1024-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "1024-x-1536/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Portrait (2026-04-21)",
+    "parent": "1024-x-1536/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "1536-x-1024/gpt-image-1.5": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Landscape",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "1536-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Landscape",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "1536-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Landscape (2026-04-21)",
+    "parent": "1536-x-1024/gpt-image-2",
     "available_providers": [
       "openai",
       "azure"
@@ -10427,6 +10490,69 @@
       "azure"
     ]
   },
+  "high/1024-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Square",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "high/1024-x-1536/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Portrait",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "high/1536-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Landscape",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "high/1024-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Square (2026-04-21)",
+    "parent": "high/1024-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "high/1024-x-1536/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Portrait (2026-04-21)",
+    "parent": "high/1024-x-1536/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "high/1536-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 High Landscape (2026-04-21)",
+    "parent": "high/1536-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "low/1024-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
@@ -10475,6 +10601,69 @@
       "azure"
     ]
   },
+  "low/1024-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Square",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "low/1024-x-1536/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Portrait",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "low/1536-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Landscape",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "low/1024-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Square (2026-04-21)",
+    "parent": "low/1024-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "low/1024-x-1536/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Portrait (2026-04-21)",
+    "parent": "low/1024-x-1536/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "low/1536-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Low Landscape (2026-04-21)",
+    "parent": "low/1536-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "medium/1024-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
@@ -10518,6 +10707,69 @@
   "medium/1536-x-1024/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1024-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Square",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1024-x-1536/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Portrait",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1536-x-1024/gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Landscape",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1024-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Square (2026-04-21)",
+    "parent": "medium/1024-x-1024/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1024-x-1536/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Portrait (2026-04-21)",
+    "parent": "medium/1024-x-1536/gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "medium/1536-x-1024/gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Image 2 Medium Landscape (2026-04-21)",
+    "parent": "medium/1536-x-1024/gpt-image-2",
     "available_providers": [
       "openai",
       "azure"
@@ -10885,6 +11137,33 @@
     "displayName": "GPT Realtime mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2 (2026-04-21)",
+    "parent": "gpt-image-2",
     "available_providers": [
       "openai",
       "azure"

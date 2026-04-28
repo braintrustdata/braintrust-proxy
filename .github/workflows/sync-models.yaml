@@ -81,22 +81,11 @@ jobs:
           set -euo pipefail
 
           git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
-
-          node - "$RUNNER_TEMP/model_list.head.json" "packages/proxy/schema/model_list.json" "$RUNNER_TEMP/sync-model-changed.json" <<'NODE'
-          const fs = require("fs");
-
-          const [headPath, afterPath, outputPath] = process.argv.slice(2);
-          const before = JSON.parse(fs.readFileSync(headPath, "utf8"));
-          const after = JSON.parse(fs.readFileSync(afterPath, "utf8"));
-          const changedModels = Object.keys(after).filter(
-            (name) => JSON.stringify(before[name]) !== JSON.stringify(after[name]),
-          );
-
-          fs.writeFileSync(outputPath, JSON.stringify(changedModels, null, 2) + "\n");
-          NODE
-
-          count="$(node -e 'const fs=require("fs"); const changedModels=JSON.parse(fs.readFileSync(process.argv[1], "utf8")); process.stdout.write(String(changedModels.length));' "$RUNNER_TEMP/sync-model-changed.json")"
-          echo "count=$count" >> "$GITHUB_OUTPUT"
+          pnpm dlx tsx packages/proxy/scripts/collect_changed_model_ids.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after "packages/proxy/schema/model_list.json" \
+            --output "$RUNNER_TEMP/sync-model-changed.json" \
+            --github-output "$GITHUB_OUTPUT"
 
       - name: Enrich changed model metadata with Claude Code
         if: ${{ steps.changed_models.outputs.count != '0' }}
@@ -173,7 +162,7 @@ jobs:
 
       - name: Validate model schema
         if: ${{ steps.changes.outputs.changed == 'true' }}
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
 
       - name: Create PR
         if: ${{ steps.changes.outputs.changed == 'true' }}

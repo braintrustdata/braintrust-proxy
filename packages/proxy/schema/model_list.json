@@ -3081,6 +3081,34 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Gemma Instruct (2B)"
   },
+  "google/gemma-4-26B-A4B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Gemma 4 26B A4B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "google/gemma-4-31B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 31B IT",
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "google/gemma-3n-E4B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.12,
+    "displayName": "Gemma 3n E4B IT",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "together"
+    ]
+  },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     "format": "openai",
     "flavor": "chat",
@@ -4658,6 +4686,52 @@
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Qwen QwQ 32B Preview",
     "deprecated": true
+  },
+  "Qwen/Qwen3.5-397B-A17B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3.6,
+    "displayName": "Qwen 3.5 397B A17B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "Qwen/Qwen3.5-9B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Qwen 3.5 9B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "Qwen/Qwen3-Coder-Next-FP8": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "Qwen3 Coder Next FP8",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Qwen3 Coder 480B A35B Instruct FP8",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "together"
+    ]
   },
   "magistral-medium-latest": {
     "format": "openai",
@@ -9560,6 +9634,18 @@
       "baseten"
     ]
   },
+  "MiniMaxAI/MiniMax-M2.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "MiniMax M2.7",
+    "max_input_tokens": 202752,
+    "available_providers": [
+      "together"
+    ]
+  },
   "accounts/fireworks/models/minimax-m2p1": {
     "format": "openai",
     "flavor": "chat",
@@ -11102,6 +11188,39 @@
     "output_cost_per_mil_tokens": 0.75,
     "available_providers": [
       "baseten"
+    ]
+  },
+  "LiquidAI/LFM2-24B-A2B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.12,
+    "displayName": "LFM2 24B A2B",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "deepcogito/cogito-v2-1-671b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "displayName": "Cogito v2.1 671B",
+    "max_input_tokens": 163840,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "essentialai/rnj-1-instruct": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "RNJ-1 Instruct",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "together"
     ]
   }
 }

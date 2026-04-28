@@ -609,6 +609,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "us.anthropic.claude-opus-4-7": ["bedrock"],
+  "global.anthropic.claude-opus-4-7": ["bedrock"],
   "claude-3-sonnet-20240229": ["anthropic"],
   "claude-3-haiku-20240307": ["anthropic"],
   "fireworks-ai-4.1b-to-16b": ["fireworks"],

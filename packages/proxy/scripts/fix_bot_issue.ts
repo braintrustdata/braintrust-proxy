@@ -80,8 +80,6 @@ const fixResultSchema = z.object({
         proposed_value: z.string(),
         sync_models_value: z.string(),
         sync_models_models: z.string(),
-        explanation: z.string(),
-        verification_urls: z.array(z.string().url()).optional(),
       }),
     )
     .optional(),
@@ -686,42 +684,6 @@ function formatComparisonValue(
   return String(value);
 }
 
-function buildLiteLLMExplanation(args: {
-  field: string;
-  localMissing: boolean;
-  litellmMissing: boolean;
-}): string {
-  const tokenField =
-    args.field === "max_input_tokens" || args.field === "max_output_tokens";
-  const pricingField = args.field.includes("cost");
-
-  if (tokenField) {
-    if (args.litellmMissing) {
-      return "Official provider docs/API verified this token limit, but sync_models has no translated value for it.";
-    }
-    if (args.localMissing) {
-      return "The proposed update intentionally leaves this token field unset because the official provider source did not verify it cleanly, even though sync_models has a value.";
-    }
-    return "Official provider docs/API linked on the issue disagree with sync_models for this token limit. The proposed value follows the provider source because sync_models can lag provider changes or collapse a different alias/context window.";
-  }
-
-  if (pricingField) {
-    if (args.litellmMissing) {
-      return "Official provider pricing was verified for the proposed value, but sync_models has no matching pricing field.";
-    }
-    if (args.localMissing) {
-      return "The proposed update leaves this pricing field unset because the official provider source did not verify it confidently, even though sync_models has a value.";
-    }
-    return "Official provider pricing linked on the issue differs from sync_models, so the proposed value keeps the provider-verified number.";
-  }
-
-  if (args.field === "deprecation_date") {
-    return "Official lifecycle information linked on the issue differs from sync_models, so the proposed value follows the provider source.";
-  }
-
-  return "Official provider verification on the issue differs from sync_models, so the proposed value keeps the provider-verified field.";
-}
-
 async function buildLiteLLMComparison(args: {
   models: Array<{ name: string; model: ModelSpec }>;
   sourceUrls: string[];
@@ -747,9 +709,6 @@ async function buildLiteLLMComparison(args: {
           proposed_value: "present",
           sync_models_value: "missing",
           sync_models_models: "None",
-          explanation:
-            "No translated sync_models reference entry matched this model name.",
-          verification_urls: args.sourceUrls,
         });
         continue;
       }
@@ -812,12 +771,6 @@ async function buildLiteLLMComparison(args: {
           proposed_value: formatComparisonValue(difference.localValue),
           sync_models_value: formatComparisonValue(difference.litellmValue),
           sync_models_models: remoteEntry.remoteModelNames.join(", "),
-          explanation: buildLiteLLMExplanation({
-            field: difference.field,
-            localMissing: difference.localMissing,
-            litellmMissing: difference.litellmMissing,
-          }),
-          verification_urls: args.sourceUrls,
         });
       }
     }

@@ -39,7 +39,7 @@ jobs:
           prompt: |
             # Goal
 
-            Find gaps in the Braintrust proxy model catalog by comparing it to official provider sources directly instead of relying on LiteLLM as the source of truth.
+            Find gaps in the Braintrust proxy model catalog by comparing it to official provider sources directly. This is an issue-finding workflow — do not edit files, create commits, or open pull requests.
 
             # Files to inspect first
 
@@ -52,7 +52,7 @@ jobs:
 
             # Current provider inventory
 
-            The current provider inventory in `packages/proxy/schema/model_list.json` is:
+            Treat these URLs as starting points — re-check the current official source if a page has redirected or been reorganized.
 
             - `anthropic` — models and pricing: `https://docs.anthropic.com/en/docs/about-claude/models/all-models`
             - `azure` — models: `https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models` ; pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
@@ -69,125 +69,68 @@ jobs:
             - `vertex` — models: `https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/available-models` ; pricing: `https://cloud.google.com/vertex-ai/generative-ai/pricing`
             - `xAI` — models and pricing: `https://docs.x.ai/developers/models`
 
-            Use this as the baseline coverage to preserve and improve.
-            Treat these URLs as starting points, not immutable truth. Re-check the current official source before making changes if a linked page redirects or has been reorganized.
-
-            # Scope
-
-            - Find high-confidence gaps across providers already present in the current inventory if you can find reliable official sources during this run.
-            - Search explicitly for both:
-              - models that are missing locally within already-supported provider families
-              - likely new provider families that are not represented in the current provider inventory
-            - Do one bounded search for provider families not already in the current provider inventory.
-            - This is an issue-finding workflow, not an editing workflow.
-
             # Process
 
-            1. Inspect the local schema, model list, and sync script to understand current naming, ordering, and provider mapping conventions.
-            2. For each provider you inspect, discover the current official model list, pricing, token limits, deprecation status, and capability metadata when available.
-            3. Search explicitly for both:
-               - models that exist in official provider docs or official APIs but appear to be missing locally
-               - local models that appear stale, deprecated, missing pricing, missing token limits, or incorrectly mapped
-            4. Prefer official APIs first. If an official API does not expose pricing or capabilities, use official provider documentation.
-            5. For pricing, use this rule consistently: if the model page already includes pricing, use that; otherwise use the provider pricing page; otherwise skip pricing for that provider instead of guessing.
-            6. For Mistral specifically, prefer the official models index for model discovery and API-style names, then follow the linked model detail pages when available because those pages are often more model-specific about pricing than the generic AI Studio pricing page. Do not infer model IDs from a generic pricing page by itself.
-            7. For xAI, use public xAI documentation first. Treat authenticated API access as optional and do not depend on it for this workflow.
-            8. For AWS Bedrock specifically, use public AWS documentation and pricing pages only. Do not depend on AWS credentials or account-specific availability checks in this workflow.
-            9. For Databricks specifically, rely on official Databricks model docs for model discovery. If you cannot find a stable public model-specific pricing source during this run, skip Databricks pricing gaps instead of guessing from generic product pricing pages.
-            10. Compare the official source to the current Braintrust catalog and identify only high-confidence gaps.
-            11. Look for missing local models within already-supported provider families.
-            12. Separately, do one bounded search for likely new provider families not in the current inventory.
-            13. If the new provider-family search is inconclusive, do not create an issue and do not guess.
-            14. Do not create missing-model issues for models that are already deprecated, retired, replaced, or have an official deprecation/retirement/replacement date within 90 days of the workflow run. Those models are not actionable additions for the active catalog.
+            1. Read the local schema and model list to understand current naming, ordering, and provider mapping conventions.
+            2. For each provider, fetch the current official model list and check for: models missing locally, local models that are stale or deprecated, and missing or drifted pricing or token limits.
+            3. Prefer official provider APIs for discovery. Fall back to official documentation. Never use third-party aggregators.
+            4. For pricing: use the model page if pricing is stated there; otherwise use the provider pricing page; otherwise skip pricing for that provider.
+            5. Do one bounded search for provider families not already in the current inventory. If inconclusive, do not create an issue.
+            6. Do not report models that are deprecated, retired, or have an official retirement date within 90 days of today.
 
-            # Model discovery versus pricing discovery
+            **Provider-specific constraints:**
+
+            | Provider   | Discovery                                        | Pricing                                                        |
+            |------------|--------------------------------------------------|----------------------------------------------------------------|
+            | Mistral    | Official models index → linked detail pages      | Use detail pages; do not infer IDs from the generic pricing page |
+            | xAI        | Public docs only; no auth required               | Public docs only                                               |
+            | Bedrock    | Public AWS docs only; no credentials             | `aws.amazon.com/bedrock/pricing`                               |
+            | Databricks | Official model docs only                         | Skip if no stable public per-model pricing source found        |
+
+            # Discovery and pricing rules
 
             - Treat model discovery and pricing discovery as separate tasks.
-            - Only report a missing or renamed model when you have an official model identifier from official model docs or an official API surface.
-            - Only report pricing drift or missing pricing when you have an official pricing source for that exact model or an unambiguous official pricing table that maps cleanly to that model.
-            - Do not infer model existence from a pricing page alone.
-            - Do not infer pricing from a model documentation page alone unless the pricing is explicitly stated there.
-            - Do not propose adding a model if official sources show it is likely to deprecate within 90 days.
+            - Only report a missing model when you have an official model ID from official model docs or an official API surface.
+            - Only report pricing gaps when you have an official pricing source that maps cleanly to that exact model.
+            - Do not infer model existence from a pricing page alone, or pricing from a model docs page alone.
+            - Only treat a model as available from a provider when it appears on that provider's public shared inference surface (serverless, general catalog). Ignore bring-your-own-model flows, custom deployments, template galleries, and self-hosted guides.
+            - `azure`, `bedrock`, and `vertex` can serve models made by other companies. A model appearing there does not mean the local provider mapping is wrong — only report a mapping gap when official docs clearly show the current mapping is incomplete.
+            - For pricing, prefer standard public on-demand pricing. Ignore free tiers, preview promos, enterprise, provisioned throughput, reserved capacity, and batch pricing. If pricing varies by region with no clear default, skip it. If pricing varies by prompt length or modality in a way that doesn't map cleanly to the existing schema, skip it.
 
-            # Provider availability rules
+            # Before filing an issue — verification checklist
 
-            - Only treat a model as available from a provider when official provider documentation or an official provider API shows that exact model on the provider's public shared inference surface.
-            - Accept shared hosted endpoints such as serverless or general inference catalogs when they are clearly provider-managed and generally available.
-            - Ignore bring-your-own-model flows, bring-your-own-deployment flows, template galleries, self-hosted guides, private deployments, dedicated deployments, or docs that only explain how a user can deploy their own copy of a model.
-            - For Baseten specifically, ignore models that only appear in custom deployment or template flows and are not listed on Baseten's general inference endpoint.
-            - Do not open provider-mapping or missing-model issues from custom-deployment-only evidence.
+            All three checks must pass before creating an issue:
 
-            # Pricing normalization rules
+            1. **Cross-source**: Confirm the model ID appears in at least two independent official signals (e.g., model listing page + pricing page, or model listing page + changelog). A single docs page is not sufficient.
+            2. **Recent commits**: Check `git log --oneline -30 -- packages/proxy/schema/model_list.json` to confirm the gap was not already fixed in a recent commit.
+            3. **ID format**: Confirm the proposed model ID matches the naming convention used by the same provider in `model_list.json` (e.g., `publishers/google/models/...` for vertex). Do not file an issue for a plausible-but-unverified ID.
 
-            - Prefer standard public on-demand pricing when multiple tiers exist.
-            - Ignore free tiers, temporary preview promos, enterprise contract pricing, provisioned throughput pricing, reserved capacity pricing, and batch pricing unless the existing schema explicitly models them.
-            - If pricing varies by region, use the most general public default or global standard presentation. If there is no obvious default, skip the pricing update.
-            - If pricing varies by prompt length, cache mode, or modality in a way that does not map cleanly to the existing schema, avoid partial updates unless the mapping is unambiguous.
-
-            # Platform versus provider rules
-
-            - Distinguish between the company that created a model and the platform that serves access to it.
-            - `azure`, `bedrock`, and `vertex` can offer access to models made by other companies.
-            - A model showing up on Azure, Bedrock, or Vertex does not automatically mean the local provider mapping is wrong.
-            - Only report a provider-mapping gap when official docs make it clear that the current local mapping is incomplete or incorrect under this repo's existing conventions.
-
-            # Good outcomes
-
-            - Create a focused issue for one provider and a small set of newly released official models missing from that provider family.
-            - Create a focused issue for one provider and a small set of existing local models that are missing that provider as an available provider.
-            - Create a focused issue for missing or stale pricing, token limits, or deprecation metadata for one provider and a small set of models when the official source clearly changed.
-            - Create a focused issue for provider-mapping gaps when the relationship is unambiguous and the issue stays narrowly scoped.
-            - Create a focused issue for a likely new provider family when support appears missing.
-
-            # Bad outcomes
-
-            - Inventing prices, token limits, capabilities, or providers.
-            - Opening vague issues without a concrete model, pricing, or provider-support gap.
-            - Opening duplicate issues for the same gap.
-            - Reporting weakly evidenced renames or provider-family additions.
-
-            # Allowed actions
-
-            - Read local files in this repository.
-            - Use official web sources to verify model and pricing information.
-            - Search for existing GitHub issues in this repository.
-            - Create GitHub issues in this repository for high-confidence non-duplicate gaps.
+            Then search for an equivalent open GitHub issue and do not create duplicates.
 
             # Constraints
 
-            - Do not use third-party aggregators as the source of truth.
             - Do not invent values, defaults, or placeholder models.
             - If a provider cannot be queried reliably in this run, skip it.
             - If a source is ambiguous about a rename versus a new model, do not create an issue unless the gap itself is still concrete.
-            - Before creating an issue, search for an equivalent open issue in this repository and do not create duplicates.
-            - Create at most 5 issues in a single run.
-            - Create at most one issue per distinct gap in a single run.
-            - Only create issues for concrete, actionable gaps.
-            - Each issue must target exactly one provider.
-            - Each issue must fit exactly one shape:
+            - Create at most 5 issues per run; at most one per distinct gap.
+            - Each issue must target exactly one provider and fit exactly one shape:
               1. a few missing models for one provider
               2. adding one provider to a few existing local models
               3. one new provider-family support gap
             - Do not mix missing-model additions with provider-mapping updates in the same issue.
-            - Do not open umbrella issues that sweep up many unrelated models at once.
-            - For model-focused issues, include at most 3 model ids per issue. If you find more than 3 high-confidence models for the same provider, split them into multiple focused issues or pick the highest-confidence subset for this run.
+            - Do not open umbrella issues. For model-focused issues, include at most 3 model IDs — if you find more, pick the highest-confidence subset.
 
             # Issue requirements
 
             If you create an issue:
 
-            - Prefix the title with `[BOT ISSUE] `
-            - Make the title specific to the gap
-            - Make the title clearly name the single target provider and the specific model or small model set.
-            - Include the official source URLs you used
-            - Mention the local files you inspected when reaching that conclusion
-            - Explain the exact gap: missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap
-            - Explain why the gap is high confidence
-            - This workflow should find narrow, high-confidence issues; the downstream `fix-missing-model-bot-issues` job is responsible for doing model-by-model verification and producing a complete, current catalog entry.
-            - Even so, include every verified field you already have that would help the downstream fix job write the model entry directly from the issue.
-            - The issue should read like a proposed update to `packages/proxy/schema/model_list.json`, with enough verified detail for the downstream fixer to re-check and then apply the update.
-            - Add a short verification note that links the exact official source URLs to the fields you verified, and call out fields that were not published or not applicable instead of guessing.
-            - Include a machine-readable metadata block immediately before the closing summary using this exact marker and a JSON code fence:
+            - Title: `[BOT ISSUE] ` prefix, naming the single provider and specific model(s).
+            - Body must include:
+              - The exact gap (missing model, missing pricing, stale metadata, missing provider-family support, or provider-mapping gap) and why it is high confidence
+              - Official source URLs used and local files inspected
+              - Every verified field that would help the downstream `fix-missing-model-bot-issues` job write the catalog entry directly — the issue should read like a proposed update to `packages/proxy/schema/model_list.json`
+              - A short verification note linking each official source URL to the fields it verifies; call out fields that were not published rather than guessing
+            - Include a machine-readable metadata block immediately before the closing summary:
               `<!-- fix-bot-issue-metadata -->`
               followed by:
               ```json
@@ -209,14 +152,12 @@ jobs:
                 "source_urls": ["https://example.com"]
               }
               ```
-            - For a single-model issue you may include either `model_spec` or `model_specs`. For a multi-model issue, include `models` and `model_specs`, with one fully populated spec per model id.
-            - Populate `model_spec`/`model_specs` with the exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location information you can verify from official sources. Do not guess. If the model requires explicit location metadata, include it there.
-            - Include `parent` only when official sources verify that the model is a non-base variant, such as a dated/versioned snapshot or a location-scoped variant (`global`, `us`, `eu`, `apac`, or similar) with a clear parent relationship. Leave `parent` unset for base models.
-            - Include replacement relationships when official sources explicitly publish them.
-            - Keep the issue concise and actionable
+            - For a single-model issue you may use `model_spec` or `model_specs`. For multi-model issues, use `model_specs` with one fully populated spec per model ID.
+            - Populate specs with exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location info from official sources. Do not guess.
+            - Include `parent` only when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json`. Recognized patterns: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`), `@NNN`/`-vN` versioned snapshots (e.g. Vertex `@001`), location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI). Leave unset for base models or when the parent id is not in the local catalog.
+            - Include replacement relationships only when officially published.
 
             # Output expectations
 
-            - Do not edit files.
-            - Do not create commits or open pull requests.
+            - Do not edit files, create commits, or open pull requests.
             - If there are no high-confidence non-duplicate gaps, do nothing.

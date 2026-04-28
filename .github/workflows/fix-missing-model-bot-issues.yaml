@@ -216,7 +216,7 @@ jobs:
             core.setOutput("source_urls", (result.source_urls || []).join(", "));
             core.setOutput("verification_summary", result.verification_summary || "");
 
-      - name: Enrich missing metadata with Claude Code
+      - name: Verify proposed changes and document sync_models deviations
         if: steps.result_initial.outputs.action == 'unsupported'
         uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
         with:
@@ -233,57 +233,74 @@ jobs:
           prompt: |
             # Goal
 
-            Create an enriched copy of the selected bot issue body so the downstream resolver can apply the fullest verified model metadata available from official provider sources.
+            The deterministic resolver could not apply a bot issue — either missing metadata or an unresolvable field. Your job is to:
+            1. Verify the proposed changes against official provider sources
+            2. Cross-check every numeric field against the sync_models (LiteLLM) reference catalog and explicitly document any deviation with a source URL and reason
+            3. Produce an updated issue body with fully verified metadata so the resolver can retry and open a PR
+
+            This is a verification and documentation step, not just gap-filling.
 
             # Inputs
 
             - Issue title: `${{ steps.issue.outputs.title }}`
             - Issue URL: `${{ steps.issue.outputs.url }}`
-            - Original issue body file: `${{ runner.temp }}/fix-missing-model-bot-issue-body.md`
-            - Output enriched body file: `${{ runner.temp }}/fix-missing-model-bot-issue-body.enriched.md`
-            - Initial resolver result: `${{ steps.result_initial.outputs.message }}`
+            - Original issue body: `${{ runner.temp }}/fix-missing-model-bot-issue-body.md`
+            - Output file (write enriched body here): `${{ runner.temp }}/fix-missing-model-bot-issue-body.enriched.md`
+            - Why the resolver failed: `${{ steps.result_initial.outputs.message }}`
 
-            # Local files to inspect first
+            # Local files to read first
 
-            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/scripts/fix_bot_issue.ts` — read this to understand exactly what fields the resolver requires and what caused it to bail
+            - `packages/proxy/schema/model_list.json` — use neighboring entries as the style reference for a complete spec
             - `packages/proxy/schema/index.ts`
             - `packages/proxy/schema/models.ts`
-            - `packages/proxy/scripts/fix_bot_issue.ts`
 
-            # What to do
+            # Process
 
-            1. Read the original issue body file.
-            2. Use the official source URLs already on the issue first.
-            3. If needed, search additional official provider docs or official provider API references to verify the model metadata.
-            4. Re-verify that each provider/model relationship in the issue is actually on the provider's public shared inference surface. Ignore bring-your-own-model flows, bring-your-own-deployment flows, template galleries, self-hosted guides, private deployments, dedicated deployments, or docs that only explain how a user can deploy their own copy of a model.
-            5. If a provider does not publicly list the model on its general inference or serverless endpoint, do not keep or add that provider relationship in the enriched metadata. For Baseten specifically, ignore custom deployment or template-only Gemma support when re-verifying.
-            6. Never add new models that are not already named in the issue title, issue body, or existing machine-readable metadata block.
-            7. If a multi-model issue is only partially valid after re-verification, do not shrink the issue to a verified subset. Instead, leave the original issue body unchanged so the deterministic resolver will continue to bail, and explain in `## Verification` which models failed validation and why.
-            8. Build the most complete verified catalog payload you can for each model already targeted by the issue, not just the initially missing field. Verify and include all relevant fields that official sources support, such as:
-               - format and flavor
-               - display name
-               - parent for non-base dated snapshots or location-scoped variants, plus replacement relationships when applicable
-               - available providers and provider mapping
-               - all applicable token limits and context limits
-               - all applicable pricing fields in the local schema
-               - deprecation/retirement status and dates
-               - reasoning, multimodal, and other capability flags when they map cleanly to the local schema
-               - locations and supported regions when required
-            9. Match local catalog conventions and style in `model_list.json` and `index.ts`, using neighboring entries as the reference for how a complete, up-to-date spec should look.
-            10. If a field is not published, not applicable, or cannot be verified confidently, do not guess it. Call that out explicitly in the verification note.
-            11. Re-verify the information already present on the issue against official sources, go deeper on token limits and pricing when needed, and add the metadata needed for the retry to resolve cleanly, including `displayName` and `parent` when they are officially verifiable.
-            12. Stay within the issue's intended scope. Do not broaden the issue to unrelated providers or unrelated models, even if you notice additional gaps while researching.
-            13. If you can verify enough metadata to let the resolver proceed safely, add a short `## Verification` section that links the exact source URLs used and notes which fields were verified, updated, not applicable, or still unavailable, then append a single `<!-- fix-bot-issue-metadata -->` JSON block to the enriched output file.
-            14. If you cannot verify enough metadata to improve the issue safely, write the original issue body unchanged to the enriched output file.
+            1. Read `fix_bot_issue.ts` and the resolver failure message to identify exactly which field(s) caused the bail. Focus your research on those fields first.
+            2. Read the original issue body and note the official source URLs already listed.
+            3. Fetch those URLs first. Search additional official provider docs or APIs only if the listed sources don't provide the missing field.
+            4. For each model in the issue, build the most complete verified spec you can — not just the missing field. Verify all fields that official sources support:
+               - `format`, `flavor`, `displayName`
+               - `parent` when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json` — patterns include: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`), `@NNN`/`-vN` versioned snapshots, location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI)
+               - `available_providers` and provider mapping
+               - `max_input_tokens`, `max_output_tokens`, and other token/context limits
+               - pricing fields (input, output, cache — use on-demand public pricing only)
+               - `deprecation`/`retirement` status and dates
+               - capability flags (`reasoning`, multimodal, etc.) when they map cleanly to the local schema
+               - `locations` and supported regions when required
+            5. **Cross-check against sync_models**: Fetch the sync_models reference catalog at `https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json`. For each numeric field in your proposed spec (token limits, pricing), compare it against the sync_models value for the same model. In the `## Verification` section, for every field that differs from sync_models, you must:
+               - State the sync_models value explicitly
+               - State the official source URL that justifies the deviation
+               - Briefly explain why the official source should be preferred (e.g., sync_models lags, collapses aliases, or has an incorrect mapping)
+               - If you cannot cite an official source that justifies a deviation, use the sync_models value or omit the field instead of overriding silently
+            6. Re-verify provider/model relationships: only keep providers where the model appears on the provider's public shared inference surface (serverless, general catalog). Ignore bring-your-own-model flows, custom deployments, template galleries, and self-hosted guides. For Baseten, ignore custom-deployment-only evidence.
+            7. Match the style of neighboring entries in `model_list.json` and `index.ts` for a complete, up-to-date spec.
+            8. Do not add models not already named in the issue. Do not broaden scope to other providers or models.
+            9. If a multi-model issue is only partially valid, do not shrink it to a verified subset — write the original body unchanged and explain in `## Verification` which models failed and why, so the resolver continues to bail rather than applying a partial fix.
+            10. Do not guess any field. If a value is not published or not applicable, omit it and note it in the verification section.
+
+            # Output
+
+            **If you can verify enough metadata for the resolver to proceed:**
+            Write the full enriched issue body to the output file. Include:
+            - A `## Verification` section with:
+              - Each official source URL and which fields it verified
+              - For each field that deviates from sync_models: the sync_models value, the proposed value, the source URL justifying the deviation, and why it is preferred
+              - Fields that were not published or not applicable
+            - A single `<!-- fix-bot-issue-metadata -->` JSON block with a fully populated `model_specs` map
+
+            **If you cannot verify enough to improve the issue safely:**
+            Write the original issue body unchanged to the output file.
+
+            The output file must contain the full issue body text, not just the JSON block.
 
             # Constraints
 
-            - Do not edit repository files.
+            - Do not edit repository source files.
             - Do not create or update GitHub issues, comments, or pull requests.
-            - Do not invent values or use third-party aggregators as the source of truth.
-            - Prefer a fully populated `model_specs` map for multi-model issues.
-            - The goal is to make the downstream fix step produce a complete, current model entry, not a minimal patch.
-            - The output file must contain the full issue body text, not just the JSON block.
+            - Do not use third-party aggregators as the source of truth.
+            - Do not invent values.
 
       - name: Ensure enriched body file exists
         if: steps.result_initial.outputs.action == 'unsupported'
@@ -308,6 +325,36 @@ jobs:
             --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md" \
             --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.retry.json" \
             --write
+
+      - name: Extract verification section from enriched issue body
+        id: verification
+        if: steps.issue.outputs.found == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          enriched="$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md"
+          if [ ! -f "$enriched" ]; then
+            {
+              echo "section<<VEOF"
+              echo "_No LLM verification step ran — model metadata was already complete in the issue._"
+              echo "VEOF"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          section=$(awk '
+            /^## Verification/{found=1}
+            found && /^## / && !/^## Verification/{exit}
+            found && /<!-- fix-bot-issue-metadata -->/{exit}
+            found{print}
+          ' "$enriched")
+          if [ -z "$section" ]; then
+            section="_No Verification section found in enriched issue body._"
+          fi
+          {
+            echo "section<<VEOF"
+            printf '%s\n' "$section"
+            echo "VEOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Read final fix result
         id: result
@@ -370,8 +417,8 @@ jobs:
             const liteLLMTable =
               liteLLMRows.length > 0
                 ? [
-                    "| Model | Field | Proposed update | sync_models | sync_models source models | Why sync_models may be wrong | Official verification |",
-                    "| --- | --- | --- | --- | --- | --- | --- |",
+                    "| Model | Field | Proposed update | sync_models | sync_models source models |",
+                    "| --- | --- | --- | --- | --- |",
                     ...liteLLMRows.map((row) =>
                       [
                         row.model,
@@ -379,8 +426,6 @@ jobs:
                         row.proposed_value,
                         row.sync_models_value,
                         row.sync_models_models,
-                        row.explanation,
-                        sourceLinks(row.verification_urls || []),
                       ]
                         .map((value) => escapeCell(value))
                         .join(" | "),
@@ -460,6 +505,10 @@ jobs:
             **Verified metadata**
 
             ${{ steps.result.outputs.pr_verification_table }}
+
+            **Verification notes**
+
+            ${{ steps.verification.outputs.section }}
 
             **sync_models vs proposed update**
 

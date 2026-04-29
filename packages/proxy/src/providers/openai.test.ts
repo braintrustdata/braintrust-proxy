@@ -310,6 +310,75 @@ it("falls back to provider base URL when metadata.api_base is not a string", asy
   expect(requests[0].url).toBe("https://api.openai.com/v1/chat/completions");
 });
 
+it("uses custom api base when routing appropriate models through responses", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-5.5",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "litellm",
+        secret: "sk-fake-key",
+        metadata: {
+          api_base: "http://test.com/v1",
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("http://test.com/v1/responses");
+  expect(requests[0].headers.authorization).toBe("Bearer sk-fake-key");
+  expect(requests[0].body).toMatchObject({
+    model: "gpt-5.5",
+    input: [
+      {
+        content: "hello",
+        role: "user",
+        type: "message",
+      },
+    ],
+  });
+});
+
+it("handles /responses as endpoint_path", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<Record<string, unknown>, Record<string, unknown>>({
+    url: "/responses",
+    body: {
+      model: "gpt-5.5",
+      input: "hello",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "litellm",
+        secret: "sk-fake-key",
+        metadata: {
+          api_base: "http://test.com/v1",
+          endpoint_path: "/responses",
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("http://test.com/v1/responses");
+  expect(requests[0].headers.authorization).toBe("Bearer sk-fake-key");
+  expect(requests[0].body).toMatchObject({
+    model: "gpt-5.5",
+    input: "hello",
+  });
+});
+
 it("uses model path for azure when metadata.deployment is non-string", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

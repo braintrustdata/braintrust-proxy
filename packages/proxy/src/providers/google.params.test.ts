@@ -7,6 +7,25 @@ import {
 
 describe("Google parameter translation (captureOnly)", () => {
   describe("basic generation config params", () => {
+    it("should send x-goog-api-key on direct Google requests", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [{ role: "user", content: "Say hello" }],
+          stream: false,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].headers["x-goog-api-key"]).toBeDefined();
+    });
+
     it("should translate temperature", async () => {
       const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

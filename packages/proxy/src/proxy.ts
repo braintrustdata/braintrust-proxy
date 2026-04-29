@@ -163,6 +163,8 @@ const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
 const GOOGLE_URL_REGEX =
   /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
 
+const GOOGLE_API_KEY_HEADER = "x-goog-api-key";
+
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
@@ -3201,11 +3203,11 @@ async function fetchGoogleGenerateContent({
       if (method === "streamGenerateContent") {
         url.searchParams.set("alt", "sse");
       }
-      url.searchParams.set("key", secret.secret);
       return await fetch(url, {
         method: "POST",
         headers: {
           "content-type": "application/json",
+          [GOOGLE_API_KEY_HEADER]: secret.secret,
         },
         body: JSON.stringify(body),
         signal,
@@ -3347,8 +3349,8 @@ async function fetchGoogleChatCompletions({
           streamingMode ? "streamGenerateContent" : "generateContent"
         }`,
     );
-    fullURL.searchParams.set("key", secret.secret);
     delete headers["authorization"];
+    headers[GOOGLE_API_KEY_HEADER] = secret.secret;
   } else {
     // secret.type === "vertex"
     const { baseUrl, accessToken } = await vertexEndpointInfo({

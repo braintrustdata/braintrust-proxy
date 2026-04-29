@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
+  canonicalizeLocalModelsContent,
   convertRemoteToLocalModel,
+  findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getUpdatedAvailableProviders,
   isSupportedRemoteModel,
@@ -70,6 +72,65 @@ describe("sync_models", () => {
     expect(models["accounts/fireworks/models/glm-4p5-air"]).toEqual(
       canonicalFireworksModel,
     );
+  });
+
+  it("canonicalizes duplicate JSON keys before the DTS build sees them", () => {
+    const { canonicalContent, models, renamedKeys } =
+      canonicalizeLocalModelsContent(`{
+  "test-model": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Old name",
+    "displayName": "New name",
+    "parent": "old-parent",
+    "parent": "new-parent"
+  }
+}
+`);
+
+    expect(renamedKeys).toEqual([]);
+    expect(models["test-model"]).toEqual({
+      format: "openai",
+      flavor: "chat",
+      displayName: "New name",
+      parent: "new-parent",
+    });
+    expect(canonicalContent).toBe(`{
+  "test-model": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "New name",
+    "parent": "new-parent"
+  }
+}
+`);
+  });
+
+  it("detects duplicate JSON keys without rewriting already-valid files", () => {
+    expect(
+      findDuplicateJsonKeys(`{
+  "test-model": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Old name",
+    "displayName": "New name",
+    "parent": "old-parent",
+    "parent": "new-parent"
+  }
+}
+`),
+    ).toEqual(["test-model.displayName", "test-model.parent"]);
+
+    expect(
+      findDuplicateJsonKeys(`{
+  "test-model": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Only name"
+  }
+}
+`),
+    ).toEqual([]);
   });
 
   it("normalizes provider mapping files to a single trailing newline", () => {

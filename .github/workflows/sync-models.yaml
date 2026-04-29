@@ -126,6 +126,7 @@ jobs:
             4. Update only `packages/proxy/schema/model_list.json`.
             5. Preserve existing JSON formatting, field order, and neighboring naming conventions.
             6. Only modify `displayName` and `parent`. Do not change pricing, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
+            6a. When updating `displayName` or `parent`, replace any existing key in place. Never leave duplicate JSON properties in a model entry.
             7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
             8. Set `parent` only when official sources explicitly document a relationship between this model id and a stable base alias, and the parent model id already exists in `model_list.json`. Do not set `parent` based on inference alone.
             9. Consider `parent` for any of these verified relationship patterns — check official docs for each:
@@ -145,6 +146,10 @@ jobs:
             - Do not edit any file other than `packages/proxy/schema/model_list.json`.
             - Use official provider sources only for metadata decisions.
             - Do not invent placeholder values.
+
+      - name: Canonicalize model list after metadata enrichment
+        if: ${{ steps.changed_models.outputs.count != '0' }}
+        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check expected files only
         id: changes

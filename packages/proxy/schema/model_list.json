@@ -4718,7 +4718,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
-    "displayName": "Devstral 2",
+    "displayName": "Devstral 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4873,6 +4873,7 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
     "parent": "codestral-latest",
+    "displayName": "Codestral 2508",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -4945,7 +4946,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
-    "displayName": "Ministral 3 14B",
+    "displayName": "Ministral 14B 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4958,6 +4959,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "parent": "ministral-8b-latest",
+    "displayName": "Ministral 8B 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4970,6 +4972,7 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "parent": "ministral-3b-latest",
+    "displayName": "Ministral 3B 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5251,6 +5254,7 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
     "parent": "mistral-large-latest",
+    "displayName": "Mistral Large 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5263,6 +5267,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "parent": "mistral-small-latest",
+    "displayName": "Mistral Small 2603",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"

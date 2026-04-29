@@ -1973,15 +1973,19 @@ async function collectStream(stream: ReadableStream<Uint8Array>): Promise<any> {
 }
 
 async function fetchOpenAIResponsesTranslate({
+  baseURL,
   headers,
   body,
   signal,
+  fetch,
 }: {
+  baseURL: string;
   headers: Record<string, string>;
   body: ChatCompletionCreateParams;
   signal: AbortSignal | undefined;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch(new URL(_urljoin(baseURL, "responses")), {
     method: "POST",
     headers,
     body: JSON.stringify(responsesRequestFromChatCompletionsRequest(body)),
@@ -2016,20 +2020,24 @@ async function fetchOpenAIResponsesTranslate({
 }
 
 async function fetchOpenAIResponses({
+  url,
   headers,
   body,
   signal,
+  fetch,
 }: {
+  url: URL;
   headers: Record<string, string>;
   body: ResponseCreateParams;
   signal: AbortSignal | undefined;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   // We allow users to set a seed, to enable caching, but Responses API itself does not.
   if ("seed" in body && body.seed !== undefined) {
     delete body.seed;
   }
 
-  const response = await fetch("https://api.openai.com/v1/responses", {
+  const response = await fetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -2070,6 +2078,7 @@ async function fetchOpenAI(
   }
 
   let fullURL: URL | null | undefined = undefined;
+  let baseURL: string | null = null;
   let bearerToken: string | null | undefined = undefined;
 
   if (secret.type === "vertex") {
@@ -2093,7 +2102,7 @@ async function fetchOpenAI(
       modelSpec,
       defaultLocation: "us-central1",
     });
-    const baseURL = getVertexBaseUrl(api_base, resolvedLocation);
+    baseURL = getVertexBaseUrl(api_base, resolvedLocation);
 
     if (
       bodyData?.model?.startsWith("publishers/meta") ||
@@ -2133,7 +2142,7 @@ async function fetchOpenAI(
       typeof secret.metadata.api_base === "string"
         ? secret.metadata.api_base
         : undefined;
-    let baseURL = metadataApiBase || EndpointProviderToBaseURL[secret.type];
+    baseURL = metadataApiBase || EndpointProviderToBaseURL[secret.type];
     if (baseURL === null) {
       throw new ProxyBadRequestError(
         `Unsupported provider ${secret.name} (${secret.type}) (must specify base url)`,
@@ -2269,9 +2278,11 @@ async function fetchOpenAI(
 
   if (url === "/responses") {
     return fetchOpenAIResponses({
+      url: fullURL,
       headers,
       body: bodyData,
       signal,
+      fetch,
     });
   }
 
@@ -2341,9 +2352,11 @@ async function fetchOpenAI(
 
   if (shouldRouteChatToResponses) {
     return fetchOpenAIResponsesTranslate({
+      baseURL,
       headers,
       body: bodyData,
       signal,
+      fetch,
     });
   }
 

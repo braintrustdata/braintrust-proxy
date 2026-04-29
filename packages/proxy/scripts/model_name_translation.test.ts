@@ -46,6 +46,23 @@ describe("translateToBraintrust", () => {
     ).toBe(false);
   });
 
+  it("rejects embedding bucket entries even without provider metadata", () => {
+    expect(
+      isSupportedTranslatedModelName("fireworks-ai-embedding-150m-to-350m"),
+    ).toBe(false);
+    expect(isSupportedTranslatedModelName("text-embedding-3-large")).toBe(
+      false,
+    );
+  });
+
+  it("rejects embedding-style model ids with embed segments", () => {
+    expect(
+      isSupportedTranslatedModelName(
+        "fireworks_ai/nomic-ai/nomic-embed-text-v1",
+      ),
+    ).toBe(false);
+  });
+
   it("accepts concrete Fireworks model ids", () => {
     expect(
       isSupportedTranslatedModelName(

@@ -1,6 +1,7 @@
 import fs from "fs";
 import https from "https";
 import path from "path";
+import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
@@ -21,6 +22,7 @@ import {
 } from "../schema/models";
 
 const partialModelSchema = ModelSchema.partial();
+export const UPCOMING_DEPRECATION_WINDOW_DAYS = 90;
 const issueMetadataSchema = z.object({
   kind: z.enum(["missing_model", "stale_metadata"]).optional(),
   provider: z.string().optional(),
@@ -58,6 +60,8 @@ const fixResultSchema = z.object({
     .array(
       z.object({
         model: z.string(),
+        display_name: z.string().optional(),
+        parent: z.string().optional(),
         format: z.string(),
         flavor: z.string(),
         providers: z.string(),
@@ -72,9 +76,10 @@ const fixResultSchema = z.object({
     .array(
       z.object({
         model: z.string(),
-        litellm_models: z.string(),
-        status: z.string(),
-        details: z.string(),
+        field: z.string(),
+        proposed_value: z.string(),
+        sync_models_value: z.string(),
+        sync_models_models: z.string(),
       }),
     )
     .optional(),
@@ -134,7 +139,6 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
 const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
 const LITELLM_REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
-const DATE_SUFFIX_PATTERN = /^(.*)-(\d{4}-\d{2}-\d{2})$/;
 const PROVIDER_CAPTURE_GROUP =
   "(OpenAI|Anthropic|Azure|Google|Vertex|AWS Bedrock|Bedrock|Groq|Mistral|xAI|Together|Fireworks|Databricks|Cerebras|Perplexity)";
 const BOT_ISSUE_TITLE_PATTERN = new RegExp(
@@ -398,6 +402,8 @@ function buildVerificationRows(
   models: Array<{ name: string; model: ModelSpec }>,
 ): Array<{
   model: string;
+  display_name?: string;
+  parent?: string;
   format: string;
   flavor: string;
   providers: string;
@@ -461,6 +467,8 @@ function buildVerificationRows(
 
     return {
       model: name,
+      ...(model.displayName ? { display_name: model.displayName } : {}),
+      ...(model.parent ? { parent: model.parent } : {}),
       format: model.format,
       flavor: model.flavor,
       providers,
@@ -630,7 +638,13 @@ function compareLiteLLMField(args: {
   field: string;
   localValue: number | string | undefined | null;
   litellmValue: number | string | undefined | null;
-}): string | null {
+}): {
+  field: string;
+  localMissing: boolean;
+  litellmMissing: boolean;
+  localValue: number | string | undefined | null;
+  litellmValue: number | string | undefined | null;
+} | null {
   const { field, localValue, litellmValue } = args;
   const localMissing = localValue === undefined || localValue === null;
   const litellmMissing = litellmValue === undefined || litellmValue === null;
@@ -652,11 +666,27 @@ function compareLiteLLMField(args: {
     return null;
   }
 
-  return `${field}: provider=${localMissing ? "n/a" : String(localValue)}, sync_models=${litellmMissing ? "n/a" : String(litellmValue)}`;
+  return {
+    field,
+    localMissing,
+    litellmMissing,
+    localValue,
+    litellmValue,
+  };
+}
+
+function formatComparisonValue(
+  value: number | string | undefined | null,
+): string {
+  if (value === undefined || value === null) {
+    return "n/a";
+  }
+  return String(value);
 }
 
 async function buildLiteLLMComparison(args: {
   models: Array<{ name: string; model: ModelSpec }>;
+  sourceUrls: string[];
 }): Promise<{
   summary?: string;
   rows?: LiteLLMComparisonRow[];
@@ -675,10 +705,10 @@ async function buildLiteLLMComparison(args: {
       if (!remoteEntry) {
         rows.push({
           model: name,
-          litellm_models: "None",
-          status: "missing in sync_models",
-          details:
-            "No translated sync_models reference entry matched this model name.",
+          field: "catalog entry",
+          proposed_value: "present",
+          sync_models_value: "missing",
+          sync_models_models: "None",
         });
         continue;
       }
@@ -723,18 +753,26 @@ async function buildLiteLLMComparison(args: {
           localValue: model.deprecation_date,
           litellmValue: remoteEntry.remoteModel.deprecation_date,
         }),
-      ].filter((difference): difference is string => difference !== null);
+      ].filter(
+        (
+          difference,
+        ): difference is NonNullable<ReturnType<typeof compareLiteLLMField>> =>
+          difference !== null,
+      );
 
       if (differences.length === 0) {
         continue;
       }
 
-      rows.push({
-        model: name,
-        litellm_models: remoteEntry.remoteModelNames.join(", "),
-        status: "differs",
-        details: differences.join("; "),
-      });
+      for (const difference of differences) {
+        rows.push({
+          model: name,
+          field: difference.field,
+          proposed_value: formatComparisonValue(difference.localValue),
+          sync_models_value: formatComparisonValue(difference.litellmValue),
+          sync_models_models: remoteEntry.remoteModelNames.join(", "),
+        });
+      }
     }
 
     if (rows.length === 0) {
@@ -784,6 +822,8 @@ function buildUnsupportedTicketComment(args: {
     "",
     `To make autofix work on a future run, update the machine-readable metadata block for this ${args.issueKind === "stale_metadata" ? "stale metadata" : "missing model"} issue and include the verified fields needed for the catalog change, such as:`,
     "- `model_spec` for single-model issues or `model_specs` for multi-model issues",
+    "- `displayName`",
+    "- `parent` for non-base dated snapshots or location-scoped variants when official sources verify the relationship",
     "- pricing fields",
     "- `max_input_tokens`",
     "- `max_output_tokens`",
@@ -807,7 +847,11 @@ function sortLocations(values: string[]): string[] {
   });
 }
 
-function isPastDate(value?: string): boolean {
+export function isDateWithinDays(
+  value: string | undefined | null,
+  days: number,
+  now = new Date(),
+): boolean {
   if (!value) {
     return false;
   }
@@ -815,7 +859,7 @@ function isPastDate(value?: string): boolean {
   if (Number.isNaN(timestamp)) {
     return false;
   }
-  return timestamp < Date.now();
+  return timestamp <= now.getTime() + days * 24 * 60 * 60 * 1000;
 }
 
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
@@ -863,67 +907,9 @@ function providersForName(providerName?: string): ModelEndpointType[] {
   return [];
 }
 
-function getSnapshotParent(modelName: string): string | null {
-  const match = modelName.match(DATE_SUFFIX_PATTERN);
-  if (!match) {
-    return null;
-  }
-  return match[1];
-}
-
-function formatDisplayToken(token: string): string {
-  if (token.toLowerCase() === "gpt") {
-    return "GPT";
-  }
-  if (token.toLowerCase() === "ai") {
-    return "AI";
-  }
-  if (token.toLowerCase() === "api") {
-    return "API";
-  }
-  if (token.length === 0) {
-    return token;
-  }
-  return token[0].toUpperCase() + token.slice(1);
-}
-
-function buildDisplayName(modelName: string): string | undefined {
-  const snapshotParent = getSnapshotParent(modelName);
-  const baseName = snapshotParent ?? modelName;
-  const baseLeafParts = baseName.split("/");
-  const baseLeaf = baseLeafParts[baseLeafParts.length - 1];
-  if (!baseLeaf) {
-    return undefined;
-  }
-
-  const pieces = baseLeaf.split("-").filter(Boolean);
-  if (pieces.length === 0) {
-    return undefined;
-  }
-
-  let formattedName = "";
-  if (pieces[0].toLowerCase() === "gpt" && pieces[1]) {
-    const remaining = pieces.slice(2).map(formatDisplayToken);
-    formattedName = [`GPT-${pieces[1]}`, ...remaining].join(" ");
-  } else {
-    formattedName = pieces.map(formatDisplayToken).join(" ");
-  }
-
-  if (!snapshotParent) {
-    return formattedName;
-  }
-
-  const snapshotMatch = modelName.match(DATE_SUFFIX_PATTERN);
-  if (!snapshotMatch) {
-    return formattedName;
-  }
-
-  return `${formattedName} (${snapshotMatch[2]})`;
-}
-
 function deriveInsertionPrefixes(modelName: string): string[] {
   const prefixes: string[] = [];
-  let current = getSnapshotParent(modelName) ?? modelName;
+  let current = modelName;
 
   while (current.length > 0) {
     if (!prefixes.includes(current)) {
@@ -1405,16 +1391,6 @@ function buildManualModelSpec(
     model.available_providers = fallbackProviders;
   }
 
-  const parent = getSnapshotParent(modelName);
-  if (parent) {
-    model.parent = parent;
-  }
-
-  const displayName = buildDisplayName(modelName);
-  if (displayName) {
-    model.displayName = displayName;
-  }
-
   applyModelSpecPatch(model, modelSpecPatch);
   return model;
 }
@@ -1447,15 +1423,30 @@ function shouldCloseAsDeprecated(
     return true;
   }
 
-  if (isPastDate(metadata?.deprecation_date)) {
+  if (
+    isDateWithinDays(
+      metadata?.deprecation_date,
+      UPCOMING_DEPRECATION_WINDOW_DAYS,
+    )
+  ) {
     return true;
   }
 
-  if (isPastDate(modelSpecPatch?.deprecation_date)) {
+  if (
+    isDateWithinDays(
+      modelSpecPatch?.deprecation_date,
+      UPCOMING_DEPRECATION_WINDOW_DAYS,
+    )
+  ) {
     return true;
   }
 
-  if (isPastDate(aliasedModel?.deprecation_date)) {
+  if (
+    isDateWithinDays(
+      aliasedModel?.deprecation_date,
+      UPCOMING_DEPRECATION_WINDOW_DAYS,
+    )
+  ) {
     return true;
   }
 
@@ -1552,6 +1543,14 @@ function buildModelsForIssue(
   const aliasSource = parsedIssue.aliasTargets[targetModel];
   if (aliasSource && localModels[aliasSource]) {
     const model = cloneLocalModel(localModels[aliasSource]);
+    const modelSpecPatch = getModelSpecPatch(parsedIssue.metadata, targetModel);
+    applyModelSpecPatch(model, modelSpecPatch);
+    if (!modelSpecPatch?.displayName) {
+      delete model.displayName;
+    }
+    if (!modelSpecPatch?.parent) {
+      delete model.parent;
+    }
     return [{ name: targetModel, model }];
   }
 
@@ -1667,7 +1666,7 @@ async function resolveIssueCommand(argv: {
   if (modelsToResolve.length === 0) {
     await writeResult(argv.resultPath, {
       action: "deprecated",
-      message: `Closing this bot issue because ${formatModelList(modelsToEvaluate)} ${modelsToEvaluate.length === 1 ? "is" : "are"} already deprecated, retired, or too old to keep changing in the active model catalog.`,
+      message: `Closing this bot issue because ${formatModelList(modelsToEvaluate)} ${modelsToEvaluate.length === 1 ? "is" : "are"} already deprecated, retired, or scheduled to deprecate within ${UPCOMING_DEPRECATION_WINDOW_DAYS} days, so ${modelsToEvaluate.length === 1 ? "it is" : "they are"} not actionable additions to the active model catalog.`,
       provider: parsedIssue.provider,
       model: primaryModel,
       changed_models: [],
@@ -1807,6 +1806,7 @@ async function resolveIssueCommand(argv: {
 
   const liteLLMComparison = await buildLiteLLMComparison({
     models: changedModelEntries,
+    sourceUrls,
   });
 
   await writeResult(argv.resultPath, {
@@ -1823,7 +1823,7 @@ async function resolveIssueCommand(argv: {
         ? `Already present: ${formatModelList(existingModels)}.`
         : "",
       deprecatedModels.length > 0
-        ? `Skipped deprecated/old models: ${formatModelList(deprecatedModels)}.`
+        ? `Skipped deprecated or near-deprecation models: ${formatModelList(deprecatedModels)}.`
         : "",
     ]
       .filter((line) => line.length > 0)
@@ -1901,7 +1901,10 @@ async function main(): Promise<void> {
     .parseAsync();
 }
 
-void main().catch((error: unknown) => {
-  console.error(errorMessage(error));
-  process.exit(1);
-});
+const entryPointPath = process.argv[1];
+if (entryPointPath && import.meta.url === pathToFileURL(entryPointPath).href) {
+  void main().catch((error: unknown) => {
+    console.error(errorMessage(error));
+    process.exit(1);
+  });
+}

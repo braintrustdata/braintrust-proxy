@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Proxy repo allowlist"
+paths = [
+  '''(^|/)pnpm-lock\.yaml$''',
+]

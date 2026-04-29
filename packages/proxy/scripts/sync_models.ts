@@ -8,6 +8,7 @@ import { exec, spawn } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
 import { ModelSchema, ModelSpec } from "../schema/models";
+import ts from "typescript";
 import {
   canonicalizeLocalModelName,
   getEquivalentLocalModelNames,
@@ -101,6 +102,12 @@ type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
 type LocalModelDetail = ModelSpec; // Use ModelSpec from schema/models.ts
 type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schema/models.ts
 
+export function isSupportedRemoteModel(
+  remoteModel: LiteLLMModelDetail,
+): boolean {
+  return remoteModel.mode !== "embedding";
+}
+
 const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
   "../schema/model_list.json",
@@ -159,9 +166,7 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
-    const localData = JSON.parse(fileContent);
-    // Validate local data with the imported ModelSchema
-    return z.record(ModelSchema).parse(localData);
+    return canonicalizeLocalModelsContent(fileContent).models;
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error(
@@ -174,6 +179,84 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
       "Failed to read or parse local model list: " + (error as Error).message,
     );
   }
+}
+
+type CanonicalizedLocalModels = {
+  models: LocalModelList;
+  renamedKeys: Array<{ from: string; to: string }>;
+  canonicalContent: string;
+};
+
+export function canonicalizeLocalModelsContent(
+  fileContent: string,
+): CanonicalizedLocalModels {
+  const localData = JSON.parse(fileContent);
+  const parsedModels = z.record(ModelSchema).parse(localData);
+  const normalizedLocalData = normalizeLocalModels(parsedModels);
+  const reorderedModels = reorderModelProperties(normalizedLocalData.models);
+
+  return {
+    models: reorderedModels,
+    renamedKeys: normalizedLocalData.renamedKeys,
+    canonicalContent: JSON.stringify(reorderedModels, null, 2) + "\n",
+  };
+}
+
+function getJsonPropertyName(name: ts.PropertyName): string | undefined {
+  if (ts.isIdentifier(name) || ts.isStringLiteral(name)) {
+    return name.text;
+  }
+
+  if (ts.isNumericLiteral(name)) {
+    return name.text;
+  }
+
+  return undefined;
+}
+
+export function findDuplicateJsonKeys(fileContent: string): string[] {
+  const sourceFile = ts.parseJsonText(LOCAL_MODEL_LIST_PATH, fileContent);
+  const [statement] = sourceFile.statements;
+  if (!statement || !ts.isExpressionStatement(statement)) {
+    return [];
+  }
+
+  const duplicates: string[] = [];
+
+  const visit = (node: ts.Node, path: string[]) => {
+    if (ts.isObjectLiteralExpression(node)) {
+      const seenKeys = new Set<string>();
+      for (const property of node.properties) {
+        if (!ts.isPropertyAssignment(property)) {
+          continue;
+        }
+
+        const propertyName = getJsonPropertyName(property.name);
+        if (!propertyName) {
+          continue;
+        }
+
+        const propertyPath = [...path, propertyName].join(".");
+        if (seenKeys.has(propertyName)) {
+          duplicates.push(propertyPath);
+        } else {
+          seenKeys.add(propertyName);
+        }
+
+        visit(property.initializer, [...path, propertyName]);
+      }
+      return;
+    }
+
+    if (ts.isArrayLiteralExpression(node)) {
+      node.elements.forEach((element, index) => {
+        visit(element, [...path, String(index)]);
+      });
+    }
+  };
+
+  visit(statement.expression, []);
+  return duplicates;
 }
 
 type ResolvedRemoteEntry = {
@@ -205,6 +288,9 @@ function resolveRemoteModels(
     const remoteModel = remoteModels[remoteModelName];
 
     if (!matchesProviderFilter(remoteModelName, remoteModel, providerFilter)) {
+      continue;
+    }
+    if (!isSupportedRemoteModel(remoteModel)) {
       continue;
     }
 
@@ -798,7 +884,10 @@ async function findMissingCommand(argv: any) {
     const filteredRemoteModels: LiteLLMModelList = {};
 
     for (const [remoteModelName, remoteModel] of Object.entries(remoteModels)) {
-      if (matchesProviderFilter(remoteModelName, remoteModel, argv.provider)) {
+      if (
+        matchesProviderFilter(remoteModelName, remoteModel, argv.provider) &&
+        isSupportedRemoteModel(remoteModel)
+      ) {
         filteredRemoteModels[remoteModelName] = remoteModel;
       }
     }
@@ -1558,12 +1647,17 @@ async function addModelsCommand(argv: any) {
 async function normalizeLocalModelsCommand(argv: any) {
   try {
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
-    const normalizedLocalData = normalizeLocalModels(
-      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    const rawLocalModelContent = await fs.promises.readFile(
+      LOCAL_MODEL_LIST_PATH,
+      "utf-8",
     );
-    const renamedKeys = normalizedLocalData.renamedKeys;
+    const canonicalizedLocalModels =
+      canonicalizeLocalModelsContent(rawLocalModelContent);
+    const renamedKeys = canonicalizedLocalModels.renamedKeys;
+    const duplicateJsonKeys = findDuplicateJsonKeys(rawLocalModelContent);
+    const needsRewrite = renamedKeys.length > 0 || duplicateJsonKeys.length > 0;
 
-    if (renamedKeys.length === 0) {
+    if (renamedKeys.length === 0 && !needsRewrite) {
       console.log("No local model keys needed normalization.");
       if (argv.write) {
         await normalizeProviderMappingsFile();
@@ -1576,6 +1670,20 @@ async function normalizeLocalModelsCommand(argv: any) {
       console.log(`  ${from} -> ${to}`);
     }
 
+    if (duplicateJsonKeys.length > 0) {
+      console.log(
+        `Found ${duplicateJsonKeys.length} duplicate JSON key occurrences that would be removed:`,
+      );
+      for (const duplicateKey of duplicateJsonKeys.slice(0, 10)) {
+        console.log(`  ${duplicateKey}`);
+      }
+      if (duplicateJsonKeys.length > 10) {
+        console.log(
+          `  ...and ${duplicateJsonKeys.length - 10} more duplicate key occurrences`,
+        );
+      }
+    }
+
     if (!argv.write) {
       console.log(
         "\n📋 To actually rewrite the local catalog, run with --write flag",
@@ -1583,9 +1691,14 @@ async function normalizeLocalModelsCommand(argv: any) {
       return;
     }
 
-    await writeLocalModels(normalizedLocalData.models);
+    await fs.promises.writeFile(
+      LOCAL_MODEL_LIST_PATH,
+      canonicalizedLocalModels.canonicalContent,
+    );
     await normalizeProviderMappingsFile();
-    console.log(`\n✅ Normalized ${renamedKeys.length} local model keys.`);
+    console.log(
+      `\n✅ Canonicalized local model catalog${renamedKeys.length > 0 ? ` and normalized ${renamedKeys.length} local model keys` : ""}.`,
+    );
   } catch (error) {
     console.error("Error during normalize-local-models command:", error);
     process.exit(1);
@@ -1596,11 +1709,12 @@ async function main() {
   await yargs(hideBin(process.argv))
     .command(
       "normalize-local-models",
-      "Normalize legacy local model ids to their canonical form",
+      "Normalize legacy local model ids and canonicalize model_list.json",
       (y) => {
         return y.option("write", {
           type: "boolean",
-          description: "Write normalized local model ids back to disk",
+          description:
+            "Write canonicalized local model ids and JSON content back to disk",
           default: false,
         });
       },

@@ -12,6 +12,9 @@ const PREFIXED_PROVIDERS = new Set([
   "baseten",
 ]);
 
+const EMBEDDING_MODEL_NAME_PATTERN =
+  /(^|[\/:_-])(embedding|embed)(?=($|[\/:_-]))/i;
+
 export function translateToBraintrust(
   modelName: string,
   provider?: string,
@@ -69,6 +72,10 @@ export function isSupportedTranslatedModelName(
   provider?: string,
 ): boolean {
   if (!modelName || modelName.endsWith("/")) {
+    return false;
+  }
+
+  if (EMBEDDING_MODEL_NAME_PATTERN.test(modelName)) {
     return false;
   }
 

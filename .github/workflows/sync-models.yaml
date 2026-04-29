@@ -75,6 +75,82 @@ jobs:
             pnpm dlx tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
           done
 
+      - name: Collect changed model ids
+        id: changed_models
+        run: |
+          set -euo pipefail
+
+          git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
+          pnpm dlx tsx packages/proxy/scripts/collect_changed_model_ids.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after "packages/proxy/schema/model_list.json" \
+            --output "$RUNNER_TEMP/sync-model-changed.json" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Enrich changed model metadata with Claude Code
+        if: ${{ steps.changed_models.outputs.count != '0' }}
+        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          show_full_output: "true"
+          display_report: "true"
+          timeout_minutes: "15"
+          claude_args: |
+            --model claude-opus-4-6
+            --max-turns 80
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
+            --disallowedTools "Bash,MultiEdit,Replace,NotebookEditCell,mcp__github__create_issue,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+          prompt: |
+            # Goal
+
+            After the deterministic `sync_models.ts` update/add passes finish, enrich the model entries changed on this branch by this run with verified `displayName` metadata and, only when appropriate, verified `parent` metadata.
+
+            # Inputs
+
+            - Changed model id file: `${{ runner.temp }}/sync-model-changed.json`
+            - Changed model count: `${{ steps.changed_models.outputs.count }}`
+
+            # Files to inspect first
+
+            - `packages/proxy/schema/model_list.json`
+            - `packages/proxy/schema/models.ts`
+            - `packages/proxy/scripts/sync_models.ts`
+            - `.github/workflows/sync-models.yaml`
+
+            # What to do
+
+            1. Read the changed model id file and only work on those exact model ids.
+            2. For each changed model, read its current entry in `packages/proxy/schema/model_list.json` and note whether `displayName` and `parent` are already set.
+            3. For fields that are already set, verify the existing value against official provider sources before deciding whether to keep or correct it. Do not go to the web first — read the local value first, then verify.
+            4. Update only `packages/proxy/schema/model_list.json`.
+            5. Preserve existing JSON formatting, field order, and neighboring naming conventions.
+            6. Only modify `displayName` and `parent`. Do not change pricing, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
+            6a. When updating `displayName` or `parent`, replace any existing key in place. Never leave duplicate JSON properties in a model entry.
+            7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
+            8. Set `parent` only when official sources explicitly document a relationship between this model id and a stable base alias, and the parent model id already exists in `model_list.json`. Do not set `parent` based on inference alone.
+            9. Consider `parent` for any of these verified relationship patterns — check official docs for each:
+               - **Dated snapshot → stable alias**: model id ends with a date or version suffix and official docs name a stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`, `gemini-2.0-flash-001` → `gemini-2.0-flash`)
+               - **Versioned snapshot**: model id ends with `@NNN` or `-vN` and official docs point to a base model (e.g. `publishers/google/models/gemini-pro@001` → `publishers/google/models/gemini-pro`)
+               - **Location-scoped variant**: model id starts with a location prefix (`global.`, `us.`, `eu.`, `apac.`) and official docs point to a non-location parent
+               - **Tier or access variant**: model id has a suffix that denotes a serving tier documented by the provider as a variant of a base model (e.g. `:free`, `:nitro`, `:floor` on Together AI)
+               - **Any other explicitly documented alias-to-base relationship** in official provider API or model docs
+            10. Leave `parent` unset when:
+               - the model is a base model with no documented parent
+               - the relationship cannot be verified from official sources
+               - the parent model id does not exist in the local `model_list.json`
+            11. If a field cannot be verified confidently from official sources, leave it unset instead of guessing.
+
+            # Constraints
+
+            - Do not edit any file other than `packages/proxy/schema/model_list.json`.
+            - Use official provider sources only for metadata decisions.
+            - Do not invent placeholder values.
+
+      - name: Canonicalize model list after metadata enrichment
+        if: ${{ steps.changed_models.outputs.count != '0' }}
+        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
       - name: Check expected files only
         id: changes
         run: |
@@ -100,7 +176,7 @@ jobs:
 
       - name: Validate model schema
         if: ${{ steps.changes.outputs.changed == 'true' }}
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
 
       - name: Create PR
         if: ${{ steps.changes.outputs.changed == 'true' }}

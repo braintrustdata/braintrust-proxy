@@ -4713,6 +4713,17 @@
       "mistral"
     ]
   },
+  "devstral-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "accounts/fireworks/models/devstral-small-2505": {
     "format": "openai",
     "flavor": "chat",
@@ -4856,6 +4867,18 @@
     "output_cost_per_mil_tokens": 0.9,
     "parent": "codestral-latest"
   },
+  "codestral-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "parent": "codestral-latest",
+    "displayName": "Codestral 2508",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "ministral-8b-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -4916,6 +4939,44 @@
     "input_cost_per_mil_tokens": 0.04,
     "output_cost_per_mil_tokens": 0.04,
     "parent": "ministral-3b-latest"
+  },
+  "ministral-14b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14B 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-8b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "parent": "ministral-8b-latest",
+    "displayName": "Ministral 8B 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-3b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "parent": "ministral-3b-latest",
+    "displayName": "Ministral 3B 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
   },
   "mistral-saba-latest": {
     "format": "openai",
@@ -5185,6 +5246,32 @@
     "output_cost_per_mil_tokens": 0.79,
     "displayName": "Mistral Saba 24B",
     "experimental": true
+  },
+  "mistral-large-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "parent": "mistral-large-latest",
+    "displayName": "Mistral Large 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small-2603": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "parent": "mistral-small-latest",
+    "displayName": "Mistral Small 2603",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
   },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",

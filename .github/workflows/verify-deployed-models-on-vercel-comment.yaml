@@ -1,0 +1,66 @@
+name: Verify deployed models on Vercel comment
+
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: verify-deployed-models-pr-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    if: ${{ github.event.issue.pull_request && github.event.comment.user.login == 'vercel' }}
+    runs-on: ubuntu-latest
+    outputs:
+      base_sha: ${{ steps.context.outputs.base_sha }}
+      head_sha: ${{ steps.context.outputs.head_sha }}
+      proxy_base_url: ${{ steps.context.outputs.proxy_base_url }}
+      should_run: ${{ steps.context.outputs.should_run }}
+    steps:
+      - name: Resolve PR context from Vercel comment
+        id: context
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const body = context.payload.comment.body || "";
+            const previewMatch =
+              body.match(/https:\/\/[^\s)]+preview\.braintrust\.dev[^\s)]*/i) ||
+              body.match(/https:\/\/[^\s)]+vercel\.app[^\s)]*/i);
+
+            if (!previewMatch) {
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.issue.number,
+            });
+
+            core.setOutput("base_sha", pullRequest.base.sha);
+            core.setOutput("head_sha", pullRequest.head.sha);
+            core.setOutput(
+              "proxy_base_url",
+              `${previewMatch[0].replace(/\/$/, "")}/api/v1`,
+            );
+            core.setOutput("should_run", "true");
+
+  verify:
+    needs: prepare
+    if: needs.prepare.outputs.should_run == 'true'
+    uses: ./.github/workflows/verify-deployed-models.yaml
+    with:
+      base_ref: ${{ needs.prepare.outputs.base_sha }}
+      head_ref: ${{ needs.prepare.outputs.head_sha }}
+      proxy_base_url: ${{ needs.prepare.outputs.proxy_base_url }}
+    secrets:
+      BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}

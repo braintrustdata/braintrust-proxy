@@ -8,7 +8,7 @@ on:
 
 permissions:
   contents: read
-  issues: read
+  issues: write
   pull-requests: read
 
 concurrency:
@@ -166,3 +166,105 @@ jobs:
     secrets:
       BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
       VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+
+  comment:
+    needs:
+      - prepare
+      - verify
+    if: always() && needs.prepare.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post verification summary to PR
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          FAILED_COUNT: ${{ needs.verify.outputs.failed_count }}
+          FAILED_MODELS_JSON: ${{ needs.verify.outputs.failed_models_json }}
+          PASSED_COUNT: ${{ needs.verify.outputs.passed_count }}
+          PASSED_MODELS_JSON: ${{ needs.verify.outputs.passed_models_json }}
+          TESTED_MODELS_JSON: ${{ needs.verify.outputs.tested_models_json }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        with:
+          script: |
+            const marker = "<!-- proxy-model-verification -->";
+
+            function parseJsonArray(raw) {
+              if (!raw) {
+                return [];
+              }
+
+              try {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed.filter((value) => typeof value === "string") : [];
+              } catch (_error) {
+                return [];
+              }
+            }
+
+            function formatModels(models) {
+              if (models.length === 0) {
+                return "- None";
+              }
+
+              return models.map((model) => `- \`${model}\``).join("\n");
+            }
+
+            const testedModels = parseJsonArray(process.env.TESTED_MODELS_JSON);
+            const passedModels = parseJsonArray(process.env.PASSED_MODELS_JSON);
+            const failedModels = parseJsonArray(process.env.FAILED_MODELS_JSON);
+            const failedCount = Number(process.env.FAILED_COUNT || "0");
+            const passedCount = Number(process.env.PASSED_COUNT || "0");
+            const verifyResult = process.env.VERIFY_RESULT || "unknown";
+
+            let statusLine = "Verification completed successfully.";
+            if (verifyResult === "failure" || failedCount > 0) {
+              statusLine = "Verification failed for one or more models.";
+            } else if (testedModels.length === 0) {
+              statusLine = "No changed models required verification.";
+            }
+
+            const body = [
+              marker,
+              "## Proxy model verification",
+              "",
+              statusLine,
+              "",
+              `Passed: ${passedCount}`,
+              `Failed: ${failedCount}`,
+              "",
+              "Tested models",
+              formatModels(testedModels),
+              "",
+              "Passed models",
+              formatModels(passedModels),
+              "",
+              "Failed models",
+              formatModels(failedModels),
+            ].join("\n");
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              per_page: 100,
+            });
+
+            const existing = comments.find((comment) =>
+              typeof comment.body === "string" && comment.body.includes(marker),
+            );
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.issue.number,
+              body,
+            });

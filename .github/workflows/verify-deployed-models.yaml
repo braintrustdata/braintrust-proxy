@@ -18,6 +18,25 @@ on:
       proxy_base_url:
         required: true
         type: string
+    outputs:
+      failed_count:
+        description: "How many models failed verification"
+        value: ${{ jobs.verify.outputs.failed_count }}
+      failed_models_json:
+        description: "JSON array of failed model ids"
+        value: ${{ jobs.verify.outputs.failed_models_json }}
+      passed_count:
+        description: "How many models passed verification"
+        value: ${{ jobs.verify.outputs.passed_count }}
+      passed_models_json:
+        description: "JSON array of passed model ids"
+        value: ${{ jobs.verify.outputs.passed_models_json }}
+      results_json:
+        description: "Full verification results JSON array"
+        value: ${{ jobs.verify.outputs.results_json }}
+      tested_models_json:
+        description: "JSON array of tested model ids"
+        value: ${{ jobs.verify.outputs.tested_models_json }}
     secrets:
       BRAINTRUST_API_KEY:
         required: true
@@ -46,6 +65,13 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    outputs:
+      failed_count: ${{ steps.summary.outputs.failed_count }}
+      failed_models_json: ${{ steps.summary.outputs.failed_models_json }}
+      passed_count: ${{ steps.summary.outputs.passed_count }}
+      passed_models_json: ${{ steps.summary.outputs.passed_models_json }}
+      results_json: ${{ steps.summary.outputs.results_json }}
+      tested_models_json: ${{ steps.summary.outputs.tested_models_json }}
 
     steps:
       - name: Resolve checkout ref
@@ -134,7 +160,9 @@ jobs:
         run: echo "No models to verify."
 
       - name: Verify deployed models
+        id: verify
         if: steps.models.outputs.count != '0'
+        continue-on-error: true
         env:
           BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -144,4 +172,50 @@ jobs:
           pnpm dlx tsx packages/proxy/scripts/verify_proxy_models.ts \
             --proxy-base-url "${{ inputs.proxy_base_url }}" \
             --model-file "${{ steps.models.outputs.path }}" \
+            --output "$RUNNER_TEMP/verification-results.json" \
             --github-output "$GITHUB_OUTPUT"
+
+      - name: Summarize verification results
+        id: summary
+        if: always()
+        shell: bash
+        env:
+          MODEL_COUNT: ${{ steps.models.outputs.count }}
+        run: |
+          set -euo pipefail
+
+          if [ "${MODEL_COUNT:-0}" = "0" ]; then
+            {
+              echo "failed_count=0"
+              echo "failed_models_json=[]"
+              echo "passed_count=0"
+              echo "passed_models_json=[]"
+              echo "results_json=[]"
+              echo "tested_models_json=[]"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          node -e '
+          const fs = require("fs");
+          const path = process.argv[1];
+          const results = JSON.parse(fs.readFileSync(path, "utf8"));
+          const testedModels = results.map((result) => result.model);
+          const passedModels = results.filter((result) => result.ok).map((result) => result.model);
+          const failedModels = results.filter((result) => !result.ok).map((result) => result.model);
+          const output = process.env.GITHUB_OUTPUT;
+
+          fs.appendFileSync(output, `failed_count=${failedModels.length}\n`);
+          fs.appendFileSync(output, `failed_models_json=${JSON.stringify(failedModels)}\n`);
+          fs.appendFileSync(output, `passed_count=${passedModels.length}\n`);
+          fs.appendFileSync(output, `passed_models_json=${JSON.stringify(passedModels)}\n`);
+          fs.appendFileSync(output, `results_json=${JSON.stringify(results)}\n`);
+          fs.appendFileSync(output, `tested_models_json=${JSON.stringify(testedModels)}\n`);
+          ' "$RUNNER_TEMP/verification-results.json"
+
+      - name: Fail if verification failed
+        if: steps.verify.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "One or more models failed verification." >&2
+          exit 1

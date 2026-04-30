@@ -8,7 +8,7 @@ import {
 } from "./verify_proxy_models";
 
 describe("buildVerificationRequest", () => {
-  it("builds a chat completion verification request", () => {
+  it("builds a chat completion verification request for chat models", () => {
     expect(
       buildVerificationRequest("gpt-4o", {
         flavor: "chat",
@@ -28,7 +28,7 @@ describe("buildVerificationRequest", () => {
     });
   });
 
-  it("builds a completion verification request", () => {
+  it("uses chat completions for completion models too", () => {
     expect(
       buildVerificationRequest("gpt-3.5-turbo-instruct", {
         flavor: "completion",
@@ -36,14 +36,19 @@ describe("buildVerificationRequest", () => {
       }),
     ).toEqual({
       body: {
+        messages: [
+          {
+            content: "ok",
+            role: "user",
+          },
+        ],
         model: "gpt-3.5-turbo-instruct",
-        prompt: "ok",
       },
-      endpoint: "completions",
+      endpoint: "chat/completions",
     });
   });
 
-  it("builds an embedding verification request", () => {
+  it("uses chat completions for embedding models too", () => {
     expect(
       buildVerificationRequest("text-embedding-3-small", {
         flavor: "embedding",
@@ -51,10 +56,15 @@ describe("buildVerificationRequest", () => {
       }),
     ).toEqual({
       body: {
-        input: "ok",
+        messages: [
+          {
+            content: "ok",
+            role: "user",
+          },
+        ],
         model: "text-embedding-3-small",
       },
-      endpoint: "embeddings",
+      endpoint: "chat/completions",
     });
   });
 });

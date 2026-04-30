@@ -74,39 +74,20 @@ export function resolveVercelProtectionBypassSecret(
 
 export function buildVerificationRequest(
   model: string,
-  modelSpec: ModelSpec,
+  _modelSpec: ModelSpec,
 ): VerificationRequest {
-  switch (modelSpec.flavor) {
-    case "chat":
-      return {
-        endpoint: "chat/completions",
-        body: {
-          messages: [
-            {
-              content: "ok",
-              role: "user",
-            },
-          ],
-          model,
+  return {
+    endpoint: "chat/completions",
+    body: {
+      messages: [
+        {
+          content: "ok",
+          role: "user",
         },
-      };
-    case "completion":
-      return {
-        endpoint: "completions",
-        body: {
-          model,
-          prompt: "ok",
-        },
-      };
-    case "embedding":
-      return {
-        endpoint: "embeddings",
-        body: {
-          input: "ok",
-          model,
-        },
-      };
-  }
+      ],
+      model,
+    },
+  };
 }
 
 export function extractErrorMessage(responseBody: string): string {

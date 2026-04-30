@@ -7,6 +7,10 @@ on:
         required: false
         type: string
         default: ""
+      pull_request_number:
+        required: false
+        type: string
+        default: ""
       head_ref:
         required: false
         type: string
@@ -48,6 +52,10 @@ on:
         description: "Base git ref to diff against when model_ids_json is omitted"
         required: false
         type: string
+      pull_request_number:
+        description: "Pull request number to diff against when reading the PR head safely"
+        required: false
+        type: string
       head_ref:
         description: "Head git ref to diff from when model_ids_json is omitted"
         required: false
@@ -74,25 +82,10 @@ jobs:
       tested_models_json: ${{ steps.summary.outputs.tested_models_json }}
 
     steps:
-      - name: Resolve checkout ref
-        id: checkout-ref
-        shell: bash
-        env:
-          HEAD_REF: ${{ inputs.head_ref }}
-        run: |
-          set -euo pipefail
-
-          if [ -n "$HEAD_REF" ] && [ "$HEAD_REF" != "HEAD" ]; then
-            echo "ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-          ref: ${{ steps.checkout-ref.outputs.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -126,6 +119,7 @@ jobs:
           BASE_REF: ${{ inputs.base_ref }}
           EXPLICIT_MODEL_IDS_JSON: ${{ inputs.model_ids_json }}
           HEAD_REF: ${{ inputs.head_ref }}
+          PULL_REQUEST_NUMBER: ${{ inputs.pull_request_number }}
         run: |
           set -euo pipefail
 
@@ -138,7 +132,21 @@ jobs:
             fi
 
             git show "${BASE_REF}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.before.json"
-            git show "${HEAD_REF}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
+
+            if [ -n "$PULL_REQUEST_NUMBER" ]; then
+              pr_head_ref="refs/remotes/origin/pr-${PULL_REQUEST_NUMBER}-head"
+              git fetch --no-tags --depth=1 origin "refs/pull/${PULL_REQUEST_NUMBER}/head:${pr_head_ref}"
+              git show "${pr_head_ref}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
+            else
+              if [ -z "$HEAD_REF" ] || [ "$HEAD_REF" = "HEAD" ]; then
+                echo "Either pull_request_number or a non-HEAD head_ref must be provided" >&2
+                exit 1
+              fi
+
+              temp_head_ref="refs/remotes/origin/verify-head"
+              git fetch --no-tags --depth=1 origin "${HEAD_REF}:${temp_head_ref}"
+              git show "${temp_head_ref}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
+            fi
 
             pnpm dlx tsx packages/proxy/scripts/collect_changed_model_ids.ts \
               --before "$RUNNER_TEMP/model_list.before.json" \

@@ -204,7 +204,7 @@ jobs:
     uses: ./.github/workflows/verify-deployed-models.yaml
     with:
       base_ref: ${{ needs.prepare.outputs.base_sha }}
-      head_ref: ${{ needs.prepare.outputs.head_sha }}
+      pull_request_number: ${{ needs.prepare.outputs.pull_request_number }}
       proxy_base_url: ${{ needs.prepare.outputs.proxy_base_url }}
     secrets:
       BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}

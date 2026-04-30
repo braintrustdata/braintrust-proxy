@@ -48,10 +48,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Resolve checkout ref
+        id: checkout-ref
+        shell: bash
+        env:
+          HEAD_REF: ${{ inputs.head_ref }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$HEAD_REF" ] && [ "$HEAD_REF" != "HEAD" ]; then
+            echo "ref=$HEAD_REF" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          ref: ${{ steps.checkout-ref.outputs.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0

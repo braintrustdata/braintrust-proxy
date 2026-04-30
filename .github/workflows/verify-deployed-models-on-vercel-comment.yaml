@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
   pull-requests: read
 
 concurrency:
@@ -29,29 +30,130 @@ jobs:
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         with:
           script: |
-            const body = context.payload.comment.body || "";
-            const previewMatch =
-              body.match(/https:\/\/[^\s)]+preview\.braintrust\.dev[^\s)]*/i) ||
-              body.match(/https:\/\/[^\s)]+vercel\.app[^\s)]*/i);
+            const readyStatuses = new Set(["DEPLOYED", "READY"]);
+            const failedStatuses = new Set([
+              "CANCELED",
+              "ERROR",
+              "FAILED",
+              "REMOVED",
+            ]);
+            const pollDelayMs = 15000;
+            const maxAttempts = 20;
 
-            if (!previewMatch) {
+            function sleep(ms) {
+              return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            function isRecord(value) {
+              return typeof value === "object" && value !== null && !Array.isArray(value);
+            }
+
+            function parseComment(body) {
+              const metadataMatch = body.match(/^\[vc\]:\s*#[^:]+:([A-Za-z0-9+/=]+)\s*$/m);
+              if (!metadataMatch) {
+                return null;
+              }
+
+              let decoded;
+              try {
+                decoded = JSON.parse(Buffer.from(metadataMatch[1], "base64").toString("utf8"));
+              } catch (_error) {
+                return null;
+              }
+
+              if (!isRecord(decoded) || !Array.isArray(decoded.projects)) {
+                return null;
+              }
+
+              const project = decoded.projects.find((value) => {
+                if (!isRecord(value)) {
+                  return false;
+                }
+
+                return (
+                  value.name === "ai-proxy" &&
+                  value.rootDirectory === "apis/vercel"
+                );
+              });
+
+              if (!isRecord(project)) {
+                return null;
+              }
+
+              const previewUrl =
+                typeof project.previewUrl === "string" && project.previewUrl.length > 0
+                  ? `https://${project.previewUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}`
+                  : null;
+              const status =
+                typeof project.nextCommitStatus === "string"
+                  ? project.nextCommitStatus.toUpperCase()
+                  : "";
+
+              return {
+                previewUrl,
+                status,
+              };
+            }
+
+            async function loadComment(commentId) {
+              const { data } = await github.rest.issues.getComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: commentId,
+              });
+
+              return parseComment(data.body || "");
+            }
+
+            const commentId = context.payload.comment.id;
+            let parsed = parseComment(context.payload.comment.body || "");
+
+            if (!parsed) {
               core.setOutput("should_run", "false");
               return;
             }
 
-            const { data: pullRequest } = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.issue.number,
-            });
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              if (failedStatuses.has(parsed.status)) {
+                core.setFailed(
+                  `Vercel preview deployment for ai-proxy finished with status ${parsed.status}.`,
+                );
+                return;
+              }
 
-            core.setOutput("base_sha", pullRequest.base.sha);
-            core.setOutput("head_sha", pullRequest.head.sha);
-            core.setOutput(
-              "proxy_base_url",
-              `${previewMatch[0].replace(/\/$/, "")}/api/v1`,
-            );
-            core.setOutput("should_run", "true");
+              if (readyStatuses.has(parsed.status)) {
+                if (!parsed.previewUrl) {
+                  core.setFailed("Vercel preview deployment is ready, but no preview URL was found.");
+                  return;
+                }
+
+                const { data: pullRequest } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: context.payload.issue.number,
+                });
+
+                core.setOutput("base_sha", pullRequest.base.sha);
+                core.setOutput("head_sha", pullRequest.head.sha);
+                core.setOutput("proxy_base_url", `${parsed.previewUrl}/api/v1`);
+                core.setOutput("should_run", "true");
+                return;
+              }
+
+              if (attempt === maxAttempts) {
+                core.setFailed(
+                  `Timed out waiting for ai-proxy preview deployment to become ready. Last status: ${parsed.status || "unknown"}.`,
+                );
+                return;
+              }
+
+              await sleep(pollDelayMs);
+              parsed = await loadComment(commentId);
+              if (!parsed) {
+                core.setFailed("Unable to parse the updated Vercel deployment comment.");
+                return;
+              }
+            }
 
   verify:
     needs: prepare

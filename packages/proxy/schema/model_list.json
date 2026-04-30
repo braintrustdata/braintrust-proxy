@@ -4689,6 +4689,30 @@
       "mistral"
     ]
   },
+  "magistral-medium-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Magistral Medium 1.2 (2509)",
+    "parent": "magistral-medium-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-small-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Magistral Small 1.2 (2509)",
+    "parent": "magistral-small-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "devstral-small-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -4872,8 +4896,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "parent": "codestral-latest",
     "displayName": "Codestral 2508",
+    "parent": "codestral-latest",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -4958,8 +4982,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
-    "parent": "ministral-8b-latest",
     "displayName": "Ministral 8B 2512",
+    "parent": "ministral-8b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4971,8 +4995,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "parent": "ministral-3b-latest",
     "displayName": "Ministral 3B 2512",
+    "parent": "ministral-3b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5253,8 +5277,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
-    "parent": "mistral-large-latest",
     "displayName": "Mistral Large 2512",
+    "parent": "mistral-large-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5266,8 +5290,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "parent": "mistral-small-latest",
     "displayName": "Mistral Small 2603",
+    "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"

@@ -607,6 +607,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "magistral-medium-2509": ["mistral"],
+  "magistral-small-2509": ["mistral"],
   "mistral-large-2512": ["mistral"],
   "mistral-small-2603": ["mistral"],
   "codestral-2508": ["mistral"],

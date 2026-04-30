@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  addSlugQueryParams,
   buildVerificationRequest,
   extractErrorMessage,
   resolveBraintrustApiKey,
@@ -94,19 +93,6 @@ describe("extractErrorMessage", () => {
 
   it("falls back to raw text", () => {
     expect(extractErrorMessage("plain text error")).toBe("plain text error");
-  });
-});
-
-describe("addSlugQueryParams", () => {
-  it("adds slug query params for the endpoint path", () => {
-    const url = addSlugQueryParams(
-      new URL("https://example.com/api/v1/chat/completions"),
-      "chat/completions",
-    );
-
-    expect(url.toString()).toBe(
-      "https://example.com/api/v1/chat/completions?slug=chat&slug=completions",
-    );
   });
 });
 

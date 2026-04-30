@@ -5,6 +5,16 @@ on:
     types:
       - created
       - edited
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: "Pull request number to verify"
+        required: true
+        type: string
+      vercel_comment_id:
+        description: "Issue comment ID for the Vercel deployment comment"
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -12,22 +22,26 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: verify-deployed-models-pr-${{ github.event.issue.number }}
+  group: verify-deployed-models-pr-${{ github.event.issue.number || github.event.inputs.pull_request_number }}
   cancel-in-progress: true
 
 jobs:
   prepare:
-    if: ${{ github.event.issue.pull_request && github.event.comment.user.login == 'vercel' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request && github.event.comment.user.login == 'vercel') }}
     runs-on: ubuntu-latest
     outputs:
       base_sha: ${{ steps.context.outputs.base_sha }}
       head_sha: ${{ steps.context.outputs.head_sha }}
+      pull_request_number: ${{ steps.context.outputs.pull_request_number }}
       proxy_base_url: ${{ steps.context.outputs.proxy_base_url }}
       should_run: ${{ steps.context.outputs.should_run }}
     steps:
       - name: Resolve PR context from Vercel comment
         id: context
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          MANUAL_PULL_REQUEST_NUMBER: ${{ github.event.inputs.pull_request_number || '' }}
+          MANUAL_VERCEL_COMMENT_ID: ${{ github.event.inputs.vercel_comment_id || '' }}
         with:
           script: |
             const readyStatuses = new Set(["DEPLOYED", "READY"]);
@@ -102,11 +116,38 @@ jobs:
                 comment_id: commentId,
               });
 
-              return parseComment(data.body || "");
+              return data;
             }
 
-            const commentId = context.payload.comment.id;
-            let parsed = parseComment(context.payload.comment.body || "");
+            const commentId =
+              context.eventName === "workflow_dispatch"
+                ? Number(process.env.MANUAL_VERCEL_COMMENT_ID)
+                : context.payload.comment.id;
+            const pullRequestNumber =
+              context.eventName === "workflow_dispatch"
+                ? Number(process.env.MANUAL_PULL_REQUEST_NUMBER)
+                : context.payload.issue.number;
+            const initialComment =
+              context.eventName === "workflow_dispatch"
+                ? await loadComment(commentId)
+                : context.payload.comment;
+
+            if (!Number.isInteger(commentId) || commentId <= 0) {
+              core.setFailed("A valid Vercel comment ID is required.");
+              return;
+            }
+
+            if (!Number.isInteger(pullRequestNumber) || pullRequestNumber <= 0) {
+              core.setFailed("A valid pull request number is required.");
+              return;
+            }
+
+            if (initialComment.user?.login !== "vercel") {
+              core.setFailed("The selected comment is not authored by the Vercel bot.");
+              return;
+            }
+
+            let parsed = parseComment(initialComment.body || "");
 
             if (!parsed) {
               core.setOutput("should_run", "false");
@@ -130,11 +171,12 @@ jobs:
                 const { data: pullRequest } = await github.rest.pulls.get({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  pull_number: context.payload.issue.number,
+                  pull_number: pullRequestNumber,
                 });
 
                 core.setOutput("base_sha", pullRequest.base.sha);
                 core.setOutput("head_sha", pullRequest.head.sha);
+                core.setOutput("pull_request_number", String(pullRequestNumber));
                 core.setOutput("proxy_base_url", `${parsed.previewUrl}/api/v1`);
                 core.setOutput("should_run", "true");
                 return;
@@ -148,7 +190,8 @@ jobs:
               }
 
               await sleep(pollDelayMs);
-              parsed = await loadComment(commentId);
+              const refreshedComment = await loadComment(commentId);
+              parsed = parseComment(refreshedComment.body || "");
               if (!parsed) {
                 core.setFailed("Unable to parse the updated Vercel deployment comment.");
                 return;
@@ -181,6 +224,7 @@ jobs:
           FAILED_MODELS_JSON: ${{ needs.verify.outputs.failed_models_json }}
           PASSED_COUNT: ${{ needs.verify.outputs.passed_count }}
           PASSED_MODELS_JSON: ${{ needs.verify.outputs.passed_models_json }}
+          PULL_REQUEST_NUMBER: ${{ needs.prepare.outputs.pull_request_number }}
           TESTED_MODELS_JSON: ${{ needs.verify.outputs.tested_models_json }}
           VERIFY_RESULT: ${{ needs.verify.result }}
         with:
@@ -213,7 +257,13 @@ jobs:
             const failedModels = parseJsonArray(process.env.FAILED_MODELS_JSON);
             const failedCount = Number(process.env.FAILED_COUNT || "0");
             const passedCount = Number(process.env.PASSED_COUNT || "0");
+            const pullRequestNumber = Number(process.env.PULL_REQUEST_NUMBER || "0");
             const verifyResult = process.env.VERIFY_RESULT || "unknown";
+
+            if (!Number.isInteger(pullRequestNumber) || pullRequestNumber <= 0) {
+              core.setFailed("Missing pull request number for verification comment.");
+              return;
+            }
 
             let statusLine = "Verification completed successfully.";
             if (verifyResult === "failure" || failedCount > 0) {
@@ -244,7 +294,7 @@ jobs:
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.issue.number,
+              issue_number: pullRequestNumber,
               per_page: 100,
             });
 
@@ -265,6 +315,6 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.payload.issue.number,
+              issue_number: pullRequestNumber,
               body,
             });

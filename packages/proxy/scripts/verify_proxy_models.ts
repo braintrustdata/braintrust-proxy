@@ -43,13 +43,6 @@ function uniqueModelIds(modelIds: string[]): string[] {
   );
 }
 
-export function addSlugQueryParams(url: URL, endpoint: string): URL {
-  for (const segment of endpoint.split("/").filter(Boolean)) {
-    url.searchParams.append("slug", segment);
-  }
-  return url;
-}
-
 export function resolveBraintrustApiKey(explicitApiKey?: string): string {
   const apiKey = explicitApiKey ?? process.env.BRAINTRUST_API_KEY;
   if (!apiKey) {
@@ -121,10 +114,7 @@ async function verifyModel(args: {
   vercelProtectionBypassSecret: string;
 }): Promise<VerificationResult> {
   const request = buildVerificationRequest(args.model, args.modelSpec);
-  const url = addSlugQueryParams(
-    new URL(request.endpoint, withTrailingSlash(args.proxyBaseUrl)),
-    request.endpoint,
-  );
+  const url = new URL(request.endpoint, withTrailingSlash(args.proxyBaseUrl));
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), args.timeoutMs);
 

@@ -62,6 +62,18 @@ jobs:
               return typeof value === "object" && value !== null && !Array.isArray(value);
             }
 
+            function isTrustedPullRequest(pullRequest) {
+              const trustedAssociations = new Set(["COLLABORATOR", "MEMBER", "OWNER"]);
+              const authorAssociation =
+                typeof pullRequest.author_association === "string"
+                  ? pullRequest.author_association.toUpperCase()
+                  : "";
+              const sameRepository =
+                pullRequest.head?.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`;
+
+              return sameRepository || trustedAssociations.has(authorAssociation);
+            }
+
             function parseComment(body) {
               const metadataMatch = body.match(/^\[vc\]:\s*#[^:]+:([A-Za-z0-9+/=]+)\s*$/m);
               if (!metadataMatch) {
@@ -154,6 +166,21 @@ jobs:
               return;
             }
 
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullRequestNumber,
+            });
+
+            if (!isTrustedPullRequest(pullRequest)) {
+              core.notice(
+                `Skipping verification for untrusted PR #${pullRequestNumber} (author_association=${pullRequest.author_association}).`,
+              );
+              core.setOutput("pull_request_number", String(pullRequestNumber));
+              core.setOutput("should_run", "false");
+              return;
+            }
+
             for (let attempt = 1; attempt <= maxAttempts; attempt++) {
               if (failedStatuses.has(parsed.status)) {
                 core.setFailed(
@@ -167,12 +194,6 @@ jobs:
                   core.setFailed("Vercel preview deployment is ready, but no preview URL was found.");
                   return;
                 }
-
-                const { data: pullRequest } = await github.rest.pulls.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  pull_number: pullRequestNumber,
-                });
 
                 core.setOutput("base_sha", pullRequest.base.sha);
                 core.setOutput("head_sha", pullRequest.head.sha);
@@ -204,6 +225,7 @@ jobs:
     uses: ./.github/workflows/verify-deployed-models.yaml
     with:
       base_ref: ${{ needs.prepare.outputs.base_sha }}
+      head_sha: ${{ needs.prepare.outputs.head_sha }}
       pull_request_number: ${{ needs.prepare.outputs.pull_request_number }}
       proxy_base_url: ${{ needs.prepare.outputs.proxy_base_url }}
     secrets:

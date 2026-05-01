@@ -7030,6 +7030,20 @@
       "xAI"
     ]
   },
+  "grok-4.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.3",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "amazon.nova-pro-v1:0": {
     "format": "converse",
     "flavor": "chat",

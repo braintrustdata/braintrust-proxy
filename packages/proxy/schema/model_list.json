@@ -4958,7 +4958,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Ministral 8B 2512",
+    "displayName": "Ministral 8B (2512)",
     "parent": "ministral-8b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -4971,7 +4971,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "displayName": "Ministral 3B 2512",
+    "displayName": "Ministral 3B (2512)",
     "parent": "ministral-3b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -5253,7 +5253,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Mistral Large 2512",
+    "displayName": "Mistral Large (2512)",
     "parent": "mistral-large-latest",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -5266,7 +5266,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Mistral Small 2603",
+    "displayName": "Mistral Small (2603)",
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -10139,6 +10139,33 @@
   "dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2 (2026-04-21)",
+    "parent": "gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2",
     "available_providers": [
       "openai",
       "azure"

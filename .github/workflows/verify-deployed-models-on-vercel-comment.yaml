@@ -27,11 +27,12 @@ concurrency:
 
 jobs:
   prepare:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request && github.event.comment.user.login == 'vercel') }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request && (github.event.comment.user.login == 'vercel' || github.event.comment.user.login == 'vercel[bot]')) }}
     runs-on: ubuntu-latest
     outputs:
       base_sha: ${{ steps.context.outputs.base_sha }}
       head_sha: ${{ steps.context.outputs.head_sha }}
+      model_list_changed: ${{ steps.context.outputs.model_list_changed }}
       pull_request_number: ${{ steps.context.outputs.pull_request_number }}
       proxy_base_url: ${{ steps.context.outputs.proxy_base_url }}
       should_run: ${{ steps.context.outputs.should_run }}
@@ -72,6 +73,31 @@ jobs:
                 pullRequest.head?.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`;
 
               return sameRepository || trustedAssociations.has(authorAssociation);
+            }
+
+            async function pullRequestTouchesModelList(pullRequestNumber) {
+              const targetPath = "packages/proxy/schema/model_list.json";
+              let page = 1;
+
+              while (true) {
+                const { data: files } = await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pullRequestNumber,
+                  per_page: 100,
+                  page,
+                });
+
+                if (files.some((file) => file.filename === targetPath)) {
+                  return true;
+                }
+
+                if (files.length < 100) {
+                  return false;
+                }
+
+                page += 1;
+              }
             }
 
             function parseComment(body) {
@@ -131,6 +157,20 @@ jobs:
               return data;
             }
 
+            function isVercelComment(comment) {
+              if (!isRecord(comment)) {
+                return false;
+              }
+
+              const login = typeof comment.user?.login === "string" ? comment.user.login : "";
+              const appSlug =
+                typeof comment.performed_via_github_app?.slug === "string"
+                  ? comment.performed_via_github_app.slug
+                  : "";
+
+              return login === "vercel" || login === "vercel[bot]" || appSlug === "vercel";
+            }
+
             const commentId =
               context.eventName === "workflow_dispatch"
                 ? Number(process.env.MANUAL_VERCEL_COMMENT_ID)
@@ -154,7 +194,7 @@ jobs:
               return;
             }
 
-            if (initialComment.user?.login !== "vercel") {
+            if (!isVercelComment(initialComment)) {
               core.setFailed("The selected comment is not authored by the Vercel bot.");
               return;
             }
@@ -177,6 +217,19 @@ jobs:
                 `Skipping verification for untrusted PR #${pullRequestNumber} (author_association=${pullRequest.author_association}).`,
               );
               core.setOutput("pull_request_number", String(pullRequestNumber));
+              core.setOutput("model_list_changed", "false");
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const modelListChanged = await pullRequestTouchesModelList(pullRequestNumber);
+            core.setOutput("model_list_changed", modelListChanged ? "true" : "false");
+
+            if (!modelListChanged) {
+              core.notice(
+                `Skipping verification for PR #${pullRequestNumber} because packages/proxy/schema/model_list.json did not change.`,
+              );
+              core.setOutput("pull_request_number", String(pullRequestNumber));
               core.setOutput("should_run", "false");
               return;
             }
@@ -197,6 +250,7 @@ jobs:
 
                 core.setOutput("base_sha", pullRequest.base.sha);
                 core.setOutput("head_sha", pullRequest.head.sha);
+                core.setOutput("model_list_changed", "true");
                 core.setOutput("pull_request_number", String(pullRequestNumber));
                 core.setOutput("proxy_base_url", `${parsed.previewUrl}/api/v1`);
                 core.setOutput("should_run", "true");

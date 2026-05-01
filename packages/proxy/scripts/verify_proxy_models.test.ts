@@ -7,13 +7,8 @@ import {
 } from "./verify_proxy_models";
 
 describe("buildVerificationRequest", () => {
-  it("builds a chat completion verification request for chat models", () => {
-    expect(
-      buildVerificationRequest("gpt-4o", {
-        flavor: "chat",
-        format: "openai",
-      }),
-    ).toEqual({
+  it("builds a chat completion verification request", () => {
+    expect(buildVerificationRequest("gpt-4o")).toEqual({
       body: {
         messages: [
           {
@@ -22,46 +17,6 @@ describe("buildVerificationRequest", () => {
           },
         ],
         model: "gpt-4o",
-      },
-      endpoint: "chat/completions",
-    });
-  });
-
-  it("uses chat completions for completion models too", () => {
-    expect(
-      buildVerificationRequest("gpt-3.5-turbo-instruct", {
-        flavor: "completion",
-        format: "openai",
-      }),
-    ).toEqual({
-      body: {
-        messages: [
-          {
-            content: "ok",
-            role: "user",
-          },
-        ],
-        model: "gpt-3.5-turbo-instruct",
-      },
-      endpoint: "chat/completions",
-    });
-  });
-
-  it("uses chat completions for embedding models too", () => {
-    expect(
-      buildVerificationRequest("text-embedding-3-small", {
-        flavor: "embedding",
-        format: "openai",
-      }),
-    ).toEqual({
-      body: {
-        messages: [
-          {
-            content: "ok",
-            role: "user",
-          },
-        ],
-        model: "text-embedding-3-small",
       },
       endpoint: "chat/completions",
     });

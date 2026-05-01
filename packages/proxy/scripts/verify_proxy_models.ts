@@ -2,7 +2,6 @@ import fs from "fs";
 import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { getAvailableModels, type ModelSpec } from "../schema/models";
 
 type VerificationRequest = {
   endpoint: string;
@@ -65,10 +64,7 @@ export function resolveVercelProtectionBypassSecret(
   return secret;
 }
 
-export function buildVerificationRequest(
-  model: string,
-  _modelSpec: ModelSpec,
-): VerificationRequest {
+export function buildVerificationRequest(model: string): VerificationRequest {
   return {
     endpoint: "chat/completions",
     body: {
@@ -108,12 +104,11 @@ export function extractErrorMessage(responseBody: string): string {
 async function verifyModel(args: {
   apiKey: string;
   model: string;
-  modelSpec: ModelSpec;
   proxyBaseUrl: string;
   timeoutMs: number;
   vercelProtectionBypassSecret: string;
 }): Promise<VerificationResult> {
-  const request = buildVerificationRequest(args.model, args.modelSpec);
+  const request = buildVerificationRequest(args.model);
   const url = new URL(request.endpoint, withTrailingSlash(args.proxyBaseUrl));
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), args.timeoutMs);
@@ -221,28 +216,14 @@ async function main(): Promise<void> {
     throw new Error("No models provided. Pass --model and/or --model-file.");
   }
 
-  const availableModels = getAvailableModels();
   const results: VerificationResult[] = [];
 
   for (const model of modelIds) {
-    const modelSpec = availableModels[model];
-    if (!modelSpec) {
-      results.push({
-        endpoint: "n/a",
-        error: "Model is not present in the local catalog",
-        model,
-        ok: false,
-        responseBody: "Model is not present in the local catalog",
-      });
-      continue;
-    }
-
     let result: VerificationResult | null = null;
     for (let attempt = 1; attempt <= argv["max-attempts"]; attempt++) {
       result = await verifyModel({
         apiKey,
         model,
-        modelSpec,
         proxyBaseUrl: argv["proxy-base-url"],
         timeoutMs: argv["timeout-ms"],
         vercelProtectionBypassSecret,

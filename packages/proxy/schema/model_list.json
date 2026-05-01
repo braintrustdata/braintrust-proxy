@@ -5273,6 +5273,19 @@
       "mistral"
     ]
   },
+  "mistral-medium-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium 3.1 (2508)",
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",
     "flavor": "chat",

@@ -4872,8 +4872,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "parent": "codestral-latest",
     "displayName": "Codestral 2508",
+    "parent": "codestral-latest",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -4958,8 +4958,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
-    "parent": "ministral-8b-latest",
     "displayName": "Ministral 8B 2512",
+    "parent": "ministral-8b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4971,8 +4971,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "parent": "ministral-3b-latest",
     "displayName": "Ministral 3B 2512",
+    "parent": "ministral-3b-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5253,8 +5253,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
-    "parent": "mistral-large-latest",
     "displayName": "Mistral Large 2512",
+    "parent": "mistral-large-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5266,8 +5266,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "parent": "mistral-small-latest",
     "displayName": "Mistral Small 2603",
+    "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -7026,6 +7026,20 @@
     "output_cost_per_mil_tokens": 15,
     "max_input_tokens": 8192,
     "max_output_tokens": 8192,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.3",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
     "available_providers": [
       "xAI"
     ]

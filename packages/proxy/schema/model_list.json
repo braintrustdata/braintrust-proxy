@@ -4872,8 +4872,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "parent": "codestral-latest",
     "displayName": "Codestral 2508",
+    "parent": "codestral-latest",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -4958,8 +4958,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Ministral 3 8B (2512)",
     "parent": "ministral-8b-latest",
-    "displayName": "Ministral 8B 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -4971,8 +4971,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 3 3B (2512)",
     "parent": "ministral-3b-latest",
-    "displayName": "Ministral 3B 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5253,8 +5253,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Mistral Large 3 (2512)",
     "parent": "mistral-large-latest",
-    "displayName": "Mistral Large 2512",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5266,8 +5266,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Small 4 (2603)",
     "parent": "mistral-small-latest",
-    "displayName": "Mistral Small 2603",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -10125,6 +10125,33 @@
   "dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2-2026-04-21": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2 (2026-04-21)",
+    "parent": "gpt-image-2",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT Image 2",
     "available_providers": [
       "openai",
       "azure"

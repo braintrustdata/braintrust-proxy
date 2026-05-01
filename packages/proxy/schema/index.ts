@@ -735,6 +735,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "256-x-256/dall-e-2": ["openai", "azure"],
   "512-x-512/dall-e-2": ["openai", "azure"],
   "dall-e-2": ["openai", "azure"],
+  "gpt-image-2-2026-04-21": ["openai", "azure"],
+  "gpt-image-2": ["openai", "azure"],
   "1024-x-1024/gpt-image-1.5-2025-12-16": ["openai", "azure"],
   "1024-x-1536/gpt-image-1.5-2025-12-16": ["openai", "azure"],
   "1536-x-1024/gpt-image-1.5-2025-12-16": ["openai", "azure"],

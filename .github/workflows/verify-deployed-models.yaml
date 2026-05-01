@@ -1,0 +1,243 @@
+name: Verify deployed models
+
+on:
+  workflow_call:
+    inputs:
+      base_ref:
+        required: false
+        type: string
+        default: ""
+      pull_request_number:
+        required: false
+        type: string
+        default: ""
+      head_ref:
+        required: false
+        type: string
+        default: "HEAD"
+      head_sha:
+        required: false
+        type: string
+        default: ""
+      model_ids_json:
+        required: false
+        type: string
+        default: ""
+      proxy_base_url:
+        required: true
+        type: string
+    outputs:
+      failed_count:
+        description: "How many models failed verification"
+        value: ${{ jobs.verify.outputs.failed_count }}
+      failed_models_json:
+        description: "JSON array of failed model ids"
+        value: ${{ jobs.verify.outputs.failed_models_json }}
+      passed_count:
+        description: "How many models passed verification"
+        value: ${{ jobs.verify.outputs.passed_count }}
+      passed_models_json:
+        description: "JSON array of passed model ids"
+        value: ${{ jobs.verify.outputs.passed_models_json }}
+      results_json:
+        description: "Full verification results JSON array"
+        value: ${{ jobs.verify.outputs.results_json }}
+      tested_models_json:
+        description: "JSON array of tested model ids"
+        value: ${{ jobs.verify.outputs.tested_models_json }}
+    secrets:
+      BRAINTRUST_API_KEY:
+        required: true
+      VERCEL_AUTOMATION_BYPASS_SECRET:
+        required: true
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: "Base git ref to diff against when model_ids_json is omitted"
+        required: false
+        type: string
+      pull_request_number:
+        description: "Pull request number to diff against when reading the PR head safely"
+        required: false
+        type: string
+      head_ref:
+        description: "Head git ref to diff from when model_ids_json is omitted"
+        required: false
+        type: string
+        default: "HEAD"
+      head_sha:
+        description: "Pinned head commit SHA to diff from when reading a PR safely"
+        required: false
+        type: string
+      model_ids_json:
+        description: "Optional JSON string array of model ids to verify"
+        required: false
+        type: string
+      proxy_base_url:
+        description: "Proxy base URL, for example https://preview.example.com/api/v1"
+        required: true
+        type: string
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    outputs:
+      failed_count: ${{ steps.summary.outputs.failed_count }}
+      failed_models_json: ${{ steps.summary.outputs.failed_models_json }}
+      passed_count: ${{ steps.summary.outputs.passed_count }}
+      passed_models_json: ${{ steps.summary.outputs.passed_models_json }}
+      results_json: ${{ steps.summary.outputs.results_json }}
+      tested_models_json: ${{ steps.summary.outputs.tested_models_json }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve models to verify
+        id: models
+        shell: bash
+        env:
+          BASE_REF: ${{ inputs.base_ref }}
+          EXPLICIT_MODEL_IDS_JSON: ${{ inputs.model_ids_json }}
+          HEAD_REF: ${{ inputs.head_ref }}
+          HEAD_SHA: ${{ inputs.head_sha }}
+          PULL_REQUEST_NUMBER: ${{ inputs.pull_request_number }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$EXPLICIT_MODEL_IDS_JSON" ]; then
+            printf '%s' "$EXPLICIT_MODEL_IDS_JSON" > "$RUNNER_TEMP/changed-models.json"
+          else
+            if [ -z "$BASE_REF" ]; then
+              echo "Either model_ids_json or base_ref must be provided" >&2
+              exit 1
+            fi
+
+            git show "${BASE_REF}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.before.json"
+
+            if [ -n "$PULL_REQUEST_NUMBER" ]; then
+              if [ -z "$HEAD_SHA" ]; then
+                echo "head_sha is required when pull_request_number is provided" >&2
+                exit 1
+              fi
+
+              pinned_head_ref="refs/remotes/origin/verify-head"
+              git fetch --no-tags --depth=1 origin "${HEAD_SHA}:${pinned_head_ref}"
+              git show "${pinned_head_ref}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
+            else
+              if [ -z "$HEAD_REF" ] || [ "$HEAD_REF" = "HEAD" ]; then
+                echo "Either pull_request_number or a non-HEAD head_ref must be provided" >&2
+                exit 1
+              fi
+
+              temp_head_ref="refs/remotes/origin/verify-head"
+              git fetch --no-tags --depth=1 origin "${HEAD_REF}:${temp_head_ref}"
+              git show "${temp_head_ref}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
+            fi
+
+            pnpm dlx tsx packages/proxy/scripts/collect_changed_model_ids.ts \
+              --before "$RUNNER_TEMP/model_list.before.json" \
+              --after "$RUNNER_TEMP/model_list.after.json" \
+              --output "$RUNNER_TEMP/changed-models.json"
+          fi
+
+          compact_json=$(node -e 'const fs=require("fs"); const parsed=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(JSON.stringify(parsed));' "$RUNNER_TEMP/changed-models.json")
+          count=$(node -e 'const fs=require("fs"); const parsed=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(String(parsed.length));' "$RUNNER_TEMP/changed-models.json")
+
+          {
+            echo "json=$compact_json"
+            echo "count=$count"
+            echo "path=$RUNNER_TEMP/changed-models.json"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Skip when no models changed
+        if: steps.models.outputs.count == '0'
+        run: echo "No models to verify."
+
+      - name: Verify deployed models
+        id: verify
+        if: steps.models.outputs.count != '0'
+        continue-on-error: true
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          set -euo pipefail
+
+          pnpm dlx tsx packages/proxy/scripts/verify_proxy_models.ts \
+            --proxy-base-url "${{ inputs.proxy_base_url }}" \
+            --model-file "${{ steps.models.outputs.path }}" \
+            --output "$RUNNER_TEMP/verification-results.json" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Summarize verification results
+        id: summary
+        if: always()
+        shell: bash
+        env:
+          MODEL_COUNT: ${{ steps.models.outputs.count }}
+        run: |
+          set -euo pipefail
+
+          if [ "${MODEL_COUNT:-0}" = "0" ]; then
+            {
+              echo "failed_count=0"
+              echo "failed_models_json=[]"
+              echo "passed_count=0"
+              echo "passed_models_json=[]"
+              echo "results_json=[]"
+              echo "tested_models_json=[]"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          node -e '
+          const fs = require("fs");
+          const path = process.argv[1];
+          const results = JSON.parse(fs.readFileSync(path, "utf8"));
+          const testedModels = results.map((result) => result.model);
+          const passedModels = results.filter((result) => result.ok).map((result) => result.model);
+          const failedModels = results.filter((result) => !result.ok).map((result) => result.model);
+          const output = process.env.GITHUB_OUTPUT;
+
+          fs.appendFileSync(output, `failed_count=${failedModels.length}\n`);
+          fs.appendFileSync(output, `failed_models_json=${JSON.stringify(failedModels)}\n`);
+          fs.appendFileSync(output, `passed_count=${passedModels.length}\n`);
+          fs.appendFileSync(output, `passed_models_json=${JSON.stringify(passedModels)}\n`);
+          fs.appendFileSync(output, `results_json=${JSON.stringify(results)}\n`);
+          fs.appendFileSync(output, `tested_models_json=${JSON.stringify(testedModels)}\n`);
+          ' "$RUNNER_TEMP/verification-results.json"
+
+      - name: Fail if verification failed
+        if: steps.verify.outcome == 'failure'
+        shell: bash
+        run: |
+          echo "One or more models failed verification." >&2
+          exit 1

@@ -3605,6 +3605,18 @@
       "together"
     ]
   },
+  "deepseek-ai/DeepSeek-V4-Pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "DeepSeek V4 Pro",
+    "max_input_tokens": 512000,
+    "available_providers": [
+      "together"
+    ]
+  },
   "accounts/fireworks/models/deepseek-r1-0528": {
     "format": "openai",
     "flavor": "chat",
@@ -4640,6 +4652,18 @@
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Qwen QwQ 32B Preview",
     "deprecated": true
+  },
+  "Qwen/Qwen3.5-397B-A17B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3.6,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "Qwen3.5 397B A17B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
   },
   "magistral-medium-latest": {
     "format": "openai",

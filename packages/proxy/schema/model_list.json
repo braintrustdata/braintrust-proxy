@@ -10056,6 +10056,30 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/deepseek-v4-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.74,
+    "output_cost_per_mil_tokens": 3.48,
+    "input_cache_read_cost_per_mil_tokens": 0.145,
+    "displayName": "DeepSeek V4 Pro",
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/minimax-m2p7": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "MiniMax M2.7",
+    "max_input_tokens": 196608,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "dall-e-3": {
     "format": "openai",
     "flavor": "chat",

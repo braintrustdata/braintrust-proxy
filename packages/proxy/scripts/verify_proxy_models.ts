@@ -2,11 +2,44 @@ import fs from "fs";
 import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import {
-  getAvailableModels,
-  type ModelEndpointType,
-  type ModelFormat,
-} from "../schema/models";
+
+type ModelEndpointType =
+  | "openai"
+  | "braintrust"
+  | "anthropic"
+  | "google"
+  | "mistral"
+  | "bedrock"
+  | "vertex"
+  | "together"
+  | "fireworks"
+  | "baseten"
+  | "perplexity"
+  | "xAI"
+  | "groq"
+  | "azure"
+  | "databricks"
+  | "lepton"
+  | "cerebras"
+  | "ollama"
+  | "replicate"
+  | "js";
+
+type ModelFormat =
+  | "openai"
+  | "anthropic"
+  | "google"
+  | "window"
+  | "js"
+  | "converse";
+
+type VerificationModelSpec = {
+  available_providers?: ModelEndpointType[];
+  endpoint_types?: ModelEndpointType[];
+  format?: ModelFormat;
+};
+
+type ModelCatalog = Record<string, VerificationModelSpec>;
 
 type VerificationRequest = {
   endpoint: string;
@@ -39,6 +72,23 @@ function readModelIdsFromFile(path: string): string[] {
     throw new Error(`Model file must be a JSON array of strings: ${path}`);
   }
   return parsed;
+}
+
+function defaultModelCatalogPath(): string {
+  return new URL("../schema/model_list.json", import.meta.url).pathname;
+}
+
+function readModelCatalog(path?: string): ModelCatalog {
+  const parsed: unknown = JSON.parse(
+    fs.readFileSync(path ?? defaultModelCatalogPath(), "utf8"),
+  );
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error(
+      `Model catalog must be a JSON object keyed by model id: ${path ?? defaultModelCatalogPath()}`,
+    );
+  }
+
+  return parsed as ModelCatalog;
 }
 
 function uniqueModelIds(modelIds: string[]): string[] {
@@ -86,8 +136,9 @@ const defaultEndpointTypesByFormat: Record<ModelFormat, ModelEndpointType[]> = {
 
 export function getModelEndpointTypesForVerification(
   model: string,
+  modelCatalog: ModelCatalog = readModelCatalog(),
 ): ModelEndpointType[] {
-  const modelSpec = getAvailableModels()[model];
+  const modelSpec = modelCatalog[model];
   if (!modelSpec) {
     return [];
   }
@@ -103,12 +154,16 @@ export function getModelEndpointTypesForVerification(
 export function resolveApiKeyForModel(
   model: string,
   explicitApiKey?: string,
+  modelCatalog: ModelCatalog = readModelCatalog(),
 ): string {
   if (explicitApiKey) {
     return explicitApiKey;
   }
 
-  for (const endpointType of getModelEndpointTypesForVerification(model)) {
+  for (const endpointType of getModelEndpointTypesForVerification(
+    model,
+    modelCatalog,
+  )) {
     for (const envVarName of endpointTypeToApiKeyEnvVars[endpointType] ?? []) {
       const providerApiKey = process.env[envVarName];
       if (providerApiKey) {
@@ -242,6 +297,11 @@ async function main(): Promise<void> {
       describe: "Path to a JSON file containing a string array of model ids",
       type: "string",
     })
+    .option("model-catalog-file", {
+      describe:
+        "Path to a JSON file containing a model catalog keyed by model id. Defaults to packages/proxy/schema/model_list.json.",
+      type: "string",
+    })
     .option("output", {
       describe: "Optional path to write the verification results JSON",
       type: "string",
@@ -282,11 +342,12 @@ async function main(): Promise<void> {
   if (modelIds.length === 0) {
     throw new Error("No models provided. Pass --model and/or --model-file.");
   }
+  const modelCatalog = readModelCatalog(argv["model-catalog-file"]);
 
   const results: VerificationResult[] = [];
 
   for (const model of modelIds) {
-    const apiKey = resolveApiKeyForModel(model, argv["api-key"]);
+    const apiKey = resolveApiKeyForModel(model, argv["api-key"], modelCatalog);
     let result: VerificationResult | null = null;
     for (let attempt = 1; attempt <= argv["max-attempts"]; attempt++) {
       result = await verifyModel({

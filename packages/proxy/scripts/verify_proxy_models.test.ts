@@ -78,7 +78,14 @@ describe("resolveApiKeyForModel", () => {
     process.env.GEMINI_API_KEY = "gemini-env-key";
     process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
 
-    expect(resolveApiKeyForModel("gemini-2.5-flash")).toBe("gemini-env-key");
+    expect(
+      resolveApiKeyForModel("gemini-2.5-flash", undefined, {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toBe("gemini-env-key");
 
     delete process.env.GEMINI_API_KEY;
     delete process.env.BRAINTRUST_API_KEY;
@@ -95,9 +102,14 @@ describe("resolveApiKeyForModel", () => {
   it("uses an explicit key when present", () => {
     process.env.GEMINI_API_KEY = "gemini-env-key";
 
-    expect(resolveApiKeyForModel("gemini-2.5-flash", "explicit-key")).toBe(
-      "explicit-key",
-    );
+    expect(
+      resolveApiKeyForModel("gemini-2.5-flash", "explicit-key", {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toBe("explicit-key");
 
     delete process.env.GEMINI_API_KEY;
   });
@@ -105,14 +117,31 @@ describe("resolveApiKeyForModel", () => {
 
 describe("getModelEndpointTypesForVerification", () => {
   it("prefers available providers from the static model list", () => {
-    expect(getModelEndpointTypesForVerification("gemini-2.5-flash")).toEqual([
-      "google",
-      "vertex",
-    ]);
+    expect(
+      getModelEndpointTypesForVerification("gemini-2.5-flash", {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toEqual(["google", "vertex"]);
   });
 
   it("returns an empty array for unknown models", () => {
-    expect(getModelEndpointTypesForVerification("unknown-model")).toEqual([]);
+    expect(getModelEndpointTypesForVerification("unknown-model", {})).toEqual(
+      [],
+    );
+  });
+
+  it("uses the passed-in catalog for newly added models", () => {
+    expect(
+      getModelEndpointTypesForVerification("gemini-2.5-flash-image", {
+        "gemini-2.5-flash-image": {
+          available_providers: ["google"],
+          format: "google",
+        },
+      }),
+    ).toEqual(["google"]);
   });
 });
 

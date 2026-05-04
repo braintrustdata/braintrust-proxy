@@ -160,6 +160,7 @@ jobs:
 
           if [ -n "$EXPLICIT_MODEL_IDS_JSON" ]; then
             printf '%s' "$EXPLICIT_MODEL_IDS_JSON" > "$RUNNER_TEMP/changed-models.json"
+            catalog_path="packages/proxy/schema/model_list.json"
           else
             if [ -z "$BASE_REF" ]; then
               echo "Either model_ids_json or base_ref must be provided" >&2
@@ -192,6 +193,7 @@ jobs:
               --before "$RUNNER_TEMP/model_list.before.json" \
               --after "$RUNNER_TEMP/model_list.after.json" \
               --output "$RUNNER_TEMP/changed-models.json"
+            catalog_path="$RUNNER_TEMP/model_list.after.json"
           fi
 
           compact_json=$(node -e 'const fs=require("fs"); const parsed=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(JSON.stringify(parsed));' "$RUNNER_TEMP/changed-models.json")
@@ -200,6 +202,7 @@ jobs:
           {
             echo "json=$compact_json"
             echo "count=$count"
+            echo "catalog_path=$catalog_path"
             echo "path=$RUNNER_TEMP/changed-models.json"
           } >> "$GITHUB_OUTPUT"
 
@@ -233,6 +236,7 @@ jobs:
           pnpm dlx tsx packages/proxy/scripts/verify_proxy_models.ts \
             --proxy-base-url "${{ inputs.proxy_base_url }}" \
             --model-file "${{ steps.models.outputs.path }}" \
+            --model-catalog-file "${{ steps.models.outputs.catalog_path }}" \
             --output "$RUNNER_TEMP/verification-results.json" \
             --github-output "$GITHUB_OUTPUT"
 

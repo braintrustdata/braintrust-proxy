@@ -6497,32 +6497,6 @@
       "vertex"
     ]
   },
-  "gemini-embedding-2-preview": {
-    "format": "google",
-    "flavor": "embedding",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "displayName": "Gemini Embedding 2 Preview",
-    "max_input_tokens": 8192,
-    "available_providers": [
-      "google",
-      "vertex"
-    ]
-  },
-  "gemini-2.5-computer-use-preview-10-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "google",
-      "vertex"
-    ]
-  },
   "grok-4-0709": {
     "format": "openai",
     "flavor": "chat",

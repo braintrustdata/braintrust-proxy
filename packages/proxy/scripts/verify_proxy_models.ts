@@ -2,7 +2,44 @@ import fs from "fs";
 import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { getAvailableModels, type ModelSpec } from "../schema/models";
+
+type ModelEndpointType =
+  | "openai"
+  | "braintrust"
+  | "anthropic"
+  | "google"
+  | "mistral"
+  | "bedrock"
+  | "vertex"
+  | "together"
+  | "fireworks"
+  | "baseten"
+  | "perplexity"
+  | "xAI"
+  | "groq"
+  | "azure"
+  | "databricks"
+  | "lepton"
+  | "cerebras"
+  | "ollama"
+  | "replicate"
+  | "js";
+
+type ModelFormat =
+  | "openai"
+  | "anthropic"
+  | "google"
+  | "window"
+  | "js"
+  | "converse";
+
+type VerificationModelSpec = {
+  available_providers?: ModelEndpointType[];
+  endpoint_types?: ModelEndpointType[];
+  format?: ModelFormat;
+};
+
+type ModelCatalog = Record<string, VerificationModelSpec>;
 
 type VerificationRequest = {
   endpoint: string;
@@ -37,6 +74,23 @@ function readModelIdsFromFile(path: string): string[] {
   return parsed;
 }
 
+function defaultModelCatalogPath(): string {
+  return new URL("../schema/model_list.json", import.meta.url).pathname;
+}
+
+function readModelCatalog(path?: string): ModelCatalog {
+  const parsed: unknown = JSON.parse(
+    fs.readFileSync(path ?? defaultModelCatalogPath(), "utf8"),
+  );
+  if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
+    throw new Error(
+      `Model catalog must be a JSON object keyed by model id: ${path ?? defaultModelCatalogPath()}`,
+    );
+  }
+
+  return parsed as ModelCatalog;
+}
+
 function uniqueModelIds(modelIds: string[]): string[] {
   return Array.from(
     new Set(modelIds.map((modelId) => modelId.trim()).filter(Boolean)),
@@ -53,6 +107,74 @@ export function resolveBraintrustApiKey(explicitApiKey?: string): string {
   return apiKey;
 }
 
+const endpointTypeToApiKeyEnvVars: Partial<
+  Record<ModelEndpointType, string[]>
+> = {
+  anthropic: ["ANTHROPIC_API_KEY"],
+  baseten: ["BASETEN_API_KEY"],
+  cerebras: ["CEREBRAS_API_KEY"],
+  fireworks: ["FIREWORKS_API_KEY"],
+  google: ["GEMINI_API_KEY"],
+  groq: ["GROQ_API_KEY"],
+  lepton: ["LEPTON_API_KEY"],
+  mistral: ["MISTRAL_API_KEY"],
+  openai: ["OPENAI_API_KEY"],
+  perplexity: ["PERPLEXITY_API_KEY"],
+  replicate: ["REPLICATE_API_KEY"],
+  together: ["TOGETHER_API_KEY"],
+  xAI: ["XAI_API_KEY"],
+};
+
+const defaultEndpointTypesByFormat: Record<ModelFormat, ModelEndpointType[]> = {
+  anthropic: ["anthropic"],
+  converse: ["bedrock"],
+  google: ["google"],
+  js: ["js"],
+  openai: ["openai", "azure"],
+  window: ["js"],
+};
+
+export function getModelEndpointTypesForVerification(
+  model: string,
+  modelCatalog: ModelCatalog = readModelCatalog(),
+): ModelEndpointType[] {
+  const modelSpec = modelCatalog[model];
+  if (!modelSpec) {
+    return [];
+  }
+
+  return (
+    modelSpec.available_providers ??
+    modelSpec.endpoint_types ??
+    defaultEndpointTypesByFormat[modelSpec.format] ??
+    []
+  );
+}
+
+export function resolveApiKeyForModel(
+  model: string,
+  explicitApiKey?: string,
+  modelCatalog: ModelCatalog = readModelCatalog(),
+): string {
+  if (explicitApiKey) {
+    return explicitApiKey;
+  }
+
+  for (const endpointType of getModelEndpointTypesForVerification(
+    model,
+    modelCatalog,
+  )) {
+    for (const envVarName of endpointTypeToApiKeyEnvVars[endpointType] ?? []) {
+      const providerApiKey = process.env[envVarName];
+      if (providerApiKey) {
+        return providerApiKey;
+      }
+    }
+  }
+
+  return resolveBraintrustApiKey();
+}
+
 export function resolveVercelProtectionBypassSecret(
   explicitSecret?: string,
 ): string {
@@ -65,10 +187,7 @@ export function resolveVercelProtectionBypassSecret(
   return secret;
 }
 
-export function buildVerificationRequest(
-  model: string,
-  _modelSpec: ModelSpec,
-): VerificationRequest {
+export function buildVerificationRequest(model: string): VerificationRequest {
   return {
     endpoint: "chat/completions",
     body: {
@@ -108,12 +227,11 @@ export function extractErrorMessage(responseBody: string): string {
 async function verifyModel(args: {
   apiKey: string;
   model: string;
-  modelSpec: ModelSpec;
   proxyBaseUrl: string;
   timeoutMs: number;
   vercelProtectionBypassSecret: string;
 }): Promise<VerificationResult> {
-  const request = buildVerificationRequest(args.model, args.modelSpec);
+  const request = buildVerificationRequest(args.model);
   const url = new URL(request.endpoint, withTrailingSlash(args.proxyBaseUrl));
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), args.timeoutMs);
@@ -158,7 +276,7 @@ async function main(): Promise<void> {
   const argv = await yargs(hideBin(process.argv))
     .option("api-key", {
       describe:
-        "Braintrust API key to send to the proxy. Defaults to BRAINTRUST_API_KEY.",
+        "API key to send to the proxy for every model. When omitted, the script prefers provider-specific env vars from the proxy schema and falls back to BRAINTRUST_API_KEY.",
       type: "string",
     })
     .option("github-output", {
@@ -177,6 +295,11 @@ async function main(): Promise<void> {
     })
     .option("model-file", {
       describe: "Path to a JSON file containing a string array of model ids",
+      type: "string",
+    })
+    .option("model-catalog-file", {
+      describe:
+        "Path to a JSON file containing a model catalog keyed by model id. Defaults to packages/proxy/schema/model_list.json.",
       type: "string",
     })
     .option("output", {
@@ -207,7 +330,6 @@ async function main(): Promise<void> {
     .strict()
     .help()
     .parseAsync();
-  const apiKey = resolveBraintrustApiKey(argv["api-key"]);
   const vercelProtectionBypassSecret = resolveVercelProtectionBypassSecret(
     argv["vercel-protection-bypass"],
   );
@@ -220,29 +342,17 @@ async function main(): Promise<void> {
   if (modelIds.length === 0) {
     throw new Error("No models provided. Pass --model and/or --model-file.");
   }
+  const modelCatalog = readModelCatalog(argv["model-catalog-file"]);
 
-  const availableModels = getAvailableModels();
   const results: VerificationResult[] = [];
 
   for (const model of modelIds) {
-    const modelSpec = availableModels[model];
-    if (!modelSpec) {
-      results.push({
-        endpoint: "n/a",
-        error: "Model is not present in the local catalog",
-        model,
-        ok: false,
-        responseBody: "Model is not present in the local catalog",
-      });
-      continue;
-    }
-
+    const apiKey = resolveApiKeyForModel(model, argv["api-key"], modelCatalog);
     let result: VerificationResult | null = null;
     for (let attempt = 1; attempt <= argv["max-attempts"]; attempt++) {
       result = await verifyModel({
         apiKey,
         model,
-        modelSpec,
         proxyBaseUrl: argv["proxy-base-url"],
         timeoutMs: argv["timeout-ms"],
         vercelProtectionBypassSecret,

@@ -2,6 +2,11 @@ import fs from "fs";
 import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import {
+  getAvailableModels,
+  type ModelEndpointType,
+  type ModelFormat,
+} from "../schema/models";
 
 type VerificationRequest = {
   endpoint: string;
@@ -50,6 +55,69 @@ export function resolveBraintrustApiKey(explicitApiKey?: string): string {
     );
   }
   return apiKey;
+}
+
+const endpointTypeToApiKeyEnvVars: Partial<
+  Record<ModelEndpointType, string[]>
+> = {
+  anthropic: ["ANTHROPIC_API_KEY"],
+  baseten: ["BASETEN_API_KEY"],
+  cerebras: ["CEREBRAS_API_KEY"],
+  fireworks: ["FIREWORKS_API_KEY"],
+  google: ["GEMINI_API_KEY"],
+  groq: ["GROQ_API_KEY"],
+  lepton: ["LEPTON_API_KEY"],
+  mistral: ["MISTRAL_API_KEY"],
+  openai: ["OPENAI_API_KEY"],
+  perplexity: ["PERPLEXITY_API_KEY"],
+  replicate: ["REPLICATE_API_KEY"],
+  together: ["TOGETHER_API_KEY"],
+  xAI: ["XAI_API_KEY"],
+};
+
+const defaultEndpointTypesByFormat: Record<ModelFormat, ModelEndpointType[]> = {
+  anthropic: ["anthropic"],
+  converse: ["bedrock"],
+  google: ["google"],
+  js: ["js"],
+  openai: ["openai", "azure"],
+  window: ["js"],
+};
+
+export function getModelEndpointTypesForVerification(
+  model: string,
+): ModelEndpointType[] {
+  const modelSpec = getAvailableModels()[model];
+  if (!modelSpec) {
+    return [];
+  }
+
+  return (
+    modelSpec.available_providers ??
+    modelSpec.endpoint_types ??
+    defaultEndpointTypesByFormat[modelSpec.format] ??
+    []
+  );
+}
+
+export function resolveApiKeyForModel(
+  model: string,
+  explicitApiKey?: string,
+): string {
+  if (explicitApiKey) {
+    return explicitApiKey;
+  }
+
+  for (const endpointType of getModelEndpointTypesForVerification(model)) {
+    for (const envVarName of endpointTypeToApiKeyEnvVars[endpointType] ?? []) {
+      const providerApiKey = process.env[envVarName];
+      if (providerApiKey) {
+        return providerApiKey;
+      }
+    }
+  }
+
+  return resolveBraintrustApiKey();
 }
 
 export function resolveVercelProtectionBypassSecret(
@@ -153,7 +221,7 @@ async function main(): Promise<void> {
   const argv = await yargs(hideBin(process.argv))
     .option("api-key", {
       describe:
-        "Braintrust API key to send to the proxy. Defaults to BRAINTRUST_API_KEY.",
+        "API key to send to the proxy for every model. When omitted, the script prefers provider-specific env vars from the proxy schema and falls back to BRAINTRUST_API_KEY.",
       type: "string",
     })
     .option("github-output", {
@@ -202,7 +270,6 @@ async function main(): Promise<void> {
     .strict()
     .help()
     .parseAsync();
-  const apiKey = resolveBraintrustApiKey(argv["api-key"]);
   const vercelProtectionBypassSecret = resolveVercelProtectionBypassSecret(
     argv["vercel-protection-bypass"],
   );
@@ -219,6 +286,7 @@ async function main(): Promise<void> {
   const results: VerificationResult[] = [];
 
   for (const model of modelIds) {
+    const apiKey = resolveApiKeyForModel(model, argv["api-key"]);
     let result: VerificationResult | null = null;
     for (let attempt = 1; attempt <= argv["max-attempts"]; attempt++) {
       result = await verifyModel({

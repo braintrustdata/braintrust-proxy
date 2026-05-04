@@ -609,6 +609,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-beta": ["xAI"],
   "deepseek-ai/DeepSeek-V4-Pro": ["together"],
   "Qwen/Qwen3.5-397B-A17B": ["together"],
+  "accounts/fireworks/models/deepseek-v4-pro": ["fireworks"],
+  "accounts/fireworks/models/minimax-m2p7": ["fireworks"],
   "grok-4.3": ["xAI"],
   "mistral-large-2512": ["mistral"],
   "mistral-small-2603": ["mistral"],

@@ -2,18 +2,15 @@ import { describe, expect, it } from "vitest";
 import {
   buildVerificationRequest,
   extractErrorMessage,
+  getModelEndpointTypesForVerification,
+  resolveApiKeyForModel,
   resolveBraintrustApiKey,
   resolveVercelProtectionBypassSecret,
 } from "./verify_proxy_models";
 
 describe("buildVerificationRequest", () => {
-  it("builds a chat completion verification request for chat models", () => {
-    expect(
-      buildVerificationRequest("gpt-4o", {
-        flavor: "chat",
-        format: "openai",
-      }),
-    ).toEqual({
+  it("builds a chat completion verification request", () => {
+    expect(buildVerificationRequest("gpt-4o")).toEqual({
       body: {
         messages: [
           {
@@ -22,46 +19,6 @@ describe("buildVerificationRequest", () => {
           },
         ],
         model: "gpt-4o",
-      },
-      endpoint: "chat/completions",
-    });
-  });
-
-  it("uses chat completions for completion models too", () => {
-    expect(
-      buildVerificationRequest("gpt-3.5-turbo-instruct", {
-        flavor: "completion",
-        format: "openai",
-      }),
-    ).toEqual({
-      body: {
-        messages: [
-          {
-            content: "ok",
-            role: "user",
-          },
-        ],
-        model: "gpt-3.5-turbo-instruct",
-      },
-      endpoint: "chat/completions",
-    });
-  });
-
-  it("uses chat completions for embedding models too", () => {
-    expect(
-      buildVerificationRequest("text-embedding-3-small", {
-        flavor: "embedding",
-        format: "openai",
-      }),
-    ).toEqual({
-      body: {
-        messages: [
-          {
-            content: "ok",
-            role: "user",
-          },
-        ],
-        model: "text-embedding-3-small",
       },
       endpoint: "chat/completions",
     });
@@ -113,6 +70,78 @@ describe("resolveBraintrustApiKey", () => {
     delete process.env.BRAINTRUST_API_KEY;
 
     expect(() => resolveBraintrustApiKey()).toThrow("Missing API key");
+  });
+});
+
+describe("resolveApiKeyForModel", () => {
+  it("prefers a provider-specific key based on the model endpoint type", () => {
+    process.env.GEMINI_API_KEY = "gemini-env-key";
+    process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
+
+    expect(
+      resolveApiKeyForModel("gemini-2.5-flash", undefined, {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toBe("gemini-env-key");
+
+    delete process.env.GEMINI_API_KEY;
+    delete process.env.BRAINTRUST_API_KEY;
+  });
+
+  it("falls back to BRAINTRUST_API_KEY when no provider-specific key exists", () => {
+    process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
+
+    expect(resolveApiKeyForModel("unknown-model")).toBe("braintrust-env-key");
+
+    delete process.env.BRAINTRUST_API_KEY;
+  });
+
+  it("uses an explicit key when present", () => {
+    process.env.GEMINI_API_KEY = "gemini-env-key";
+
+    expect(
+      resolveApiKeyForModel("gemini-2.5-flash", "explicit-key", {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toBe("explicit-key");
+
+    delete process.env.GEMINI_API_KEY;
+  });
+});
+
+describe("getModelEndpointTypesForVerification", () => {
+  it("prefers available providers from the static model list", () => {
+    expect(
+      getModelEndpointTypesForVerification("gemini-2.5-flash", {
+        "gemini-2.5-flash": {
+          available_providers: ["google", "vertex"],
+          format: "google",
+        },
+      }),
+    ).toEqual(["google", "vertex"]);
+  });
+
+  it("returns an empty array for unknown models", () => {
+    expect(getModelEndpointTypesForVerification("unknown-model", {})).toEqual(
+      [],
+    );
+  });
+
+  it("uses the passed-in catalog for newly added models", () => {
+    expect(
+      getModelEndpointTypesForVerification("gemini-2.5-flash-image", {
+        "gemini-2.5-flash-image": {
+          available_providers: ["google"],
+          format: "google",
+        },
+      }),
+    ).toEqual(["google"]);
   });
 });
 

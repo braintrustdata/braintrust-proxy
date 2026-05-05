@@ -131,7 +131,10 @@ export const MistralMetadataSchema = BaseMetadataSchema.merge(
 
 export const OllamaMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
+    api_base: z
+      .union([z.string().url(), z.string().length(0)])
+      .nullish()
+      .catch(undefined),
   }),
 ).passthrough();
 

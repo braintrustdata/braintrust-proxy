@@ -4672,6 +4672,8 @@
     "output_cost_per_mil_tokens": 3,
     "displayName": "Qwen3.6 Plus",
     "max_input_tokens": 1000000,
+    "supports_streaming": true,
+    "streaming_only": true,
     "available_providers": [
       "together"
     ]

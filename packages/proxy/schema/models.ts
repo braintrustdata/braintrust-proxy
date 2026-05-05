@@ -96,6 +96,16 @@ export const ModelSchema = z.object({
     .number()
     .nullish()
     .describe("The model supports a maximum output token limit."),
+  supports_streaming: z
+    .boolean()
+    .nullish()
+    .describe("The model supports native streaming responses."),
+  streaming_only: z
+    .boolean()
+    .nullish()
+    .describe(
+      "The upstream provider requires requests for this model to be sent with streaming enabled.",
+    ),
   available_providers: z.array(z.enum(ModelEndpointType)).nullish(),
 });
 

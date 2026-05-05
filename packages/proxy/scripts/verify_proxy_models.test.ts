@@ -23,6 +23,30 @@ describe("buildVerificationRequest", () => {
       endpoint: "chat/completions",
     });
   });
+
+  it("forces stream mode for streaming-only models", () => {
+    expect(
+      buildVerificationRequest("Qwen/Qwen3.6-Plus", {
+        "Qwen/Qwen3.6-Plus": {
+          available_providers: ["together"],
+          format: "openai",
+          streaming_only: true,
+        },
+      }),
+    ).toEqual({
+      body: {
+        messages: [
+          {
+            content: "ok",
+            role: "user",
+          },
+        ],
+        model: "Qwen/Qwen3.6-Plus",
+        stream: true,
+      },
+      endpoint: "chat/completions",
+    });
+  });
 });
 
 describe("extractErrorMessage", () => {

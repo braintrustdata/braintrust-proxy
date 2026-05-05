@@ -37,6 +37,7 @@ type VerificationModelSpec = {
   available_providers?: ModelEndpointType[];
   endpoint_types?: ModelEndpointType[];
   format?: ModelFormat;
+  streaming_only?: boolean;
 };
 
 type ModelCatalog = Record<string, VerificationModelSpec>;
@@ -187,7 +188,11 @@ export function resolveVercelProtectionBypassSecret(
   return secret;
 }
 
-export function buildVerificationRequest(model: string): VerificationRequest {
+export function buildVerificationRequest(
+  model: string,
+  modelCatalog: ModelCatalog = readModelCatalog(),
+): VerificationRequest {
+  const modelSpec = modelCatalog[model];
   return {
     endpoint: "chat/completions",
     body: {
@@ -198,6 +203,7 @@ export function buildVerificationRequest(model: string): VerificationRequest {
         },
       ],
       model,
+      ...(modelSpec?.streaming_only ? { stream: true } : {}),
     },
   };
 }
@@ -227,11 +233,12 @@ export function extractErrorMessage(responseBody: string): string {
 async function verifyModel(args: {
   apiKey: string;
   model: string;
+  modelCatalog: ModelCatalog;
   proxyBaseUrl: string;
   timeoutMs: number;
   vercelProtectionBypassSecret: string;
 }): Promise<VerificationResult> {
-  const request = buildVerificationRequest(args.model);
+  const request = buildVerificationRequest(args.model, args.modelCatalog);
   const url = new URL(request.endpoint, withTrailingSlash(args.proxyBaseUrl));
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), args.timeoutMs);
@@ -353,6 +360,7 @@ async function main(): Promise<void> {
       result = await verifyModel({
         apiKey,
         model,
+        modelCatalog,
         proxyBaseUrl: argv["proxy-base-url"],
         timeoutMs: argv["timeout-ms"],
         vercelProtectionBypassSecret,

@@ -389,16 +389,6 @@ export async function proxyV1({
     }
   }
 
-  if (
-    model &&
-    isObject(bodyData) &&
-    getAvailableModels()[model]?.streaming_only === true &&
-    bodyData.stream !== true
-  ) {
-    bodyData.stream = true;
-    body = JSON.stringify(bodyData);
-  }
-
   // Create attributes object that includes model for all metrics
   // Use undefined instead of null since OpenTelemetry doesn't accept null
   const baseAttributes: Record<string, string | undefined> = {

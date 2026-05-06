@@ -312,44 +312,67 @@ jobs:
       - name: Post verification summary to PR
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          FAILED_COUNT: ${{ needs.verify.outputs.failed_count }}
-          FAILED_MODELS_JSON: ${{ needs.verify.outputs.failed_models_json }}
-          PASSED_COUNT: ${{ needs.verify.outputs.passed_count }}
-          PASSED_MODELS_JSON: ${{ needs.verify.outputs.passed_models_json }}
           PULL_REQUEST_NUMBER: ${{ needs.prepare.outputs.pull_request_number }}
-          TESTED_MODELS_JSON: ${{ needs.verify.outputs.tested_models_json }}
+          RESULTS_JSON: ${{ needs.verify.outputs.results_json }}
           VERIFY_RESULT: ${{ needs.verify.result }}
         with:
           github-token: ${{ github.token }}
           script: |
             const marker = "<!-- proxy-model-verification -->";
 
-            function parseJsonArray(raw) {
+            function parseResults(raw) {
               if (!raw) {
                 return [];
               }
-
               try {
                 const parsed = JSON.parse(raw);
-                return Array.isArray(parsed) ? parsed.filter((value) => typeof value === "string") : [];
+                return Array.isArray(parsed) ? parsed : [];
               } catch (_error) {
                 return [];
               }
             }
 
-            function formatModels(models) {
-              if (models.length === 0) {
-                return "- None";
+            function extractReason(result) {
+              if (typeof result.error === "string" && result.error.length > 0) {
+                return result.error;
               }
-
-              return models.map((model) => `- \`${model}\``).join("\n");
+              if (typeof result.responseBody === "string" && result.responseBody.length > 0) {
+                try {
+                  const parsed = JSON.parse(result.responseBody);
+                  if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
+                    if (typeof parsed.message === "string") return parsed.message;
+                    if (parsed.error !== null && typeof parsed.error === "object" && typeof parsed.error.message === "string") {
+                      return parsed.error.message;
+                    }
+                  }
+                } catch (_error) {}
+                return result.responseBody.slice(0, 300);
+              }
+              return "";
             }
 
-            const testedModels = parseJsonArray(process.env.TESTED_MODELS_JSON);
-            const passedModels = parseJsonArray(process.env.PASSED_MODELS_JSON);
-            const failedModels = parseJsonArray(process.env.FAILED_MODELS_JSON);
-            const failedCount = Number(process.env.FAILED_COUNT || "0");
-            const passedCount = Number(process.env.PASSED_COUNT || "0");
+            function formatTable(results) {
+              if (results.length === 0) {
+                return "_No models were tested._";
+              }
+
+              const rows = results.map((result) => {
+                const status = result.ok ? "✅ Passed" : "❌ Failed";
+                const reason = result.ok ? "" : (extractReason(result) || "Unknown error");
+                const escapedReason = reason.replace(/\|/g, "\\|").replace(/\n/g, " ");
+                return `| \`${result.model}\` | ${status} | ${escapedReason} |`;
+              });
+
+              return [
+                "| Model | Status | Reason |",
+                "| --- | --- | --- |",
+                ...rows,
+              ].join("\n");
+            }
+
+            const results = parseResults(process.env.RESULTS_JSON);
+            const failedCount = results.filter((r) => !r.ok).length;
+            const passedCount = results.filter((r) => r.ok).length;
             const pullRequestNumber = Number(process.env.PULL_REQUEST_NUMBER || "0");
             const verifyResult = process.env.VERIFY_RESULT || "unknown";
 
@@ -361,7 +384,7 @@ jobs:
             let statusLine = "Verification completed successfully.";
             if (verifyResult === "failure" || failedCount > 0) {
               statusLine = "Verification failed for one or more models.";
-            } else if (testedModels.length === 0) {
+            } else if (results.length === 0) {
               statusLine = "No changed models required verification.";
             }
 
@@ -374,14 +397,7 @@ jobs:
               `Passed: ${passedCount}`,
               `Failed: ${failedCount}`,
               "",
-              "Tested models",
-              formatModels(testedModels),
-              "",
-              "Passed models",
-              formatModels(passedModels),
-              "",
-              "Failed models",
-              formatModels(failedModels),
+              formatTable(results),
             ].join("\n");
 
             try {

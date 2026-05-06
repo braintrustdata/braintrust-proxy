@@ -4719,6 +4719,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Magistral Small (2506)",
     "parent": "magistral-small-latest",
     "max_input_tokens": 40000,
     "max_output_tokens": 40000,
@@ -4731,7 +4732,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 5,
-    "displayName": "Magistral Medium 1.2 (2509)",
+    "displayName": "Magistral Medium (2509)",
     "parent": "magistral-medium-latest",
     "max_input_tokens": 128000,
     "available_providers": [
@@ -4743,7 +4744,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Magistral Small 1.2 (2509)",
+    "displayName": "Magistral Small (2509)",
     "parent": "magistral-small-latest",
     "max_input_tokens": 128000,
     "available_providers": [

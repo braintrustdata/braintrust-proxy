@@ -37,6 +37,9 @@
   },
   "packageManager": "pnpm@10.33.0",
   "resolutions": {
+    "handlebars": "4.7.8",
+    "protobufjs": "7.5.5",
+    "simple-git": "3.32.3",
     "zod": "3.25.34"
   }
 }

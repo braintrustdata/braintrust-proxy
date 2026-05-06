@@ -50,6 +50,8 @@ on:
         required: false
       BASETEN_API_KEY:
         required: false
+      BEDROCK_API_KEY:
+        required: false
       BRAINTRUST_API_KEY:
         required: true
       CEREBRAS_API_KEY:
@@ -218,6 +220,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+          BEDROCK_API_KEY: ${{ secrets.BEDROCK_API_KEY }}
           BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
           CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
           FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}

@@ -11339,5 +11339,17 @@
     "available_providers": [
       "baseten"
     ]
+  },
+  "deepseek.v3.2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.62,
+    "output_cost_per_mil_tokens": 1.85,
+    "displayName": "DeepSeek V3.2",
+    "max_input_tokens": 164000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

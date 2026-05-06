@@ -607,6 +607,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "deepseek.v3.2": ["bedrock"],
   "Qwen/Qwen3.6-Plus": ["together"],
   "zai-org/GLM-5.1": ["together"],
   "MiniMaxAI/MiniMax-M2.7": ["together"],

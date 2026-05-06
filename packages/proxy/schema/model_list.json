@@ -3081,6 +3081,28 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Gemma Instruct (2B)"
   },
+  "google/gemma-4-31B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "Gemma 4 31B IT",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "google/gemma-3n-E4B-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.12,
+    "displayName": "Gemma 3n E4B IT",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "together"
+    ]
+  },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     "format": "openai",
     "flavor": "chat",

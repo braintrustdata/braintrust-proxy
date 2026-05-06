@@ -607,6 +607,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "google/gemma-4-31B-it": ["together"],
+  "google/gemma-3n-E4B-it": ["together"],
   "Qwen/Qwen3.5-9B": ["together"],
   "Qwen/Qwen3-Coder-Next-FP8": ["together"],
   "Qwen/Qwen3-235B-A22B-Instruct-2507-tput": ["together"],

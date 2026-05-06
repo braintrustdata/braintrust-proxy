@@ -528,6 +528,12 @@ jobs:
             ${{ steps.result.outputs.litellm_comparison_summary }}
 
             ${{ steps.result.outputs.pr_litellm_table }}
+          reviewers: |
+            knjiang
+            cpinn
+            erin2722
+            CLowbrow
+            aswink
           labels: auto-sync
           signoff: false
 

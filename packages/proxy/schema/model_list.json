@@ -7206,6 +7206,29 @@
       "bedrock"
     ]
   },
+  "amazon.nova-premier-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Nova Premier",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 25000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "amazon.nova-2-lite-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Nova 2 Lite",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "us.amazon.nova-lite-v1:0": {
     "format": "converse",
     "flavor": "chat",

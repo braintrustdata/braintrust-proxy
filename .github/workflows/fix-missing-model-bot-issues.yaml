@@ -533,6 +533,7 @@ jobs:
             cpinn
             erin2722
             CLowbrow
+            aswink
           labels: auto-sync
           signoff: false
 

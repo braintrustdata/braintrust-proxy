@@ -129,6 +129,15 @@ export const MistralMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).passthrough();
 
+export const OllamaMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z
+      .union([z.string().url(), z.string().length(0)])
+      .nullish()
+      .catch(undefined),
+  }),
+).passthrough();
+
 export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
@@ -155,7 +164,6 @@ export const APISecretSchema = z.union([
         "replicate",
         "together",
         "baseten",
-        "ollama",
         "groq",
         "lepton",
         "fireworks",
@@ -206,6 +214,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("mistral"),
       metadata: MistralMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("ollama"),
+      metadata: OllamaMetadataSchema.nullish(),
     }),
   ).passthrough(),
 ]);

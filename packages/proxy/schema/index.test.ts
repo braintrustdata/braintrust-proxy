@@ -331,4 +331,29 @@ describe("APISecretSchema compatibility", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("preserves passthrough behavior for legacy Ollama api_base values", () => {
+    const cases: Array<{ name: string; api_base: unknown }> = [
+      { name: "invalid url string", api_base: "not a url" },
+      { name: "bare hostname", api_base: "localhost" },
+      { name: "number", api_base: 12345 },
+      { name: "boolean", api_base: true },
+      { name: "object", api_base: { nested: 1 } },
+    ];
+
+    for (const { name, api_base } of cases) {
+      const parsed = APISecretSchema.parse({
+        secret: "ollama-secret",
+        type: "ollama",
+        metadata: { api_base },
+      });
+      if (parsed.type !== "ollama") {
+        throw new Error(`Expected ollama secret for case '${name}'`);
+      }
+      expect(
+        parsed.metadata?.api_base,
+        `case '${name}' should coerce to undefined to preserve runtime fallback`,
+      ).toBeUndefined();
+    }
+  });
 });

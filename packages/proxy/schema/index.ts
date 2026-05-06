@@ -607,6 +607,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "amazon.nova-premier-v1:0": ["bedrock"],
+  "amazon.nova-2-lite-v1:0": ["bedrock"],
   "magistral-medium-2509": ["mistral"],
   "magistral-small-2509": ["mistral"],
   "google/gemma-4-31B-it": ["together"],

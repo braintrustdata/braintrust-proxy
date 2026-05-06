@@ -113,6 +113,7 @@ const endpointTypeToApiKeyEnvVars: Partial<
 > = {
   anthropic: ["ANTHROPIC_API_KEY"],
   baseten: ["BASETEN_API_KEY"],
+  bedrock: ["BEDROCK_API_KEY"],
   cerebras: ["CEREBRAS_API_KEY"],
   fireworks: ["FIREWORKS_API_KEY"],
   google: ["GEMINI_API_KEY"],

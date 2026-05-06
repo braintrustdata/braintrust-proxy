@@ -332,25 +332,6 @@ jobs:
               }
             }
 
-            function extractReason(result) {
-              if (typeof result.error === "string" && result.error.length > 0) {
-                return result.error;
-              }
-              if (typeof result.responseBody === "string" && result.responseBody.length > 0) {
-                try {
-                  const parsed = JSON.parse(result.responseBody);
-                  if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
-                    if (typeof parsed.message === "string") return parsed.message;
-                    if (parsed.error !== null && typeof parsed.error === "object" && typeof parsed.error.message === "string") {
-                      return parsed.error.message;
-                    }
-                  }
-                } catch (_error) {}
-                return result.responseBody.slice(0, 300);
-              }
-              return "";
-            }
-
             function formatTable(results) {
               if (results.length === 0) {
                 return "_No models were tested._";
@@ -358,14 +339,12 @@ jobs:
 
               const rows = results.map((result) => {
                 const status = result.ok ? "✅ Passed" : "❌ Failed";
-                const reason = result.ok ? "" : (extractReason(result) || "Unknown error");
-                const escapedReason = reason.replace(/\|/g, "\\|").replace(/\n/g, " ");
-                return `| \`${result.model}\` | ${status} | ${escapedReason} |`;
+                return `| \`${result.model}\` | ${status} |`;
               });
 
               return [
-                "| Model | Status | Reason |",
-                "| --- | --- | --- |",
+                "| Model | Status |",
+                "| --- | --- |",
                 ...rows,
               ].join("\n");
             }
@@ -388,6 +367,8 @@ jobs:
               statusLine = "No changed models required verification.";
             }
 
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
             const body = [
               marker,
               "## Proxy model verification",
@@ -398,6 +379,8 @@ jobs:
               `Failed: ${failedCount}`,
               "",
               formatTable(results),
+              "",
+              `[View job details](${runUrl})`,
             ].join("\n");
 
             try {

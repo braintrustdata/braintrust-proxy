@@ -6714,6 +6714,19 @@
       "vertex"
     ]
   },
+  "gemini-2.5-computer-use-preview-10-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "google"
+    ]
+  },
   "grok-4-0709": {
     "format": "openai",
     "flavor": "chat",

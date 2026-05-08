@@ -21,7 +21,7 @@ function processError(res: Response, err: any) {
   res.end();
 }
 
-app.get("/proxy/v1/*", async (req, res) => {
+app.get("/proxy/v1/*splat", async (req, res) => {
   const url = req.url.slice("/proxy/v1".length);
   try {
     await nodeProxyV1({
@@ -39,7 +39,7 @@ app.get("/proxy/v1/*", async (req, res) => {
   }
 });
 
-app.post("/proxy/v1/*", async (req, res) => {
+app.post("/proxy/v1/*splat", async (req, res) => {
   const url = req.url.slice("/proxy/v1".length);
   try {
     await nodeProxyV1({

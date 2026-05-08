@@ -16,6 +16,7 @@
     "test": "vitest run"
   },
   "engines": {
+    "node": ">=24.0.0",
     "pnpm": ">=10.27.0",
     "npm": "please-use-pnpm",
     "yarn": "please-use-pnpm"

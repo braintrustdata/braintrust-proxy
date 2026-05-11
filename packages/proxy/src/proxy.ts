@@ -165,6 +165,30 @@ const GOOGLE_URL_REGEX =
 
 const GOOGLE_API_KEY_HEADER = "x-goog-api-key";
 
+function isAnthropicOAuthBearerSecret(secret: APISecret) {
+  return (
+    secret.type === "anthropic" &&
+    secret.metadata !== null &&
+    secret.metadata !== undefined &&
+    "auth_type" in secret.metadata &&
+    secret.metadata.auth_type === "oauth_bearer"
+  );
+}
+
+export function anthropicAuthHeaders(
+  secret: APISecret,
+): Record<string, string> {
+  if (isAnthropicOAuthBearerSecret(secret)) {
+    return {
+      authorization: `Bearer ${secret.secret}`,
+    };
+  }
+
+  return {
+    "x-api-key": secret.secret,
+  };
+}
+
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
   excludeAuthToken?: boolean;
@@ -2666,7 +2690,7 @@ async function fetchAnthropicMessages({
         {
           method: "POST",
           headers: {
-            "x-api-key": secret.secret,
+            ...anthropicAuthHeaders(secret),
             "content-type": "application/json",
             "anthropic-version": "2023-06-01",
           },
@@ -2769,7 +2793,7 @@ async function fetchAnthropicChatCompletions({
     headers["accept"] = "application/json";
     headers["anthropic-version"] = "2023-06-01";
     headers["host"] = fullURL.host;
-    headers["x-api-key"] = secret.secret;
+    Object.assign(headers, anthropicAuthHeaders(secret));
   }
 
   if (isEmpty(bodyData)) {

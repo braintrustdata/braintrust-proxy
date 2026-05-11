@@ -5,14 +5,14 @@
   "main": "./dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "run-p build:*",
+    "build": "pnpm run build:typecheck && pnpm run build:local && pnpm run build:lambda",
     "build:typecheck": "tsc --noEmit",
     "build:local": "esbuild --platform=node --bundle src/local.ts --outfile=dist/local.js --minify --sourcemap --target=es2020",
     "build:lambda": "esbuild --platform=node --external:@aws-sdk --bundle src/index.js --outfile=dist/index.js --minify --sourcemap --target=es2020",
     "watch:local": "esbuild --platform=node --bundle src/local.ts --outfile=dist/local.js --sourcemap --target=es2020 --watch",
     "watch:lambda": "esbuild --platform=node --external:@aws-sdk --bundle src/index.js --outfile=dist/index.js --sourcemap --target=es2020 --watch",
-    "dev": "run-p dev:serve watch:*",
-    "dev:serve": "nodemon dist/local.js",
+    "dev": "pnpm run build:local && (pnpm run dev:serve & pnpm run watch:local & pnpm run watch:lambda & wait)",
+    "dev:serve": "node --watch dist/local.js",
     "postbuild": "cd dist && zip -r index.zip index.js"
   },
   "author": "",
@@ -29,7 +29,7 @@
     "dotenv": "^16.3.1",
     "esbuild": "^0.27.0",
     "eventsource-parser": "^1.1.1",
-    "express": "^4.19.2",
+    "express": "^5.2.1",
     "openai": "^4.104.0",
     "redis": "^4.6.8"
   },
@@ -38,10 +38,8 @@
     "@types/combined-stream": "^1.0.3",
     "@types/cors": "^2.8.13",
     "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.17",
-    "@types/node": "^20.5.0",
-    "nodemon": "^3.0.1",
-    "npm-run-all": "^4.1.5",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.19.0",
     "typescript": "^5.0.4"
   }
 }

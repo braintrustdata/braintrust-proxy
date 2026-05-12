@@ -1,6 +1,7 @@
 import dns from "node:dns";
 import { kv } from "@vercel/kv";
 import { waitUntil } from "@vercel/functions";
+import { NextResponse } from "next/server";
 import { EdgeProxyV1, CacheSetOptions } from "@braintrust/proxy/edge";
 import { Agent, setGlobalDispatcher } from "undici";
 

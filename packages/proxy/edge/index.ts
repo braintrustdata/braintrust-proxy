@@ -432,6 +432,11 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         signalReady = resolve;
       });
 
+      let signalPipeComplete: () => void = () => {};
+      const pipeComplete = new Promise<void>((resolve) => {
+        signalPipeComplete = resolve;
+      });
+
       const baseWriter = writable.getWriter();
       const wrappedWritable = new WritableStream<Uint8Array>({
         async write(chunk) {
@@ -441,29 +446,34 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         async close() {
           signalReady();
           await baseWriter.close();
+          signalPipeComplete();
         },
         async abort(reason) {
           signalReady();
           await baseWriter.abort(reason);
+          signalPipeComplete();
         },
       });
 
-      const backgroundKeepAlive = proxyV1({
+      const proxyV1Promise = proxyV1({
         ...proxyV1Args,
         res: wrappedWritable,
       }).catch((e) => {
-        // Unblock the headers-ready wait so we don't hang if proxyV1 throws
-        // before writing anything.
         signalReady();
         baseWriter.abort(e).catch(() => {});
+        signalPipeComplete();
         throw e;
       });
 
-      // Anchor the background work to the platform's function lifetime.
-      ctx.waitUntil(backgroundKeepAlive.catch(() => {}));
+      // Keep the platform from tearing the function down
+      ctx.waitUntil(
+        Promise.all([proxyV1Promise.catch(() => {}), pipeComplete]).catch(
+          () => {},
+        ),
+      );
 
       try {
-        await Promise.race([headersReady, backgroundKeepAlive]);
+        await Promise.race([headersReady, proxyV1Promise]);
       } catch (e) {
         console.error("EdgeProxyV1 request failed", e);
         return new Response(`${e}`, {

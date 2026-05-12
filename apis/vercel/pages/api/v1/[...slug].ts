@@ -1,10 +1,6 @@
 import { kv } from "@vercel/kv";
 import { EdgeProxyV1, CacheSetOptions } from "@braintrust/proxy/edge";
 
-export const config = {
-  runtime: "edge",
-};
-
 const KVCache = {
   get: kv.get,
   set: async <T>(key: string, value: T, opts: CacheSetOptions) => {

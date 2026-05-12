@@ -279,7 +279,8 @@ export function makeFetchApiSecrets({
       });
     }
 
-    if (opts.credentialsCache && !lookupFailed) {
+    // temp skip the cache for testing
+    if (useCache && opts.credentialsCache && !lookupFailed) {
       ctx.waitUntil(
         encryptedPut(
           opts.credentialsCache,

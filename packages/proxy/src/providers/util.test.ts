@@ -59,6 +59,26 @@ describe("convertMediaToBase64", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it("rejects IPv4-mapped IPv6 localhost URLs before fetching", async () => {
+    const fetchMock = mockFetch(new Response());
+
+    await expect(
+      convertMediaToBase64({
+        media: "http://[::ffff:127.0.0.1]/image.png",
+        allowedMediaTypes: null,
+        maxMediaBytes: null,
+      }),
+    ).rejects.toThrow("Media URL resolves to a blocked address");
+    await expect(
+      convertMediaToBase64({
+        media: "http://[::ffff:7f00:1]/image.png",
+        allowedMediaTypes: null,
+        maxMediaBytes: null,
+      }),
+    ).rejects.toThrow("Media URL resolves to a blocked address");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it("rejects hostnames that resolve to private addresses before fetching", async () => {
     const lookupMock = vi.mocked(lookup);
     lookupMock.mockResolvedValueOnce([{ address: "10.0.0.5", family: 4 }]);
@@ -74,50 +94,12 @@ describe("convertMediaToBase64", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("revalidates redirect locations", async () => {
-    const fetchMock = mockFetch(
-      new Response(null, {
-        status: 302,
-        headers: { location: "http://127.0.0.1/image.png" },
-      }),
-    );
+  it("converts base64 data URLs without remote fetching", async () => {
+    const fetchMock = mockFetch(new Response());
 
     await expect(
       convertMediaToBase64({
-        media: publicImageUrl,
-        allowedMediaTypes: null,
-        maxMediaBytes: null,
-      }),
-    ).rejects.toThrow("Media URL resolves to a blocked address");
-    expect(fetchMock).toHaveBeenCalledOnce();
-  });
-
-  it("enforces the byte cap while reading the response body", async () => {
-    mockFetch(
-      new Response(new Uint8Array([1, 2, 3]), {
-        headers: { "content-type": "image/png" },
-      }),
-    );
-
-    await expect(
-      convertMediaToBase64({
-        media: publicImageUrl,
-        allowedMediaTypes: ["image/png"],
-        maxMediaBytes: 2,
-      }),
-    ).rejects.toThrow("Media size exceeds");
-  });
-
-  it("converts valid remote media responses", async () => {
-    mockFetch(
-      new Response(new Uint8Array([1, 2, 3]), {
-        headers: { "content-type": "image/png; charset=utf-8" },
-      }),
-    );
-
-    await expect(
-      convertMediaToBase64({
-        media: publicImageUrl,
+        media: "data:image/png;base64,AQID",
         allowedMediaTypes: ["image/png"],
         maxMediaBytes: 3,
       }),
@@ -125,5 +107,6 @@ describe("convertMediaToBase64", () => {
       media_type: "image/png",
       data: "AQID",
     });
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

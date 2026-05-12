@@ -1,4 +1,8 @@
 import { lookup } from "node:dns/promises";
+import { type IncomingHttpHeaders } from "node:http";
+import { request as httpRequest } from "node:http";
+import { request as httpsRequest } from "node:https";
+import { Readable } from "node:stream";
 import { arrayBufferToBase64 } from "utils";
 
 const base64MediaPattern =
@@ -9,6 +13,11 @@ const mediaFetchTimeoutMs = 30_000;
 export interface MediaBlock {
   media_type: string;
   data: string;
+}
+
+interface ValidatedMediaUrl {
+  address: string;
+  url: URL;
 }
 
 export function convertBase64Media(media: string): MediaBlock | null {
@@ -92,14 +101,52 @@ function parseFirstIPv6Segment(address: string): number | null {
   return Number.parseInt(firstSegment, 16);
 }
 
+function parseIPv4MappedIPv6Address(address: string): string | null {
+  const mappedPrefix = "::ffff:";
+  const normalized = normalizeHostname(address);
+  if (!normalized.startsWith(mappedPrefix)) {
+    return null;
+  }
+
+  const mappedAddress = normalized.slice(mappedPrefix.length);
+  if (parseIPv4Address(mappedAddress) !== null) {
+    return mappedAddress;
+  }
+
+  const parts = mappedAddress.split(":");
+  if (parts.length !== 2) {
+    return null;
+  }
+
+  const parsedParts = parts.map((part) => {
+    if (!/^[0-9a-f]{1,4}$/i.test(part)) {
+      return null;
+    }
+    return Number.parseInt(part, 16);
+  });
+  if (parsedParts.some((part) => part === null)) {
+    return null;
+  }
+
+  const [high, low] = parsedParts;
+  if (high === null || low === null) {
+    return null;
+  }
+
+  return [(high >> 8) & 0xff, high & 0xff, (low >> 8) & 0xff, low & 0xff].join(
+    ".",
+  );
+}
+
 function isBlockedIPv6Address(address: string): boolean {
   const normalized = normalizeHostname(address);
   if (normalized === "::" || normalized === "::1") {
     return true;
   }
 
-  if (normalized.startsWith("::ffff:")) {
-    return isBlockedIPv4Address(normalized.slice("::ffff:".length));
+  const mappedIPv4Address = parseIPv4MappedIPv6Address(normalized);
+  if (mappedIPv4Address !== null) {
+    return isBlockedIPv4Address(mappedIPv4Address);
   }
 
   const firstSegment = parseFirstIPv6Segment(normalized);
@@ -118,7 +165,24 @@ function isBlockedIPAddress(address: string): boolean {
   return isBlockedIPv4Address(address) || isBlockedIPv6Address(address);
 }
 
-async function validateMediaUrl(url: URL) {
+function nodeHeadersToHeaders(headers: IncomingHttpHeaders): Headers {
+  const result = new Headers();
+  for (const [name, value] of Object.entries(headers)) {
+    if (value === undefined) {
+      continue;
+    }
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        result.append(name, item);
+      }
+      continue;
+    }
+    result.set(name, value);
+  }
+  return result;
+}
+
+async function validateMediaUrl(url: URL): Promise<ValidatedMediaUrl> {
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("Media URL must use http or https");
   }
@@ -129,7 +193,7 @@ async function validateMediaUrl(url: URL) {
   }
 
   if (parseIPv4Address(hostname) !== null || hostname.includes(":")) {
-    return;
+    return { address: hostname, url };
   }
 
   const addresses = await lookup(hostname, { all: true, verbatim: true });
@@ -139,6 +203,8 @@ async function validateMediaUrl(url: URL) {
   ) {
     throw new Error("Media URL resolves to a blocked address");
   }
+
+  return { address: addresses[0].address, url };
 }
 
 async function readResponseBytes(
@@ -184,12 +250,8 @@ async function fetchMediaUrl(
   signal: AbortSignal,
   redirectCount = 0,
 ): Promise<Response> {
-  await validateMediaUrl(url);
-
-  const response = await fetch(url, {
-    redirect: "manual",
-    signal,
-  });
+  const target = await validateMediaUrl(url);
+  const response = await fetchValidatedMediaUrl(target, signal);
 
   if (response.status >= 300 && response.status < 400) {
     const location = response.headers.get("location");
@@ -208,6 +270,51 @@ async function fetchMediaUrl(
   }
 
   return response;
+}
+
+async function fetchValidatedMediaUrl(
+  { address, url }: ValidatedMediaUrl,
+  signal: AbortSignal,
+): Promise<Response> {
+  return await new Promise((resolve, reject) => {
+    const hostname = normalizeHostname(url.hostname);
+    const servername =
+      parseIPv4Address(hostname) === null && !hostname.includes(":")
+        ? url.hostname
+        : undefined;
+    const request = (url.protocol === "https:" ? httpsRequest : httpRequest)(
+      {
+        headers: {
+          Host: url.host,
+        },
+        hostname: address,
+        method: "GET",
+        path: `${url.pathname}${url.search}`,
+        port: url.port || (url.protocol === "https:" ? 443 : 80),
+        protocol: url.protocol,
+        servername,
+      },
+      (response) => {
+        resolve(
+          new Response(Readable.toWeb(response), {
+            headers: nodeHeadersToHeaders(response.headers),
+            status: response.statusCode ?? 500,
+            statusText: response.statusMessage,
+          }),
+        );
+      },
+    );
+
+    request.on("error", reject);
+    signal.addEventListener(
+      "abort",
+      () => {
+        request.destroy(new Error("Media fetch aborted"));
+      },
+      { once: true },
+    );
+    request.end();
+  });
 }
 
 async function convertMediaUrl({

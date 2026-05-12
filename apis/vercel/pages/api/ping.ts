@@ -8,6 +8,10 @@ const ratelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(1000, "10 s"),
 });
 
+export const config = {
+  runtime: "edge",
+};
+
 let i = 0;
 export default async function handler(request: NextRequest) {
   // You could alternatively limit based on user ID or similar

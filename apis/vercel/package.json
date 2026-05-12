@@ -16,7 +16,8 @@
     "@braintrust/proxy": "workspace:*",
     "next": "15.5.15",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "undici": "^6.0.0"
   },
   "devDependencies": {
     "@types/node": "^17.0.45",

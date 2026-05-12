@@ -405,6 +405,10 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         onBillingEvent: opts.onBillingEvent,
       });
     } catch (e) {
+      // Log so the underlying cause shows up in Vercel/Cloudflare function
+      // logs. The body still echoes the error message for the caller, but
+      // without this, the only signal at the proxy is "status=400".
+      console.error("EdgeProxyV1 request failed", e);
       return new Response(`${e}`, {
         status: 400,
         headers: { "Content-Type": "text/plain" },

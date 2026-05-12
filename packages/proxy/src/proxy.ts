@@ -1463,7 +1463,10 @@ async function fetchModelLoop(
         errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
-      const isAbortError = e instanceof DOMException && e.name === "AbortError";
+      const isAbortError =
+        typeof DOMException !== "undefined" &&
+        e instanceof DOMException &&
+        e.name === "AbortError";
       if (!isAbortError) {
         console.log("ERROR", e);
       }

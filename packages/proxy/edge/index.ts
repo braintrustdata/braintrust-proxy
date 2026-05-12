@@ -41,6 +41,15 @@ export interface ProxyOpts {
   spanId?: string;
   spanExport?: string;
   nativeInferenceSecretKey?: string;
+  /**
+   * When true, the upstream → response body runs in the background
+   * and the function is kept alive via `ctx.waitUntil`.
+   *
+   * Leave unset on Cloudflare Workers as those already keep the event stream alive
+   *
+   * @default false
+   */
+  streamingViaWaitUntil?: boolean;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -320,6 +329,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         headers: { "Content-Type": "text/plain" },
       });
     }
+    const method: "GET" | "POST" = request.method;
 
     const relativeURL = opts.getRelativeURL(request);
 
@@ -386,23 +396,93 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
     };
 
+    const requestBody = await request.text();
+    const proxyV1Args = {
+      method,
+      url: relativeURL,
+      proxyHeaders,
+      body: requestBody,
+      setHeader,
+      setStatusCode: setStatus,
+      getApiSecrets: fetchApiSecrets,
+      cacheGet,
+      cachePut,
+      digest: digestMessage,
+      logHistogram: opts.logHistogram,
+      spanLogger: opts.spanLogger,
+      billingOrgId: opts.billingOrgId,
+      onBillingEvent: opts.onBillingEvent,
+    };
+
+    const meterProvider = opts.meterProvider;
+    const wrapWithMeter = (body: ReadableStream<Uint8Array>) =>
+      meterProvider
+        ? body.pipeThrough(
+            new TransformStream<Uint8Array, Uint8Array>({
+              flush() {
+                ctx.waitUntil(flushMetrics(meterProvider));
+              },
+            }),
+          )
+        : body;
+
+    if (opts.streamingViaWaitUntil) {
+      let signalReady: () => void = () => {};
+      const headersReady = new Promise<void>((resolve) => {
+        signalReady = resolve;
+      });
+
+      const baseWriter = writable.getWriter();
+      const wrappedWritable = new WritableStream<Uint8Array>({
+        async write(chunk) {
+          signalReady();
+          await baseWriter.write(chunk);
+        },
+        async close() {
+          signalReady();
+          await baseWriter.close();
+        },
+        async abort(reason) {
+          signalReady();
+          await baseWriter.abort(reason);
+        },
+      });
+
+      const backgroundKeepAlive = proxyV1({
+        ...proxyV1Args,
+        res: wrappedWritable,
+      }).catch((e) => {
+        // Unblock the headers-ready wait so we don't hang if proxyV1 throws
+        // before writing anything.
+        signalReady();
+        baseWriter.abort(e).catch(() => {});
+        throw e;
+      });
+
+      // Anchor the background work to the platform's function lifetime.
+      ctx.waitUntil(backgroundKeepAlive.catch(() => {}));
+
+      try {
+        await Promise.race([headersReady, backgroundKeepAlive]);
+      } catch (e) {
+        console.error("EdgeProxyV1 request failed", e);
+        return new Response(`${e}`, {
+          status: 400,
+          headers: { "Content-Type": "text/plain" },
+        });
+      }
+
+      return new Response(wrapWithMeter(readable), {
+        status,
+        headers,
+      });
+    }
+
+    // Default path: await proxyV1 to completion before returning.
     try {
       await proxyV1({
-        method: request.method,
-        url: relativeURL,
-        proxyHeaders,
-        body: await request.text(),
-        setHeader,
-        setStatusCode: setStatus,
+        ...proxyV1Args,
         res: writable,
-        getApiSecrets: fetchApiSecrets,
-        cacheGet,
-        cachePut,
-        digest: digestMessage,
-        logHistogram: opts.logHistogram,
-        spanLogger: opts.spanLogger,
-        billingOrgId: opts.billingOrgId,
-        onBillingEvent: opts.onBillingEvent,
       });
     } catch (e) {
       // log error to vercel
@@ -413,18 +493,7 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       });
     }
 
-    const meterProvider = opts.meterProvider;
-    const responseBody = meterProvider
-      ? readable.pipeThrough(
-          new TransformStream<Uint8Array, Uint8Array>({
-            flush() {
-              ctx.waitUntil(flushMetrics(meterProvider));
-            },
-          }),
-        )
-      : readable;
-
-    return new Response(responseBody, {
+    return new Response(wrapWithMeter(readable), {
       status,
       headers,
     });

@@ -31,6 +31,8 @@ const proxyHandler = EdgeProxyV1({
   credentialsCache: KVCache,
   completionsCache: KVCache,
   braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
+  // Vercel Node Lambda tears down the function when the handler returns, so we use `waitUntil` to allow background tasks to continue after the response is sent.
+  streamingViaWaitUntil: true,
 });
 
 const ctx = {
@@ -70,36 +72,7 @@ async function proxy(request: Request): Promise<Response> {
     const response = await proxyHandler(request, ctx);
     log("route:after-handler", { status: response.status });
     response.headers.set("x-request-id", requestId);
-
-    if (!response.body) {
-      return response;
-    }
-    const buffered = new ReadableStream<Uint8Array>({
-      async start(controller) {
-        const reader = response.body!.getReader();
-        let totalBytes = 0;
-        let chunkCount = 0;
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            totalBytes += value.byteLength;
-            chunkCount += 1;
-            controller.enqueue(value);
-          }
-          controller.close();
-          log("route:body-complete", { totalBytes, chunkCount });
-        } catch (err) {
-          log("route:body-error", { error: String(err), totalBytes });
-          controller.error(err);
-        }
-      },
-    });
-    return new Response(buffered, {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-    });
+    return response;
   } catch (error) {
     log("route:error", { error: String(error) });
     return new Response(

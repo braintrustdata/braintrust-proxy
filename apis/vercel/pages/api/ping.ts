@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
+import { ipAddress } from "@vercel/functions";
 
 const ratelimit = new Ratelimit({
   redis: kv,
@@ -10,8 +11,10 @@ const ratelimit = new Ratelimit({
 
 let i = 0;
 export default async function handler(request: NextRequest) {
-  // You could alternatively limit based on user ID or similar
-  const ip = request.ip ?? "127.0.0.1";
+  // Next 16 removed `request.ip`; ipAddress() from @vercel/functions
+  // reads the same X-Real-IP / X-Forwarded-For headers.
+  // You could alternatively limit based on user ID or similar.
+  const ip = ipAddress(request) ?? "127.0.0.1";
   /*
   let start = Date.now();
   const { limit, reset, remaining } = await ratelimit.limit(ip);

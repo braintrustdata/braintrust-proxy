@@ -1,10 +1,11 @@
+import dns from "node:dns";
 import { kv } from "@vercel/kv";
+import { waitUntil } from "@vercel/functions";
 import { EdgeProxyV1, CacheSetOptions } from "@braintrust/proxy/edge";
 import { Agent, setGlobalDispatcher } from "undici";
 
-// On the Node runtime, fetch is implemented by undici, which pools sockets
-// with HTTP keep-alive by default. Don't do that, since we want to be able
-// to close the connection after each request and not have it held open by the keep-alive timer.
+dns.setDefaultResultOrder("ipv4first");
+
 setGlobalDispatcher(
   new Agent({
     keepAliveTimeout: 1,
@@ -39,12 +40,10 @@ const handler = EdgeProxyV1({
   braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
 });
 
-// Wrap the EdgeProxyV1 handler so we can properly wait for any background tasks to finish before closing the connection.
 export default async function route(request: Request): Promise<Response> {
-  const pending: Promise<unknown>[] = [];
   const ctx = {
     waitUntil(promise: Promise<unknown>) {
-      pending.push(
+      waitUntil(
         promise.catch((error) => {
           console.warn("Background task failed", error);
         }),
@@ -53,7 +52,6 @@ export default async function route(request: Request): Promise<Response> {
   };
 
   const response = await handler(request, ctx);
-  await Promise.allSettled(pending);
   response.headers.set("Connection", "close");
   return response;
 }

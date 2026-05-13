@@ -437,18 +437,38 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         signalPipeComplete = resolve;
       });
 
+      let writeCount = 0;
+      let totalBytes = 0;
+      let closed = false;
+      let aborted = false;
+
       const baseWriter = writable.getWriter();
       const wrappedWritable = new WritableStream<Uint8Array>({
         async write(chunk) {
+          writeCount += 1;
+          totalBytes += chunk.byteLength;
+          if (writeCount <= 3 || writeCount % 50 === 0) {
+            console.log(
+              `EdgeProxyV1 wrappedWritable.write #${writeCount} bytes=${chunk.byteLength} total=${totalBytes}`,
+            );
+          }
           signalReady();
           await baseWriter.write(chunk);
         },
         async close() {
+          closed = true;
+          console.log(
+            `EdgeProxyV1 wrappedWritable.close writes=${writeCount} totalBytes=${totalBytes}`,
+          );
           signalReady();
           await baseWriter.close();
           signalPipeComplete();
         },
         async abort(reason) {
+          aborted = true;
+          console.error(
+            `EdgeProxyV1 wrappedWritable.abort writes=${writeCount} totalBytes=${totalBytes} reason=${reason}`,
+          );
           signalReady();
           await baseWriter.abort(reason);
           signalPipeComplete();
@@ -458,18 +478,32 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       const proxyV1Promise = proxyV1({
         ...proxyV1Args,
         res: wrappedWritable,
-      }).catch((e) => {
-        signalReady();
-        baseWriter.abort(e).catch(() => {});
-        signalPipeComplete();
-        throw e;
-      });
+      })
+        .then(() => {
+          console.log(
+            `EdgeProxyV1 proxyV1 resolved writes=${writeCount} totalBytes=${totalBytes} closed=${closed} aborted=${aborted}`,
+          );
+        })
+        .catch((e) => {
+          console.error(
+            `EdgeProxyV1 proxyV1 threw writes=${writeCount} totalBytes=${totalBytes} closed=${closed} aborted=${aborted}`,
+            e,
+          );
+          signalReady();
+          baseWriter.abort(e).catch(() => {});
+          signalPipeComplete();
+          throw e;
+        });
 
       // Keep the platform from tearing the function down
       ctx.waitUntil(
-        Promise.all([proxyV1Promise.catch(() => {}), pipeComplete]).catch(
-          () => {},
-        ),
+        Promise.all([proxyV1Promise.catch(() => {}), pipeComplete])
+          .then(() => {
+            console.log(
+              `EdgeProxyV1 waitUntil settled writes=${writeCount} totalBytes=${totalBytes} closed=${closed} aborted=${aborted}`,
+            );
+          })
+          .catch(() => {}),
       );
 
       try {
@@ -481,6 +515,10 @@ export function EdgeProxyV1(opts: ProxyOpts) {
           headers: { "Content-Type": "text/plain" },
         });
       }
+
+      console.log(
+        `EdgeProxyV1 returning Response status=${status} writes=${writeCount} totalBytes=${totalBytes}`,
+      );
 
       return new Response(wrapWithMeter(readable), {
         status,

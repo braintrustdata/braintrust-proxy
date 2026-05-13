@@ -2,6 +2,7 @@ import dns from "node:dns";
 
 import { after } from "next/server";
 
+import { ProxyBadRequestError } from "@braintrust/proxy";
 import {
   type CacheSetOptions,
   digestMessage,
@@ -21,6 +22,7 @@ const ACCESS_CONTROL_REQUEST_HEADERS_HEADER = "access-control-request-headers";
 const ACCESS_CONTROL_ALLOW_HEADERS_HEADER = "access-control-allow-headers";
 const ALLOW_METHODS_HEADER_VALUE = "GET, HEAD, POST, OPTIONS";
 const FORBIDDEN_RESPONSE_TEXT = "Forbidden";
+const INTERNAL_SERVER_ERROR_TEXT = "Internal server error";
 const API_V1_PATH_PREFIX = /^\/api\/v1/;
 const DEFAULT_CACHE_TTL_SECONDS = 60 * 60 * 24 * 7;
 const KEEP_ALIVE_TIMEOUT_MS = 1;
@@ -82,8 +84,7 @@ function handleOptions(request: Request, corsHeaders: Record<string, string>) {
 }
 
 async function handleRequest(method: "GET" | "POST", request: Request) {
-  const requestId =
-    request.headers.get(REQUEST_ID_HEADER) ?? crypto.randomUUID();
+  const requestId = crypto.randomUUID();
   const requestUrl = new URL(request.url);
 
   const backgroundTasks: Promise<unknown>[] = [];
@@ -150,11 +151,11 @@ async function handleRequest(method: "GET" | "POST", request: Request) {
   } catch (error) {
     return Response.json(
       {
-        error: error instanceof Error ? error.message : String(error),
+        error: INTERNAL_SERVER_ERROR_TEXT,
         requestId,
       },
       {
-        status: 500,
+        status: error instanceof ProxyBadRequestError ? 400 : 500,
         headers: initialHeaders,
       },
     );

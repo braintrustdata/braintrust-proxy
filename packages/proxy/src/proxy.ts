@@ -436,10 +436,11 @@ export async function proxyV1({
         e instanceof Error ? e.message : JSON.stringify(e),
       );
     } finally {
-      if (readable) {
-        readable.pipeTo(res).catch(console.error);
-      } else {
-        res.close().catch(console.error);
+      try {
+        await pipeBodyToResponse(readable, res);
+      } catch (e) {
+        console.error("Error writing credentials response", e);
+        throw e;
       }
     }
     return;
@@ -1222,14 +1223,11 @@ export async function proxyV1({
     stream = stream.pipeThrough(parseStream);
   }
 
-  if (stream) {
-    stream.pipeTo(res).catch((e) => {
-      console.error("Error piping stream to response", e);
-    });
-  } else {
-    res.close().catch((e) => {
-      console.error("Error closing response", e);
-    });
+  try {
+    await pipeBodyToResponse(stream, res);
+  } catch (e) {
+    console.error("Error piping stream to response", e);
+    throw e;
   }
 
   logRequest();
@@ -1238,6 +1236,18 @@ export async function proxyV1({
     value: 1,
     attributes: baseAttributes,
   });
+}
+
+export async function pipeBodyToResponse(
+  stream: ReadableStream<Uint8Array> | null,
+  res: WritableStream<Uint8Array>,
+) {
+  if (stream) {
+    await stream.pipeTo(res);
+    return;
+  }
+
+  await res.close();
 }
 
 const RATE_LIMIT_ERROR_CODE = 429;

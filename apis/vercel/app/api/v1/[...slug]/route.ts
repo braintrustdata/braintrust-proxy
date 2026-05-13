@@ -1,9 +1,19 @@
 import dns from "node:dns";
-import { kv } from "@vercel/kv";
+
+import { proxyV1 } from "@braintrust/proxy";
+import {
+  type CacheSetOptions,
+  digestMessage,
+  encryptedGet,
+  encryptedPut,
+  getCorsHeaders,
+  makeFetchApiSecrets,
+} from "@braintrust/proxy/edge";
 import { waitUntil } from "@vercel/functions";
-import { NextResponse } from "next/server";
-import { EdgeProxyV1, CacheSetOptions } from "@braintrust/proxy/edge";
+import { kv } from "@vercel/kv";
 import { Agent, setGlobalDispatcher } from "undici";
+
+import { nodeStreamingResponseViaPassThrough } from "../../../../lib/nodeProxy";
 
 dns.setDefaultResultOrder("ipv4first");
 
@@ -21,30 +31,38 @@ const KVCache = {
   },
 };
 
-const proxyHandler = EdgeProxyV1({
-  getRelativeURL: (request) => {
-    // App Router route is /api/v1/[...slug] — strip the prefix to get
-    // the upstream path (e.g. "/chat/completions").
-    const url = new URL(request.url);
-    return url.pathname.replace(/^\/api\/v1/, "");
-  },
-  cors: true,
-  credentialsCache: KVCache,
-  completionsCache: KVCache,
-  braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
-  // Vercel Node Lambda tears down the function when the handler returns, so we use `waitUntil` to allow background tasks to continue after the response is sent.
-  streamingViaWaitUntil: true,
-});
+function safeWaitUntil(promise: Promise<unknown>) {
+  waitUntil(
+    promise.catch((error) => {
+      console.warn("Background task failed", error);
+    }),
+  );
+}
 
-const ctx = {
-  waitUntil(promise: Promise<unknown>) {
-    waitUntil(
-      promise.catch((error) => {
-        console.warn("Background task failed", error);
-      }),
-    );
-  },
-};
+function handleOptions(
+  request: Request,
+  corsHeaders: Record<string, string>,
+): Response {
+  if (
+    request.headers.get("Origin") !== null &&
+    request.headers.get("Access-Control-Request-Method") !== null &&
+    request.headers.get("Access-Control-Request-Headers") !== null
+  ) {
+    return new Response(null, {
+      headers: {
+        ...corsHeaders,
+        "access-control-allow-headers":
+          request.headers.get("Access-Control-Request-Headers") ?? "",
+      },
+    });
+  }
+
+  return new Response(null, {
+    headers: {
+      Allow: "GET, HEAD, POST, OPTIONS",
+    },
+  });
+}
 
 async function proxy(request: Request): Promise<Response> {
   const requestId =
@@ -69,10 +87,97 @@ async function proxy(request: Request): Promise<Response> {
     braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
   });
 
+  let corsHeaders = {};
   try {
-    const response = await proxyHandler(request, ctx);
+    corsHeaders = getCorsHeaders(request, undefined);
+  } catch {
+    return new Response("Forbidden", { status: 403 });
+  }
+
+  if (request.method === "OPTIONS") {
+    return handleOptions(request, corsHeaders);
+  }
+
+  if (request.method !== "GET" && request.method !== "POST") {
+    return new Response("Method not allowed", {
+      status: 405,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  const method: "GET" | "POST" = request.method;
+  const relativeURL = new URL(request.url).pathname.replace(/^\/api\/v1/, "");
+  const requestBody = await request.text();
+
+  let status = 200;
+  const headers: Record<string, string> = {
+    ...corsHeaders,
+    "x-request-id": requestId,
+  };
+
+  const setStatusCode = (code: number) => {
+    status = code;
+  };
+
+  const setHeader = (name: string, value: string) => {
+    headers[name] = value;
+  };
+
+  const proxyHeaders: Record<string, string> = {};
+  request.headers.forEach((value, name) => {
+    proxyHeaders[name] = value;
+  });
+
+  const fetchApiSecrets = makeFetchApiSecrets({
+    ctx: { waitUntil: safeWaitUntil },
+    opts: {
+      getRelativeURL() {
+        return relativeURL;
+      },
+      credentialsCache: KVCache,
+      braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
+      nativeInferenceSecretKey: process.env.NATIVE_INFERENCE_SECRET_KEY,
+    },
+  });
+
+  const cacheGet = async (encryptionKey: string, key: string) => {
+    return (await encryptedGet(KVCache, encryptionKey, key)) ?? null;
+  };
+
+  const cachePut = async (
+    encryptionKey: string,
+    key: string,
+    value: string,
+    ttlSeconds?: number,
+  ) => {
+    const promise = encryptedPut(KVCache, encryptionKey, key, value, {
+      ttl: ttlSeconds ?? 60 * 60 * 24 * 7,
+    });
+    safeWaitUntil(promise);
+    await promise;
+  };
+
+  try {
+    const response = await nodeStreamingResponseViaPassThrough({
+      waitUntil: safeWaitUntil,
+      runProxy: (res) =>
+        proxyV1({
+          method,
+          url: relativeURL,
+          proxyHeaders,
+          body: requestBody,
+          setHeader,
+          setStatusCode,
+          res,
+          getApiSecrets: fetchApiSecrets,
+          cacheGet,
+          cachePut,
+          digest: digestMessage,
+        }),
+      getStatus: () => status,
+      getHeaders: () => headers,
+    });
     log("route:after-handler", { status: response.status });
-    response.headers.set("x-request-id", requestId);
     return response;
   } catch (error) {
     log("route:error", { error: String(error) });
@@ -97,3 +202,4 @@ export const POST = proxy;
 export const OPTIONS = proxy;
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";

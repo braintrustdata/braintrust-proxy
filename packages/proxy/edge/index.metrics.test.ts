@@ -71,4 +71,103 @@ describe("EdgeProxyV1 metric flushing", () => {
     expect(waitUntilPromises).toHaveLength(1);
     await Promise.all(waitUntilPromises);
   });
+
+  it("returns application/json on the default response path", async () => {
+    const { EdgeProxyV1 } = await import("./index");
+
+    proxyV1Mock.mockImplementation(
+      async ({
+        res,
+        setHeader,
+      }: {
+        res: WritableStream<Uint8Array>;
+        setHeader: (name: string, value: string) => void;
+      }) => {
+        setHeader("content-type", "application/json");
+        const writer = res.getWriter();
+        queueMicrotask(() => {
+          void writer
+            .write(new TextEncoder().encode(JSON.stringify({ ok: true })))
+            .then(() => writer.close());
+        });
+      },
+    );
+
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const handler = EdgeProxyV1({
+      getRelativeURL() {
+        return "/chat/completions";
+      },
+    });
+
+    const response = await handler(
+      new Request("https://example.com/v1/chat/completions", {
+        method: "POST",
+        body: "{}",
+        headers: {
+          Authorization: "Bearer test-token",
+        },
+      }),
+      {
+        waitUntil(promise) {
+          waitUntilPromises.push(promise);
+        },
+      },
+    );
+
+    expect(response.headers.get("content-type")).toBe("application/json");
+    await expect(response.json()).resolves.toEqual({ ok: true });
+    expect(waitUntilPromises).toHaveLength(0);
+  });
+
+  it("streams text/event-stream when streamingViaWaitUntil is enabled", async () => {
+    const { EdgeProxyV1 } = await import("./index");
+
+    proxyV1Mock.mockImplementation(
+      async ({
+        res,
+        setHeader,
+      }: {
+        res: WritableStream<Uint8Array>;
+        setHeader: (name: string, value: string) => void;
+      }) => {
+        setHeader("content-type", "text/event-stream");
+        const writer = res.getWriter();
+        await writer.write(new TextEncoder().encode("data: first\n\n"));
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        await writer.write(new TextEncoder().encode("data: second\n\n"));
+        await writer.close();
+      },
+    );
+
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const handler = EdgeProxyV1({
+      getRelativeURL() {
+        return "/chat/completions";
+      },
+      streamingViaWaitUntil: true,
+    });
+
+    const response = await handler(
+      new Request("https://example.com/v1/chat/completions", {
+        method: "POST",
+        body: JSON.stringify({ stream: true }),
+        headers: {
+          Authorization: "Bearer test-token",
+        },
+      }),
+      {
+        waitUntil(promise) {
+          waitUntilPromises.push(promise);
+        },
+      },
+    );
+
+    expect(response.headers.get("content-type")).toBe("text/event-stream");
+    await expect(response.text()).resolves.toBe(
+      "data: first\n\ndata: second\n\n",
+    );
+    expect(waitUntilPromises).toHaveLength(1);
+    await expect(Promise.all(waitUntilPromises)).resolves.toBeDefined();
+  });
 });

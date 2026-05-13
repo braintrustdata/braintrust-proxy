@@ -344,18 +344,36 @@ export async function streamingResponseViaWaitUntil({
     signalPipeComplete = resolve;
   });
 
+  let writeCount = 0;
+  let totalBytes = 0;
+  let closed = false;
+  let aborted = false;
+
   const baseWriter = writable.getWriter();
   const wrappedWritable = new WritableStream<Uint8Array>({
     async write(chunk) {
+      writeCount += 1;
+      totalBytes += chunk.byteLength;
       await baseWriter.write(chunk);
+      console.log(
+        `streamingResponseViaWaitUntil write #${writeCount} bytes=${chunk.byteLength} total=${totalBytes}`,
+      );
       signalReady();
     },
     async close() {
+      closed = true;
+      console.log(
+        `streamingResponseViaWaitUntil close writes=${writeCount} total=${totalBytes}`,
+      );
       await baseWriter.close();
       signalReady();
       signalPipeComplete();
     },
     async abort(reason) {
+      aborted = true;
+      console.error(
+        `streamingResponseViaWaitUntil abort writes=${writeCount} total=${totalBytes} reason=${reason}`,
+      );
       await baseWriter.abort(reason);
       signalReady();
       signalPipeComplete();
@@ -363,14 +381,30 @@ export async function streamingResponseViaWaitUntil({
   });
 
   let proxyError: unknown = undefined;
-  const proxyPromise = runProxy(wrappedWritable).catch((e) => {
-    proxyError = e;
-    signalReady();
-    baseWriter.abort(e).catch(() => {});
-    signalPipeComplete();
-  });
+  const proxyPromise = runProxy(wrappedWritable)
+    .then(() => {
+      console.log(
+        `streamingResponseViaWaitUntil runProxy resolved writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
+      );
+    })
+    .catch((e) => {
+      console.error(
+        `streamingResponseViaWaitUntil runProxy threw writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
+        e,
+      );
+      proxyError = e;
+      signalReady();
+      baseWriter.abort(e).catch(() => {});
+      signalPipeComplete();
+    });
 
-  ctx.waitUntil(Promise.all([proxyPromise, pipeComplete]));
+  ctx.waitUntil(
+    Promise.all([proxyPromise, pipeComplete]).then(() => {
+      console.log(
+        `streamingResponseViaWaitUntil waitUntil settled writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
+      );
+    }),
+  );
 
   await headersReady;
   if (proxyError !== undefined) {
@@ -379,6 +413,10 @@ export async function streamingResponseViaWaitUntil({
       headers: { "Content-Type": "text/plain" },
     });
   }
+
+  console.log(
+    `streamingResponseViaWaitUntil returning Response status=${getStatus()} writes=${writeCount} total=${totalBytes}`,
+  );
 
   return new Response(wrapWithMeter(readable), {
     status: getStatus(),

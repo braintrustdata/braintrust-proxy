@@ -379,6 +379,33 @@ it("handles /responses as endpoint_path", async () => {
   });
 });
 
+it("uses injected fetch when supportsStreaming is false", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: "hello" }],
+      stream: true,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "provider-secret",
+        metadata: {
+          api_base: "http://test.com/v1",
+          supportsStreaming: false,
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("http://test.com/v1/chat/completions");
+});
+
 it("uses model path for azure when metadata.deployment is non-string", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

@@ -2336,6 +2336,7 @@ async function fetchOpenAI(
       bodyData,
       setHeader,
       signal,
+      fetch,
     });
   }
 
@@ -2494,6 +2495,7 @@ async function fetchOpenAIFakeStream({
   bodyData,
   setHeader,
   signal,
+  fetch,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
@@ -2501,6 +2503,7 @@ async function fetchOpenAIFakeStream({
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
@@ -2610,11 +2613,13 @@ async function fetchVertexAnthropicMessages({
   modelSpec,
   body,
   signal,
+  fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
   signal?: AbortSignal;
+  fetch: FetchFn;
 }): Promise<ModelResponse> {
   const { baseUrl, accessToken } = await vertexEndpointInfo({
     secret,
@@ -2689,6 +2694,7 @@ async function fetchAnthropicMessages({
         modelSpec,
         body,
         signal,
+        fetch: customFetch,
       });
     default:
       throw new ProxyBadRequestError(

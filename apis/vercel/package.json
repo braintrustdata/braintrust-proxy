@@ -11,9 +11,7 @@
   },
   "dependencies": {
     "@braintrust/proxy": "workspace:*",
-    "@upstash/ratelimit": "^0.4.3",
     "@vercel/examples-ui": "^1.0.5",
-    "@vercel/functions": "^3.4.2",
     "@vercel/kv": "^0.2.2",
     "next": "^16.2.6",
     "react": "19.2.6",

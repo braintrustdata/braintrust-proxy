@@ -15,12 +15,22 @@ import { Agent, setGlobalDispatcher } from "undici";
 
 import { proxyV1ToAppRouteResponse } from "../../../../lib/appRouteProxy";
 
-dns.setDefaultResultOrder("ipv4first");
+const DNS_RESULT_ORDER = "ipv4first";
+const REQUEST_ID_HEADER = "x-request-id";
+const ACCESS_CONTROL_REQUEST_HEADERS_HEADER = "access-control-request-headers";
+const ACCESS_CONTROL_ALLOW_HEADERS_HEADER = "access-control-allow-headers";
+const ALLOW_METHODS_HEADER_VALUE = "GET, HEAD, POST, OPTIONS";
+const FORBIDDEN_RESPONSE_TEXT = "Forbidden";
+const API_V1_PATH_PREFIX = /^\/api\/v1/;
+const DEFAULT_CACHE_TTL_SECONDS = 60 * 60 * 24 * 7;
+const KEEP_ALIVE_TIMEOUT_MS = 1;
+
+dns.setDefaultResultOrder(DNS_RESULT_ORDER);
 
 setGlobalDispatcher(
   new Agent({
-    keepAliveTimeout: 1,
-    keepAliveMaxTimeout: 1,
+    keepAliveTimeout: KEEP_ALIVE_TIMEOUT_MS,
+    keepAliveMaxTimeout: KEEP_ALIVE_TIMEOUT_MS,
   }),
 );
 
@@ -46,7 +56,7 @@ function normalizeHeaders(headers: Headers): Record<string, string> {
 
 function handleOptions(request: Request, corsHeaders: Record<string, string>) {
   const accessControlRequestHeaders = request.headers.get(
-    "access-control-request-headers",
+    ACCESS_CONTROL_REQUEST_HEADERS_HEADER,
   );
 
   if (
@@ -58,7 +68,7 @@ function handleOptions(request: Request, corsHeaders: Record<string, string>) {
       status: 200,
       headers: {
         ...corsHeaders,
-        "access-control-allow-headers": accessControlRequestHeaders,
+        [ACCESS_CONTROL_ALLOW_HEADERS_HEADER]: accessControlRequestHeaders,
       },
     });
   }
@@ -66,66 +76,38 @@ function handleOptions(request: Request, corsHeaders: Record<string, string>) {
   return new Response(null, {
     status: 200,
     headers: {
-      Allow: "GET, HEAD, POST, OPTIONS",
+      Allow: ALLOW_METHODS_HEADER_VALUE,
     },
   });
 }
 
 async function handleRequest(method: "GET" | "POST", request: Request) {
   const requestId =
-    request.headers.get("x-request-id") ??
-    Math.random().toString(36).slice(2, 10);
-  const start = Date.now();
+    request.headers.get(REQUEST_ID_HEADER) ?? crypto.randomUUID();
   const requestUrl = new URL(request.url);
-  const log = (msg: string, extra?: Record<string, unknown>) => {
-    console.log(
-      JSON.stringify({
-        requestId,
-        method,
-        path: requestUrl.pathname,
-        elapsedMs: Date.now() - start,
-        msg,
-        ...extra,
-      }),
-    );
-  };
 
-  log("route:start", {
-    hasAuth: request.headers.get("authorization") !== null,
-    braintrustApiUrl: process.env.BRAINTRUST_APP_URL,
-  });
-
-  const backgroundTasks = new Set<Promise<unknown>>();
+  const backgroundTasks: Promise<unknown>[] = [];
   const trackBackgroundTask = (promise: Promise<unknown>) => {
-    backgroundTasks.add(promise);
-    void promise.finally(() => {
-      backgroundTasks.delete(promise);
-    });
+    backgroundTasks.push(promise);
   };
 
   after(async () => {
-    const tasks = [...backgroundTasks];
-    const results = await Promise.allSettled(tasks);
-    for (const result of results) {
-      if (result.status === "rejected") {
-        console.warn("Background task failed", result.reason);
-      }
-    }
+    await Promise.allSettled(backgroundTasks);
   });
 
   let corsHeaders = {};
   try {
     corsHeaders = getCorsHeaders(request, undefined);
   } catch {
-    return new Response("Forbidden", { status: 403 });
+    return new Response(FORBIDDEN_RESPONSE_TEXT, { status: 403 });
   }
 
   const proxyHeaders = normalizeHeaders(request.headers);
-  const relativeURL = `${requestUrl.pathname.replace(/^\/api\/v1/, "")}${requestUrl.search}`;
+  const relativeURL = `${requestUrl.pathname.replace(API_V1_PATH_PREFIX, "")}${requestUrl.search}`;
   const requestBody = method === "POST" ? await request.text() : "";
   const initialHeaders = {
     ...corsHeaders,
-    "x-request-id": requestId,
+    [REQUEST_ID_HEADER]: requestId,
   };
 
   const fetchApiSecrets = makeFetchApiSecrets({
@@ -145,7 +127,7 @@ async function handleRequest(method: "GET" | "POST", request: Request) {
   });
 
   try {
-    const { response, completed } = await proxyV1ToAppRouteResponse({
+    const proxyResult = await proxyV1ToAppRouteResponse({
       method,
       url: relativeURL,
       proxyHeaders,
@@ -157,27 +139,15 @@ async function handleRequest(method: "GET" | "POST", request: Request) {
       },
       cachePut: async (encryptionKey, key, value, ttlSeconds) => {
         const putPromise = encryptedPut(KVCache, encryptionKey, key, value, {
-          ttl: ttlSeconds ?? 60 * 60 * 24 * 7,
+          ttl: ttlSeconds ?? DEFAULT_CACHE_TTL_SECONDS,
         });
         trackBackgroundTask(putPromise);
         return putPromise;
       },
       digest: digestMessage,
     });
-
-    after(async () => {
-      try {
-        await completed;
-        log("route:stream-finished", { status: response.status });
-      } catch (error) {
-        log("route:stream-error", { error: String(error) });
-      }
-    });
-
-    log("route:after-handler", { status: response.status });
-    return response;
+    return proxyResult.response;
   } catch (error) {
-    log("route:error", { error: String(error) });
     return Response.json(
       {
         error: error instanceof Error ? error.message : String(error),
@@ -196,7 +166,7 @@ export async function OPTIONS(request: Request) {
   try {
     corsHeaders = getCorsHeaders(request, undefined);
   } catch {
-    return new Response("Forbidden", { status: 403 });
+    return new Response(FORBIDDEN_RESPONSE_TEXT, { status: 403 });
   }
 
   return handleOptions(request, corsHeaders);

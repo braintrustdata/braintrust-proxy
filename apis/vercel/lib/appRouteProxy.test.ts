@@ -10,6 +10,14 @@ function createSettledTracker(promise: Promise<void>) {
   return () => settled;
 }
 
+function createDeferred() {
+  let resolve: () => void = () => {};
+  const promise = new Promise<void>((resolver) => {
+    resolve = resolver;
+  });
+  return { promise, resolve };
+}
+
 describe("proxyV1ToAppRouteResponse", () => {
   it("reassembles split application/json chunks", async () => {
     const { response, completed } = await proxyV1ToAppRouteResponse({
@@ -69,10 +77,7 @@ describe("proxyV1ToAppRouteResponse", () => {
   });
 
   it("returns the app route response before a split JSON stream finishes", async () => {
-    let releaseSecondChunk: () => void = () => {};
-    const secondChunkReleased = new Promise<void>((resolve) => {
-      releaseSecondChunk = resolve;
-    });
+    const secondChunk = createDeferred();
 
     const result = await proxyV1ToAppRouteResponse({
       method: "POST",
@@ -87,7 +92,7 @@ describe("proxyV1ToAppRouteResponse", () => {
         setHeader("content-type", "application/json");
         const writer = res.getWriter();
         await writer.write(new TextEncoder().encode('{"ok":'));
-        await secondChunkReleased;
+        await secondChunk.promise;
         await writer.write(new TextEncoder().encode("true}"));
         await writer.close();
       },
@@ -100,16 +105,13 @@ describe("proxyV1ToAppRouteResponse", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     expect(isCompletedSettled()).toBe(false);
 
-    releaseSecondChunk();
+    secondChunk.resolve();
     expect(await bodyPromise).toBe('{"ok":true}');
     await expect(result.completed).resolves.toBeUndefined();
   });
 
   it("returns the app route response before a split SSE stream finishes", async () => {
-    let releaseDoneFrame: () => void = () => {};
-    const doneFrameReleased = new Promise<void>((resolve) => {
-      releaseDoneFrame = resolve;
-    });
+    const doneFrame = createDeferred();
 
     const result = await proxyV1ToAppRouteResponse({
       method: "POST",
@@ -126,7 +128,7 @@ describe("proxyV1ToAppRouteResponse", () => {
         await writer.write(
           new TextEncoder().encode('data: {"id":"chunk-1"}\n\n'),
         );
-        await doneFrameReleased;
+        await doneFrame.promise;
         await writer.write(new TextEncoder().encode("data: [DONE]\n\n"));
         await writer.close();
       },
@@ -150,7 +152,7 @@ describe("proxyV1ToAppRouteResponse", () => {
     expect(firstChunk.done).toBe(false);
     expect(isCompletedSettled()).toBe(false);
 
-    releaseDoneFrame();
+    doneFrame.resolve();
     const secondChunk = await reader.read();
     expect(new TextDecoder().decode(secondChunk.value)).toBe(
       "data: [DONE]\n\n",

@@ -41,15 +41,6 @@ export interface ProxyOpts {
   spanId?: string;
   spanExport?: string;
   nativeInferenceSecretKey?: string;
-  /**
-   * When true, the upstream → response body runs in the background
-   * and the function is kept alive via `ctx.waitUntil`.
-   *
-   * Leave unset on Cloudflare Workers as those already keep the event stream alive
-   *
-   * @default false
-   */
-  streamingViaWaitUntil?: boolean;
 }
 
 const defaultWhitelist: (string | RegExp)[] = [
@@ -288,8 +279,7 @@ export function makeFetchApiSecrets({
       });
     }
 
-    // temp skip the cache for testing
-    if (useCache && opts.credentialsCache && !lookupFailed) {
+    if (opts.credentialsCache && !lookupFailed) {
       ctx.waitUntil(
         encryptedPut(
           opts.credentialsCache,
@@ -308,121 +298,6 @@ export function makeFetchApiSecrets({
 }
 
 // Metric logging functions are now created in the calling layer (e.g., Cloudflare proxy)
-
-// readable highWaterMark is generous so the producer can prime the stream
-// before any reader is attached — Response(readable) is only constructed
-// after the first write, so without buffering `baseWriter.write` would
-// deadlock waiting for a consumer.
-export async function streamingResponseViaWaitUntil({
-  ctx,
-  wrapWithMeter,
-  runProxy,
-  getStatus,
-  getHeaders,
-}: {
-  ctx: EdgeContext;
-  wrapWithMeter: (
-    body: ReadableStream<Uint8Array>,
-  ) => ReadableStream<Uint8Array>;
-  runProxy: (res: WritableStream<Uint8Array>) => Promise<void>;
-  getStatus: () => number;
-  getHeaders: () => Record<string, string>;
-}): Promise<Response> {
-  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>(
-    {},
-    { highWaterMark: 1 },
-    { highWaterMark: 64 },
-  );
-
-  let signalReady: () => void = () => {};
-  const headersReady = new Promise<void>((resolve) => {
-    signalReady = resolve;
-  });
-
-  let signalPipeComplete: () => void = () => {};
-  const pipeComplete = new Promise<void>((resolve) => {
-    signalPipeComplete = resolve;
-  });
-
-  let writeCount = 0;
-  let totalBytes = 0;
-  let closed = false;
-  let aborted = false;
-
-  const baseWriter = writable.getWriter();
-  const wrappedWritable = new WritableStream<Uint8Array>({
-    async write(chunk) {
-      writeCount += 1;
-      totalBytes += chunk.byteLength;
-      await baseWriter.write(chunk);
-      console.log(
-        `streamingResponseViaWaitUntil write #${writeCount} bytes=${chunk.byteLength} total=${totalBytes}`,
-      );
-      signalReady();
-    },
-    async close() {
-      closed = true;
-      console.log(
-        `streamingResponseViaWaitUntil close writes=${writeCount} total=${totalBytes}`,
-      );
-      await baseWriter.close();
-      signalReady();
-      signalPipeComplete();
-    },
-    async abort(reason) {
-      aborted = true;
-      console.error(
-        `streamingResponseViaWaitUntil abort writes=${writeCount} total=${totalBytes} reason=${reason}`,
-      );
-      await baseWriter.abort(reason);
-      signalReady();
-      signalPipeComplete();
-    },
-  });
-
-  let proxyError: unknown = undefined;
-  const proxyPromise = runProxy(wrappedWritable)
-    .then(() => {
-      console.log(
-        `streamingResponseViaWaitUntil runProxy resolved writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
-      );
-    })
-    .catch((e) => {
-      console.error(
-        `streamingResponseViaWaitUntil runProxy threw writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
-        e,
-      );
-      proxyError = e;
-      signalReady();
-      baseWriter.abort(e).catch(() => {});
-      signalPipeComplete();
-    });
-
-  ctx.waitUntil(
-    Promise.all([proxyPromise, pipeComplete]).then(() => {
-      console.log(
-        `streamingResponseViaWaitUntil waitUntil settled writes=${writeCount} total=${totalBytes} closed=${closed} aborted=${aborted}`,
-      );
-    }),
-  );
-
-  await headersReady;
-  if (proxyError !== undefined) {
-    return new Response(`${proxyError}`, {
-      status: 400,
-      headers: { "Content-Type": "text/plain" },
-    });
-  }
-
-  console.log(
-    `streamingResponseViaWaitUntil returning Response status=${getStatus()} writes=${writeCount} total=${totalBytes}`,
-  );
-
-  return new Response(wrapWithMeter(readable), {
-    status: getStatus(),
-    headers: getHeaders(),
-  });
-}
 
 export function EdgeProxyV1(opts: ProxyOpts) {
   return async (request: Request, ctx: EdgeContext) => {
@@ -444,7 +319,6 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         headers: { "Content-Type": "text/plain" },
       });
     }
-    const method: "GET" | "POST" = request.method;
 
     const relativeURL = opts.getRelativeURL(request);
 
@@ -511,62 +385,43 @@ export function EdgeProxyV1(opts: ProxyOpts) {
       }
     };
 
-    const requestBody = await request.text();
-    const proxyV1Args = {
-      method,
-      url: relativeURL,
-      proxyHeaders,
-      body: requestBody,
-      setHeader,
-      setStatusCode: setStatus,
-      getApiSecrets: fetchApiSecrets,
-      cacheGet,
-      cachePut,
-      digest: digestMessage,
-      logHistogram: opts.logHistogram,
-      spanLogger: opts.spanLogger,
-      billingOrgId: opts.billingOrgId,
-      onBillingEvent: opts.onBillingEvent,
-    };
-
-    const meterProvider = opts.meterProvider;
-    const wrapWithMeter = (body: ReadableStream<Uint8Array>) =>
-      meterProvider
-        ? body.pipeThrough(
-            new TransformStream<Uint8Array, Uint8Array>({
-              flush() {
-                ctx.waitUntil(flushMetrics(meterProvider));
-              },
-            }),
-          )
-        : body;
-
-    if (opts.streamingViaWaitUntil) {
-      return streamingResponseViaWaitUntil({
-        ctx,
-        wrapWithMeter,
-        runProxy: (res) => proxyV1({ ...proxyV1Args, res }),
-        getStatus: () => status,
-        getHeaders: () => headers,
-      });
-    }
-
-    // Default path: await proxyV1 to completion before returning.
     try {
       await proxyV1({
-        ...proxyV1Args,
+        method: request.method,
+        url: relativeURL,
+        proxyHeaders,
+        body: await request.text(),
+        setHeader,
+        setStatusCode: setStatus,
         res: writable,
+        getApiSecrets: fetchApiSecrets,
+        cacheGet,
+        cachePut,
+        digest: digestMessage,
+        logHistogram: opts.logHistogram,
+        spanLogger: opts.spanLogger,
+        billingOrgId: opts.billingOrgId,
+        onBillingEvent: opts.onBillingEvent,
       });
     } catch (e) {
-      // log error to vercel
-      console.error("EdgeProxyV1 request failed", e);
       return new Response(`${e}`, {
         status: 400,
         headers: { "Content-Type": "text/plain" },
       });
     }
 
-    return new Response(wrapWithMeter(readable), {
+    const meterProvider = opts.meterProvider;
+    const responseBody = meterProvider
+      ? readable.pipeThrough(
+          new TransformStream<Uint8Array, Uint8Array>({
+            flush() {
+              ctx.waitUntil(flushMetrics(meterProvider));
+            },
+          }),
+        )
+      : readable;
+
+    return new Response(responseBody, {
       status,
       headers,
     });

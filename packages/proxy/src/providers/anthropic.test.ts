@@ -91,6 +91,40 @@ it("should use bearer authorization for Anthropic WIF secrets", () => {
   });
 });
 
+it("should not forward caller x-api-key for Anthropic WIF chat completions", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: ANTHROPIC_LIVE_TEST_MODEL,
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+      max_tokens: 32,
+    },
+    proxyHeaders: {
+      "x-api-key": "proxy-api-key",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "anthropic",
+        secret: "test-wif-access-token",
+        name: "anthropic",
+        metadata: {
+          auth_type: "oauth_bearer",
+          auth_source: "anthropic_workload_identity_federation",
+        },
+      },
+    ],
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].headers.authorization).toBe(
+    "Bearer test-wif-access-token",
+  );
+  expect(requests[0].headers["x-api-key"]).toBeUndefined();
+});
+
 it("should mark streaming responses as no-transform", async () => {
   const encoder = new TextEncoder();
   const anthropicEvents = [

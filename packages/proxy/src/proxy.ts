@@ -2793,6 +2793,7 @@ async function fetchAnthropicChatCompletions({
     headers["accept"] = "application/json";
     headers["anthropic-version"] = "2023-06-01";
     headers["host"] = fullURL.host;
+    delete headers["x-api-key"];
     Object.assign(headers, anthropicAuthHeaders(secret));
   }
 

@@ -1,71 +1,92 @@
+import { PassThrough } from "node:stream";
+
 import { describe, expect, it } from "vitest";
 
-import { nodeStreamingResponseViaPassThrough } from "./nodeProxy";
+import { proxyV1ToNodeResponse } from "./nodeProxy";
 
-describe("nodeStreamingResponseViaPassThrough", () => {
-  it("returns application/json bodies", async () => {
-    const encoder = new TextEncoder();
+describe("proxyV1ToNodeResponse", () => {
+  it("reassembles split application/json chunks", async () => {
+    const headers = new Map<string, string>();
+    let statusCode = 200;
+    const res = new PassThrough();
+    const bodyChunks: Buffer[] = [];
 
-    const response = await nodeStreamingResponseViaPassThrough({
-      runProxy: async (res) => {
-        const writer = res.getWriter();
-        await writer.write(encoder.encode(JSON.stringify({ ok: true })));
-        await writer.close();
-      },
-      getStatus: () => 200,
-      getHeaders: () => ({ "content-type": "application/json" }),
+    res.on("data", (chunk: Buffer) => {
+      bodyChunks.push(chunk);
     });
 
-    expect(response.status).toBe(200);
-    expect(response.headers.get("content-type")).toBe("application/json");
-    await expect(response.json()).resolves.toEqual({ ok: true });
+    await proxyV1ToNodeResponse({
+      method: "POST",
+      url: "/chat/completions",
+      proxyHeaders: {},
+      body: "{}",
+      setHeader(name, value) {
+        headers.set(name, value);
+      },
+      setStatusCode(code) {
+        statusCode = code;
+      },
+      getApiSecrets: async () => [],
+      cacheGet: async () => null,
+      cachePut: async () => {},
+      digest: async (message) => message,
+      getRes: () => res,
+      proxyImpl: async ({ res, setHeader }) => {
+        setHeader("content-type", "application/json");
+        const writer = res.getWriter();
+        await writer.write(new TextEncoder().encode('{"ok":'));
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        await writer.write(new TextEncoder().encode('true,"parts":[1,2]}'));
+        await writer.close();
+      },
+    });
+
+    expect(statusCode).toBe(200);
+    expect(headers.get("content-type")).toBe("application/json");
+    expect(JSON.parse(Buffer.concat(bodyChunks).toString("utf8"))).toEqual({
+      ok: true,
+      parts: [1, 2],
+    });
   });
 
-  it("streams multiple chunks through a node PassThrough body", async () => {
-    const encoder = new TextEncoder();
-    const decoder = new TextDecoder();
-    const waitUntilPromises: Promise<unknown>[] = [];
-    let returnedResponse = false;
+  it("streams split SSE frames for stream=true style responses", async () => {
+    const headers = new Map<string, string>();
+    const res = new PassThrough();
+    const bodyChunks: Buffer[] = [];
 
-    const responsePromise = nodeStreamingResponseViaPassThrough({
-      runProxy: async (res) => {
-        await new Promise((resolve) => setTimeout(resolve, 20));
-        const writer = res.getWriter();
-        await writer.write(encoder.encode("data: first\n\n"));
-        await new Promise((resolve) => setTimeout(resolve, 20));
-        await writer.write(encoder.encode("data: second\n\n"));
-        await writer.close();
-      },
-      getStatus: () => 200,
-      getHeaders: () => ({ "content-type": "text/event-stream" }),
-      waitUntil(promise) {
-        waitUntilPromises.push(promise);
-      },
-    }).then((response) => {
-      returnedResponse = true;
-      return response;
+    res.on("data", (chunk: Buffer) => {
+      bodyChunks.push(chunk);
     });
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(returnedResponse).toBe(false);
+    await proxyV1ToNodeResponse({
+      method: "POST",
+      url: "/chat/completions",
+      proxyHeaders: {},
+      body: '{"stream":true}',
+      setHeader(name, value) {
+        headers.set(name, value);
+      },
+      setStatusCode() {},
+      getApiSecrets: async () => [],
+      cacheGet: async () => null,
+      cachePut: async () => {},
+      digest: async (message) => message,
+      getRes: () => res,
+      proxyImpl: async ({ res, setHeader }) => {
+        setHeader("content-type", "text/event-stream");
+        const writer = res.getWriter();
+        await writer.write(new TextEncoder().encode('data: {"id":"chunk-1"'));
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        await writer.write(new TextEncoder().encode("}\n\n"));
+        await new Promise((resolve) => setTimeout(resolve, 20));
+        await writer.write(new TextEncoder().encode("data: [DONE]\n\n"));
+        await writer.close();
+      },
+    });
 
-    const response = await responsePromise;
-    expect(response.status).toBe(200);
-    expect(response.headers.get("content-type")).toBe("text/event-stream");
-
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("Expected response body");
-    }
-
-    const first = await reader.read();
-    const second = await reader.read();
-    const third = await reader.read();
-
-    expect(decoder.decode(first.value)).toBe("data: first\n\n");
-    expect(decoder.decode(second.value)).toBe("data: second\n\n");
-    expect(third.done).toBe(true);
-    expect(waitUntilPromises).toHaveLength(1);
-    await expect(Promise.all(waitUntilPromises)).resolves.toBeDefined();
+    expect(headers.get("content-type")).toBe("text/event-stream");
+    expect(Buffer.concat(bodyChunks).toString("utf8")).toBe(
+      'data: {"id":"chunk-1"}\n\ndata: [DONE]\n\n',
+    );
   });
 });

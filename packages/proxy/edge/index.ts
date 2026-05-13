@@ -309,6 +309,83 @@ export function makeFetchApiSecrets({
 
 // Metric logging functions are now created in the calling layer (e.g., Cloudflare proxy)
 
+// readable highWaterMark is generous so the producer can prime the stream
+// before any reader is attached — Response(readable) is only constructed
+// after the first write, so without buffering `baseWriter.write` would
+// deadlock waiting for a consumer.
+export async function streamingResponseViaWaitUntil({
+  ctx,
+  wrapWithMeter,
+  runProxy,
+  getStatus,
+  getHeaders,
+}: {
+  ctx: EdgeContext;
+  wrapWithMeter: (
+    body: ReadableStream<Uint8Array>,
+  ) => ReadableStream<Uint8Array>;
+  runProxy: (res: WritableStream<Uint8Array>) => Promise<void>;
+  getStatus: () => number;
+  getHeaders: () => Record<string, string>;
+}): Promise<Response> {
+  const { readable, writable } = new TransformStream<Uint8Array, Uint8Array>(
+    {},
+    { highWaterMark: 1 },
+    { highWaterMark: 64 },
+  );
+
+  let signalReady: () => void = () => {};
+  const headersReady = new Promise<void>((resolve) => {
+    signalReady = resolve;
+  });
+
+  let signalPipeComplete: () => void = () => {};
+  const pipeComplete = new Promise<void>((resolve) => {
+    signalPipeComplete = resolve;
+  });
+
+  const baseWriter = writable.getWriter();
+  const wrappedWritable = new WritableStream<Uint8Array>({
+    async write(chunk) {
+      await baseWriter.write(chunk);
+      signalReady();
+    },
+    async close() {
+      await baseWriter.close();
+      signalReady();
+      signalPipeComplete();
+    },
+    async abort(reason) {
+      await baseWriter.abort(reason);
+      signalReady();
+      signalPipeComplete();
+    },
+  });
+
+  let proxyError: unknown = undefined;
+  const proxyPromise = runProxy(wrappedWritable).catch((e) => {
+    proxyError = e;
+    signalReady();
+    baseWriter.abort(e).catch(() => {});
+    signalPipeComplete();
+  });
+
+  ctx.waitUntil(Promise.all([proxyPromise, pipeComplete]));
+
+  await headersReady;
+  if (proxyError !== undefined) {
+    return new Response(`${proxyError}`, {
+      status: 400,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  return new Response(wrapWithMeter(readable), {
+    status: getStatus(),
+    headers: getHeaders(),
+  });
+}
+
 export function EdgeProxyV1(opts: ProxyOpts) {
   return async (request: Request, ctx: EdgeContext) => {
     let corsHeaders = {};
@@ -427,59 +504,12 @@ export function EdgeProxyV1(opts: ProxyOpts) {
         : body;
 
     if (opts.streamingViaWaitUntil) {
-      let signalReady: () => void = () => {};
-      const headersReady = new Promise<void>((resolve) => {
-        signalReady = resolve;
-      });
-
-      let signalPipeComplete: () => void = () => {};
-      const pipeComplete = new Promise<void>((resolve) => {
-        signalPipeComplete = resolve;
-      });
-
-      const baseWriter = writable.getWriter();
-      const wrappedWritable = new WritableStream<Uint8Array>({
-        async write(chunk) {
-          signalReady();
-          await baseWriter.write(chunk);
-        },
-        async close() {
-          signalReady();
-          await baseWriter.close();
-          signalPipeComplete();
-        },
-        async abort(reason) {
-          signalReady();
-          await baseWriter.abort(reason);
-          signalPipeComplete();
-        },
-      });
-
-      let proxyError: unknown = undefined;
-      const proxyV1Promise = proxyV1({
-        ...proxyV1Args,
-        res: wrappedWritable,
-      }).catch((e) => {
-        proxyError = e;
-        signalReady();
-        baseWriter.abort(e).catch(() => {});
-        signalPipeComplete();
-      });
-
-      ctx.waitUntil(Promise.all([proxyV1Promise, pipeComplete]));
-
-      await headersReady;
-      if (proxyError !== undefined) {
-        console.error("EdgeProxyV1 request failed", proxyError);
-        return new Response(`${proxyError}`, {
-          status: 400,
-          headers: { "Content-Type": "text/plain" },
-        });
-      }
-
-      return new Response(wrapWithMeter(readable), {
-        status,
-        headers,
+      return streamingResponseViaWaitUntil({
+        ctx,
+        wrapWithMeter,
+        runProxy: (res) => proxyV1({ ...proxyV1Args, res }),
+        getStatus: () => status,
+        getHeaders: () => headers,
       });
     }
 

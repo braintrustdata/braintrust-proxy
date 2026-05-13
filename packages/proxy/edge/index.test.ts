@@ -1,5 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { makeFetchApiSecrets, type EdgeContext, type ProxyOpts } from "./index";
+import {
+  makeFetchApiSecrets,
+  streamingResponseViaWaitUntil,
+  type EdgeContext,
+  type ProxyOpts,
+} from "./index";
 
 function createInMemoryCache() {
   const store = new Map<string, unknown>();
@@ -182,5 +187,116 @@ describe("makeFetchApiSecrets", () => {
     });
     expect(getSetCalls()).toBe(1);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("streamingResponseViaWaitUntil", () => {
+  function setup() {
+    const waitUntilPromises: Promise<unknown>[] = [];
+    const ctx: EdgeContext = {
+      waitUntil(promise) {
+        waitUntilPromises.push(promise);
+      },
+    };
+    const wrapWithMeter = (b: ReadableStream<Uint8Array>) => b;
+    return { waitUntilPromises, ctx, wrapWithMeter };
+  }
+
+  it("waits for the first byte before returning Response", async () => {
+    const { ctx, wrapWithMeter } = setup();
+    const encoder = new TextEncoder();
+
+    let returnedResponse = false;
+    let firstWriteAt = -1;
+    let responseAt = -1;
+    let tick = 0;
+
+    const runProxy = async (res: WritableStream<Uint8Array>) => {
+      (async () => {
+        await new Promise((r) => setTimeout(r, 20));
+        const writer = res.getWriter();
+        firstWriteAt = ++tick;
+        await writer.write(encoder.encode("hello "));
+        await writer.write(encoder.encode("world"));
+        await writer.close();
+      })();
+    };
+
+    const responsePromise = streamingResponseViaWaitUntil({
+      ctx,
+      wrapWithMeter,
+      runProxy,
+      getStatus: () => 200,
+      getHeaders: () => ({ "content-type": "text/plain" }),
+    }).then((r) => {
+      responseAt = ++tick;
+      returnedResponse = true;
+      return r;
+    });
+
+    await new Promise((r) => setTimeout(r, 0));
+    expect(returnedResponse).toBe(false);
+
+    const response = await responsePromise;
+    expect(response.status).toBe(200);
+    expect(firstWriteAt).toBeGreaterThan(0);
+    expect(responseAt).toBeGreaterThan(firstWriteAt);
+
+    const text = await response.text();
+    expect(text).toBe("hello world");
+  });
+
+  it("returns a 400 response when runProxy throws before writing", async () => {
+    const { ctx, wrapWithMeter } = setup();
+
+    const runProxy = async () => {
+      throw new Error("boom");
+    };
+
+    const response = await streamingResponseViaWaitUntil({
+      ctx,
+      wrapWithMeter,
+      runProxy,
+      getStatus: () => 200,
+      getHeaders: () => ({}),
+    });
+
+    expect(response.status).toBe(400);
+    expect(await response.text()).toContain("boom");
+  });
+
+  it("keeps the platform alive via ctx.waitUntil until the pipe drains", async () => {
+    const { waitUntilPromises, ctx, wrapWithMeter } = setup();
+    const encoder = new TextEncoder();
+    let pipeFinished = false;
+
+    const runProxy = async (res: WritableStream<Uint8Array>) => {
+      (async () => {
+        const writer = res.getWriter();
+        await writer.write(encoder.encode("first"));
+        await new Promise((r) => setTimeout(r, 30));
+        await writer.write(encoder.encode("-second"));
+        await writer.close();
+        pipeFinished = true;
+      })();
+    };
+
+    const response = await streamingResponseViaWaitUntil({
+      ctx,
+      wrapWithMeter,
+      runProxy,
+      getStatus: () => 200,
+      getHeaders: () => ({}),
+    });
+
+    expect(pipeFinished).toBe(false);
+    expect(waitUntilPromises.length).toBe(1);
+
+    const text = await response.text();
+    expect(text).toBe("first-second");
+
+    await Promise.all(waitUntilPromises);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(pipeFinished).toBe(true);
   });
 });

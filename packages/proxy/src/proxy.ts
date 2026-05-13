@@ -167,11 +167,7 @@ const GOOGLE_API_KEY_HEADER = "x-goog-api-key";
 
 function isAnthropicOAuthBearerSecret(secret: APISecret) {
   return (
-    secret.type === "anthropic" &&
-    secret.metadata !== null &&
-    secret.metadata !== undefined &&
-    "auth_type" in secret.metadata &&
-    secret.metadata.auth_type === "oauth_bearer"
+    secret.type === "anthropic" && secret.metadata?.auth_type === "oauth_bearer"
   );
 }
 

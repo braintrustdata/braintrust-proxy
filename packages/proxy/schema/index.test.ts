@@ -324,6 +324,36 @@ describe("APISecretSchema compatibility", () => {
     });
   });
 
+  it("accepts Anthropic OAuth bearer metadata", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "anthropic-access-token",
+      type: "anthropic",
+      metadata: {
+        auth_type: "oauth_bearer",
+        auth_source: "anthropic_workload_identity_federation",
+        future_field: "future-value",
+      },
+    });
+
+    expect(parsed.type).toBe("anthropic");
+    expect(parsed.metadata).toMatchObject({
+      auth_type: "oauth_bearer",
+      auth_source: "anthropic_workload_identity_federation",
+      future_field: "future-value",
+    });
+  });
+
+  it("defaults Anthropic auth metadata to api_key", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "anthropic-api-key",
+      type: "anthropic",
+      metadata: {},
+    });
+
+    expect(parsed.type).toBe("anthropic");
+    expect(parsed.metadata?.auth_type).toBe("api_key");
+  });
+
   it("still rejects schema violations", () => {
     const result = APISecretSchema.safeParse({
       type: "openai",

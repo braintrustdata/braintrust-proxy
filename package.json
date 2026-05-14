@@ -40,6 +40,7 @@
   },
   "packageManager": "pnpm@10.33.0",
   "resolutions": {
+    "handlebars": "4.7.9",
     "protobufjs": "7.5.5",
     "zod": "3.25.34"
   }

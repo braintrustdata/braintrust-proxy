@@ -4,7 +4,7 @@ const path = require("path");
 const nextConfig = {
   poweredByHeader: false,
   outputFileTracingRoot: path.join(__dirname, "../.."),
-  transpilePackages: ["@braintrust/proxy"],
+  transpilePackages: ["@braintrust/proxy", "@vercel/examples-ui"],
   typescript: {
     ignoreBuildErrors: true,
   },

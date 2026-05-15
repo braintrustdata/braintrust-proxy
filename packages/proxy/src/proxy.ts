@@ -2135,7 +2135,7 @@ async function fetchOpenAI(
       bearerToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      bearerToken = await getGoogleAccessToken(secret.secret);
+      bearerToken = await getGoogleAccessToken(secret.secret, fetch);
     }
   } else {
     const metadataApiBase =
@@ -2215,6 +2215,7 @@ async function fetchOpenAI(
         digest,
         cacheGet,
         cachePut,
+        fetch,
       });
     } else {
       bearerToken = secret.secret;
@@ -2584,10 +2585,12 @@ async function vertexEndpointInfo({
   secret: { secret, metadata },
   modelSpec,
   defaultLocation,
+  fetch = globalThis.fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   defaultLocation: string;
+  fetch?: FetchFn;
 }): Promise<VertexEndpointInfo> {
   const { project, location, authType, api_base } =
     VertexMetadataSchema.parse(metadata);
@@ -2598,7 +2601,9 @@ async function vertexEndpointInfo({
   });
   const apiBase = getVertexBaseUrl(api_base, resolvedLocation);
   const accessToken =
-    authType === "access_token" ? secret : await getGoogleAccessToken(secret);
+    authType === "access_token"
+      ? secret
+      : await getGoogleAccessToken(secret, fetch);
   if (!accessToken) {
     throw new Error("Failed to get Google access token");
   }
@@ -2625,6 +2630,7 @@ async function fetchVertexAnthropicMessages({
     secret,
     modelSpec,
     defaultLocation: "us-east5",
+    fetch,
   });
   const { model, ...rest } = z
     .object({
@@ -2968,6 +2974,7 @@ async function fetchAnthropicChatCompletions({
       secret,
       modelSpec,
       defaultLocation: "us-east5",
+      fetch: customFetch,
     });
     fullURL = new URL(
       `${baseUrl}/${params.model}:${
@@ -3156,7 +3163,10 @@ async function openAIToolsToGoogleTools(params: {
   return out;
 }
 
-async function getGoogleAccessToken(secret: string): Promise<string> {
+async function getGoogleAccessToken(
+  secret: string,
+  fetch: FetchFn = globalThis.fetch,
+): Promise<string> {
   const {
     private_key_id: kid,
     private_key: pk,
@@ -3240,6 +3250,7 @@ async function fetchGoogleGenerateContent({
         secret,
         modelSpec,
         defaultLocation: "us-central1",
+        fetch,
       });
       const url = new URL(`${baseUrl}/${model}:${method}`);
       if (method === "streamGenerateContent") {
@@ -3376,6 +3387,7 @@ async function fetchGoogleChatCompletions({
       secret,
       modelSpec,
       defaultLocation: "us-central1",
+      fetch,
     });
     fullURL = new URL(
       `${baseUrl}/${model}:${

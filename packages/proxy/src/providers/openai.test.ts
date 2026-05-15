@@ -3,6 +3,7 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import { type APISecret } from "@schema";
 import { bypass, http, HttpResponse, JsonBodyType } from "msw";
 import { setupServer } from "msw/node";
 import { ChatCompletionContentPart } from "openai/resources";
@@ -18,6 +19,7 @@ import {
 } from "vitest";
 import { callProxyV1, createCapturingFetch } from "../../utils/tests";
 import * as proxyUtil from "../util";
+import { type FetchFn } from "../proxy";
 import { normalizeOpenAIContent } from "./openai";
 import * as util from "./util";
 import {
@@ -29,6 +31,26 @@ import {
   MD_DATA_URL,
   CSV_DATA_URL,
 } from "../../tests/fixtures/base64";
+
+function fetchInputUrl(input: Parameters<FetchFn>[0]): string {
+  if (typeof input === "string") {
+    return input;
+  }
+  if (input instanceof URL) {
+    return input.toString();
+  }
+  return input.url;
+}
+
+function fetchHeaderValue(
+  headers: HeadersInit | undefined,
+  name: string,
+): string | null {
+  if (!headers) {
+    return null;
+  }
+  return new Headers(headers).get(name);
+}
 
 it("should deny reasoning_effort for unsupported models non-streaming", async () => {
   const { json } = await callProxyV1<
@@ -404,6 +426,80 @@ it("uses injected fetch when supportsStreaming is false", async () => {
 
   expect(requests.length).toBe(1);
   expect(requests[0].url).toBe("http://test.com/v1/chat/completions");
+});
+
+it("uses injected fetch for Databricks OAuth token exchange", async () => {
+  vi.stubGlobal("fetch", async () => {
+    throw new Error("global fetch was called");
+  });
+
+  try {
+    const calls: Array<{
+      url: string;
+      body: BodyInit | null | undefined;
+      headers: HeadersInit | undefined;
+    }> = [];
+    const fetch: FetchFn = async (input, init) => {
+      const url = fetchInputUrl(input);
+      calls.push({ url, body: init?.body, headers: init?.headers });
+
+      if (url === "https://dbc.example/oidc/v1/token") {
+        return new Response(
+          JSON.stringify({
+            access_token: "databricks-token",
+            token_type: "Bearer",
+            expires_in: 3600,
+          }),
+          { headers: { "content-type": "application/json" } },
+        );
+      }
+
+      return new Response(JSON.stringify({ choices: [] }), {
+        headers: { "content-type": "application/json" },
+      });
+    };
+    const getApiSecrets = async (): Promise<APISecret[]> => [
+      {
+        type: "databricks",
+        name: "databricks",
+        secret: JSON.stringify({
+          client_id: "client-id",
+          client_secret: "client-secret",
+        }),
+        metadata: {
+          api_base: "https://dbc.example",
+          auth_type: "service_principal_oauth",
+          supportsStreaming: true,
+        },
+      },
+    ];
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "databricks-model",
+        messages: [{ role: "user", content: "hello" }],
+      },
+      fetch,
+      ...{ getApiSecrets },
+    });
+
+    expect(calls.map((call) => call.url)).toEqual([
+      "https://dbc.example/oidc/v1/token",
+      "https://dbc.example/serving-endpoints/databricks-model/invocations",
+    ]);
+    expect(calls[0]?.body?.toString()).toBe(
+      "grant_type=client_credentials&scope=all-apis",
+    );
+    expect(fetchHeaderValue(calls[0]?.headers, "authorization")).toBe(
+      // Base64 for the fake "client-id:client-secret" fixture above.
+      "Basic Y2xpZW50LWlkOmNsaWVudC1zZWNyZXQ=", // gitleaks:allow
+    );
+    expect(fetchHeaderValue(calls[1]?.headers, "authorization")).toBe(
+      "Bearer databricks-token",
+    );
+  } finally {
+    vi.unstubAllGlobals();
+  }
 });
 
 it("uses model path for azure when metadata.deployment is non-string", async () => {

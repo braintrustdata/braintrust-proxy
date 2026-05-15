@@ -109,6 +109,7 @@ import {
   parseAuthHeader,
   parseNumericHeader,
   ProxyBadRequestError,
+  sanitizeUsageField,
   writeToReadable,
   _urljoin,
 } from "./util";
@@ -828,13 +829,19 @@ export async function proxyV1({
                   result.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
+                  inputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens,
+                  );
+                  outputTokens = sanitizeUsageField(
+                    extendedUsage.data.completion_tokens,
+                  );
+                  cachedInputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                  );
+                  cacheWriteInputTokens = sanitizeUsageField(
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens,
+                  );
                   spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
@@ -1029,13 +1036,19 @@ export async function proxyV1({
                   data.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
+                  inputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens,
+                  );
+                  outputTokens = sanitizeUsageField(
+                    extendedUsage.data.completion_tokens,
+                  );
+                  cachedInputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                  );
+                  cacheWriteInputTokens = sanitizeUsageField(
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens,
+                  );
                   spanLogger?.log({
                     output: data.choices,
                     metrics: {
@@ -1099,10 +1112,11 @@ export async function proxyV1({
                   resolvedModel = data.model;
                 }
                 if (data.usage) {
-                  inputTokens = data.usage.input_tokens;
-                  outputTokens = data.usage.output_tokens;
-                  cachedInputTokens =
-                    data.usage.input_tokens_details?.cached_tokens;
+                  inputTokens = sanitizeUsageField(data.usage.input_tokens);
+                  outputTokens = sanitizeUsageField(data.usage.output_tokens);
+                  cachedInputTokens = sanitizeUsageField(
+                    data.usage.input_tokens_details?.cached_tokens,
+                  );
                 }
                 spanLogger?.log({
                   output: data.output,

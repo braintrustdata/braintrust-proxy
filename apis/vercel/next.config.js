@@ -5,7 +5,7 @@ const nextConfig = {
   poweredByHeader: false,
   outputFileTracingRoot: path.join(__dirname, "../.."),
   turbopack: {
-    root: path.join(__dirname, "../.."),
+    root: path.join(__dirname, "../../.."),
   },
   transpilePackages: ["@braintrust/proxy", "@vercel/examples-ui"],
   typescript: {

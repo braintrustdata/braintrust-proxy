@@ -20,6 +20,12 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ["schema/translate.ts"],
+    format: ["cjs", "esm"],
+    outDir: "schema/translate/dist",
+    dts: true,
+  },
+  {
     entry: ["utils/index.ts"],
     format: ["cjs", "esm"],
     outDir: "utils/dist",

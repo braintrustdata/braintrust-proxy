@@ -19,9 +19,9 @@ import {
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
-  translateParams,
   VertexMetadataSchema,
 } from "@schema";
+import { translateParams } from "../schema/translate";
 import {
   completionUsageSchema,
   OpenAIChatCompletionChunk,

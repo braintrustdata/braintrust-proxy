@@ -3,7 +3,8 @@ import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, it } from "vitest";
 import { APISecretSchema } from "./secrets";
-import { ModelFormat, translateParams } from "./index";
+import { ModelFormat } from "./index";
+import { translateParams } from "./translate";
 
 const examples: Record<
   string,

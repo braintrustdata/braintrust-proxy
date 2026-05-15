@@ -1,10 +1,15 @@
 const path = require("path");
 
+const workspaceRoot = path.join(__dirname, "../..");
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
-  outputFileTracingRoot: path.join(__dirname, "../.."),
-  transpilePackages: ["@braintrust/proxy"],
+  outputFileTracingRoot: workspaceRoot,
+  turbopack: {
+    root: workspaceRoot,
+  },
+  transpilePackages: ["@braintrust/proxy", "@vercel/examples-ui"],
   typescript: {
     ignoreBuildErrors: true,
   },

@@ -13,6 +13,13 @@ export const BaseMetadataSchema = z
   })
   .passthrough();
 
+export const AnthropicMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    auth_type: z.enum(["api_key", "oauth_bearer"]).default("api_key"),
+    auth_source: z.string().nullish(),
+  }),
+).passthrough();
+
 export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string().url(),
@@ -159,7 +166,6 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.enum([
         "perplexity",
-        "anthropic",
         "google",
         "replicate",
         "together",
@@ -172,6 +178,12 @@ export const APISecretSchema = z.union([
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("anthropic"),
+      metadata: AnthropicMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(

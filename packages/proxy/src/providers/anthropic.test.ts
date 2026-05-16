@@ -1,11 +1,12 @@
 import { it, expect, describe } from "vitest";
 import { callProxyV1, createCapturingFetch } from "../../utils/tests";
-import { FetchFn } from "../proxy";
+import { anthropicAuthHeaders, FetchFn } from "../proxy";
 import {
   OpenAIChatCompletion,
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
+import { APISecretSchema } from "@schema";
 import { omitUnsupportedAnthropicParams } from "./anthropic";
 import {
   IMAGE_DATA_URL,
@@ -70,6 +71,58 @@ it("should request identity encoding for streaming Anthropic chat completions", 
 
   expect(requests).toHaveLength(1);
   expect(requests[0].headers["accept-encoding"]).toBe("identity");
+});
+
+it("should use bearer authorization for Anthropic WIF secrets", () => {
+  const headers = anthropicAuthHeaders(
+    APISecretSchema.parse({
+      type: "anthropic",
+      secret: "test-wif-access-token",
+      name: "anthropic",
+      metadata: {
+        auth_type: "oauth_bearer",
+        auth_source: "anthropic_workload_identity_federation",
+      },
+    }),
+  );
+
+  expect(headers).toEqual({
+    authorization: "Bearer test-wif-access-token",
+  });
+});
+
+it("should not forward caller x-api-key for Anthropic WIF chat completions", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: ANTHROPIC_LIVE_TEST_MODEL,
+      messages: [{ role: "user", content: "Hello" }],
+      stream: false,
+      max_tokens: 32,
+    },
+    proxyHeaders: {
+      "x-api-key": "proxy-api-key",
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "anthropic",
+        secret: "test-wif-access-token",
+        name: "anthropic",
+        metadata: {
+          auth_type: "oauth_bearer",
+          auth_source: "anthropic_workload_identity_federation",
+        },
+      },
+    ],
+  });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].headers.authorization).toBe(
+    "Bearer test-wif-access-token",
+  );
+  expect(requests[0].headers["x-api-key"]).toBeUndefined();
 });
 
 it("should mark streaming responses as no-transform", async () => {

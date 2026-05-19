@@ -6731,6 +6731,22 @@
       "google"
     ]
   },
+  "gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "grok-4-0709": {
     "format": "openai",
     "flavor": "chat",
@@ -9064,6 +9080,24 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
+  },
+  "publishers/google/models/gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "google"
+    ]
   },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",

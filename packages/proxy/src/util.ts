@@ -80,6 +80,28 @@ export function isEmpty(a: any): a is null | undefined {
   return a === undefined || a === null;
 }
 
+// Upper bound for any token-usage counter we'll forward to billing.
+export const MAX_TOKEN_COUNT = 1_000_000_000;
+
+// Drop any usage value that is missing, non-numeric, non-finite, non-integer,
+// negative, or implausibly large before it reaches `BillingEvent`.
+export function sanitizeUsageField(
+  value: number | undefined | null,
+): number | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (
+    !Number.isFinite(value) ||
+    !Number.isInteger(value) ||
+    value < 0 ||
+    value > MAX_TOKEN_COUNT
+  ) {
+    return undefined;
+  }
+  return value;
+}
+
 export const NATIVE_INFERENCE_ENDPOINT = "braintrust";
 
 export function isNativeInferenceSecret(

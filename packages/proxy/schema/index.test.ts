@@ -3,7 +3,8 @@ import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, it } from "vitest";
 import { APISecretSchema } from "./secrets";
-import { ModelFormat, translateParams } from "./index";
+import { ModelFormat } from "./index";
+import { translateParams } from "./translate";
 
 const examples: Record<
   string,
@@ -322,6 +323,36 @@ describe("APISecretSchema compatibility", () => {
     expect(parsed).toMatchObject({
       future_top_level: { enabled: true },
     });
+  });
+
+  it("accepts Anthropic OAuth bearer metadata", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "anthropic-access-token",
+      type: "anthropic",
+      metadata: {
+        auth_type: "oauth_bearer",
+        auth_source: "anthropic_workload_identity_federation",
+        future_field: "future-value",
+      },
+    });
+
+    expect(parsed.type).toBe("anthropic");
+    expect(parsed.metadata).toMatchObject({
+      auth_type: "oauth_bearer",
+      auth_source: "anthropic_workload_identity_federation",
+      future_field: "future-value",
+    });
+  });
+
+  it("defaults Anthropic auth metadata to api_key", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "anthropic-api-key",
+      type: "anthropic",
+      metadata: {},
+    });
+
+    expect(parsed.type).toBe("anthropic");
+    expect(parsed.metadata?.auth_type).toBe("api_key");
   });
 
   it("still rejects schema violations", () => {

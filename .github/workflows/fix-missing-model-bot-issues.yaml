@@ -285,6 +285,7 @@ jobs:
             9. Do not add models not already named in the issue. Do not broaden scope to other providers or models.
             10. If a multi-model issue is only partially valid, do not shrink it to a verified subset — write the original body unchanged and explain in `## Verification` which models failed and why, so the resolver continues to bail rather than applying a partial fix.
             11. Do not guess any field. If a value is not published or not applicable, omit it and note it in the verification section.
+            12. **Out of scope: computer-vision-only models.** The catalog only tracks text/chat LLMs (including multimodal LLMs that accept images as input alongside text). Do not enrich, add, or research models whose sole purpose is computer vision — image generation (e.g. Imagen, DALL·E, Stable Diffusion, Flux), image editing/inpainting, image embeddings/classification, OCR, object detection, segmentation, video generation (e.g. Veo, Sora, Runway), or speech-only models. If the issue names a CV-only model, do not write a verified spec for it — leave the original body unchanged and note in `## Verification` that the model is out of scope so the resolver bails to `unsupported`.
 
             # Output
 

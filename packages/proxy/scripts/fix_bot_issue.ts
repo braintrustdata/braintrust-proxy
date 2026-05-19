@@ -6,11 +6,6 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
 import {
-  fetchVertexSupportedRegions,
-  GOOGLE_VERTEX_LOCATIONS_URL,
-  syncVertexSupportedRegions,
-} from "./sync_vertex_regions";
-import {
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
@@ -1005,15 +1000,15 @@ function escapeForRegex(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-async function updateAvailableEndpointTypes(
+export function applyAvailableEndpointTypeMappings(
+  content: string,
   mappings: Record<string, readonly ModelEndpointType[]>,
-): Promise<void> {
+): string {
   const names = Object.keys(mappings);
   if (names.length === 0) {
-    return;
+    return content;
   }
 
-  const content = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
   const startMarker =
     "export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {";
   const startIndex = content.indexOf(startMarker);
@@ -1032,7 +1027,7 @@ async function updateAvailableEndpointTypes(
 
   for (const name of names) {
     const linePattern = new RegExp(
-      `^\\s*"${escapeForRegex(name)}": .*?,\\n?`,
+      `^\\s*"${escapeForRegex(name)}":[^\\n]*\\n?`,
       "m",
     );
     const newLine = `  "${name}": ${JSON.stringify(mappings[name])},`;
@@ -1064,11 +1059,21 @@ async function updateAvailableEndpointTypes(
     normalizedBody = `\n${normalizedBody}`;
   }
 
-  const updatedContent =
+  return (
     content.slice(0, objectStartIndex + 1) +
     normalizedBody +
-    content.slice(objectEndIndex);
+    content.slice(objectEndIndex)
+  );
+}
 
+async function updateAvailableEndpointTypes(
+  mappings: Record<string, readonly ModelEndpointType[]>,
+): Promise<void> {
+  if (Object.keys(mappings).length === 0) {
+    return;
+  }
+  const content = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const updatedContent = applyAvailableEndpointTypeMappings(content, mappings);
   await fs.promises.writeFile(SCHEMA_INDEX_PATH, updatedContent);
 }
 
@@ -1785,17 +1790,6 @@ async function resolveIssueCommand(argv: {
     .map((entry) => entry.name);
 
   const updatedModels = applyModelChanges(localModels, changedModelEntries);
-  const needsVertexSync = changedModelEntries.some((entry) =>
-    entry.model.available_providers?.includes("vertex"),
-  );
-
-  if (needsVertexSync) {
-    console.log(
-      `Fetching Vertex supported regions from: ${GOOGLE_VERTEX_LOCATIONS_URL}`,
-    );
-    const supportedRegionsByModel = await fetchVertexSupportedRegions();
-    syncVertexSupportedRegions(updatedModels, supportedRegionsByModel);
-  }
 
   if (argv.write) {
     await writeLocalModels(updatedModels);

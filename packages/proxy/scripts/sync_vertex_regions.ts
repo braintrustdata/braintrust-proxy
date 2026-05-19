@@ -18,17 +18,33 @@ function sortRegionsDeterministically(regions: string[]): string[] {
   });
 }
 
-function fetchText(url: string): Promise<string> {
+const MAX_REDIRECTS = 5;
+
+function fetchText(
+  url: string,
+  redirectsRemaining = MAX_REDIRECTS,
+): Promise<string> {
   return new Promise((resolve, reject) => {
     https
       .get(url, (res) => {
+        const status = res.statusCode ?? 0;
+        if (status >= 300 && status < 400 && res.headers.location) {
+          if (redirectsRemaining <= 0) {
+            reject(new Error(`Failed to fetch ${url}: too many redirects`));
+            return;
+          }
+          res.resume();
+          const redirectUrl = new URL(res.headers.location, url).toString();
+          fetchText(redirectUrl, redirectsRemaining - 1).then(resolve, reject);
+          return;
+        }
         let data = "";
         res.on("data", (chunk) => {
           data += chunk;
         });
         res.on("end", () => {
-          if (res.statusCode && res.statusCode >= 400) {
-            reject(new Error(`Failed to fetch ${url}: HTTP ${res.statusCode}`));
+          if (status >= 400) {
+            reject(new Error(`Failed to fetch ${url}: HTTP ${status}`));
             return;
           }
           resolve(data);

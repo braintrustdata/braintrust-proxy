@@ -5404,6 +5404,44 @@
       "mistral"
     ]
   },
+  "mistral-medium-3.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3",
+    "parent": "mistral-medium-3.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-3-5-26-04": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5 (2026-04)",
+    "parent": "mistral-medium-3.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",
     "flavor": "chat",
@@ -6729,6 +6767,22 @@
     "max_output_tokens": 65536,
     "available_providers": [
       "google"
+    ]
+  },
+  "gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex"
     ]
   },
   "grok-4-0709": {
@@ -9064,6 +9118,24 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
+  },
+  "publishers/google/models/gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "google"
+    ]
   },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",

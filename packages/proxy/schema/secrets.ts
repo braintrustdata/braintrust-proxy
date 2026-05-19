@@ -13,6 +13,13 @@ export const BaseMetadataSchema = z
   })
   .passthrough();
 
+export const AnthropicMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    auth_type: z.enum(["api_key", "oauth_bearer"]).default("api_key"),
+    auth_source: z.string().nullish(),
+  }),
+).passthrough();
+
 export const AzureMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.string().url(),
@@ -40,22 +47,41 @@ const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
   z.object({
     region: z.string().min(1, "Region cannot be empty"),
     auth_type: z
-      .enum(["iam_credentials", "api_key"])
+      .enum(["iam_credentials", "api_key", "assume_role"])
       .default("iam_credentials"),
     access_key: z.string().nullish(),
     session_token: z.string().nullish(),
+    external_id: z.string().nullish(),
+    role_arn: z.string().nullish(),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).passthrough();
 export const BedrockMetadataSchema = BedrockMetadataSchemaBase;
 export const BedrockMetadataSchemaWithAuth =
   BedrockMetadataSchemaBase.superRefine((data, ctx) => {
-    if ((data.auth_type ?? "iam_credentials") === "iam_credentials") {
+    const authType = data.auth_type ?? "iam_credentials";
+    if (authType === "iam_credentials") {
       if (!data.access_key) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Access key is required for IAM credentials",
           path: ["access_key"],
+        });
+      }
+    }
+    if (authType === "assume_role") {
+      if (!data.external_id?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "External ID is required for assume role",
+          path: ["external_id"],
+        });
+      }
+      if (!data.role_arn?.trim()) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Role ARN is required for assume role",
+          path: ["role_arn"],
         });
       }
     }
@@ -110,6 +136,15 @@ export const MistralMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).passthrough();
 
+export const OllamaMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z
+      .union([z.string().url(), z.string().length(0)])
+      .nullish()
+      .catch(undefined),
+  }),
+).passthrough();
+
 export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
@@ -131,12 +166,10 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.enum([
         "perplexity",
-        "anthropic",
         "google",
         "replicate",
         "together",
         "baseten",
-        "ollama",
         "groq",
         "lepton",
         "fireworks",
@@ -145,6 +178,12 @@ export const APISecretSchema = z.union([
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("anthropic"),
+      metadata: AnthropicMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(
@@ -187,6 +226,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("mistral"),
       metadata: MistralMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("ollama"),
+      metadata: OllamaMetadataSchema.nullish(),
     }),
   ).passthrough(),
 ]);

@@ -144,7 +144,7 @@ jobs:
         if: steps.issue.outputs.found == 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20
+          node-version: 24
           registry-url: "https://registry.npmjs.org"
 
       - name: Setup pnpm
@@ -294,6 +294,19 @@ jobs:
             Write the original issue body unchanged to the output file.
 
             The output file must contain the full issue body text, not just the JSON block.
+
+            # Display name examples
+
+            **Good** (model id → `displayName`):
+            - `"mistral-small-latest"` → `"Mistral Small"` — stable alias, no date suffix, no version number
+            - `"mistral-large-2512"` → `"Mistral Large 3 (2512)"` — version "3" confirmed in Mistral's official release docs; YYMM kept as-is in parentheses
+            - `"claude-3-5-sonnet-20241022"` → `"Claude 3.5 Sonnet (2024-10-22)"` — ISO date in parentheses, matches official Anthropic naming exactly
+            - `"gpt-4o-2024-11-20"` → `"GPT-4o (2024-11-20)"` — ISO date in parentheses, provider spells it "GPT-4o"
+
+            **Bad** (what NOT to do):
+            - `"mistral-small-2603"` → `"Mistral Small 4 (2603)"` ❌ — "4" is a generation number not found in the model id or official Mistral docs for this snapshot; if official docs do not confirm the generation label, omit it and write `"Mistral Small (2603)"` instead
+            - `"mistral-small-2603"` → `"Mistral Small (March 2026)"` ❌ — never expand a YYMM code into prose month/year; keep the original numeric form in parentheses
+            - `"claude-3-5-sonnet-20241022"` → `"Claude 3.5 Sonnet October 2024"` ❌ — date must be in parentheses, not free prose
 
             # Constraints
 
@@ -515,6 +528,12 @@ jobs:
             ${{ steps.result.outputs.litellm_comparison_summary }}
 
             ${{ steps.result.outputs.pr_litellm_table }}
+          reviewers: |
+            knjiang
+            cpinn
+            erin2722
+            CLowbrow
+            aswink
           labels: auto-sync
           signoff: false
 

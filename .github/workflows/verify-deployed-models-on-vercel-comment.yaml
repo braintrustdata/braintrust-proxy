@@ -1,0 +1,416 @@
+name: Verify deployed models on Vercel comment
+
+on:
+  issue_comment:
+    types:
+      - created
+      - edited
+  workflow_dispatch:
+    inputs:
+      pull_request_number:
+        description: "Pull request number to verify"
+        required: true
+        type: string
+      vercel_comment_id:
+        description: "Issue comment ID for the Vercel deployment comment"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: verify-deployed-models-pr-${{ github.event.issue.number || github.event.inputs.pull_request_number }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request && (github.event.comment.user.login == 'vercel' || github.event.comment.user.login == 'vercel[bot]')) }}
+    runs-on: ubuntu-latest
+    outputs:
+      base_sha: ${{ steps.context.outputs.base_sha }}
+      head_sha: ${{ steps.context.outputs.head_sha }}
+      model_list_changed: ${{ steps.context.outputs.model_list_changed }}
+      pull_request_number: ${{ steps.context.outputs.pull_request_number }}
+      proxy_base_url: ${{ steps.context.outputs.proxy_base_url }}
+      should_run: ${{ steps.context.outputs.should_run }}
+    steps:
+      - name: Resolve PR context from Vercel comment
+        id: context
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          MANUAL_PULL_REQUEST_NUMBER: ${{ github.event.inputs.pull_request_number || '' }}
+          MANUAL_VERCEL_COMMENT_ID: ${{ github.event.inputs.vercel_comment_id || '' }}
+        with:
+          script: |
+            const readyStatuses = new Set(["DEPLOYED", "READY"]);
+            const failedStatuses = new Set([
+              "CANCELED",
+              "ERROR",
+              "FAILED",
+              "REMOVED",
+            ]);
+            const pollDelayMs = 15000;
+            const maxAttempts = 20;
+
+            function sleep(ms) {
+              return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            function isRecord(value) {
+              return typeof value === "object" && value !== null && !Array.isArray(value);
+            }
+
+            function isTrustedPullRequest(pullRequest) {
+              const trustedAssociations = new Set(["COLLABORATOR", "MEMBER", "OWNER"]);
+              const authorAssociation =
+                typeof pullRequest.author_association === "string"
+                  ? pullRequest.author_association.toUpperCase()
+                  : "";
+              const sameRepository =
+                pullRequest.head?.repo?.full_name === `${context.repo.owner}/${context.repo.repo}`;
+
+              return sameRepository || trustedAssociations.has(authorAssociation);
+            }
+
+            async function pullRequestTouchesModelList(pullRequestNumber) {
+              const targetPath = "packages/proxy/schema/model_list.json";
+              let page = 1;
+
+              while (true) {
+                const { data: files } = await github.rest.pulls.listFiles({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pullRequestNumber,
+                  per_page: 100,
+                  page,
+                });
+
+                if (files.some((file) => file.filename === targetPath)) {
+                  return true;
+                }
+
+                if (files.length < 100) {
+                  return false;
+                }
+
+                page += 1;
+              }
+            }
+
+            function parseComment(body) {
+              const metadataMatch = body.match(/^\[vc\]:\s*#[^:]+:([A-Za-z0-9+/=]+)\s*$/m);
+              if (!metadataMatch) {
+                return null;
+              }
+
+              let decoded;
+              try {
+                decoded = JSON.parse(Buffer.from(metadataMatch[1], "base64").toString("utf8"));
+              } catch (_error) {
+                return null;
+              }
+
+              if (!isRecord(decoded) || !Array.isArray(decoded.projects)) {
+                return null;
+              }
+
+              const project = decoded.projects.find((value) => {
+                if (!isRecord(value)) {
+                  return false;
+                }
+
+                return (
+                  value.name === "ai-proxy" &&
+                  value.rootDirectory === "apis/vercel"
+                );
+              });
+
+              if (!isRecord(project)) {
+                return null;
+              }
+
+              const previewUrl =
+                typeof project.previewUrl === "string" && project.previewUrl.length > 0
+                  ? `https://${project.previewUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}`
+                  : null;
+              const status =
+                typeof project.nextCommitStatus === "string"
+                  ? project.nextCommitStatus.toUpperCase()
+                  : "";
+
+              return {
+                previewUrl,
+                status,
+              };
+            }
+
+            async function loadComment(commentId) {
+              const { data } = await github.rest.issues.getComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: commentId,
+              });
+
+              return data;
+            }
+
+            function isVercelComment(comment) {
+              if (!isRecord(comment)) {
+                return false;
+              }
+
+              const login = typeof comment.user?.login === "string" ? comment.user.login : "";
+              const appSlug =
+                typeof comment.performed_via_github_app?.slug === "string"
+                  ? comment.performed_via_github_app.slug
+                  : "";
+
+              return login === "vercel" || login === "vercel[bot]" || appSlug === "vercel";
+            }
+
+            const commentId =
+              context.eventName === "workflow_dispatch"
+                ? Number(process.env.MANUAL_VERCEL_COMMENT_ID)
+                : context.payload.comment.id;
+            const pullRequestNumber =
+              context.eventName === "workflow_dispatch"
+                ? Number(process.env.MANUAL_PULL_REQUEST_NUMBER)
+                : context.payload.issue.number;
+            const initialComment =
+              context.eventName === "workflow_dispatch"
+                ? await loadComment(commentId)
+                : context.payload.comment;
+
+            if (!Number.isInteger(commentId) || commentId <= 0) {
+              core.setFailed("A valid Vercel comment ID is required.");
+              return;
+            }
+
+            if (!Number.isInteger(pullRequestNumber) || pullRequestNumber <= 0) {
+              core.setFailed("A valid pull request number is required.");
+              return;
+            }
+
+            if (!isVercelComment(initialComment)) {
+              core.setFailed("The selected comment is not authored by the Vercel bot.");
+              return;
+            }
+
+            let parsed = parseComment(initialComment.body || "");
+
+            if (!parsed) {
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const { data: pullRequest } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullRequestNumber,
+            });
+
+            if (!isTrustedPullRequest(pullRequest)) {
+              core.notice(
+                `Skipping verification for untrusted PR #${pullRequestNumber} (author_association=${pullRequest.author_association}).`,
+              );
+              core.setOutput("pull_request_number", String(pullRequestNumber));
+              core.setOutput("model_list_changed", "false");
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            const modelListChanged = await pullRequestTouchesModelList(pullRequestNumber);
+            core.setOutput("model_list_changed", modelListChanged ? "true" : "false");
+
+            if (!modelListChanged) {
+              core.notice(
+                `Skipping verification for PR #${pullRequestNumber} because packages/proxy/schema/model_list.json did not change.`,
+              );
+              core.setOutput("pull_request_number", String(pullRequestNumber));
+              core.setOutput("should_run", "false");
+              return;
+            }
+
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+              if (failedStatuses.has(parsed.status)) {
+                core.setFailed(
+                  `Vercel preview deployment for ai-proxy finished with status ${parsed.status}.`,
+                );
+                return;
+              }
+
+              if (readyStatuses.has(parsed.status)) {
+                if (!parsed.previewUrl) {
+                  core.setFailed("Vercel preview deployment is ready, but no preview URL was found.");
+                  return;
+                }
+
+                core.setOutput("base_sha", pullRequest.base.sha);
+                core.setOutput("head_sha", pullRequest.head.sha);
+                core.setOutput("model_list_changed", "true");
+                core.setOutput("pull_request_number", String(pullRequestNumber));
+                core.setOutput("proxy_base_url", `${parsed.previewUrl}/api/v1`);
+                core.setOutput("should_run", "true");
+                return;
+              }
+
+              if (attempt === maxAttempts) {
+                core.setFailed(
+                  `Timed out waiting for ai-proxy preview deployment to become ready. Last status: ${parsed.status || "unknown"}.`,
+                );
+                return;
+              }
+
+              await sleep(pollDelayMs);
+              const refreshedComment = await loadComment(commentId);
+              parsed = parseComment(refreshedComment.body || "");
+              if (!parsed) {
+                core.setFailed("Unable to parse the updated Vercel deployment comment.");
+                return;
+              }
+            }
+
+  verify:
+    needs: prepare
+    if: needs.prepare.outputs.should_run == 'true'
+    uses: ./.github/workflows/verify-deployed-models.yaml
+    with:
+      base_ref: ${{ needs.prepare.outputs.base_sha }}
+      head_sha: ${{ needs.prepare.outputs.head_sha }}
+      pull_request_number: ${{ needs.prepare.outputs.pull_request_number }}
+      proxy_base_url: ${{ needs.prepare.outputs.proxy_base_url }}
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+      BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
+      CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+      FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      LEPTON_API_KEY: ${{ secrets.LEPTON_API_KEY }}
+      MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+      REPLICATE_API_KEY: ${{ secrets.REPLICATE_API_KEY }}
+      TOGETHER_API_KEY: ${{ secrets.TOGETHER_API_KEY }}
+      VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+      XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+
+  comment:
+    needs:
+      - prepare
+      - verify
+    if: always() && needs.prepare.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Post verification summary to PR
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PULL_REQUEST_NUMBER: ${{ needs.prepare.outputs.pull_request_number }}
+          RESULTS_JSON: ${{ needs.verify.outputs.results_json }}
+          VERIFY_RESULT: ${{ needs.verify.result }}
+        with:
+          github-token: ${{ github.token }}
+          script: |
+            const marker = "<!-- proxy-model-verification -->";
+
+            function parseResults(raw) {
+              if (!raw) {
+                return [];
+              }
+              try {
+                const parsed = JSON.parse(raw);
+                return Array.isArray(parsed) ? parsed : [];
+              } catch (_error) {
+                return [];
+              }
+            }
+
+            function formatTable(results) {
+              if (results.length === 0) {
+                return "_No models were tested._";
+              }
+
+              const rows = results.map((result) => {
+                const status = result.ok ? "✅ Passed" : "❌ Failed";
+                return `| \`${result.model}\` | ${status} |`;
+              });
+
+              return [
+                "| Model | Status |",
+                "| --- | --- |",
+                ...rows,
+              ].join("\n");
+            }
+
+            const results = parseResults(process.env.RESULTS_JSON);
+            const failedCount = results.filter((r) => !r.ok).length;
+            const passedCount = results.filter((r) => r.ok).length;
+            const pullRequestNumber = Number(process.env.PULL_REQUEST_NUMBER || "0");
+            const verifyResult = process.env.VERIFY_RESULT || "unknown";
+
+            if (!Number.isInteger(pullRequestNumber) || pullRequestNumber <= 0) {
+              core.setFailed("Missing pull request number for verification comment.");
+              return;
+            }
+
+            let statusLine = "Verification completed successfully.";
+            if (verifyResult === "failure" || failedCount > 0) {
+              statusLine = "Verification failed for one or more models.";
+            } else if (results.length === 0) {
+              statusLine = "No changed models required verification.";
+            }
+
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+
+            const body = [
+              marker,
+              "## Proxy model verification",
+              "",
+              statusLine,
+              "",
+              `Passed: ${passedCount}`,
+              `Failed: ${failedCount}`,
+              "",
+              formatTable(results),
+              "",
+              `[View job details](${runUrl})`,
+            ].join("\n");
+
+            try {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequestNumber,
+                per_page: 100,
+              });
+
+              const existing = comments.find((comment) =>
+                typeof comment.body === "string" && comment.body.includes(marker),
+              );
+
+              if (existing) {
+                await github.rest.issues.updateComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  comment_id: existing.id,
+                  body,
+                });
+                return;
+              }
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullRequestNumber,
+                body,
+              });
+            } catch (error) {
+              core.setFailed("Unable to post the verification summary comment.");
+            }

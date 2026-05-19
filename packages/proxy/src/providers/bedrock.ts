@@ -1,19 +1,21 @@
 import {
-  Message as BedrockMessage,
   BedrockRuntimeClient,
-  ContentBlock,
   ConverseCommand,
-  ConverseCommandOutput,
   ConverseStreamCommand,
-  ConverseStreamOutput,
-  ImageFormat,
-  InferenceConfiguration,
   InvokeModelCommand,
   InvokeModelWithResponseStreamCommand,
-  ResponseStream,
-  StopReason,
-  SystemContentBlock,
-  ToolConfiguration,
+} from "@aws-sdk/client-bedrock-runtime";
+import {
+  type Message as BedrockMessage,
+  type ContentBlock,
+  type ConverseCommandOutput,
+  type ConverseStreamOutput,
+  type ImageFormat,
+  type InferenceConfiguration,
+  type ResponseStream,
+  type StopReason,
+  type SystemContentBlock,
+  type ToolConfiguration,
 } from "@aws-sdk/client-bedrock-runtime";
 import {
   type MessageRoleType as MessageRole,
@@ -50,6 +52,171 @@ import {
 import { makeFakeOpenAIStreamTransformer } from "./openai";
 import { convertMediaToBase64 } from "./util";
 
+function visitResponseStream<T>(
+  value: ResponseStream,
+  visitor: {
+    chunk: (value: ResponseStream.ChunkMember["chunk"]) => T;
+    internalServerException: (
+      value: ResponseStream.InternalServerExceptionMember["internalServerException"],
+    ) => T;
+    modelStreamErrorException: (
+      value: ResponseStream.ModelStreamErrorExceptionMember["modelStreamErrorException"],
+    ) => T;
+    validationException: (
+      value: ResponseStream.ValidationExceptionMember["validationException"],
+    ) => T;
+    throttlingException: (
+      value: ResponseStream.ThrottlingExceptionMember["throttlingException"],
+    ) => T;
+    modelTimeoutException: (
+      value: ResponseStream.ModelTimeoutExceptionMember["modelTimeoutException"],
+    ) => T;
+    serviceUnavailableException: (
+      value: ResponseStream.ServiceUnavailableExceptionMember["serviceUnavailableException"],
+    ) => T;
+    unknown: (value: ResponseStream.$UnknownMember["$unknown"]) => T;
+  },
+): T {
+  if ("chunk" in value && value.chunk !== undefined) {
+    return visitor.chunk(value.chunk);
+  }
+  if (
+    "internalServerException" in value &&
+    value.internalServerException !== undefined
+  ) {
+    return visitor.internalServerException(value.internalServerException);
+  }
+  if (
+    "modelStreamErrorException" in value &&
+    value.modelStreamErrorException !== undefined
+  ) {
+    return visitor.modelStreamErrorException(value.modelStreamErrorException);
+  }
+  if (
+    "validationException" in value &&
+    value.validationException !== undefined
+  ) {
+    return visitor.validationException(value.validationException);
+  }
+  if (
+    "throttlingException" in value &&
+    value.throttlingException !== undefined
+  ) {
+    return visitor.throttlingException(value.throttlingException);
+  }
+  if (
+    "modelTimeoutException" in value &&
+    value.modelTimeoutException !== undefined
+  ) {
+    return visitor.modelTimeoutException(value.modelTimeoutException);
+  }
+  if (
+    "serviceUnavailableException" in value &&
+    value.serviceUnavailableException !== undefined
+  ) {
+    return visitor.serviceUnavailableException(
+      value.serviceUnavailableException,
+    );
+  }
+  if ("$unknown" in value && value.$unknown !== undefined) {
+    return visitor.unknown(value.$unknown);
+  }
+  throw new Error("Unhandled Bedrock response stream event");
+}
+
+function matchConverseStreamOutput<T>(
+  value: ConverseStreamOutput,
+  visitor: {
+    messageStart: (
+      value: ConverseStreamOutput.MessageStartMember["messageStart"],
+    ) => T;
+    contentBlockStart: (
+      value: ConverseStreamOutput.ContentBlockStartMember["contentBlockStart"],
+    ) => T;
+    contentBlockDelta: (
+      value: ConverseStreamOutput.ContentBlockDeltaMember["contentBlockDelta"],
+    ) => T;
+    contentBlockStop: (
+      value: ConverseStreamOutput.ContentBlockStopMember["contentBlockStop"],
+    ) => T;
+    messageStop: (
+      value: ConverseStreamOutput.MessageStopMember["messageStop"],
+    ) => T;
+    metadata: (value: ConverseStreamOutput.MetadataMember["metadata"]) => T;
+    internalServerException: (
+      value: ConverseStreamOutput.InternalServerExceptionMember["internalServerException"],
+    ) => T;
+    modelStreamErrorException: (
+      value: ConverseStreamOutput.ModelStreamErrorExceptionMember["modelStreamErrorException"],
+    ) => T;
+    validationException: (
+      value: ConverseStreamOutput.ValidationExceptionMember["validationException"],
+    ) => T;
+    throttlingException: (
+      value: ConverseStreamOutput.ThrottlingExceptionMember["throttlingException"],
+    ) => T;
+    serviceUnavailableException: (
+      value: ConverseStreamOutput.ServiceUnavailableExceptionMember["serviceUnavailableException"],
+    ) => T;
+    unknown: (value: ConverseStreamOutput.$UnknownMember["$unknown"]) => T;
+  },
+): T {
+  if ("messageStart" in value && value.messageStart !== undefined) {
+    return visitor.messageStart(value.messageStart);
+  }
+  if ("contentBlockStart" in value && value.contentBlockStart !== undefined) {
+    return visitor.contentBlockStart(value.contentBlockStart);
+  }
+  if ("contentBlockDelta" in value && value.contentBlockDelta !== undefined) {
+    return visitor.contentBlockDelta(value.contentBlockDelta);
+  }
+  if ("contentBlockStop" in value && value.contentBlockStop !== undefined) {
+    return visitor.contentBlockStop(value.contentBlockStop);
+  }
+  if ("messageStop" in value && value.messageStop !== undefined) {
+    return visitor.messageStop(value.messageStop);
+  }
+  if ("metadata" in value && value.metadata !== undefined) {
+    return visitor.metadata(value.metadata);
+  }
+  if (
+    "internalServerException" in value &&
+    value.internalServerException !== undefined
+  ) {
+    return visitor.internalServerException(value.internalServerException);
+  }
+  if (
+    "modelStreamErrorException" in value &&
+    value.modelStreamErrorException !== undefined
+  ) {
+    return visitor.modelStreamErrorException(value.modelStreamErrorException);
+  }
+  if (
+    "validationException" in value &&
+    value.validationException !== undefined
+  ) {
+    return visitor.validationException(value.validationException);
+  }
+  if (
+    "throttlingException" in value &&
+    value.throttlingException !== undefined
+  ) {
+    return visitor.throttlingException(value.throttlingException);
+  }
+  if (
+    "serviceUnavailableException" in value &&
+    value.serviceUnavailableException !== undefined
+  ) {
+    return visitor.serviceUnavailableException(
+      value.serviceUnavailableException,
+    );
+  }
+  if ("$unknown" in value && value.$unknown !== undefined) {
+    return visitor.unknown(value.$unknown);
+  }
+  throw new Error("Unhandled Bedrock converse stream event");
+}
+
 function streamResponse(
   body: AsyncIterable<ResponseStream>,
 ): ReadableStream<Uint8Array> {
@@ -60,7 +227,7 @@ function streamResponse(
       if (done) {
         controller.close();
       } else {
-        ResponseStream.visit(value, {
+        visitResponseStream(value, {
           chunk: ({ bytes }) => {
             const data = new TextDecoder().decode(bytes);
             const { type } = JSON.parse(data);
@@ -91,7 +258,7 @@ function streamResponse(
             console.error("Bedrock stream service unavailable error:", value);
             controller.close();
           },
-          _: (value) => {
+          unknown: (value) => {
             console.error("Bedrock stream unhandled value:", value);
             controller.close();
           },
@@ -919,7 +1086,7 @@ export function bedrockMessageToOpenAIMessage(
   event: OpenAIChatCompletionChunk | null;
   finished: boolean;
 } {
-  return ConverseStreamOutput.visit<{
+  return matchConverseStreamOutput<{
     event: OpenAIChatCompletionChunk | null;
     finished: boolean;
   }>(output, {
@@ -1049,6 +1216,6 @@ export function bedrockMessageToOpenAIMessage(
     validationException: () => ({ event: null, finished: true }),
     throttlingException: () => ({ event: null, finished: true }),
     serviceUnavailableException: () => ({ event: null, finished: true }),
-    _: () => ({ event: null, finished: false }),
+    unknown: () => ({ event: null, finished: false }),
   });
 }

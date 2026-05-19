@@ -2,8 +2,20 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
-import { trimStartOfStreamHelper } from "ai";
 import { ChatCompletionCreateParams, Completion } from "openai/resources";
+
+// Trims leading whitespace from the first
+// non-empty chunk emitted by a stream.
+function trimStartOfStreamHelper(): (text: string) => string {
+  let isStreamStart = true;
+  return (text: string): string => {
+    if (isStreamStart) {
+      text = text.trimStart();
+      if (text) isStreamStart = false;
+    }
+    return text;
+  };
+}
 
 /**
  * Creates a parser function for processing the OpenAI stream data.

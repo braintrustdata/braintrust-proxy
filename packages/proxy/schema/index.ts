@@ -590,6 +590,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "gemini-3.5-flash": ["google","vertex"],
+  "publishers/google/models/gemini-3.5-flash": ["google"],
   "deepseek.v3.2": ["bedrock"],
   "gemini-3.1-flash-lite": ["google"],
   "amazon.nova-premier-v1:0": ["bedrock"],

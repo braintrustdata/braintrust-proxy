@@ -11576,6 +11576,16 @@
       "bedrock"
     ]
   },
+  "deepseek.v3-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "DeepSeek V3.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "LiquidAI/LFM2-24B-A2B": {
     "format": "openai",
     "flavor": "chat",

@@ -11670,5 +11670,51 @@
     "available_providers": [
       "together"
     ]
+  },
+  "meta.llama4-scout-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Scout",
+    "max_input_tokens": 10000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "meta.llama4-maverick-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Maverick",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.meta.llama4-scout-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Llama 4 Scout",
+    "parent": "meta.llama4-scout-17b-instruct-v1:0",
+    "max_input_tokens": 10000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.meta.llama4-maverick-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Llama 4 Maverick",
+    "parent": "meta.llama4-maverick-17b-instruct-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

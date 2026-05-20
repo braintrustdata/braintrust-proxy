@@ -6873,12 +6873,12 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Reasoning (0309)",
     "reasoning": true,
-    "max_input_tokens": 2000000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 2000000,
     "available_providers": [
       "xAI"
@@ -9131,24 +9131,6 @@
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
   },
-  "publishers/google/models/gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "google"
-    ]
-  },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",
     "flavor": "chat",
@@ -10444,6 +10426,18 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax M2.5",
     "max_input_tokens": 196608,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/deepseek-v4-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.28,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "DeepSeek V4 Flash",
+    "max_input_tokens": 1048576,
     "available_providers": [
       "fireworks"
     ]

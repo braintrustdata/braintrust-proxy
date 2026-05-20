@@ -590,6 +590,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "nvidia.nemotron-super-3-120b": ["bedrock"],
   "mistral-medium-3.5": ["mistral"],
   "mistral-medium-3": ["mistral"],
   "mistral-medium-3-5-26-04": ["mistral"],

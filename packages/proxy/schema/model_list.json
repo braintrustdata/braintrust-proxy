@@ -1532,13 +1532,13 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.5,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 32766,
+    "max_output_tokens": 65536,
     "available_providers": [
       "groq",
       "together",
@@ -10432,6 +10432,30 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax M2.7",
+    "max_input_tokens": 196608,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/glm-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3.2,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "GLM 5",
+    "max_input_tokens": 202752,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/minimax-m2p5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "MiniMax M2.5",
     "max_input_tokens": 196608,
     "available_providers": [
       "fireworks"

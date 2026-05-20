@@ -1532,13 +1532,13 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.5,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 32766,
+    "max_output_tokens": 65536,
     "available_providers": [
       "groq",
       "together",

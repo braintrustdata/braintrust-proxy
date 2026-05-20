@@ -59,7 +59,7 @@ jobs:
             - `bedrock` — models: `https://docs.aws.amazon.com/en_us/bedrock/latest/userguide/foundation-models-reference.html` ; pricing: `https://aws.amazon.com/bedrock/pricing/`
             - `cerebras` — models: `https://inference-docs.cerebras.ai/models/overview` ; pricing: `https://inference-docs.cerebras.ai/support/pricing`
             - `databricks` — models: `https://docs.databricks.com/aws/en/machine-learning/model-serving/foundation-model-overview`
-            - `fireworks` — models: `https://docs.fireworks.ai/models/overview` ; pricing: `https://fireworks.ai/pricing`
+            - `fireworks` — models: `https://docs.fireworks.ai/models/overview` and `https://fireworks.ai/models` (catalog listing; per-model pages live at `https://fireworks.ai/models/<owner>/<id>`) ; pricing: `https://fireworks.ai/pricing`
             - `google` — models: `https://ai.google.dev/gemini-api/docs/models/gemini` ; pricing: `https://ai.google.dev/pricing`
             - `groq` — models and pricing: `https://console.groq.com/docs/models`
             - `mistral` — models: `https://docs.mistral.ai/getting-started/models`

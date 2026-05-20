@@ -10412,6 +10412,30 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/glm-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3.2,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "GLM 5",
+    "max_input_tokens": 202752,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/minimax-m2p5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "MiniMax M2.5",
+    "max_input_tokens": 196608,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "dall-e-3": {
     "format": "openai",
     "flavor": "chat",

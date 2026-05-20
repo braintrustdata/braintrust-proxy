@@ -590,13 +590,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
-<<<<<<< chore/autofix-issue-544
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "grok-4.20-multi-agent-0309": ["xAI"],
-=======
   "accounts/fireworks/models/glm-5": ["fireworks"],
   "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
->>>>>>> main
   "mistral-medium-3.5": ["mistral"],
   "mistral-medium-3": ["mistral"],
   "mistral-medium-3-5-26-04": ["mistral"],

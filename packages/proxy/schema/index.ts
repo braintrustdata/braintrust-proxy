@@ -957,7 +957,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
-  "openai/gpt-oss-120b": ["groq","together","baseten"],
+  "openai/gpt-oss-120b": ["together", "groq", "baseten"],
   "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
   "o4-mini-deep-research-2025-06-26": ["openai", "azure"],
   "o4-mini-deep-research": ["openai", "azure"],

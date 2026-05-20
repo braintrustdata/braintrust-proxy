@@ -8543,6 +8543,22 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535
   },
+  "publishers/google/models/gemini-3.1-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "Gemini 3.1 Flash-Lite",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536
+  },
   "publishers/google/models/gemini-3-pro-preview": {
     "format": "google",
     "flavor": "chat",

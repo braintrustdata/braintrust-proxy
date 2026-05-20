@@ -11670,5 +11670,41 @@
     "available_providers": [
       "together"
     ]
+  },
+  "qwen.qwen3-32b-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Qwen3 32B",
+    "reasoning": true,
+    "max_input_tokens": 32000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "qwen.qwen3-coder-480b-a35b-instruct": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Qwen3 Coder 480B A35B",
+    "reasoning": false,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "qwen.qwen3-next-80b-a3b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Qwen3 Next 80B A3B",
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

@@ -6806,6 +6806,8 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Grok 4.1 Fast",
+    "deprecated": true,
+    "deprecation_date": "2026-05-15",
     "parent": "grok-4-1-fast",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
@@ -6963,6 +6965,8 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Grok 4",
+    "deprecated": true,
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -7255,6 +7259,8 @@
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "reasoning": true,
+    "deprecated": true,
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [

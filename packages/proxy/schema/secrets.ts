@@ -15,7 +15,9 @@ export const BaseMetadataSchema = z
 
 export const AnthropicMetadataSchema = BaseMetadataSchema.merge(
   z.object({
-    auth_type: z.enum(["api_key", "oauth_bearer"]).default("api_key"),
+    auth_type: z
+      .enum(["api_key", "oauth_bearer", "workload_identity_federation"])
+      .default("api_key"),
     auth_source: z.string().nullish(),
   }),
 ).passthrough();

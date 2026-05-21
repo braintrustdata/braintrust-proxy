@@ -154,6 +154,7 @@ export const BraintrustMetadataSchema = BaseMetadataSchema.merge(
 const APISecretBaseSchema = z
   .object({
     id: z.string().uuid().nullish(),
+    org_id: z.string().nullish(),
     org_name: z.string().nullish(),
     name: z.string().nullish(),
     secret: z.string(),

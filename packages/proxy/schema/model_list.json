@@ -7322,6 +7322,16 @@
       "xAI"
     ]
   },
+  "grok-4.20-multi-agent-0309": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "max_input_tokens": 2000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "amazon.nova-pro-v1:0": {
     "format": "converse",
     "flavor": "chat",

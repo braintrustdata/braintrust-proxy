@@ -11081,6 +11081,19 @@
       "azure"
     ]
   },
+  "chat-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT Chat Latest",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "codex-mini-latest": {
     "format": "openai",
     "flavor": "chat",

@@ -11670,5 +11670,55 @@
     "available_providers": [
       "together"
     ]
+  },
+  "writer.palmyra-x4-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Palmyra X4",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "writer.palmyra-x5-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Palmyra X5",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.writer.palmyra-x4-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "US Palmyra X4",
+    "parent": "writer.palmyra-x4-v1:0",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.writer.palmyra-x5-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "US Palmyra X5",
+    "parent": "writer.palmyra-x5-v1:0",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

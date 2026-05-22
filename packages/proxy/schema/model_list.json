@@ -9215,6 +9215,45 @@
       "databricks"
     ]
   },
+  "databricks-claude-sonnet-4-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-opus-4-6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4.6 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-sonnet-4": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "text-block": {
     "format": "js",
     "flavor": "completion",

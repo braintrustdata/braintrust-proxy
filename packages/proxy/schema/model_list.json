@@ -11670,5 +11670,15 @@
     "available_providers": [
       "together"
     ]
+  },
+  "minimax.minimax-m2.5": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "MiniMax M2.5",
+    "max_input_tokens": 196000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

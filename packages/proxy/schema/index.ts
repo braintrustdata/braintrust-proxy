@@ -590,6 +590,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "minimax.minimax-m2.5": ["bedrock"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "accounts/fireworks/models/deepseek-v4-flash": ["fireworks"],
   "accounts/fireworks/models/glm-5": ["fireworks"],

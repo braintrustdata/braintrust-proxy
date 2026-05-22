@@ -11670,5 +11670,15 @@
     "available_providers": [
       "together"
     ]
+  },
+  "nvidia.nemotron-super-3-120b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "NVIDIA Nemotron 3 Super 120B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

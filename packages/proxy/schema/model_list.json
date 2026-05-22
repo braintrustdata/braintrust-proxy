@@ -11502,6 +11502,19 @@
       "azure"
     ]
   },
+  "openai/gpt-oss-safeguard-20b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "GPT-OSS Safeguard (20B)",
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "groq"
+    ]
+  },
   "sora-2": {
     "format": "openai",
     "flavor": "chat",

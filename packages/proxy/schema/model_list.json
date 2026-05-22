@@ -11670,5 +11670,16 @@
     "available_providers": [
       "together"
     ]
+  },
+  "zai.glm-4.7": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "GLM 4.7",
+    "max_input_tokens": 203000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

@@ -11670,5 +11670,18 @@
     "available_providers": [
       "together"
     ]
+  },
+  "moonshotai.kimi-k2.5": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Kimi K2.5",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

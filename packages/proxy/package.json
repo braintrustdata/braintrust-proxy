@@ -125,7 +125,7 @@
     "jsonwebtoken": "^9.0.3",
     "openai": "4.104.0",
     "openapi-json-schema": "^2.0.0",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "zod": "^3.25.34"
   }
 }

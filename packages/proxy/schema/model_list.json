@@ -9215,6 +9215,39 @@
       "databricks"
     ]
   },
+  "databricks-gpt-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.1",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5 mini",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "text-block": {
     "format": "js",
     "flavor": "completion",

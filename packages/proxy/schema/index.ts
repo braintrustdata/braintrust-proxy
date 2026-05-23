@@ -590,6 +590,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "databricks-gpt-5-nano": ["databricks"],
+  "databricks-gpt-5-3-codex": ["databricks"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "accounts/fireworks/models/deepseek-v4-flash": ["fireworks"],
   "accounts/fireworks/models/glm-5": ["fireworks"],

@@ -11670,5 +11670,27 @@
     "available_providers": [
       "together"
     ]
+  },
+  "mistral.devstral-2-123b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "Devstral 2 123B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.magistral-small-2509": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Magistral Small (2509)",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 40000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

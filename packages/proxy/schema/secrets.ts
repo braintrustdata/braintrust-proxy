@@ -90,6 +90,15 @@ export const BedrockMetadataSchemaWithAuth =
   });
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
+export const VertexOIDCSecretMetadataSchema = z.object({
+  connection_id: z.string().nullish(),
+  scopes: z.array(z.string()).nullish(),
+  workload_identity_provider: z.string().nullish(),
+});
+export type VertexOIDCSecretMetadata = z.infer<
+  typeof VertexOIDCSecretMetadataSchema
+>;
+
 export const VertexMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     project: z.string().min(1, "Project cannot be empty"),
@@ -99,10 +108,25 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
       }
       return value;
     }, z.string().min(1, "Location cannot be empty").optional()),
-    authType: z.enum(["access_token", "service_account_key"]),
+    authType: z.enum([
+      "access_token",
+      "oauth_bearer",
+      "service_account_key",
+      "workload_identity_federation",
+    ]),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).passthrough();
+export const VertexAPISecretMetadataSchema = z.union([
+  VertexMetadataSchema.extend({
+    authType: z.literal("workload_identity_federation"),
+  })
+    .merge(VertexOIDCSecretMetadataSchema)
+    .passthrough(),
+  VertexMetadataSchema.extend({
+    authType: z.enum(["access_token", "oauth_bearer", "service_account_key"]),
+  }).passthrough(),
+]);
 
 export const DatabricksMetadataSchema = BaseMetadataSchema.merge(
   z.object({
@@ -215,7 +239,7 @@ export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("vertex"),
-      metadata: VertexMetadataSchema.nullish(),
+      metadata: VertexAPISecretMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(

@@ -97,7 +97,12 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
       }
       return value;
     }, z.string().min(1, "Location cannot be empty").optional()),
-    authType: z.enum(["access_token", "oauth_bearer", "service_account_key"]),
+    authType: z.enum([
+      "access_token",
+      "oauth_bearer",
+      "service_account_key",
+      "workload_identity_federation",
+    ]),
     connection_id: z.string().nullish(),
     scopes: z.array(z.string()).nullish(),
     workload_identity_provider: z.string().nullish(),

@@ -11452,6 +11452,24 @@
       "azure"
     ]
   },
+  "gpt-realtime-translate": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 16000,
+    "max_output_tokens": 2000,
+    "available_providers": [
+      "openai"
+    ]
+  },
+  "gpt-realtime-whisper": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 16000,
+    "max_output_tokens": 2000,
+    "available_providers": [
+      "openai"
+    ]
+  },
   "omni-moderation-2024-09-26": {
     "format": "openai",
     "flavor": "chat",

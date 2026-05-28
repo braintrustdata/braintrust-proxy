@@ -11670,5 +11670,35 @@
     "available_providers": [
       "together"
     ]
+  },
+  "pplx-embed-v1-0.6b": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.004,
+    "displayName": "Perplexity Embed v1 (0.6B)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
+  "pplx-embed-v1-4b": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.03,
+    "displayName": "Perplexity Embed v1 (4B)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "perplexity"
+    ]
+  },
+  "pplx-embed-context-v1-0.6b": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.008,
+    "displayName": "Perplexity Embed Context v1 (0.6B)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "perplexity"
+    ]
   }
 }

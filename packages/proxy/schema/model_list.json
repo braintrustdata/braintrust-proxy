@@ -11677,10 +11677,7 @@
     "multimodal": true,
     "displayName": "Llama 4 Scout",
     "max_input_tokens": 10000000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
-    ]
+    "max_output_tokens": 8000
   },
   "meta.llama4-maverick-17b-instruct-v1:0": {
     "format": "converse",
@@ -11688,10 +11685,7 @@
     "multimodal": true,
     "displayName": "Llama 4 Maverick",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
-    ]
+    "max_output_tokens": 8000
   },
   "us.meta.llama4-scout-17b-instruct-v1:0": {
     "format": "converse",

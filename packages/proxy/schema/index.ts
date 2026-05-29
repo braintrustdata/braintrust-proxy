@@ -603,6 +603,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
   "minimax.minimax-m2.5": ["bedrock"],
   "zai.glm-5": ["bedrock"],
+  "nvidia.nemotron-super-3-120b": ["bedrock"],
   "mistral-medium-3.5": ["mistral"],
   "mistral-medium-3": ["mistral"],
   "mistral-medium-3-5-26-04": ["mistral"],

@@ -591,7 +591,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
   "qwen.qwen3-32b-v1:0": ["bedrock"],
-  "qwen.qwen3-coder-480b-a35b-instruct": ["bedrock"],
   "qwen.qwen3-next-80b-a3b": ["bedrock"],
   "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
   "us.meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],

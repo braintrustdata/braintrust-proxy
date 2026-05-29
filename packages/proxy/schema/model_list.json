@@ -11739,18 +11739,6 @@
       "bedrock"
     ]
   },
-  "qwen.qwen3-coder-480b-a35b-instruct": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": false,
-    "displayName": "Qwen3 Coder 480B A35B",
-    "reasoning": false,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
   "qwen.qwen3-next-80b-a3b": {
     "format": "converse",
     "flavor": "chat",

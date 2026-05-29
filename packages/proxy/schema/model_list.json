@@ -2604,6 +2604,22 @@
     "max_input_tokens": 100000,
     "max_output_tokens": 8191
   },
+  "claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "meta/llama-2-70b-chat": {
     "format": "openai",
     "flavor": "chat",
@@ -11669,6 +11685,46 @@
     "max_input_tokens": 32768,
     "available_providers": [
       "together"
+    ]
+  },
+  "meta.llama4-scout-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Scout",
+    "max_input_tokens": 10000000,
+    "max_output_tokens": 8000
+  },
+  "meta.llama4-maverick-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Maverick",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8000
+  },
+  "us.meta.llama4-scout-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Llama 4 Scout",
+    "parent": "meta.llama4-scout-17b-instruct-v1:0",
+    "max_input_tokens": 10000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.meta.llama4-maverick-17b-instruct-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Llama 4 Maverick",
+    "parent": "meta.llama4-maverick-17b-instruct-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
     ]
   },
   "qwen.qwen3-32b-v1:0": {

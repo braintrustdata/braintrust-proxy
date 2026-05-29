@@ -344,6 +344,62 @@ describe("APISecretSchema compatibility", () => {
     });
   });
 
+  it("accepts resolved Vertex OAuth bearer metadata", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "google-access-token",
+      type: "vertex",
+      metadata: {
+        authType: "oauth_bearer",
+        auth_source: "google_workload_identity_federation",
+        connection_id: 123,
+        project: "vertex-project",
+        future_field: "future-value",
+      },
+    });
+
+    expect(parsed.type).toBe("vertex");
+    expect(parsed.metadata).toMatchObject({
+      authType: "oauth_bearer",
+      connection_id: 123,
+      auth_source: "google_workload_identity_federation",
+      future_field: "future-value",
+      project: "vertex-project",
+    });
+  });
+
+  it("accepts raw Vertex workload identity metadata", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "__VERTEX_WIF__",
+      type: "vertex",
+      metadata: {
+        authType: "workload_identity_federation",
+        project: "vertex-project",
+        workload_identity_provider: "//iam.googleapis.com/projects/123",
+      },
+    });
+
+    expect(parsed.type).toBe("vertex");
+    expect(parsed.metadata).toMatchObject({
+      authType: "workload_identity_federation",
+      project: "vertex-project",
+      workload_identity_provider: "//iam.googleapis.com/projects/123",
+    });
+  });
+
+  it("validates OIDC metadata only for raw Vertex workload identity metadata", () => {
+    const result = APISecretSchema.safeParse({
+      secret: "__VERTEX_WIF__",
+      type: "vertex",
+      metadata: {
+        authType: "workload_identity_federation",
+        project: "vertex-project",
+        connection_id: 123,
+      },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it("defaults Anthropic auth metadata to api_key", () => {
     const parsed = APISecretSchema.parse({
       secret: "anthropic-api-key",

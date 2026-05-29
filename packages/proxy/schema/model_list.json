@@ -11772,5 +11772,31 @@
     "available_providers": [
       "bedrock"
     ]
+  },
+  "minimax.minimax-m2.5": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "displayName": "MiniMax M2.5",
+    "max_input_tokens": 196000,
+    "max_output_tokens": 98000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "zai.glm-5": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 3.2,
+    "displayName": "GLM 5",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

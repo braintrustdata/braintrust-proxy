@@ -19,6 +19,7 @@ import {
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
+  VertexOIDCSecretMetadataSchema,
   VertexMetadataSchema,
 } from "@schema";
 import { translateParams } from "../schema/translate";
@@ -2136,6 +2137,9 @@ async function fetchOpenAI(
 
     const { project, location, authType, api_base } =
       VertexMetadataSchema.parse(secret.metadata);
+    if (authType === "workload_identity_federation") {
+      VertexOIDCSecretMetadataSchema.parse(secret.metadata);
+    }
     const resolvedLocation = resolveVertexLocation({
       metadataLocation: location,
       modelSpec,
@@ -2625,6 +2629,9 @@ async function vertexEndpointInfo({
 }): Promise<VertexEndpointInfo> {
   const { project, location, authType, api_base } =
     VertexMetadataSchema.parse(metadata);
+  if (authType === "workload_identity_federation") {
+    VertexOIDCSecretMetadataSchema.parse(metadata);
+  }
   const resolvedLocation = resolveVertexLocation({
     metadataLocation: location,
     modelSpec,

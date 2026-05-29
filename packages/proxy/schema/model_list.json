@@ -11750,5 +11750,27 @@
     "available_providers": [
       "bedrock"
     ]
+  },
+  "qwen.qwen3-vl-235b-a22b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Qwen3 VL 235B A22B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "qwen.qwen3-coder-next": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "Qwen3 Coder Next",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 16000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

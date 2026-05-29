@@ -596,6 +596,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
   "claude-opus-4-8": ["anthropic"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
+  "qwen.qwen3-vl-235b-a22b": ["bedrock"],
+  "qwen.qwen3-coder-next": ["bedrock"],
   "accounts/fireworks/models/deepseek-v4-flash": ["fireworks"],
   "accounts/fireworks/models/glm-5": ["fireworks"],
   "accounts/fireworks/models/minimax-m2p5": ["fireworks"],

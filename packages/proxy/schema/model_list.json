@@ -5112,6 +5112,18 @@
       "mistral"
     ]
   },
+  "ministral-14b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14B",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "mistral-saba-latest": {
     "format": "openai",
     "flavor": "chat",

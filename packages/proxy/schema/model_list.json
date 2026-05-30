@@ -1548,9 +1548,9 @@
   "accounts/fireworks/models/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.05,
-    "output_cost_per_mil_tokens": 0.2,
-    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.035,
     "displayName": "OpenAI GPT-OSS (20B)",
     "reasoning": true,
     "max_input_tokens": 131072,

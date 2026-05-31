@@ -11808,5 +11808,25 @@
     "available_providers": [
       "bedrock"
     ]
+  },
+  "openai.gpt-oss-120b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "OpenAI GPT-OSS (120B)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-oss-20b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "OpenAI GPT-OSS (20B)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

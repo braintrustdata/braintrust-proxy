@@ -11808,5 +11808,16 @@
     "available_providers": [
       "bedrock"
     ]
+  },
+  "nvidia.nemotron-nano-3-30b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "displayName": "NVIDIA Nemotron 3 Nano 30B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

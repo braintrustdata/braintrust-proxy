@@ -4985,11 +4985,10 @@
   "codestral-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 3,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral",
-    "max_input_tokens": 32000,
-    "max_output_tokens": 8191,
+    "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
     ]

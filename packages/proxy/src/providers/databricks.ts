@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DatabricksOAuthSecretSchema } from "@braintrust/proxy/schema";
+import { type FetchFn } from "../proxy";
 
 const databricksOAuthResponseSchema = z.union([
   z.object({
@@ -30,7 +31,7 @@ export async function getDatabricksOAuthAccessToken({
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>;
-  fetch?: typeof globalThis.fetch;
+  fetch?: FetchFn;
 }): Promise<string> {
   const { client_id, client_secret } = secret;
   const tokenUrl = `${apiBase}/oidc/v1/token`;

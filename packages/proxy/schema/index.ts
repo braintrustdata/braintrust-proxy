@@ -1,7 +1,6 @@
 import { z } from "zod";
 import type {
   AnyModelParamsType as AnyModelParam,
-  ChatCompletionMessageParamType as Message,
   MessageRoleType as MessageRole,
   ModelParamsType as ModelParams,
 } from "../src/generated_types";
@@ -12,9 +11,6 @@ import {
   ModelSpec,
   getAvailableModels,
 } from "./models";
-import { openaiParamsToAnthropicMesssageParams } from "@lib/providers/anthropic";
-import { OpenAIChatCompletionCreateParams } from "@types";
-import { openaiParamsToGeminiMessageParams } from "@lib/providers/google";
 
 export * from "./secrets";
 export * from "./models";
@@ -75,19 +71,6 @@ export const modelParamToModelParam: {
   reasoning_budget: "reasoning_budget",
   verbosity: "verbosity",
   stop: null,
-};
-
-const paramMappers: Partial<
-  Record<
-    ModelFormat,
-    (
-      params: OpenAIChatCompletionCreateParams,
-      modelSpec?: ModelSpec | null,
-    ) => object
-  >
-> = {
-  anthropic: openaiParamsToAnthropicMesssageParams,
-  google: openaiParamsToGeminiMessageParams,
 };
 
 export const sliderSpecs: {
@@ -607,7 +590,26 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
-  "gemini-3.1-flash-lite": ["google"],
+  "qwen.qwen3-32b-v1:0": ["bedrock"],
+  "qwen.qwen3-next-80b-a3b": ["bedrock"],
+  "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
+  "us.meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
+  "claude-opus-4-8": ["anthropic"],
+  "grok-4.20-0309-non-reasoning": ["xAI"],
+  "qwen.qwen3-vl-235b-a22b": ["bedrock"],
+  "qwen.qwen3-coder-next": ["bedrock"],
+  "accounts/fireworks/models/deepseek-v4-flash": ["fireworks"],
+  "accounts/fireworks/models/glm-5": ["fireworks"],
+  "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
+  "minimax.minimax-m2.5": ["bedrock"],
+  "zai.glm-5": ["bedrock"],
+  "nvidia.nemotron-super-3-120b": ["bedrock"],
+  "mistral-medium-3.5": ["mistral"],
+  "mistral-medium-3": ["mistral"],
+  "mistral-medium-3-5-26-04": ["mistral"],
+  "gemini-3.5-flash": ["google", "vertex"],
+  "deepseek.v3.2": ["bedrock"],
+  "gemini-3.1-flash-lite": ["google", "vertex"],
   "amazon.nova-premier-v1:0": ["bedrock"],
   "amazon.nova-2-lite-v1:0": ["bedrock"],
   "magistral-medium-2509": ["mistral"],
@@ -631,6 +633,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/deepseek-v4-pro": ["fireworks"],
   "accounts/fireworks/models/minimax-m2p7": ["fireworks"],
   "grok-4.3": ["xAI"],
+  "grok-4.3-latest": ["xAI"],
   "mistral-large-2512": ["mistral"],
   "mistral-small-2603": ["mistral"],
   "codestral-2508": ["mistral"],
@@ -833,6 +836,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-audio": ["openai", "azure"],
   "gpt-audio-mini": ["openai", "azure"],
   "gpt-realtime-2025-08-28": ["openai", "azure"],
+  "gpt-realtime-2": ["openai", "azure"],
   "gpt-realtime-1.5": ["openai", "azure"],
   "gpt-realtime-mini-2025-12-15": ["openai", "azure"],
   "gpt-realtime-mini-2025-10-06": ["openai", "azure"],
@@ -886,8 +890,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-3.1-flash-lite-preview": ["google"],
   "gemini-3-pro-image-preview": ["google"],
   "gemini-3-flash-preview": ["google"],
+  "publishers/google/models/gemini-3.5-flash": ["vertex"],
   "publishers/google/models/gemini-3.1-pro-preview": ["vertex"],
   "publishers/google/models/gemini-3.1-pro-preview-customtools": ["vertex"],
+  "publishers/google/models/gemini-3.1-flash-lite": ["vertex"],
   "publishers/google/models/gemini-3.1-flash-lite-preview": ["vertex"],
   "publishers/google/models/gemini-3-pro-preview": ["vertex"],
   "publishers/google/models/gemini-3-flash-preview": ["vertex"],
@@ -1045,58 +1051,6 @@ export const EndpointProviderToBaseURL: {
   databricks: null,
   js: null,
 };
-
-export function buildClassicChatPrompt(messages: Message[]) {
-  return (
-    messages
-      .map(
-        ({ content, role }) => `<|im_start|>${role}
-${content}<|im_end|>`,
-      )
-      .join("\n") + "\n<|im_start|>assistant"
-  );
-}
-
-export function translateParams(
-  toProvider: ModelFormat,
-  params: Record<string, unknown>,
-  modelSpec?: ModelSpec | null,
-): Record<string, unknown> {
-  let translatedParams: Record<string, unknown> = {};
-
-  for (const [k, v] of Object.entries(params || {})) {
-    const safeValue = v ?? undefined; // Don't propagate "null" along
-    const translatedKey = modelParamToModelParam[k as keyof ModelParams] as
-      | keyof ModelParams
-      | undefined
-      | null;
-
-    if (translatedKey === null) {
-      continue;
-    }
-
-    const hasDefaultParam =
-      translatedKey !== undefined &&
-      Object.prototype.hasOwnProperty.call(
-        defaultModelParamSettings[toProvider] ?? {},
-        translatedKey,
-      );
-
-    translatedParams[hasDefaultParam ? translatedKey : k] = safeValue;
-  }
-
-  // ideally we should short circuit and just have a master mapper but this avoids scope
-  // for now
-  const mapper = paramMappers[toProvider];
-  if (mapper) {
-    translatedParams = mapper(
-      translatedParams as unknown as OpenAIChatCompletionCreateParams,
-      modelSpec,
-    ) as unknown as Record<string, unknown>;
-  }
-
-  return translatedParams;
-}
 
 export const anthropicSupportedMediaTypes = [
   "image/jpeg",

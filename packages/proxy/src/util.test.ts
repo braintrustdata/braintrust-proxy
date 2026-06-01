@@ -2,7 +2,9 @@ import { describe, expect, test } from "vitest";
 import { type APISecret } from "@schema";
 import {
   isNativeInferenceSecret,
+  MAX_TOKEN_COUNT,
   parseFileMetadataFromUrl,
+  sanitizeUsageField,
   _urljoin,
 } from "./util";
 
@@ -298,5 +300,41 @@ describe("isNativeInferenceSecret", () => {
 
     expect(isNativeInferenceSecret(secret, null)).toBe(false);
     expect(isNativeInferenceSecret(secret, undefined)).toBe(false);
+  });
+});
+
+describe("sanitizeUsageField", () => {
+  test("passes through valid non-negative integers", () => {
+    expect(sanitizeUsageField(0)).toBe(0);
+    expect(sanitizeUsageField(1)).toBe(1);
+    expect(sanitizeUsageField(123_456)).toBe(123_456);
+    expect(sanitizeUsageField(MAX_TOKEN_COUNT)).toBe(MAX_TOKEN_COUNT);
+  });
+
+  test("returns undefined for missing values", () => {
+    expect(sanitizeUsageField(undefined)).toBeUndefined();
+    expect(sanitizeUsageField(null)).toBeUndefined();
+  });
+
+  test("rejects negative values", () => {
+    expect(sanitizeUsageField(-1)).toBeUndefined();
+    expect(sanitizeUsageField(-1000)).toBeUndefined();
+    expect(sanitizeUsageField(-Number.MAX_SAFE_INTEGER)).toBeUndefined();
+  });
+
+  test("rejects values above MAX_TOKEN_COUNT", () => {
+    expect(sanitizeUsageField(MAX_TOKEN_COUNT + 1)).toBeUndefined();
+    expect(sanitizeUsageField(Number.MAX_SAFE_INTEGER)).toBeUndefined();
+  });
+
+  test("rejects non-integer numbers", () => {
+    expect(sanitizeUsageField(1.5)).toBeUndefined();
+    expect(sanitizeUsageField(0.1)).toBeUndefined();
+  });
+
+  test("rejects non-finite values", () => {
+    expect(sanitizeUsageField(Number.NaN)).toBeUndefined();
+    expect(sanitizeUsageField(Number.POSITIVE_INFINITY)).toBeUndefined();
+    expect(sanitizeUsageField(Number.NEGATIVE_INFINITY)).toBeUndefined();
   });
 });

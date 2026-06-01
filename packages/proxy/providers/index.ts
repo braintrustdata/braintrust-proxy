@@ -2,4 +2,4 @@ export {
   googleCompletionToOpenAICompletion,
   geminiParamsToOpenAIMessages,
   geminiParamsToOpenAITools,
-} from "../src/providers/google";
+} from "../src/providers/google-converter";

@@ -19,9 +19,10 @@ import {
   MessageTypeToMessageType,
   modelProviderHasReasoning,
   ModelSpec,
-  translateParams,
+  VertexOIDCSecretMetadataSchema,
   VertexMetadataSchema,
 } from "@schema";
+import { translateParams } from "../schema/translate";
 import {
   completionUsageSchema,
   OpenAIChatCompletionChunk,
@@ -109,6 +110,7 @@ import {
   parseAuthHeader,
   parseNumericHeader,
   ProxyBadRequestError,
+  sanitizeUsageField,
   writeToReadable,
   _urljoin,
 } from "./util";
@@ -164,6 +166,26 @@ const GOOGLE_URL_REGEX =
   /\/google\/(models\/[^:]+|publishers\/[^\/]+\/models\/[^:]+):([^\/]+)/;
 
 const GOOGLE_API_KEY_HEADER = "x-goog-api-key";
+
+function isAnthropicOAuthBearerSecret(secret: APISecret) {
+  return (
+    secret.type === "anthropic" && secret.metadata?.auth_type === "oauth_bearer"
+  );
+}
+
+export function anthropicAuthHeaders(
+  secret: APISecret,
+): Record<string, string> {
+  if (isAnthropicOAuthBearerSecret(secret)) {
+    return {
+      authorization: `Bearer ${secret.secret}`,
+    };
+  }
+
+  return {
+    "x-api-key": secret.secret,
+  };
+}
 
 // Options to control how the cache key is generated.
 export interface CacheKeyOptions {
@@ -828,13 +850,19 @@ export async function proxyV1({
                   result.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
+                  inputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens,
+                  );
+                  outputTokens = sanitizeUsageField(
+                    extendedUsage.data.completion_tokens,
+                  );
+                  cachedInputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                  );
+                  cacheWriteInputTokens = sanitizeUsageField(
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens,
+                  );
                   spanLogger?.log({
                     metrics: {
                       tokens: extendedUsage.data.total_tokens,
@@ -1029,13 +1057,19 @@ export async function proxyV1({
                   data.usage,
                 );
                 if (extendedUsage.success) {
-                  inputTokens = extendedUsage.data.prompt_tokens;
-                  outputTokens = extendedUsage.data.completion_tokens;
-                  cachedInputTokens =
-                    extendedUsage.data.prompt_tokens_details?.cached_tokens;
-                  cacheWriteInputTokens =
+                  inputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens,
+                  );
+                  outputTokens = sanitizeUsageField(
+                    extendedUsage.data.completion_tokens,
+                  );
+                  cachedInputTokens = sanitizeUsageField(
+                    extendedUsage.data.prompt_tokens_details?.cached_tokens,
+                  );
+                  cacheWriteInputTokens = sanitizeUsageField(
                     extendedUsage.data.prompt_tokens_details
-                      ?.cache_creation_tokens;
+                      ?.cache_creation_tokens,
+                  );
                   spanLogger?.log({
                     output: data.choices,
                     metrics: {
@@ -1099,10 +1133,11 @@ export async function proxyV1({
                   resolvedModel = data.model;
                 }
                 if (data.usage) {
-                  inputTokens = data.usage.input_tokens;
-                  outputTokens = data.usage.output_tokens;
-                  cachedInputTokens =
-                    data.usage.input_tokens_details?.cached_tokens;
+                  inputTokens = sanitizeUsageField(data.usage.input_tokens);
+                  outputTokens = sanitizeUsageField(data.usage.output_tokens);
+                  cachedInputTokens = sanitizeUsageField(
+                    data.usage.input_tokens_details?.cached_tokens,
+                  );
                 }
                 spanLogger?.log({
                   output: data.output,
@@ -1463,7 +1498,10 @@ async function fetchModelLoop(
         errorHttpHeaders = proxyResponse.response.headers;
       }
     } catch (e) {
-      const isAbortError = e instanceof DOMException && e.name === "AbortError";
+      const isAbortError =
+        typeof DOMException !== "undefined" &&
+        e instanceof DOMException &&
+        e.name === "AbortError";
       if (!isAbortError) {
         console.log("ERROR", e);
       }
@@ -2099,6 +2137,9 @@ async function fetchOpenAI(
 
     const { project, location, authType, api_base } =
       VertexMetadataSchema.parse(secret.metadata);
+    if (authType === "workload_identity_federation") {
+      VertexOIDCSecretMetadataSchema.parse(secret.metadata);
+    }
     const resolvedLocation = resolveVertexLocation({
       metadataLocation: location,
       modelSpec,
@@ -2594,6 +2635,9 @@ async function vertexEndpointInfo({
 }): Promise<VertexEndpointInfo> {
   const { project, location, authType, api_base } =
     VertexMetadataSchema.parse(metadata);
+  if (authType === "workload_identity_federation") {
+    VertexOIDCSecretMetadataSchema.parse(metadata);
+  }
   const resolvedLocation = resolveVertexLocation({
     metadataLocation: location,
     modelSpec,
@@ -2677,7 +2721,7 @@ async function fetchAnthropicMessages({
         {
           method: "POST",
           headers: {
-            "x-api-key": secret.secret,
+            ...anthropicAuthHeaders(secret),
             "content-type": "application/json",
             "anthropic-version": "2023-06-01",
           },
@@ -2781,7 +2825,8 @@ async function fetchAnthropicChatCompletions({
     headers["accept"] = "application/json";
     headers["anthropic-version"] = "2023-06-01";
     headers["host"] = fullURL.host;
-    headers["x-api-key"] = secret.secret;
+    delete headers["x-api-key"];
+    Object.assign(headers, anthropicAuthHeaders(secret));
   }
 
   if (isEmpty(bodyData)) {

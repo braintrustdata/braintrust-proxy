@@ -4858,6 +4858,28 @@
       "mistral"
     ]
   },
+  "devstral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral Medium Latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral Latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "accounts/fireworks/models/devstral-small-2505": {
     "format": "openai",
     "flavor": "chat",

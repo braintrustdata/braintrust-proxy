@@ -428,7 +428,7 @@ it("uses injected fetch when supportsStreaming is false", async () => {
   expect(requests[0].url).toBe("http://test.com/v1/chat/completions");
 });
 
-it("uses injected fetch for Databricks OAuth token exchange", async () => {
+it("uses injected customFetch for Databricks OAuth token exchange", async () => {
   vi.stubGlobal("fetch", async () => {
     throw new Error("global fetch was called");
   });
@@ -439,7 +439,7 @@ it("uses injected fetch for Databricks OAuth token exchange", async () => {
       body: BodyInit | null | undefined;
       headers: HeadersInit | undefined;
     }> = [];
-    const fetch: FetchFn = async (input, init) => {
+    const customFetch: FetchFn = async (input, init) => {
       const url = fetchInputUrl(input);
       calls.push({ url, body: init?.body, headers: init?.headers });
 
@@ -479,7 +479,7 @@ it("uses injected fetch for Databricks OAuth token exchange", async () => {
         model: "databricks-model",
         messages: [{ role: "user", content: "hello" }],
       },
-      fetch,
+      customFetch,
       ...{ getApiSecrets },
     });
 
@@ -496,6 +496,84 @@ it("uses injected fetch for Databricks OAuth token exchange", async () => {
     );
     expect(fetchHeaderValue(calls[1]?.headers, "authorization")).toBe(
       "Bearer databricks-token",
+    );
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
+
+it("uses injected customFetch for Azure Entra token exchange", async () => {
+  vi.stubGlobal("fetch", async () => {
+    throw new Error("global fetch was called");
+  });
+
+  try {
+    const calls: Array<{
+      url: string;
+      body: BodyInit | null | undefined;
+      headers: HeadersInit | undefined;
+    }> = [];
+    const customFetch: FetchFn = async (input, init) => {
+      const url = fetchInputUrl(input);
+      calls.push({ url, body: init?.body, headers: init?.headers });
+
+      if (
+        url === "https://login.microsoftonline.com/tenant-id/oauth2/v2.0/token"
+      ) {
+        return new Response(
+          JSON.stringify({
+            access_token: "azure-token",
+            token_type: "Bearer",
+            expires_in: 3600,
+          }),
+          { headers: { "content-type": "application/json" } },
+        );
+      }
+
+      return new Response(JSON.stringify({ choices: [] }), {
+        headers: { "content-type": "application/json" },
+      });
+    };
+    const getApiSecrets = async (): Promise<APISecret[]> => [
+      {
+        type: "azure",
+        name: "azure",
+        secret: JSON.stringify({
+          client_id: "client-id",
+          client_secret: "client-secret",
+          tenant_id: "tenant-id",
+          scope: "https://cognitiveservices.azure.com/.default",
+        }),
+        metadata: {
+          api_base: "https://azure.example.com",
+          api_version: "2025-01-01-preview",
+          auth_type: "entra_api",
+          supportsStreaming: true,
+        },
+      },
+    ];
+
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: "hello" }],
+      },
+      proxyHeaders: {
+        "x-bt-endpoint-name": "azure",
+      },
+      customFetch,
+      ...{ getApiSecrets },
+    });
+
+    expect(calls.map((call) => call.url)).toEqual([
+      "https://login.microsoftonline.com/tenant-id/oauth2/v2.0/token",
+      "https://azure.example.com/openai/deployments/gpt-4o-mini/chat/completions?api-version=2025-01-01-preview",
+    ]);
+    expect(calls[0]?.body?.toString()).toBe(
+      "client_id=client-id&tenant=tenant-id&scope=https%3A%2F%2Fcognitiveservices.azure.com%2F.default&grant_type=client_credentials&client_secret=client-secret",
+    );
+    expect(fetchHeaderValue(calls[1]?.headers, "authorization")).toBe(
+      "Bearer azure-token",
     );
   } finally {
     vi.unstubAllGlobals();

@@ -4988,7 +4988,7 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral",
-    "max_input_tokens": 256000,
+    "max_input_tokens": 128000,
     "available_providers": [
       "mistral"
     ]

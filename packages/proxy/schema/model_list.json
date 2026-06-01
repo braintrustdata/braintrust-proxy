@@ -4997,10 +4997,11 @@
   "mistral-small-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.18,
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
     "displayName": "Mistral Small",
-    "max_input_tokens": 131072,
+    "max_input_tokens": 262144,
     "max_output_tokens": 131072,
     "available_providers": [
       "mistral"

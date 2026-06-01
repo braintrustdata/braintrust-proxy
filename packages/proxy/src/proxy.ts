@@ -122,9 +122,20 @@ export type LogHistogramFn = (args: {
 }) => void;
 
 export type ProviderFetchInput = string | URL;
-export type ProviderFetchInit = NonNullable<
-  Parameters<typeof globalThis.fetch>[1]
->;
+export type ProviderFetchHeaders = Record<string, string> | [string, string][];
+export type ProviderFetchBody =
+  | string
+  | URLSearchParams
+  | ArrayBuffer
+  | Uint8Array
+  | ReadableStream<Uint8Array>;
+export type ProviderFetchInit = {
+  method?: string;
+  headers?: ProviderFetchHeaders;
+  body?: ProviderFetchBody;
+  signal?: AbortSignal;
+  keepalive?: boolean;
+};
 export type CustomFetchFn = (
   input: ProviderFetchInput,
   init?: ProviderFetchInit,

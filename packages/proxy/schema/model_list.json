@@ -222,6 +222,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.3 chat",
     "reasoning": true,
+    "deprecation_date": "2026-08-10",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -303,6 +304,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 chat",
     "reasoning": true,
+    "deprecation_date": "2026-08-10",
     "parent": "gpt-5.2",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -5533,7 +5535,8 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   },
   "moonshotai/Kimi-K2.6": {
@@ -5541,7 +5544,8 @@
     "flavor": "chat",
     "displayName": "Kimi K2.6",
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   },
   "publishers/moonshotai/models/kimi-k2.5": {
@@ -6865,6 +6869,8 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Grok 4.1 Fast",
+    "deprecated": true,
+    "deprecation_date": "2026-05-15",
     "parent": "grok-4-1-fast",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
@@ -7030,6 +7036,8 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Grok 4",
+    "deprecated": true,
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -9860,7 +9868,8 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 3.15,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   },
   "accounts/fireworks/models/glm-4p7": {

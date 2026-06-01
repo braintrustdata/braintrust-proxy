@@ -320,6 +320,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 Codex",
     "reasoning": true,
+    "deprecation_date": "2026-07-23",
     "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -385,6 +386,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5.1 chat",
     "reasoning": true,
+    "deprecation_date": "2026-07-23",
     "parent": "gpt-5.1",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -569,6 +571,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 chat",
     "reasoning": true,
+    "deprecation_date": "2026-07-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -585,6 +588,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5 Codex",
     "reasoning": true,
+    "deprecation_date": "2026-07-23",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [

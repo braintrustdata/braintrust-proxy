@@ -2318,7 +2318,7 @@
     "max_output_tokens": 128000
   },
   "claude-opus-4-6-20260205": {
-    "format": "openai",
+    "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
@@ -2392,7 +2392,7 @@
     "max_output_tokens": 64000
   },
   "claude-opus-4-1": {
-    "format": "openai",
+    "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,

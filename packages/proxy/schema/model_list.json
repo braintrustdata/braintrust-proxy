@@ -320,6 +320,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 Codex",
     "reasoning": true,
+    "deprecation_date": "2026-07-23",
     "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,

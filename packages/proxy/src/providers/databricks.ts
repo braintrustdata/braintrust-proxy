@@ -19,7 +19,7 @@ export async function getDatabricksOAuthAccessToken({
   digest,
   cacheGet,
   cachePut,
-  fetch = globalThis.fetch,
+  customFetch = globalThis.fetch,
 }: {
   secret: z.infer<typeof DatabricksOAuthSecretSchema>;
   apiBase: string;
@@ -31,7 +31,7 @@ export async function getDatabricksOAuthAccessToken({
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>;
-  fetch?: FetchFn;
+  customFetch?: FetchFn;
 }): Promise<string> {
   const { client_id, client_secret } = secret;
   const tokenUrl = `${apiBase}/oidc/v1/token`;
@@ -49,7 +49,7 @@ export async function getDatabricksOAuthAccessToken({
   const credentials = Buffer.from(`${client_id}:${client_secret}`).toString(
     "base64",
   );
-  const res = await fetch(tokenUrl, {
+  const res = await customFetch(tokenUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

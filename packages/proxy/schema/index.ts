@@ -596,6 +596,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-5.1-chat-latest": ["openai", "azure"],
   "gpt-5.1-codex": ["openai", "azure"],
   "gpt-5.1-codex-mini": ["openai", "azure"],
+  "devstral-medium-latest": ["mistral"],
+  "devstral-latest": ["mistral"],
   "qwen.qwen3-32b-v1:0": ["bedrock"],
   "qwen.qwen3-next-80b-a3b": ["bedrock"],
   "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],

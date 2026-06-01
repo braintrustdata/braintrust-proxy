@@ -121,7 +121,26 @@ export type LogHistogramFn = (args: {
   attributes?: Attributes;
 }) => void;
 
-export type FetchFn = typeof globalThis.fetch;
+export type ProviderFetchInput = string | URL;
+export type ProviderFetchHeaders = Record<string, string> | [string, string][];
+export type ProviderFetchBody =
+  | string
+  | URLSearchParams
+  | ArrayBuffer
+  | Uint8Array
+  | ReadableStream<Uint8Array>;
+export type ProviderFetchInit = {
+  method?: string;
+  headers?: ProviderFetchHeaders;
+  body?: ProviderFetchBody;
+  signal?: AbortSignal;
+  keepalive?: boolean;
+};
+export type CustomFetchFn = (
+  input: ProviderFetchInput,
+  init?: ProviderFetchInit,
+) => Promise<Response>;
+export type FetchFn = CustomFetchFn;
 
 type CachedMetadata = {
   cached_at: Date;
@@ -251,7 +270,7 @@ export async function proxyV1({
   billingOrgId,
   onBillingEvent,
   signal,
-  fetch = globalThis.fetch,
+  customFetch = globalThis.fetch,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -282,8 +301,10 @@ export async function proxyV1({
   billingOrgId?: string;
   onBillingEvent?: (event: BillingEvent) => void;
   signal?: AbortSignal;
-  fetch?: FetchFn;
+  customFetch?: FetchFn;
 }): Promise<void> {
+  const fetch = customFetch;
+
   // totalCalls will be updated with model attributes after model extraction
 
   proxyHeaders = Object.fromEntries(

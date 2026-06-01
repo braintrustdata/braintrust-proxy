@@ -222,6 +222,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.3 chat",
     "reasoning": true,
+    "deprecation_date": "2026-08-10",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -303,6 +304,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.2 chat",
     "reasoning": true,
+    "deprecation_date": "2026-08-10",
     "parent": "gpt-5.2",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,

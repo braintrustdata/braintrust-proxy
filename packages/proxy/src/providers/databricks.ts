@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DatabricksOAuthSecretSchema } from "@braintrust/proxy/schema";
+import { type FetchFn } from "../proxy";
 
 const databricksOAuthResponseSchema = z.union([
   z.object({
@@ -18,6 +19,7 @@ export async function getDatabricksOAuthAccessToken({
   digest,
   cacheGet,
   cachePut,
+  fetch = globalThis.fetch,
 }: {
   secret: z.infer<typeof DatabricksOAuthSecretSchema>;
   apiBase: string;
@@ -29,6 +31,7 @@ export async function getDatabricksOAuthAccessToken({
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>;
+  fetch?: FetchFn;
 }): Promise<string> {
   const { client_id, client_secret } = secret;
   const tokenUrl = `${apiBase}/oidc/v1/token`;
@@ -59,7 +62,9 @@ export async function getDatabricksOAuthAccessToken({
   });
   if (!res.ok) {
     throw new Error(
-      `Databricks OAuth error (${res.status}): ${res.statusText} ${await res.text()}`,
+      `Databricks OAuth error (${res.status}): ${
+        res.statusText
+      } ${await res.text()}`,
     );
   }
 

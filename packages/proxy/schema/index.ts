@@ -590,6 +590,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "gpt-5.2-codex": ["openai", "azure"],
   "gpt-5-chat-latest": ["openai", "azure"],
   "gpt-5-codex": ["openai", "azure"],
   "gpt-5.1-chat-latest": ["openai", "azure"],

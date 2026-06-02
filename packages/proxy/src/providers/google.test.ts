@@ -1571,31 +1571,31 @@ describe("googleCompletionToOpenAICompletion", () => {
     }
   });
 
-  it("should handle mixed text and image in response via callProxyV1", async () => {
-    const { json } = await callProxyV1<
-      OpenAIChatCompletionCreateParams,
-      OpenAIChatCompletion
-    >({
-      body: {
-        model: "gemini-3-pro-image-preview",
-        messages: [
-          {
-            role: "user",
-            content:
-              'First write "Here is the image:" then generate a small solid blue circle',
+  it("should handle mixed text and image in response", () => {
+    const geminiResponse: GenerateContentResponse = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              { text: "Here is the image:" },
+              { inlineData: { data: "abcd", mimeType: "image/png" } },
+            ],
           },
-        ],
-        stream: false,
-        responseModalities: ["TEXT", "IMAGE"],
-      },
-    });
+          finishReason: "STOP",
+        },
+      ],
+    };
 
-    const result = json();
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-3-pro-image-preview",
+      geminiResponse,
+    );
+
     expect(result.choices).toHaveLength(1);
     expect(result.choices[0].message.role).toBe("assistant");
     expect(result.choices[0].finish_reason).toBe("stop");
 
-    // Response should contain both text and image content
     const content = result.choices[0].message.content;
     expect(Array.isArray(content)).toBe(true);
     if (Array.isArray(content)) {
@@ -1606,9 +1606,7 @@ describe("googleCompletionToOpenAICompletion", () => {
       expect(textContent?.text).toBeTruthy();
 
       expect(imageContent).toBeDefined();
-      expect(imageContent?.image_url?.url).toMatch(
-        /^data:image\/(png|jpeg);base64,/,
-      );
+      expect(imageContent?.image_url?.url).toBe("data:image/png;base64,abcd");
     }
   });
 

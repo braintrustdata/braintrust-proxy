@@ -12200,5 +12200,38 @@
     "available_providers": [
       "bedrock"
     ]
+  },
+  "deepseek.v3-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "DeepSeek V3.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "deepseek.r1-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "DeepSeek R1",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.deepseek.r1-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "US DeepSeek R1",
+    "reasoning": true,
+    "parent": "deepseek.r1-v1:0",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   }
 }

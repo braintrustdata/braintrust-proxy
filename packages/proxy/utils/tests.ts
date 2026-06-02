@@ -27,16 +27,12 @@ export function createCapturingFetch(options?: { captureOnly?: boolean }): {
   const requests: CapturedRequest[] = [];
 
   const fetch: FetchFn = async (input, init) => {
-    const url = input instanceof Request ? input.url : input.toString();
+    const url = input.toString();
     const method = init?.method || "GET";
     const headers: Record<string, string> = {};
 
     if (init?.headers) {
-      if (init.headers instanceof Headers) {
-        init.headers.forEach((value, key) => {
-          headers[key] = value;
-        });
-      } else if (Array.isArray(init.headers)) {
+      if (Array.isArray(init.headers)) {
         init.headers.forEach(([key, value]) => {
           headers[key] = value;
         });
@@ -189,11 +185,13 @@ export const getKnownApiSecrets: Parameters<
 export async function callProxyV1<Input extends object, Output extends object>({
   body,
   proxyHeaders,
+  customFetch,
   fetch,
   ...request
 }: Partial<Omit<Parameters<typeof proxyV1>, "body" | "proxyHeaders">> & {
   body: Input;
   proxyHeaders?: Record<string, string>;
+  customFetch?: FetchFn;
   fetch?: FetchFn;
 }): Promise<
   ReturnType<typeof createHeaderHandlers> & {
@@ -232,7 +230,7 @@ export async function callProxyV1<Input extends object, Output extends object>({
       cachePut: async () => {},
       digest: async (message: string) =>
         Buffer.from(message).toString("base64"),
-      fetch: fetch ?? globalThis.fetch,
+      customFetch: customFetch ?? fetch ?? globalThis.fetch,
       ...request,
       body: requestBody,
     });

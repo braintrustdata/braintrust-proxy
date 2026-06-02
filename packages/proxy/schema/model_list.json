@@ -11900,9 +11900,24 @@
   "nvidia.nemotron-super-3-120b": {
     "format": "converse",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.65,
     "displayName": "NVIDIA Nemotron 3 Super 120B",
     "max_input_tokens": 256000,
     "max_output_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-3-30b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.24,
+    "displayName": "NVIDIA Nemotron 3 Nano 30B",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
     ]

@@ -9,7 +9,8 @@
     "build": "tsup",
     "watch": "tsup --watch",
     "clean": "rm -r dist/*",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:cloudflare-worker": "tsx scripts/cloudflare_worker_media_test.ts"
   },
   "exports": {
     "./package.json": "./package.json",

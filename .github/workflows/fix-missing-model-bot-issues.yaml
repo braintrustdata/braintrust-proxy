@@ -73,6 +73,27 @@ jobs:
               return data.length > 0;
             }
 
+            async function getIssuesInOpenBatchPullRequests() {
+              const pulls = await github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                state: "open",
+                per_page: 100,
+              });
+              const issueNumbers = new Set();
+              for (const pull of pulls) {
+                if (!pull.head?.ref?.startsWith("chore/autofix-bot-issues-")) {
+                  continue;
+                }
+
+                const body = pull.body || "";
+                for (const match of body.matchAll(/\b(?:Closes|Fixes|Resolves)\s+#(\d+)\b/gi)) {
+                  issueNumbers.add(Number(match[1]));
+                }
+              }
+              return issueNumbers;
+            }
+
             let candidates = [];
 
             if (manualIssueNumber.length > 0) {
@@ -97,6 +118,10 @@ jobs:
             }
 
             const selectedIssues = [];
+            const issuesInOpenBatchPullRequests =
+              manualIssueNumber.length === 0
+                ? await getIssuesInOpenBatchPullRequests()
+                : new Set();
             for (const issue of candidates) {
               if (!botIssuePattern.test(issue.title)) {
                 continue;
@@ -106,6 +131,7 @@ jobs:
               if (
                 manualIssueNumber.length === 0 &&
                 ((await hasOpenPullRequest(branchName)) ||
+                  issuesInOpenBatchPullRequests.has(issue.number) ||
                   issue.labels?.some((label) =>
                     typeof label === "string"
                       ? label === blockedLabel

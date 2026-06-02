@@ -7822,6 +7822,24 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Global Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-8",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8234,6 +8252,23 @@
       "bedrock"
     ]
   },
+  "anthropic.claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "us.anthropic.claude-3-haiku-20240307-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8264,6 +8299,24 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-opus-4-7",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 27.5,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "US Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-8",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -9275,6 +9328,23 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
+  },
+  "publishers/anthropic/models/claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",

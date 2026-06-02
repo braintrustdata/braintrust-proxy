@@ -138,11 +138,13 @@ account_id = ${JSON.stringify(accountId)}
 }
 
 function startWrangler({
+  cloudflareApiToken,
   cloudflarePackageRoot,
   port,
   proxyPackageRoot,
   tempDir,
 }: {
+  cloudflareApiToken: string;
   cloudflarePackageRoot: string;
   port: number;
   proxyPackageRoot: string;
@@ -175,6 +177,7 @@ function startWrangler({
     {
       env: {
         ...process.env,
+        CLOUDFLARE_API_TOKEN: cloudflareApiToken,
         HOME: join(tempDir, "home"),
         XDG_CONFIG_HOME: join(tempDir, "xdg-config"),
       },
@@ -301,8 +304,8 @@ function expectBlockedPrivateResponse(body: unknown, status: number) {
 }
 
 async function main() {
-  requireEnv("CLOUDFLARE_API_TOKEN");
-  const accountId = requireEnv("CLOUDFLARE_ACCOUNT_ID");
+  const cloudflareApiToken = requireEnv("TEST_CLOUDFLARE_API_TOKEN");
+  const accountId = requireEnv("TEST_CLOUDFLARE_ACCOUNT_ID");
 
   const scriptDir = dirname(fileURLToPath(import.meta.url));
   const proxyPackageRoot = resolve(scriptDir, "..");
@@ -321,6 +324,7 @@ async function main() {
       workerName,
     });
     wrangler = startWrangler({
+      cloudflareApiToken,
       cloudflarePackageRoot,
       port,
       proxyPackageRoot,

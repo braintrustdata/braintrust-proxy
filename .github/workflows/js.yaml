@@ -84,8 +84,8 @@ jobs:
       - name: Check Cloudflare credentials
         id: cloudflare
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TEST_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.TEST_CLOUDFLARE_ACCOUNT_ID }}
+          TEST_CLOUDFLARE_API_TOKEN: ${{ secrets.TEST_CLOUDFLARE_API_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
           REPOSITORY: ${{ github.repository }}
@@ -95,7 +95,7 @@ jobs:
             echo "::notice::Skipping remote Cloudflare Worker media test for fork pull request"
             exit 0
           fi
-          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+          if [ -z "${TEST_CLOUDFLARE_API_TOKEN:-}" ] || [ -z "${TEST_CLOUDFLARE_ACCOUNT_ID:-}" ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
             echo "::notice::Skipping remote Cloudflare Worker media test because Cloudflare secrets are unavailable"
             exit 0
@@ -133,5 +133,5 @@ jobs:
         working-directory: packages/proxy
         run: pnpm run test:cloudflare-worker
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TEST_CLOUDFLARE_ACCOUNT_ID: ${{ secrets.TEST_CLOUDFLARE_ACCOUNT_ID }}
+          TEST_CLOUDFLARE_API_TOKEN: ${{ secrets.TEST_CLOUDFLARE_API_TOKEN }}

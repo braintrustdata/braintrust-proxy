@@ -12387,5 +12387,37 @@
     "available_providers": [
       "databricks"
     ]
+  },
+  "databricks-claude-haiku-4-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4.5 Haiku",
+    "max_input_tokens": 200000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-opus-4-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4.5 Opus",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-opus-4-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude 4.1 Opus",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "databricks"
+    ]
   }
 }

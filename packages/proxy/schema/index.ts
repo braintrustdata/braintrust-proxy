@@ -603,6 +603,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai.glm-4.7": ["bedrock"],
   "zai.glm-4.7-flash": ["bedrock"],
   "nvidia.nemotron-nano-3-30b": ["bedrock"],
+  "openai.gpt-oss-120b-1:0": ["bedrock"],
+  "openai.gpt-oss-20b-1:0": ["bedrock"],
   "qwen.qwen3-32b-v1:0": ["bedrock"],
   "qwen.qwen3-next-80b-a3b": ["bedrock"],
   "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],

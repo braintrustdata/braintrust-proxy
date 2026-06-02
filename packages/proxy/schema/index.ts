@@ -636,10 +636,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral.magistral-small-2509": ["bedrock"],
   "openai/gpt-oss-safeguard-20b": ["groq"],
   "chat-latest": ["openai", "azure"],
-  "gemini-2.5-computer-use-preview-10-2025": ["google"],
-  "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": [
-    "vertex",
-  ],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],
   "qwen.qwen3-coder-next": ["bedrock"],

@@ -2,7 +2,7 @@ name: Fix missing model bot issues
 
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "0 10 * * *"
   workflow_dispatch:
     inputs:
       issue_number:
@@ -14,8 +14,6 @@ on:
         required: false
         default: false
         type: boolean
-  issues:
-    types: [opened, reopened, edited]
 
 concurrency:
   group: fix-missing-model-bot-issues
@@ -31,20 +29,26 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BLOCKED_LABEL: autofix-blocked
+      BATCH_DIR: fix-missing-model-bot-issues
 
     steps:
-      - name: Select issue
-        id: issue
+      - name: Select issues
+        id: issues
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           MANUAL_ISSUE_NUMBER: ${{ inputs.issue_number || '' }}
+          BATCH_DIR: ${{ runner.temp }}/${{ env.BATCH_DIR }}
         with:
           script: |
+            const fs = require("fs");
+            const path = require("path");
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const manualIssueNumber = (process.env.MANUAL_ISSUE_NUMBER || "").trim();
             const blockedLabel = process.env.BLOCKED_LABEL;
             const botIssuePattern = /^\[(?:BOT ISSUE|Bot Issue)\]/i;
+            const batchDir = process.env.BATCH_DIR;
+            fs.mkdirSync(batchDir, { recursive: true });
 
             async function getIssue(issueNumber) {
               const { data } = await github.rest.issues.get({
@@ -71,9 +75,7 @@ jobs:
 
             let candidates = [];
 
-            if (context.eventName === "issues") {
-              candidates = [context.payload.issue];
-            } else if (manualIssueNumber.length > 0) {
+            if (manualIssueNumber.length > 0) {
               const issueNumber = Number.parseInt(manualIssueNumber, 10);
               if (!Number.isInteger(issueNumber)) {
                 throw new Error(`Invalid issue number: ${manualIssueNumber}`);
@@ -94,7 +96,7 @@ jobs:
                 );
             }
 
-            let selected = null;
+            const selectedIssues = [];
             for (const issue of candidates) {
               if (!botIssuePattern.test(issue.title)) {
                 continue;
@@ -102,7 +104,6 @@ jobs:
 
               const branchName = `chore/autofix-issue-${issue.number}`;
               if (
-                context.eventName === "schedule" &&
                 manualIssueNumber.length === 0 &&
                 ((await hasOpenPullRequest(branchName)) ||
                   issue.labels?.some((label) =>
@@ -114,11 +115,35 @@ jobs:
                 continue;
               }
 
-              selected = { issue, branchName };
-              break;
+              selectedIssues.push({
+                number: issue.number,
+                title: issue.title,
+                body: issue.body ?? "",
+                url: issue.html_url,
+              });
             }
 
-            if (!selected) {
+            const today = new Date().toISOString().slice(0, 10);
+            const branchName =
+              manualIssueNumber.length > 0
+                ? `chore/autofix-bot-issues-manual-${manualIssueNumber}`
+                : `chore/autofix-bot-issues-${today}`;
+            const manifest = {
+              branch: branchName,
+              issues: selectedIssues,
+            };
+            fs.writeFileSync(
+              path.join(batchDir, "issues.json"),
+              JSON.stringify(manifest, null, 2) + "\n",
+            );
+            for (const issue of selectedIssues) {
+              fs.writeFileSync(
+                path.join(batchDir, `issue-${issue.number}.body.md`),
+                issue.body,
+              );
+            }
+
+            if (selectedIssues.length === 0) {
               core.setOutput("found", "false");
               await core.summary
                 .addHeading("Fix missing model bot issues")
@@ -128,38 +153,35 @@ jobs:
             }
 
             core.setOutput("found", "true");
-            core.setOutput("number", String(selected.issue.number));
-            core.setOutput("title", selected.issue.title);
-            core.setOutput("body", selected.issue.body ?? "");
-            core.setOutput("url", selected.issue.html_url);
-            core.setOutput("branch", selected.branchName);
+            core.setOutput("count", String(selectedIssues.length));
+            core.setOutput("branch", branchName);
 
       - name: Checkout repository
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
 
       - name: Set up Node.js
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 24
           registry-url: "https://registry.npmjs.org"
 
       - name: Setup pnpm
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
         with:
           version: 10.33.0
 
       - name: Get pnpm store directory
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -167,57 +189,43 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         run: pnpm install --frozen-lockfile
 
-      - name: Write issue body to file
-        if: steps.issue.outputs.found == 'true'
-        env:
-          ISSUE_BODY: ${{ steps.issue.outputs.body }}
-        run: |
-          set -euo pipefail
-          printf '%s' "$ISSUE_BODY" > "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md"
-
-      - name: Apply fix from issue body
-        if: steps.issue.outputs.found == 'true'
+      - name: Apply deterministic fixes
+        if: steps.issues.outputs.found == 'true'
         id: fix_initial
-        env:
-          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+        shell: bash
         run: |
           set -euo pipefail
 
-          pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
-            --title "$ISSUE_TITLE" \
-            --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
-            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.initial.json" \
-            --write
+          BATCH_DIR="$RUNNER_TEMP/$BATCH_DIR"
+          mkdir -p "$BATCH_DIR/results"
+          : > "$BATCH_DIR/unsupported.txt"
 
-      - name: Read initial fix result
-        id: result_initial
-        if: steps.issue.outputs.found == 'true'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
-        env:
-          RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.initial.json
-        with:
-          script: |
-            const fs = require("fs");
-            const resultPath = process.env.RESULT_PATH;
-            const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
+          while IFS= read -r encoded_issue; do
+            issue_json=$(printf '%s' "$encoded_issue" | base64 --decode)
+            issue_number=$(jq -r '.number' <<<"$issue_json")
+            issue_title=$(jq -r '.title' <<<"$issue_json")
+            body_file="$BATCH_DIR/issue-${issue_number}.body.md"
+            result_file="$BATCH_DIR/results/issue-${issue_number}.initial.json"
 
-            core.setOutput("action", result.action);
-            core.setOutput("message", result.message);
-            core.setOutput("provider", result.provider || "");
-            core.setOutput("model", result.model || "");
-            core.setOutput("pr_title", result.pr_title || "");
-            core.setOutput("changed_models", (result.changed_models || []).join(", "));
-            core.setOutput("added_models", (result.added_models || []).join(", "));
-            core.setOutput("updated_models", (result.updated_models || []).join(", "));
-            core.setOutput("comment_body", result.comment_body || result.message);
-            core.setOutput("source_urls", (result.source_urls || []).join(", "));
-            core.setOutput("verification_summary", result.verification_summary || "");
+            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+              --title "$issue_title" \
+              --body-file "$body_file" \
+              --result-path "$result_file" \
+              --write
+
+            if [ "$(jq -r '.action' "$result_file")" = "unsupported" ]; then
+              echo "$issue_number" >> "$BATCH_DIR/unsupported.txt"
+            fi
+          done < <(jq -r '.issues[] | @base64' "$BATCH_DIR/issues.json")
+
+          unsupported_count=$(wc -l < "$BATCH_DIR/unsupported.txt" | tr -d ' ')
+          echo "unsupported_count=$unsupported_count" >> "$GITHUB_OUTPUT"
 
       - name: Verify proposed changes and document sync_models deviations
-        if: steps.result_initial.outputs.action == 'unsupported'
+        if: steps.fix_initial.outputs.unsupported_count != '0'
         uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -233,20 +241,17 @@ jobs:
           prompt: |
             # Goal
 
-            The deterministic resolver could not apply a bot issue — either missing metadata or an unresolvable field. Your job is to:
-            1. Verify the proposed changes against official provider sources
-            2. Cross-check every numeric field against the sync_models (LiteLLM) reference catalog and explicitly document any deviation with a source URL and reason
-            3. Produce an updated issue body with fully verified metadata so the resolver can retry and open a PR
+            The deterministic resolver could not apply one or more bot issues, either due to missing metadata or an unresolvable field. Your job is to improve each unsupported issue body independently so the resolver can retry it as part of one daily batch PR.
 
-            This is a verification and documentation step, not just gap-filling.
+            This is a verification and documentation step, not just gap-filling. Keep each issue scoped to the exact models it already names.
 
             # Inputs
 
-            - Issue title: `${{ steps.issue.outputs.title }}`
-            - Issue URL: `${{ steps.issue.outputs.url }}`
-            - Original issue body: `${{ runner.temp }}/fix-missing-model-bot-issue-body.md`
-            - Output file (write enriched body here): `${{ runner.temp }}/fix-missing-model-bot-issue-body.enriched.md`
-            - Why the resolver failed: `${{ steps.result_initial.outputs.message }}`
+            - Batch manifest: `${{ runner.temp }}/${{ env.BATCH_DIR }}/issues.json`
+            - Unsupported issue numbers: `${{ runner.temp }}/${{ env.BATCH_DIR }}/unsupported.txt`
+            - Initial result files: `${{ runner.temp }}/${{ env.BATCH_DIR }}/results/issue-<number>.initial.json`
+            - Original issue bodies: `${{ runner.temp }}/${{ env.BATCH_DIR }}/issue-<number>.body.md`
+            - Output files: write enriched bodies to `${{ runner.temp }}/${{ env.BATCH_DIR }}/issue-<number>.body.enriched.md`
 
             # Local files to read first
 
@@ -257,10 +262,10 @@ jobs:
 
             # Process
 
-            1. Read `fix_bot_issue.ts` and the resolver failure message to identify exactly which field(s) caused the bail. Focus your research on those fields first.
-            2. Read the original issue body and note the official source URLs already listed.
-            3. Fetch those URLs first. Search additional official provider docs or APIs only if the listed sources don't provide the missing field.
-            4. For each model in the issue, build the most complete verified spec you can — not just the missing field. Verify all fields that official sources support:
+            1. Read the unsupported issue numbers file, then process each listed issue independently.
+            2. For each issue, read its initial result file and original issue body. Use the resolver message to identify exactly which field(s) caused the bail. Focus your research on those fields first.
+            3. Fetch the official source URLs already listed in the issue first. Search additional official provider docs or APIs only if the listed sources don't provide the missing field.
+            4. For each model in the issue, build the most complete verified spec you can, not just the missing field. Verify all fields that official sources support:
                - `format`, `flavor`, `displayName`
                - `parent` when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json` — patterns include: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`), `@NNN`/`-vN` versioned snapshots, location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI)
                - `available_providers` and provider mapping
@@ -290,7 +295,7 @@ jobs:
             # Output
 
             **If you can verify enough metadata for the resolver to proceed:**
-            Write the full enriched issue body to the output file. Include:
+            Write the full enriched issue body to that issue's `.body.enriched.md` output file. Include:
             - A `## Verification` section with:
               - Each official source URL and which fields it verified
               - For each field that deviates from sync_models: the sync_models value, the proposed value, the source URL justifying the deviation, and why it is preferred
@@ -298,7 +303,7 @@ jobs:
             - A single `<!-- fix-bot-issue-metadata -->` JSON block with a fully populated `model_specs` map
 
             **If you cannot verify enough to improve the issue safely:**
-            Write the original issue body unchanged to the output file.
+            Write the original issue body unchanged to that issue's `.body.enriched.md` output file.
 
             The output file must contain the full issue body text, not just the JSON block.
 
@@ -322,70 +327,45 @@ jobs:
             - Do not use third-party aggregators as the source of truth.
             - Do not invent values.
 
-      - name: Ensure enriched body file exists
-        if: steps.result_initial.outputs.action == 'unsupported'
-        run: |
-          set -euo pipefail
-          if [ ! -f "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md" ]; then
-            cp \
-              "$RUNNER_TEMP/fix-missing-model-bot-issue-body.md" \
-              "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md"
-          fi
-
-      - name: Re-apply fix from enriched issue body
-        if: steps.result_initial.outputs.action == 'unsupported'
-        id: fix_retry
-        env:
-          ISSUE_TITLE: ${{ steps.issue.outputs.title }}
+      - name: Re-apply enriched fixes
+        if: steps.fix_initial.outputs.unsupported_count != '0'
         run: |
           set -euo pipefail
 
-          pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
-            --title "$ISSUE_TITLE" \
-            --body-file "$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md" \
-            --result-path "$RUNNER_TEMP/fix-missing-model-bot-issue-result.retry.json" \
-            --write
+          BATCH_DIR="$RUNNER_TEMP/$BATCH_DIR"
+          while IFS= read -r issue_number; do
+            [ -n "$issue_number" ] || continue
+            issue_title=$(jq -r --arg number "$issue_number" '.issues[] | select((.number | tostring) == $number) | .title' "$BATCH_DIR/issues.json")
+            original_body="$BATCH_DIR/issue-${issue_number}.body.md"
+            enriched_body="$BATCH_DIR/issue-${issue_number}.body.enriched.md"
+            result_file="$BATCH_DIR/results/issue-${issue_number}.retry.json"
 
-      - name: Extract verification section from enriched issue body
-        id: verification
-        if: steps.issue.outputs.found == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          enriched="$RUNNER_TEMP/fix-missing-model-bot-issue-body.enriched.md"
-          if [ ! -f "$enriched" ]; then
-            {
-              echo "section<<VEOF"
-              echo "_No LLM verification step ran — model metadata was already complete in the issue._"
-              echo "VEOF"
-            } >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          section=$(awk '
-            /^## Verification/{found=1}
-            found && /^## / && !/^## Verification/{exit}
-            found && /<!-- fix-bot-issue-metadata -->/{exit}
-            found{print}
-          ' "$enriched")
-          if [ -z "$section" ]; then
-            section="_No Verification section found in enriched issue body._"
-          fi
-          {
-            echo "section<<VEOF"
-            printf '%s\n' "$section"
-            echo "VEOF"
-          } >> "$GITHUB_OUTPUT"
+            if [ ! -f "$enriched_body" ]; then
+              cp "$original_body" "$enriched_body"
+            fi
 
-      - name: Read final fix result
+            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+              --title "$issue_title" \
+              --body-file "$enriched_body" \
+              --result-path "$result_file" \
+              --write
+          done < "$BATCH_DIR/unsupported.txt"
+
+      - name: Read final fix results
         id: result
-        if: steps.issue.outputs.found == 'true'
+        if: steps.issues.outputs.found == 'true'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          INITIAL_RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.initial.json
-          RETRY_RESULT_PATH: ${{ runner.temp }}/fix-missing-model-bot-issue-result.retry.json
+          BATCH_DIR: ${{ runner.temp }}/${{ env.BATCH_DIR }}
         with:
           script: |
             const fs = require("fs");
+            const path = require("path");
+            const batchDir = process.env.BATCH_DIR;
+            const manifest = JSON.parse(
+              fs.readFileSync(path.join(batchDir, "issues.json"), "utf8"),
+            );
+
             const escapeCell = (value) =>
               String(value ?? "n/a").replace(/\|/g, "\\|").replace(/\n/g, "<br>");
             const codeList = (items) =>
@@ -396,28 +376,42 @@ jobs:
               items && items.length > 0
                 ? items.map((item, index) => `[${index + 1}](${item})`).join("<br>")
                 : "None";
-            const resultPath = fs.existsSync(process.env.RETRY_RESULT_PATH)
-              ? process.env.RETRY_RESULT_PATH
-              : process.env.INITIAL_RESULT_PATH;
-            const result = JSON.parse(fs.readFileSync(resultPath, "utf8"));
-            const summaryTable = [
-              "| Field | Value |",
-              "| --- | --- |",
-              `| Provider | ${escapeCell(result.provider || "n/a")} |`,
-              `| Primary model | ${escapeCell(result.model || "n/a")} |`,
-              `| Changed models | ${codeList(result.changed_models || [])} |`,
-              `| Added models | ${codeList(result.added_models || [])} |`,
-              `| Updated models | ${codeList(result.updated_models || [])} |`,
-              `| Verification sources | ${sourceLinks(result.source_urls || [])} |`,
-            ].join("\n");
-            const verificationRows = result.verification_rows || [];
-            const verificationTable =
-              verificationRows.length > 0
+            const readFinalResult = (issueNumber) => {
+              const retryPath = path.join(
+                batchDir,
+                "results",
+                `issue-${issueNumber}.retry.json`,
+              );
+              const initialPath = path.join(
+                batchDir,
+                "results",
+                `issue-${issueNumber}.initial.json`,
+              );
+              return JSON.parse(
+                fs.readFileSync(fs.existsSync(retryPath) ? retryPath : initialPath, "utf8"),
+              );
+            };
+            const buildVerificationSection = (issueNumber) => {
+              const enrichedPath = path.join(
+                batchDir,
+                `issue-${issueNumber}.body.enriched.md`,
+              );
+              if (!fs.existsSync(enrichedPath)) {
+                return "_No LLM verification step ran; model metadata was already complete in the issue._";
+              }
+              const body = fs.readFileSync(enrichedPath, "utf8");
+              const match = body.match(
+                /^## Verification[\s\S]*?(?=\n## (?!Verification)|\n<!-- fix-bot-issue-metadata -->|$)/m,
+              );
+              return match ? match[0].trim() : "_No Verification section found in enriched issue body._";
+            };
+            const verificationTable = (rows) =>
+              rows && rows.length > 0
                 ? [
                     "| Model | Display name | Parent | Providers | Format | Flavor | Token limits | Pricing | Lifecycle |",
                     "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
-                    ...verificationRows.map((row) =>
-                      [
+                    ...rows.map((row) =>
+                      `| ${[
                         row.model,
                         row.display_name ?? "",
                         row.parent ?? "",
@@ -429,18 +423,17 @@ jobs:
                         row.lifecycle,
                       ]
                         .map((value) => escapeCell(value))
-                        .join(" | "),
-                    ).map((row) => `| ${row} |`),
+                        .join(" | ")} |`,
+                    ),
                   ].join("\n")
                 : "No per-model verification rows were generated.";
-            const liteLLMRows = result.litellm_comparison_rows || [];
-            const liteLLMTable =
-              liteLLMRows.length > 0
+            const litellmTable = (rows) =>
+              rows && rows.length > 0
                 ? [
                     "| Model | Field | Proposed update | sync_models | sync_models source models |",
                     "| --- | --- | --- | --- | --- |",
-                    ...liteLLMRows.map((row) =>
-                      [
+                    ...rows.map((row) =>
+                      `| ${[
                         row.model,
                         row.field,
                         row.proposed_value,
@@ -448,30 +441,85 @@ jobs:
                         row.sync_models_models,
                       ]
                         .map((value) => escapeCell(value))
-                        .join(" | "),
-                    ).map((row) => `| ${row} |`),
+                        .join(" | ")} |`,
+                    ),
                   ].join("\n")
                 : "No sync_models discrepancies were noted.";
 
-            core.setOutput("action", result.action);
-            core.setOutput("message", result.message);
-            core.setOutput("provider", result.provider || "");
-            core.setOutput("model", result.model || "");
-            core.setOutput("pr_title", result.pr_title || "");
-            core.setOutput("changed_models", (result.changed_models || []).join(", "));
-            core.setOutput("added_models", (result.added_models || []).join(", "));
-            core.setOutput("updated_models", (result.updated_models || []).join(", "));
-            core.setOutput("comment_body", result.comment_body || result.message);
-            core.setOutput("source_urls", (result.source_urls || []).join(", "));
-            core.setOutput("verification_summary", result.verification_summary || "");
-            core.setOutput("pr_summary_table", summaryTable);
-            core.setOutput("pr_verification_table", verificationTable);
-            core.setOutput(
-              "litellm_comparison_summary",
-              result.litellm_comparison_summary ||
-                "sync_models cross-check was not needed for this result.",
+            const changed = [];
+            const alreadyResolved = [];
+            const unsupported = [];
+            const allAddedModels = [];
+            const allUpdatedModels = [];
+
+            for (const issue of manifest.issues) {
+              const result = readFinalResult(issue.number);
+              const entry = { ...issue, result };
+              if (result.action === "changed") {
+                changed.push(entry);
+                allAddedModels.push(...(result.added_models || []));
+                allUpdatedModels.push(...(result.updated_models || []));
+              } else if (
+                result.action === "already_present" ||
+                result.action === "deprecated"
+              ) {
+                alreadyResolved.push(entry);
+              } else {
+                unsupported.push(entry);
+              }
+            }
+
+            const unique = (items) => Array.from(new Set(items));
+            const bodyLines = [
+              "Automated daily batch of model catalog updates from bot issues.",
+              "",
+              "## Included issues",
+              "",
+              ...changed.map((entry) => `- Closes #${entry.number}: ${entry.title}`),
+              "",
+              "## Summary",
+              "",
+              "| Issue | Provider | Primary model | Changed models | Added models | Updated models | Verification sources |",
+              "| --- | --- | --- | --- | --- | --- | --- |",
+              ...changed.map(({ number, result }) =>
+                `| #${number} | ${escapeCell(result.provider || "n/a")} | ${escapeCell(result.model || "n/a")} | ${codeList(result.changed_models || [])} | ${codeList(result.added_models || [])} | ${codeList(result.updated_models || [])} | ${sourceLinks(result.source_urls || [])} |`,
+              ),
+              "",
+              "## Verified metadata",
+              "",
+              ...changed.flatMap(({ number, title, result }) => [
+                `### #${number}: ${title}`,
+                "",
+                verificationTable(result.verification_rows || []),
+                "",
+                "### Verification notes",
+                "",
+                buildVerificationSection(number),
+                "",
+                "### sync_models vs proposed update",
+                "",
+                result.litellm_comparison_summary ||
+                  "sync_models cross-check was not needed for this result.",
+                "",
+                litellmTable(result.litellm_comparison_rows || []),
+                "",
+              ]),
+            ];
+            if (changed.length === 0) {
+              bodyLines.push("No issue produced catalog changes in this batch.");
+            }
+            fs.writeFileSync(path.join(batchDir, "pull-request-body.md"), bodyLines.join("\n"));
+            fs.writeFileSync(
+              path.join(batchDir, "final-results.json"),
+              JSON.stringify({ changed, alreadyResolved, unsupported }, null, 2) + "\n",
             );
-            core.setOutput("pr_litellm_table", liteLLMTable);
+
+            core.setOutput("action", changed.length > 0 ? "changed" : "unchanged");
+            core.setOutput("changed_count", String(changed.length));
+            core.setOutput("already_resolved_count", String(alreadyResolved.length));
+            core.setOutput("unsupported_count", String(unsupported.length));
+            core.setOutput("added_models", unique(allAddedModels).join(", "));
+            core.setOutput("updated_models", unique(allUpdatedModels).join(", "));
 
       - name: Check expected files only
         id: changes
@@ -508,33 +556,10 @@ jobs:
         with:
           token: ${{ github.token }}
           base: main
-          branch: ${{ steps.issue.outputs.branch }}
-          commit-message: "${{ steps.result.outputs.pr_title }}"
-          title: "${{ steps.result.outputs.pr_title }}"
-          body: |
-            ${{ steps.result.outputs.pr_title }}
-
-            Closes #${{ steps.issue.outputs.number }}
-
-            Source issue: ${{ steps.issue.outputs.url }}
-
-            **Summary**
-
-            ${{ steps.result.outputs.pr_summary_table }}
-
-            **Verified metadata**
-
-            ${{ steps.result.outputs.pr_verification_table }}
-
-            **Verification notes**
-
-            ${{ steps.verification.outputs.section }}
-
-            **sync_models vs proposed update**
-
-            ${{ steps.result.outputs.litellm_comparison_summary }}
-
-            ${{ steps.result.outputs.pr_litellm_table }}
+          branch: ${{ steps.issues.outputs.branch }}
+          commit-message: "chore: update model catalog from bot issues"
+          title: "chore: update model catalog from bot issues"
+          body-path: ${{ runner.temp }}/${{ env.BATCH_DIR }}/pull-request-body.md
           reviewers: |
             knjiang
             cpinn
@@ -544,80 +569,292 @@ jobs:
           labels: auto-sync
           signoff: false
 
-      - name: Comment on fix PR
-        if: steps.pr.outputs.pull-request-url != ''
+      - name: Checkout PR branch for Codex review
+        if: steps.pr.outputs.pull-request-number != ''
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          clean: false
+          fetch-depth: 0
+          ref: ${{ steps.pr.outputs.pull-request-branch }}
+
+      - name: Fetch base branch for Codex review
+        if: steps.pr.outputs.pull-request-number != ''
+        run: git fetch --no-tags origin main
+
+      - name: Request Codex review
+        id: codex_request
+        if: steps.pr.outputs.pull-request-number != ''
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
+          PULL_REQUEST_NUMBER: ${{ steps.pr.outputs.pull-request-number }}
+        with:
+          script: |
+            const requestedAt = new Date().toISOString();
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.PULL_REQUEST_NUMBER),
+              body: "<!-- codex-model-sync-review-request -->\n@codex review",
+            });
+            core.setOutput("requested_at", requestedAt);
+
+      - name: Collect Codex review comments
+        id: codex_comments
+        if: steps.pr.outputs.pull-request-number != ''
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          CODEX_REVIEW_PATH: ${{ runner.temp }}/codex-review.md
+          PULL_REQUEST_NUMBER: ${{ steps.pr.outputs.pull-request-number }}
+          REQUESTED_AT: ${{ steps.codex_request.outputs.requested_at }}
+        with:
+          script: |
+            const fs = require("fs");
+            const pullNumber = Number(process.env.PULL_REQUEST_NUMBER);
+            const requestedAt = new Date(process.env.REQUESTED_AT);
+            const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            const isCodexUser = (user) =>
+              Boolean(user?.login && user.login.toLowerCase().includes("codex"));
+            const isAfterRequest = (timestamp) =>
+              timestamp && new Date(timestamp).getTime() >= requestedAt.getTime();
+            const render = (items) => {
+              const lines = ["# Codex review comments", ""];
+              for (const item of items) {
+                lines.push(`## ${item.kind}`);
+                if (item.path) {
+                  lines.push(`- File: \`${item.path}\``);
+                }
+                if (item.line) {
+                  lines.push(`- Line: ${item.line}`);
+                }
+                lines.push(`- Author: ${item.author}`);
+                lines.push(`- Created: ${item.createdAt}`);
+                lines.push("");
+                lines.push(item.body || "_No body provided._");
+                lines.push("");
+              }
+              return lines.join("\n");
+            };
+            const collect = async () => {
+              const reviews = await github.paginate(github.rest.pulls.listReviews, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pullNumber,
+                per_page: 100,
+              });
+              const reviewComments = await github.paginate(
+                github.rest.pulls.listReviewComments,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pullNumber,
+                  per_page: 100,
+                },
+              );
+              const issueComments = await github.paginate(
+                github.rest.issues.listComments,
+                {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pullNumber,
+                  per_page: 100,
+                },
+              );
+              return [
+                ...reviews
+                  .filter((review) =>
+                    isCodexUser(review.user) && isAfterRequest(review.submitted_at),
+                  )
+                  .map((review) => ({
+                    kind: `Review ${review.state}`,
+                    author: review.user.login,
+                    createdAt: review.submitted_at,
+                    body: review.body,
+                  })),
+                ...reviewComments
+                  .filter((comment) =>
+                    isCodexUser(comment.user) && isAfterRequest(comment.created_at),
+                  )
+                  .map((comment) => ({
+                    kind: "Inline comment",
+                    author: comment.user.login,
+                    createdAt: comment.created_at,
+                    path: comment.path,
+                    line: comment.line || comment.original_line,
+                    body: comment.body,
+                  })),
+                ...issueComments
+                  .filter((comment) =>
+                    isCodexUser(comment.user) && isAfterRequest(comment.created_at),
+                  )
+                  .map((comment) => ({
+                    kind: "PR comment",
+                    author: comment.user.login,
+                    createdAt: comment.created_at,
+                    body: comment.body,
+                  })),
+              ];
+            };
+
+            const deadline = Date.now() + 20 * 60 * 1000;
+            let items = [];
+            while (Date.now() < deadline) {
+              items = await collect();
+              if (items.length > 0) {
+                break;
+              }
+              await sleep(30 * 1000);
+            }
+
+            if (items.length === 0) {
+              fs.writeFileSync(
+                process.env.CODEX_REVIEW_PATH,
+                "# Codex review comments\n\nNo Codex review comments were found after waiting for the existing Codex review setup.\n",
+              );
+              core.setOutput("found", "false");
+              return;
+            }
+
+            fs.writeFileSync(process.env.CODEX_REVIEW_PATH, render(items));
+            core.setOutput("found", "true");
+
+      - name: Respond to Codex review with Claude Code
+        if: steps.codex_comments.outputs.found == 'true'
+        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ github.token }}
+          show_full_output: "true"
+          display_report: "true"
+          timeout_minutes: "15"
+          claude_args: |
+            --model claude-opus-4-6
+            --max-turns 80
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
+            --disallowedTools "Bash,MultiEdit,Replace,NotebookEditCell,mcp__github__create_issue,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+          prompt: |
+            # Goal
+
+            Respond to the Codex review for this automated model catalog PR.
+
+            # Inputs
+
+            - Codex review file: `${{ runner.temp }}/codex-review.md`
+            - Response summary file to write: `${{ runner.temp }}/codex-review-response.md`
+            - PR number: `${{ steps.pr.outputs.pull-request-number }}`
+
+            # What to do
+
+            1. Read the Codex review file.
+            2. If Codex found no issues, do not edit repository files. Write a short response summary saying no changes were needed.
+            3. If Codex raised concrete actionable issues, address only those issues.
+            4. Only edit `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
+            5. Preserve existing JSON formatting, field order, model ordering, and neighboring schema conventions.
+            6. Do not invent metadata. Use official provider sources only if verification is needed.
+            7. Write a concise response summary to the response summary file describing what changed, or why no change was made.
+
+      - name: Ensure Codex response summary exists
+        if: steps.codex_comments.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+          if [ ! -f "$RUNNER_TEMP/codex-review-response.md" ]; then
+            echo "Claude did not write a Codex review response summary." > "$RUNNER_TEMP/codex-review-response.md"
+          fi
+
+      - name: Canonicalize model list after Codex response
+        if: steps.codex_comments.outputs.found == 'true'
+        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
+      - name: Check Codex response changes
+        id: codex_changes
+        if: steps.codex_comments.outputs.found == 'true'
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build proxy package after Codex response
+        if: steps.codex_changes.outputs.changed == 'true'
+        run: pnpm --filter @braintrust/proxy run build
+
+      - name: Validate model schema after Codex response
+        if: steps.codex_changes.outputs.changed == 'true'
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/fix_bot_issue.test.ts packages/proxy/scripts/sync_models.test.ts
+
+      - name: Update PR after Codex response
+        if: steps.codex_changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ github.token }}
+          base: main
+          branch: ${{ steps.pr.outputs.pull-request-branch }}
+          commit-message: "chore: respond to codex review"
+          title: "chore: update model catalog from bot issues"
+          body-path: ${{ runner.temp }}/${{ env.BATCH_DIR }}/pull-request-body.md
+          labels: auto-sync
+          signoff: false
+
+      - name: Post Codex response summary
+        if: steps.codex_comments.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PULL_REQUEST_NUMBER: ${{ steps.pr.outputs.pull-request-number }}
+          RESPONSE_PATH: ${{ runner.temp }}/codex-review-response.md
+        with:
+          script: |
+            const fs = require("fs");
+            const response = fs.readFileSync(process.env.RESPONSE_PATH, "utf8").trim();
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number(process.env.PULL_REQUEST_NUMBER),
+              body: `<!-- codex-model-sync-response -->\n${response}`,
+            });
+
+      - name: Update bot issues
+        if: steps.issues.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          BATCH_DIR: ${{ runner.temp }}/${{ env.BATCH_DIR }}
           BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
           PULL_REQUEST_URL: ${{ steps.pr.outputs.pull-request-url }}
-          RESULT_MESSAGE: ${{ steps.result.outputs.message }}
-          VERIFICATION_SUMMARY: ${{ steps.result.outputs.verification_summary }}
         with:
           script: |
-            try {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: Number(process.env.ISSUE_NUMBER),
-                name: process.env.BLOCKED_LABEL,
-              });
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error;
+            const fs = require("fs");
+            const path = require("path");
+            const finalResults = JSON.parse(
+              fs.readFileSync(
+                path.join(process.env.BATCH_DIR, "final-results.json"),
+                "utf8",
+              ),
+            );
+
+            async function removeBlockedLabel(issueNumber) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  name: process.env.BLOCKED_LABEL,
+                });
+              } catch (error) {
+                if (error.status !== 404) {
+                  throw error;
+                }
               }
             }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUMBER),
-              body: `${process.env.RESULT_MESSAGE}\n\n${process.env.VERIFICATION_SUMMARY}\n\nOpened ${process.env.PULL_REQUEST_URL} to apply the catalog update.`,
-            });
 
-      - name: Close already resolved issue
-        if: steps.result.outputs.action == 'already_present' || steps.result.outputs.action == 'deprecated'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
-        env:
-          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
-          RESULT_MESSAGE: ${{ steps.result.outputs.message }}
-          VERIFICATION_SUMMARY: ${{ steps.result.outputs.verification_summary }}
-        with:
-          script: |
-            try {
-              await github.rest.issues.removeLabel({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: Number(process.env.ISSUE_NUMBER),
-                name: process.env.BLOCKED_LABEL,
-              });
-            } catch (error) {
-              if (error.status !== 404) {
-                throw error;
-              }
-            }
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUMBER),
-              body: `${process.env.RESULT_MESSAGE}\n\n${process.env.VERIFICATION_SUMMARY}`,
-            });
-            await github.rest.issues.update({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUMBER),
-              state: "closed",
-            });
-
-      - name: Comment on unsupported issue
-        if: steps.result.outputs.action == 'unsupported'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
-        env:
-          BLOCKED_LABEL: ${{ env.BLOCKED_LABEL }}
-          ISSUE_NUMBER: ${{ steps.issue.outputs.number }}
-          RESULT_MESSAGE: ${{ steps.result.outputs.comment_body }}
-        with:
-          script: |
             async function ensureLabel() {
               try {
                 await github.rest.issues.getLabel({
@@ -640,16 +877,48 @@ jobs:
               }
             }
 
-            await ensureLabel();
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUMBER),
-              labels: [process.env.BLOCKED_LABEL],
-            });
-            await github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(process.env.ISSUE_NUMBER),
-              body: process.env.RESULT_MESSAGE,
-            });
+            if (process.env.PULL_REQUEST_URL) {
+              for (const entry of finalResults.changed) {
+                await removeBlockedLabel(entry.number);
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: entry.number,
+                  body: `${entry.result.message}\n\n${entry.result.verification_summary || ""}\n\nIncluded in the daily batch PR: ${process.env.PULL_REQUEST_URL}`,
+                });
+              }
+            }
+
+            for (const entry of finalResults.alreadyResolved) {
+              await removeBlockedLabel(entry.number);
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: entry.number,
+                body: `${entry.result.message}\n\n${entry.result.verification_summary || ""}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: entry.number,
+                state: "closed",
+              });
+            }
+
+            if (finalResults.unsupported.length > 0) {
+              await ensureLabel();
+            }
+            for (const entry of finalResults.unsupported) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: entry.number,
+                labels: [process.env.BLOCKED_LABEL],
+              });
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: entry.number,
+                body: entry.result.comment_body || entry.result.message,
+              });
+            }

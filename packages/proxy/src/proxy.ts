@@ -121,7 +121,26 @@ export type LogHistogramFn = (args: {
   attributes?: Attributes;
 }) => void;
 
-export type FetchFn = typeof globalThis.fetch;
+export type ProviderFetchInput = string | URL;
+export type ProviderFetchHeaders = Record<string, string> | [string, string][];
+export type ProviderFetchBody =
+  | string
+  | URLSearchParams
+  | ArrayBuffer
+  | Uint8Array
+  | ReadableStream<Uint8Array>;
+export type ProviderFetchInit = {
+  method?: string;
+  headers?: ProviderFetchHeaders;
+  body?: ProviderFetchBody;
+  signal?: AbortSignal;
+  keepalive?: boolean;
+};
+export type CustomFetchFn = (
+  input: ProviderFetchInput,
+  init?: ProviderFetchInit,
+) => Promise<Response>;
+export type FetchFn = CustomFetchFn;
 
 type CachedMetadata = {
   cached_at: Date;
@@ -251,7 +270,7 @@ export async function proxyV1({
   billingOrgId,
   onBillingEvent,
   signal,
-  fetch = globalThis.fetch,
+  customFetch = globalThis.fetch,
 }: {
   method: "GET" | "POST";
   url: string;
@@ -282,7 +301,7 @@ export async function proxyV1({
   billingOrgId?: string;
   onBillingEvent?: (event: BillingEvent) => void;
   signal?: AbortSignal;
-  fetch?: FetchFn;
+  customFetch?: FetchFn;
 }): Promise<void> {
   // totalCalls will be updated with model attributes after model extraction
 
@@ -714,7 +733,7 @@ export async function proxyV1({
       cachePut,
       model,
       signal,
-      fetch,
+      customFetch,
     );
     proxyResponse = fetchResult.modelResponse.response;
     proxyStream = fetchResult.modelResponse.stream;
@@ -1321,7 +1340,7 @@ async function fetchModelLoop(
   ) => Promise<void>,
   model: string | null,
   signal: AbortSignal | undefined,
-  fetch: FetchFn,
+  customFetch: FetchFn,
 ): Promise<{
   modelResponse: ModelResponse;
   secretName?: string | null;
@@ -1474,7 +1493,7 @@ async function fetchModelLoop(
         cacheGet,
         cachePut,
         signal,
-        fetch,
+        customFetch,
       );
       secretName = secret.name;
       // If the response is ok or a 400 (Bad Request), we can break out of the loop and return
@@ -1723,7 +1742,7 @@ async function fetchModel(
     ttl_seconds?: number,
   ) => Promise<void>,
   signal: AbortSignal | undefined,
-  fetch: FetchFn,
+  customFetch: FetchFn,
 ): Promise<ModelResponse> {
   const format = modelSpec?.format ?? "openai";
   switch (format) {
@@ -1740,7 +1759,7 @@ async function fetchModel(
         cacheGet,
         cachePut,
         signal,
-        fetch,
+        customFetch,
       );
     case "anthropic":
       console.assert(method === "POST");
@@ -1751,7 +1770,7 @@ async function fetchModel(
         bodyData,
         secret,
         signal,
-        fetch,
+        customFetch,
       });
     case "google":
       console.assert(method === "POST");
@@ -1762,7 +1781,7 @@ async function fetchModel(
         headers,
         bodyData,
         signal,
-        fetch,
+        customFetch,
       });
     case "converse":
       console.assert(method === "POST");
@@ -2017,15 +2036,15 @@ async function fetchOpenAIResponsesTranslate({
   headers,
   body,
   signal,
-  fetch,
+  customFetch,
 }: {
   baseURL: string;
   headers: Record<string, string>;
   body: ChatCompletionCreateParams;
   signal: AbortSignal | undefined;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
-  const response = await fetch(new URL(_urljoin(baseURL, "responses")), {
+  const response = await customFetch(new URL(_urljoin(baseURL, "responses")), {
     method: "POST",
     headers,
     body: JSON.stringify(responsesRequestFromChatCompletionsRequest(body)),
@@ -2064,20 +2083,20 @@ async function fetchOpenAIResponses({
   headers,
   body,
   signal,
-  fetch,
+  customFetch,
 }: {
   url: URL;
   headers: Record<string, string>;
   body: ResponseCreateParams;
   signal: AbortSignal | undefined;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   // We allow users to set a seed, to enable caching, but Responses API itself does not.
   if ("seed" in body && body.seed !== undefined) {
     delete body.seed;
   }
 
-  const response = await fetch(url, {
+  const response = await customFetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(body),
@@ -2106,7 +2125,7 @@ async function fetchOpenAI(
     ttl_seconds?: number,
   ) => Promise<void>,
   signal?: AbortSignal,
-  fetch: FetchFn = globalThis.fetch,
+  customFetch: FetchFn = globalThis.fetch,
 ): Promise<ModelResponse> {
   if (secret.type === "bedrock") {
     throw new ProxyBadRequestError(`Bedrock does not support OpenAI format`);
@@ -2131,7 +2150,7 @@ async function fetchOpenAI(
         headers,
         bodyData,
         signal,
-        fetch,
+        customFetch,
       });
     }
 
@@ -2176,7 +2195,7 @@ async function fetchOpenAI(
       bearerToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      bearerToken = await getGoogleAccessToken(secret.secret);
+      bearerToken = await getGoogleAccessToken(secret.secret, customFetch);
     }
   } else {
     const metadataApiBase =
@@ -2245,6 +2264,7 @@ async function fetchOpenAI(
         digest,
         cacheGet,
         cachePut,
+        customFetch,
       });
     } else if (
       secret.type === "databricks" &&
@@ -2256,6 +2276,7 @@ async function fetchOpenAI(
         digest,
         cacheGet,
         cachePut,
+        customFetch,
       });
     } else {
       bearerToken = secret.secret;
@@ -2325,7 +2346,7 @@ async function fetchOpenAI(
       headers,
       body: bodyData,
       signal,
-      fetch,
+      customFetch,
     });
   }
 
@@ -2377,6 +2398,7 @@ async function fetchOpenAI(
       bodyData,
       setHeader,
       signal,
+      customFetch,
     });
   }
 
@@ -2399,7 +2421,7 @@ async function fetchOpenAI(
       headers,
       body: bodyData,
       signal,
-      fetch,
+      customFetch,
     });
   }
 
@@ -2447,7 +2469,7 @@ async function fetchOpenAI(
     }
   }
 
-  const proxyResponse = await fetch(
+  const proxyResponse = await customFetch(
     fullURL.toString(),
     method === "POST"
       ? {
@@ -2535,6 +2557,7 @@ async function fetchOpenAIFakeStream({
   bodyData,
   setHeader,
   signal,
+  customFetch,
 }: {
   method: "GET" | "POST";
   fullURL: URL;
@@ -2542,6 +2565,7 @@ async function fetchOpenAIFakeStream({
   bodyData: null | any;
   setHeader: (name: string, value: string) => void;
   signal?: AbortSignal;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   let isStream = false;
   if (bodyData) {
@@ -2549,7 +2573,7 @@ async function fetchOpenAIFakeStream({
     delete bodyData["stream"];
     delete bodyData["stream_options"];
   }
-  const proxyResponse = await fetch(
+  const proxyResponse = await customFetch(
     fullURL.toString(),
     method === "POST"
       ? {
@@ -2622,10 +2646,12 @@ async function vertexEndpointInfo({
   secret: { secret, metadata },
   modelSpec,
   defaultLocation,
+  customFetch = globalThis.fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   defaultLocation: string;
+  customFetch?: FetchFn;
 }): Promise<VertexEndpointInfo> {
   const { project, location, authType, api_base } =
     VertexMetadataSchema.parse(metadata);
@@ -2639,7 +2665,9 @@ async function vertexEndpointInfo({
   });
   const apiBase = getVertexBaseUrl(api_base, resolvedLocation);
   const accessToken =
-    authType === "access_token" ? secret : await getGoogleAccessToken(secret);
+    authType === "access_token"
+      ? secret
+      : await getGoogleAccessToken(secret, customFetch);
   if (!accessToken) {
     throw new Error("Failed to get Google access token");
   }
@@ -2654,16 +2682,19 @@ async function fetchVertexAnthropicMessages({
   modelSpec,
   body,
   signal,
+  customFetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
   signal?: AbortSignal;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   const { baseUrl, accessToken } = await vertexEndpointInfo({
     secret,
     modelSpec,
     defaultLocation: "us-east5",
+    customFetch,
   });
   const { model, ...rest } = z
     .object({
@@ -2671,7 +2702,7 @@ async function fetchVertexAnthropicMessages({
     })
     .passthrough()
     .parse(body);
-  return await fetch(`${baseUrl}/${model}:streamRawPredict`, {
+  return await customFetch(`${baseUrl}/${model}:streamRawPredict`, {
     method: "POST",
     headers: {
       authorization: `Bearer ${accessToken}`,
@@ -2693,13 +2724,13 @@ async function fetchAnthropicMessages({
   modelSpec,
   body,
   signal,
-  fetch: customFetch = globalThis.fetch,
+  customFetch = globalThis.fetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   body: unknown;
   signal?: AbortSignal;
-  fetch?: FetchFn;
+  customFetch?: FetchFn;
 }): Promise<ModelResponse> {
   body = omitUnsupportedAnthropicBodyParams(body);
 
@@ -2733,6 +2764,7 @@ async function fetchAnthropicMessages({
         modelSpec,
         body,
         signal,
+        customFetch,
       });
     default:
       throw new ProxyBadRequestError(
@@ -2758,7 +2790,7 @@ async function fetchAnthropic({
   bodyData,
   secret,
   signal,
-  fetch,
+  customFetch,
 }: {
   url: string;
   modelSpec: ModelSpec | null;
@@ -2766,7 +2798,7 @@ async function fetchAnthropic({
   bodyData: null | any;
   secret: APISecret;
   signal?: AbortSignal;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   switch (url) {
     case ANTHROPIC_MESSAGES:
@@ -2776,7 +2808,7 @@ async function fetchAnthropic({
         modelSpec,
         body: bodyData,
         signal,
-        fetch,
+        customFetch,
       });
     case "/chat/completions":
       return fetchAnthropicChatCompletions({
@@ -2785,7 +2817,7 @@ async function fetchAnthropic({
         bodyData,
         secret,
         signal,
-        fetch,
+        customFetch,
       });
     default:
       throw new ProxyBadRequestError(`Unsupported Anthropic URL: ${url}`);
@@ -2798,14 +2830,14 @@ async function fetchAnthropicChatCompletions({
   bodyData,
   secret,
   signal,
-  fetch: customFetch = globalThis.fetch,
+  customFetch = globalThis.fetch,
 }: {
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   secret: APISecret;
   signal?: AbortSignal;
-  fetch?: FetchFn;
+  customFetch?: FetchFn;
 }): Promise<ModelResponse> {
   // https://docs.anthropic.com/claude/reference/complete_post
   let fullURL = new URL(EndpointProviderToBaseURL.anthropic + "/messages");
@@ -3007,6 +3039,7 @@ async function fetchAnthropicChatCompletions({
       secret,
       modelSpec,
       defaultLocation: "us-east5",
+      customFetch,
     });
     fullURL = new URL(
       `${baseUrl}/${params.model}:${
@@ -3195,7 +3228,10 @@ async function openAIToolsToGoogleTools(params: {
   return out;
 }
 
-async function getGoogleAccessToken(secret: string): Promise<string> {
+async function getGoogleAccessToken(
+  secret: string,
+  customFetch: FetchFn = globalThis.fetch,
+): Promise<string> {
   const {
     private_key_id: kid,
     private_key: pk,
@@ -3219,7 +3255,7 @@ async function getGoogleAccessToken(secret: string): Promise<string> {
     .setIssuedAt()
     .setExpirationTime("5m")
     .sign(await importPKCS8(pk, "RS256"));
-  const res = await fetch(tokenUri, {
+  const res = await customFetch(tokenUri, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -3241,7 +3277,7 @@ async function fetchGoogleGenerateContent({
   method,
   body,
   signal,
-  fetch,
+  customFetch,
 }: {
   secret: APISecret;
   model: string;
@@ -3249,7 +3285,7 @@ async function fetchGoogleGenerateContent({
   method: string;
   body: unknown;
   signal?: AbortSignal;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   // Hack since Gemini models are not registered with the models/ prefix.
   model = model.replace(/^models\//, "");
@@ -3261,7 +3297,7 @@ async function fetchGoogleGenerateContent({
       if (method === "streamGenerateContent") {
         url.searchParams.set("alt", "sse");
       }
-      return await fetch(url, {
+      return await customFetch(url, {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -3279,12 +3315,13 @@ async function fetchGoogleGenerateContent({
         secret,
         modelSpec,
         defaultLocation: "us-central1",
+        customFetch,
       });
       const url = new URL(`${baseUrl}/${model}:${method}`);
       if (method === "streamGenerateContent") {
         url.searchParams.set("alt", "sse");
       }
-      return await fetch(url, {
+      return await customFetch(url, {
         method: "POST",
         headers: {
           authorization: `Bearer ${accessToken}`,
@@ -3311,7 +3348,7 @@ async function fetchGoogle({
   headers,
   bodyData,
   signal,
-  fetch,
+  customFetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
@@ -3319,7 +3356,7 @@ async function fetchGoogle({
   headers: Record<string, string>;
   bodyData: null | any;
   signal?: AbortSignal;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   if (secret.type !== "google" && secret.type !== "vertex") {
     throw new ProxyBadRequestError(
@@ -3335,7 +3372,7 @@ async function fetchGoogle({
       method: m[2],
       body: bodyData,
       signal,
-      fetch,
+      customFetch,
     });
   } else {
     return await fetchGoogleChatCompletions({
@@ -3344,7 +3381,7 @@ async function fetchGoogle({
       headers,
       bodyData,
       signal,
-      fetch,
+      customFetch,
     });
   }
 }
@@ -3355,14 +3392,14 @@ async function fetchGoogleChatCompletions({
   headers,
   bodyData,
   signal,
-  fetch,
+  customFetch,
 }: {
   secret: APISecret;
   modelSpec: ModelSpec | null;
   headers: Record<string, string>;
   bodyData: null | any;
   signal?: AbortSignal;
-  fetch: FetchFn;
+  customFetch: FetchFn;
 }): Promise<ModelResponse> {
   if (isEmpty(bodyData)) {
     throw new ProxyBadRequestError(
@@ -3415,6 +3452,7 @@ async function fetchGoogleChatCompletions({
       secret,
       modelSpec,
       defaultLocation: "us-central1",
+      customFetch,
     });
     fullURL = new URL(
       `${baseUrl}/${model}:${
@@ -3465,7 +3503,7 @@ async function fetchGoogleChatCompletions({
     })),
   });
 
-  const proxyResponse = await fetch(fullURL.toString(), {
+  const proxyResponse = await customFetch(fullURL.toString(), {
     method: "POST",
     headers,
     body,

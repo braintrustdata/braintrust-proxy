@@ -613,6 +613,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
   "us.meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
   "zai-glm-4.7": ["cerebras"],
+  "sonar-deep-research": ["perplexity"],
   "claude-opus-4-8": ["anthropic"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],

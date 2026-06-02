@@ -634,6 +634,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "qwen.qwen3-coder-30b-a3b-v1:0": ["bedrock"],
   "mistral.devstral-2-123b": ["bedrock"],
   "mistral.magistral-small-2509": ["bedrock"],
+  "openai/gpt-oss-safeguard-20b": ["groq"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],
   "qwen.qwen3-coder-next": ["bedrock"],

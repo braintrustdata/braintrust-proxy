@@ -12344,5 +12344,37 @@
     "available_providers": [
       "databricks"
     ]
+  },
+  "databricks-gemini-3-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3 Flash",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-3-1-flash-lite": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.1 Flash-Lite",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-oss-20b": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-OSS 20B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "databricks"
+    ]
   }
 }

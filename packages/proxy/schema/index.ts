@@ -621,6 +621,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "claude-opus-4-8": ["anthropic"],
   "Qwen/Qwen3.7-Max": ["together"],
   "grok-build-0.1": ["xAI"],
+  "mistral.devstral-2-123b": ["bedrock"],
+  "mistral.magistral-small-2509": ["bedrock"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],
   "qwen.qwen3-coder-next": ["bedrock"],

@@ -11871,6 +11871,32 @@
       "bedrock"
     ]
   },
+  "zai.glm-4.7": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.2,
+    "displayName": "GLM 4.7",
+    "max_input_tokens": 203000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "zai.glm-4.7-flash": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "GLM 4.7 Flash",
+    "max_input_tokens": 203000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "nvidia.nemotron-super-3-120b": {
     "format": "converse",
     "flavor": "chat",

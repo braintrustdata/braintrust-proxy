@@ -16,10 +16,7 @@ function buildPayloadEvent(event: BillingEvent) {
     console.warn("billing event skipped: missing org_id");
     return null;
   }
-  if (!event.resolved_model) {
-    console.warn("billing event skipped: missing resolved_model");
-    return null;
-  }
+  const resolvedModel = event.resolved_model || event.model;
   const hasTokenUsageData =
     event.input_tokens !== undefined ||
     event.output_tokens !== undefined ||
@@ -39,7 +36,7 @@ function buildPayloadEvent(event: BillingEvent) {
     idempotency_key: requestId,
     properties: {
       model: event.model,
-      resolved_model: event.resolved_model,
+      resolved_model: resolvedModel,
       org_id: event.org_id,
       input_tokens: event.input_tokens,
       output_tokens: event.output_tokens,

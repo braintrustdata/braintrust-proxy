@@ -27,7 +27,10 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
     api_base: z.string().url(),
     api_version: z.string().default("2023-07-01-preview"),
     deployment: z.string().nullish(),
-    auth_type: z.enum(["api_key", "entra_api"]).default("api_key"),
+    auth_type: z
+      .enum(["api_key", "entra_api", "entra_oidc", "entra_bearer"])
+      .default("api_key"),
+    auth_source: z.string().nullish(),
     no_named_deployment: z
       .boolean()
       .default(false)
@@ -44,6 +47,14 @@ export const AzureEntraSecretSchema = z.object({
   scope: z.string().min(1, "Scope cannot be empty"),
 });
 export type AzureEntraSecret = z.infer<typeof AzureEntraSecretSchema>;
+
+export const AzureEntraOidcSecretSchema = z.object({
+  client_id: z.string().min(1, "Client ID cannot be empty"),
+  connection_id: z.string().min(1, "Subject suffix cannot be empty"),
+  scope: z.string().min(1, "Scope cannot be empty"),
+  tenant_id: z.string().min(1, "Tenant ID cannot be empty"),
+});
+export type AzureEntraOidcSecret = z.infer<typeof AzureEntraOidcSecretSchema>;
 
 const BedrockMetadataSchemaBase = BaseMetadataSchema.merge(
   z.object({
@@ -90,6 +101,15 @@ export const BedrockMetadataSchemaWithAuth =
   });
 export type BedrockMetadata = z.infer<typeof BedrockMetadataSchema>;
 
+export const VertexOIDCSecretMetadataSchema = z.object({
+  connection_id: z.string().nullish(),
+  scopes: z.array(z.string()).nullish(),
+  workload_identity_provider: z.string().nullish(),
+});
+export type VertexOIDCSecretMetadata = z.infer<
+  typeof VertexOIDCSecretMetadataSchema
+>;
+
 export const VertexMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     project: z.string().min(1, "Project cannot be empty"),
@@ -99,10 +119,25 @@ export const VertexMetadataSchema = BaseMetadataSchema.merge(
       }
       return value;
     }, z.string().min(1, "Location cannot be empty").optional()),
-    authType: z.enum(["access_token", "service_account_key"]),
+    authType: z.enum([
+      "access_token",
+      "oauth_bearer",
+      "service_account_key",
+      "workload_identity_federation",
+    ]),
     api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
   }),
 ).passthrough();
+export const VertexAPISecretMetadataSchema = z.union([
+  VertexMetadataSchema.extend({
+    authType: z.literal("workload_identity_federation"),
+  })
+    .merge(VertexOIDCSecretMetadataSchema)
+    .passthrough(),
+  VertexMetadataSchema.extend({
+    authType: z.enum(["access_token", "oauth_bearer", "service_account_key"]),
+  }).passthrough(),
+]);
 
 export const DatabricksMetadataSchema = BaseMetadataSchema.merge(
   z.object({
@@ -215,7 +250,7 @@ export const APISecretSchema = z.union([
   APISecretBaseSchema.merge(
     z.object({
       type: z.literal("vertex"),
-      metadata: VertexMetadataSchema.nullish(),
+      metadata: VertexAPISecretMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(

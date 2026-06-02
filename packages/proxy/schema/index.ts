@@ -636,6 +636,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral.magistral-small-2509": ["bedrock"],
   "openai/gpt-oss-safeguard-20b": ["groq"],
   "chat-latest": ["openai", "azure"],
+  "databricks-claude-opus-4-8": ["databricks"],
+  "databricks-gpt-oss-120b": ["databricks"],
+  "databricks-llama-4-maverick": ["databricks"],
   "gemini-2.5-computer-use-preview-10-2025": ["google"],
   "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": [
     "vertex",

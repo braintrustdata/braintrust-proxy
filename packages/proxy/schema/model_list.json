@@ -9431,6 +9431,38 @@
       "databricks"
     ]
   },
+  "databricks-claude-opus-4-8": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Opus 4.8",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-oss-120b": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-OSS 120B",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-llama-4-maverick": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Llama 4 Maverick",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "text-block": {
     "format": "js",
     "flavor": "completion",

@@ -2623,8 +2623,11 @@
     "output_cost_per_mil_tokens": 25,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 10,
     "displayName": "Claude 4.8 Opus",
     "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [

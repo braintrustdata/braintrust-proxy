@@ -12452,5 +12452,35 @@
     "available_providers": [
       "databricks"
     ]
+  },
+  "databricks-gemini-3-1-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.1 Pro",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-2-5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.5 Pro",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-2-5-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.5 Flash",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "databricks"
+    ]
   }
 }

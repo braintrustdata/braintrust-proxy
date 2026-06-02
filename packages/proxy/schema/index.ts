@@ -607,6 +607,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "openai.gpt-oss-20b-1:0": ["bedrock"],
   "claude-sonnet-4-20250514": ["anthropic"],
   "claude-4-sonnet-20250514": ["anthropic"],
+  "ministral-14b-latest": ["mistral"],
   "qwen.qwen3-32b-v1:0": ["bedrock"],
   "qwen.qwen3-next-80b-a3b": ["bedrock"],
   "us.meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],

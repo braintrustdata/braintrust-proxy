@@ -636,6 +636,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral.magistral-small-2509": ["bedrock"],
   "openai/gpt-oss-safeguard-20b": ["groq"],
   "chat-latest": ["openai", "azure"],
+  "databricks-qwen35-122b-a10b": ["databricks"],
+  "databricks-qwen3-next-80b-a3b-instruct": ["databricks"],
   "databricks-claude-opus-4-8": ["databricks"],
   "databricks-gpt-oss-120b": ["databricks"],
   "databricks-llama-4-maverick": ["databricks"],

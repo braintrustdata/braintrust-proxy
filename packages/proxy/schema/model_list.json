@@ -9940,6 +9940,19 @@
       "together"
     ]
   },
+  "zai-glm-4.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.25,
+    "output_cost_per_mil_tokens": 2.75,
+    "displayName": "Z.ai GLM 4.7",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "available_providers": [
+      "cerebras"
+    ]
+  },
   "accounts/fireworks/models/glm-4p5": {
     "format": "openai",
     "flavor": "chat",

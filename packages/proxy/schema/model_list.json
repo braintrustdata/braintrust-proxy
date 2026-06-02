@@ -2016,7 +2016,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2026-05-14",
-    "max_input_tokens": 1000000,
+    "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
       "anthropic"
@@ -2034,7 +2034,7 @@
     "input_cache_write_1h_cost_per_mil_tokens": 6,
     "displayName": "Claude 4 Sonnet (old naming format)",
     "deprecated": true,
-    "max_input_tokens": 1000000,
+    "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
       "anthropic"

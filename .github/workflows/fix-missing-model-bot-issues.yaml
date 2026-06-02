@@ -269,16 +269,23 @@ jobs:
                - `deprecation`/`retirement` status and dates
                - capability flags (`reasoning`, multimodal, etc.) when they map cleanly to the local schema
                - `locations` and supported regions when required
-            5. **Cross-check against sync_models**: Fetch the sync_models reference catalog at `https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json`. For each numeric field in your proposed spec (token limits, pricing), compare it against the sync_models value for the same model. In the `## Verification` section, for every field that differs from sync_models, you must:
+               - `supported_regions` for any model whose `available_providers` includes `"vertex"` — see the dedicated section below
+            5. **Vertex `supported_regions`**: For every model with `"vertex"` in `available_providers`, populate `supported_regions` in the model spec. The resolver does not scrape the Vertex docs page, so this field must come from you.
+               - Source of truth: `https://docs.cloud.google.com/gemini-enterprise-agent-platform/resources/locations`. Look for the `Google models` section and find the row whose `<code>` cell matches the model id (e.g. `gemini-2.5-pro`), then collect every region code (e.g. `us-central1`, `europe-west1`) whose cell is marked Supported.
+               - Always include `"global"` first if Google lists the model as available on the global endpoint, followed by per-region codes sorted alphabetically. Match the ordering used by existing vertex entries in `model_list.json`.
+               - If the model id is not listed on the Google docs page (e.g. preview-only or recently announced), check the model's product page or release notes for explicit region availability. If you still cannot find an official region list, omit `supported_regions` entirely and call this out in the `## Verification` section — do not invent regions.
+               - Do not copy `supported_regions` from sync_models; sync_models does not track Vertex regions accurately.
+            6. **Cross-check against sync_models**: Fetch the sync_models reference catalog at `https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json`. For each numeric field in your proposed spec (token limits, pricing), compare it against the sync_models value for the same model. In the `## Verification` section, for every field that differs from sync_models, you must:
                - State the sync_models value explicitly
                - State the official source URL that justifies the deviation
                - Briefly explain why the official source should be preferred (e.g., sync_models lags, collapses aliases, or has an incorrect mapping)
                - If you cannot cite an official source that justifies a deviation, use the sync_models value or omit the field instead of overriding silently
-            6. Re-verify provider/model relationships: only keep providers where the model appears on the provider's public shared inference surface (serverless, general catalog). Ignore bring-your-own-model flows, custom deployments, template galleries, and self-hosted guides. For Baseten, ignore custom-deployment-only evidence.
-            7. Match the style of neighboring entries in `model_list.json` and `index.ts` for a complete, up-to-date spec.
-            8. Do not add models not already named in the issue. Do not broaden scope to other providers or models.
-            9. If a multi-model issue is only partially valid, do not shrink it to a verified subset — write the original body unchanged and explain in `## Verification` which models failed and why, so the resolver continues to bail rather than applying a partial fix.
-            10. Do not guess any field. If a value is not published or not applicable, omit it and note it in the verification section.
+            7. Re-verify provider/model relationships: only keep providers where the model appears on the provider's public shared inference surface (serverless, general catalog). Ignore bring-your-own-model flows, custom deployments, template galleries, and self-hosted guides. For Baseten, ignore custom-deployment-only evidence.
+            8. Match the style of neighboring entries in `model_list.json` and `index.ts` for a complete, up-to-date spec.
+            9. Do not add models not already named in the issue. Do not broaden scope to other providers or models.
+            10. If a multi-model issue is only partially valid, do not shrink it to a verified subset — write the original body unchanged and explain in `## Verification` which models failed and why, so the resolver continues to bail rather than applying a partial fix.
+            11. Do not guess any field. If a value is not published or not applicable, omit it and note it in the verification section.
+            12. **Out of scope: computer-vision-only models.** The catalog only tracks text/chat LLMs (including multimodal LLMs that accept images as input alongside text). Do not enrich, add, or research models whose sole purpose is computer vision — image generation (e.g. Imagen, DALL·E, Stable Diffusion, Flux), image editing/inpainting, image embeddings/classification, OCR, object detection, segmentation, video generation (e.g. Veo, Sora, Runway), or speech-only models. If the issue names a CV-only model, do not write a verified spec for it — leave the original body unchanged and note in `## Verification` that the model is out of scope so the resolver bails to `unsupported`.
 
             # Output
 

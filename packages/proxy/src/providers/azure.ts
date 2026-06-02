@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { AzureEntraSecretSchema } from "@braintrust/proxy/schema";
+import { type FetchFn } from "../proxy";
 
 const azureEntraResponseSchema = z.union([
   z.object({
@@ -17,6 +18,7 @@ export async function getAzureEntraAccessToken({
   digest,
   cacheGet,
   cachePut,
+  customFetch = globalThis.fetch,
 }: {
   secret: z.infer<typeof AzureEntraSecretSchema>;
   digest: (message: string) => Promise<string>;
@@ -27,6 +29,7 @@ export async function getAzureEntraAccessToken({
     value: string,
     ttl_seconds?: number,
   ) => Promise<void>;
+  customFetch?: FetchFn;
 }): Promise<string> {
   const { client_id, tenant_id, scope, client_secret } = secret;
   const tokenUrl = `https://login.microsoftonline.com/${tenant_id}/oauth2/v2.0/token`;
@@ -49,7 +52,7 @@ export async function getAzureEntraAccessToken({
     return cached;
   }
 
-  const res = await fetch(tokenUrl, {
+  const res = await customFetch(tokenUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",

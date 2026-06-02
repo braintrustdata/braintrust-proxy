@@ -5,7 +5,10 @@ import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,
 } from "@types";
-import { GenerateContentParameters } from "../../types/google";
+import {
+  GenerateContentParameters,
+  GenerateContentResponse,
+} from "../../types/google";
 import {
   geminiParamsToOpenAIParams,
   geminiParamsToOpenAIMessages,
@@ -1385,6 +1388,52 @@ describe("geminiParamsToOpenAIMessages", () => {
 });
 
 describe("googleCompletionToOpenAICompletion", () => {
+  it("should return string content for text-only responses", () => {
+    const geminiResponse: GenerateContentResponse = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [{ text: "Hello there!" }],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.5-flash",
+      geminiResponse,
+    );
+
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].message.role).toBe("assistant");
+    expect(result.choices[0].message.content).toBe("Hello there!");
+    expect(result.choices[0].finish_reason).toBe("stop");
+  });
+
+  it("should map safety finish reasons to content_filter", () => {
+    const geminiResponse: GenerateContentResponse = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [{ text: "I can't help with that." }],
+          },
+          finishReason: "SAFETY",
+        },
+      ],
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.5-flash",
+      geminiResponse,
+    );
+
+    expect(result.choices).toHaveLength(1);
+    expect(result.choices[0].finish_reason).toBe("content_filter");
+  });
+
   it("should handle snake_case function_call in output", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const geminiResponse: any = {
@@ -1643,7 +1692,7 @@ describe("googleCompletionToOpenAICompletion", () => {
       OpenAIChatCompletion
     >({
       body: {
-        model: "gemini-3-pro-image-preview",
+        model: "gemini-2.5-flash",
         messages: [{ role: "user", content: "Say hello" }],
         stream: false,
       },

@@ -2404,7 +2404,9 @@ async function fetchOpenAI(
 
   const gpt5MinorMatch = bodyData?.model?.match(/^gpt-5\.(\d+)(?:\D|$)/i);
   const isGpt53OrHigher =
-    gpt5MinorMatch !== null && Number(gpt5MinorMatch[1]) >= 3;
+    Array.isArray(gpt5MinorMatch) &&
+    typeof gpt5MinorMatch[1] === "string" &&
+    Number(gpt5MinorMatch[1]) >= 3;
 
   const shouldRouteChatToResponses =
     secret.type === "openai" &&

@@ -591,7 +591,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
   "moonshot.kimi-k2-thinking": ["bedrock"],
-  "moonshotai.kimi-k2-thinking": ["bedrock"],
   "mistral.mistral-large-3-675b-instruct": ["bedrock"],
   "mistral.pixtral-large-2502-v1:0": ["bedrock"],
   "mistral.ministral-3-14b-instruct": ["bedrock"],

@@ -12229,20 +12229,6 @@
       "bedrock"
     ]
   },
-  "moonshotai.kimi-k2-thinking": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": false,
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "Kimi K2 Thinking",
-    "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
   "writer.palmyra-x4-v1:0": {
     "format": "converse",
     "flavor": "chat",

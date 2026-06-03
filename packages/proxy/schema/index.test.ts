@@ -344,6 +344,39 @@ describe("APISecretSchema compatibility", () => {
     });
   });
 
+  it("accepts resolved OpenAI OAuth bearer metadata", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "openai-access-token",
+      type: "openai",
+      metadata: {
+        auth_type: "oauth_bearer",
+        auth_source: "openai_workload_identity_federation",
+        future_field: "future-value",
+      },
+    });
+
+    expect(parsed.type).toBe("openai");
+    expect(parsed.metadata).toMatchObject({
+      auth_type: "oauth_bearer",
+      auth_source: "openai_workload_identity_federation",
+      future_field: "future-value",
+    });
+  });
+
+  it("rejects raw OpenAI workload identity metadata", () => {
+    const result = APISecretSchema.safeParse({
+      secret: "__OPENAI_WIF__",
+      type: "openai",
+      metadata: {
+        auth_type: "workload_identity_federation",
+        identity_provider_id: "wip-test",
+        service_account_id: "svc-test",
+      },
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it("accepts resolved Vertex OAuth bearer metadata", () => {
     const parsed = APISecretSchema.parse({
       secret: "google-access-token",

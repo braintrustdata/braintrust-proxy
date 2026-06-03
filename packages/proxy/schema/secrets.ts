@@ -159,9 +159,7 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
       z.string().length(0),
       z.null(),
     ]),
-    auth_type: z
-      .enum(["api_key", "oauth_bearer", "workload_identity_federation"])
-      .default("api_key"),
+    auth_type: z.enum(["api_key", "oauth_bearer"]).default("api_key"),
     auth_source: z.string().nullish(),
     organization_id: z.string().nullish(),
     // Custom endpoint path to override the default (e.g., "" to use api_base as full URL)

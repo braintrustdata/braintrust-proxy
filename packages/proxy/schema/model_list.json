@@ -2775,6 +2775,19 @@
       "bedrock"
     ]
   },
+  "mistral.mistral-large-3-675b-instruct": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Mistral Large 3 (675B)",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "mistral": {
     "format": "openai",
     "flavor": "chat"
@@ -12590,6 +12603,94 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
+    ]
+  },
+  "mistral.pixtral-large-2502-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Pixtral Large (2502)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.ministral-3-14b-instruct": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 3 14B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.ministral-3-8b-instruct": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Ministral 3 8B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.ministral-3-3b-instruct": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 3 3B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.mistral.pixtral-large-2502-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Pixtral Large (2502)",
+    "parent": "mistral.pixtral-large-2502-v1:0",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "eu.mistral.pixtral-large-2502-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "EU Pixtral Large (2502)",
+    "parent": "mistral.pixtral-large-2502-v1:0",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "moonshot.kimi-k2-thinking": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Kimi K2 Thinking",
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
     ]
   }
 }

@@ -28,6 +28,62 @@ import {
 
 const execAsync = promisify(exec);
 
+// Fields that are intentionally maintained by hand in model_list.json and must
+// NOT be overwritten by the LiteLLM sync, because the upstream (LiteLLM) value
+// is stale or wrong for these models. Keyed by local model name -> the
+// ModelSpec fields to preserve. The `updateModelsCommand` cost/token-limit
+// sync skips these fields (it neither reports a discrepancy nor writes a
+// change for them).
+//
+// Update an entry only when the *authoritative provider* value genuinely
+// changes; remove an entry to re-enable blind LiteLLM sync for that field.
+// Without this list every sync run reverts these manual corrections (the
+// recurring "chore: sync new models" regressions).
+const GROK_FAST_COST_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+  "input_cache_read_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const INPUT_OUTPUT_COST_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+
+export const SYNC_PRESERVED_FIELDS: Record<
+  string,
+  ReadonlyArray<keyof ModelSpec>
+> = {
+  // Deprecated grok "fast" models redirect to grok-4.3 at xAI and therefore
+  // bill at grok-4.3 rates ($1.25 in / $2.50 out / $0.20 cache-read per 1M).
+  // LiteLLM still lists the pre-redirect $0.20/$0.50 rates, which undercounts.
+  "grok-4-1-fast-non-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-non-reasoning-latest": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-reasoning-latest": GROK_FAST_COST_FIELDS,
+  "grok-4-fast-non-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-fast-reasoning": GROK_FAST_COST_FIELDS,
+  // Claude Sonnet 4's documented standard context window is 200k (1M is a
+  // beta tier); LiteLLM reports the 1M beta window.
+  "claude-sonnet-4-20250514": ["max_input_tokens"],
+  "claude-4-sonnet-20250514": ["max_input_tokens"],
+  // gpt-oss pricing taken from the provider pricing pages; LiteLLM is stale
+  // (lists lower rates).
+  "openai/gpt-oss-120b": INPUT_OUTPUT_COST_FIELDS,
+  "accounts/fireworks/models/gpt-oss-20b": INPUT_OUTPUT_COST_FIELDS,
+  // mistral-small-latest = Mistral Small 4 ($0.15/$0.60 per the model card);
+  // LiteLLM is stale at $0.10/$0.30.
+  "mistral-small-latest": INPUT_OUTPUT_COST_FIELDS,
+};
+
+// Returns true if `field` of `modelName` is hand-maintained and must not be
+// overwritten by the LiteLLM sync.
+export function isFieldManuallyPreserved(
+  modelName: string,
+  field: keyof ModelSpec,
+): boolean {
+  return SYNC_PRESERVED_FIELDS[modelName]?.includes(field) ?? false;
+}
+
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
   .object({
@@ -1158,6 +1214,16 @@ async function updateModelsCommand(argv: any) {
         remoteCostPerToken: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
+        if (isFieldManuallyPreserved(localModelName, localFieldName)) {
+          console.log(
+            `  [PRESERVE] ${localModelName}.${String(
+              localFieldName,
+            )} kept at local value (${
+              localCost ?? "unset"
+            }); LiteLLM sync skipped`,
+          );
+          return;
+        }
         const normalizedRemoteCostPerToken =
           getNonZeroNumber(remoteCostPerToken);
         if (normalizedRemoteCostPerToken !== undefined) {
@@ -1209,6 +1275,16 @@ async function updateModelsCommand(argv: any) {
         remoteLimit: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
+        if (isFieldManuallyPreserved(localModelName, localFieldName)) {
+          console.log(
+            `  [PRESERVE] ${localModelName}.${String(
+              localFieldName,
+            )} kept at local value (${
+              localLimit ?? "unset"
+            }); LiteLLM sync skipped`,
+          );
+          return;
+        }
         const normalizedRemoteLimit = getNonZeroNumber(remoteLimit);
         if (normalizedRemoteLimit !== undefined) {
           if (

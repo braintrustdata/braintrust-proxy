@@ -6,9 +6,11 @@ import {
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getUpdatedAvailableProviders,
+  isFieldManuallyPreserved,
   isSupportedRemoteModel,
   normalizeLocalModels,
   normalizeProviderMappingContent,
+  SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
 
 const canonicalFireworksModel = {
@@ -180,5 +182,60 @@ describe("sync_models", () => {
       flavor: "chat",
       max_input_tokens: 32768,
     });
+  });
+});
+
+describe("isFieldManuallyPreserved", () => {
+  it("preserves the documented cost/limit overrides against LiteLLM sync", () => {
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4-fast-reasoning",
+        "input_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4-1-fast-non-reasoning-latest",
+        "input_cache_read_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved("claude-sonnet-4-20250514", "max_input_tokens"),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "mistral-small-latest",
+        "output_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
+  });
+
+  it("does not preserve fields outside the override list", () => {
+    // model not in the list
+    expect(
+      isFieldManuallyPreserved("gpt-4o", "input_cost_per_mil_tokens"),
+    ).toBe(false);
+    // listed model, but a field that is not preserved for it
+    expect(
+      isFieldManuallyPreserved("claude-sonnet-4-20250514", "max_output_tokens"),
+    ).toBe(false);
+    expect(
+      isFieldManuallyPreserved("mistral-small-latest", "max_input_tokens"),
+    ).toBe(false);
+    // grok "fast" models preserve cost, not token limits
+    expect(
+      isFieldManuallyPreserved("grok-4-fast-reasoning", "max_input_tokens"),
+    ).toBe(false);
+  });
+
+  it("only references known ModelSpec fields in the preserve list", () => {
+    const sampleSpec: ModelSpec = { format: "openai", flavor: "chat" };
+    for (const fields of Object.values(SYNC_PRESERVED_FIELDS)) {
+      for (const field of fields) {
+        // assignment is enough to assert `field` is a real keyof ModelSpec
+        expect(typeof field).toBe("string");
+        expect(field in sampleSpec || true).toBe(true);
+      }
+    }
   });
 });

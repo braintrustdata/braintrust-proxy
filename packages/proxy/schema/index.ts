@@ -964,7 +964,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-code-fast-1-0825": ["xAI"],
   "gemini-3.5-flash": ["google"],
   "gemini-3.1-flash-image-preview": ["google"],
-  "gemini-3.1-flash-lite": ["google"],
+  "gemini-3.1-flash-lite": ["google","vertex"],
   "gemini-3.1-flash-lite-preview": ["google"],
   "gemini-3.1-pro-preview": ["google"],
   "gemini-3.1-pro-preview-customtools": ["google"],

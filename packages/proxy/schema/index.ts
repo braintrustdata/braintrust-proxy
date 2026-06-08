@@ -1039,7 +1039,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/anthropic/models/claude-3-5-sonnet": ["vertex"],
   "publishers/anthropic/models/claude-3-5-sonnet@20240620": ["vertex"],
   "publishers/anthropic/models/claude-opus-4-7": ["vertex"],
-  "claude-opus-4-7-20260416": ["anthropic"],
   "publishers/anthropic/models/claude-opus-4-6": ["vertex"],
   "claude-opus-4-6-20260205": ["anthropic"],
   "publishers/anthropic/models/claude-opus-4-5@20251101": ["vertex"],

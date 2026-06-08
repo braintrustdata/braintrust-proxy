@@ -236,7 +236,7 @@ jobs:
             body_file="$BATCH_DIR/issue-${issue_number}.body.md"
             result_file="$BATCH_DIR/results/issue-${issue_number}.initial.json"
 
-            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            pnpm exec tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
               --title "$issue_title" \
               --body-file "$body_file" \
               --result-path "$result_file" \
@@ -370,7 +370,7 @@ jobs:
               cp "$original_body" "$enriched_body"
             fi
 
-            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            pnpm exec tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
               --title "$issue_title" \
               --body-file "$enriched_body" \
               --result-path "$result_file" \
@@ -788,7 +788,7 @@ jobs:
 
       - name: Canonicalize model list after Codex response
         if: steps.codex_comments.outputs.found == 'true'
-        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check Codex response changes
         id: codex_changes

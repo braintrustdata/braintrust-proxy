@@ -252,11 +252,11 @@ jobs:
 
       - name: Verify proposed changes and document sync_models deviations
         if: steps.fix_initial.outputs.unsupported_count != '0'
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        uses: anthropics/claude-code-action@7b544592acccd8d90668a8906d0a252a853f7039 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
+
           display_report: "true"
           timeout_minutes: "15"
           claude_args: |
@@ -745,11 +745,11 @@ jobs:
 
       - name: Respond to Codex review with Claude Code
         if: steps.codex_comments.outputs.found == 'true'
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        uses: anthropics/claude-code-action@7b544592acccd8d90668a8906d0a252a853f7039 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
+
           display_report: "true"
           timeout_minutes: "15"
           claude_args: |

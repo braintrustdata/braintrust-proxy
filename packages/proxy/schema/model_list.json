@@ -12171,6 +12171,8 @@
   "openai.gpt-oss-safeguard-120b": {
     "format": "converse",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "displayName": "OpenAI GPT-OSS Safeguard (120B)",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -12181,6 +12183,8 @@
   "openai.gpt-oss-safeguard-20b": {
     "format": "converse",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.2,
     "displayName": "OpenAI GPT-OSS Safeguard (20B)",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,

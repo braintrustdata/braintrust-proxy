@@ -90,7 +90,7 @@ jobs:
 
       - name: Enrich changed model metadata with Claude Code
         if: ${{ steps.changed_models.outputs.count != '0' }}
-        uses: anthropics/claude-code-action@7b544592acccd8d90668a8906d0a252a853f7039 # v1.0.140
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
@@ -355,7 +355,7 @@ jobs:
 
       - name: Respond to Codex review with Claude Code
         if: steps.codex_comments.outputs.found == 'true'
-        uses: anthropics/claude-code-action@7b544592acccd8d90668a8906d0a252a853f7039 # v1.0.140
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}

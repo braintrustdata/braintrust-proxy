@@ -12168,6 +12168,26 @@
       "bedrock"
     ]
   },
+  "openai.gpt-oss-safeguard-120b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "OpenAI GPT-OSS Safeguard (120B)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-oss-safeguard-20b": {
+    "format": "converse",
+    "flavor": "chat",
+    "displayName": "OpenAI GPT-OSS Safeguard (20B)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "nvidia.nemotron-nano-3-30b": {
     "format": "converse",
     "flavor": "chat",

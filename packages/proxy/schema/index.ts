@@ -590,6 +590,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "openai.gpt-oss-safeguard-120b": ["bedrock"],
+  "openai.gpt-oss-safeguard-20b": ["bedrock"],
   "nvidia/nemotron-3-ultra-550b-a55b": ["together"],
   "moonshot.kimi-k2-thinking": ["bedrock"],
   "mistral.mistral-large-3-675b-instruct": ["bedrock"],

@@ -1588,7 +1588,7 @@
     "displayName": "OpenAI GPT-OSS (20B)",
     "reasoning": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
+    "max_output_tokens": 65536,
     "available_providers": [
       "groq",
       "together"
@@ -2264,25 +2264,6 @@
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000
-  },
-  "claude-opus-4-7-20260416": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude 4.7 Opus (2026-04-16)",
-    "reasoning": true,
-    "parent": "claude-opus-4-7",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
   },
   "claude-opus-4-6": {
     "format": "anthropic",
@@ -3869,8 +3850,8 @@
     "displayName": "Qwen3-32B",
     "reasoning": true,
     "experimental": true,
-    "max_input_tokens": 131000,
-    "max_output_tokens": 131000,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
     "available_providers": [
       "groq"
     ]
@@ -4807,7 +4788,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Magistral Medium Latest",
-    "max_input_tokens": 40000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [
       "mistral"
@@ -4831,7 +4812,7 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Magistral Small Latest",
-    "max_input_tokens": 40000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [
       "mistral"
@@ -5339,8 +5320,8 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.08,
     "displayName": "Llama 3.1 8B Instant 128k",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8192,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 131072,
     "available_providers": [
       "groq"
     ]

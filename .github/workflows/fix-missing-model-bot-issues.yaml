@@ -236,7 +236,7 @@ jobs:
             body_file="$BATCH_DIR/issue-${issue_number}.body.md"
             result_file="$BATCH_DIR/results/issue-${issue_number}.initial.json"
 
-            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            pnpm -C packages/proxy exec tsx scripts/fix_bot_issue.ts resolve-issue \
               --title "$issue_title" \
               --body-file "$body_file" \
               --result-path "$result_file" \
@@ -252,11 +252,11 @@ jobs:
 
       - name: Verify proposed changes and document sync_models deviations
         if: steps.fix_initial.outputs.unsupported_count != '0'
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
+
           display_report: "true"
           timeout_minutes: "15"
           claude_args: |
@@ -370,7 +370,7 @@ jobs:
               cp "$original_body" "$enriched_body"
             fi
 
-            pnpm dlx tsx packages/proxy/scripts/fix_bot_issue.ts resolve-issue \
+            pnpm -C packages/proxy exec tsx scripts/fix_bot_issue.ts resolve-issue \
               --title "$issue_title" \
               --body-file "$enriched_body" \
               --result-path "$result_file" \
@@ -745,11 +745,11 @@ jobs:
 
       - name: Respond to Codex review with Claude Code
         if: steps.codex_comments.outputs.found == 'true'
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
+
           display_report: "true"
           timeout_minutes: "15"
           claude_args: |
@@ -788,7 +788,7 @@ jobs:
 
       - name: Canonicalize model list after Codex response
         if: steps.codex_comments.outputs.found == 'true'
-        run: pnpm dlx tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+        run: pnpm -C packages/proxy exec tsx scripts/sync_models.ts normalize-local-models --write
 
       - name: Check Codex response changes
         id: codex_changes

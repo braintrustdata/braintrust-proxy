@@ -24,11 +24,10 @@ jobs:
           fetch-depth: 0
 
       - name: Attempt provider-direct sync with Claude Code
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
           display_report: "true"
           timeout_minutes: "25"
           claude_args: |

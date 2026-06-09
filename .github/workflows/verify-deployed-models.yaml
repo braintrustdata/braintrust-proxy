@@ -192,7 +192,7 @@ jobs:
               git show "${temp_head_ref}:packages/proxy/schema/model_list.json" > "$RUNNER_TEMP/model_list.after.json"
             fi
 
-            pnpm dlx tsx packages/proxy/scripts/collect_changed_model_ids.ts \
+            pnpm exec tsx packages/proxy/scripts/collect_changed_model_ids.ts \
               --before "$RUNNER_TEMP/model_list.before.json" \
               --after "$RUNNER_TEMP/model_list.after.json" \
               --output "$RUNNER_TEMP/changed-models.json"
@@ -237,7 +237,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          pnpm dlx tsx packages/proxy/scripts/verify_proxy_models.ts \
+          pnpm exec tsx packages/proxy/scripts/verify_proxy_models.ts \
             --proxy-base-url "${{ inputs.proxy_base_url }}" \
             --model-file "${{ steps.models.outputs.path }}" \
             --model-catalog-file "${{ steps.models.outputs.catalog_path }}" \

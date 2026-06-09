@@ -2615,6 +2615,22 @@
       "anthropic"
     ]
   },
+  "claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "displayName": "Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "meta/llama-2-70b-chat": {
     "format": "openai",
     "flavor": "chat",
@@ -2842,6 +2858,8 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Sonar Reasoning",
+    "deprecated": true,
+    "deprecation_date": "2025-12-15",
     "max_input_tokens": 128000,
     "available_providers": [
       "perplexity"

@@ -2615,6 +2615,25 @@
       "anthropic"
     ]
   },
+  "claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "input_cache_write_5m_cost_per_mil_tokens": 12.5,
+    "input_cache_write_1h_cost_per_mil_tokens": 20,
+    "displayName": "Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "meta/llama-2-70b-chat": {
     "format": "openai",
     "flavor": "chat",
@@ -2842,6 +2861,8 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Sonar Reasoning",
+    "deprecated": true,
+    "deprecation_date": "2025-12-15",
     "max_input_tokens": 128000,
     "available_providers": [
       "perplexity"
@@ -7871,6 +7892,24 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Global Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-fable-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8292,6 +8331,23 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "anthropic.claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
@@ -9395,6 +9451,23 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,

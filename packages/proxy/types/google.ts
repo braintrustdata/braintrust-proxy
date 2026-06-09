@@ -101,14 +101,14 @@ const fileDataSchema = z.object({
 
 const functionCallSchema = z.object({
   id: z.string().nullish(),
-  args: z.record(z.unknown()).nullish(),
+  args: z.record(z.string(), z.unknown()).nullish(),
   name: z.string().nullish(),
 });
 
 const functionResponseSchema = z.object({
   id: z.string().nullish(),
   name: z.string().nullish(),
-  response: z.record(z.unknown()).nullish(),
+  response: z.record(z.string(), z.unknown()).nullish(),
 });
 
 const blobSchema = z.object({
@@ -495,7 +495,7 @@ const schemaSchema: z.ZodSchema<any> = z.object({
   minimum: z.number().nullish(),
   nullable: z.boolean().nullish(),
   pattern: z.string().nullish(),
-  properties: z.lazy(() => z.record(schemaSchema)).nullish(),
+  properties: z.lazy(() => z.record(z.string(), schemaSchema)).nullish(),
   propertyOrdering: z.array(z.string()).nullish(),
   required: z.array(z.string()).nullish(),
   title: z.string().nullish(),
@@ -627,7 +627,7 @@ const generateContentConfigSchema = z.object({
   safetySettings: z.array(safetySettingSchema).nullish(),
   tools: toolListUnionSchema.nullish(),
   toolConfig: toolConfigSchema.nullish(),
-  labels: z.record(z.string()).nullish(),
+  labels: z.record(z.string(), z.string()).nullish(),
   cachedContent: z.string().nullish(),
   responseModalities: z.array(z.string()).nullish(),
   mediaResolution: mediaResolutionSchema.nullish(),

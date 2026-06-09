@@ -36,7 +36,7 @@ const issueMetadataSchema = z.object({
     .optional(),
   deprecation_date: z.string().optional(),
   model_spec: partialModelSchema.optional(),
-  model_specs: z.record(partialModelSchema).optional(),
+  model_specs: z.record(z.string(), partialModelSchema).optional(),
   source_urls: z.array(z.string().url()).optional(),
 });
 const fixResultSchema = z.object({
@@ -115,7 +115,7 @@ const liteLLMModelDetailSchema = z
     deprecation_date: z.string().optional(),
   })
   .passthrough();
-const liteLLMModelListSchema = z.record(liteLLMModelDetailSchema);
+const liteLLMModelListSchema = z.record(z.string(), liteLLMModelDetailSchema);
 
 type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
 type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
@@ -859,7 +859,7 @@ export function isDateWithinDays(
 
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   const fileContent = await fs.promises.readFile(filePath, "utf-8");
-  return z.record(ModelSchema).parse(JSON.parse(fileContent));
+  return z.record(z.string(), ModelSchema).parse(JSON.parse(fileContent));
 }
 
 function providersForName(providerName?: string): ModelEndpointType[] {

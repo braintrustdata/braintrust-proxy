@@ -112,7 +112,9 @@ export const ModelSchema = z.object({
 export type ModelSpec = z.infer<typeof ModelSchema>;
 
 import modelListJson from "./model_list.json";
-const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);
+const modelListJsonTyped = z
+  .record(z.string(), ModelSchema)
+  .parse(modelListJson);
 
 export type ModelName = keyof typeof modelListJson;
 

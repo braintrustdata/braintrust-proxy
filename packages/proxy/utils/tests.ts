@@ -188,7 +188,7 @@ export async function callProxyV1<Input extends object, Output extends object>({
   customFetch,
   fetch,
   ...request
-}: Partial<Omit<Parameters<typeof proxyV1>, "body" | "proxyHeaders">> & {
+}: Partial<Omit<Parameters<typeof proxyV1>[0], "body" | "proxyHeaders">> & {
   body: Input;
   proxyHeaders?: Record<string, string>;
   customFetch?: FetchFn;

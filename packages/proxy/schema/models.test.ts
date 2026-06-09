@@ -5,7 +5,7 @@ import { markModelsPastDeprecationDate, ModelSchema } from "./models";
 import { z } from "zod";
 
 it("parse model list", () => {
-  const models = z.record(z.unknown()).parse(raw_models);
+  const models = z.record(z.string(), z.unknown()).parse(raw_models);
   for (const [key, value] of Object.entries(models)) {
     const result = ModelSchema.safeParse(value);
     if (!result.success) {

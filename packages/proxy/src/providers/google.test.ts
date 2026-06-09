@@ -18,7 +18,6 @@ import {
   googleCompletionToOpenAICompletion,
   googleEventToOpenAIChatEvent,
 } from "./google";
-import { zodToJsonSchema } from "zod-to-json-schema";
 import { z } from "zod";
 import {
   IMAGE_DATA_URL,
@@ -237,7 +236,11 @@ for (const model of [
       });
 
       // we do this in sdk/js/src/functions/upload.ts
-      const jsonSchema = zodToJsonSchema(unionSchema);
+      const jsonSchema = z.toJSONSchema(unionSchema, {
+        target: "draft-7",
+        io: "input",
+        unrepresentable: "any",
+      });
 
       const body: OpenAIChatCompletionCreateParams = {
         model,

@@ -151,7 +151,7 @@ const liteLLMModelDetailSchema = z
   })
   .passthrough();
 
-const liteLLMModelListSchema = z.record(liteLLMModelDetailSchema);
+const liteLLMModelListSchema = z.record(z.string(), liteLLMModelDetailSchema);
 
 type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
 type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
@@ -196,7 +196,7 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
             if (error instanceof z.ZodError) {
               console.error(
                 "Zod validation errors in remote data:",
-                error.errors,
+                error.issues,
               );
               reject(
                 new Error(
@@ -227,7 +227,7 @@ async function readLocalModels(filePath: string): Promise<LocalModelList> {
     if (error instanceof z.ZodError) {
       console.error(
         "Zod validation errors in local model_list.json:",
-        error.errors,
+        error.issues,
       );
       throw new Error("Local model_list.json failed Zod validation.");
     }
@@ -247,7 +247,7 @@ export function canonicalizeLocalModelsContent(
   fileContent: string,
 ): CanonicalizedLocalModels {
   const localData = JSON.parse(fileContent);
-  const parsedModels = z.record(ModelSchema).parse(localData);
+  const parsedModels = z.record(z.string(), ModelSchema).parse(localData);
   const normalizedLocalData = normalizeLocalModels(parsedModels);
   const reorderedModels = reorderModelProperties(normalizedLocalData.models);
 

@@ -29,7 +29,7 @@ import { openApiToJsonSchema as toJsonSchema } from "openapi-json-schema";
 import * as dereferenceJsonSchema from "dereference-json-schema";
 const deref = dereferenceJsonSchema.dereferenceSync;
 
-const finishReason = finishReasonSchema.Enum;
+const finishReason = finishReasonSchema.enum;
 
 function translateFinishReason(
   reason?: FinishReason | null,

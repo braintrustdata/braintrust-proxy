@@ -12484,10 +12484,7 @@
       "global"
     ],
     "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "google"
-    ]
+    "max_output_tokens": 32768
   },
   "databricks-qwen35-122b-a10b": {
     "format": "openai",

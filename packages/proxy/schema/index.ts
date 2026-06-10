@@ -590,6 +590,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-2-1212": ["xAI"],
   "grok-vision-beta": ["xAI"],
   "grok-beta": ["xAI"],
+  "gemini-3-pro-image": ["google"],
+  "publishers/google/models/gemini-3-pro-image": ["vertex"],
   "claude-fable-5": ["anthropic"],
   "openai.gpt-oss-safeguard-120b": ["bedrock"],
   "openai.gpt-oss-safeguard-20b": ["bedrock"],

@@ -12446,6 +12446,23 @@
       "google"
     ]
   },
+  "gemini-3-pro-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Gemini 3 Pro Image",
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": {
     "format": "google",
     "flavor": "chat",
@@ -12455,6 +12472,22 @@
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
     "max_input_tokens": 128000,
     "max_output_tokens": 64000
+  },
+  "publishers/google/models/gemini-3-pro-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Gemini 3 Pro Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google"
+    ]
   },
   "databricks-qwen35-122b-a10b": {
     "format": "openai",

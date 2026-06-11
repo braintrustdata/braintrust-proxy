@@ -72,8 +72,8 @@ jobs:
           echo "Syncing providers: $providers"
 
           for provider in $providers; do
-            pnpm -C packages/proxy exec tsx scripts/sync_models.ts update-models --provider "$provider" --write
-            pnpm -C packages/proxy exec tsx scripts/sync_models.ts add-models --provider "$provider" --write
+            pnpm exec tsx packages/proxy/scripts/sync_models.ts update-models --provider "$provider" --write
+            pnpm exec tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
           done
 
       - name: Collect changed model ids
@@ -82,9 +82,9 @@ jobs:
           set -euo pipefail
 
           git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
-          pnpm -C packages/proxy exec tsx scripts/collect_changed_model_ids.ts \
+          pnpm exec tsx packages/proxy/scripts/collect_changed_model_ids.ts \
             --before "$RUNNER_TEMP/model_list.head.json" \
-            --after "schema/model_list.json" \
+            --after "packages/proxy/schema/model_list.json" \
             --output "$RUNNER_TEMP/sync-model-changed.json" \
             --github-output "$GITHUB_OUTPUT"
 
@@ -162,7 +162,7 @@ jobs:
 
       - name: Canonicalize model list after metadata enrichment
         if: ${{ steps.changed_models.outputs.count != '0' }}
-        run: pnpm -C packages/proxy exec tsx scripts/sync_models.ts normalize-local-models --write
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check expected files only
         id: changes
@@ -397,7 +397,7 @@ jobs:
 
       - name: Canonicalize model list after Codex response
         if: steps.codex_comments.outputs.found == 'true'
-        run: pnpm -C packages/proxy exec tsx scripts/sync_models.ts normalize-local-models --write
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check Codex response changes
         id: codex_changes

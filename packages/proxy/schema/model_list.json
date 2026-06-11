@@ -2230,6 +2230,42 @@
       "anthropic"
     ]
   },
+  "claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "publishers/anthropic/models/claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "claude-opus-4-7": {
     "format": "anthropic",
     "flavor": "chat",
@@ -2264,6 +2300,23 @@
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000
+  },
+  "claude-opus-4-7-20260416": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude 4.7 Opus (2026-04-16)",
+    "reasoning": true,
+    "parent": "claude-opus-4-7",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
   },
   "claude-opus-4-6": {
     "format": "anthropic",
@@ -2595,25 +2648,6 @@
     "deprecated": true,
     "max_input_tokens": 100000,
     "max_output_tokens": 8191
-  },
-  "claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude 4.8 Opus",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
   },
   "claude-fable-5": {
     "format": "anthropic",
@@ -7006,12 +7040,12 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Reasoning (0309)",
     "reasoning": true,
-    "max_input_tokens": 1000000,
+    "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
       "xAI"
@@ -7021,10 +7055,11 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Beta (Non-Reasoning)",
+    "parent": "grok-4.20-0309-non-reasoning",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
@@ -7035,11 +7070,12 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Beta Reasoning (0309)",
     "reasoning": true,
+    "parent": "grok-4.20-0309-reasoning",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
@@ -7050,8 +7086,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Multi-Agent Beta (0309)",
     "reasoning": true,
@@ -7419,7 +7455,10 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "displayName": "Grok Code Fast 1 (0825)",
     "reasoning": true,
+    "deprecation_date": "2026-05-15",
+    "parent": "grok-code-fast-1",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -9442,23 +9481,6 @@
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
   },
-  "publishers/anthropic/models/claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Claude 4.8 Opus",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
   "publishers/anthropic/models/claude-fable-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -10243,8 +10265,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,
-    "max_input_tokens": 202752,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 202800,
+    "max_output_tokens": 202800,
     "available_providers": [
       "fireworks"
     ]

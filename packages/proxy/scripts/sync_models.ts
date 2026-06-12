@@ -423,6 +423,135 @@ export function getUpdatedAvailableProviders(
   return mergedProviders;
 }
 
+const ANTHROPIC_BEDROCK_SCOPES = new Set(["us", "eu", "apac", "global"]);
+const MISTRAL_VERTEX_EQUIVALENT_MODELS = new Set([
+  "codestral-2501",
+  "mistral-large-2411",
+]);
+
+type EquivalentModelCandidate = {
+  canonicalName: string;
+  managed: boolean;
+};
+
+function equivalentModelCandidate(
+  modelName: string,
+): EquivalentModelCandidate | undefined {
+  const anthropicVertexPrefix = "publishers/anthropic/models/";
+  if (modelName.startsWith(anthropicVertexPrefix)) {
+    return {
+      canonicalName: modelName.substring(anthropicVertexPrefix.length),
+      managed: true,
+    };
+  }
+
+  const googleVertexPrefix = "publishers/google/models/";
+  if (modelName.startsWith(googleVertexPrefix)) {
+    const canonicalName = modelName.substring(googleVertexPrefix.length);
+    return {
+      canonicalName,
+      managed: canonicalName.startsWith("gemini-"),
+    };
+  }
+
+  const mistralVertexPrefix = "publishers/mistralai/models/";
+  if (modelName.startsWith(mistralVertexPrefix)) {
+    const canonicalName = modelName.substring(mistralVertexPrefix.length);
+    return {
+      canonicalName,
+      managed: MISTRAL_VERTEX_EQUIVALENT_MODELS.has(canonicalName),
+    };
+  }
+
+  if (modelName.startsWith("anthropic.")) {
+    return {
+      canonicalName: modelName.substring("anthropic.".length),
+      managed: true,
+    };
+  }
+
+  const parts = modelName.split(".");
+  if (
+    parts.length >= 3 &&
+    ANTHROPIC_BEDROCK_SCOPES.has(parts[0]) &&
+    parts[1] === "anthropic"
+  ) {
+    return {
+      canonicalName: parts.slice(2).join("."),
+      managed: true,
+    };
+  }
+
+  if (
+    modelName.startsWith("claude-") ||
+    modelName.startsWith("gemini-") ||
+    MISTRAL_VERTEX_EQUIVALENT_MODELS.has(modelName)
+  ) {
+    return { canonicalName: modelName, managed: true };
+  }
+
+  return undefined;
+}
+
+export function applyEquivalentModels(
+  localModels: LocalModelList,
+): LocalModelList {
+  const modelNames = new Set(Object.keys(localModels));
+  const groups = new Map<string, string[]>();
+  const managedNames = new Set<string>();
+
+  for (const modelName of modelNames) {
+    const candidate = equivalentModelCandidate(modelName);
+    if (!candidate?.managed || !modelNames.has(candidate.canonicalName)) {
+      continue;
+    }
+
+    const group = groups.get(candidate.canonicalName) ?? [];
+    group.push(modelName);
+    groups.set(candidate.canonicalName, group);
+    managedNames.add(modelName);
+    managedNames.add(candidate.canonicalName);
+  }
+
+  const updatedModels: LocalModelList = {};
+  for (const [modelName, model] of Object.entries(localModels)) {
+    if (managedNames.has(modelName)) {
+      const { equivalent_models: _equivalentModels, ...rest } = model;
+      updatedModels[modelName] = rest;
+    } else {
+      updatedModels[modelName] = model;
+    }
+  }
+
+  for (const [canonicalName, group] of groups) {
+    const equivalentModels = Array.from(new Set(group))
+      .filter((modelName) => modelName !== canonicalName)
+      .sort();
+    if (equivalentModels.length === 0) {
+      continue;
+    }
+
+    const canonicalModel = updatedModels[canonicalName];
+    if (!canonicalModel) {
+      continue;
+    }
+
+    if (
+      MISTRAL_VERTEX_EQUIVALENT_MODELS.has(canonicalName) &&
+      !canonicalModel.available_providers?.length
+    ) {
+      canonicalModel.available_providers = ["mistral"];
+    }
+
+    updatedModels[canonicalName] = {
+      ...canonicalModel,
+      equivalent_models: equivalentModels,
+    };
+  }
+
+  return updatedModels;
+}
+
 export function normalizeLocalModels(localModels: LocalModelList): {
   models: LocalModelList;
   renamedKeys: Array<{ from: string; to: string }>;
@@ -467,7 +596,7 @@ export function normalizeLocalModels(localModels: LocalModelList): {
   }
 
   return {
-    models: orderedModels,
+    models: applyEquivalentModels(orderedModels),
     renamedKeys,
   };
 }
@@ -1731,10 +1860,13 @@ async function normalizeLocalModelsCommand(argv: any) {
       canonicalizeLocalModelsContent(rawLocalModelContent);
     const renamedKeys = canonicalizedLocalModels.renamedKeys;
     const duplicateJsonKeys = findDuplicateJsonKeys(rawLocalModelContent);
-    const needsRewrite = renamedKeys.length > 0 || duplicateJsonKeys.length > 0;
+    const needsRewrite =
+      renamedKeys.length > 0 ||
+      duplicateJsonKeys.length > 0 ||
+      rawLocalModelContent !== canonicalizedLocalModels.canonicalContent;
 
-    if (renamedKeys.length === 0 && !needsRewrite) {
-      console.log("No local model keys needed normalization.");
+    if (!needsRewrite) {
+      console.log("Local model catalog already normalized.");
       if (argv.write) {
         await normalizeProviderMappingsFile();
       }

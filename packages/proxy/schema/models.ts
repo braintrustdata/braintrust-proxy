@@ -81,6 +81,12 @@ export const ModelSchema = z.object({
     .nullish()
     .describe("Date after which the model will be treated as deprecated"),
   parent: z.string().nullish().describe("The model was replaced this model."),
+  equivalent_models: z
+    .array(z.string())
+    .nullish()
+    .describe(
+      "Other catalog model ids for the same underlying model on provider-specific surfaces.",
+    ),
   endpoint_types: z.array(z.enum(ModelEndpointType)).nullish(),
   locations: z.array(z.string()).nullish(),
   supported_regions: z

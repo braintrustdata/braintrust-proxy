@@ -15,6 +15,18 @@ it("parse model list", () => {
   }
 });
 
+it("keeps equivalent model references within the catalog", () => {
+  const models = z.record(ModelSchema).parse(raw_models);
+  for (const [key, value] of Object.entries(models)) {
+    for (const equivalentModel of value.equivalent_models ?? []) {
+      expect(
+        models[equivalentModel],
+        `${key} -> ${equivalentModel}`,
+      ).toBeDefined();
+    }
+  }
+});
+
 it("Marks models as deprecated once deprecation date has been reached", () => {
   const result = markModelsPastDeprecationDate({
     testModel: {

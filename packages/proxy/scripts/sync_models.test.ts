@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
+  applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertRemoteToLocalModel,
   findDuplicateJsonKeys,
@@ -165,6 +166,103 @@ describe("sync_models", () => {
     expect(isSupportedRemoteModel({ mode: "embedding" })).toBe(false);
     expect(isSupportedRemoteModel({ mode: "chat" })).toBe(true);
     expect(isSupportedRemoteModel({})).toBe(true);
+  });
+
+  it("adds deterministic equivalent model groups for provider-native model ids", () => {
+    const models = applyEquivalentModels({
+      "claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+        available_providers: ["anthropic"],
+      },
+      "publishers/anthropic/models/claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+      },
+      "anthropic.claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+      },
+      "global.anthropic.claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+      },
+      "gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google", "vertex"],
+      },
+      "publishers/google/models/gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+      },
+      "mistral-large-2411": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["mistral"],
+      },
+      "publishers/mistralai/models/mistral-large-2411": {
+        format: "openai",
+        flavor: "chat",
+      },
+    });
+
+    expect(models["claude-sonnet-4-6"].equivalent_models).toEqual([
+      "anthropic.claude-sonnet-4-6",
+      "global.anthropic.claude-sonnet-4-6",
+      "publishers/anthropic/models/claude-sonnet-4-6",
+    ]);
+    expect(models["gemini-2.5-flash"].equivalent_models).toEqual([
+      "publishers/google/models/gemini-2.5-flash",
+    ]);
+    expect(models["mistral-large-2411"].equivalent_models).toEqual([
+      "publishers/mistralai/models/mistral-large-2411",
+    ]);
+  });
+
+  it("does not group lookalike variants that need curated equivalence", () => {
+    const models = applyEquivalentModels({
+      "gpt-4o": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure"],
+      },
+      "low/1024-x-1024/gpt-image-1": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure"],
+      },
+      "gpt-image-1": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure"],
+      },
+      "gpt-oss-120b": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["cerebras"],
+      },
+      "accounts/fireworks/models/gpt-oss-120b": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["fireworks"],
+      },
+      "publishers/google/models/gemma-3-27b-it": {
+        format: "google",
+        flavor: "chat",
+      },
+      "gemma-3-27b-it": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google"],
+      },
+    });
+
+    for (const model of Object.values(models)) {
+      expect(model.equivalent_models).toBeUndefined();
+    }
   });
 
   it("does not carry zero-valued remote settings into converted models", () => {

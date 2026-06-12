@@ -294,7 +294,7 @@ describe("model-specific Anthropic params", () => {
 describe("getModelEndpointTypes", () => {
   it("includes endpoint types from equivalent models", () => {
     expect(getModelEndpointTypes("claude-sonnet-4-6")).toEqual(
-      expect.arrayContaining(["anthropic", "vertex"]),
+      expect.arrayContaining(["anthropic", "bedrock", "vertex"]),
     );
   });
 });

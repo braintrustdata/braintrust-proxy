@@ -2630,6 +2630,12 @@
     "displayName": "Claude 4.8 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "equivalent_models": [
+      "anthropic.claude-opus-4-8",
+      "global.anthropic.claude-opus-4-8",
+      "publishers/anthropic/models/claude-opus-4-8",
+      "us.anthropic.claude-opus-4-8"
+    ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2649,6 +2655,11 @@
     "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
+    "equivalent_models": [
+      "anthropic.claude-fable-5",
+      "global.anthropic.claude-fable-5",
+      "publishers/anthropic/models/claude-fable-5"
+    ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -6945,6 +6956,9 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "displayName": "Gemini 3.1 Flash Image Preview",
+    "equivalent_models": [
+      "publishers/google/models/gemini-3.1-flash-image-preview"
+    ],
     "supported_regions": [
       "global"
     ],
@@ -6962,6 +6976,9 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
     "displayName": "Gemini 2.5 Flash Image",
+    "equivalent_models": [
+      "publishers/google/models/gemini-2.5-flash-image"
+    ],
     "supported_regions": [
       "global",
       "europe-central2",
@@ -6995,11 +7012,11 @@
     "displayName": "Gemini 3.1 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
-    "supported_regions": [
-      "global"
-    ],
     "equivalent_models": [
       "publishers/google/models/gemini-3.1-flash-lite"
+    ],
+    "supported_regions": [
+      "global"
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
@@ -12563,6 +12580,9 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
+    "equivalent_models": [
+      "publishers/google/models/gemini-2.5-computer-use-preview-10-2025"
+    ],
     "max_input_tokens": 128000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -12576,6 +12596,9 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image",
+    "equivalent_models": [
+      "publishers/google/models/gemini-3-pro-image"
+    ],
     "supported_regions": [
       "global"
     ],

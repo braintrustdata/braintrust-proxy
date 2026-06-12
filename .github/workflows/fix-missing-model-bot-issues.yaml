@@ -603,6 +603,10 @@ jobs:
           fetch-depth: 0
           ref: ${{ steps.pr.outputs.pull-request-branch }}
 
+      - name: Reinstall dependencies after PR branch checkout
+        if: steps.pr.outputs.pull-request-number != ''
+        run: pnpm install --frozen-lockfile
+
       - name: Fetch base branch for Codex review
         if: steps.pr.outputs.pull-request-number != ''
         run: git fetch --no-tags origin main

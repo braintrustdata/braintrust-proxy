@@ -10410,6 +10410,18 @@
       "together"
     ]
   },
+  "MiniMaxAI/MiniMax-M3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "MiniMax M3",
+    "max_input_tokens": 524288,
+    "available_providers": [
+      "together"
+    ]
+  },
   "accounts/fireworks/models/minimax-m2p1": {
     "format": "openai",
     "flavor": "chat",
@@ -10859,6 +10871,42 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "DeepSeek V4 Flash",
     "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/kimi-k2p7-code": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.19,
+    "displayName": "Kimi K2.7 Code",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/qwen3p7-plus": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 1.6,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
+    "displayName": "Qwen3.7 Plus",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/minimax-m3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "MiniMax M3",
+    "max_input_tokens": 512000,
     "available_providers": [
       "fireworks"
     ]

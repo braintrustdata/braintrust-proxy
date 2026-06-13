@@ -6214,6 +6214,25 @@
       "vertex"
     ]
   },
+  "gemini-embedding-2": {
+    "format": "google",
+    "flavor": "embedding",
+    "multimodal": true,
+    "displayName": "Gemini embedding 2",
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
+  "gemini-embedding-001": {
+    "format": "google",
+    "flavor": "embedding",
+    "displayName": "Gemini embedding 001",
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "gemini-2.5-flash": {
     "format": "google",
     "flavor": "chat",
@@ -9305,6 +9324,17 @@
     "displayName": "Gemini 2.5 Pro Experimental",
     "experimental": true,
     "parent": "publishers/google/models/gemini-2.5-pro"
+  },
+  "publishers/google/models/gemini-embedding-2": {
+    "format": "google",
+    "flavor": "embedding",
+    "multimodal": true,
+    "displayName": "Gemini embedding 2"
+  },
+  "publishers/google/models/gemini-embedding-001": {
+    "format": "google",
+    "flavor": "embedding",
+    "displayName": "Gemini embedding 001"
   },
   "publishers/google/models/gemini-2.5-flash": {
     "format": "google",

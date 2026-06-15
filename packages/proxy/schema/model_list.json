@@ -12380,6 +12380,18 @@
       "bedrock"
     ]
   },
+  "moonshotai/Kimi-K2.7-Code": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.19,
+    "displayName": "Kimi K2.7 Code",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "together"
+    ]
+  },
   "writer.palmyra-x4-v1:0": {
     "format": "converse",
     "flavor": "chat",

@@ -6114,10 +6114,7 @@
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Llama 3.1 8B",
     "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "cerebras"
-    ]
+    "max_output_tokens": 128000
   },
   "gemini-3.1-pro-preview": {
     "format": "google",

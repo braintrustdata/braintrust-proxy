@@ -183,6 +183,16 @@ export const AvailableEndpointTypes = {
     const localModels = {
       "accounts/fireworks/models/minimax-m3": canonicalFireworksModel,
       "accounts/fireworks/models/minimax-m2p5": canonicalFireworksModel,
+      "gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google", "vertex"],
+      },
+      "publishers/google/models/gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["vertex"],
+      },
       sonar: {
         format: "openai",
         flavor: "chat",
@@ -203,6 +213,10 @@ export const AvailableEndpointTypes = {
       {
         name: "accounts/fireworks/models/minimax-m3",
         providers: ["fireworks"],
+      },
+      {
+        name: "publishers/google/models/gemini-2.5-flash",
+        providers: ["vertex"],
       },
     ]);
   });

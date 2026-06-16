@@ -650,6 +650,22 @@ export function formatProviderMappingProviders(providers: string[]): string {
   return `[${providers.map((provider) => JSON.stringify(provider)).join(", ")}]`;
 }
 
+function isVertexModelName(modelName: string): boolean {
+  return (
+    modelName.startsWith("publishers/") ||
+    /^(?:global|us|eu|apac)\./.test(modelName)
+  );
+}
+
+function providersForExactModelName(
+  modelName: string,
+  providers: NonNullable<ModelSpec["available_providers"]>,
+): NonNullable<ModelSpec["available_providers"]> {
+  return providers.filter(
+    (provider) => provider !== "vertex" || isVertexModelName(modelName),
+  );
+}
+
 export function getMissingProviderMappings(
   localModels: LocalModelList,
   schemaContent: string,
@@ -664,19 +680,25 @@ export function getMissingProviderMappings(
     if (!providers || providers.length === 0) {
       continue;
     }
+    const exactModelProviders = providersForExactModelName(name, providers);
+    if (exactModelProviders.length === 0) {
+      continue;
+    }
     if (findProviderMappingEntryRange(lines, name)) {
       continue;
     }
     const defaultProviders = model && SYNC_DEFAULT_ENDPOINT_TYPES[model.format];
     const matchesDefault =
       defaultProviders &&
-      defaultProviders.length === providers.length &&
-      defaultProviders.every((provider, i) => provider === providers[i]);
+      defaultProviders.length === exactModelProviders.length &&
+      defaultProviders.every(
+        (provider, i) => provider === exactModelProviders[i],
+      );
     if (matchesDefault) {
       continue;
     }
 
-    missingProviderMappings.push({ name, providers });
+    missingProviderMappings.push({ name, providers: exactModelProviders });
   }
 
   return missingProviderMappings;

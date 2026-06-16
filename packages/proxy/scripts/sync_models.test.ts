@@ -179,7 +179,7 @@ export const AvailableEndpointTypes = {
     );
   });
 
-  it("finds missing provider mappings from available providers", () => {
+  it("finds missing provider mappings only for exact model providers", () => {
     const localModels = {
       "accounts/fireworks/models/minimax-m3": canonicalFireworksModel,
       "accounts/fireworks/models/minimax-m2p5": canonicalFireworksModel,
@@ -209,7 +209,12 @@ export const AvailableEndpointTypes = {
 };
 `;
 
-    expect(getMissingProviderMappings(localModels, schemaContent)).toEqual([
+    const missingProviderMappings = getMissingProviderMappings(
+      localModels,
+      schemaContent,
+    );
+
+    expect(missingProviderMappings).toEqual([
       {
         name: "accounts/fireworks/models/minimax-m3",
         providers: ["fireworks"],
@@ -219,6 +224,10 @@ export const AvailableEndpointTypes = {
         providers: ["vertex"],
       },
     ]);
+    expect(missingProviderMappings).not.toContainEqual({
+      name: "gemini-2.5-flash",
+      providers: ["google", "vertex"],
+    });
   });
 
   it("preserves existing providers during provider-filtered updates", () => {

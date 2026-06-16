@@ -12843,6 +12843,19 @@
       "databricks"
     ]
   },
+  "databricks-claude-fable-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Claude Fable 5",
+    "deprecated": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "mistral.pixtral-large-2502-v1:0": {
     "format": "converse",
     "flavor": "chat",

@@ -81,7 +81,7 @@ export const ModelSchema = z.object({
     .nullish()
     .describe("Date after which the model will be treated as deprecated"),
   parent: z.string().nullish().describe("The model was replaced this model."),
-  equivalent_models: z
+  fallback_models: z
     .array(z.string())
     .nullish()
     .describe(

@@ -1957,7 +1957,7 @@
     "displayName": "Claude 4.6 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "anthropic.claude-sonnet-4-6",
       "global.anthropic.claude-sonnet-4-6",
       "publishers/anthropic/models/claude-sonnet-4-6",
@@ -1982,7 +1982,7 @@
     "displayName": "Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/anthropic/models/claude-sonnet-4-5"
     ],
     "max_input_tokens": 200000,
@@ -2103,7 +2103,7 @@
     "displayName": "Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/anthropic/models/claude-haiku-4-5"
     ],
     "max_input_tokens": 200000,
@@ -2255,7 +2255,7 @@
     "displayName": "Claude 4.7 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "anthropic.claude-opus-4-7",
       "global.anthropic.claude-opus-4-7",
       "publishers/anthropic/models/claude-opus-4-7",
@@ -2296,7 +2296,7 @@
     "displayName": "Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/anthropic/models/claude-opus-4-6"
     ],
     "max_input_tokens": 1000000,
@@ -2630,7 +2630,7 @@
     "displayName": "Claude 4.8 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "anthropic.claude-opus-4-8",
       "global.anthropic.claude-opus-4-8",
       "publishers/anthropic/models/claude-opus-4-8",
@@ -2655,7 +2655,7 @@
     "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "anthropic.claude-fable-5",
       "global.anthropic.claude-fable-5",
       "publishers/anthropic/models/claude-fable-5"
@@ -5005,7 +5005,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "parent": "mistral-large-latest",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/mistralai/models/mistral-large-2411"
     ],
     "max_input_tokens": 128000,
@@ -5110,7 +5110,7 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
     "parent": "codestral-latest",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/mistralai/models/codestral-2501"
     ],
     "available_providers": [
@@ -6170,7 +6170,7 @@
     "displayName": "Gemini 3.1 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.1-pro-preview"
     ],
     "supported_regions": [
@@ -6193,7 +6193,7 @@
     "displayName": "Gemini 3.1 Pro Custom Tools (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.1-pro-preview-customtools"
     ],
     "max_input_tokens": 1048576,
@@ -6213,7 +6213,7 @@
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite-preview"
     ],
     "supported_regions": [
@@ -6237,7 +6237,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2026-03-09",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3-pro-preview"
     ],
     "max_input_tokens": 1048576,
@@ -6257,7 +6257,7 @@
     "displayName": "Gemini 3 Flash (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3-flash-preview"
     ],
     "supported_regions": [
@@ -6280,7 +6280,7 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash"
     ],
     "supported_regions": [
@@ -6326,7 +6326,7 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-pro"
     ],
     "supported_regions": [
@@ -6366,7 +6366,7 @@
     "reasoning_budget": true,
     "experimental": false,
     "parent": "gemini-2.5-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-preview-09-2025"
     ],
     "supported_regions": [
@@ -6392,7 +6392,7 @@
     "deprecated": true,
     "deprecation_date": "2025-11-18",
     "parent": "gemini-2.5-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-preview-05-20"
     ],
     "max_input_tokens": 1048576,
@@ -6413,7 +6413,7 @@
     "experimental": false,
     "deprecated": true,
     "parent": "gemini-2.5-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-preview-04-17"
     ],
     "max_input_tokens": 1048576,
@@ -6453,7 +6453,7 @@
     "deprecated": true,
     "deprecation_date": "2025-12-02",
     "parent": "gemini-2.5-pro",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-pro-preview-05-06"
     ],
     "max_input_tokens": 1048576,
@@ -6475,7 +6475,7 @@
     "deprecated": true,
     "deprecation_date": "2025-12-02",
     "parent": "gemini-2.5-pro",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-pro-preview-03-25"
     ],
     "max_input_tokens": 1048576,
@@ -6494,7 +6494,7 @@
     "reasoning": true,
     "experimental": true,
     "parent": "gemini-2.5-pro",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-pro-exp-03-25"
     ],
     "max_input_tokens": 1048576,
@@ -6514,7 +6514,7 @@
     "reasoning_budget": true,
     "experimental": true,
     "parent": "gemini-2.5-flash-lite",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025"
     ],
     "supported_regions": [
@@ -6540,7 +6540,7 @@
     "deprecated": true,
     "deprecation_date": "2025-11-18",
     "parent": "gemini-2.5-flash-lite",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-lite-preview-06-17"
     ],
     "max_input_tokens": 1048576,
@@ -6560,7 +6560,7 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-lite"
     ],
     "supported_regions": [
@@ -6596,7 +6596,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "Gemini 2.0 Flash Latest",
     "deprecation_date": "2026-06-01",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.0-flash"
     ],
     "max_input_tokens": 1048576,
@@ -6615,7 +6615,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "deprecation_date": "2026-06-01",
     "parent": "gemini-2.0-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.0-flash-001"
     ],
     "max_input_tokens": 1048576,
@@ -6634,7 +6634,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecation_date": "2026-06-01",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.0-flash-lite"
     ],
     "max_input_tokens": 1048576,
@@ -6653,7 +6653,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "deprecation_date": "2026-06-01",
     "parent": "gemini-2.0-flash-lite",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.0-flash-lite-001"
     ],
     "max_input_tokens": 1048576,
@@ -6670,7 +6670,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3-pro-image-preview"
     ],
     "supported_regions": [
@@ -6690,7 +6690,7 @@
     "input_cost_per_mil_tokens": 0.075,
     "displayName": "Gemini 1.5 Flash",
     "deprecation_date": "2025-09-29",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-flash"
     ],
     "max_input_tokens": 8192,
@@ -6723,7 +6723,7 @@
     "input_cache_write_cost_per_mil_tokens": 1,
     "deprecation_date": "2025-05-24",
     "parent": "gemini-1.5-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-flash-001"
     ],
     "max_input_tokens": 1000000,
@@ -6742,7 +6742,7 @@
     "input_cache_write_cost_per_mil_tokens": 1,
     "deprecation_date": "2025-09-24",
     "parent": "gemini-1.5-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-flash-002"
     ],
     "max_input_tokens": 1048576,
@@ -6787,7 +6787,7 @@
     "output_cost_per_mil_tokens": 5,
     "displayName": "Gemini 1.5 Pro",
     "deprecation_date": "2025-09-29",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-pro"
     ],
     "max_input_tokens": 2097152,
@@ -6818,7 +6818,7 @@
     "output_cost_per_mil_tokens": 5,
     "deprecation_date": "2025-05-24",
     "parent": "gemini-1.5-pro",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-pro-001"
     ],
     "max_input_tokens": 1000000,
@@ -6835,7 +6835,7 @@
     "output_cost_per_mil_tokens": 5,
     "deprecation_date": "2025-09-24",
     "parent": "gemini-1.5-pro",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.5-pro-002"
     ],
     "max_input_tokens": 2097152,
@@ -6885,7 +6885,7 @@
     "deprecated": true,
     "deprecation_date": "2025-12-02",
     "parent": "gemini-2.0-flash",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21"
     ],
     "max_input_tokens": 1048576,
@@ -6927,7 +6927,7 @@
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Gemini 1.0 Pro",
     "deprecated": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-1.0-pro"
     ],
     "max_input_tokens": 32760,
@@ -6956,7 +6956,7 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "displayName": "Gemini 3.1 Flash Image Preview",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-image-preview"
     ],
     "supported_regions": [
@@ -6976,7 +6976,7 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
     "displayName": "Gemini 2.5 Flash Image",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-image"
     ],
     "supported_regions": [
@@ -7012,7 +7012,7 @@
     "displayName": "Gemini 3.1 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite"
     ],
     "supported_regions": [
@@ -7034,7 +7034,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Gemini 3.5 Flash",
     "reasoning": true,
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3.5-flash"
     ],
     "max_input_tokens": 1048576,
@@ -12580,7 +12580,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-2.5-computer-use-preview-10-2025"
     ],
     "max_input_tokens": 128000,
@@ -12596,7 +12596,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image",
-    "equivalent_models": [
+    "fallback_models": [
       "publishers/google/models/gemini-3-pro-image"
     ],
     "supported_regions": [

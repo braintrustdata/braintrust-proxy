@@ -209,15 +209,15 @@ describe("sync_models", () => {
       },
     });
 
-    expect(models["claude-sonnet-4-6"].equivalent_models).toEqual([
+    expect(models["claude-sonnet-4-6"].fallback_models).toEqual([
       "anthropic.claude-sonnet-4-6",
       "global.anthropic.claude-sonnet-4-6",
       "publishers/anthropic/models/claude-sonnet-4-6",
     ]);
-    expect(models["gemini-2.5-flash"].equivalent_models).toEqual([
+    expect(models["gemini-2.5-flash"].fallback_models).toEqual([
       "publishers/google/models/gemini-2.5-flash",
     ]);
-    expect(models["mistral-large-2411"].equivalent_models).toEqual([
+    expect(models["mistral-large-2411"].fallback_models).toEqual([
       "publishers/mistralai/models/mistral-large-2411",
     ]);
   });
@@ -261,7 +261,7 @@ describe("sync_models", () => {
     });
 
     for (const model of Object.values(models)) {
-      expect(model.equivalent_models).toBeUndefined();
+      expect(model.fallback_models).toBeUndefined();
     }
   });
 

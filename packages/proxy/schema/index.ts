@@ -1100,20 +1100,20 @@ export function getModelEndpointTypes(model: string): ModelEndpointType[] {
     getDirectModelEndpointTypes(model),
   );
 
-  const equivalentModels = new Set<string>(
-    availableModels[model]?.equivalent_models ?? [],
+  const fallbackModels = new Set<string>(
+    availableModels[model]?.fallback_models ?? [],
   );
   for (const [candidate, spec] of Object.entries(availableModels)) {
-    if (spec.equivalent_models?.includes(model)) {
-      equivalentModels.add(candidate);
-      for (const equivalentModel of spec.equivalent_models) {
-        equivalentModels.add(equivalentModel);
+    if (spec.fallback_models?.includes(model)) {
+      fallbackModels.add(candidate);
+      for (const fallbackModel of spec.fallback_models) {
+        fallbackModels.add(fallbackModel);
       }
     }
   }
 
-  for (const equivalentModel of equivalentModels) {
-    for (const endpointType of getDirectModelEndpointTypes(equivalentModel)) {
+  for (const fallbackModel of fallbackModels) {
+    for (const endpointType of getDirectModelEndpointTypes(fallbackModel)) {
       endpointTypes.add(endpointType);
     }
   }

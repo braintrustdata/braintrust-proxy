@@ -516,7 +516,7 @@ export function applyEquivalentModels(
   const updatedModels: LocalModelList = {};
   for (const [modelName, model] of Object.entries(localModels)) {
     if (managedNames.has(modelName)) {
-      const { equivalent_models: _equivalentModels, ...rest } = model;
+      const { fallback_models: _fallbackModels, ...rest } = model;
       updatedModels[modelName] = rest;
     } else {
       updatedModels[modelName] = model;
@@ -545,7 +545,7 @@ export function applyEquivalentModels(
 
     updatedModels[canonicalName] = {
       ...canonicalModel,
-      equivalent_models: equivalentModels,
+      fallback_models: equivalentModels,
     };
   }
 

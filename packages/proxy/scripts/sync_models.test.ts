@@ -5,6 +5,7 @@ import {
   convertRemoteToLocalModel,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
+  getMissingProviderMappings,
   getUpdatedAvailableProviders,
   isFieldManuallyPreserved,
   isSupportedRemoteModel,
@@ -143,10 +144,90 @@ describe("sync_models", () => {
     );
   });
 
+  it("only deduplicates entries inside AvailableEndpointTypes", () => {
+    const schemaContent = `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "sonar": ["perplexity"],
+};
+`;
+
+    expect(normalizeProviderMappingContent(schemaContent)).toBe(
+      `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+};
+`,
+    );
+  });
+
   it("formats provider arrays with spaces after commas", () => {
     expect(formatProviderMappingProviders(["openai", "azure"])).toBe(
       `["openai", "azure"]`,
     );
+  });
+
+  it("finds missing provider mappings only for exact model providers", () => {
+    const localModels = {
+      "accounts/fireworks/models/minimax-m3": canonicalFireworksModel,
+      "accounts/fireworks/models/minimax-m2p5": canonicalFireworksModel,
+      "gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google", "vertex"],
+      },
+      "publishers/google/models/gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["vertex"],
+      },
+      sonar: {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["perplexity"],
+      },
+      "custom-model": {
+        format: "openai",
+        flavor: "chat",
+      },
+    } satisfies Record<string, ModelSpec>;
+    const schemaContent = `const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
+};
+`;
+
+    const missingProviderMappings = getMissingProviderMappings(
+      localModels,
+      schemaContent,
+    );
+
+    expect(missingProviderMappings).toEqual([
+      {
+        name: "accounts/fireworks/models/minimax-m3",
+        providers: ["fireworks"],
+      },
+      {
+        name: "publishers/google/models/gemini-2.5-flash",
+        providers: ["vertex"],
+      },
+    ]);
+    expect(missingProviderMappings).not.toContainEqual({
+      name: "gemini-2.5-flash",
+      providers: ["google", "vertex"],
+    });
   });
 
   it("preserves existing providers during provider-filtered updates", () => {

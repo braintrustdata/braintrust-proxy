@@ -1,6 +1,7 @@
 import { expect } from "vitest";
 import { it } from "vitest";
 import raw_models from "./model_list.json";
+import { getModelEndpointTypes } from "./index";
 import { markModelsPastDeprecationDate, ModelSchema } from "./models";
 import { z } from "zod";
 
@@ -13,6 +14,12 @@ it("parse model list", () => {
     }
     expect(result.success).toBe(true);
   }
+});
+
+it("Uses available providers for Fireworks model endpoint types", () => {
+  expect(getModelEndpointTypes("accounts/fireworks/models/minimax-m3")).toEqual(
+    ["fireworks"],
+  );
 });
 
 it("Marks models as deprecated once deprecation date has been reached", () => {

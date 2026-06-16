@@ -169,6 +169,17 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
   "../schema/model_list.json",
 );
 const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
+const SYNC_DEFAULT_ENDPOINT_TYPES = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  js: ["js"],
+  window: ["js"],
+  converse: ["bedrock"],
+} satisfies Record<
+  ModelSpec["format"],
+  NonNullable<ModelSpec["available_providers"]>
+>;
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
@@ -521,18 +532,26 @@ type ProviderMappingEntryRange = {
   end: number;
 };
 
+type ProviderMappingUpdate = {
+  name: string;
+  providers: string[];
+};
+
 function isProviderMappingEntryEnd(line: string): boolean {
   return /\],(?:\s*\/\/.*)?$/.test(line.trim());
+}
+
+function getProviderMappingKey(line: string): string | undefined {
+  const match = line.match(/^  (?:"([^"]+)"|([A-Za-z_$][\w$]*)):/);
+  return match?.[1] ?? match?.[2];
 }
 
 function findProviderMappingEntryRange(
   lines: string[],
   modelName: string,
 ): ProviderMappingEntryRange | undefined {
-  const entryPrefix = `  "${modelName}":`;
-
   for (let i = 0; i < lines.length; i++) {
-    if (!lines[i].startsWith(entryPrefix)) {
+    if (getProviderMappingKey(lines[i]) !== modelName) {
       continue;
     }
 
@@ -551,10 +570,28 @@ export function normalizeProviderMappingContent(schemaContent: string): string {
   const lines = schemaContent.split("\n");
   const normalizedLines: string[] = [];
   const seenCanonicalKeys = new Set<string>();
+  let inAvailableEndpointTypes = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(/^  "([^"]+)":/);
-    if (!match) {
+    if (lines[i].startsWith("export const AvailableEndpointTypes")) {
+      inAvailableEndpointTypes = true;
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    if (!inAvailableEndpointTypes) {
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    if (lines[i].trim() === "};") {
+      inAvailableEndpointTypes = false;
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    const originalKey = getProviderMappingKey(lines[i]);
+    if (!originalKey) {
       if (lines[i].trim() === "],") {
         continue;
       }
@@ -563,7 +600,6 @@ export function normalizeProviderMappingContent(schemaContent: string): string {
       continue;
     }
 
-    const originalKey = match[1];
     const canonicalKey = canonicalizeLocalModelName(originalKey);
     const entryLines = [lines[i]];
 
@@ -614,12 +650,64 @@ export function formatProviderMappingProviders(providers: string[]): string {
   return `[${providers.map((provider) => JSON.stringify(provider)).join(", ")}]`;
 }
 
+export function getMissingProviderMappings(
+  localModels: LocalModelList,
+  schemaContent: string,
+  modelNames: string[] = Object.keys(localModels),
+): ProviderMappingUpdate[] {
+  const lines = normalizeProviderMappingContent(schemaContent).split("\n");
+  const missingProviderMappings: ProviderMappingUpdate[] = [];
+
+  for (const name of modelNames) {
+    const model = localModels[name];
+    const providers = model?.available_providers;
+    if (!providers || providers.length === 0) {
+      continue;
+    }
+    if (findProviderMappingEntryRange(lines, name)) {
+      continue;
+    }
+    const defaultProviders = model && SYNC_DEFAULT_ENDPOINT_TYPES[model.format];
+    const matchesDefault =
+      defaultProviders &&
+      defaultProviders.length === providers.length &&
+      defaultProviders.every((provider, i) => provider === providers[i]);
+    if (matchesDefault) {
+      continue;
+    }
+
+    missingProviderMappings.push({ name, providers });
+  }
+
+  return missingProviderMappings;
+}
+
+async function syncProviderMappingsForLocalModels(
+  localModels: LocalModelList,
+  modelNames: string[] = Object.keys(localModels),
+): Promise<void> {
+  const schemaContent = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const missingProviderMappings = getMissingProviderMappings(
+    localModels,
+    schemaContent,
+    modelNames,
+  );
+  if (missingProviderMappings.length > 0) {
+    console.log(
+      `\nUpdating ${missingProviderMappings.length} missing provider mappings...`,
+    );
+    await updateProviderMapping(
+      missingProviderMappings,
+      Object.keys(localModels),
+    );
+    return;
+  }
+
+  await normalizeProviderMappingsFile();
+}
+
 async function updateProviderMapping(
-  newModels: Array<{
-    name: string;
-    providers: string[];
-    remoteModel: LiteLLMModelDetail;
-  }>,
+  newModels: ProviderMappingUpdate[],
   completeModelOrder?: string[],
 ): Promise<void> {
   try {
@@ -1489,7 +1577,6 @@ async function updateModelsCommand(argv: any) {
     if (argv.write) {
       if (madeChanges) {
         await writeLocalModels(updatedLocalModels);
-        await normalizeProviderMappingsFile();
         console.log(
           `\nLocal model_list.json has been updated with new model information (pricing, token limits) and keys ordered according to schema.`,
         );
@@ -1498,6 +1585,11 @@ async function updateModelsCommand(argv: any) {
           "\nNo model updates were necessary for local model_list.json.",
         );
       }
+
+      await syncProviderMappingsForLocalModels(
+        updatedLocalModels,
+        modelsInScope,
+      );
     } else {
       if (discrepanciesFound === 0) {
         console.log(
@@ -1574,22 +1666,14 @@ async function addModelsCommand(argv: any) {
           SCHEMA_INDEX_PATH,
           "utf-8",
         );
-
-        // Check which grok models are missing from provider mappings
-        const allGrokModels = Object.keys(localModels).filter((name) =>
-          name.includes("grok"),
+        const modelsInScope = Array.from(resolvedRemote.keys()).filter((name) =>
+          Object.prototype.hasOwnProperty.call(localModels, name),
         );
-        const missingProviderMappings = [];
-
-        for (const model of allGrokModels) {
-          if (!schemaContent.includes(`"${model}": ["xAI"]`)) {
-            missingProviderMappings.push({
-              name: model,
-              providers: ["xAI"],
-              remoteModel: { litellm_provider: "xai" },
-            });
-          }
-        }
+        const missingProviderMappings = getMissingProviderMappings(
+          localModels,
+          schemaContent,
+          modelsInScope,
+        );
 
         if (missingProviderMappings.length > 0) {
           console.log(
@@ -1736,7 +1820,9 @@ async function normalizeLocalModelsCommand(argv: any) {
     if (renamedKeys.length === 0 && !needsRewrite) {
       console.log("No local model keys needed normalization.");
       if (argv.write) {
-        await normalizeProviderMappingsFile();
+        await syncProviderMappingsForLocalModels(
+          canonicalizedLocalModels.models,
+        );
       }
       return;
     }
@@ -1771,7 +1857,7 @@ async function normalizeLocalModelsCommand(argv: any) {
       LOCAL_MODEL_LIST_PATH,
       canonicalizedLocalModels.canonicalContent,
     );
-    await normalizeProviderMappingsFile();
+    await syncProviderMappingsForLocalModels(canonicalizedLocalModels.models);
     console.log(
       `\n✅ Canonicalized local model catalog${renamedKeys.length > 0 ? ` and normalized ${renamedKeys.length} local model keys` : ""}.`,
     );

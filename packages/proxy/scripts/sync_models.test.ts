@@ -5,6 +5,7 @@ import {
   convertRemoteToLocalModel,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
+  getMissingProviderMappings,
   getUpdatedAvailableProviders,
   isFieldManuallyPreserved,
   isSupportedRemoteModel,
@@ -143,10 +144,67 @@ describe("sync_models", () => {
     );
   });
 
+  it("only deduplicates entries inside AvailableEndpointTypes", () => {
+    const schemaContent = `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "sonar": ["perplexity"],
+};
+`;
+
+    expect(normalizeProviderMappingContent(schemaContent)).toBe(
+      `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+};
+`,
+    );
+  });
+
   it("formats provider arrays with spaces after commas", () => {
     expect(formatProviderMappingProviders(["openai", "azure"])).toBe(
       `["openai", "azure"]`,
     );
+  });
+
+  it("finds missing provider mappings from available providers", () => {
+    const localModels = {
+      "accounts/fireworks/models/minimax-m3": canonicalFireworksModel,
+      "accounts/fireworks/models/minimax-m2p5": canonicalFireworksModel,
+      sonar: {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["perplexity"],
+      },
+      "custom-model": {
+        format: "openai",
+        flavor: "chat",
+      },
+    } satisfies Record<string, ModelSpec>;
+    const schemaContent = `const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
+};
+`;
+
+    expect(getMissingProviderMappings(localModels, schemaContent)).toEqual([
+      {
+        name: "accounts/fireworks/models/minimax-m3",
+        providers: ["fireworks"],
+      },
+    ]);
   });
 
   it("preserves existing providers during provider-filtered updates", () => {

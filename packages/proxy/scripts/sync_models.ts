@@ -84,6 +84,26 @@ export function isFieldManuallyPreserved(
   return SYNC_PRESERVED_FIELDS[modelName]?.includes(field) ?? false;
 }
 
+// Model ids that must NEVER be auto-added by the LiteLLM sync, even though the
+// remote source lists them. These are entries the source carries but that are
+// not real, invocable models at the provider, so `add-models` re-introduces
+// them on every run and they have to be removed by hand each time.
+//
+// Each id is matched against both the translated (local) name and the raw
+// remote name. Add an id here only after confirming the provider rejects it;
+// remove it if the provider later ships the model for real.
+export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
+  // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
+  // canonical id `claude-opus-4-7`; the API returns not_found for this dated
+  // id, but LiteLLM still lists it, so the sync kept re-adding it.
+  "claude-opus-4-7-20260416",
+]);
+
+// Returns true if `modelName` must not be auto-added by the sync.
+export function isModelExcludedFromSync(modelName: string): boolean {
+  return SYNC_EXCLUDED_MODELS.has(modelName);
+}
+
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
   .object({
@@ -1550,6 +1570,16 @@ async function addModelsCommand(argv: any) {
         ) {
           continue;
         }
+      }
+
+      if (
+        isModelExcludedFromSync(translatedModelName) ||
+        isModelExcludedFromSync(remoteModelName)
+      ) {
+        console.log(
+          `  [EXCLUDED] Skipping ${translatedModelName} (in SYNC_EXCLUDED_MODELS)`,
+        );
+        continue;
       }
 
       const equivalentLocalNames =

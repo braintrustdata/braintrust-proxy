@@ -7040,7 +7040,8 @@
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Beta (Non-Reasoning)",
-    "max_input_tokens": 2000000,
+    "parent": "grok-4.20-0309-non-reasoning",
+    "max_input_tokens": 1000000,
     "max_output_tokens": 2000000,
     "available_providers": [
       "xAI"
@@ -7055,7 +7056,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Beta Reasoning (0309)",
     "reasoning": true,
-    "max_input_tokens": 2000000,
+    "parent": "grok-4.20-0309-reasoning",
+    "max_input_tokens": 1000000,
     "max_output_tokens": 2000000,
     "available_providers": [
       "xAI"
@@ -7070,7 +7072,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 Multi-Agent Beta (0309)",
     "reasoning": true,
-    "max_input_tokens": 2000000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 2000000,
     "available_providers": [
       "xAI"

@@ -5016,11 +5016,10 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "Mistral Medium 3",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5",
+    "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
     ]

@@ -48,6 +48,11 @@ const INPUT_OUTPUT_COST_FIELDS = [
   "input_cost_per_mil_tokens",
   "output_cost_per_mil_tokens",
 ] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const GROK_420_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+  "max_input_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
 
 export const SYNC_PRESERVED_FIELDS: Record<
   string,
@@ -62,6 +67,16 @@ export const SYNC_PRESERVED_FIELDS: Record<
   "grok-4-1-fast-reasoning-latest": GROK_FAST_COST_FIELDS,
   "grok-4-fast-non-reasoning": GROK_FAST_COST_FIELDS,
   "grok-4-fast-reasoning": GROK_FAST_COST_FIELDS,
+  // Grok 4.20: xAI docs list $1.25 in / $2.50 out per 1M and a 1,000,000-token
+  // context window for the reasoning model and its beta/multi-agent aliases
+  // (https://docs.x.ai/developers/models/grok-4.20-0309-reasoning). LiteLLM
+  // lists a 2,000,000 context window, so the sync keeps re-raising
+  // max_input_tokens; pin the verified price + context.
+  "grok-4.20-0309-non-reasoning": GROK_420_FIELDS,
+  "grok-4.20-0309-reasoning": GROK_420_FIELDS,
+  "grok-4.20-beta-0309-non-reasoning": GROK_420_FIELDS,
+  "grok-4.20-beta-0309-reasoning": GROK_420_FIELDS,
+  "grok-4.20-multi-agent-beta-0309": GROK_420_FIELDS,
   // Claude Sonnet 4's documented standard context window is 200k (1M is a
   // beta tier); LiteLLM reports the 1M beta window.
   "claude-sonnet-4-20250514": ["max_input_tokens"],

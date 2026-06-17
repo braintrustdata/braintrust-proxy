@@ -59,6 +59,7 @@ jobs:
 
             - `anthropic` — models and pricing: `https://docs.anthropic.com/en/docs/about-claude/models/all-models`
             - `azure` — models: `https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models` ; pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
+            - `baseten` — models: `https://www.baseten.co/library/` (Model APIs library; per-model pages live at `https://www.baseten.co/library/<id>/`) ; pricing: the per-model library page, else `https://www.baseten.co/pricing/`
             - `bedrock` — models: `https://docs.aws.amazon.com/en_us/bedrock/latest/userguide/foundation-models-reference.html` ; pricing: `https://aws.amazon.com/bedrock/pricing/`
             - `cerebras` — models: `https://inference-docs.cerebras.ai/models/overview` ; pricing: `https://inference-docs.cerebras.ai/support/pricing`
             - `databricks` — models: `https://docs.databricks.com/aws/en/machine-learning/model-serving/foundation-model-overview`

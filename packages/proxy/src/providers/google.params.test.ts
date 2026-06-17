@@ -950,6 +950,96 @@ describe("Google parameter translation (captureOnly)", () => {
         },
       });
     });
+
+    it("should omit returned thoughts for streaming json_schema with reasoning", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [
+            {
+              role: "user",
+              content: "Return a JSON object with the answer.",
+            },
+          ],
+          response_format: {
+            type: "json_schema",
+            json_schema: {
+              name: "answer",
+              strict: true,
+              schema: {
+                type: "object",
+                properties: {
+                  answer: { type: "string" },
+                },
+                required: ["answer"],
+                additionalProperties: false,
+              },
+            },
+          },
+          reasoning_budget: 1000,
+          max_tokens: 300,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      const body = requests[0].body as Record<string, unknown>;
+      const generationConfig = body.generationConfig as Record<
+        string,
+        unknown
+      >;
+      const thinkingConfig = generationConfig.thinkingConfig as Record<
+        string,
+        unknown
+      >;
+      expect(thinkingConfig.thinkingBudget).toBe(1000);
+      expect(thinkingConfig).not.toHaveProperty("includeThoughts");
+    });
+
+    it("should omit returned thoughts for streaming json_object with reasoning", async () => {
+      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+      await callProxyV1<
+        OpenAIChatCompletionCreateParams,
+        OpenAIChatCompletionChunk
+      >({
+        body: {
+          model: "gemini-2.5-flash",
+          messages: [
+            {
+              role: "user",
+              content: "Return a JSON object with name and age.",
+            },
+          ],
+          response_format: { type: "json_object" },
+          reasoning_budget: 1000,
+          max_tokens: 300,
+          stream: true,
+        },
+        fetch,
+      });
+
+      expect(requests).toHaveLength(1);
+      expect(requests[0].url).toContain("streamGenerateContent");
+      const body = requests[0].body as Record<string, unknown>;
+      const generationConfig = body.generationConfig as Record<
+        string,
+        unknown
+      >;
+      const thinkingConfig = generationConfig.thinkingConfig as Record<
+        string,
+        unknown
+      >;
+      expect(thinkingConfig.thinkingBudget).toBe(1000);
+      expect(thinkingConfig).not.toHaveProperty("includeThoughts");
+    });
   });
 
   describe("image input", () => {

@@ -1709,6 +1709,41 @@ describe("googleCompletionToOpenAICompletion", () => {
 });
 
 describe("googleEventToOpenAIChatEvent", () => {
+  it("should emit thought text as reasoning and not content", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiEvent: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [
+              {
+                thought: true,
+                text: "**Defining the response shape**",
+              },
+              {
+                text: '{"answer":"done"}',
+              },
+            ],
+          },
+          finishReason: "STOP",
+        },
+      ],
+    };
+
+    const result = googleEventToOpenAIChatEvent(
+      "gemini-2.0-flash",
+      geminiEvent,
+    );
+
+    expect(result.event).not.toBeNull();
+    expect(result.event!.choices).toHaveLength(1);
+    expect(result.event!.choices[0].delta.content).toBe('{"answer":"done"}');
+    expect(result.event!.choices[0].delta.reasoning?.content).toBe(
+      "**Defining the response shape**",
+    );
+  });
+
   it("should handle snake_case function_call in streaming output", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const geminiEvent: any = {

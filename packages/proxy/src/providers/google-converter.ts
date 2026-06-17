@@ -349,15 +349,23 @@ export const openaiParamsToGeminiMessageParams = (
     gemini.thinkingConfig = getGeminiThinkingParams({
       ...openai,
       max_completion_tokens: maxTokens,
+      includeThoughts: !isJSONResponseFormat(openai.response_format),
     });
   }
 
   return gemini;
 };
 
+const isJSONResponseFormat = (
+  responseFormat: OpenAIChatCompletionCreateParams["response_format"],
+): boolean =>
+  responseFormat?.type === "json_schema" ||
+  responseFormat?.type === "json_object";
+
 const getGeminiThinkingParams = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
+    includeThoughts?: boolean;
   },
 ): ThinkingConfig => {
   if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
@@ -367,7 +375,7 @@ const getGeminiThinkingParams = (
   }
 
   return {
-    includeThoughts: true,
+    ...(openai.includeThoughts ? { includeThoughts: true } : {}),
     thinkingBudget: getThinkingBudget(openai),
   };
 };

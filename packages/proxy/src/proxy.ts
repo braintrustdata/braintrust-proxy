@@ -3472,6 +3472,13 @@ async function fetchGoogleChatCompletions({
     oaiParams.response_format?.type === "json_schema"
   ) {
     params.response_mime_type = "application/json";
+    if (
+      params.thinkingConfig &&
+      typeof params.thinkingConfig === "object" &&
+      !Array.isArray(params.thinkingConfig)
+    ) {
+      delete (params.thinkingConfig as Record<string, unknown>).includeThoughts;
+    }
   }
   if (oaiParams.response_format?.type === "json_schema") {
     params.response_schema = await googleSchemaFromJsonSchema(

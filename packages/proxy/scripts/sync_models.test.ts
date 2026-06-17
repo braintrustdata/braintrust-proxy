@@ -8,9 +8,11 @@ import {
   getMissingProviderMappings,
   getUpdatedAvailableProviders,
   isFieldManuallyPreserved,
+  isModelExcludedFromSync,
   isSupportedRemoteModel,
   normalizeLocalModels,
   normalizeProviderMappingContent,
+  SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
 
@@ -318,5 +320,18 @@ describe("isFieldManuallyPreserved", () => {
         expect(field in sampleSpec || true).toBe(true);
       }
     }
+  });
+});
+
+describe("isModelExcludedFromSync", () => {
+  it("excludes the known phantom model id", () => {
+    expect(isModelExcludedFromSync("claude-opus-4-7-20260416")).toBe(true);
+    expect(SYNC_EXCLUDED_MODELS.has("claude-opus-4-7-20260416")).toBe(true);
+  });
+
+  it("does not exclude real model ids", () => {
+    expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
+    expect(isModelExcludedFromSync("gpt-5")).toBe(false);
+    expect(isModelExcludedFromSync("")).toBe(false);
   });
 });

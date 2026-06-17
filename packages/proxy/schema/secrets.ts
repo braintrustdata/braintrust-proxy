@@ -216,6 +216,7 @@ export const APISecretSchema = z.union([
         "fireworks",
         "cerebras",
         "xAI",
+        "wafer",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),

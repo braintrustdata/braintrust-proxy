@@ -1113,6 +1113,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
   BASETEN_API_KEY: "baseten",
+  WAFER_API_KEY: "wafer",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -1140,6 +1141,7 @@ export const EndpointProviderToBaseURL: {
   baseten: "https://inference.baseten.co/v1",
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
+  wafer: "https://pass.wafer.ai/v1",
   bedrock: null,
   vertex: null,
   azure: null,

@@ -23,6 +23,7 @@ type ModelEndpointType =
   | "cerebras"
   | "ollama"
   | "replicate"
+  | "wafer"
   | "js";
 
 type ModelFormat =

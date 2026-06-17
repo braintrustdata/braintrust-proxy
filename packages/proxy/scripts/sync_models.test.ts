@@ -291,6 +291,16 @@ describe("isFieldManuallyPreserved", () => {
         "output_cost_per_mil_tokens",
       ),
     ).toBe(true);
+    // grok-4.20 pins price + context (LiteLLM lists a 2M context window)
+    expect(
+      isFieldManuallyPreserved("grok-4.20-0309-reasoning", "max_input_tokens"),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4.20-multi-agent-beta-0309",
+        "input_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
   });
 
   it("does not preserve fields outside the override list", () => {

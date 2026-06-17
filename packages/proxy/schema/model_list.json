@@ -10908,6 +10908,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/glm-5p2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.4,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "displayName": "GLM 5.2",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "dall-e-3": {
     "format": "openai",
     "flavor": "chat",
@@ -12838,6 +12852,19 @@
     "multimodal": true,
     "displayName": "GPT-5.5",
     "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-fable-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"

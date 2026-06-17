@@ -24,7 +24,11 @@ jobs:
           fetch-depth: 0
 
       - name: Attempt provider-direct sync with Claude Code
-        timeout-minutes: 25
+        # The audit covers ~15 providers (model list + pricing per provider) with
+        # --max-turns 200. At the other Claude steps' rate (~80 turns / 15 min)
+        # that needs ~35-40 min, so a 25-min cap killed the step mid-audit on
+        # essentially every run. Give the turn budget room to finish.
+        timeout-minutes: 45
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -115,7 +119,7 @@ jobs:
             All three checks must pass before creating an issue:
 
             1. **Cross-source**: Confirm the model ID appears in at least two independent official signals (e.g., model listing page + pricing page, or model listing page + changelog). A single docs page is not sufficient.
-            2. **Recent commits**: Check `git log --oneline -30 -- packages/proxy/schema/model_list.json` to confirm the gap was not already fixed in a recent commit.
+            2. **Already fixed**: Read `packages/proxy/schema/model_list.json` (and `index.ts`) and confirm the model id / corrected value is not already present, so you do not re-file a gap that has already been addressed. (Do not use `git`/Bash — they are not available to this step.)
             3. **ID format**: Confirm the proposed model ID matches the naming convention used by the same provider in `model_list.json` (e.g., `publishers/google/models/...` for vertex). Do not file an issue for a plausible-but-unverified ID.
 
             Then search for an equivalent open GitHub issue and do not create duplicates.

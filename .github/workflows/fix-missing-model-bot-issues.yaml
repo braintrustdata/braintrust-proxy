@@ -547,6 +547,16 @@ jobs:
             core.setOutput("added_models", unique(allAddedModels).join(", "));
             core.setOutput("updated_models", unique(allUpdatedModels).join(", "));
 
+      # Always regenerate AvailableEndpointTypes from model_list.json before
+      # opening the PR. Models added by the Claude fallback (rather than the
+      # deterministic resolve-issue path) don't call updateAvailableEndpointTypes,
+      # so without this their index.ts provider mapping is missing. Running it
+      # here (node_modules is installed; no PR-branch re-checkout yet) means the
+      # mapping lands in the first PR commit regardless of the Codex path.
+      - name: Canonicalize model list
+        if: steps.result.outputs.action == 'changed'
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
       - name: Check expected files only
         id: changes
         if: steps.result.outputs.action == 'changed'

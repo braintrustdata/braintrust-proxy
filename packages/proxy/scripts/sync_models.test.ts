@@ -6,11 +6,14 @@ import {
   convertRemoteToLocalModel,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
+  getMissingProviderMappings,
   getUpdatedAvailableProviders,
   isFieldManuallyPreserved,
+  isModelExcludedFromSync,
   isSupportedRemoteModel,
   normalizeLocalModels,
   normalizeProviderMappingContent,
+  SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
 
@@ -144,10 +147,90 @@ describe("sync_models", () => {
     );
   });
 
+  it("only deduplicates entries inside AvailableEndpointTypes", () => {
+    const schemaContent = `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "sonar": ["perplexity"],
+};
+`;
+
+    expect(normalizeProviderMappingContent(schemaContent)).toBe(
+      `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  converse: ["bedrock"],
+};
+
+export const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+};
+`,
+    );
+  });
+
   it("formats provider arrays with spaces after commas", () => {
     expect(formatProviderMappingProviders(["openai", "azure"])).toBe(
       `["openai", "azure"]`,
     );
+  });
+
+  it("finds missing provider mappings only for exact model providers", () => {
+    const localModels = {
+      "accounts/fireworks/models/minimax-m3": canonicalFireworksModel,
+      "accounts/fireworks/models/minimax-m2p5": canonicalFireworksModel,
+      "gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google", "vertex"],
+      },
+      "publishers/google/models/gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["vertex"],
+      },
+      sonar: {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["perplexity"],
+      },
+      "custom-model": {
+        format: "openai",
+        flavor: "chat",
+      },
+    } satisfies Record<string, ModelSpec>;
+    const schemaContent = `const AvailableEndpointTypes = {
+  sonar: ["perplexity"],
+  "accounts/fireworks/models/minimax-m2p5": ["fireworks"],
+};
+`;
+
+    const missingProviderMappings = getMissingProviderMappings(
+      localModels,
+      schemaContent,
+    );
+
+    expect(missingProviderMappings).toEqual([
+      {
+        name: "accounts/fireworks/models/minimax-m3",
+        providers: ["fireworks"],
+      },
+      {
+        name: "publishers/google/models/gemini-2.5-flash",
+        providers: ["vertex"],
+      },
+    ]);
+    expect(missingProviderMappings).not.toContainEqual({
+      name: "gemini-2.5-flash",
+      providers: ["google", "vertex"],
+    });
   });
 
   it("preserves existing providers during provider-filtered updates", () => {
@@ -306,6 +389,16 @@ describe("isFieldManuallyPreserved", () => {
         "output_cost_per_mil_tokens",
       ),
     ).toBe(true);
+    // grok-4.20 pins price + context (LiteLLM lists a 2M context window)
+    expect(
+      isFieldManuallyPreserved("grok-4.20-0309-reasoning", "max_input_tokens"),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4.20-multi-agent-beta-0309",
+        "input_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
   });
 
   it("does not preserve fields outside the override list", () => {
@@ -335,5 +428,18 @@ describe("isFieldManuallyPreserved", () => {
         expect(field in sampleSpec || true).toBe(true);
       }
     }
+  });
+});
+
+describe("isModelExcludedFromSync", () => {
+  it("excludes the known phantom model id", () => {
+    expect(isModelExcludedFromSync("claude-opus-4-7-20260416")).toBe(true);
+    expect(SYNC_EXCLUDED_MODELS.has("claude-opus-4-7-20260416")).toBe(true);
+  });
+
+  it("does not exclude real model ids", () => {
+    expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
+    expect(isModelExcludedFromSync("gpt-5")).toBe(false);
+    expect(isModelExcludedFromSync("")).toBe(false);
   });
 });

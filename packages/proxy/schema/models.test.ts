@@ -16,6 +16,18 @@ it("parse model list", () => {
   }
 });
 
+it("keeps equivalent model references within the catalog", () => {
+  const models = z.record(ModelSchema).parse(raw_models);
+  for (const [key, value] of Object.entries(models)) {
+    for (const equivalentModel of value.fallback_models ?? []) {
+      expect(
+        models[equivalentModel],
+        `${key} -> ${equivalentModel}`,
+      ).toBeDefined();
+    }
+  }
+});
+
 it("Uses available providers for Fireworks model endpoint types", () => {
   expect(getModelEndpointTypes("accounts/fireworks/models/minimax-m3")).toEqual(
     ["fireworks"],

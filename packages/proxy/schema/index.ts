@@ -1094,13 +1094,40 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
 };
 
-export function getModelEndpointTypes(model: string): ModelEndpointType[] {
+function getDirectModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
     (getAvailableModels()[model] &&
       DefaultEndpointTypes[getAvailableModels()[model].format]) ||
     []
   );
+}
+
+export function getModelEndpointTypes(model: string): ModelEndpointType[] {
+  const availableModels = getAvailableModels();
+  const endpointTypes = new Set<ModelEndpointType>(
+    getDirectModelEndpointTypes(model),
+  );
+
+  const fallbackModels = new Set<string>(
+    availableModels[model]?.fallback_models ?? [],
+  );
+  for (const [candidate, spec] of Object.entries(availableModels)) {
+    if (spec.fallback_models?.includes(model)) {
+      fallbackModels.add(candidate);
+      for (const fallbackModel of spec.fallback_models) {
+        fallbackModels.add(fallbackModel);
+      }
+    }
+  }
+
+  for (const fallbackModel of fallbackModels) {
+    for (const endpointType of getDirectModelEndpointTypes(fallbackModel)) {
+      endpointTypes.add(endpointType);
+    }
+  }
+
+  return [...endpointTypes];
 }
 
 export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {

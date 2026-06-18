@@ -160,7 +160,7 @@ jobs:
             - Use official provider sources only for metadata decisions.
             - Do not invent placeholder values.
 
-      - name: Canonicalize model list after metadata enrichment
+      - name: Canonicalize model list and equivalent models after metadata enrichment
         if: ${{ steps.changed_models.outputs.count != '0' }}
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 

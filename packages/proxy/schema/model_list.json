@@ -12340,6 +12340,34 @@
       "bedrock"
     ]
   },
+  "openai.gpt-5.5": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 33,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "OpenAI GPT-5.5 (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.4": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.75,
+    "output_cost_per_mil_tokens": 16.5,
+    "input_cache_read_cost_per_mil_tokens": 0.275,
+    "displayName": "OpenAI GPT-5.4 (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "nvidia.nemotron-nano-3-30b": {
     "format": "converse",
     "flavor": "chat",
@@ -12957,6 +12985,32 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "xai.grok-4.3": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.3",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "voxtral-small-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "mistral"
     ]
   }
 }

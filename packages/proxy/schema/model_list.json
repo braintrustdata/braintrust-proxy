@@ -10271,7 +10271,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,
-    "max_input_tokens": 202752,
+    "max_input_tokens": 202800,
     "max_output_tokens": 128000,
     "available_providers": [
       "fireworks"

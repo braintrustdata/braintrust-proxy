@@ -174,7 +174,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -190,7 +190,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -239,7 +239,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.3 Codex",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -1929,6 +1929,7 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 15,
     "displayName": "ChatGPT-4o",
+    "deprecated": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -4835,6 +4836,17 @@
       "together"
     ]
   },
+  "Qwen/Qwen3.7-Plus": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.32,
+    "output_cost_per_mil_tokens": 1.28,
+    "displayName": "Qwen 3.7 Plus",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "together"
+    ]
+  },
   "magistral-medium-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -4890,6 +4902,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Magistral Medium (2509)",
+    "deprecation_date": "2026-07-31",
     "parent": "magistral-medium-latest",
     "max_input_tokens": 128000,
     "available_providers": [
@@ -4902,6 +4915,7 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Magistral Small (2509)",
+    "deprecation_date": "2026-07-31",
     "parent": "magistral-small-latest",
     "max_input_tokens": 128000,
     "available_providers": [
@@ -4938,6 +4952,7 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Devstral 2512",
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -5282,6 +5297,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "displayName": "Mistral NeMo",
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -5293,6 +5309,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -6271,6 +6288,9 @@
     "flavor": "embedding",
     "multimodal": true,
     "displayName": "Gemini embedding 2",
+    "fallback_models": [
+      "publishers/google/models/gemini-embedding-2"
+    ],
     "available_providers": [
       "google",
       "vertex"
@@ -6280,6 +6300,9 @@
     "format": "google",
     "flavor": "embedding",
     "displayName": "Gemini embedding 001",
+    "fallback_models": [
+      "publishers/google/models/gemini-embedding-001"
+    ],
     "available_providers": [
       "google",
       "vertex"
@@ -11706,6 +11729,7 @@
     "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.375,
     "reasoning": true,
+    "deprecated": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -12608,6 +12632,19 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "qwen/qwen3.6-27b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Qwen 3.6 27B",
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "groq"
     ]
   },
   "moonshotai.kimi-k2.5": {

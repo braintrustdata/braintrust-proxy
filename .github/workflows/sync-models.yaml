@@ -76,6 +76,22 @@ jobs:
             pnpm exec tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
           done
 
+      - name: Sync Baseten models from /v1/models
+        env:
+          BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          # Baseten's own /v1/models is authoritative for Baseten availability
+          # (LiteLLM lags it). Skip cleanly if the key is not configured yet so
+          # the rest of the sync still runs.
+          if [ -z "${BASETEN_API_KEY:-}" ]; then
+            echo "BASETEN_API_KEY not set; skipping Baseten model sync."
+            exit 0
+          fi
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-baseten --write
+
       - name: Collect changed model ids
         id: changed_models
         run: |

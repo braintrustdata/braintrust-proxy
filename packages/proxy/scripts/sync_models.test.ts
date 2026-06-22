@@ -300,9 +300,16 @@ export const AvailableEndpointTypes = {
     expect(models["gemini-2.5-flash"].fallback_models).toEqual([
       "publishers/google/models/gemini-2.5-flash",
     ]);
+    expect(
+      models["publishers/google/models/gemini-2.5-flash"].available_providers,
+    ).toEqual(["vertex"]);
     expect(models["mistral-large-2411"].fallback_models).toEqual([
       "publishers/mistralai/models/mistral-large-2411",
     ]);
+    expect(
+      models["publishers/mistralai/models/mistral-large-2411"]
+        .available_providers,
+    ).toEqual(["vertex"]);
   });
 
   it("does not group lookalike variants that need curated equivalence", () => {

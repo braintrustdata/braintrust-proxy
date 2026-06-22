@@ -3732,7 +3732,8 @@
     "displayName": "DeepSeek V4 Pro",
     "max_input_tokens": 512000,
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "accounts/fireworks/models/deepseek-r1-0528": {
@@ -12795,7 +12796,8 @@
     "displayName": "Kimi K2.7 Code",
     "max_input_tokens": 262144,
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "writer.palmyra-x4-v1:0": {

@@ -389,7 +389,8 @@ jobs:
             4. Only edit `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
             5. Preserve existing JSON formatting, field order, model ordering, and neighboring schema conventions.
             6. Do not invent metadata. Use official provider sources only if verification is needed.
-            7. Write a concise response summary to the response summary file describing what changed, or why no change was made.
+            7. Bedrock "Mantle" exception: do NOT change a model's `format` from "openai" to "converse" because Codex flagged an "openai format on a Bedrock model" incompatibility. A model with `format: "openai"` whose only provider is `bedrock` (e.g. `openai.gpt-5.5`, `openai.gpt-5.4`, `xai.grok-4.3`) is a Bedrock Mantle-engine model: AWS serves it exclusively through the OpenAI-compatible `bedrock-mantle` endpoint, and it does NOT support the Bedrock Converse API or InvokeModel, so flipping it to "converse" breaks invocation at AWS. Leave its `format` as "openai" and note in the response summary that OpenAI-format-on-Bedrock is an intentional Mantle case to be handled in the proxy, not a catalog change.
+            8. Write a concise response summary to the response summary file describing what changed, or why no change was made.
 
       - name: Ensure Codex response summary exists
         if: steps.codex_comments.outputs.found == 'true'

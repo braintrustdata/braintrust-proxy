@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
+  addProviderToProviderMappingContent,
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
+  convertBasetenToLocalModel,
   convertRemoteToLocalModel,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
@@ -448,5 +450,96 @@ describe("isModelExcludedFromSync", () => {
     expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
     expect(isModelExcludedFromSync("gpt-5")).toBe(false);
     expect(isModelExcludedFromSync("")).toBe(false);
+  });
+});
+
+describe("convertBasetenToLocalModel", () => {
+  it("converts a Baseten model (per-token string pricing, reasoning) to a ModelSpec", () => {
+    expect(
+      convertBasetenToLocalModel({
+        id: "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B",
+        name: "Nemotron Ultra",
+        context_length: 202800,
+        max_completion_tokens: 202800,
+        pricing: {
+          prompt: "0.0000006",
+          completion: "0.0000024",
+          input_cache_read: "0.00000012",
+        },
+        supported_features: ["tools", "reasoning"],
+        input_modalities: ["text"],
+        output_modalities: ["text"],
+      }),
+    ).toEqual({
+      format: "openai",
+      flavor: "chat",
+      reasoning: true,
+      input_cost_per_mil_tokens: 0.6,
+      output_cost_per_mil_tokens: 2.4,
+      input_cache_read_cost_per_mil_tokens: 0.12,
+      displayName: "Nemotron Ultra",
+      max_input_tokens: 202800,
+      available_providers: ["baseten"],
+    });
+  });
+
+  it("flags image-input models multimodal and drops zero-valued pricing", () => {
+    expect(
+      convertBasetenToLocalModel({
+        id: "some/vision-model",
+        input_modalities: ["text", "image"],
+        pricing: { prompt: "0", completion: "0.000001" },
+      }),
+    ).toEqual({
+      format: "openai",
+      flavor: "chat",
+      multimodal: true,
+      output_cost_per_mil_tokens: 1,
+      available_providers: ["baseten"],
+    });
+  });
+});
+
+describe("addProviderToProviderMappingContent", () => {
+  const schema = `export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "deepseek-ai/DeepSeek-V4-Pro": ["together"],
+  "moonshotai/Kimi-K2.7-Code": ["together"],
+  "openai/gpt-oss-20b": ["groq"], // groq pricing / Together for 120B
+};
+`;
+
+  it("widens existing entries and leaves unrelated entries (incl. comments) intact", () => {
+    const { content, updated } = addProviderToProviderMappingContent(
+      schema,
+      ["deepseek-ai/DeepSeek-V4-Pro", "moonshotai/Kimi-K2.7-Code"],
+      "baseten",
+    );
+    expect([...updated].sort()).toEqual([
+      "deepseek-ai/DeepSeek-V4-Pro",
+      "moonshotai/Kimi-K2.7-Code",
+    ]);
+    expect(content).toContain(
+      `"deepseek-ai/DeepSeek-V4-Pro": ["together", "baseten"],`,
+    );
+    expect(content).toContain(
+      `"moonshotai/Kimi-K2.7-Code": ["together", "baseten"],`,
+    );
+    expect(content).toContain(
+      `"openai/gpt-oss-20b": ["groq"], // groq pricing / Together for 120B`,
+    );
+  });
+
+  it("does not duplicate an already-present provider or touch unknown models", () => {
+    const present = `export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "zai-org/GLM-5.2": ["baseten", "together"],
+};
+`;
+    const { content, updated } = addProviderToProviderMappingContent(
+      present,
+      ["zai-org/GLM-5.2", "does/not-exist"],
+      "baseten",
+    );
+    expect(updated).toEqual([]);
+    expect(content).toContain(`"zai-org/GLM-5.2": ["baseten", "together"],`);
   });
 });

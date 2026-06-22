@@ -3414,16 +3414,6 @@
       "fireworks"
     ]
   },
-  "deepseek-ai/DeepSeek-V3-0324": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.77,
-    "output_cost_per_mil_tokens": 0.77,
-    "displayName": "DeepSeek V3 0324",
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "accounts/fireworks/models/deepseek-v2p5": {
     "format": "openai",
     "flavor": "chat",
@@ -3732,7 +3722,8 @@
     "displayName": "DeepSeek V4 Pro",
     "max_input_tokens": 512000,
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "accounts/fireworks/models/deepseek-r1-0528": {
@@ -5712,15 +5703,6 @@
       "together"
     ]
   },
-  "moonshotai/Kimi-K2-Thinking": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "accounts/fireworks/models/kimi-k2-instruct-0905": {
     "format": "openai",
     "flavor": "chat",
@@ -5744,15 +5726,6 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "groq"
-    ]
-  },
-  "moonshotai/Kimi-K2-Instruct-0905": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "available_providers": [
-      "baseten"
     ]
   },
   "llama-3.1-70b-versatile": {
@@ -10481,15 +10454,6 @@
       "fireworks"
     ]
   },
-  "zai-org/GLM-4.6": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.2,
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "zai-org/GLM-5.1": {
     "format": "openai",
     "flavor": "chat",
@@ -12699,6 +12663,19 @@
       "together"
     ]
   },
+  "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.12,
+    "displayName": "NVIDIA Nemotron 3 Ultra 550B",
+    "reasoning": true,
+    "max_input_tokens": 202800,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "mistral.devstral-2-123b": {
     "format": "converse",
     "flavor": "chat",
@@ -12795,7 +12772,8 @@
     "displayName": "Kimi K2.7 Code",
     "max_input_tokens": 262144,
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "writer.palmyra-x4-v1:0": {

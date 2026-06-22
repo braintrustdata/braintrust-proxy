@@ -265,6 +265,91 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
   });
 }
 
+// Baseten Model APIs expose an OpenAI-compatible /v1/models endpoint that lists
+// the models currently served on Baseten's shared inference surface, with
+// pricing (per token, as strings), context length, and feature flags. This is
+// the authoritative source for Baseten availability — LiteLLM lags it.
+const BASETEN_MODEL_URL = "https://inference.baseten.co/v1/models";
+
+const basetenPricingSchema = z
+  .object({
+    prompt: z.string().optional(),
+    completion: z.string().optional(),
+    input_cache_read: z.string().optional(),
+  })
+  .passthrough();
+
+const basetenModelSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    context_length: z.number().optional(),
+    max_completion_tokens: z.number().optional(),
+    pricing: basetenPricingSchema.optional(),
+    supported_features: z.array(z.string()).optional(),
+    input_modalities: z.array(z.string()).optional(),
+    output_modalities: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const basetenModelListSchema = z
+  .object({ data: z.array(basetenModelSchema) })
+  .passthrough();
+
+type BasetenModel = z.infer<typeof basetenModelSchema>;
+
+async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(
+        BASETEN_MODEL_URL,
+        { headers: { Authorization: `Bearer ${apiKey}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 400) {
+              reject(
+                new Error(
+                  `Baseten /v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+                ),
+              );
+              return;
+            }
+            try {
+              const parsed = basetenModelListSchema.parse(JSON.parse(data));
+              resolve(parsed.data);
+            } catch (error) {
+              if (error instanceof z.ZodError) {
+                console.error(
+                  "Zod validation errors in Baseten data:",
+                  error.errors,
+                );
+                reject(
+                  new Error(
+                    "Failed to parse Baseten /v1/models due to schema validation errors.",
+                  ),
+                );
+              } else {
+                reject(
+                  new Error(
+                    "Failed to parse Baseten /v1/models: " +
+                      (error as Error).message,
+                  ),
+                );
+              }
+            }
+          });
+        },
+      )
+      .on("error", (err) => {
+        reject(new Error("Failed to fetch Baseten models: " + err.message));
+      });
+  });
+}
+
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
@@ -982,6 +1067,82 @@ async function updateProviderMapping(
   }
 }
 
+// Widen EXISTING AvailableEndpointTypes entries to include `provider` (pure).
+// `updateProviderMapping`/`getMissingProviderMappings` only ADD entries for
+// models with no mapping at all; they never widen an existing entry. This is
+// needed when a model already mapped to one provider (e.g. Together) is also
+// served by Baseten under the same id. Returns the rewritten content and the
+// names actually widened (entries missing or already containing the provider
+// are left untouched).
+export function addProviderToProviderMappingContent(
+  schemaContent: string,
+  modelNames: string[],
+  provider: string,
+): { content: string; updated: string[] } {
+  const updated: string[] = [];
+  if (modelNames.length === 0) {
+    return { content: schemaContent, updated };
+  }
+
+  const lines = normalizeProviderMappingContent(schemaContent).split("\n");
+
+  // Resolve ranges first, then apply bottom-up so earlier indices don't shift.
+  const targets = modelNames
+    .map((name) => ({
+      name,
+      range: findProviderMappingEntryRange(lines, name),
+    }))
+    .filter(
+      (t): t is { name: string; range: ProviderMappingEntryRange } =>
+        t.range !== undefined,
+    )
+    .sort((a, b) => b.range.start - a.range.start);
+
+  for (const { name, range } of targets) {
+    const entryText = lines.slice(range.start, range.end + 1).join("\n");
+    const arrayMatch = entryText.match(/\[([^\]]*)\]/);
+    if (!arrayMatch) {
+      continue;
+    }
+    const providers = Array.from(arrayMatch[1].matchAll(/"([^"]+)"/g)).map(
+      (m) => m[1],
+    );
+    if (providers.includes(provider)) {
+      continue;
+    }
+    providers.push(provider);
+    const commentMatch = entryText.match(/\],\s*(\/\/.*)$/);
+    const comment = commentMatch ? ` ${commentMatch[1]}` : "";
+    const newLine = `  "${name}": ${formatProviderMappingProviders(providers)},${comment}`;
+    lines.splice(range.start, range.end - range.start + 1, newLine);
+    updated.push(name);
+  }
+
+  return {
+    content: normalizeProviderMappingContent(lines.join("\n")),
+    updated,
+  };
+}
+
+async function addProviderToExistingMappings(
+  modelNames: string[],
+  provider: string,
+): Promise<string[]> {
+  if (modelNames.length === 0) {
+    return [];
+  }
+  const schemaContent = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const { content, updated } = addProviderToProviderMappingContent(
+    schemaContent,
+    modelNames,
+    provider,
+  );
+  if (updated.length > 0) {
+    await fs.promises.writeFile(SCHEMA_INDEX_PATH, content);
+  }
+  return updated;
+}
+
 export function convertRemoteToLocalModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
@@ -1058,6 +1219,57 @@ export function convertRemoteToLocalModel(
       providers as ModelSpec["available_providers"];
   }
 
+  return baseModel as ModelSpec;
+}
+
+function parseBasetenPrice(value: string | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+
+  if (model.input_modalities?.includes("image")) {
+    baseModel.multimodal = true;
+  }
+  if (model.supported_features?.includes("reasoning")) {
+    baseModel.reasoning = true;
+  }
+
+  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
+  if (inputCost !== undefined) {
+    baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
+  }
+  const outputCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.completion),
+  );
+  if (outputCost !== undefined) {
+    baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
+  }
+  const cacheReadCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.input_cache_read),
+  );
+  if (cacheReadCost !== undefined) {
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
+  }
+
+  if (model.name) {
+    baseModel.displayName = model.name;
+  }
+
+  const maxInputTokens = getNonZeroNumber(model.context_length);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+
+  baseModel.available_providers = ["baseten"];
   return baseModel as ModelSpec;
 }
 
@@ -2012,6 +2224,135 @@ async function addModelsCommand(argv: any) {
   }
 }
 
+// Sync the catalog against Baseten's authoritative /v1/models list. Additive
+// and provider-union only: adds models Baseten serves that are missing locally,
+// and unions `baseten` into the available_providers (and index.ts mapping) of
+// models already present under the same id. It does NOT prune models absent
+// from /v1/models — that list is not exhaustive (some served ids are unlisted),
+// so removals stay a manual decision. Requires BASETEN_API_KEY.
+async function syncBasetenModelsCommand(argv: any) {
+  try {
+    const apiKey = process.env.BASETEN_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "BASETEN_API_KEY environment variable is required to sync Baseten models.",
+      );
+    }
+
+    console.log("Fetching Baseten models from:", BASETEN_MODEL_URL);
+    const basetenModels = await fetchBasetenModels(apiKey);
+    console.log(`Fetched ${basetenModels.length} Baseten models.`);
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
+    const providerUnions: string[] = [];
+
+    for (const basetenModel of basetenModels) {
+      const id = basetenModel.id;
+      if (isModelExcludedFromSync(id)) {
+        console.log(`  [EXCLUDED] Skipping ${id} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+
+      const existingName = getEquivalentLocalModelNames(id).find((name) =>
+        Object.prototype.hasOwnProperty.call(localModels, name),
+      );
+
+      if (existingName) {
+        const existing = localModels[existingName];
+        const currentProviders = existing.available_providers ?? [];
+        if (!currentProviders.includes("baseten")) {
+          localModels[existingName] = {
+            ...existing,
+            available_providers: [
+              ...currentProviders,
+              "baseten",
+            ] as ModelSpec["available_providers"],
+          };
+          providerUnions.push(existingName);
+          console.log(`  [UNION] add baseten to ${existingName}`);
+        }
+      } else {
+        modelsToAdd.push({
+          name: id,
+          model: convertBasetenToLocalModel(basetenModel),
+        });
+        console.log(`  [NEW] ${id}`);
+      }
+    }
+
+    if (modelsToAdd.length === 0 && providerUnions.length === 0) {
+      console.log("Baseten catalog already in sync. No changes needed.");
+      return;
+    }
+
+    console.log(
+      `\n${modelsToAdd.length} new Baseten model(s), ${providerUnions.length} provider union(s).`,
+    );
+
+    if (!argv.write) {
+      console.log("\n📋 Dry run. Re-run with --write to apply.");
+      for (const { name } of modelsToAdd) {
+        console.log(`  would add: ${name}`);
+      }
+      for (const name of providerUnions) {
+        console.log(`  would add baseten to: ${name}`);
+      }
+      return;
+    }
+
+    // Rebuild the model list with new models inserted in a stable order.
+    const newModelNames = modelsToAdd.map((m) => m.name);
+    const completeModelOrder = getFallbackCompleteOrdering(
+      Object.keys(localModels),
+      newModelNames,
+    );
+    const updatedModels: LocalModelList = {};
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        const toAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (toAdd) {
+          updatedModels[modelName] = toAdd.model;
+        }
+      }
+    }
+
+    await writeLocalModels(updatedModels);
+    console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+
+    if (modelsToAdd.length > 0) {
+      await updateProviderMapping(
+        modelsToAdd.map(({ name, model }) => ({
+          name,
+          providers: (model.available_providers ?? []) as string[],
+        })),
+        completeModelOrder,
+      );
+    }
+    if (providerUnions.length > 0) {
+      const widened = await addProviderToExistingMappings(
+        providerUnions,
+        "baseten",
+      );
+      console.log(
+        `✅ Widened ${widened.length} existing provider mapping(s) with baseten`,
+      );
+    }
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
+  } catch (error) {
+    console.error("Error during sync-baseten command:", error);
+    process.exit(1);
+  }
+}
+
 async function normalizeLocalModelsCommand(argv: any) {
   try {
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -2169,9 +2510,24 @@ async function main() {
         await addModelsCommand(argv);
       },
     )
+    .command(
+      "sync-baseten",
+      "Sync the catalog against Baseten's /v1/models (add missing Baseten models and union the baseten provider into existing ids). Requires BASETEN_API_KEY.",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description:
+            "Write the new models and provider mappings to model_list.json / index.ts",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await syncBasetenModelsCommand(argv);
+      },
+    )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing, update-models, or add-models).",
+      "You need to specify a command (e.g., find-missing, update-models, add-models, or sync-baseten).",
     )
     .help()
     .alias("help", "h")

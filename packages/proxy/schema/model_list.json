@@ -2281,7 +2281,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "claude-opus-4-6": {
     "format": "anthropic",
@@ -2319,7 +2322,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,
-    "max_output_tokens": 128000
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "claude-opus-4-6-20260205": {
     "format": "anthropic",
@@ -5019,7 +5025,10 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "displayName": "Mistral Large (24.11)"
+    "displayName": "Mistral Large (24.11)",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "pixtral-large-latest": {
     "format": "openai",
@@ -6271,6 +6280,9 @@
     "flavor": "embedding",
     "multimodal": true,
     "displayName": "Gemini embedding 2",
+    "fallback_models": [
+      "publishers/google/models/gemini-embedding-2"
+    ],
     "available_providers": [
       "google",
       "vertex"
@@ -6280,6 +6292,9 @@
     "format": "google",
     "flavor": "embedding",
     "displayName": "Gemini embedding 001",
+    "fallback_models": [
+      "publishers/google/models/gemini-embedding-001"
+    ],
     "available_providers": [
       "google",
       "vertex"
@@ -8919,7 +8934,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65536
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3.1-pro-preview-customtools": {
     "format": "google",
@@ -8935,7 +8953,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65536
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3.1-flash-image-preview": {
     "format": "google",
@@ -8948,7 +8969,10 @@
       "global"
     ],
     "max_input_tokens": 131072,
-    "max_output_tokens": 32768
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3.1-flash-lite-preview": {
     "format": "google",
@@ -8964,7 +8988,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3.1-flash-lite": {
     "format": "google",
@@ -8980,7 +9007,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65536
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3-pro-preview": {
     "format": "google",
@@ -8996,7 +9026,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3.5-flash": {
     "format": "google",
@@ -9012,7 +9045,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3-flash-preview": {
     "format": "google",
@@ -9028,7 +9064,10 @@
       "global"
     ],
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3-pro-image-preview": {
     "format": "google",
@@ -9038,7 +9077,10 @@
     "output_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3 Pro Image Preview",
     "max_input_tokens": 65536,
-    "max_output_tokens": 32768
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.0-flash": {
     "format": "google",
@@ -9047,7 +9089,10 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Gemini 2.0 Flash",
-    "deprecation_date": "2026-03-31"
+    "deprecation_date": "2026-03-31",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.0-flash-001": {
     "format": "google",
@@ -9056,7 +9101,10 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "deprecation_date": "2026-03-31",
-    "parent": "publishers/google/models/gemini-2.0-flash"
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.0-flash-lite": {
     "format": "google",
@@ -9065,7 +9113,10 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
-    "deprecation_date": "2026-03-31"
+    "deprecation_date": "2026-03-31",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.0-flash-lite-001": {
     "format": "google",
@@ -9074,43 +9125,64 @@
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
     "deprecation_date": "2026-03-31",
-    "parent": "publishers/google/models/gemini-2.0-flash-lite"
+    "parent": "publishers/google/models/gemini-2.0-flash-lite",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-pro": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "displayName": "Gemini 1.5 Pro"
+    "displayName": "Gemini 1.5 Pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-pro-002": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-pro"
+    "parent": "publishers/google/models/gemini-1.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-pro-001": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-pro"
+    "parent": "publishers/google/models/gemini-1.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-flash": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "displayName": "Gemini 1.5 Flash"
+    "displayName": "Gemini 1.5 Flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-flash-002": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-flash"
+    "parent": "publishers/google/models/gemini-1.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.5-flash-001": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-flash"
+    "parent": "publishers/google/models/gemini-1.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.0-pro-vision": {
     "format": "google",
@@ -9127,7 +9199,10 @@
   "publishers/google/models/gemini-1.0-pro": {
     "format": "google",
     "flavor": "chat",
-    "displayName": "Gemini 1.0 Pro"
+    "displayName": "Gemini 1.0 Pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.0-pro-002": {
     "format": "google",
@@ -9153,7 +9228,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,
-    "max_output_tokens": 64000
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/anthropic/models/claude-sonnet-4-5": {
     "format": "anthropic",
@@ -9167,7 +9245,10 @@
     "input_cache_write_1h_cost_per_mil_tokens": 6,
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
-    "reasoning_budget": true
+    "reasoning_budget": true,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/anthropic/models/claude-sonnet-4-5@20250929": {
     "format": "anthropic",
@@ -9258,7 +9339,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 200000,
-    "max_output_tokens": 64000
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/anthropic/models/claude-haiku-4-5@20251001": {
     "format": "anthropic",
@@ -9427,7 +9511,10 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Codestral (25.01)"
+    "displayName": "Codestral (25.01)",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro": {
     "format": "google",
@@ -9439,21 +9526,30 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro-preview-05-06": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro-preview-03-25": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-pro-exp-03-25": {
     "format": "google",
@@ -9461,18 +9557,27 @@
     "multimodal": true,
     "displayName": "Gemini 2.5 Pro Experimental",
     "experimental": true,
-    "parent": "publishers/google/models/gemini-2.5-pro"
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-embedding-2": {
     "format": "google",
     "flavor": "embedding",
     "multimodal": true,
-    "displayName": "Gemini embedding 2"
+    "displayName": "Gemini embedding 2",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-embedding-001": {
     "format": "google",
     "flavor": "embedding",
-    "displayName": "Gemini embedding 001"
+    "displayName": "Gemini embedding 001",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash": {
     "format": "google",
@@ -9484,7 +9589,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-image": {
     "format": "google",
@@ -9497,7 +9605,10 @@
       "global"
     ],
     "max_input_tokens": 32768,
-    "max_output_tokens": 32768
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-preview-09-2025": {
     "format": "google",
@@ -9505,7 +9616,10 @@
     "multimodal": true,
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-preview-05-20": {
     "format": "google",
@@ -9514,7 +9628,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-preview-04-17": {
     "format": "google",
@@ -9525,7 +9642,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash"
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025": {
     "format": "google",
@@ -9538,7 +9658,10 @@
     "experimental": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-lite-preview-06-17": {
     "format": "google",
@@ -9552,7 +9675,10 @@
     "deprecated": true,
     "parent": "publishers/google/models/gemini-2.5-flash-lite",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -9565,7 +9691,10 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 65535
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
     "format": "google",
@@ -9574,7 +9703,10 @@
     "displayName": "Gemini 2.0 Flash Thinking Mode",
     "experimental": true,
     "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.0-flash"
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {
     "format": "openai",
@@ -12762,7 +12894,10 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
     "max_input_tokens": 128000,
-    "max_output_tokens": 64000
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-3-pro-image": {
     "format": "google",
@@ -12775,7 +12910,10 @@
       "global"
     ],
     "max_input_tokens": 65536,
-    "max_output_tokens": 32768
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "databricks-qwen35-122b-a10b": {
     "format": "openai",

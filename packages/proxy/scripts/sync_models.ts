@@ -478,6 +478,7 @@ const MISTRAL_VERTEX_EQUIVALENT_MODELS = new Set([
 type EquivalentModelCandidate = {
   canonicalName: string;
   managed: boolean;
+  provider?: string;
 };
 
 function equivalentModelCandidate(
@@ -488,6 +489,7 @@ function equivalentModelCandidate(
     return {
       canonicalName: modelName.substring(anthropicVertexPrefix.length),
       managed: true,
+      provider: "vertex",
     };
   }
 
@@ -497,6 +499,7 @@ function equivalentModelCandidate(
     return {
       canonicalName,
       managed: canonicalName.startsWith("gemini-"),
+      provider: "vertex",
     };
   }
 
@@ -506,6 +509,7 @@ function equivalentModelCandidate(
     return {
       canonicalName,
       managed: MISTRAL_VERTEX_EQUIVALENT_MODELS.has(canonicalName),
+      provider: "vertex",
     };
   }
 
@@ -545,6 +549,7 @@ export function applyEquivalentModels(
   const modelNames = new Set(Object.keys(localModels));
   const groups = new Map<string, string[]>();
   const managedNames = new Set<string>();
+  const managedProviders = new Map<string, string>();
 
   for (const modelName of modelNames) {
     const candidate = equivalentModelCandidate(modelName);
@@ -557,12 +562,19 @@ export function applyEquivalentModels(
     groups.set(candidate.canonicalName, group);
     managedNames.add(modelName);
     managedNames.add(candidate.canonicalName);
+    if (candidate.provider) {
+      managedProviders.set(modelName, candidate.provider);
+    }
   }
 
   const updatedModels: LocalModelList = {};
   for (const [modelName, model] of Object.entries(localModels)) {
     if (managedNames.has(modelName)) {
       const { fallback_models: _fallbackModels, ...rest } = model;
+      const provider = managedProviders.get(modelName);
+      if (provider && !rest.available_providers?.length) {
+        rest.available_providers = [provider];
+      }
       updatedModels[modelName] = rest;
     } else {
       updatedModels[modelName] = model;

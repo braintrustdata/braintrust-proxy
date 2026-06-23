@@ -1,6 +1,7 @@
 import fs from "fs";
 import https from "https";
 import path from "path";
+import prettier from "prettier";
 import { z } from "zod";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -2440,6 +2441,26 @@ async function syncBasetenModelsCommand(argv: any) {
   }
 }
 
+// Format schema/index.ts with Prettier so the catalog scripts never emit
+// unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
+// steps, and older writers can all leave entries like ["openai","azure"]
+// (no space after the comma) that fail the prettier pre-commit hook; this
+// guarantees the file matches the repo style before it is committed.
+// (model_list.json is intentionally excluded from the prettier hook, so it is
+// canonicalized separately and not run through Prettier here.)
+async function formatIndexFileWithPrettier(): Promise<void> {
+  const source = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const config = await prettier.resolveConfig(SCHEMA_INDEX_PATH);
+  const formatted = await prettier.format(source, {
+    ...config,
+    filepath: SCHEMA_INDEX_PATH,
+  });
+  if (formatted !== source) {
+    await fs.promises.writeFile(SCHEMA_INDEX_PATH, formatted);
+    console.log("✅ Formatted schema/index.ts with Prettier");
+  }
+}
+
 async function normalizeLocalModelsCommand(argv: any) {
   try {
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -2462,6 +2483,7 @@ async function normalizeLocalModelsCommand(argv: any) {
         await syncProviderMappingsForLocalModels(
           canonicalizedLocalModels.models,
         );
+        await formatIndexFileWithPrettier();
       }
       return;
     }
@@ -2497,6 +2519,7 @@ async function normalizeLocalModelsCommand(argv: any) {
       canonicalizedLocalModels.canonicalContent,
     );
     await syncProviderMappingsForLocalModels(canonicalizedLocalModels.models);
+    await formatIndexFileWithPrettier();
     console.log(
       `\n✅ Canonicalized local model catalog${renamedKeys.length > 0 ? ` and normalized ${renamedKeys.length} local model keys` : ""}.`,
     );

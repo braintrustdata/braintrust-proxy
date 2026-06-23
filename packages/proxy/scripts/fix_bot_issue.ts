@@ -1030,7 +1030,10 @@ export function applyAvailableEndpointTypeMappings(
       `^\\s*"${escapeForRegex(name)}":[^\\n]*\\n?`,
       "m",
     );
-    const newLine = `  "${name}": ${JSON.stringify(mappings[name])},`;
+    const formattedProviders = `[${mappings[name]
+      .map((provider) => JSON.stringify(provider))
+      .join(", ")}]`;
+    const newLine = `  "${name}": ${formattedProviders},`;
     if (linePattern.test(objectBody)) {
       objectBody = objectBody.replace(linePattern, `${newLine}\n`);
       continue;

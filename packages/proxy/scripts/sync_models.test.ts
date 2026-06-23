@@ -446,6 +446,18 @@ describe("isModelExcludedFromSync", () => {
     expect(SYNC_EXCLUDED_MODELS.has("claude-opus-4-7-20260416")).toBe(true);
   });
 
+  it("excludes the Baseten-deprecated and non-chat ids the sync kept re-adding", () => {
+    for (const id of [
+      "deepseek-ai/DeepSeek-V3-0324",
+      "moonshotai/Kimi-K2-Thinking",
+      "moonshotai/Kimi-K2-Instruct-0905",
+      "zai-org/GLM-4.6",
+      "gpt-realtime-whisper",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+  });
+
   it("does not exclude real model ids", () => {
     expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
     expect(isModelExcludedFromSync("gpt-5")).toBe(false);

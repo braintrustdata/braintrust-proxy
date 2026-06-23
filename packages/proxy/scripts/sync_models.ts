@@ -112,6 +112,18 @@ export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
   // canonical id `claude-opus-4-7`; the API returns not_found for this dated
   // id, but LiteLLM still lists it, so the sync kept re-adding it.
   "claude-opus-4-7-20260416",
+  // Deprecated on Baseten: these baseten-only ids return HTTP 410 ("the model
+  // version you are trying to access has been deprecated") and are absent from
+  // Baseten's /v1/models, but LiteLLM still lists them as baseten, so the sync
+  // kept re-adding non-invocable entries (see PR #849).
+  "deepseek-ai/DeepSeek-V3-0324",
+  "moonshotai/Kimi-K2-Thinking",
+  "moonshotai/Kimi-K2-Instruct-0905",
+  "zai-org/GLM-4.6",
+  // Not a chat model: OpenAI's realtime transcription model is rejected by
+  // /v1/chat/completions ("This is not a chat model"); the catalog only routes
+  // chat/completion flavors, so it cannot be invoked from here.
+  "gpt-realtime-whisper",
 ]);
 
 // Returns true if `modelName` must not be auto-added by the sync.

@@ -3454,17 +3454,6 @@
       "fireworks"
     ]
   },
-  "deepseek-ai/DeepSeek-V3-0324": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.77,
-    "output_cost_per_mil_tokens": 0.77,
-    "displayName": "DeepSeek V3 (0324)",
-    "parent": "deepseek-ai/DeepSeek-V3",
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "accounts/fireworks/models/deepseek-v2p5": {
     "format": "openai",
     "flavor": "chat",
@@ -5800,16 +5789,6 @@
       "together"
     ]
   },
-  "moonshotai/Kimi-K2-Thinking": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "Kimi K2 Thinking",
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "accounts/fireworks/models/kimi-k2-instruct-0905": {
     "format": "openai",
     "flavor": "chat",
@@ -5833,17 +5812,6 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "groq"
-    ]
-  },
-  "moonshotai/Kimi-K2-Instruct-0905": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "Kimi K2 Instruct (0905)",
-    "parent": "moonshotai/Kimi-K2-Instruct",
-    "available_providers": [
-      "baseten"
     ]
   },
   "llama-3.1-70b-versatile": {
@@ -10643,16 +10611,6 @@
       "fireworks"
     ]
   },
-  "zai-org/GLM-4.6": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.2,
-    "displayName": "GLM 4.6",
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "accounts/fireworks/models/glm-4p5": {
     "format": "openai",
     "flavor": "chat",
@@ -12276,15 +12234,6 @@
     "displayName": "GPT Realtime mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-realtime-whisper": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "GPT Realtime Whisper",
     "available_providers": [
       "openai",
       "azure"

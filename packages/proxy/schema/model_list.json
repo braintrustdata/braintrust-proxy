@@ -1544,7 +1544,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -3363,9 +3363,9 @@
   "deepseek-ai/DeepSeek-V4-Pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.1,
-    "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cost_per_mil_tokens": 1.74,
+    "output_cost_per_mil_tokens": 3.48,
+    "input_cache_read_cost_per_mil_tokens": 0.145,
     "displayName": "DeepSeek V4 Pro",
     "max_input_tokens": 512000,
     "available_providers": [
@@ -5690,7 +5690,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.19,
+    "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.7 Code",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -5715,6 +5715,9 @@
   "moonshotai/Kimi-K2.6": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.6",
     "available_providers": [
       "baseten",
@@ -5740,6 +5743,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
+    "input_cache_read_cost_per_mil_tokens": 0.12,
     "available_providers": [
       "baseten",
       "together"
@@ -10518,6 +10522,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10544,8 +10549,9 @@
   "zai-org/GLM-5.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.4,
-    "output_cost_per_mil_tokens": 4.4,
+    "input_cost_per_mil_tokens": 1.3,
+    "output_cost_per_mil_tokens": 4.3,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,
     "max_input_tokens": 202752,
@@ -10572,6 +10578,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 3.15,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "available_providers": [
       "baseten",
       "together"
@@ -10595,6 +10602,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.2,
+    "input_cache_read_cost_per_mil_tokens": 0.12,
     "available_providers": [
       "baseten"
     ]
@@ -12422,6 +12430,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.75,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
     "available_providers": [
       "baseten"
     ]

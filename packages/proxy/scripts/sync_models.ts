@@ -1285,6 +1285,55 @@ export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
   return baseModel as ModelSpec;
 }
 
+// Apply Baseten's authoritative /v1/models pricing to a model Baseten serves.
+// The catalog holds one price per id, and Baseten + another provider (e.g.
+// Together) can price the same model differently, so we deliberately PREFER
+// Baseten's pricing for any id Baseten serves — including ids shared with
+// Together. Overwrites input/output/cached prices from Baseten, but never
+// touches a field in SYNC_PRESERVED_FIELDS (those are hand-maintained
+// overrides). Returns a new ModelSpec if anything changed, else null.
+export function applyBasetenPricing(
+  name: string,
+  model: ModelSpec,
+  basetenModel: BasetenModel,
+): ModelSpec | null {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const updated: ModelSpec = { ...model };
+  let changed = false;
+
+  const apply = (
+    field:
+      | "input_cost_per_mil_tokens"
+      | "output_cost_per_mil_tokens"
+      | "input_cache_read_cost_per_mil_tokens",
+    raw: string | undefined,
+  ): void => {
+    if (isFieldManuallyPreserved(name, field)) {
+      return;
+    }
+    const value = getNonZeroNumber(parseBasetenPrice(raw));
+    if (value === undefined) {
+      return;
+    }
+    const rounded = roundCost(value);
+    if (updated[field] === rounded) {
+      return;
+    }
+    updated[field] = rounded;
+    changed = true;
+  };
+
+  apply("input_cost_per_mil_tokens", basetenModel.pricing?.prompt);
+  apply("output_cost_per_mil_tokens", basetenModel.pricing?.completion);
+  apply(
+    "input_cache_read_cost_per_mil_tokens",
+    basetenModel.pricing?.input_cache_read,
+  );
+
+  return changed ? updated : null;
+}
+
 async function getOptimalModelOrderingFromClaude(
   modelsToAdd: Array<{ name: string; model: ModelSpec }>,
   existingModels: LocalModelList,
@@ -2263,6 +2312,7 @@ async function syncBasetenModelsCommand(argv: any) {
 
     const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
     const providerUnions: string[] = [];
+    const pricingUpdates: string[] = [];
 
     for (const basetenModel of basetenModels) {
       const id = basetenModel.id;
@@ -2278,9 +2328,11 @@ async function syncBasetenModelsCommand(argv: any) {
       if (existingName) {
         const existing = localModels[existingName];
         const currentProviders = existing.available_providers ?? [];
+        let next = existing;
+
         if (!currentProviders.includes("baseten")) {
-          localModels[existingName] = {
-            ...existing,
+          next = {
+            ...next,
             available_providers: [
               ...currentProviders,
               "baseten",
@@ -2288,6 +2340,22 @@ async function syncBasetenModelsCommand(argv: any) {
           };
           providerUnions.push(existingName);
           console.log(`  [UNION] add baseten to ${existingName}`);
+        }
+
+        // Prefer Baseten's pricing for any id Baseten serves, including ids
+        // shared with Together. The catalog stores one price per id and the two
+        // providers can price the same model differently (e.g. GLM-5.1,
+        // DeepSeek-V4-Pro), so we deliberately use Baseten's. Manually
+        // preserved fields (SYNC_PRESERVED_FIELDS) are left untouched.
+        const priced = applyBasetenPricing(existingName, next, basetenModel);
+        if (priced) {
+          next = priced;
+          pricingUpdates.push(existingName);
+          console.log(`  [PRICING] prefer Baseten pricing on ${existingName}`);
+        }
+
+        if (next !== existing) {
+          localModels[existingName] = next;
         }
       } else {
         modelsToAdd.push({
@@ -2298,13 +2366,17 @@ async function syncBasetenModelsCommand(argv: any) {
       }
     }
 
-    if (modelsToAdd.length === 0 && providerUnions.length === 0) {
+    if (
+      modelsToAdd.length === 0 &&
+      providerUnions.length === 0 &&
+      pricingUpdates.length === 0
+    ) {
       console.log("Baseten catalog already in sync. No changes needed.");
       return;
     }
 
     console.log(
-      `\n${modelsToAdd.length} new Baseten model(s), ${providerUnions.length} provider union(s).`,
+      `\n${modelsToAdd.length} new Baseten model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing fill(s).`,
     );
 
     if (!argv.write) {
@@ -2314,6 +2386,9 @@ async function syncBasetenModelsCommand(argv: any) {
       }
       for (const name of providerUnions) {
         console.log(`  would add baseten to: ${name}`);
+      }
+      for (const name of pricingUpdates) {
+        console.log(`  would fill missing Baseten prices on: ${name}`);
       }
       return;
     }

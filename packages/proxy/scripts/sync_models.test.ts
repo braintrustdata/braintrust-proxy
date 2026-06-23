@@ -6,6 +6,7 @@ import {
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
   convertRemoteToLocalModel,
+  applyBasetenPricing,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getMissingProviderMappings,
@@ -446,6 +447,18 @@ describe("isModelExcludedFromSync", () => {
     expect(SYNC_EXCLUDED_MODELS.has("claude-opus-4-7-20260416")).toBe(true);
   });
 
+  it("excludes the Baseten-deprecated and non-chat ids the sync kept re-adding", () => {
+    for (const id of [
+      "deepseek-ai/DeepSeek-V3-0324",
+      "moonshotai/Kimi-K2-Thinking",
+      "moonshotai/Kimi-K2-Instruct-0905",
+      "zai-org/GLM-4.6",
+      "gpt-realtime-whisper",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+  });
+
   it("does not exclude real model ids", () => {
     expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
     expect(isModelExcludedFromSync("gpt-5")).toBe(false);
@@ -497,6 +510,113 @@ describe("convertBasetenToLocalModel", () => {
       output_cost_per_mil_tokens: 1,
       available_providers: ["baseten"],
     });
+  });
+});
+
+describe("applyBasetenPricing", () => {
+  const basetenGlm51 = {
+    id: "zai-org/GLM-5.1",
+    pricing: {
+      prompt: "0.0000013",
+      completion: "0.0000043",
+      input_cache_read: "0.00000026",
+    },
+  };
+
+  it("prefers Baseten pricing over the existing (e.g. Together) price on a shared id", () => {
+    const priced = applyBasetenPricing(
+      "zai-org/GLM-5.1",
+      {
+        format: "openai",
+        flavor: "chat",
+        input_cost_per_mil_tokens: 1.4,
+        output_cost_per_mil_tokens: 4.4,
+        reasoning: true,
+        available_providers: ["baseten", "together"],
+      },
+      basetenGlm51,
+    );
+    expect(priced).toEqual({
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 1.3,
+      output_cost_per_mil_tokens: 4.3,
+      input_cache_read_cost_per_mil_tokens: 0.26,
+      reasoning: true,
+      available_providers: ["baseten", "together"],
+    });
+  });
+
+  it("fills a missing cached price on a baseten-only id", () => {
+    const priced = applyBasetenPricing(
+      "zai-org/GLM-4.7",
+      {
+        format: "openai",
+        flavor: "chat",
+        input_cost_per_mil_tokens: 0.6,
+        output_cost_per_mil_tokens: 2.2,
+        available_providers: ["baseten"],
+      },
+      {
+        id: "zai-org/GLM-4.7",
+        pricing: {
+          prompt: "0.0000006",
+          completion: "0.0000022",
+          input_cache_read: "0.00000012",
+        },
+      },
+    );
+    expect(priced).toEqual({
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 0.6,
+      output_cost_per_mil_tokens: 2.2,
+      input_cache_read_cost_per_mil_tokens: 0.12,
+      available_providers: ["baseten"],
+    });
+  });
+
+  it("returns null when Baseten pricing already matches", () => {
+    expect(
+      applyBasetenPricing(
+        "zai-org/GLM-5.1",
+        {
+          format: "openai",
+          flavor: "chat",
+          input_cost_per_mil_tokens: 1.3,
+          output_cost_per_mil_tokens: 4.3,
+          input_cache_read_cost_per_mil_tokens: 0.26,
+          available_providers: ["baseten", "together"],
+        },
+        basetenGlm51,
+      ),
+    ).toBeNull();
+  });
+
+  it("never overwrites a manually preserved field (SYNC_PRESERVED_FIELDS)", () => {
+    // openai/gpt-oss-120b pins input/output cost via SYNC_PRESERVED_FIELDS; only
+    // the non-preserved cached price may be updated from Baseten.
+    const priced = applyBasetenPricing(
+      "openai/gpt-oss-120b",
+      {
+        format: "openai",
+        flavor: "chat",
+        input_cost_per_mil_tokens: 0.15,
+        output_cost_per_mil_tokens: 0.6,
+        available_providers: ["groq", "together", "baseten"],
+      },
+      {
+        id: "openai/gpt-oss-120b",
+        pricing: {
+          prompt: "0.0000001",
+          completion: "0.0000005",
+          input_cache_read: "0.0000001",
+        },
+      },
+    );
+    expect(priced?.input_cost_per_mil_tokens).toBe(0.15);
+    expect(priced?.output_cost_per_mil_tokens).toBe(0.6);
+    expect(priced?.input_cache_read_cost_per_mil_tokens).toBe(0.1);
   });
 });
 

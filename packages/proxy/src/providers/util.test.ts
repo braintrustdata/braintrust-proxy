@@ -1,12 +1,30 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { lookup } from "node:dns/promises";
 import { convertMediaToBase64 } from "./util";
 
-vi.mock("node:dns/promises", () => ({
-  lookup: vi.fn(async () => [{ address: "93.184.216.34", family: 4 }]),
-}));
+const dnsMocks = vi.hoisted(() => {
+  const resolve4 = vi.fn(async (): Promise<string[]> => ["93.184.216.34"]);
+  const resolve6 = vi.fn(async (): Promise<string[]> => []);
 
-const publicImageUrl = "https://93.184.216.34/image.png";
+  class MockResolver {
+    resolve4(hostname: string) {
+      return resolve4(hostname);
+    }
+
+    resolve6(hostname: string) {
+      return resolve6(hostname);
+    }
+  }
+
+  return {
+    Resolver: MockResolver,
+    resolve4,
+    resolve6,
+  };
+});
+
+vi.mock("node:dns/promises", () => ({
+  Resolver: dnsMocks.Resolver,
+}));
 
 function mockFetch(response: Response) {
   const fetchMock = vi.fn(async () => response);
@@ -17,6 +35,8 @@ function mockFetch(response: Response) {
 describe("convertMediaToBase64", () => {
   afterEach(() => {
     vi.clearAllMocks();
+    dnsMocks.resolve4.mockResolvedValue(["93.184.216.34"]);
+    dnsMocks.resolve6.mockResolvedValue([]);
     vi.unstubAllGlobals();
   });
 
@@ -80,8 +100,48 @@ describe("convertMediaToBase64", () => {
   });
 
   it("rejects hostnames that resolve to private addresses before fetching", async () => {
-    const lookupMock = vi.mocked(lookup);
-    lookupMock.mockResolvedValueOnce([{ address: "10.0.0.5", family: 4 }]);
+    dnsMocks.resolve4.mockResolvedValueOnce(["10.0.0.5"]);
+    const fetchMock = mockFetch(new Response());
+
+    await expect(
+      convertMediaToBase64({
+        media: "https://example.com/image.png",
+        allowedMediaTypes: null,
+        maxMediaBytes: null,
+      }),
+    ).rejects.toThrow("Media URL resolves to a blocked address");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("fetches public hostname media with Cloudflare Worker fetch", async () => {
+    vi.stubGlobal("navigator", { userAgent: "Cloudflare-Workers" });
+    const fetchMock = mockFetch(
+      new Response(new Uint8Array([1, 2, 3]), {
+        headers: { "content-type": "image/png" },
+      }),
+    );
+
+    await expect(
+      convertMediaToBase64({
+        media: "https://example.com/image.png",
+        allowedMediaTypes: ["image/png"],
+        maxMediaBytes: 3,
+      }),
+    ).resolves.toEqual({
+      media_type: "image/png",
+      data: "AQID",
+    });
+    expect(dnsMocks.resolve4).toHaveBeenCalledWith("example.com");
+    expect(fetchMock).toHaveBeenCalledWith("https://example.com/image.png", {
+      method: "GET",
+      redirect: "manual",
+      signal: expect.any(AbortSignal),
+    });
+  });
+
+  it("rejects private hostname resolutions before Cloudflare Worker fetch", async () => {
+    vi.stubGlobal("navigator", { userAgent: "Cloudflare-Workers" });
+    dnsMocks.resolve4.mockResolvedValueOnce(["10.0.0.5"]);
     const fetchMock = mockFetch(new Response());
 
     await expect(

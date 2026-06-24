@@ -1,6 +1,7 @@
 import fs from "fs";
 import https from "https";
 import path from "path";
+import prettier from "prettier";
 import { z } from "zod";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -27,6 +28,109 @@ import {
 } from "./sync_vertex_regions";
 
 const execAsync = promisify(exec);
+
+// Fields that are intentionally maintained by hand in model_list.json and must
+// NOT be overwritten by the LiteLLM sync, because the upstream (LiteLLM) value
+// is stale or wrong for these models. Keyed by local model name -> the
+// ModelSpec fields to preserve. The `updateModelsCommand` cost/token-limit
+// sync skips these fields (it neither reports a discrepancy nor writes a
+// change for them).
+//
+// Update an entry only when the *authoritative provider* value genuinely
+// changes; remove an entry to re-enable blind LiteLLM sync for that field.
+// Without this list every sync run reverts these manual corrections (the
+// recurring "chore: sync new models" regressions).
+const GROK_FAST_COST_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+  "input_cache_read_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const INPUT_OUTPUT_COST_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const GROK_420_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+  "max_input_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+
+export const SYNC_PRESERVED_FIELDS: Record<
+  string,
+  ReadonlyArray<keyof ModelSpec>
+> = {
+  // Deprecated grok "fast" models redirect to grok-4.3 at xAI and therefore
+  // bill at grok-4.3 rates ($1.25 in / $2.50 out / $0.20 cache-read per 1M).
+  // LiteLLM still lists the pre-redirect $0.20/$0.50 rates, which undercounts.
+  "grok-4-1-fast-non-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-non-reasoning-latest": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-1-fast-reasoning-latest": GROK_FAST_COST_FIELDS,
+  "grok-4-fast-non-reasoning": GROK_FAST_COST_FIELDS,
+  "grok-4-fast-reasoning": GROK_FAST_COST_FIELDS,
+  // Grok 4.20: xAI docs list $1.25 in / $2.50 out per 1M and a 1,000,000-token
+  // context window for the reasoning model and its beta/multi-agent aliases
+  // (https://docs.x.ai/developers/models/grok-4.20-0309-reasoning). LiteLLM
+  // lists a 2,000,000 context window, so the sync keeps re-raising
+  // max_input_tokens; pin the verified price + context.
+  "grok-4.20-0309-non-reasoning": GROK_420_FIELDS,
+  "grok-4.20-0309-reasoning": GROK_420_FIELDS,
+  "grok-4.20-beta-0309-non-reasoning": GROK_420_FIELDS,
+  "grok-4.20-beta-0309-reasoning": GROK_420_FIELDS,
+  "grok-4.20-multi-agent-beta-0309": GROK_420_FIELDS,
+  // Claude Sonnet 4's documented standard context window is 200k (1M is a
+  // beta tier); LiteLLM reports the 1M beta window.
+  "claude-sonnet-4-20250514": ["max_input_tokens"],
+  "claude-4-sonnet-20250514": ["max_input_tokens"],
+  // gpt-oss pricing taken from the provider pricing pages; LiteLLM is stale
+  // (lists lower rates).
+  "openai/gpt-oss-120b": INPUT_OUTPUT_COST_FIELDS,
+  "accounts/fireworks/models/gpt-oss-20b": INPUT_OUTPUT_COST_FIELDS,
+  // mistral-small-latest = Mistral Small 4 ($0.15/$0.60 per the model card);
+  // LiteLLM is stale at $0.10/$0.30.
+  "mistral-small-latest": INPUT_OUTPUT_COST_FIELDS,
+};
+
+// Returns true if `field` of `modelName` is hand-maintained and must not be
+// overwritten by the LiteLLM sync.
+export function isFieldManuallyPreserved(
+  modelName: string,
+  field: keyof ModelSpec,
+): boolean {
+  return SYNC_PRESERVED_FIELDS[modelName]?.includes(field) ?? false;
+}
+
+// Model ids that must NEVER be auto-added by the LiteLLM sync, even though the
+// remote source lists them. These are entries the source carries but that are
+// not real, invocable models at the provider, so `add-models` re-introduces
+// them on every run and they have to be removed by hand each time.
+//
+// Each id is matched against both the translated (local) name and the raw
+// remote name. Add an id here only after confirming the provider rejects it;
+// remove it if the provider later ships the model for real.
+export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
+  // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
+  // canonical id `claude-opus-4-7`; the API returns not_found for this dated
+  // id, but LiteLLM still lists it, so the sync kept re-adding it.
+  "claude-opus-4-7-20260416",
+  // Deprecated on Baseten: these baseten-only ids return HTTP 410 ("the model
+  // version you are trying to access has been deprecated") and are absent from
+  // Baseten's /v1/models, but LiteLLM still lists them as baseten, so the sync
+  // kept re-adding non-invocable entries (see PR #849).
+  "deepseek-ai/DeepSeek-V3-0324",
+  "moonshotai/Kimi-K2-Thinking",
+  "moonshotai/Kimi-K2-Instruct-0905",
+  "zai-org/GLM-4.6",
+  // Not a chat model: OpenAI's realtime transcription model is rejected by
+  // /v1/chat/completions ("This is not a chat model"); the catalog only routes
+  // chat/completion flavors, so it cannot be invoked from here.
+  "gpt-realtime-whisper",
+]);
+
+// Returns true if `modelName` must not be auto-added by the sync.
+export function isModelExcludedFromSync(modelName: string): boolean {
+  return SYNC_EXCLUDED_MODELS.has(modelName);
+}
 
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
@@ -113,6 +217,17 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
   "../schema/model_list.json",
 );
 const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
+const SYNC_DEFAULT_ENDPOINT_TYPES = {
+  openai: ["openai", "azure"],
+  anthropic: ["anthropic"],
+  google: ["google"],
+  js: ["js"],
+  window: ["js"],
+  converse: ["bedrock"],
+} satisfies Record<
+  ModelSpec["format"],
+  NonNullable<ModelSpec["available_providers"]>
+>;
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
@@ -159,6 +274,91 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
       })
       .on("error", (err) => {
         reject(new Error("Failed to fetch remote models: " + err.message));
+      });
+  });
+}
+
+// Baseten Model APIs expose an OpenAI-compatible /v1/models endpoint that lists
+// the models currently served on Baseten's shared inference surface, with
+// pricing (per token, as strings), context length, and feature flags. This is
+// the authoritative source for Baseten availability — LiteLLM lags it.
+const BASETEN_MODEL_URL = "https://inference.baseten.co/v1/models";
+
+const basetenPricingSchema = z
+  .object({
+    prompt: z.string().optional(),
+    completion: z.string().optional(),
+    input_cache_read: z.string().optional(),
+  })
+  .passthrough();
+
+const basetenModelSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    context_length: z.number().optional(),
+    max_completion_tokens: z.number().optional(),
+    pricing: basetenPricingSchema.optional(),
+    supported_features: z.array(z.string()).optional(),
+    input_modalities: z.array(z.string()).optional(),
+    output_modalities: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const basetenModelListSchema = z
+  .object({ data: z.array(basetenModelSchema) })
+  .passthrough();
+
+type BasetenModel = z.infer<typeof basetenModelSchema>;
+
+async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(
+        BASETEN_MODEL_URL,
+        { headers: { Authorization: `Bearer ${apiKey}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 400) {
+              reject(
+                new Error(
+                  `Baseten /v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+                ),
+              );
+              return;
+            }
+            try {
+              const parsed = basetenModelListSchema.parse(JSON.parse(data));
+              resolve(parsed.data);
+            } catch (error) {
+              if (error instanceof z.ZodError) {
+                console.error(
+                  "Zod validation errors in Baseten data:",
+                  error.errors,
+                );
+                reject(
+                  new Error(
+                    "Failed to parse Baseten /v1/models due to schema validation errors.",
+                  ),
+                );
+              } else {
+                reject(
+                  new Error(
+                    "Failed to parse Baseten /v1/models: " +
+                      (error as Error).message,
+                  ),
+                );
+              }
+            }
+          });
+        },
+      )
+      .on("error", (err) => {
+        reject(new Error("Failed to fetch Baseten models: " + err.message));
       });
   });
 }
@@ -367,6 +567,147 @@ export function getUpdatedAvailableProviders(
   return mergedProviders;
 }
 
+const ANTHROPIC_BEDROCK_SCOPES = new Set(["us", "eu", "apac", "global"]);
+const MISTRAL_VERTEX_EQUIVALENT_MODELS = new Set([
+  "codestral-2501",
+  "mistral-large-2411",
+]);
+
+type EquivalentModelCandidate = {
+  canonicalName: string;
+  managed: boolean;
+  provider?: string;
+};
+
+function equivalentModelCandidate(
+  modelName: string,
+): EquivalentModelCandidate | undefined {
+  const anthropicVertexPrefix = "publishers/anthropic/models/";
+  if (modelName.startsWith(anthropicVertexPrefix)) {
+    return {
+      canonicalName: modelName.substring(anthropicVertexPrefix.length),
+      managed: true,
+      provider: "vertex",
+    };
+  }
+
+  const googleVertexPrefix = "publishers/google/models/";
+  if (modelName.startsWith(googleVertexPrefix)) {
+    const canonicalName = modelName.substring(googleVertexPrefix.length);
+    return {
+      canonicalName,
+      managed: canonicalName.startsWith("gemini-"),
+      provider: "vertex",
+    };
+  }
+
+  const mistralVertexPrefix = "publishers/mistralai/models/";
+  if (modelName.startsWith(mistralVertexPrefix)) {
+    const canonicalName = modelName.substring(mistralVertexPrefix.length);
+    return {
+      canonicalName,
+      managed: MISTRAL_VERTEX_EQUIVALENT_MODELS.has(canonicalName),
+      provider: "vertex",
+    };
+  }
+
+  if (modelName.startsWith("anthropic.")) {
+    return {
+      canonicalName: modelName.substring("anthropic.".length),
+      managed: true,
+    };
+  }
+
+  const parts = modelName.split(".");
+  if (
+    parts.length >= 3 &&
+    ANTHROPIC_BEDROCK_SCOPES.has(parts[0]) &&
+    parts[1] === "anthropic"
+  ) {
+    return {
+      canonicalName: parts.slice(2).join("."),
+      managed: true,
+    };
+  }
+
+  if (
+    modelName.startsWith("claude-") ||
+    modelName.startsWith("gemini-") ||
+    MISTRAL_VERTEX_EQUIVALENT_MODELS.has(modelName)
+  ) {
+    return { canonicalName: modelName, managed: true };
+  }
+
+  return undefined;
+}
+
+export function applyEquivalentModels(
+  localModels: LocalModelList,
+): LocalModelList {
+  const modelNames = new Set(Object.keys(localModels));
+  const groups = new Map<string, string[]>();
+  const managedNames = new Set<string>();
+  const managedProviders = new Map<string, string>();
+
+  for (const modelName of modelNames) {
+    const candidate = equivalentModelCandidate(modelName);
+    if (!candidate?.managed || !modelNames.has(candidate.canonicalName)) {
+      continue;
+    }
+
+    const group = groups.get(candidate.canonicalName) ?? [];
+    group.push(modelName);
+    groups.set(candidate.canonicalName, group);
+    managedNames.add(modelName);
+    managedNames.add(candidate.canonicalName);
+    if (candidate.provider) {
+      managedProviders.set(modelName, candidate.provider);
+    }
+  }
+
+  const updatedModels: LocalModelList = {};
+  for (const [modelName, model] of Object.entries(localModels)) {
+    if (managedNames.has(modelName)) {
+      const { fallback_models: _fallbackModels, ...rest } = model;
+      const provider = managedProviders.get(modelName);
+      if (provider && !rest.available_providers?.length) {
+        rest.available_providers = [provider];
+      }
+      updatedModels[modelName] = rest;
+    } else {
+      updatedModels[modelName] = model;
+    }
+  }
+
+  for (const [canonicalName, group] of groups) {
+    const equivalentModels = Array.from(new Set(group))
+      .filter((modelName) => modelName !== canonicalName)
+      .sort();
+    if (equivalentModels.length === 0) {
+      continue;
+    }
+
+    const canonicalModel = updatedModels[canonicalName];
+    if (!canonicalModel) {
+      continue;
+    }
+
+    if (
+      MISTRAL_VERTEX_EQUIVALENT_MODELS.has(canonicalName) &&
+      !canonicalModel.available_providers?.length
+    ) {
+      canonicalModel.available_providers = ["mistral"];
+    }
+
+    updatedModels[canonicalName] = {
+      ...canonicalModel,
+      fallback_models: equivalentModels,
+    };
+  }
+
+  return updatedModels;
+}
+
 export function normalizeLocalModels(localModels: LocalModelList): {
   models: LocalModelList;
   renamedKeys: Array<{ from: string; to: string }>;
@@ -411,7 +752,7 @@ export function normalizeLocalModels(localModels: LocalModelList): {
   }
 
   return {
-    models: orderedModels,
+    models: applyEquivalentModels(orderedModels),
     renamedKeys,
   };
 }
@@ -465,18 +806,26 @@ type ProviderMappingEntryRange = {
   end: number;
 };
 
+type ProviderMappingUpdate = {
+  name: string;
+  providers: string[];
+};
+
 function isProviderMappingEntryEnd(line: string): boolean {
   return /\],(?:\s*\/\/.*)?$/.test(line.trim());
+}
+
+function getProviderMappingKey(line: string): string | undefined {
+  const match = line.match(/^  (?:"([^"]+)"|([A-Za-z_$][\w$]*)):/);
+  return match?.[1] ?? match?.[2];
 }
 
 function findProviderMappingEntryRange(
   lines: string[],
   modelName: string,
 ): ProviderMappingEntryRange | undefined {
-  const entryPrefix = `  "${modelName}":`;
-
   for (let i = 0; i < lines.length; i++) {
-    if (!lines[i].startsWith(entryPrefix)) {
+    if (getProviderMappingKey(lines[i]) !== modelName) {
       continue;
     }
 
@@ -495,10 +844,28 @@ export function normalizeProviderMappingContent(schemaContent: string): string {
   const lines = schemaContent.split("\n");
   const normalizedLines: string[] = [];
   const seenCanonicalKeys = new Set<string>();
+  let inAvailableEndpointTypes = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const match = lines[i].match(/^  "([^"]+)":/);
-    if (!match) {
+    if (lines[i].startsWith("export const AvailableEndpointTypes")) {
+      inAvailableEndpointTypes = true;
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    if (!inAvailableEndpointTypes) {
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    if (lines[i].trim() === "};") {
+      inAvailableEndpointTypes = false;
+      normalizedLines.push(lines[i]);
+      continue;
+    }
+
+    const originalKey = getProviderMappingKey(lines[i]);
+    if (!originalKey) {
       if (lines[i].trim() === "],") {
         continue;
       }
@@ -507,7 +874,6 @@ export function normalizeProviderMappingContent(schemaContent: string): string {
       continue;
     }
 
-    const originalKey = match[1];
     const canonicalKey = canonicalizeLocalModelName(originalKey);
     const entryLines = [lines[i]];
 
@@ -558,12 +924,86 @@ export function formatProviderMappingProviders(providers: string[]): string {
   return `[${providers.map((provider) => JSON.stringify(provider)).join(", ")}]`;
 }
 
+function isVertexModelName(modelName: string): boolean {
+  return (
+    modelName.startsWith("publishers/") ||
+    /^(?:global|us|eu|apac)\./.test(modelName)
+  );
+}
+
+function providersForExactModelName(
+  modelName: string,
+  providers: NonNullable<ModelSpec["available_providers"]>,
+): NonNullable<ModelSpec["available_providers"]> {
+  return providers.filter(
+    (provider) => provider !== "vertex" || isVertexModelName(modelName),
+  );
+}
+
+export function getMissingProviderMappings(
+  localModels: LocalModelList,
+  schemaContent: string,
+  modelNames: string[] = Object.keys(localModels),
+): ProviderMappingUpdate[] {
+  const lines = normalizeProviderMappingContent(schemaContent).split("\n");
+  const missingProviderMappings: ProviderMappingUpdate[] = [];
+
+  for (const name of modelNames) {
+    const model = localModels[name];
+    const providers = model?.available_providers;
+    if (!providers || providers.length === 0) {
+      continue;
+    }
+    const exactModelProviders = providersForExactModelName(name, providers);
+    if (exactModelProviders.length === 0) {
+      continue;
+    }
+    if (findProviderMappingEntryRange(lines, name)) {
+      continue;
+    }
+    const defaultProviders = model && SYNC_DEFAULT_ENDPOINT_TYPES[model.format];
+    const matchesDefault =
+      defaultProviders &&
+      defaultProviders.length === exactModelProviders.length &&
+      defaultProviders.every(
+        (provider, i) => provider === exactModelProviders[i],
+      );
+    if (matchesDefault) {
+      continue;
+    }
+
+    missingProviderMappings.push({ name, providers: exactModelProviders });
+  }
+
+  return missingProviderMappings;
+}
+
+async function syncProviderMappingsForLocalModels(
+  localModels: LocalModelList,
+  modelNames: string[] = Object.keys(localModels),
+): Promise<void> {
+  const schemaContent = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const missingProviderMappings = getMissingProviderMappings(
+    localModels,
+    schemaContent,
+    modelNames,
+  );
+  if (missingProviderMappings.length > 0) {
+    console.log(
+      `\nUpdating ${missingProviderMappings.length} missing provider mappings...`,
+    );
+    await updateProviderMapping(
+      missingProviderMappings,
+      Object.keys(localModels),
+    );
+    return;
+  }
+
+  await normalizeProviderMappingsFile();
+}
+
 async function updateProviderMapping(
-  newModels: Array<{
-    name: string;
-    providers: string[];
-    remoteModel: LiteLLMModelDetail;
-  }>,
+  newModels: ProviderMappingUpdate[],
   completeModelOrder?: string[],
 ): Promise<void> {
   try {
@@ -638,6 +1078,82 @@ async function updateProviderMapping(
   } catch (error) {
     console.error("Failed to update provider mappings:", error);
   }
+}
+
+// Widen EXISTING AvailableEndpointTypes entries to include `provider` (pure).
+// `updateProviderMapping`/`getMissingProviderMappings` only ADD entries for
+// models with no mapping at all; they never widen an existing entry. This is
+// needed when a model already mapped to one provider (e.g. Together) is also
+// served by Baseten under the same id. Returns the rewritten content and the
+// names actually widened (entries missing or already containing the provider
+// are left untouched).
+export function addProviderToProviderMappingContent(
+  schemaContent: string,
+  modelNames: string[],
+  provider: string,
+): { content: string; updated: string[] } {
+  const updated: string[] = [];
+  if (modelNames.length === 0) {
+    return { content: schemaContent, updated };
+  }
+
+  const lines = normalizeProviderMappingContent(schemaContent).split("\n");
+
+  // Resolve ranges first, then apply bottom-up so earlier indices don't shift.
+  const targets = modelNames
+    .map((name) => ({
+      name,
+      range: findProviderMappingEntryRange(lines, name),
+    }))
+    .filter(
+      (t): t is { name: string; range: ProviderMappingEntryRange } =>
+        t.range !== undefined,
+    )
+    .sort((a, b) => b.range.start - a.range.start);
+
+  for (const { name, range } of targets) {
+    const entryText = lines.slice(range.start, range.end + 1).join("\n");
+    const arrayMatch = entryText.match(/\[([^\]]*)\]/);
+    if (!arrayMatch) {
+      continue;
+    }
+    const providers = Array.from(arrayMatch[1].matchAll(/"([^"]+)"/g)).map(
+      (m) => m[1],
+    );
+    if (providers.includes(provider)) {
+      continue;
+    }
+    providers.push(provider);
+    const commentMatch = entryText.match(/\],\s*(\/\/.*)$/);
+    const comment = commentMatch ? ` ${commentMatch[1]}` : "";
+    const newLine = `  "${name}": ${formatProviderMappingProviders(providers)},${comment}`;
+    lines.splice(range.start, range.end - range.start + 1, newLine);
+    updated.push(name);
+  }
+
+  return {
+    content: normalizeProviderMappingContent(lines.join("\n")),
+    updated,
+  };
+}
+
+async function addProviderToExistingMappings(
+  modelNames: string[],
+  provider: string,
+): Promise<string[]> {
+  if (modelNames.length === 0) {
+    return [];
+  }
+  const schemaContent = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const { content, updated } = addProviderToProviderMappingContent(
+    schemaContent,
+    modelNames,
+    provider,
+  );
+  if (updated.length > 0) {
+    await fs.promises.writeFile(SCHEMA_INDEX_PATH, content);
+  }
+  return updated;
 }
 
 export function convertRemoteToLocalModel(
@@ -717,6 +1233,106 @@ export function convertRemoteToLocalModel(
   }
 
   return baseModel as ModelSpec;
+}
+
+function parseBasetenPrice(value: string | undefined): number | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+
+  if (model.input_modalities?.includes("image")) {
+    baseModel.multimodal = true;
+  }
+  if (model.supported_features?.includes("reasoning")) {
+    baseModel.reasoning = true;
+  }
+
+  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
+  if (inputCost !== undefined) {
+    baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
+  }
+  const outputCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.completion),
+  );
+  if (outputCost !== undefined) {
+    baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
+  }
+  const cacheReadCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.input_cache_read),
+  );
+  if (cacheReadCost !== undefined) {
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
+  }
+
+  if (model.name) {
+    baseModel.displayName = model.name;
+  }
+
+  const maxInputTokens = getNonZeroNumber(model.context_length);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+
+  baseModel.available_providers = ["baseten"];
+  return baseModel as ModelSpec;
+}
+
+// Apply Baseten's authoritative /v1/models pricing to a model Baseten serves.
+// The catalog holds one price per id, and Baseten + another provider (e.g.
+// Together) can price the same model differently, so we deliberately PREFER
+// Baseten's pricing for any id Baseten serves — including ids shared with
+// Together. Overwrites input/output/cached prices from Baseten, but never
+// touches a field in SYNC_PRESERVED_FIELDS (those are hand-maintained
+// overrides). Returns a new ModelSpec if anything changed, else null.
+export function applyBasetenPricing(
+  name: string,
+  model: ModelSpec,
+  basetenModel: BasetenModel,
+): ModelSpec | null {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const updated: ModelSpec = { ...model };
+  let changed = false;
+
+  const apply = (
+    field:
+      | "input_cost_per_mil_tokens"
+      | "output_cost_per_mil_tokens"
+      | "input_cache_read_cost_per_mil_tokens",
+    raw: string | undefined,
+  ): void => {
+    if (isFieldManuallyPreserved(name, field)) {
+      return;
+    }
+    const value = getNonZeroNumber(parseBasetenPrice(raw));
+    if (value === undefined) {
+      return;
+    }
+    const rounded = roundCost(value);
+    if (updated[field] === rounded) {
+      return;
+    }
+    updated[field] = rounded;
+    changed = true;
+  };
+
+  apply("input_cost_per_mil_tokens", basetenModel.pricing?.prompt);
+  apply("output_cost_per_mil_tokens", basetenModel.pricing?.completion);
+  apply(
+    "input_cache_read_cost_per_mil_tokens",
+    basetenModel.pricing?.input_cache_read,
+  );
+
+  return changed ? updated : null;
 }
 
 async function getOptimalModelOrderingFromClaude(
@@ -1158,6 +1774,16 @@ async function updateModelsCommand(argv: any) {
         remoteCostPerToken: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
+        if (isFieldManuallyPreserved(localModelName, localFieldName)) {
+          console.log(
+            `  [PRESERVE] ${localModelName}.${String(
+              localFieldName,
+            )} kept at local value (${
+              localCost ?? "unset"
+            }); LiteLLM sync skipped`,
+          );
+          return;
+        }
         const normalizedRemoteCostPerToken =
           getNonZeroNumber(remoteCostPerToken);
         if (normalizedRemoteCostPerToken !== undefined) {
@@ -1209,6 +1835,16 @@ async function updateModelsCommand(argv: any) {
         remoteLimit: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
+        if (isFieldManuallyPreserved(localModelName, localFieldName)) {
+          console.log(
+            `  [PRESERVE] ${localModelName}.${String(
+              localFieldName,
+            )} kept at local value (${
+              localLimit ?? "unset"
+            }); LiteLLM sync skipped`,
+          );
+          return;
+        }
         const normalizedRemoteLimit = getNonZeroNumber(remoteLimit);
         if (normalizedRemoteLimit !== undefined) {
           if (
@@ -1413,7 +2049,6 @@ async function updateModelsCommand(argv: any) {
     if (argv.write) {
       if (madeChanges) {
         await writeLocalModels(updatedLocalModels);
-        await normalizeProviderMappingsFile();
         console.log(
           `\nLocal model_list.json has been updated with new model information (pricing, token limits) and keys ordered according to schema.`,
         );
@@ -1422,6 +2057,11 @@ async function updateModelsCommand(argv: any) {
           "\nNo model updates were necessary for local model_list.json.",
         );
       }
+
+      await syncProviderMappingsForLocalModels(
+        updatedLocalModels,
+        modelsInScope,
+      );
     } else {
       if (discrepanciesFound === 0) {
         console.log(
@@ -1476,6 +2116,16 @@ async function addModelsCommand(argv: any) {
         }
       }
 
+      if (
+        isModelExcludedFromSync(translatedModelName) ||
+        isModelExcludedFromSync(remoteModelName)
+      ) {
+        console.log(
+          `  [EXCLUDED] Skipping ${translatedModelName} (in SYNC_EXCLUDED_MODELS)`,
+        );
+        continue;
+      }
+
       const equivalentLocalNames =
         getEquivalentLocalModelNames(translatedModelName);
       if (!equivalentLocalNames.some((name) => localModelNames.has(name))) {
@@ -1498,22 +2148,14 @@ async function addModelsCommand(argv: any) {
           SCHEMA_INDEX_PATH,
           "utf-8",
         );
-
-        // Check which grok models are missing from provider mappings
-        const allGrokModels = Object.keys(localModels).filter((name) =>
-          name.includes("grok"),
+        const modelsInScope = Array.from(resolvedRemote.keys()).filter((name) =>
+          Object.prototype.hasOwnProperty.call(localModels, name),
         );
-        const missingProviderMappings = [];
-
-        for (const model of allGrokModels) {
-          if (!schemaContent.includes(`"${model}": ["xAI"]`)) {
-            missingProviderMappings.push({
-              name: model,
-              providers: ["xAI"],
-              remoteModel: { litellm_provider: "xai" },
-            });
-          }
-        }
+        const missingProviderMappings = getMissingProviderMappings(
+          localModels,
+          schemaContent,
+          modelsInScope,
+        );
 
         if (missingProviderMappings.length > 0) {
           console.log(
@@ -1644,6 +2286,181 @@ async function addModelsCommand(argv: any) {
   }
 }
 
+// Sync the catalog against Baseten's authoritative /v1/models list. Additive
+// and provider-union only: adds models Baseten serves that are missing locally,
+// and unions `baseten` into the available_providers (and index.ts mapping) of
+// models already present under the same id. It does NOT prune models absent
+// from /v1/models — that list is not exhaustive (some served ids are unlisted),
+// so removals stay a manual decision. Requires BASETEN_API_KEY.
+async function syncBasetenModelsCommand(argv: any) {
+  try {
+    const apiKey = process.env.BASETEN_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "BASETEN_API_KEY environment variable is required to sync Baseten models.",
+      );
+    }
+
+    console.log("Fetching Baseten models from:", BASETEN_MODEL_URL);
+    const basetenModels = await fetchBasetenModels(apiKey);
+    console.log(`Fetched ${basetenModels.length} Baseten models.`);
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
+    const providerUnions: string[] = [];
+    const pricingUpdates: string[] = [];
+
+    for (const basetenModel of basetenModels) {
+      const id = basetenModel.id;
+      if (isModelExcludedFromSync(id)) {
+        console.log(`  [EXCLUDED] Skipping ${id} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+
+      const existingName = getEquivalentLocalModelNames(id).find((name) =>
+        Object.prototype.hasOwnProperty.call(localModels, name),
+      );
+
+      if (existingName) {
+        const existing = localModels[existingName];
+        const currentProviders = existing.available_providers ?? [];
+        let next = existing;
+
+        if (!currentProviders.includes("baseten")) {
+          next = {
+            ...next,
+            available_providers: [
+              ...currentProviders,
+              "baseten",
+            ] as ModelSpec["available_providers"],
+          };
+          providerUnions.push(existingName);
+          console.log(`  [UNION] add baseten to ${existingName}`);
+        }
+
+        // Prefer Baseten's pricing for any id Baseten serves, including ids
+        // shared with Together. The catalog stores one price per id and the two
+        // providers can price the same model differently (e.g. GLM-5.1,
+        // DeepSeek-V4-Pro), so we deliberately use Baseten's. Manually
+        // preserved fields (SYNC_PRESERVED_FIELDS) are left untouched.
+        const priced = applyBasetenPricing(existingName, next, basetenModel);
+        if (priced) {
+          next = priced;
+          pricingUpdates.push(existingName);
+          console.log(`  [PRICING] prefer Baseten pricing on ${existingName}`);
+        }
+
+        if (next !== existing) {
+          localModels[existingName] = next;
+        }
+      } else {
+        modelsToAdd.push({
+          name: id,
+          model: convertBasetenToLocalModel(basetenModel),
+        });
+        console.log(`  [NEW] ${id}`);
+      }
+    }
+
+    if (
+      modelsToAdd.length === 0 &&
+      providerUnions.length === 0 &&
+      pricingUpdates.length === 0
+    ) {
+      console.log("Baseten catalog already in sync. No changes needed.");
+      return;
+    }
+
+    console.log(
+      `\n${modelsToAdd.length} new Baseten model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing fill(s).`,
+    );
+
+    if (!argv.write) {
+      console.log("\n📋 Dry run. Re-run with --write to apply.");
+      for (const { name } of modelsToAdd) {
+        console.log(`  would add: ${name}`);
+      }
+      for (const name of providerUnions) {
+        console.log(`  would add baseten to: ${name}`);
+      }
+      for (const name of pricingUpdates) {
+        console.log(`  would fill missing Baseten prices on: ${name}`);
+      }
+      return;
+    }
+
+    // Rebuild the model list with new models inserted in a stable order.
+    const newModelNames = modelsToAdd.map((m) => m.name);
+    const completeModelOrder = getFallbackCompleteOrdering(
+      Object.keys(localModels),
+      newModelNames,
+    );
+    const updatedModels: LocalModelList = {};
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        const toAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (toAdd) {
+          updatedModels[modelName] = toAdd.model;
+        }
+      }
+    }
+
+    await writeLocalModels(updatedModels);
+    console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+
+    if (modelsToAdd.length > 0) {
+      await updateProviderMapping(
+        modelsToAdd.map(({ name, model }) => ({
+          name,
+          providers: (model.available_providers ?? []) as string[],
+        })),
+        completeModelOrder,
+      );
+    }
+    if (providerUnions.length > 0) {
+      const widened = await addProviderToExistingMappings(
+        providerUnions,
+        "baseten",
+      );
+      console.log(
+        `✅ Widened ${widened.length} existing provider mapping(s) with baseten`,
+      );
+    }
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
+  } catch (error) {
+    console.error("Error during sync-baseten command:", error);
+    process.exit(1);
+  }
+}
+
+// Format schema/index.ts with Prettier so the catalog scripts never emit
+// unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
+// steps, and older writers can all leave entries like ["openai","azure"]
+// (no space after the comma) that fail the prettier pre-commit hook; this
+// guarantees the file matches the repo style before it is committed.
+// (model_list.json is intentionally excluded from the prettier hook, so it is
+// canonicalized separately and not run through Prettier here.)
+async function formatIndexFileWithPrettier(): Promise<void> {
+  const source = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  const config = await prettier.resolveConfig(SCHEMA_INDEX_PATH);
+  const formatted = await prettier.format(source, {
+    ...config,
+    filepath: SCHEMA_INDEX_PATH,
+  });
+  if (formatted !== source) {
+    await fs.promises.writeFile(SCHEMA_INDEX_PATH, formatted);
+    console.log("✅ Formatted schema/index.ts with Prettier");
+  }
+}
+
 async function normalizeLocalModelsCommand(argv: any) {
   try {
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -1655,12 +2472,18 @@ async function normalizeLocalModelsCommand(argv: any) {
       canonicalizeLocalModelsContent(rawLocalModelContent);
     const renamedKeys = canonicalizedLocalModels.renamedKeys;
     const duplicateJsonKeys = findDuplicateJsonKeys(rawLocalModelContent);
-    const needsRewrite = renamedKeys.length > 0 || duplicateJsonKeys.length > 0;
+    const needsRewrite =
+      renamedKeys.length > 0 ||
+      duplicateJsonKeys.length > 0 ||
+      rawLocalModelContent !== canonicalizedLocalModels.canonicalContent;
 
-    if (renamedKeys.length === 0 && !needsRewrite) {
-      console.log("No local model keys needed normalization.");
+    if (!needsRewrite) {
+      console.log("Local model catalog already normalized.");
       if (argv.write) {
-        await normalizeProviderMappingsFile();
+        await syncProviderMappingsForLocalModels(
+          canonicalizedLocalModels.models,
+        );
+        await formatIndexFileWithPrettier();
       }
       return;
     }
@@ -1695,7 +2518,8 @@ async function normalizeLocalModelsCommand(argv: any) {
       LOCAL_MODEL_LIST_PATH,
       canonicalizedLocalModels.canonicalContent,
     );
-    await normalizeProviderMappingsFile();
+    await syncProviderMappingsForLocalModels(canonicalizedLocalModels.models);
+    await formatIndexFileWithPrettier();
     console.log(
       `\n✅ Canonicalized local model catalog${renamedKeys.length > 0 ? ` and normalized ${renamedKeys.length} local model keys` : ""}.`,
     );
@@ -1796,9 +2620,24 @@ async function main() {
         await addModelsCommand(argv);
       },
     )
+    .command(
+      "sync-baseten",
+      "Sync the catalog against Baseten's /v1/models (add missing Baseten models and union the baseten provider into existing ids). Requires BASETEN_API_KEY.",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description:
+            "Write the new models and provider mappings to model_list.json / index.ts",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await syncBasetenModelsCommand(argv);
+      },
+    )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing, update-models, or add-models).",
+      "You need to specify a command (e.g., find-missing, update-models, add-models, or sync-baseten).",
     )
     .help()
     .alias("help", "h")

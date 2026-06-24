@@ -1,4 +1,4 @@
-import { lookup } from "node:dns/promises";
+import { Resolver } from "node:dns/promises";
 import { type IncomingHttpHeaders } from "node:http";
 import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
@@ -17,6 +17,7 @@ export interface MediaBlock {
 
 interface ValidatedMediaUrl {
   address: string;
+  transport: "fetch" | "node";
   url: URL;
 }
 
@@ -165,6 +166,55 @@ function isBlockedIPAddress(address: string): boolean {
   return isBlockedIPv4Address(address) || isBlockedIPv6Address(address);
 }
 
+function shouldUseFetchTransport(): boolean {
+  return (
+    typeof navigator !== "undefined" &&
+    navigator.userAgent === "Cloudflare-Workers"
+  );
+}
+
+function dnsErrorCode(error: unknown): string | undefined {
+  const code =
+    error !== null && typeof error === "object"
+      ? Object.getOwnPropertyDescriptor(error, "code")?.value
+      : undefined;
+  return typeof code === "string" ? code : undefined;
+}
+
+function dnsRecordNotFound(error: unknown): boolean {
+  const code = dnsErrorCode(error);
+  return code === "ENODATA" || code === "ENOTFOUND";
+}
+
+async function resolveHostnameAddresses(hostname: string): Promise<string[]> {
+  const resolver = new Resolver();
+  const results = await Promise.allSettled([
+    resolver.resolve4(hostname),
+    resolver.resolve6(hostname),
+  ]);
+  const addresses: string[] = [];
+  const errors: unknown[] = [];
+
+  for (const result of results) {
+    if (result.status === "fulfilled") {
+      addresses.push(...result.value);
+      continue;
+    }
+
+    if (!dnsRecordNotFound(result.reason)) {
+      errors.push(result.reason);
+    }
+  }
+
+  if (addresses.length > 0) {
+    return addresses;
+  }
+  if (errors.length > 0) {
+    throw errors[0];
+  }
+  return [];
+}
+
 function nodeHeadersToHeaders(headers: IncomingHttpHeaders): Headers {
   const result = new Headers();
   for (const [name, value] of Object.entries(headers)) {
@@ -192,19 +242,26 @@ async function validateMediaUrl(url: URL): Promise<ValidatedMediaUrl> {
     throw new Error("Media URL resolves to a blocked address");
   }
 
+  // Cloudflare Workers reject media requests sent through the Node transport
+  // even after DNS validation succeeds, while their native fetch path works.
+  const transport = shouldUseFetchTransport() ? "fetch" : "node";
   if (parseIPv4Address(hostname) !== null || hostname.includes(":")) {
-    return { address: hostname, url };
+    return { address: hostname, transport, url };
   }
 
-  const addresses = await lookup(hostname, { all: true, verbatim: true });
+  const addresses = await resolveHostnameAddresses(hostname);
   if (
     addresses.length === 0 ||
-    addresses.some(({ address }) => isBlockedIPAddress(address))
+    addresses.some((address) => isBlockedIPAddress(address))
   ) {
     throw new Error("Media URL resolves to a blocked address");
   }
 
-  return { address: addresses[0].address, url };
+  return {
+    address: transport === "node" ? addresses[0] : hostname,
+    transport,
+    url,
+  };
 }
 
 async function readResponseBytes(
@@ -273,9 +330,17 @@ async function fetchMediaUrl(
 }
 
 async function fetchValidatedMediaUrl(
-  { address, url }: ValidatedMediaUrl,
+  { address, transport, url }: ValidatedMediaUrl,
   signal: AbortSignal,
 ): Promise<Response> {
+  if (transport === "fetch") {
+    return await fetch(url.toString(), {
+      method: "GET",
+      redirect: "manual",
+      signal,
+    });
+  }
+
   return await new Promise((resolve, reject) => {
     const hostname = normalizeHostname(url.hostname);
     const servername =

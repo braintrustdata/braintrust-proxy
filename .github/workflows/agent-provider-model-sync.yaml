@@ -24,13 +24,16 @@ jobs:
           fetch-depth: 0
 
       - name: Attempt provider-direct sync with Claude Code
-        uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1.0.75
+        # The audit covers ~15 providers (model list + pricing per provider) with
+        # --max-turns 200. At the other Claude steps' rate (~80 turns / 15 min)
+        # that needs ~35-40 min, so a 25-min cap killed the step mid-audit on
+        # essentially every run. Give the turn budget room to finish.
+        timeout-minutes: 45
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           github_token: ${{ github.token }}
-          show_full_output: "true"
           display_report: "true"
-          timeout_minutes: "25"
           claude_args: |
             --model claude-opus-4-6
             --max-turns 200
@@ -56,6 +59,7 @@ jobs:
 
             - `anthropic` — models and pricing: `https://docs.anthropic.com/en/docs/about-claude/models/all-models`
             - `azure` — models: `https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models` ; pricing: `https://azure.microsoft.com/en-us/pricing/details/azure-openai/`
+            - `baseten` — models: `https://www.baseten.co/library/` (Model APIs library; per-model pages live at `https://www.baseten.co/library/<id>/`) ; pricing: the per-model library page, else `https://www.baseten.co/pricing/`
             - `bedrock` — models: `https://docs.aws.amazon.com/en_us/bedrock/latest/userguide/foundation-models-reference.html` ; pricing: `https://aws.amazon.com/bedrock/pricing/`
             - `cerebras` — models: `https://inference-docs.cerebras.ai/models/overview` ; pricing: `https://inference-docs.cerebras.ai/support/pricing`
             - `databricks` — models: `https://docs.databricks.com/aws/en/machine-learning/model-serving/foundation-model-overview`
@@ -109,6 +113,8 @@ jobs:
             - Do not infer model existence from a pricing page alone, or pricing from a model docs page alone.
             - Only treat a model as available from a provider when it appears on that provider's public shared inference surface (serverless, general catalog). Ignore bring-your-own-model flows, custom deployments, template galleries, and self-hosted guides.
             - `azure`, `bedrock`, and `vertex` can serve models made by other companies. A model appearing there does not mean the local provider mapping is wrong — only report a mapping gap when official docs clearly show the current mapping is incomplete.
+            - **Shared model ids span providers — union them.** Some ids are served by more than one provider under the exact same id (e.g. `zai-org/GLM-5.2` and `moonshotai/Kimi-K2.6` are on both `baseten` and `together`). When you find such an id, check EVERY provider in the inventory that serves that exact id and report the FULL set in `available_providers` — never attribute a shared id to only the first provider you happen to find it on. If the id is already in `model_list.json` but a provider that serves it (on that provider's official inference surface) is missing from its `available_providers`, that is itself a fileable gap (a provider-mapping update, priority alongside cost updates): report the id and the complete provider set, and set `kind: "stale_metadata"` in the metadata block (it is an update to an already-present id, not a new model — see the metadata rules below). This gap is distinct from an "add model" issue, so do not suppress it via the duplicate check just because the id already exists or a recent issue added the id for one provider.
+            - Report the `model_list.json` `available_providers` set only. Do NOT assume `index.ts` (`AvailableEndpointTypes`) must equal it — index.ts is intentionally narrower for some models (e.g. an id pinned to a single provider for pricing), so a difference there is not necessarily a gap.
             - For pricing, prefer standard public on-demand pricing. Ignore free tiers, preview promos, enterprise, provisioned throughput, reserved capacity, and batch pricing. If pricing varies by region with no clear default, skip it. If pricing varies by prompt length or modality in a way that doesn't map cleanly to the existing schema, skip it.
 
             # Before filing an issue — verification checklist
@@ -116,7 +122,7 @@ jobs:
             All three checks must pass before creating an issue:
 
             1. **Cross-source**: Confirm the model ID appears in at least two independent official signals (e.g., model listing page + pricing page, or model listing page + changelog). A single docs page is not sufficient.
-            2. **Recent commits**: Check `git log --oneline -30 -- packages/proxy/schema/model_list.json` to confirm the gap was not already fixed in a recent commit.
+            2. **Already fixed**: Read `packages/proxy/schema/model_list.json` (and `index.ts`) and confirm the model id / corrected value is not already present, so you do not re-file a gap that has already been addressed. (Do not use `git`/Bash — they are not available to this step.)
             3. **ID format**: Confirm the proposed model ID matches the naming convention used by the same provider in `model_list.json` (e.g., `publishers/google/models/...` for vertex). Do not file an issue for a plausible-but-unverified ID.
 
             Then search for an equivalent open GitHub issue and do not create duplicates.
@@ -166,6 +172,7 @@ jobs:
                 "source_urls": ["https://example.com"]
               }
               ```
+            - Set `kind` correctly — this is required for the fix to apply. Use `"missing_model"` ONLY when the model id is not yet in `model_list.json`. For ANY change to an id that is already present — provider-mapping gaps (adding a provider to `available_providers`), pricing or token-limit corrections, deprecations — set `kind: "stale_metadata"`. The downstream fixer treats absent/`missing_model` issues as additions and CLOSES them without changes when the named models already exist (`fix_bot_issue.ts`), so a provider-mapping or metadata gap filed as `missing_model` is silently dropped. For `stale_metadata`, the `model_specs` you provide must be the full intended entry (e.g. the complete `available_providers` set), since the fixer updates the existing entry from it.
             - For a single-model issue you may use `model_spec` or `model_specs`. For multi-model issues, use `model_specs` with one fully populated spec per model ID.
             - Populate specs with exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location info from official sources. Do not guess.
             - Include `parent` only when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json`. Recognized patterns: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`), `@NNN`/`-vN` versioned snapshots (e.g. Vertex `@001`), location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI). Leave unset for base models or when the parent id is not in the local catalog.

@@ -1,7 +1,7 @@
 import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
 import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import { APISecretSchema } from "./secrets";
 import { getModelEndpointTypes, ModelFormat } from "./index";
 import { translateParams } from "./translate";
@@ -331,6 +331,19 @@ describe("APISecretSchema compatibility", () => {
     expect(parsed).toMatchObject({
       future_top_level: { enabled: true },
     });
+  });
+
+  it("accepts org ids as a top-level API secret field", () => {
+    const parsed = APISecretSchema.parse({
+      secret: "provider-secret",
+      type: "openai",
+      org_id: "org-id",
+      org_name: "org-name",
+      metadata: {},
+    });
+
+    expectTypeOf(parsed.org_id).toEqualTypeOf<string | null | undefined>();
+    expect(parsed.org_id).toBe("org-id");
   });
 
   it("accepts Anthropic OAuth bearer metadata", () => {

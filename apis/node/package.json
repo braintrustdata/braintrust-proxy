@@ -25,7 +25,7 @@
     "combined-stream": "^1.0.8",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "esbuild": "^0.27.0",
+    "esbuild": "^0.28.1",
     "eventsource-parser": "^1.1.1",
     "express": "^5.2.1",
     "openai": "^4.104.0",

@@ -18,7 +18,10 @@ import {
   VIDEO_DATA_URL,
 } from "../../tests/fixtures/base64";
 
-const ANTHROPIC_LIVE_TEST_MODEL = "claude-sonnet-4-20250514";
+// Anthropic retired the dated claude-sonnet-4-20250514 snapshot (its API now
+// returns not_found_error for it), so the live tests use the current Sonnet
+// alias — the same model the other live tests in this file already use.
+const ANTHROPIC_LIVE_TEST_MODEL = "claude-sonnet-4-5";
 
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<

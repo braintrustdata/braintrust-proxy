@@ -5,7 +5,7 @@ import {
   parseIndexEndpointTypes,
 } from "./reconcile_provider_models";
 import {
-  addToSyncExcluded,
+  addToDeprecatedIds,
   applyDeprecations,
   rewriteIndexEntry,
 } from "./apply_deprecations";
@@ -66,16 +66,13 @@ describe("applyDeprecations", () => {
   "model-c": ["openai", "azure"],
 };
 `;
-  const baseSync = `export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
-  "claude-opus-4-7-20260416",
-]);
-`;
+  const baseDeprecatedIds: string[] = ["claude-opus-4-7-20260416"];
 
   it("narrows providers when a model survives on another provider", () => {
     const catalog = {
       "model-a": { available_providers: ["together", "baseten"] },
     };
-    const out = applyDeprecations(catalog, baseIndex, baseSync, [
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-a", provider: "baseten", reason: "probe not-found" },
     ]);
     expect(out.catalog["model-a"].available_providers).toEqual(["together"]);
@@ -90,19 +87,19 @@ describe("applyDeprecations", () => {
 
   it("removes a model and excludes it when it loses all providers", () => {
     const catalog = { "model-b": { available_providers: ["xAI"] } };
-    const out = applyDeprecations(catalog, baseIndex, baseSync, [
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-b", provider: "xAI", reason: "probe not-found" },
     ]);
     expect(out.catalog["model-b"]).toBeUndefined();
     expect(out.indexContent).not.toContain('"model-b"');
     expect(out.indexContent).toContain('"model-a"'); // others intact
     expect(out.result.removedModels).toEqual(["model-b"]);
-    expect(out.syncContent).toContain('"model-b"');
+    expect(out.deprecatedIds).toContain("model-b");
   });
 
   it("is a no-op for a provider the model does not have", () => {
     const catalog = { "model-c": { available_providers: ["openai", "azure"] } };
-    const out = applyDeprecations(catalog, baseIndex, baseSync, [
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-c", provider: "groq", reason: "x" },
     ]);
     expect(out.catalog["model-c"].available_providers).toEqual([
@@ -116,13 +113,13 @@ describe("applyDeprecations", () => {
   it("removes an index-only model (no available_providers) routed via index.ts", () => {
     // model-b is mapped only in index.ts (["xAI"]) with no available_providers.
     const catalog = { "model-b": { format: "openai" } };
-    const out = applyDeprecations(catalog, baseIndex, baseSync, [
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-b", provider: "xAI", reason: "probe not-found" },
     ]);
     expect(out.catalog["model-b"]).toBeUndefined();
     expect(out.indexContent).not.toContain('"model-b"');
     expect(out.result.removedModels).toEqual(["model-b"]);
-    expect(out.syncContent).toContain('"model-b"');
+    expect(out.deprecatedIds).toContain("model-b");
   });
 });
 
@@ -169,10 +166,8 @@ describe("rewriteIndexEntry / addToSyncExcluded", () => {
     expect(rewriteIndexEntry(idx, "y", [])).toContain('"x"');
   });
 
-  it("inserts ids into SYNC_EXCLUDED_MODELS without duplicates", () => {
-    const sync = `export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([\n  "a",\n]);\n`;
-    const out = addToSyncExcluded(sync, ["b", "a"]);
-    expect(out).toContain('"b"');
-    expect(out.match(/"a"/g)?.length).toBe(1); // not duplicated
+  it("adds ids to the deprecated-ids list, sorted and de-duplicated", () => {
+    expect(addToDeprecatedIds(["a"], ["b", "a"])).toEqual(["a", "b"]);
+    expect(addToDeprecatedIds(["m"], ["c", "z"])).toEqual(["c", "m", "z"]);
   });
 });

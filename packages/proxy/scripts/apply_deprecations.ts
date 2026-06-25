@@ -14,7 +14,7 @@ import { parseIndexEndpointTypes } from "./reconcile_provider_models";
 const SCHEMA_DIR = path.resolve(__dirname, "../schema");
 const MODEL_LIST_PATH = path.join(SCHEMA_DIR, "model_list.json");
 const INDEX_PATH = path.join(SCHEMA_DIR, "index.ts");
-const SYNC_MODELS_PATH = path.join(__dirname, "sync_models.ts");
+const DEPRECATED_IDS_PATH = path.join(__dirname, "deprecated_model_ids.json");
 
 type ModelSpec = { available_providers?: string[] } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
@@ -41,30 +41,14 @@ export function rewriteIndexEntry(
   return content.replace(lineRe, `  "${model}": ${arr},\n`);
 }
 
-// Insert model ids into the SYNC_EXCLUDED_MODELS set literal (before its close).
-export function addToSyncExcluded(content: string, models: string[]): string {
-  if (models.length === 0) {
-    return content;
-  }
-  const marker = "export const SYNC_EXCLUDED_MODELS";
-  const start = content.indexOf(marker);
-  if (start < 0) {
-    throw new Error("Could not find SYNC_EXCLUDED_MODELS in sync_models.ts");
-  }
-  const close = content.indexOf("]);", start);
-  if (close < 0) {
-    throw new Error("Could not find end of SYNC_EXCLUDED_MODELS set");
-  }
-  const existing = content.slice(start, close);
-  const toAdd = models.filter((m) => !existing.includes(`"${m}"`));
-  if (toAdd.length === 0) {
-    return content;
-  }
-  const insertion =
-    `  // Auto-removed by the model deprecation audit (provider returned not-found).\n` +
-    toAdd.map((m) => `  ${JSON.stringify(m)},`).join("\n") +
-    "\n";
-  return content.slice(0, close) + insertion + content.slice(close);
+// Add model ids to the automation-managed deprecated-ids list (sorted, unique).
+// sync_models.ts reads this JSON into SYNC_EXCLUDED_MODELS, so the audit never
+// has to edit TypeScript source.
+export function addToDeprecatedIds(
+  current: string[],
+  models: string[],
+): string[] {
+  return Array.from(new Set([...current, ...models])).sort();
 }
 
 export type ApplyResult = {
@@ -75,12 +59,12 @@ export type ApplyResult = {
 export function applyDeprecations(
   catalog: Catalog,
   indexContent: string,
-  syncContent: string,
+  deprecatedIds: string[],
   deprecations: Deprecation[],
 ): {
   catalog: Catalog;
   indexContent: string;
-  syncContent: string;
+  deprecatedIds: string[];
   result: ApplyResult;
 } {
   const deadByModel = new Map<string, Set<string>>();
@@ -130,11 +114,11 @@ export function applyDeprecations(
     }
   }
 
-  const syncOut = addToSyncExcluded(syncContent, removedModels);
+  const updatedDeprecatedIds = addToDeprecatedIds(deprecatedIds, removedModels);
   return {
     catalog,
     indexContent: nextIndex,
-    syncContent: syncOut,
+    deprecatedIds: updatedDeprecatedIds,
     result: { removedModels, narrowedModels },
   };
 }
@@ -158,12 +142,14 @@ async function main(): Promise<void> {
   const report: AuditReport = JSON.parse(fs.readFileSync(argv.report, "utf8"));
   const catalog: Catalog = JSON.parse(fs.readFileSync(MODEL_LIST_PATH, "utf8"));
   const indexContent = fs.readFileSync(INDEX_PATH, "utf8");
-  const syncContent = fs.readFileSync(SYNC_MODELS_PATH, "utf8");
+  const deprecatedIds: string[] = JSON.parse(
+    fs.readFileSync(DEPRECATED_IDS_PATH, "utf8"),
+  );
 
   const out = applyDeprecations(
     catalog,
     indexContent,
-    syncContent,
+    deprecatedIds,
     report.deprecations,
   );
 
@@ -189,7 +175,10 @@ async function main(): Promise<void> {
     JSON.stringify(out.catalog, null, 2) + "\n",
   );
   await fs.promises.writeFile(INDEX_PATH, out.indexContent);
-  await fs.promises.writeFile(SYNC_MODELS_PATH, out.syncContent);
+  await fs.promises.writeFile(
+    DEPRECATED_IDS_PATH,
+    JSON.stringify(out.deprecatedIds, null, 2) + "\n",
+  );
   console.log("\n✅ Applied deprecations.");
 }
 

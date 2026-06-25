@@ -16,6 +16,7 @@ import {
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
+import deprecatedModelIds from "./deprecated_model_ids.json";
 import {
   getFallbackCompleteOrdering,
   getProviderMappingForModel,
@@ -108,101 +109,25 @@ export function isFieldManuallyPreserved(
 // Each id is matched against both the translated (local) name and the raw
 // remote name. Add an id here only after confirming the provider rejects it;
 // remove it if the provider later ships the model for real.
-export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
+// Manual, non-deprecation sync exclusions (sync quirks that are not provider
+// "model not found" deprecations): a phantom dated snapshot LiteLLM keeps
+// listing, and a non-chat model that cannot be invoked via chat/completions.
+const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
-  // canonical id `claude-opus-4-7`; the API returns not_found for this dated
-  // id, but LiteLLM still lists it, so the sync kept re-adding it.
+  // canonical id `claude-opus-4-7`; the API returns not_found for this dated id,
+  // but LiteLLM still lists it, so the sync kept re-adding it.
   "claude-opus-4-7-20260416",
-  // Deprecated on Baseten: these baseten-only ids return HTTP 410 ("the model
-  // version you are trying to access has been deprecated") and are absent from
-  // Baseten's /v1/models, but LiteLLM still lists them as baseten, so the sync
-  // kept re-adding non-invocable entries (see PR #849).
-  "deepseek-ai/DeepSeek-V3-0324",
-  "moonshotai/Kimi-K2-Thinking",
-  "moonshotai/Kimi-K2-Instruct-0905",
-  "zai-org/GLM-4.6",
   // Not a chat model: OpenAI's realtime transcription model is rejected by
-  // /v1/chat/completions ("This is not a chat model"); the catalog only routes
-  // chat/completion flavors, so it cannot be invoked from here.
+  // /v1/chat/completions ("This is not a chat model").
   "gpt-realtime-whisper",
-  // Auto-removed by the model deprecation audit (provider returned not-found).
-  "chatgpt-4o-latest",
-  "codex-mini-latest",
-  "gpt-3.5-turbo-0301",
-  "gpt-3.5-turbo-0613",
-  "gpt-3.5-turbo-16k-0613",
-  "gpt-4-0125-preview",
-  "gpt-4-0314",
-  "gpt-4-1106-preview",
-  "gpt-4-1106-vision-preview",
-  "gpt-4-32k",
-  "gpt-4-32k-0314",
-  "gpt-4-32k-0613",
-  "gpt-4-turbo-preview",
-  "gpt-4-vision-preview",
-  "gpt-4.5-preview",
-  "gpt-4.5-preview-2025-02-27",
-  "gpt-5-chat",
-  "o1-mini",
-  "o1-mini-2024-09-12",
-  "o1-preview",
-  "o1-preview-2024-09-12",
-  "MiniMaxAI/MiniMax-M2.5",
-  "gemini-1.5-flash",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro-latest",
-  "gemini-exp-1206",
-  "learnlm-1.5-pro-experimental",
-  "gemma-7b-it",
-  "meta-llama/llama-4-maverick-17b-128e-instruct",
-  "moonshotai/kimi-k2-instruct-0905",
-  "magistral-medium-2506",
-  "magistral-small-2506",
-  "mistral-medium-3-5-26-04",
-  "open-codestral-mamba",
-  "sonar-reasoning",
-  "grok-2",
-  "grok-2-1212",
-  "grok-2-latest",
-  "grok-2-vision",
-  "grok-2-vision-1212",
-  "grok-2-vision-latest",
-  "grok-beta",
-  "grok-vision-beta",
-  // Auto-removed by the model deprecation audit (provider returned not-found).
-  "gpt-35-turbo",
-  "gpt-35-turbo-16k",
-  "publishers/moonshotai/models/kimi-k2.5",
-  "Qwen3-Coder-480B-A35B-Instruct",
-  "deepseek-r1-distill-llama-70b",
-  "llama-4-scout-17b-16e-instruct",
-  "llama3.1-8b",
-  "llama3.3-70b",
-  "deepseek-r1-distill-llama-70b-specdec",
-  "deepseek-r1-distill-qwen-32b",
-  "gemma2-9b-it",
-  "llama-3.1-405b-reasoning",
-  "llama-3.1-70b-versatile",
-  "llama-3.2-11b-vision-preview",
-  "llama-3.2-1b-preview",
-  "llama-3.2-3b-preview",
-  "llama-3.2-90b-vision-preview",
-  "llama-3.3-70b-specdec",
-  "llama-guard-3-8b",
-  "llama2-70b-4096",
-  "llama3-70b-8192",
-  "llama3-8b-8192",
-  "mistral-saba-24b",
-  "mixtral-8x7b-32768",
-  "qwen-2.5-32b",
-  "qwen-2.5-coder-32b",
-  "qwen-qwq-32b",
-  "r1-1776",
-  "databricks/dbrx-instruct",
-  "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
-  "mistralai/mixtral-8x7b-32kseqlen",
-  "mistralai/Mixtral-8x7B-Instruct-v0.1-json",
+];
+
+// The full exclusion set: manual quirks above + the provider-confirmed
+// deprecations the audit maintains in scripts/deprecated_model_ids.json
+// (written by scripts/apply_deprecations.ts — do not edit that JSON by hand).
+export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set<string>([
+  ...MANUAL_SYNC_EXCLUDED_MODELS,
+  ...deprecatedModelIds,
 ]);
 
 // Returns true if `modelName` must not be auto-added by the sync.

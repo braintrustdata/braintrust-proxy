@@ -1,5 +1,5 @@
-import { it, expect, describe } from "vitest";
-import { callProxyV1, createCapturingFetch } from "../../utils/tests";
+import { expect, describe } from "vitest";
+import { callProxyV1, createCapturingFetch, it } from "../../utils/tests";
 import { anthropicAuthHeaders, FetchFn } from "../proxy";
 import {
   OpenAIChatCompletion,
@@ -18,7 +18,10 @@ import {
   VIDEO_DATA_URL,
 } from "../../tests/fixtures/base64";
 
-const ANTHROPIC_LIVE_TEST_MODEL = "claude-sonnet-4-20250514";
+// Anthropic retired the dated claude-sonnet-4-20250514 snapshot (its API now
+// returns not_found_error for it), so the live tests use the current Sonnet
+// alias — the same model the other live tests in this file already use.
+const ANTHROPIC_LIVE_TEST_MODEL = "claude-sonnet-4-5";
 
 it("should convert OpenAI streaming request to Anthropic and back", async () => {
   const { events } = await callProxyV1<
@@ -233,7 +236,10 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: ANTHROPIC_LIVE_TEST_MODEL,
+    // The alias resolves upstream to a dated snapshot (e.g.
+    // claude-sonnet-4-5-20250929), which Anthropic echoes back, so match the
+    // family rather than the exact requested id.
+    model: expect.stringMatching(/^claude-sonnet-4-5/),
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),

@@ -13,11 +13,10 @@ import {
   beforeAll,
   describe,
   expect,
-  it,
   test,
   vi,
 } from "vitest";
-import { callProxyV1, createCapturingFetch } from "../../utils/tests";
+import { callProxyV1, createCapturingFetch, it } from "../../utils/tests";
 import * as proxyUtil from "../util";
 import { type FetchFn } from "../proxy";
 import { normalizeOpenAIContent } from "./openai";

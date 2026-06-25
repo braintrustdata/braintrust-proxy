@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { callProxyV1, createCapturingFetch } from "../../utils/tests";
+import { describe, expect } from "vitest";
+import { callProxyV1, createCapturingFetch, it } from "../../utils/tests";
 import {
   OpenAIChatCompletionChunk,
   OpenAIChatCompletionCreateParams,

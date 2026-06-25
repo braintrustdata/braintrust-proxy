@@ -1,6 +1,6 @@
 import { OpenAIChatCompletion, OpenAIChatCompletionCreateParams } from "@types";
-import { expect, it } from "vitest";
-import { callProxyV1 } from "../../utils/tests";
+import { expect } from "vitest";
+import { callProxyV1, it } from "../../utils/tests";
 
 it("should filter Braintrust parameters when calling OpenAI", async () => {
   if (!process.env.AZURE_OPENAI_API_KEY) {

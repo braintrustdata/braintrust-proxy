@@ -37,7 +37,7 @@ describe("fix_bot_issue", () => {
 
       expect(updated).toBe(
         buildEndpointTypesFile([
-          '  "openai/gpt-oss-120b": ["together","groq","baseten","cerebras"],',
+          '  "openai/gpt-oss-120b": ["together", "groq", "baseten", "cerebras"],',
           '  "openai/gpt-oss-20b": ["groq"],',
         ]),
       );
@@ -53,7 +53,7 @@ describe("fix_bot_issue", () => {
         "openai/gpt-oss-20b": ["groq", "cerebras"],
       });
 
-      expect(updated).toContain('"openai/gpt-oss-20b": ["groq","cerebras"],');
+      expect(updated).toContain('"openai/gpt-oss-20b": ["groq", "cerebras"],');
     });
   });
 });

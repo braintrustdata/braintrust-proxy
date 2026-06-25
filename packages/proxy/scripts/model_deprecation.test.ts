@@ -41,6 +41,18 @@ describe("classifyProbe", () => {
     ).toBe("unknown");
     expect(classifyProbe(401, '{"error":"invalid x-api-key"}')).toBe("unknown");
   });
+
+  it("does not deprecate existing non-chat models (wrong endpoint / modality)", () => {
+    expect(
+      classifyProbe(
+        404,
+        "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?",
+      ),
+    ).toBe("unknown");
+    expect(
+      classifyProbe(400, '{"error":"This model only supports streaming"}'),
+    ).toBe("unknown");
+  });
 });
 
 describe("applyDeprecations", () => {

@@ -39,6 +39,11 @@ const TRANSIENT_TEXT =
 // Markers that a model id was rejected because it does not exist / was retired.
 const DEPRECATED_TEXT =
   /not[\s_-]?found|does not exist|no longer available|has been deprecated|decommission|model_not_found|invalid model|unknown model|unsupported model|is not supported/i;
+// Markers that the model EXISTS but is not usable from chat/completions (image,
+// audio, realtime, embeddings, responses-only models). These must NOT be
+// treated as deprecations even though they often come back as 404/400.
+const WRONG_ENDPOINT_TEXT =
+  /not a chat model|chat completions are not supported|v1\/(completions|responses|audio|embeddings|images|realtime)|only supports streaming|must be at least/i;
 
 // Classify a direct-provider probe. A single definitive not-found / deprecated
 // response marks the model deprecated; rate-limit / overload / network noise is
@@ -49,6 +54,11 @@ export function classifyProbe(status: number, body: string): ProbeOutcome {
   }
   if (RATE_LIMIT_STATUS.has(status) || TRANSIENT_TEXT.test(body)) {
     return "transient";
+  }
+  // The model exists but is the wrong modality / endpoint for a chat probe —
+  // not a deprecation. Check this before the not-found rules below.
+  if (WRONG_ENDPOINT_TEXT.test(body)) {
+    return "unknown";
   }
   // 404 is always a missing model. 400/403/410 only when the body says so, to
   // avoid mistaking an unrelated bad-request for a deprecation.
@@ -263,11 +273,14 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
 // Providers whose model availability is account / region / workspace scoped, so
 // absence from one account's view is NOT a global deprecation signal:
 //   - bedrock / vertex: no simple global list and region/account gated
-//   - databricks: serving-endpoints is per-workspace (a model missing from the
-//     CI workspace may still be valid on a customer's workspace)
+//   - databricks: serving-endpoints is per-workspace
+//   - fireworks: serverless deployments are account-scoped — current models
+//     (deepseek-v3, glm-5, kimi-k2 ...) report "not deployed" when simply not
+//     provisioned on this account, which is not a deprecation
 // These are surfaced for manual review rather than auto-deprecated.
 export const REPORT_ONLY_PROVIDERS = new Set([
   "bedrock",
   "vertex",
   "databricks",
+  "fireworks",
 ]);

@@ -46,9 +46,25 @@ export type AuditReport = {
 // OpenAI list + probe (using the OpenAI secret) rather than a separate source.
 const PROVIDER_AUDIT_ALIAS: Record<string, string> = { azure: "openai" };
 
+// Models that cannot be validated with a chat/completions probe (image, audio,
+// realtime, embedding, moderation), plus fine-tune placeholders (ft:* are id
+// prefixes for user fine-tunes, not standalone models). The catalog marks many
+// of these flavor: "chat" even though they are not, so we filter by id pattern.
+// They are skipped from the audit rather than risk a false "invalid model"
+// deprecation.
+export const NON_CHAT_MODEL_PATTERN =
+  /^ft:|^\d+-x-\d+\/|dall-e|gpt-image|imagen|stable-diffusion|playground-v|\bflux\b|\bsora\b|\/container\b|whisper|-tts\b|\btts-|-audio\b|-realtime\b|realtime-|-transcribe\b|text-embedding|-embedding\b|embed-|moderation|computer-use/i;
+
+export function isChatProbeableModel(model: string): boolean {
+  return !NON_CHAT_MODEL_PATTERN.test(model);
+}
+
 function catalogModelsByProvider(catalog: Catalog): Map<string, string[]> {
   const byProvider = new Map<string, string[]>();
   for (const [model, spec] of Object.entries(catalog)) {
+    if (!isChatProbeableModel(model)) {
+      continue;
+    }
     for (const provider of spec.available_providers ?? []) {
       const list = byProvider.get(provider) ?? [];
       list.push(model);

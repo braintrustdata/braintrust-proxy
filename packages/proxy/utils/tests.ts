@@ -32,7 +32,10 @@ export class ProviderRateLimitError extends Error {
   }
 }
 
-const RATE_LIMIT_STATUS_CODES = new Set([429, 529]);
+// Rate-limit / transient-overload statuses. These mirror the proxy's own
+// RATE_LIMITING_ERROR_CODES (429 rate limit, 503 overloaded); 529 is included
+// because some providers (e.g. Anthropic) return it directly for overload.
+const RATE_LIMIT_STATUS_CODES = new Set([429, 503, 529]);
 const RATE_LIMIT_TEXT_PATTERN =
   /rate[\s_-]?limit|rate_limit_exceeded|too many requests|quota exceeded|insufficient_quota|overloaded/i;
 
@@ -41,6 +44,13 @@ export function isProviderRateLimit(
   responseText: string,
 ): boolean {
   if (RATE_LIMIT_STATUS_CODES.has(statusCode)) {
+    return true;
+  }
+  // When the proxy exhausts its own retries it streams the upstream failure as
+  // `AI provider returned <code> error: ...` with that status; catch the
+  // rate-limit codes embedded in that wrapper text too.
+  const wrapped = responseText.match(/AI provider returned (\d+) error/i);
+  if (wrapped && RATE_LIMIT_STATUS_CODES.has(Number(wrapped[1]))) {
     return true;
   }
   return RATE_LIMIT_TEXT_PATTERN.test(responseText);

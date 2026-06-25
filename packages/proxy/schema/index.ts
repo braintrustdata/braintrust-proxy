@@ -7,8 +7,6 @@ import type {
 import {
   ModelFormat,
   ModelEndpointType,
-  type ModelName,
-  ModelSpec,
   getAvailableModels,
 } from "./models";
 
@@ -1111,40 +1109,52 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
 };
 
+const modelEndpointAvailableModels = getAvailableModels();
+const fallbackModelsByName: Record<string, Set<string>> = {};
+const modelEndpointTypesByName: Record<string, ModelEndpointType[]> = {};
+
+for (const [modelName, spec] of Object.entries(modelEndpointAvailableModels)) {
+  const fallbackModels = spec.fallback_models ?? [];
+  if (fallbackModels.length === 0) {
+    continue;
+  }
+  fallbackModelsByName[modelName] ??= new Set<string>();
+  for (const fallbackModel of fallbackModels) {
+    fallbackModelsByName[modelName].add(fallbackModel);
+    fallbackModelsByName[fallbackModel] ??= new Set<string>();
+    fallbackModelsByName[fallbackModel].add(modelName);
+    for (const relatedFallbackModel of fallbackModels) {
+      fallbackModelsByName[fallbackModel].add(relatedFallbackModel);
+    }
+  }
+}
+
 function getDirectModelEndpointTypes(model: string): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
-    (getAvailableModels()[model] &&
-      DefaultEndpointTypes[getAvailableModels()[model].format]) ||
+    (modelEndpointAvailableModels[model] &&
+      DefaultEndpointTypes[modelEndpointAvailableModels[model].format]) ||
     []
   );
 }
 
 export function getModelEndpointTypes(model: string): ModelEndpointType[] {
-  const availableModels = getAvailableModels();
+  if (modelEndpointTypesByName[model]) {
+    return modelEndpointTypesByName[model];
+  }
+
   const endpointTypes = new Set<ModelEndpointType>(
     getDirectModelEndpointTypes(model),
   );
 
-  const fallbackModels = new Set<string>(
-    availableModels[model]?.fallback_models ?? [],
-  );
-  for (const [candidate, spec] of Object.entries(availableModels)) {
-    if (spec.fallback_models?.includes(model)) {
-      fallbackModels.add(candidate);
-      for (const fallbackModel of spec.fallback_models) {
-        fallbackModels.add(fallbackModel);
-      }
-    }
-  }
-
-  for (const fallbackModel of fallbackModels) {
+  for (const fallbackModel of fallbackModelsByName[model] ?? []) {
     for (const endpointType of getDirectModelEndpointTypes(fallbackModel)) {
       endpointTypes.add(endpointType);
     }
   }
 
-  return [...endpointTypes];
+  modelEndpointTypesByName[model] = [...endpointTypes];
+  return modelEndpointTypesByName[model];
 }
 
 export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {

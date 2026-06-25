@@ -27,10 +27,10 @@ export type ProviderSecret = {
 };
 
 export function resolveBraintrustApiKey(explicitApiKey?: string): string {
-  const apiKey = explicitApiKey ?? process.env.BRAINTRUST_API_KEY;
+  const apiKey = explicitApiKey ?? process.env.BRAINTRUST_CI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "Missing API key. Pass --api-key or set BRAINTRUST_API_KEY.",
+      "Missing API key. Pass --api-key or set BRAINTRUST_CI_API_KEY.",
     );
   }
   return apiKey;

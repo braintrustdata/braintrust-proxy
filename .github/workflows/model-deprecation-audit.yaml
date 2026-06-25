@@ -40,7 +40,7 @@ jobs:
       - name: Reconcile provider model lists
         id: reconcile
         env:
-          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
+          BRAINTRUST_CI_API_KEY: ${{ secrets.BRAINTRUST_CI_API_KEY }}
         run: |
           set -euo pipefail
           pnpm exec tsx packages/proxy/scripts/reconcile_provider_models.ts \

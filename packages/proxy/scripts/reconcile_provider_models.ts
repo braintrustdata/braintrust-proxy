@@ -252,7 +252,7 @@ export async function runAudit(args: {
 async function main(): Promise<void> {
   const argv = await yargs(hideBin(process.argv))
     .option("api-key", {
-      describe: "Braintrust API key (defaults to BRAINTRUST_API_KEY)",
+      describe: "Braintrust API key (defaults to BRAINTRUST_CI_API_KEY)",
       type: "string",
     })
     .option("model-catalog-file", {

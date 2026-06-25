@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { classifyProbe } from "./model_probe";
 import {
+  effectiveProviders,
+  parseIndexEndpointTypes,
+} from "./reconcile_provider_models";
+import {
   addToSyncExcluded,
   applyDeprecations,
   rewriteIndexEntry,
@@ -107,6 +111,49 @@ describe("applyDeprecations", () => {
     ]);
     expect(out.result.removedModels).toEqual([]);
     expect(out.result.narrowedModels).toEqual([]);
+  });
+
+  it("removes an index-only model (no available_providers) routed via index.ts", () => {
+    // model-b is mapped only in index.ts (["xAI"]) with no available_providers.
+    const catalog = { "model-b": { format: "openai" } };
+    const out = applyDeprecations(catalog, baseIndex, baseSync, [
+      { model: "model-b", provider: "xAI", reason: "probe not-found" },
+    ]);
+    expect(out.catalog["model-b"]).toBeUndefined();
+    expect(out.indexContent).not.toContain('"model-b"');
+    expect(out.result.removedModels).toEqual(["model-b"]);
+    expect(out.syncContent).toContain('"model-b"');
+  });
+});
+
+describe("parseIndexEndpointTypes / effectiveProviders", () => {
+  const index = `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+};
+
+export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "meta-llama/Llama-3-70b-chat-hf": ["together"],
+  "model-x": ["openai", "azure"],
+};
+`;
+
+  it("parses only the AvailableEndpointTypes block", () => {
+    const map = parseIndexEndpointTypes(index);
+    expect(map.get("meta-llama/Llama-3-70b-chat-hf")).toEqual(["together"]);
+    expect(map.get("model-x")).toEqual(["openai", "azure"]);
+    expect(map.has("openai")).toBe(false); // not from DefaultEndpointTypes
+  });
+
+  it("unions model_list providers with index.ts mappings", () => {
+    const map = parseIndexEndpointTypes(index);
+    // index-only model: no available_providers, provider comes from index.ts
+    expect(
+      effectiveProviders("meta-llama/Llama-3-70b-chat-hf", {}, map),
+    ).toEqual(["together"]);
+    // union of both sources
+    expect(
+      effectiveProviders("model-x", { available_providers: ["openai"] }, map),
+    ).toEqual(["openai", "azure"]);
   });
 });
 

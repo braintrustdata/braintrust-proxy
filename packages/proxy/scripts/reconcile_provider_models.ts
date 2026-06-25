@@ -59,13 +59,59 @@ export function isChatProbeableModel(model: string): boolean {
   return !NON_CHAT_MODEL_PATTERN.test(model);
 }
 
-function catalogModelsByProvider(catalog: Catalog): Map<string, string[]> {
+// Parse the AvailableEndpointTypes map from schema/index.ts into model ->
+// providers. Some routed models keep their provider ONLY here (no
+// available_providers in model_list.json), so the audit must include these.
+export function parseIndexEndpointTypes(
+  indexContent: string,
+): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  const start = indexContent.indexOf("AvailableEndpointTypes");
+  if (start < 0) {
+    return map;
+  }
+  const open = indexContent.indexOf("{", start);
+  const close = indexContent.indexOf("\n};", open);
+  if (open < 0 || close < 0) {
+    return map;
+  }
+  const body = indexContent.slice(open, close);
+  const lineRe = /^\s*"([^"]+)":\s*\[([^\]]*)\]/gm;
+  let m: RegExpExecArray | null;
+  while ((m = lineRe.exec(body)) !== null) {
+    const providers = Array.from(m[2].matchAll(/"([^"]+)"/g)).map((x) => x[1]);
+    if (providers.length > 0) {
+      map.set(m[1], providers);
+    }
+  }
+  return map;
+}
+
+// Effective providers for a model = the union of its model_list.json
+// available_providers and any schema/index.ts AvailableEndpointTypes mapping.
+export function effectiveProviders(
+  model: string,
+  spec: ModelSpec | undefined,
+  indexMap: Map<string, string[]>,
+): string[] {
+  return Array.from(
+    new Set([
+      ...(spec?.available_providers ?? []),
+      ...(indexMap.get(model) ?? []),
+    ]),
+  );
+}
+
+function catalogModelsByProvider(
+  catalog: Catalog,
+  indexMap: Map<string, string[]>,
+): Map<string, string[]> {
   const byProvider = new Map<string, string[]>();
   for (const [model, spec] of Object.entries(catalog)) {
     if (!isChatProbeableModel(model)) {
       continue;
     }
-    for (const provider of spec.available_providers ?? []) {
+    for (const provider of effectiveProviders(model, spec, indexMap)) {
       const list = byProvider.get(provider) ?? [];
       list.push(model);
       byProvider.set(provider, list);
@@ -197,10 +243,12 @@ async function auditProvider(
 export async function runAudit(args: {
   braintrustApiKey: string;
   catalog: Catalog;
+  indexContent: string;
   concurrency: number;
   providerFilter?: string[];
 }): Promise<AuditReport> {
-  const byProvider = catalogModelsByProvider(args.catalog);
+  const indexMap = parseIndexEndpointTypes(args.indexContent);
+  const byProvider = catalogModelsByProvider(args.catalog, indexMap);
   const allProviders = Array.from(byProvider.keys())
     .filter((p) => !args.providerFilter || args.providerFilter.includes(p))
     .sort();
@@ -288,10 +336,15 @@ async function main(): Promise<void> {
       "utf8",
     ),
   );
+  const indexContent = fs.readFileSync(
+    path.resolve(__dirname, "../schema/index.ts"),
+    "utf8",
+  );
 
   const report = await runAudit({
     braintrustApiKey,
     catalog,
+    indexContent,
     concurrency: argv.concurrency,
     providerFilter: argv.provider,
   });

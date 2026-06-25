@@ -4,6 +4,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { pathToFileURL } from "url";
 import type { AuditReport, Deprecation } from "./reconcile_provider_models";
+import { parseIndexEndpointTypes } from "./reconcile_provider_models";
 
 // Apply confirmed deprecations from the audit report to the catalog:
 //   - drop the dead provider from a model's available_providers (+ index.ts)
@@ -92,36 +93,38 @@ export function applyDeprecations(
   const removedModels: string[] = [];
   const narrowedModels: ApplyResult["narrowedModels"] = [];
   let nextIndex = indexContent;
+  const indexMap = parseIndexEndpointTypes(indexContent);
 
   for (const [model, dead] of deadByModel) {
     const spec = catalog[model];
-    if (!spec) {
-      continue;
-    }
-    const current = spec.available_providers ?? [];
-    const remaining = current.filter((p) => !dead.has(p));
-    const dropped = current.filter((p) => dead.has(p));
+    const avail = spec?.available_providers ?? [];
+    const idx = indexMap.get(model) ?? [];
+    // Effective providers come from BOTH model_list.json and index.ts; a model
+    // routed only via index.ts has no available_providers but must still be
+    // removable when its index mapping is the dead route.
+    const effective = Array.from(new Set([...avail, ...idx]));
+    const dropped = effective.filter((p) => dead.has(p));
     if (dropped.length === 0) {
       continue;
     }
+    const remaining = effective.filter((p) => !dead.has(p));
 
     if (remaining.length === 0) {
-      delete catalog[model];
+      if (spec) {
+        delete catalog[model];
+      }
       nextIndex = rewriteIndexEntry(nextIndex, model, []);
       removedModels.push(model);
     } else {
-      spec.available_providers = remaining;
-      // Keep index.ts in sync, but only narrow within what it already lists.
-      const indexLine = new RegExp(
-        `^  "${escapeRegex(model)}":\\s*\\[([^\\]]*)\\]`,
-        "m",
-      ).exec(nextIndex);
-      if (indexLine) {
-        const indexProviders = Array.from(
-          indexLine[1].matchAll(/"([^"]+)"/g),
-        ).map((m) => m[1]);
-        const narrowed = indexProviders.filter((p) => !dead.has(p));
-        nextIndex = rewriteIndexEntry(nextIndex, model, narrowed);
+      if (spec && avail.some((p) => dead.has(p))) {
+        spec.available_providers = avail.filter((p) => !dead.has(p));
+      }
+      if (idx.some((p) => dead.has(p))) {
+        nextIndex = rewriteIndexEntry(
+          nextIndex,
+          model,
+          idx.filter((p) => !dead.has(p)),
+        );
       }
       narrowedModels.push({ model, dropped, remaining });
     }

@@ -236,7 +236,10 @@ it("should convert OpenAI non-streaming request to Anthropic and back", async ()
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: ANTHROPIC_LIVE_TEST_MODEL,
+    // The alias resolves upstream to a dated snapshot (e.g.
+    // claude-sonnet-4-5-20250929), which Anthropic echoes back, so match the
+    // family rather than the exact requested id.
+    model: expect.stringMatching(/^claude-sonnet-4-5/),
     object: "chat.completion",
     usage: {
       completion_tokens: expect.any(Number),

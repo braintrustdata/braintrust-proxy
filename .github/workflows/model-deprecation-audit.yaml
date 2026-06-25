@@ -1,0 +1,91 @@
+name: Model deprecation audit
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: model-deprecation-audit
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 20
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Reconcile the catalog against every provider's live model list / direct
+      # probe. Provider secrets are resolved centrally from Braintrust using a
+      # single Braintrust API key — there are no per-provider secrets here.
+      - name: Reconcile provider model lists
+        id: reconcile
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_API_KEY }}
+        run: |
+          set -euo pipefail
+          pnpm exec tsx packages/proxy/scripts/reconcile_provider_models.ts \
+            --output "$RUNNER_TEMP/deprecations.json" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Apply deprecations to the catalog
+        if: steps.reconcile.outputs.deprecation_count != '0'
+        run: |
+          set -euo pipefail
+          pnpm exec tsx packages/proxy/scripts/apply_deprecations.ts \
+            --report "$RUNNER_TEMP/deprecations.json" --write
+
+      # Canonicalize so index.ts is re-formatted (Prettier) and consistent.
+      - name: Canonicalize model list
+        if: steps.reconcile.outputs.deprecation_count != '0'
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
+      - name: Validate model schema
+        if: steps.reconcile.outputs.deprecation_count != '0'
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/model_deprecation.test.ts
+
+      - name: Build deprecation summary
+        if: steps.reconcile.outputs.deprecation_count != '0'
+        run: |
+          set -euo pipefail
+          {
+            echo "## Model deprecation audit"
+            echo
+            echo "Each model below returned a definitive not-found / deprecated response from its provider (a single 404 / not-found is treated as authoritative). Account/region-scoped providers (bedrock, vertex, databricks) are surfaced for manual review, not auto-removed."
+            echo
+            echo '```json'
+            cat "$RUNNER_TEMP/deprecations.json"
+            echo '```'
+          } > "$RUNNER_TEMP/pr-body.md"
+
+      - name: Create PR
+        if: steps.reconcile.outputs.deprecation_count != '0'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          branch: chore/model-deprecation-audit
+          commit-message: "chore: remove models no longer served by their providers"
+          title: "chore: remove deprecated models from the catalog"
+          body-path: ${{ runner.temp }}/pr-body.md
+          add-paths: |
+            packages/proxy/schema/model_list.json
+            packages/proxy/schema/index.ts
+            packages/proxy/scripts/sync_models.ts

@@ -98,7 +98,7 @@ describe("resolveBraintrustApiKey", () => {
 });
 
 describe("resolveApiKeyForModel", () => {
-  it("prefers a provider-specific key based on the model endpoint type", () => {
+  it("centralizes on the Braintrust key, ignoring provider-specific env vars", () => {
     process.env.GEMINI_API_KEY = "gemini-env-key";
     process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
 
@@ -109,13 +109,13 @@ describe("resolveApiKeyForModel", () => {
           format: "google",
         },
       }),
-    ).toBe("gemini-env-key");
+    ).toBe("braintrust-env-key");
 
     delete process.env.GEMINI_API_KEY;
     delete process.env.BRAINTRUST_API_KEY;
   });
 
-  it("falls back to BRAINTRUST_API_KEY when no provider-specific key exists", () => {
+  it("uses BRAINTRUST_API_KEY for any model", () => {
     process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
 
     expect(resolveApiKeyForModel("unknown-model")).toBe("braintrust-env-key");
@@ -124,18 +124,9 @@ describe("resolveApiKeyForModel", () => {
   });
 
   it("uses an explicit key when present", () => {
-    process.env.GEMINI_API_KEY = "gemini-env-key";
-
-    expect(
-      resolveApiKeyForModel("gemini-2.5-flash", "explicit-key", {
-        "gemini-2.5-flash": {
-          available_providers: ["google", "vertex"],
-          format: "google",
-        },
-      }),
-    ).toBe("explicit-key");
-
-    delete process.env.GEMINI_API_KEY;
+    expect(resolveApiKeyForModel("gemini-2.5-flash", "explicit-key")).toBe(
+      "explicit-key",
+    );
   });
 });
 

@@ -2,6 +2,7 @@
 
 import { TextDecoder } from "util";
 import { Buffer } from "node:buffer";
+import { it as vitestIt, type TestContext } from "vitest";
 import { proxyV1, FetchFn } from "../src/proxy";
 import { getModelEndpointTypes } from "@schema";
 import { createParser, ParsedEvent, ParseEvent } from "eventsource-parser";
@@ -12,6 +13,79 @@ export class CaptureOnlyError extends Error {
     this.name = "CaptureOnlyError";
   }
 }
+
+// Thrown by `callProxyV1` when an upstream model provider returns a rate-limit
+// or transient-overload response (HTTP 429, Anthropic's 529 "overloaded", or a
+// body that looks like a rate-limit error). Tests written with the `it` wrapper
+// exported below retry once and then skip on this error instead of failing, so
+// flaky provider rate limits don't turn into red CI.
+export class ProviderRateLimitError extends Error {
+  statusCode: number;
+  responseText: string;
+  constructor(statusCode: number, responseText: string) {
+    super(
+      `Model provider rate limit (status ${statusCode}): ${responseText.slice(0, 200)}`,
+    );
+    this.name = "ProviderRateLimitError";
+    this.statusCode = statusCode;
+    this.responseText = responseText;
+  }
+}
+
+const RATE_LIMIT_STATUS_CODES = new Set([429, 529]);
+const RATE_LIMIT_TEXT_PATTERN =
+  /rate[\s_-]?limit|rate_limit_exceeded|too many requests|quota exceeded|insufficient_quota|overloaded/i;
+
+export function isProviderRateLimit(
+  statusCode: number,
+  responseText: string,
+): boolean {
+  if (RATE_LIMIT_STATUS_CODES.has(statusCode)) {
+    return true;
+  }
+  return RATE_LIMIT_TEXT_PATTERN.test(responseText);
+}
+
+// Drop-in replacement for vitest's `it` for tests that make real model-provider
+// calls. It retries the test body once on any failure, and if the failure is a
+// provider rate limit (ProviderRateLimitError), skips the test instead of
+// failing. Non-rate-limit failures still fail after the single retry.
+type ProviderTestFn = (ctx: TestContext) => void | Promise<void>;
+
+export const it: typeof vitestIt = Object.assign(
+  function itWithProviderRetry(
+    name: string,
+    fn?: ProviderTestFn,
+    timeout?: number,
+  ) {
+    return vitestIt(
+      name,
+      async (ctx) => {
+        if (!fn) {
+          return;
+        }
+        const maxAttempts = 2; // initial attempt + one retry
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            await fn(ctx);
+            return;
+          } catch (err) {
+            if (attempt < maxAttempts) {
+              continue; // retry once on any failure
+            }
+            if (err instanceof ProviderRateLimitError) {
+              ctx.skip();
+              return;
+            }
+            throw err;
+          }
+        }
+      },
+      timeout,
+    );
+  } as typeof vitestIt,
+  vitestIt,
+);
 
 export interface CapturedRequest {
   url: string;
@@ -256,6 +330,12 @@ export async function callProxyV1<Input extends object, Output extends object>({
 
     const chunks = await Promise.race([chunksPromise, timeoutPromise]);
     const responseText = new TextDecoder().decode(Buffer.concat(chunks));
+
+    // Surface upstream rate-limit / overload responses as a typed error so the
+    // `it` wrapper above can retry-once-then-skip instead of failing CI.
+    if (isProviderRateLimit(ref.statusCode, responseText)) {
+      throw new ProviderRateLimitError(ref.statusCode, responseText);
+    }
 
     // TODO: avoid object reference trick
     // @ts-expect-error

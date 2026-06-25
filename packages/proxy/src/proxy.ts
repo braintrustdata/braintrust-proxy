@@ -1422,6 +1422,18 @@ async function fetchModelLoop(
         ? secret.metadata?.customModels?.[model] ?? getAvailableModels()[model]
         : null) ?? null;
 
+    // Bedrock has no OpenAI-compatible endpoint, so an OpenAI-format request can
+    // never be served by a Bedrock credential (fetchOpenAI throws for it). A
+    // Bedrock credential can land here when a model lists Bedrock among its
+    // providers via fallback_models (e.g. gpt-5.5 -> openai.gpt-5.5). Skip it so
+    // a compatible credential can be tried instead of hard-failing the request.
+    if (
+      secret.type === "bedrock" &&
+      (modelSpec?.format ?? "openai") === "openai"
+    ) {
+      continue;
+    }
+
     let endpointUrl = url;
     if (endpointUrl === "/auto") {
       switch (modelSpec?.flavor) {

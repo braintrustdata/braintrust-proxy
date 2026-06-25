@@ -4,11 +4,7 @@ import type {
   MessageRoleType as MessageRole,
   ModelParamsType as ModelParams,
 } from "../src/generated_types";
-import {
-  ModelFormat,
-  ModelEndpointType,
-  getAvailableModels,
-} from "./models";
+import { ModelFormat, ModelEndpointType, getAvailableModels } from "./models";
 
 export * from "./secrets";
 export * from "./models";

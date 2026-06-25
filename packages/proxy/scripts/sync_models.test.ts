@@ -315,6 +315,44 @@ export const AvailableEndpointTypes = {
     ).toEqual(["vertex"]);
   });
 
+  it("registers Bedrock Mantle openai.gpt-* ids as fallbacks for the canonical gpt model", () => {
+    const models = applyEquivalentModels({
+      "gpt-5.5": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure"],
+      },
+      "openai.gpt-5.5": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+      },
+      "us.openai.gpt-5.4": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+      },
+      "gpt-5.4": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure"],
+      },
+      // gpt-oss is open-weight (converse format, not openai/azure) and must not
+      // be grouped even though its Bedrock id also starts with `openai.gpt-`.
+      "openai.gpt-oss-120b-1:0": {
+        format: "converse",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+      },
+    });
+
+    expect(models["gpt-5.5"].fallback_models).toEqual(["openai.gpt-5.5"]);
+    expect(models["gpt-5.4"].fallback_models).toEqual(["us.openai.gpt-5.4"]);
+    expect(models["openai.gpt-5.5"].fallback_models).toBeUndefined();
+    expect(models["openai.gpt-5.5"].available_providers).toEqual(["bedrock"]);
+    expect(models["openai.gpt-oss-120b-1:0"].fallback_models).toBeUndefined();
+  });
+
   it("does not group lookalike variants that need curated equivalence", () => {
     const models = applyEquivalentModels({
       "gpt-4o": {

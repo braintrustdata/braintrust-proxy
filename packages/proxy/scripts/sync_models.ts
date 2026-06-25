@@ -573,6 +573,15 @@ const MISTRAL_VERTEX_EQUIVALENT_MODELS = new Set([
   "mistral-large-2411",
 ]);
 
+// AWS Bedrock serves OpenAI's GPT models through the Mantle engine under an
+// `openai.` prefix (optionally region-scoped, e.g. `us.openai.gpt-5.5`). These
+// are the same models as the canonical `gpt-*` ids available via openai/azure,
+// so register the Bedrock ids as fallbacks for the canonical model. The
+// open-weight `gpt-oss` family is excluded: it is a distinct (converse-format)
+// model served outside openai/azure, so it must not be grouped here.
+const BEDROCK_OPENAI_GPT_PATTERN =
+  /^(?:(?:global|us|eu|apac)\.)?openai\.(gpt-(?!oss).+)$/;
+
 type EquivalentModelCandidate = {
   canonicalName: string;
   managed: boolean;
@@ -626,6 +635,14 @@ function equivalentModelCandidate(
   ) {
     return {
       canonicalName: parts.slice(2).join("."),
+      managed: true,
+    };
+  }
+
+  const bedrockOpenAiGptMatch = modelName.match(BEDROCK_OPENAI_GPT_PATTERN);
+  if (bedrockOpenAiGptMatch) {
+    return {
+      canonicalName: bedrockOpenAiGptMatch[1],
       managed: true,
     };
   }

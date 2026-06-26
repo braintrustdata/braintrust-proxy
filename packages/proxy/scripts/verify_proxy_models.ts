@@ -2,6 +2,7 @@ import fs from "fs";
 import { pathToFileURL } from "url";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { classifyProbe, type ProbeOutcome } from "./model_probe";
 
 type ModelEndpointType =
   | "openai"
@@ -108,25 +109,6 @@ export function resolveBraintrustApiKey(explicitApiKey?: string): string {
   return apiKey;
 }
 
-const endpointTypeToApiKeyEnvVars: Partial<
-  Record<ModelEndpointType, string[]>
-> = {
-  anthropic: ["ANTHROPIC_API_KEY"],
-  baseten: ["BASETEN_API_KEY"],
-  bedrock: ["BEDROCK_API_KEY"],
-  cerebras: ["CEREBRAS_API_KEY"],
-  fireworks: ["FIREWORKS_API_KEY"],
-  google: ["GEMINI_API_KEY"],
-  groq: ["GROQ_API_KEY"],
-  lepton: ["LEPTON_API_KEY"],
-  mistral: ["MISTRAL_API_KEY"],
-  openai: ["OPENAI_API_KEY"],
-  perplexity: ["PERPLEXITY_API_KEY"],
-  replicate: ["REPLICATE_API_KEY"],
-  together: ["TOGETHER_API_KEY"],
-  xAI: ["XAI_API_KEY"],
-};
-
 const defaultEndpointTypesByFormat: Record<ModelFormat, ModelEndpointType[]> = {
   anthropic: ["anthropic"],
   converse: ["bedrock"],
@@ -153,28 +135,15 @@ export function getModelEndpointTypesForVerification(
   );
 }
 
+// Secret management is centralized in Braintrust: the script authenticates to
+// the proxy with a single Braintrust API key and the proxy resolves the
+// underlying provider secret for each model. There are no per-provider env vars.
 export function resolveApiKeyForModel(
-  model: string,
+  _model: string,
   explicitApiKey?: string,
-  modelCatalog: ModelCatalog = readModelCatalog(),
+  _modelCatalog: ModelCatalog = readModelCatalog(),
 ): string {
-  if (explicitApiKey) {
-    return explicitApiKey;
-  }
-
-  for (const endpointType of getModelEndpointTypesForVerification(
-    model,
-    modelCatalog,
-  )) {
-    for (const envVarName of endpointTypeToApiKeyEnvVars[endpointType] ?? []) {
-      const providerApiKey = process.env[envVarName];
-      if (providerApiKey) {
-        return providerApiKey;
-      }
-    }
-  }
-
-  return resolveBraintrustApiKey();
+  return resolveBraintrustApiKey(explicitApiKey);
 }
 
 export function resolveVercelProtectionBypassSecret(
@@ -229,6 +198,19 @@ export function extractErrorMessage(responseBody: string): string {
   }
 
   return responseBody;
+}
+
+// Classify a verification result into active / deprecated / transient / unknown,
+// so the deprecation audit can act only on definitive provider not-found
+// responses (and never on transient rate-limit / overload noise).
+export function classifyVerificationResult(
+  result: VerificationResult,
+): ProbeOutcome {
+  if (result.status === undefined) {
+    // No HTTP status means a network/timeout error — treat as transient.
+    return "transient";
+  }
+  return classifyProbe(result.status, result.responseBody);
 }
 
 async function verifyModel(args: {

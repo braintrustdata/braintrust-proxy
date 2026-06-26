@@ -1,0 +1,173 @@
+import { describe, expect, it } from "vitest";
+import { classifyProbe } from "./model_probe";
+import {
+  effectiveProviders,
+  parseIndexEndpointTypes,
+} from "./reconcile_provider_models";
+import {
+  addToDeprecatedIds,
+  applyDeprecations,
+  rewriteIndexEntry,
+} from "./apply_deprecations";
+
+describe("classifyProbe", () => {
+  it("treats 2xx as active", () => {
+    expect(classifyProbe(200, "{}")).toBe("active");
+  });
+
+  it("treats 404 / 410 and not-found bodies as deprecated", () => {
+    expect(classifyProbe(404, "")).toBe("deprecated");
+    expect(classifyProbe(410, "deprecated")).toBe("deprecated");
+    expect(classifyProbe(400, '{"error":"Model not found: grok-2"}')).toBe(
+      "deprecated",
+    );
+    expect(
+      classifyProbe(
+        400,
+        '{"message":"Invalid model: foo","type":"invalid_model"}',
+      ),
+    ).toBe("deprecated");
+    expect(classifyProbe(400, "The model `x` has been decommissioned")).toBe(
+      "deprecated",
+    );
+  });
+
+  it("treats rate-limit / overload as transient, never deprecated", () => {
+    expect(classifyProbe(429, "")).toBe("transient");
+    expect(classifyProbe(503, "")).toBe("transient");
+    expect(classifyProbe(529, "overloaded")).toBe("transient");
+    expect(classifyProbe(200, "")).not.toBe("transient");
+  });
+
+  it("treats unrelated 400 / auth errors as unknown (not deprecated)", () => {
+    expect(
+      classifyProbe(400, '{"error":"max_tokens must be at least 16"}'),
+    ).toBe("unknown");
+    expect(classifyProbe(401, '{"error":"invalid x-api-key"}')).toBe("unknown");
+  });
+
+  it("does not deprecate existing non-chat models (wrong endpoint / modality)", () => {
+    expect(
+      classifyProbe(
+        404,
+        "This is not a chat model and thus not supported in the v1/chat/completions endpoint. Did you mean to use v1/completions?",
+      ),
+    ).toBe("unknown");
+    expect(
+      classifyProbe(400, '{"error":"This model only supports streaming"}'),
+    ).toBe("unknown");
+  });
+});
+
+describe("applyDeprecations", () => {
+  const baseIndex = `export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "model-a": ["together", "baseten"],
+  "model-b": ["xAI"],
+  "model-c": ["openai", "azure"],
+};
+`;
+  const baseDeprecatedIds: string[] = ["claude-opus-4-7-20260416"];
+
+  it("narrows providers when a model survives on another provider", () => {
+    const catalog = {
+      "model-a": { available_providers: ["together", "baseten"] },
+    };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-a", provider: "baseten", reason: "probe not-found" },
+    ]);
+    expect(out.catalog["model-a"].available_providers).toEqual(["together"]);
+    expect(out.indexContent).toContain('"model-a": ["together"],');
+    expect(out.result.removedModels).toEqual([]);
+    expect(out.result.narrowedModels[0]).toMatchObject({
+      model: "model-a",
+      dropped: ["baseten"],
+      remaining: ["together"],
+    });
+  });
+
+  it("removes a model and excludes it when it loses all providers", () => {
+    const catalog = { "model-b": { available_providers: ["xAI"] } };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "probe not-found" },
+    ]);
+    expect(out.catalog["model-b"]).toBeUndefined();
+    expect(out.indexContent).not.toContain('"model-b"');
+    expect(out.indexContent).toContain('"model-a"'); // others intact
+    expect(out.result.removedModels).toEqual(["model-b"]);
+    expect(out.deprecatedIds).toContain("model-b");
+  });
+
+  it("is a no-op for a provider the model does not have", () => {
+    const catalog = { "model-c": { available_providers: ["openai", "azure"] } };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-c", provider: "groq", reason: "x" },
+    ]);
+    expect(out.catalog["model-c"].available_providers).toEqual([
+      "openai",
+      "azure",
+    ]);
+    expect(out.result.removedModels).toEqual([]);
+    expect(out.result.narrowedModels).toEqual([]);
+  });
+
+  it("removes an index-only model (no available_providers) routed via index.ts", () => {
+    // model-b is mapped only in index.ts (["xAI"]) with no available_providers.
+    const catalog = { "model-b": { format: "openai" } };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "probe not-found" },
+    ]);
+    expect(out.catalog["model-b"]).toBeUndefined();
+    expect(out.indexContent).not.toContain('"model-b"');
+    expect(out.result.removedModels).toEqual(["model-b"]);
+    expect(out.deprecatedIds).toContain("model-b");
+  });
+});
+
+describe("parseIndexEndpointTypes / effectiveProviders", () => {
+  const index = `export const DefaultEndpointTypes = {
+  openai: ["openai", "azure"],
+};
+
+export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "meta-llama/Llama-3-70b-chat-hf": ["together"],
+  "model-x": ["openai", "azure"],
+};
+`;
+
+  it("parses only the AvailableEndpointTypes block", () => {
+    const map = parseIndexEndpointTypes(index);
+    expect(map.get("meta-llama/Llama-3-70b-chat-hf")).toEqual(["together"]);
+    expect(map.get("model-x")).toEqual(["openai", "azure"]);
+    expect(map.has("openai")).toBe(false); // not from DefaultEndpointTypes
+  });
+
+  it("unions model_list providers with index.ts mappings", () => {
+    const map = parseIndexEndpointTypes(index);
+    // index-only model: no available_providers, provider comes from index.ts
+    expect(
+      effectiveProviders("meta-llama/Llama-3-70b-chat-hf", {}, map),
+    ).toEqual(["together"]);
+    // union of both sources
+    expect(
+      effectiveProviders("model-x", { available_providers: ["openai"] }, map),
+    ).toEqual(["openai", "azure"]);
+  });
+});
+
+describe("rewriteIndexEntry / addToSyncExcluded", () => {
+  it("rewrites and deletes index entries, preserving neighbors", () => {
+    const idx = `export const AvailableEndpointTypes = {
+  "x": ["a", "b"],
+  "y": ["c"],
+};
+`;
+    expect(rewriteIndexEntry(idx, "x", ["a"])).toContain('"x": ["a"],');
+    expect(rewriteIndexEntry(idx, "y", [])).not.toContain('"y"');
+    expect(rewriteIndexEntry(idx, "y", [])).toContain('"x"');
+  });
+
+  it("adds ids to the deprecated-ids list, sorted and de-duplicated", () => {
+    expect(addToDeprecatedIds(["a"], ["b", "a"])).toEqual(["a", "b"]);
+    expect(addToDeprecatedIds(["m"], ["c", "z"])).toEqual(["c", "m", "z"]);
+  });
+});

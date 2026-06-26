@@ -16,6 +16,7 @@ import {
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
+import deprecatedModelIds from "./deprecated_model_ids.json";
 import {
   getFallbackCompleteOrdering,
   getProviderMappingForModel,
@@ -108,23 +109,25 @@ export function isFieldManuallyPreserved(
 // Each id is matched against both the translated (local) name and the raw
 // remote name. Add an id here only after confirming the provider rejects it;
 // remove it if the provider later ships the model for real.
-export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set([
+// Manual, non-deprecation sync exclusions (sync quirks that are not provider
+// "model not found" deprecations): a phantom dated snapshot LiteLLM keeps
+// listing, and a non-chat model that cannot be invoked via chat/completions.
+const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
-  // canonical id `claude-opus-4-7`; the API returns not_found for this dated
-  // id, but LiteLLM still lists it, so the sync kept re-adding it.
+  // canonical id `claude-opus-4-7`; the API returns not_found for this dated id,
+  // but LiteLLM still lists it, so the sync kept re-adding it.
   "claude-opus-4-7-20260416",
-  // Deprecated on Baseten: these baseten-only ids return HTTP 410 ("the model
-  // version you are trying to access has been deprecated") and are absent from
-  // Baseten's /v1/models, but LiteLLM still lists them as baseten, so the sync
-  // kept re-adding non-invocable entries (see PR #849).
-  "deepseek-ai/DeepSeek-V3-0324",
-  "moonshotai/Kimi-K2-Thinking",
-  "moonshotai/Kimi-K2-Instruct-0905",
-  "zai-org/GLM-4.6",
   // Not a chat model: OpenAI's realtime transcription model is rejected by
-  // /v1/chat/completions ("This is not a chat model"); the catalog only routes
-  // chat/completion flavors, so it cannot be invoked from here.
+  // /v1/chat/completions ("This is not a chat model").
   "gpt-realtime-whisper",
+];
+
+// The full exclusion set: manual quirks above + the provider-confirmed
+// deprecations the audit maintains in scripts/deprecated_model_ids.json
+// (written by scripts/apply_deprecations.ts — do not edit that JSON by hand).
+export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set<string>([
+  ...MANUAL_SYNC_EXCLUDED_MODELS,
+  ...deprecatedModelIds,
 ]);
 
 // Returns true if `modelName` must not be auto-added by the sync.

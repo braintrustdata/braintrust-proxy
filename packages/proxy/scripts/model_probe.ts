@@ -156,6 +156,17 @@ function openAiCompatible(defaultBase: string): ProviderApi {
 
 const ANTHROPIC_VERSION = "2023-06-01";
 
+// Anthropic secrets can be either a raw API key (x-api-key) or an OAuth bearer
+// token (auth_type: "oauth_bearer", e.g. workload-identity federation). Mirror
+// the proxy's anthropicAuthHeaders so the audit authenticates the same way.
+function anthropicAuthHeaders(secret: ProviderSecret): Record<string, string> {
+  const base = { "anthropic-version": ANTHROPIC_VERSION };
+  if (secret.metadata?.auth_type === "oauth_bearer") {
+    return { ...base, authorization: `Bearer ${secret.secret}` };
+  }
+  return { ...base, "x-api-key": secret.secret };
+}
+
 // Provider id (catalog ModelEndpointType) -> adapter. Providers absent from
 // this map (bedrock, vertex) have no automated source and are report-only.
 export const PROVIDER_APIS: Record<string, ProviderApi> = {
@@ -190,7 +201,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
       const { status, body } = await request(
         "GET",
         "https://api.anthropic.com/v1/models?limit=1000",
-        { "x-api-key": secret.secret, "anthropic-version": ANTHROPIC_VERSION },
+        anthropicAuthHeaders(secret),
       );
       if (status >= 400) {
         throw new Error(
@@ -205,8 +216,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
         "POST",
         "https://api.anthropic.com/v1/messages",
         {
-          "x-api-key": secret.secret,
-          "anthropic-version": ANTHROPIC_VERSION,
+          ...anthropicAuthHeaders(secret),
           "content-type": "application/json",
         },
         JSON.stringify({

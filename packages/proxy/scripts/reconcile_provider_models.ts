@@ -272,16 +272,6 @@ export async function runAudit(args: {
     .filter((p) => !args.providerFilter || args.providerFilter.includes(p))
     .sort();
 
-  // Fetch every provider secret we might need (including alias targets) up front.
-  const secretTypes = new Set<string>();
-  for (const p of allProviders) {
-    secretTypes.add(PROVIDER_AUDIT_ALIAS[p] ?? p);
-  }
-  const secrets = await fetchProviderSecrets(
-    args.braintrustApiKey,
-    Array.from(secretTypes),
-  );
-
   const report: AuditReport = {
     deprecations: [],
     reportOnly: [],
@@ -297,6 +287,13 @@ export async function runAudit(args: {
       );
       continue;
     }
+    // Fetch the secret fresh right before auditing this provider: some provider
+    // secrets are short-lived OAuth tokens (e.g. anthropic/openai workload
+    // identity, ~5 min) that would expire if all were fetched up front.
+    const adapterKey = PROVIDER_AUDIT_ALIAS[provider] ?? provider;
+    const secrets = await fetchProviderSecrets(args.braintrustApiKey, [
+      adapterKey,
+    ]);
     const { deprecations, skipped } = await auditProvider(
       provider,
       models,

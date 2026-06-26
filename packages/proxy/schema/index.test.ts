@@ -3,7 +3,11 @@ import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { APISecretSchema } from "./secrets";
-import { getModelEndpointTypes, ModelFormat } from "./index";
+import {
+  getModelEndpointTypes,
+  getDirectModelEndpointTypes,
+  ModelFormat,
+} from "./index";
 import { translateParams } from "./translate";
 
 const examples: Record<
@@ -296,6 +300,21 @@ describe("getModelEndpointTypes", () => {
     expect(getModelEndpointTypes("claude-sonnet-4-6")).toEqual(
       expect.arrayContaining(["anthropic", "bedrock", "vertex"]),
     );
+  });
+});
+
+describe("getDirectModelEndpointTypes", () => {
+  // Regression for BT-5895: Gemini/Vertex aliases must not duplicate across
+  // providers. The direct (native) endpoint types must not union in the
+  // providers of `fallback_models`, so each id maps to a single provider.
+  it("maps the short Gemini id only to google", () => {
+    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual(["google"]);
+  });
+
+  it("maps the Vertex publisher id only to vertex", () => {
+    expect(
+      getDirectModelEndpointTypes("publishers/google/models/gemini-2.5-flash"),
+    ).toEqual(["vertex"]);
   });
 });
 

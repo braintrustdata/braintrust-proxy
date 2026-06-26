@@ -168,8 +168,27 @@ async function auditProvider(
       liveList = await api.listModels(secret);
       console.log(`  ${provider}: live list has ${liveList.size} models`);
     } catch (error) {
+      const message = (error as Error).message;
+      // An auth failure on the list endpoint means the probe (same secret) will
+      // fail too — every probe would come back 401/403 and classify as
+      // "unknown", silently yielding zero deprecations. Surface it as a skip so
+      // a stale/invalid provider secret is visible instead of looking like
+      // "nothing to deprecate".
+      if (
+        /\b(401|403)\b|authentication|invalid x-api-key|unauthor|permission denied/i.test(
+          message,
+        )
+      ) {
+        return {
+          deprecations: [],
+          skipped: {
+            provider,
+            reason: `cannot audit — ${provider} secret rejected (${message.slice(0, 80)})`,
+          },
+        };
+      }
       console.warn(
-        `  ${provider}: list endpoint failed (${(error as Error).message.slice(0, 100)}); falling back to probing all models`,
+        `  ${provider}: list endpoint failed (${message.slice(0, 100)}); falling back to probing all models`,
       );
     }
   }

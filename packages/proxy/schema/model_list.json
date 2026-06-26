@@ -9324,7 +9324,7 @@
     "displayName": "Claude Sonnet 4.6",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
       "vertex"
@@ -12931,6 +12931,26 @@
       "vertex"
     ]
   },
+  "gemini-3.1-flash-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Gemini 3.1 Flash Image",
+    "fallback_models": [
+      "publishers/google/models/gemini-3.1-flash-image"
+    ],
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": {
     "format": "google",
     "flavor": "chat",
@@ -12955,6 +12975,22 @@
       "global"
     ],
     "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Gemini 3.1 Flash Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 131072,
     "max_output_tokens": 32768,
     "available_providers": [
       "vertex"

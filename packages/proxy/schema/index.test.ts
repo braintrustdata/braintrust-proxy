@@ -304,9 +304,7 @@ describe("getModelEndpointTypes", () => {
 });
 
 describe("getDirectModelEndpointTypes", () => {
-  // Regression for BT-5895: Gemini/Vertex aliases must not duplicate across
-  // providers. The direct (native) endpoint types must not union in the
-  // providers of `fallback_models`, so each id maps to a single provider.
+  // BT-5895: native types must not union `fallback_models` providers.
   it("maps the short Gemini id only to google", () => {
     expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual(["google"]);
   });

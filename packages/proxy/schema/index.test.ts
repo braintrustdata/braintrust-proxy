@@ -3,7 +3,11 @@ import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { APISecretSchema } from "./secrets";
-import { getModelEndpointTypes, ModelFormat } from "./index";
+import {
+  getModelEndpointTypes,
+  getDirectModelEndpointTypes,
+  ModelFormat,
+} from "./index";
 import { translateParams } from "./translate";
 
 const examples: Record<
@@ -296,6 +300,19 @@ describe("getModelEndpointTypes", () => {
     expect(getModelEndpointTypes("claude-sonnet-4-6")).toEqual(
       expect.arrayContaining(["anthropic", "bedrock", "vertex"]),
     );
+  });
+});
+
+describe("getDirectModelEndpointTypes", () => {
+  // BT-5895: native types must not union `fallback_models` providers.
+  it("maps the short Gemini id only to google", () => {
+    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual(["google"]);
+  });
+
+  it("maps the Vertex publisher id only to vertex", () => {
+    expect(
+      getDirectModelEndpointTypes("publishers/google/models/gemini-2.5-flash"),
+    ).toEqual(["vertex"]);
   });
 });
 

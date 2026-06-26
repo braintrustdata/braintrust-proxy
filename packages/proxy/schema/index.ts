@@ -1132,7 +1132,9 @@ for (const [modelName, spec] of Object.entries(modelEndpointAvailableModels)) {
   }
 }
 
-function getDirectModelEndpointTypes(model: string): ModelEndpointType[] {
+export function getDirectModelEndpointTypes(
+  model: string,
+): ModelEndpointType[] {
   return (
     AvailableEndpointTypes[model] ||
     (modelEndpointAvailableModels[model] &&

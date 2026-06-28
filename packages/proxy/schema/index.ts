@@ -1054,6 +1054,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/deepseek-v2p5": ["fireworks"],
   "accounts/fireworks/models/deepseek-v2-lite-chat": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
+  "grok-latest": ["xAI"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

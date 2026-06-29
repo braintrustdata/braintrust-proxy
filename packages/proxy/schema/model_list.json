@@ -2331,8 +2331,8 @@
   "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.88,
-    "output_cost_per_mil_tokens": 0.88,
+    "input_cost_per_mil_tokens": 1.04,
+    "output_cost_per_mil_tokens": 1.04,
     "displayName": "Llama 3.3 70B Instruct Turbo",
     "available_providers": [
       "together"
@@ -2524,8 +2524,8 @@
   "google/gemma-4-31B-it": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.5,
+    "input_cost_per_mil_tokens": 0.39,
+    "output_cost_per_mil_tokens": 0.97,
     "displayName": "Gemma 4 31B IT",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -4107,8 +4107,8 @@
   "Qwen/Qwen3.5-9B": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 0.17,
+    "output_cost_per_mil_tokens": 0.25,
     "displayName": "Qwen3.5 9B",
     "max_input_tokens": 262144,
     "available_providers": [

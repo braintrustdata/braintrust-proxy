@@ -12238,5 +12238,64 @@
     "available_providers": [
       "mistral"
     ]
+  },
+  "claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+    "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "displayName": "Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "anthropic.claude-sonnet-5",
+      "publishers/anthropic/models/claude-sonnet-5"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "publishers/anthropic/models/claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+    "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "displayName": "Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
   }
 }

@@ -1515,14 +1515,8 @@ export function buildUpdatedLocalModel(
   const updatedModel = cloneLocalModel(existingModel);
   applyModelSpecPatch(updatedModel, modelSpecPatch);
   // Only enforce the explicit-locations requirement when the existing entry
-  // already declared locations (so an update cannot silently strip them). Do
-  // NOT demand locations on an entry that intentionally omits them: Anthropic
-  // on Vertex (publishers/anthropic/...) omits `locations` so the proxy's
-  // resolveVertexLocation uses the customer's configured region. Demanding it
-  // here forced the enrichment step to inject `locations: ["global"]`, which
-  // Codex then (correctly) flagged as breaking regional routing — the resulting
-  // add-then-revert churn left the daily batch PR with an empty diff, so it was
-  // auto-closed.
+  // already declared locations; don't demand it on entries that intentionally
+  // omit it (e.g. Anthropic on Vertex, so the customer's region is used).
   if (existingModel.locations && existingModel.locations.length > 0) {
     ensureResolvedModelMetadata(
       parsedIssue.provider ?? "",

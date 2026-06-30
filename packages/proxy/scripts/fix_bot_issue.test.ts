@@ -77,9 +77,7 @@ describe("fix_bot_issue", () => {
       );
 
       expect(updated.max_output_tokens).toBe(128000);
-      // Must NOT inject locations: ["global"] — Anthropic-on-Vertex omits it so
-      // the proxy uses the customer's region. Injecting it triggers the Codex
-      // P1 + revert loop that emptied the daily batch PR.
+      // Must not inject locations: ["global"] (would override the Vertex region).
       expect(updated.locations).toBeUndefined();
     });
 

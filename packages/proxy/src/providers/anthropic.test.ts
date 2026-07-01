@@ -816,12 +816,12 @@ it("should return error when non-3.7 model receives max_tokens exceeding its lim
   expect(statusCode).toBeGreaterThanOrEqual(400);
 });
 
-it("should use 64000 max_tokens and avoid 128k beta header for claude-3-7-sonnet when unset", async () => {
+it("should use 64000 max_tokens and avoid 128k beta header for claude-sonnet-4-5 when unset", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-7-sonnet-latest",
+      model: "claude-sonnet-4-5",
       messages: [{ role: "user", content: "Say hi" }],
       stream: false,
     },
@@ -840,7 +840,7 @@ it("should convert plain text file to Anthropic PlainTextSource document", async
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-7-sonnet-latest",
+      model: "claude-sonnet-4-5",
       messages: [
         {
           role: "user",
@@ -885,7 +885,7 @@ it("should convert markdown file to Anthropic PlainTextSource document", async (
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-7-sonnet-latest",
+      model: "claude-sonnet-4-5",
       messages: [
         {
           role: "user",
@@ -929,7 +929,7 @@ it("should convert CSV file to Anthropic PlainTextSource document", async () => 
 
   await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
-      model: "claude-3-7-sonnet-latest",
+      model: "claude-sonnet-4-5",
       messages: [
         {
           role: "user",

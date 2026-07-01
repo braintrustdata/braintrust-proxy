@@ -11527,7 +11527,7 @@
   },
   "openai.gpt-5.5": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "responses",
     "multimodal": true,
     "input_cost_per_mil_tokens": 5.5,
     "output_cost_per_mil_tokens": 33,
@@ -11541,7 +11541,7 @@
   },
   "openai.gpt-5.4": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "responses",
     "multimodal": true,
     "input_cost_per_mil_tokens": 2.75,
     "output_cost_per_mil_tokens": 16.5,

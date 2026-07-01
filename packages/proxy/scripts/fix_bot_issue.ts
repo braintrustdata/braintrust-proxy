@@ -1500,7 +1500,7 @@ function ensureRequiredModelMetadataForAdd(
   ensureResolvedModelMetadata(provider, modelName, model);
 }
 
-function buildUpdatedLocalModel(
+export function buildUpdatedLocalModel(
   parsedIssue: ParsedIssue,
   targetModel: string,
   existingModel: ModelSpec,
@@ -1514,11 +1514,16 @@ function buildUpdatedLocalModel(
 
   const updatedModel = cloneLocalModel(existingModel);
   applyModelSpecPatch(updatedModel, modelSpecPatch);
-  ensureResolvedModelMetadata(
-    parsedIssue.provider ?? "",
-    targetModel,
-    updatedModel,
-  );
+  // Only enforce the explicit-locations requirement when the existing entry
+  // already declared locations; don't demand it on entries that intentionally
+  // omit it (e.g. Anthropic on Vertex, so the customer's region is used).
+  if (existingModel.locations && existingModel.locations.length > 0) {
+    ensureResolvedModelMetadata(
+      parsedIssue.provider ?? "",
+      targetModel,
+      updatedModel,
+    );
+  }
   return updatedModel;
 }
 

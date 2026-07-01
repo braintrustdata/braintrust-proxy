@@ -113,7 +113,7 @@ describe("bedrock secret skipped for openai-format models (#18324)", () => {
     // failure must NOT be our "No API keys found" skip path.
     await expect(
       runProxy({
-        model: "claude-3-5-sonnet-20240620",
+        model: "anthropic.claude-sonnet-4-6",
         secrets: [bedrockSecret],
         customFetch: async () => fakeOpenAIResponse(),
       }),

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyAvailableEndpointTypeMappings,
+  buildUpdatedLocalModel,
   isDateWithinDays,
   UPCOMING_DEPRECATION_WINDOW_DAYS,
 } from "./fix_bot_issue";
@@ -54,6 +55,51 @@ describe("fix_bot_issue", () => {
       });
 
       expect(updated).toContain('"openai/gpt-oss-20b": ["groq", "cerebras"],');
+    });
+  });
+
+  describe("buildUpdatedLocalModel Vertex locations requirement", () => {
+    it("updates a Vertex publishers entry that omits locations without demanding them", () => {
+      const updated = buildUpdatedLocalModel(
+        {
+          provider: "vertex",
+          models: ["publishers/anthropic/models/claude-sonnet-4-6"],
+          metadata: { model_spec: { max_output_tokens: 128000 } },
+          aliasTargets: {},
+        },
+        "publishers/anthropic/models/claude-sonnet-4-6",
+        {
+          format: "anthropic",
+          flavor: "chat",
+          available_providers: ["vertex"],
+          max_output_tokens: 64000,
+        },
+      );
+
+      expect(updated.max_output_tokens).toBe(128000);
+      // Must not inject locations: ["global"] (would override the Vertex region).
+      expect(updated.locations).toBeUndefined();
+    });
+
+    it("still rejects an update that would strip locations from an entry that had them", () => {
+      expect(() =>
+        buildUpdatedLocalModel(
+          {
+            provider: "vertex",
+            models: ["publishers/google/models/gemini-3-pro"],
+            metadata: { model_spec: { locations: [] } },
+            aliasTargets: {},
+          },
+          "publishers/google/models/gemini-3-pro",
+          {
+            format: "google",
+            flavor: "chat",
+            available_providers: ["vertex"],
+            max_output_tokens: 65536,
+            locations: ["global", "us-central1"],
+          },
+        ),
+      ).toThrow("without explicit location metadata");
     });
   });
 });

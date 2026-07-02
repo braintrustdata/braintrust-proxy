@@ -1061,7 +1061,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
   "grok-latest": ["xAI"],
   "gemma-4-31b": ["cerebras"],
-  "mistral-medium-3-5-26-04": ["mistral"],
   "gpt-5.4-mini-2026-03-17": ["openai", "azure"],
 };
 

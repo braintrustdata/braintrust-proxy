@@ -6790,7 +6790,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -6808,7 +6808,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -12185,19 +12185,6 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
-  },
-  "mistral-medium-3-5-26-04": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "displayName": "Mistral Medium 3.5 (2026-04)",
-    "parent": "mistral-medium-3.5",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
     ]
   },
   "us.mistral.pixtral-large-2502-v1:0": {

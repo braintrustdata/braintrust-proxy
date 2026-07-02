@@ -4,12 +4,7 @@ import { _urljoin } from "../src/util";
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
-export const ModelFlavors = [
-  "chat",
-  "completion",
-  "embedding",
-  "responses",
-] as const;
+export const ModelFlavors = ["chat", "completion", "embedding"] as const;
 export type ModelFlavor = (typeof ModelFlavors)[number];
 
 export const ModelFormats = [

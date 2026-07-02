@@ -364,7 +364,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pixtral-large-latest": ["mistral"],
   "mistral-medium-latest": ["mistral"],
   "mistral-medium-2505": ["mistral"],
-  "pixtral-large-2411": ["mistral", "vertex"],
+  "pixtral-large-2411": ["mistral"],
   "mistral-small-latest": ["mistral"],
   "mistral-small-2501": ["mistral"],
   "codestral-2501": ["mistral"],
@@ -947,7 +947,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-code-fast-1": ["xAI"],
   "grok-code-fast": ["xAI"],
   "grok-code-fast-1-0825": ["xAI"],
-  "gemini-3.5-flash": ["google"],
+  "gemini-3.5-flash": ["google", "vertex"],
   "gemini-3.1-flash-image-preview": ["google"],
   "gemini-3.1-flash-lite": ["google"],
   "gemini-3.1-flash-lite-preview": ["google"],
@@ -1043,7 +1043,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-3-70b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
-  "openai/gpt-oss-120b": ["together", "groq", "baseten"],
+  "openai/gpt-oss-120b": ["groq", "together", "baseten"],
   "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
   "o4-mini-deep-research-2025-06-26": ["openai", "azure"],
   "o4-mini-deep-research": ["openai", "azure"],
@@ -1060,6 +1060,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/deepseek-v2-lite-chat": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],
   "grok-latest": ["xAI"],
+  "gemma-4-31b": ["cerebras"],
+  "mistral-medium-3-5-26-04": ["mistral"],
+  "gpt-5.4-mini-2026-03-17": ["openai", "azure"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

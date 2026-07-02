@@ -78,7 +78,7 @@
     "displayName": "GPT-5.4 mini (2026-03-17)",
     "reasoning": true,
     "parent": "gpt-5.4-mini",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -164,7 +164,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -180,7 +180,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -1313,8 +1313,8 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
@@ -1655,7 +1655,7 @@
       "us.anthropic.claude-sonnet-4-6"
     ],
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
     ]
@@ -3249,6 +3249,7 @@
     "displayName": "Qwen3-32B",
     "reasoning": true,
     "experimental": true,
+    "deprecation_date": "2026-07-17",
     "max_input_tokens": 131072,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -4084,7 +4085,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3.6,
-    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "input_cache_read_cost_per_mil_tokens": 0.35,
     "displayName": "Qwen3.5 397B A17B",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -4308,6 +4309,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
+    "deprecation_date": "2026-05-31",
     "parent": "mistral-large-latest",
     "fallback_models": [
       "publishers/mistralai/models/mistral-large-2411"
@@ -4347,6 +4349,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
+    "deprecation_date": "2026-05-31",
     "parent": "pixtral-large-latest",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
@@ -4361,6 +4364,8 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
     "displayName": "Mistral Medium 3.5",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -4386,6 +4391,8 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Mistral Small",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -4666,6 +4673,7 @@
     "input_cost_per_mil_tokens": 0.59,
     "output_cost_per_mil_tokens": 0.79,
     "displayName": "Llama 3.3 70B Versatile 128k",
+    "deprecation_date": "2026-08-16",
     "max_input_tokens": 128000,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -4724,6 +4732,7 @@
     "output_cost_per_mil_tokens": 0.34,
     "displayName": "Llama 4 Scout (17Bx16E)",
     "experimental": true,
+    "deprecation_date": "2026-07-17",
     "max_input_tokens": 131072,
     "max_output_tokens": 8192,
     "available_providers": [
@@ -4776,6 +4785,8 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
     "displayName": "Mistral Medium 3.5",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -6112,6 +6123,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Gemini 3.5 Flash",
     "reasoning": true,
+    "reasoning_budget": true,
     "fallback_models": [
       "publishers/google/models/gemini-3.5-flash"
     ],
@@ -6778,7 +6790,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -6796,7 +6808,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -6813,7 +6825,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -8196,7 +8208,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
     ]
@@ -9393,7 +9405,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -12296,6 +12308,20 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
+    ]
+  },
+  "gemma-4-31b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.99,
+    "output_cost_per_mil_tokens": 1.49,
+    "displayName": "Gemma 4 31B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "available_providers": [
+      "cerebras"
     ]
   }
 }

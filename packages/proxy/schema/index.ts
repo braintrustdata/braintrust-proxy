@@ -1062,6 +1062,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-latest": ["xAI"],
   "gemma-4-31b": ["cerebras"],
   "gpt-5.4-mini-2026-03-17": ["openai", "azure"],
+  "global.anthropic.claude-opus-4-6-v1:0": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

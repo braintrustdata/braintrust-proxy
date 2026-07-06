@@ -1063,6 +1063,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemma-4-31b": ["cerebras"],
   "gpt-5.4-mini-2026-03-17": ["openai", "azure"],
   "global.anthropic.claude-opus-4-6-v1": ["bedrock"],
+  "gemini-3.1-flash-lite-image": ["google", "vertex"],
+  "publishers/google/models/gemini-3.1-flash-lite-image": ["vertex"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

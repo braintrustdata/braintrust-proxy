@@ -7062,7 +7062,7 @@
       "bedrock"
     ]
   },
-  "global.anthropic.claude-opus-4-6-v1:0": {
+  "global.anthropic.claude-opus-4-6-v1": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -7073,8 +7073,8 @@
     "displayName": "Global Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-6-v1:0",
-    "max_input_tokens": 200000,
+    "parent": "anthropic.claude-opus-4-6-v1",
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -7241,7 +7241,7 @@
       "bedrock"
     ]
   },
-  "us.anthropic.claude-opus-4-6-v1:0": {
+  "us.anthropic.claude-opus-4-6-v1": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -7252,14 +7252,14 @@
     "displayName": "US Claude 4.6 Opus",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-6-v1:0",
-    "max_input_tokens": 200000,
+    "parent": "anthropic.claude-opus-4-6-v1",
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
   },
-  "anthropic.claude-opus-4-6-v1:0": {
+  "anthropic.claude-opus-4-6-v1": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -7270,7 +7270,7 @@
     "displayName": "Claude Opus 4.6",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"

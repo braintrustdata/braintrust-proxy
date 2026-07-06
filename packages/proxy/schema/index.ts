@@ -519,8 +519,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-opus-4-5-20251101-v1:0": ["bedrock"],
   "us.anthropic.claude-opus-4-5-20251101-v1:0": ["bedrock"],
   "anthropic.claude-opus-4-7": ["bedrock"],
-  "anthropic.claude-opus-4-6-v1:0": ["bedrock"],
-  "us.anthropic.claude-opus-4-6-v1:0": ["bedrock"],
+  "anthropic.claude-opus-4-6-v1": ["bedrock"],
+  "us.anthropic.claude-opus-4-6-v1": ["bedrock"],
   "anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
   "us.anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
   "amazon.nova-pro-v1:0": ["bedrock"],
@@ -1062,7 +1062,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-latest": ["xAI"],
   "gemma-4-31b": ["cerebras"],
   "gpt-5.4-mini-2026-03-17": ["openai", "azure"],
-  "global.anthropic.claude-opus-4-6-v1:0": ["bedrock"],
+  "global.anthropic.claude-opus-4-6-v1": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

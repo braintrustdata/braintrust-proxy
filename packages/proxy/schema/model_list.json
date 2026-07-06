@@ -12421,5 +12421,16 @@
     "available_providers": [
       "cerebras"
     ]
+  },
+  "pearl-ai/gemma-4-31b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.28,
+    "output_cost_per_mil_tokens": 0.86,
+    "displayName": "Gemma 4 31B IT (Pearl)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "together"
+    ]
   }
 }

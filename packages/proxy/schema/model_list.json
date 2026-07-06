@@ -7062,6 +7062,24 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-3-5-haiku-20241022-v1:0": {
     "format": "anthropic",
     "flavor": "chat",
@@ -7556,6 +7574,24 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-opus-4-8",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "US Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -11809,6 +11845,26 @@
       "vertex"
     ]
   },
+  "gemini-3.1-flash-lite-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini 3.1 Flash-Lite Image",
+    "fallback_models": [
+      "publishers/google/models/gemini-3.1-flash-lite-image"
+    ],
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": {
     "format": "google",
     "flavor": "chat",
@@ -12266,7 +12322,9 @@
     "reasoning_budget": true,
     "fallback_models": [
       "anthropic.claude-sonnet-5",
-      "publishers/anthropic/models/claude-sonnet-5"
+      "global.anthropic.claude-sonnet-5",
+      "publishers/anthropic/models/claude-sonnet-5",
+      "us.anthropic.claude-sonnet-5"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -12306,6 +12364,22 @@
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-lite-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini 3.1 Flash-Lite Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 4096,
     "available_providers": [
       "vertex"
     ]

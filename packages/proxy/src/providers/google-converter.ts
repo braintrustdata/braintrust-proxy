@@ -147,7 +147,14 @@ const geminiUsageToOpenAIUsage = (
 
   const usage: OpenAICompletionUsage = {
     prompt_tokens: usageMetadata.promptTokenCount || 0,
-    completion_tokens: usageMetadata.candidatesTokenCount || 0,
+    // Gemini reports visible output (candidatesTokenCount) and thinking
+    // (thoughtsTokenCount) separately, and totalTokenCount is their sum. Follow
+    // the OpenAI convention (also used by the Anthropic converter and Lingua)
+    // where completion_tokens includes reasoning, so downstream cost estimation
+    // prices thinking tokens as output. reasoning_tokens below stays the subset
+    // breakdown.
+    completion_tokens:
+      (usageMetadata.candidatesTokenCount || 0) + (thoughtsTokenCount || 0),
     total_tokens: usageMetadata.totalTokenCount || 0,
   };
 

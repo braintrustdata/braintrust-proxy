@@ -1412,6 +1412,37 @@ describe("googleCompletionToOpenAICompletion", () => {
     expect(result.choices[0].finish_reason).toBe("stop");
   });
 
+  it("should include thinking tokens in completion_tokens for cost estimation", () => {
+    const geminiResponse: GenerateContentResponse = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [{ text: "The answer is 42." }],
+          },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata: {
+        promptTokenCount: 100,
+        candidatesTokenCount: 50,
+        thoughtsTokenCount: 25,
+        totalTokenCount: 175,
+      },
+    };
+
+    const result = googleCompletionToOpenAICompletion(
+      "gemini-2.5-flash",
+      geminiResponse,
+    );
+
+    // completion_tokens must include thinking tokens (50 + 25) so downstream
+    // cost estimation prices reasoning as output. reasoning_tokens is the subset.
+    expect(result.usage?.completion_tokens).toBe(75);
+    expect(result.usage?.completion_tokens_details?.reasoning_tokens).toBe(25);
+    expect(result.usage?.prompt_tokens).toBe(100);
+  });
+
   it("should map safety finish reasons to content_filter", () => {
     const geminiResponse: GenerateContentResponse = {
       candidates: [
@@ -1754,6 +1785,38 @@ describe("googleEventToOpenAIChatEvent", () => {
       }),
     });
     expect(result.event!.choices[0].finish_reason).toBe("tool_calls");
+  });
+
+  it("should include thinking tokens in streaming completion_tokens", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const geminiEvent: any = {
+      candidates: [
+        {
+          content: {
+            role: "model",
+            parts: [{ text: "The answer is 42." }],
+          },
+          finishReason: "STOP",
+        },
+      ],
+      usageMetadata: {
+        promptTokenCount: 100,
+        candidatesTokenCount: 50,
+        thoughtsTokenCount: 25,
+        totalTokenCount: 175,
+      },
+    };
+
+    const result = googleEventToOpenAIChatEvent(
+      "gemini-2.5-flash",
+      geminiEvent,
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const usage = (result.event as any)?.usage;
+    expect(usage?.completion_tokens).toBe(75);
+    expect(usage?.completion_tokens_details?.reasoning_tokens).toBe(25);
+    expect(usage?.prompt_tokens).toBe(100);
   });
 });
 

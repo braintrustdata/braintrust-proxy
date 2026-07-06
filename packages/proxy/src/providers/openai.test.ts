@@ -368,6 +368,61 @@ it("uses custom api base when routing appropriate models through responses", asy
   });
 });
 
+it("preserves temperature for GPT-5.1+ when reasoning_effort is none", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-5.5",
+      messages: [{ role: "user", content: "hello" }],
+      reasoning_effort: "none",
+      stream: false,
+      temperature: 0.2,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "sk-fake-key",
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("https://api.openai.com/v1/responses");
+  expect(requests[0].body).toMatchObject({
+    model: "gpt-5.5",
+    temperature: 0.2,
+  });
+});
+
+it("removes temperature for GPT-5.1+ when reasoning_effort is not none", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-5.5",
+      messages: [{ role: "user", content: "hello" }],
+      reasoning_effort: "low",
+      stream: false,
+      temperature: 0.2,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "openai",
+        secret: "sk-fake-key",
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("https://api.openai.com/v1/responses");
+  expect(requests[0].body).not.toHaveProperty("temperature");
+});
+
 it("handles /responses as endpoint_path", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

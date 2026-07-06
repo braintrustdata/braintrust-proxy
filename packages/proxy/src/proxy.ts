@@ -2367,13 +2367,21 @@ async function fetchOpenAI(
     (typeof bodyData?.model === "string" &&
       modelProviderHasReasoning.openai?.test(bodyData.model));
 
+  const canKeepTemperature =
+    typeof bodyData?.model === "string" &&
+    bodyData.model.toLowerCase().includes("gpt-5") &&
+    Object.prototype.hasOwnProperty.call(bodyData, "reasoning_effort") &&
+    bodyData.reasoning_effort === "none";
+
   if (hasReasoning) {
     if (!isEmpty(bodyData.max_tokens)) {
       bodyData.max_completion_tokens = bodyData.max_tokens;
       delete bodyData.max_tokens;
     }
 
-    delete bodyData.temperature;
+    if (!canKeepTemperature) {
+      delete bodyData.temperature;
+    }
     delete bodyData.parallel_tool_calls;
 
     // gpt-5.1 models don't support "minimal" reasoning_effort, so convert to "low"

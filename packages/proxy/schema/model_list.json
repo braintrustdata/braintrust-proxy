@@ -534,7 +534,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -584,7 +584,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -600,7 +600,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.005,
     "displayName": "GPT-5 nano",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -615,7 +615,7 @@
     "output_cost_per_mil_tokens": 120,
     "displayName": "GPT-5 Pro",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000,
     "available_providers": [
       "openai",

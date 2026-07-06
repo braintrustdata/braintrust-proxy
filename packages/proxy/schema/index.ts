@@ -519,8 +519,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-opus-4-5-20251101-v1:0": ["bedrock"],
   "us.anthropic.claude-opus-4-5-20251101-v1:0": ["bedrock"],
   "anthropic.claude-opus-4-7": ["bedrock"],
-  "anthropic.claude-opus-4-6-v1:0": ["bedrock"],
-  "us.anthropic.claude-opus-4-6-v1:0": ["bedrock"],
+  "anthropic.claude-opus-4-6-v1": ["bedrock"],
+  "us.anthropic.claude-opus-4-6-v1": ["bedrock"],
   "anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
   "us.anthropic.claude-opus-4-1-20250805-v1:0": ["bedrock"],
   "amazon.nova-pro-v1:0": ["bedrock"],
@@ -1065,6 +1065,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "pearl-ai/gemma-4-31b-it": ["together"],
   "gpt-5-mini": ["openai", "azure"],
   "gpt-5-nano": ["openai", "azure"],
+  "global.anthropic.claude-opus-4-6-v1": ["bedrock"],
+  "gemini-3.1-flash-lite-image": ["google", "vertex"],
+  "publishers/google/models/gemini-3.1-flash-lite-image": ["vertex"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -1068,6 +1068,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "global.anthropic.claude-opus-4-6-v1": ["bedrock"],
   "gemini-3.1-flash-lite-image": ["google", "vertex"],
   "publishers/google/models/gemini-3.1-flash-lite-image": ["vertex"],
+  "groq/compound": ["groq"],
+  "groq/compound-mini": ["groq"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

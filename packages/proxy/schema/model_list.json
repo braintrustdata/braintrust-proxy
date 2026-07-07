@@ -4377,7 +4377,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
-    "deprecation_date": "2026-08-31",
+    "deprecation_date": "2026-05-22",
     "parent": "mistral-medium-latest",
     "max_input_tokens": 131072,
     "max_output_tokens": 8191,
@@ -4773,7 +4773,7 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Mistral Medium (2508)",
-    "deprecation_date": "2026-08-31",
+    "deprecation_date": "2026-05-22",
     "parent": "mistral-medium-latest",
     "max_input_tokens": 128000,
     "available_providers": [

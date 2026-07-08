@@ -1059,6 +1059,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/google/models/gemini-3.1-flash-lite-image": ["vertex"],
   "groq/compound": ["groq"],
   "groq/compound-mini": ["groq"],
+  "mistral-medium-2604": ["mistral"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

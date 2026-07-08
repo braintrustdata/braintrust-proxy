@@ -12000,6 +12000,21 @@
       "bedrock"
     ]
   },
+  "mistral-medium-2604": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5 (2604)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "us.mistral.pixtral-large-2502-v1:0": {
     "format": "converse",
     "flavor": "chat",

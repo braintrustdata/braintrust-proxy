@@ -6586,6 +6586,48 @@
       "xAI"
     ]
   },
+  "grok-4.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok 4.5 (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.5-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok 4.5",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-build-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok Build (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "amazon.nova-pro-v1:0": {
     "format": "converse",
     "flavor": "chat",
@@ -12142,6 +12184,15 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "groq"
+    ]
+  },
+  "labs-leanstral-1-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Leanstral 1.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
     ]
   }
 }

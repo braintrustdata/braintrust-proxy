@@ -4224,18 +4224,6 @@
       "mistral"
     ]
   },
-  "devstral-small-2507": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.3,
-    "parent": "devstral-small-latest",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
   "devstral-2512": {
     "format": "openai",
     "flavor": "chat",
@@ -4304,22 +4292,6 @@
       "mistral"
     ]
   },
-  "mistral-large-2411": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "deprecation_date": "2026-05-31",
-    "parent": "mistral-large-latest",
-    "fallback_models": [
-      "publishers/mistralai/models/mistral-large-2411"
-    ],
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
   "publishers/mistralai/models/mistral-large-2411": {
     "format": "openai",
     "flavor": "chat",
@@ -4328,33 +4300,6 @@
     "displayName": "Mistral Large (24.11)",
     "available_providers": [
       "vertex"
-    ]
-  },
-  "pixtral-large-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "displayName": "Pixtral Large",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "pixtral-large-2411": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "deprecation_date": "2026-05-31",
-    "parent": "pixtral-large-latest",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
     ]
   },
   "mistral-medium-latest": {

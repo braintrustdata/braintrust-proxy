@@ -1056,6 +1056,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "groq/compound": ["groq"],
   "groq/compound-mini": ["groq"],
   "mistral-medium-2604": ["mistral"],
+  "grok-4.5": ["xAI"],
+  "grok-4.5-latest": ["xAI"],
+  "grok-build-latest": ["xAI"],
+  "labs-leanstral-1-5": ["mistral"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

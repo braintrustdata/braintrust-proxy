@@ -1823,7 +1823,7 @@
     "displayName": "Claude Opus 4.6",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
@@ -4383,7 +4383,7 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
-    "max_input_tokens": 256000,
+    "max_input_tokens": 128000,
     "available_providers": [
       "mistral"
     ]
@@ -9226,8 +9226,8 @@
   "zai-org/GLM-5.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.3,
-    "output_cost_per_mil_tokens": 4.3,
+    "input_cost_per_mil_tokens": 1.4,
+    "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,
@@ -12061,6 +12061,18 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Voxtral Small",
     "max_input_tokens": 32000,
     "available_providers": [
       "mistral"

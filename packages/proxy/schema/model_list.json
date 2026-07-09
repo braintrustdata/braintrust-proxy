@@ -1874,7 +1874,7 @@
     "displayName": "Claude Opus 4.6",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
@@ -12112,6 +12112,18 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Voxtral Small",
     "max_input_tokens": 32000,
     "available_providers": [
       "mistral"

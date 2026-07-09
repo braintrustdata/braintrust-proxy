@@ -4434,7 +4434,7 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
     ]
@@ -9277,8 +9277,8 @@
   "zai-org/GLM-5.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.4,
-    "output_cost_per_mil_tokens": 4.4,
+    "input_cost_per_mil_tokens": 1.3,
+    "output_cost_per_mil_tokens": 4.3,
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,

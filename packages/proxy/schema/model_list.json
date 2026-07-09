@@ -1655,7 +1655,7 @@
       "us.anthropic.claude-sonnet-4-6"
     ],
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
     ]

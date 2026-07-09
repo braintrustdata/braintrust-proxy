@@ -78,7 +78,7 @@
     "displayName": "GPT-5.4 mini (2026-03-17)",
     "reasoning": true,
     "parent": "gpt-5.4-mini",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -164,7 +164,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -180,7 +180,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -1655,7 +1655,7 @@
       "us.anthropic.claude-sonnet-4-6"
     ],
     "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
+    "max_output_tokens": 64000,
     "available_providers": [
       "anthropic"
     ]
@@ -9185,7 +9185,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,

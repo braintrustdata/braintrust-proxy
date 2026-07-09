@@ -90,6 +90,9 @@ export const SYNC_PRESERVED_FIELDS: Record<
   // mistral-small-latest = Mistral Small 4 ($0.15/$0.60 per the model card);
   // LiteLLM is stale at $0.10/$0.30.
   "mistral-small-latest": INPUT_OUTPUT_COST_FIELDS,
+  // Claude Sonnet 4.6 max output is 128k per Anthropic's model card; LiteLLM
+  // carries the stale 64k, so the sync keeps trying to lower it.
+  "claude-sonnet-4-6": ["max_output_tokens"],
 };
 
 // Returns true if `field` of `modelName` is hand-maintained and must not be

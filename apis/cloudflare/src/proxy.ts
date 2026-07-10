@@ -11,6 +11,7 @@ import {
   flushMetrics,
   ORG_NAME_HEADER,
   parseAuthHeader,
+  resolveProxyOrgName,
 } from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
 import { braintrustAppUrl } from "./env";
@@ -119,7 +120,24 @@ export async function handleProxyV1(
   let spanId: string | undefined;
   let spanExport: string | undefined;
   let billingOrgId: string | undefined;
-  const orgName = request.headers.get(ORG_NAME_HEADER) ?? undefined;
+  const url = new URL(request.url);
+  const relativeUrl = url.pathname.slice(proxyV1Prefix.length);
+  let resolvedOrgSelection: ReturnType<typeof resolveProxyOrgName>;
+  try {
+    resolvedOrgSelection = resolveProxyOrgName({
+      headerOrgName: request.headers.get(ORG_NAME_HEADER) ?? undefined,
+      url: relativeUrl,
+    });
+  } catch (error) {
+    return new Response(
+      error instanceof Error ? error.message : String(error),
+      {
+        status: 400,
+        headers: { "Content-Type": "text/plain" },
+      },
+    );
+  }
+  const orgName = resolvedOrgSelection.orgName;
   const apiKey =
     parseAuthHeader({
       authorization: request.headers.get("authorization") ?? undefined,
@@ -177,8 +195,8 @@ export async function handleProxyV1(
   }
 
   const opts: ProxyOpts = {
-    getRelativeURL(request: Request): string {
-      return new URL(request.url).pathname.slice(proxyV1Prefix.length);
+    getRelativeURL(): string {
+      return relativeUrl;
     },
     cors: true,
     credentialsCache,
@@ -230,7 +248,6 @@ export async function handleProxyV1(
     nativeInferenceSecretKey: env.NATIVE_INFERENCE_SECRET_KEY,
   };
 
-  const url = new URL(request.url);
   if (url.pathname === `${proxyV1Prefix}/realtime`) {
     return await handleRealtimeProxy({
       request,

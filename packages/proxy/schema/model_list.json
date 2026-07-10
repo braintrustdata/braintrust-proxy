@@ -10903,6 +10903,34 @@
       "azure"
     ]
   },
+  "gpt-realtime-2.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 24,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "displayName": "GPT Realtime 2.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-realtime-2.1-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "GPT Realtime 2.1 mini",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-realtime-2": {
     "format": "openai",
     "flavor": "chat",

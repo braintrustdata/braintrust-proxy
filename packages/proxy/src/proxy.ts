@@ -386,6 +386,7 @@ export async function proxyV1({
     proxyHeaders[FORMAT_HEADER],
   );
 
+  // Checks x-bt-org-name and /btorg/my-org/ agree
   const resolvedOrgSelection = resolveProxyOrgName({
     headerOrgName: proxyHeaders[ORG_NAME_HEADER] ?? undefined,
     url,

@@ -887,8 +887,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-audio": ["openai", "azure"],
   "gpt-audio-mini": ["openai", "azure"],
   "gpt-realtime-2025-08-28": ["openai", "azure"],
-  "gpt-realtime-2.1": ["openai", "azure"],
-  "gpt-realtime-2.1-mini": ["openai", "azure"],
   "gpt-realtime-2": ["openai", "azure"],
   "gpt-realtime-1.5": ["openai", "azure"],
   "gpt-realtime-mini-2025-12-15": ["openai", "azure"],

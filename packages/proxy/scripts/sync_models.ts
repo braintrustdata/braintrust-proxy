@@ -123,6 +123,11 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Not a chat model: OpenAI's realtime transcription model is rejected by
   // /v1/chat/completions ("This is not a chat model").
   "gpt-realtime-whisper",
+  // Realtime models: not supported yet. They are rejected by
+  // /v1/chat/completions ("This is not a chat model"), but LiteLLM (mode
+  // "realtime") keeps surfacing them so the sync re-adds them each run.
+  "gpt-realtime-2.1",
+  "gpt-realtime-2.1-mini",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

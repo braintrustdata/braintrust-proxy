@@ -200,6 +200,7 @@ export const DefaultEndpointTypes: {
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-5.6-sol": ["openai", "azure"],
   "gpt-5.6-terra": ["openai", "azure"],
+  "gpt-5.6": ["openai", "azure"],
   "gpt-5.6-luna": ["openai", "azure"],
   "gpt-5.5-2026-04-23": ["openai", "azure"],
   "gpt-5.5-pro-2026-04-23": ["openai", "azure"],
@@ -886,6 +887,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-audio": ["openai", "azure"],
   "gpt-audio-mini": ["openai", "azure"],
   "gpt-realtime-2025-08-28": ["openai", "azure"],
+  "gpt-realtime-2.1": ["openai", "azure"],
+  "gpt-realtime-2.1-mini": ["openai", "azure"],
   "gpt-realtime-2": ["openai", "azure"],
   "gpt-realtime-1.5": ["openai", "azure"],
   "gpt-realtime-mini-2025-12-15": ["openai", "azure"],

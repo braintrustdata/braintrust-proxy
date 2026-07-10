@@ -177,6 +177,31 @@ export const USED_ENDPOINT_HEADER = "x-bt-used-endpoint";
 
 const CACHE_MODES = ["auto", "always", "never"] as const;
 
+export function resolveProxyOrgName({
+  headerOrgName,
+  url,
+}: {
+  headerOrgName?: string;
+  url: string;
+}): { orgName?: string; url: string } {
+  // "/btorg/my-org/chat/completions" -> ["btorg", "my-org", "chat", "completions"].
+  const pieces = url.split("/").filter((p) => p.trim() !== "");
+
+  if (pieces.length <= 2 || pieces[0].toLowerCase() !== "btorg") {
+    return { orgName: headerOrgName, url };
+  }
+
+  const pathOrgName = decodeURIComponent(pieces[1]);
+  if (headerOrgName && headerOrgName !== pathOrgName) {
+    throw new ProxyBadRequestError("Conflicting organization selectors");
+  }
+
+  return {
+    orgName: pathOrgName,
+    url: `/${pieces.slice(2).join("/")}`,
+  };
+}
+
 // The Anthropic SDK generates /v1/messages appended to the base URL, so we support both
 const ANTHROPIC_MESSAGES = "/anthropic/messages";
 const ANTHROPIC_V1_MESSAGES = "/anthropic/v1/messages";
@@ -361,20 +386,15 @@ export async function proxyV1({
     proxyHeaders[FORMAT_HEADER],
   );
 
-  let orgName: string | undefined = proxyHeaders[ORG_NAME_HEADER] ?? undefined;
+  const resolvedOrgSelection = resolveProxyOrgName({
+    headerOrgName: proxyHeaders[ORG_NAME_HEADER] ?? undefined,
+    url,
+  });
+  let orgName = resolvedOrgSelection.orgName;
   let resolvedOrgName: string | undefined = orgName;
+  url = resolvedOrgSelection.url;
   const projectId: string | undefined =
     proxyHeaders[PROJECT_ID_HEADER] ?? undefined;
-
-  const pieces = url
-    .split("/")
-    .filter((p) => p.trim() !== "")
-    .map((d) => decodeURIComponent(d));
-
-  if (pieces.length > 2 && pieces[0].toLowerCase() === "btorg") {
-    orgName = pieces[1];
-    url = "/" + pieces.slice(2).map(encodeURIComponent).join("/");
-  }
 
   const isGoogleUrl = GOOGLE_URL_REGEX.test(url);
 

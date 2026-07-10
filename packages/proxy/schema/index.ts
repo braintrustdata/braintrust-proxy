@@ -1065,6 +1065,14 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-build-latest": ["xAI"],
   "labs-leanstral-1-5": ["mistral"],
   "voxtral-small-latest": ["mistral"],
+  "LiquidAI/LFM2.5-8B-A1B": ["together"],
+  "databricks-gpt-5-6-sol": ["databricks"],
+  "databricks-gpt-5-6-terra": ["databricks"],
+  "databricks-gpt-5-6-luna": ["databricks"],
+  "databricks-claude-sonnet-5": ["databricks"],
+  "google.gemma-4-31b": ["bedrock"],
+  "google.gemma-4-26b-a4b": ["bedrock"],
+  "google.gemma-4-e2b": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -11173,6 +11173,17 @@
       "together"
     ]
   },
+  "LiquidAI/LFM2.5-8B-A1B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.12,
+    "displayName": "LFM2.5 8B A1B",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "together"
+    ]
+  },
   "deepcogito/cogito-v2-1-671b": {
     "format": "openai",
     "flavor": "chat",
@@ -12009,6 +12020,55 @@
       "databricks"
     ]
   },
+  "databricks-gpt-5-6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.6 Sol",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.6 Terra",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.6 Luna",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-sonnet-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "mistral.pixtral-large-2502-v1:0": {
     "format": "converse",
     "flavor": "chat",
@@ -12277,6 +12337,39 @@
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
+    ]
+  },
+  "google.gemma-4-31b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 31B",
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "google.gemma-4-26b-a4b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 26B A4B",
+    "reasoning": true,
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "google.gemma-4-e2b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemma 4 E2B",
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "bedrock"
     ]
   }
 }

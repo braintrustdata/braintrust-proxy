@@ -12371,21 +12371,5 @@
     "available_providers": [
       "bedrock"
     ]
-  },
-  "codex-mini-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.375,
-    "displayName": "Codex Mini",
-    "reasoning": true,
-    "max_input_tokens": 200000,
-    "max_output_tokens": 100000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
   }
 }

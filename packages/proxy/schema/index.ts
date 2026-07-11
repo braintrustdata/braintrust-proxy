@@ -1073,6 +1073,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "google.gemma-4-31b": ["bedrock"],
   "google.gemma-4-26b-a4b": ["bedrock"],
   "google.gemma-4-e2b": ["bedrock"],
+  "codex-mini-latest": ["openai", "azure"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

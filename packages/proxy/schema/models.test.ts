@@ -110,9 +110,9 @@ it("normalizes Cursor CLI reasoning-effort slugs to the base model for cost", ()
     normalizeModelNameForCost("some-unknown-model-high", isKnown),
   ).toBeUndefined();
   expect(normalizeModelNameForCost("gpt-9-max", isKnown)).toBeUndefined();
-  expect(
-    normalizeModelNameForCost("gemini-2.5-pro-high", isKnown),
-  ).toBeUndefined();
+  expect(normalizeModelNameForCost("gemini-2.5-pro-high", isKnown)).toBe(
+    "gemini-2.5-pro",
+  );
 });
 
 it("prefers exact catalog entries over Cursor model normalization", () => {

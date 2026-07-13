@@ -214,8 +214,6 @@ async function loadModelsFromControlPlane(
   }
 }
 
-const CURSOR_COST_BASE_MODELS = new Set(["claude-opus-4-8", "gpt-5.3-codex"]);
-
 const COST_MODEL_SUFFIX_TOKENS = new Set([
   "thinking",
   "none",
@@ -243,7 +241,7 @@ export function normalizeModelNameForCost(
       return undefined;
     }
     candidate = candidate.slice(0, dash);
-    if (CURSOR_COST_BASE_MODELS.has(candidate) && isKnownModel(candidate)) {
+    if (isKnownModel(candidate)) {
       return candidate;
     }
   }

@@ -45,6 +45,13 @@ const DEPRECATED_TEXT =
 const WRONG_ENDPOINT_TEXT =
   /not a chat model|chat completions are not supported|v1\/(completions|responses|audio|embeddings|images|realtime)|only supports streaming|must be at least/i;
 
+// Markers that the model EXISTS but the probe sent a parameter it rejects
+// (e.g. reasoning models require `max_completion_tokens` instead of
+// `max_tokens`). A parameter-validation error proves the id is recognized, so
+// it must NOT be treated as a deprecation.
+const PARAM_ERROR_TEXT =
+  /unsupported parameter|unknown parameter|unsupported value|max_completion_tokens/i;
+
 // Classify a direct-provider probe. A single definitive not-found / deprecated
 // response marks the model deprecated; rate-limit / overload / network noise is
 // transient (never deprecate); anything else is unknown (inconclusive).
@@ -58,6 +65,13 @@ export function classifyProbe(status: number, body: string): ProbeOutcome {
   // The model exists but is the wrong modality / endpoint for a chat probe —
   // not a deprecation. Check this before the not-found rules below.
   if (WRONG_ENDPOINT_TEXT.test(body)) {
+    return "unknown";
+  }
+  // The model exists but rejected a request parameter (e.g. reasoning models
+  // want `max_completion_tokens`, not `max_tokens`). A param error is not a
+  // deprecation — check before the not-found rules, whose "is not supported"
+  // marker would otherwise match "'max_tokens' is not supported".
+  if (PARAM_ERROR_TEXT.test(body)) {
     return "unknown";
   }
   // 404 is always a missing model. 400/403/410 only when the body says so, to

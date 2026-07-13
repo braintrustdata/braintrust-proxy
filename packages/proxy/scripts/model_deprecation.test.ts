@@ -57,6 +57,15 @@ describe("classifyProbe", () => {
       classifyProbe(400, '{"error":"This model only supports streaming"}'),
     ).toBe("unknown");
   });
+
+  it("does not deprecate reasoning models that reject max_tokens (param error, model exists)", () => {
+    expect(
+      classifyProbe(
+        400,
+        '{"error":{"message":"Unsupported parameter: \'max_tokens\' is not supported with this model. Use \'max_completion_tokens\' instead.","type":"invalid_request_error","param":"max_tokens"}}',
+      ),
+    ).toBe("unknown");
+  });
 });
 
 describe("applyDeprecations", () => {

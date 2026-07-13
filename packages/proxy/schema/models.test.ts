@@ -81,19 +81,13 @@ it("Does not deprecate models if deprecation date has not yet passed", () => {
 });
 
 it("normalizes Cursor CLI reasoning-effort slugs to the base model for cost", () => {
-  const known = new Set([
-    "claude-opus-4-8",
-    "claude-opus-4-7",
-    "gpt-5.3-codex",
-  ]);
+  const known = new Set(["claude-opus-4-8", "gpt-5.3-codex", "gemini-2.5-pro"]);
   const isKnown = (name: string) => known.has(name);
 
-  // Exact matches pass through untouched.
   expect(normalizeModelNameForCost("claude-opus-4-8", isKnown)).toBe(
     "claude-opus-4-8",
   );
 
-  // Effort and thinking suffixes collapse to the base model.
   for (const slug of [
     "claude-opus-4-8-low",
     "claude-opus-4-8-medium",
@@ -105,25 +99,32 @@ it("normalizes Cursor CLI reasoning-effort slugs to the base model for cost", ()
   ]) {
     expect(normalizeModelNameForCost(slug, isKnown)).toBe("claude-opus-4-8");
   }
-  expect(
-    normalizeModelNameForCost("claude-opus-4-7-thinking-high", isKnown),
-  ).toBe("claude-opus-4-7");
   expect(normalizeModelNameForCost("gpt-5.3-codex-low", isKnown)).toBe(
     "gpt-5.3-codex",
   );
+  expect(
+    normalizeModelNameForCost(" Claude-Opus-4-8-Thinking-High ", isKnown),
+  ).toBe("claude-opus-4-8");
 
-  // Unknown base models are not invented.
   expect(
     normalizeModelNameForCost("some-unknown-model-high", isKnown),
   ).toBeUndefined();
   expect(normalizeModelNameForCost("gpt-9-max", isKnown)).toBeUndefined();
+  expect(
+    normalizeModelNameForCost("gemini-2.5-pro-high", isKnown),
+  ).toBeUndefined();
+});
+
+it("prefers exact catalog entries over Cursor model normalization", () => {
+  const known = new Set(["gpt-5.3-codex", "gpt-5.3-codex-low"]);
+  expect(
+    normalizeModelNameForCost("gpt-5.3-codex-low", (name) => known.has(name)),
+  ).toBe("gpt-5.3-codex-low");
 });
 
 it("does not strip -fast, which can denote a distinct model", () => {
   const known = new Set(["grok-4"]);
   const isKnown = (name: string) => known.has(name);
-  // grok-4-fast is a separate, cheaper model, so it stays unpriced rather than
-  // collapsing onto grok-4.
   expect(normalizeModelNameForCost("grok-4-fast", isKnown)).toBeUndefined();
 });
 

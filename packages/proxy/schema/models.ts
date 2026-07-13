@@ -214,11 +214,8 @@ async function loadModelsFromControlPlane(
   }
 }
 
-// Reasoning-effort / thinking tier suffixes that tools such as the Cursor CLI
-// append to a base provider model (e.g. "claude-opus-4-8-thinking-high"). They
-// bill at the base per-token rate, so for cost tracking we collapse them onto
-// the base model. "-fast" is intentionally excluded: some providers use it for
-// genuinely distinct, separately-priced models (e.g. grok-4-fast).
+const CURSOR_COST_BASE_MODELS = new Set(["claude-opus-4-8", "gpt-5.3-codex"]);
+
 const COST_MODEL_SUFFIX_TOKENS = new Set([
   "thinking",
   "none",
@@ -229,10 +226,6 @@ const COST_MODEL_SUFFIX_TOKENS = new Set([
   "max",
 ]);
 
-// Returns the catalog model name whose pricing should be used for `modelName`,
-// or undefined if none applies. An exact match wins first, so distinct provider
-// models keep their own pricing; otherwise wrapper suffix tokens are stripped
-// one at a time until a known base model is found.
 export function normalizeModelNameForCost(
   modelName: string,
   isKnownModel: (name: string) => boolean,
@@ -240,7 +233,7 @@ export function normalizeModelNameForCost(
   if (isKnownModel(modelName)) {
     return modelName;
   }
-  let candidate = modelName;
+  let candidate = modelName.trim().toLowerCase();
   while (true) {
     const dash = candidate.lastIndexOf("-");
     if (dash <= 0) {
@@ -250,7 +243,7 @@ export function normalizeModelNameForCost(
       return undefined;
     }
     candidate = candidate.slice(0, dash);
-    if (isKnownModel(candidate)) {
+    if (CURSOR_COST_BASE_MODELS.has(candidate) && isKnownModel(candidate)) {
       return candidate;
     }
   }

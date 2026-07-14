@@ -14,6 +14,7 @@ const PREFIXED_PROVIDERS = new Set([
 
 const EMBEDDING_MODEL_NAME_PATTERN =
   /(^|[\/:_-])(embedding|embed)(?=($|[\/:_-]))/i;
+const GENERATED_MODEL_NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:/@+~-]{0,255}$/;
 
 export function translateToBraintrust(
   modelName: string,
@@ -71,7 +72,10 @@ export function isSupportedTranslatedModelName(
   modelName: string,
   provider?: string,
 ): boolean {
-  if (!modelName || modelName.endsWith("/")) {
+  if (
+    !GENERATED_MODEL_NAME_PATTERN.test(modelName) ||
+    modelName.endsWith("/")
+  ) {
     return false;
   }
 

@@ -738,29 +738,19 @@ function orderBedrockModels(names: string[]): string[] {
 // block.
 const INTERLEAVE_PROVIDERS = new Set(["anthropic"]);
 
-// Publisher-format ids ("publishers/<vendor>/models/<model>") carry a clear
-// class even without an available_providers tag, so tier them like their vertex
-// counterparts. Other models with no provider keep their original order.
-function orderNoProviderModels(names: string[]): string[] {
-  const publisherFormat: string[] = [];
-  const other: string[] = [];
-  for (const name of names) {
-    if (/^publishers\/[^/]+\/models\//.test(name)) {
-      publisherFormat.push(name);
-    } else {
-      other.push(name);
-    }
-  }
-  return [...blockProviderFamilies("vertex", publisherFormat), ...other];
-}
+// Publisher-format ids ("publishers/<vendor>/models/<model>") are vertex models
+// even when they carry no available_providers tag, so they are grouped with the
+// vertex block (see orderModelsByProviderAndClass) and tiered alongside it.
+const PUBLISHER_FORMAT_RE = /^publishers\/[^/]+\/models\//;
 
 // Full catalog ordering: partition models into provider blocks (by their
 // primary access provider, in first-appearance order). Within a block that has
 // a class tier, either interleave the families column-major (parallel-tier
 // providers) or lay each family out as a contiguous newest-first block, with
 // families in class-tier order. Bedrock is partitioned by region and then
-// class-tiered within each region. Models with no provider keep their existing
-// relative order, except publisher-format ids, which are tiered like vertex.
+// class-tiered within each region. Publisher-format ids with no provider are
+// folded into the vertex block so they tier alongside real vertex models; any
+// other no-provider models keep their existing relative order.
 export function orderModelsByProviderAndClass(
   catalog: Record<string, { available_providers?: readonly string[] | null }>,
 ): string[] {
@@ -769,7 +759,9 @@ export function orderModelsByProviderAndClass(
   const blocks = new Map<string, string[]>();
 
   for (const name of Object.keys(catalog)) {
-    const provider = getPrimaryProvider(catalog[name]) ?? noProviderKey;
+    const primary = getPrimaryProvider(catalog[name]);
+    const provider =
+      primary ?? (PUBLISHER_FORMAT_RE.test(name) ? "vertex" : noProviderKey);
     const existing = blocks.get(provider);
     if (existing) {
       existing.push(name);
@@ -784,9 +776,7 @@ export function orderModelsByProviderAndClass(
     const names = blocks.get(provider) ?? [];
     if (provider === "bedrock") {
       ordered.push(...orderBedrockModels(names));
-    } else if (provider === noProviderKey) {
-      ordered.push(...orderNoProviderModels(names));
-    } else if (PROVIDER_CLASS_ORDER[provider]) {
+    } else if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
       ordered.push(
         ...(INTERLEAVE_PROVIDERS.has(provider)
           ? interleaveProviderFamilies(provider, names)

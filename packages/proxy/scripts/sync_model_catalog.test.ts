@@ -223,20 +223,26 @@ describe("sync_model_catalog", () => {
     ).toEqual(["gpt-5.6", "o3", "dall-e-3", "sora-2"]);
   });
 
-  it("tiers publisher-format no-provider models and leaves others in place", () => {
+  it("folds publisher-format no-provider models into the vertex block", () => {
     expect(
       orderModelsByProviderAndClass({
+        "publishers/anthropic/models/claude-opus-4-8": {
+          available_providers: ["vertex"],
+        },
+        "publishers/anthropic/models/claude-opus-4-6": {
+          available_providers: ["vertex"],
+        },
+        "publishers/anthropic/models/claude-opus-4-5@20251101": {},
+        "publishers/google/models/gemini-3.5-flash": {
+          available_providers: ["vertex"],
+        },
         "some-legacy-model": {},
-        "publishers/anthropic/models/claude-sonnet-4-5@20250929": {},
-        "publishers/google/models/gemini-1.0-pro-002": {},
-        "publishers/anthropic/models/claude-opus-4@20250514": {},
-        "publishers/anthropic/models/claude-haiku-4-5@20251001": {},
       }),
     ).toEqual([
-      "publishers/google/models/gemini-1.0-pro-002",
-      "publishers/anthropic/models/claude-opus-4@20250514",
-      "publishers/anthropic/models/claude-sonnet-4-5@20250929",
-      "publishers/anthropic/models/claude-haiku-4-5@20251001",
+      "publishers/google/models/gemini-3.5-flash",
+      "publishers/anthropic/models/claude-opus-4-8",
+      "publishers/anthropic/models/claude-opus-4-6",
+      "publishers/anthropic/models/claude-opus-4-5@20251101",
       "some-legacy-model",
     ]);
   });

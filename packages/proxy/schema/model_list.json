@@ -6044,6 +6044,600 @@
       "groq"
     ]
   },
+  "publishers/google/models/gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Gemini 3.1 Flash Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Gemini 3.1 Flash Image Preview",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "Gemini 3.1 Flash-Lite",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-lite-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini 3.1 Flash-Lite Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-flash-lite-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "Gemini 3.1 Flash-Lite (Preview)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-pro-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Gemini 3.1 Pro Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.1-pro-preview-customtools": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Gemini 3.1 Pro Custom Tools Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3-flash-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Gemini 3 Flash Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3-pro-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Gemini 3 Pro Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3-pro-image-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Gemini 3 Pro Image Preview",
+    "max_input_tokens": 65536,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3-pro-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "displayName": "Gemini 3 Pro Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-lite-preview-09-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "parent": "gemini-2.5-flash-lite",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025"
+    ],
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-preview-09-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "parent": "gemini-2.5-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-flash-preview-09-2025"
+    ],
+    "supported_regions": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "parent": "publishers/google/models/gemini-2.5-flash-lite",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-preview-09-2025": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-lite-preview-06-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "deprecated": true,
+    "deprecation_date": "2025-11-18",
+    "parent": "gemini-2.5-flash-lite",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-flash-lite-preview-06-17"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-lite-preview-06-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-flash-lite",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-pro-preview-06-05": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "deprecated": true,
+    "parent": "gemini-2.5-pro",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-preview-05-20": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "deprecated": true,
+    "deprecation_date": "2025-11-18",
+    "parent": "gemini-2.5-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-flash-preview-05-20"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-preview-05-20": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-pro-preview-05-06": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "deprecated": true,
+    "deprecation_date": "2025-12-02",
+    "parent": "gemini-2.5-pro",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-pro-preview-05-06"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-flash-preview-04-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.0375,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "deprecated": true,
+    "parent": "gemini-2.5-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-flash-preview-04-17"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-pro-exp-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "experimental": true,
+    "parent": "gemini-2.5-pro",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-pro-exp-03-25"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.5-pro-preview-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.125,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": false,
+    "deprecated": true,
+    "deprecation_date": "2025-12-02",
+    "parent": "gemini-2.5-pro",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.5-pro-preview-03-25"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.5 Pro Experimental",
+    "experimental": true,
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Gemini 2.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-image": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Gemini 2.5 Flash Image",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 32768,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "displayName": "Gemini 2.5 Flash-Lite",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Gemini 2.5 Pro",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.0-pro-exp-02-05": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.3125,
+    "experimental": true,
+    "deprecated": true,
+    "parent": "gemini-2.5-pro",
+    "max_input_tokens": 2097152,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-2.0-flash-lite-preview-02-05": {
     "format": "google",
     "flavor": "chat",
@@ -6052,6 +6646,243 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Gemini 2.0 Flash-Lite",
     "deprecated": true
+  },
+  "gemini-2.0-flash-thinking-exp-01-21": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "deprecated": true,
+    "deprecation_date": "2025-12-02",
+    "parent": "gemini-2.0-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 2.0 Flash Thinking Mode",
+    "experimental": true,
+    "deprecated": true,
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.0-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "deprecation_date": "2026-03-31",
+    "parent": "publishers/google/models/gemini-2.0-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.0-flash-lite-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "deprecation_date": "2026-03-31",
+    "parent": "publishers/google/models/gemini-2.0-flash-lite",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-2.0-flash-exp": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.0375,
+    "experimental": true,
+    "parent": "gemini-2.0-flash",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.0-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Gemini 2.0 Flash",
+    "deprecation_date": "2026-03-31",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-2.0-flash-lite": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Gemini 2.0 Flash-Lite",
+    "deprecation_date": "2026-03-31",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-1.5-flash-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.01875,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "deprecation_date": "2025-09-24",
+    "parent": "gemini-1.5-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-1.5-flash-002"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-1.5-pro-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "deprecation_date": "2025-09-24",
+    "parent": "gemini-1.5-pro",
+    "fallback_models": [
+      "publishers/google/models/gemini-1.5-pro-002"
+    ],
+    "max_input_tokens": 2097152,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-flash-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-pro-002": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-1.5-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.01875,
+    "input_cache_write_cost_per_mil_tokens": 1,
+    "deprecation_date": "2025-05-24",
+    "parent": "gemini-1.5-flash",
+    "fallback_models": [
+      "publishers/google/models/gemini-1.5-flash-001"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-1.5-pro-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "deprecation_date": "2025-05-24",
+    "parent": "gemini-1.5-pro",
+    "fallback_models": [
+      "publishers/google/models/gemini-1.5-pro-001"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-flash-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-pro-001": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "parent": "publishers/google/models/gemini-1.5-pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "gemini-1.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Gemini 1.5 Pro",
+    "deprecation_date": "2025-09-29",
+    "fallback_models": [
+      "publishers/google/models/gemini-1.5-pro"
+    ],
+    "max_input_tokens": 2097152,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 1.5 Flash",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.5-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 1.5 Pro",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/google/models/gemini-1.0-pro-002": {
     "format": "google",
@@ -6069,11 +6900,120 @@
     "multimodal": true,
     "parent": "publishers/google/models/gemini-1.0-pro-vision"
   },
+  "gemini-1.0-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini 1.0 Pro",
+    "deprecated": true,
+    "fallback_models": [
+      "publishers/google/models/gemini-1.0-pro"
+    ],
+    "max_input_tokens": 32760,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-1.0-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "displayName": "Gemini 1.0 Pro",
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-1.0-pro-vision": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Gemini 1.0 Pro Vision"
+  },
+  "gemini-pro": {
+    "format": "google",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Gemini Pro",
+    "deprecated": true,
+    "max_input_tokens": 32760,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude Opus 4.8",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-opus-4-7": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "displayName": "Claude Opus 4.7",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-opus-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "displayName": "Claude Opus 4.6",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/anthropic/models/claude-opus-4-5@20251101": {
     "format": "anthropic",
@@ -6135,6 +7075,61 @@
     "reasoning_budget": true,
     "parent": "publishers/anthropic/models/claude-opus-4"
   },
+  "publishers/anthropic/models/claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+    "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "displayName": "Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-sonnet-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+    "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "displayName": "Claude Sonnet 4.6",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-sonnet-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+    "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "displayName": "Claude Sonnet 4.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/anthropic/models/claude-sonnet-4-5@20250929": {
     "format": "anthropic",
     "flavor": "chat",
@@ -6179,6 +7174,25 @@
     "experimental": true,
     "parent": "publishers/anthropic/models/claude-sonnet-4"
   },
+  "publishers/anthropic/models/claude-haiku-4-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 1.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 2,
+    "displayName": "Claude Haiku 4.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/anthropic/models/claude-haiku-4-5@20251001": {
     "format": "anthropic",
     "flavor": "chat",
@@ -6194,6 +7208,43 @@
     "parent": "publishers/anthropic/models/claude-haiku-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000
+  },
+  "publishers/mistralai/models/mistral-large-2411": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Mistral Large (24.11)",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/mistralai/models/codestral-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral (25.01)",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-embedding-2": {
+    "format": "google",
+    "flavor": "embedding",
+    "multimodal": true,
+    "displayName": "Gemini embedding 2",
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-embedding-001": {
+    "format": "google",
+    "flavor": "embedding",
+    "displayName": "Gemini embedding 001",
+    "available_providers": [
+      "vertex"
+    ]
   },
   "publishers/anthropic/models/claude-3-7-sonnet": {
     "format": "anthropic",
@@ -7208,1057 +8259,6 @@
     "max_output_tokens": 32000,
     "available_providers": [
       "anthropic"
-    ]
-  },
-  "publishers/google/models/gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-flash-image": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 3,
-    "displayName": "Gemini 3.1 Flash Image",
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-flash-image-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 3,
-    "displayName": "Gemini 3.1 Flash Image Preview",
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-flash-lite": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.5,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
-    "displayName": "Gemini 3.1 Flash-Lite",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-flash-lite-image": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Gemini 3.1 Flash-Lite Image",
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 65536,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-flash-lite-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.5,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
-    "displayName": "Gemini 3.1 Flash-Lite (Preview)",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-pro-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "displayName": "Gemini 3.1 Pro Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3.1-pro-preview-customtools": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "displayName": "Gemini 3.1 Pro Custom Tools Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3-flash-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 3,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
-    "displayName": "Gemini 3 Flash Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3-pro-image": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "displayName": "Gemini 3 Pro Image",
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3-pro-image-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "displayName": "Gemini 3 Pro Image Preview",
-    "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-3-pro-preview": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
-    "displayName": "Gemini 3 Pro Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-flash-lite-preview-09-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "input_cache_read_cost_per_mil_tokens": 0.01,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": true,
-    "parent": "gemini-2.5-flash-lite",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025"
-    ],
-    "supported_regions": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-flash-preview-09-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 2.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "parent": "gemini-2.5-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-flash-preview-09-2025"
-    ],
-    "supported_regions": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-lite-preview-09-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": true,
-    "parent": "publishers/google/models/gemini-2.5-flash-lite",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-preview-09-2025": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "publishers/google/models/gemini-2.5-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-flash-lite-preview-06-17": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": true,
-    "deprecated": true,
-    "deprecation_date": "2025-11-18",
-    "parent": "gemini-2.5-flash-lite",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-flash-lite-preview-06-17"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-lite-preview-06-17": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash-lite",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-pro-preview-06-05": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "deprecated": true,
-    "parent": "gemini-2.5-pro",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-flash-preview-05-20": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 2.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "deprecated": true,
-    "deprecation_date": "2025-11-18",
-    "parent": "gemini-2.5-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-flash-preview-05-20"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-preview-05-20": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-pro-preview-05-06": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "deprecated": true,
-    "deprecation_date": "2025-12-02",
-    "parent": "gemini-2.5-pro",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-pro-preview-05-06"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-pro-preview-05-06": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-flash-preview-04-17": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.0375,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "deprecated": true,
-    "parent": "gemini-2.5-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-flash-preview-04-17"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-preview-04-17": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-pro-exp-03-25": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
-    "experimental": true,
-    "parent": "gemini-2.5-pro",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-pro-exp-03-25"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.5-pro-preview-03-25": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.125,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": false,
-    "deprecated": true,
-    "deprecation_date": "2025-12-02",
-    "parent": "gemini-2.5-pro",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.5-pro-preview-03-25"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-pro-exp-03-25": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Gemini 2.5 Pro Experimental",
-    "experimental": true,
-    "parent": "publishers/google/models/gemini-2.5-pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-pro-preview-03-25": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.5-pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "Gemini 2.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-image": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "Gemini 2.5 Flash Image",
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 32768,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-flash-lite": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
-    "displayName": "Gemini 2.5 Flash-Lite",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.5-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Gemini 2.5 Pro",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.0-pro-exp-02-05": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.3125,
-    "experimental": true,
-    "deprecated": true,
-    "parent": "gemini-2.5-pro",
-    "max_input_tokens": 2097152,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.0-flash-thinking-exp-01-21": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "experimental": true,
-    "deprecated": true,
-    "deprecation_date": "2025-12-02",
-    "parent": "gemini-2.0-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.0-flash-thinking-exp-01-21": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Gemini 2.0 Flash Thinking Mode",
-    "experimental": true,
-    "deprecated": true,
-    "parent": "publishers/google/models/gemini-2.0-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.0-flash-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "deprecation_date": "2026-03-31",
-    "parent": "publishers/google/models/gemini-2.0-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.0-flash-lite-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
-    "deprecation_date": "2026-03-31",
-    "parent": "publishers/google/models/gemini-2.0-flash-lite",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-2.0-flash-exp": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.0375,
-    "experimental": true,
-    "parent": "gemini-2.0-flash",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.0-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Gemini 2.0 Flash",
-    "deprecation_date": "2026-03-31",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-2.0-flash-lite": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
-    "displayName": "Gemini 2.0 Flash-Lite",
-    "deprecation_date": "2026-03-31",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.5-flash-002": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.01875,
-    "input_cache_write_cost_per_mil_tokens": 1,
-    "deprecation_date": "2025-09-24",
-    "parent": "gemini-1.5-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-1.5-flash-002"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.5-pro-002": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 5,
-    "deprecation_date": "2025-09-24",
-    "parent": "gemini-1.5-pro",
-    "fallback_models": [
-      "publishers/google/models/gemini-1.5-pro-002"
-    ],
-    "max_input_tokens": 2097152,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-flash-002": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-pro-002": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.5-flash-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.01875,
-    "input_cache_write_cost_per_mil_tokens": 1,
-    "deprecation_date": "2025-05-24",
-    "parent": "gemini-1.5-flash",
-    "fallback_models": [
-      "publishers/google/models/gemini-1.5-flash-001"
-    ],
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.5-pro-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 5,
-    "deprecation_date": "2025-05-24",
-    "parent": "gemini-1.5-pro",
-    "fallback_models": [
-      "publishers/google/models/gemini-1.5-pro-001"
-    ],
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-flash-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-pro-001": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "parent": "publishers/google/models/gemini-1.5-pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.5-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 5,
-    "displayName": "Gemini 1.5 Pro",
-    "deprecation_date": "2025-09-29",
-    "fallback_models": [
-      "publishers/google/models/gemini-1.5-pro"
-    ],
-    "max_input_tokens": 2097152,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Gemini 1.5 Flash",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.5-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Gemini 1.5 Pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-1.0-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Gemini 1.0 Pro",
-    "deprecated": true,
-    "fallback_models": [
-      "publishers/google/models/gemini-1.0-pro"
-    ],
-    "max_input_tokens": 32760,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-1.0-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "displayName": "Gemini 1.0 Pro",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "gemini-pro": {
-    "format": "google",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Gemini Pro",
-    "deprecated": true,
-    "max_input_tokens": 32760,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-fable-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Fable 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Claude Opus 4.8",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-opus-4-7": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude Opus 4.7",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-opus-4-6": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude Opus 4.6",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-sonnet-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
-    "input_cache_write_1h_cost_per_mil_tokens": 6,
-    "displayName": "Claude Sonnet 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-sonnet-4-6": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
-    "input_cache_write_1h_cost_per_mil_tokens": 6,
-    "displayName": "Claude Sonnet 4.6",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-sonnet-4-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "input_cache_write_5m_cost_per_mil_tokens": 3.75,
-    "input_cache_write_1h_cost_per_mil_tokens": 6,
-    "displayName": "Claude Sonnet 4.5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/anthropic/models/claude-haiku-4-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
-    "input_cache_write_cost_per_mil_tokens": 1.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 1.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 2,
-    "displayName": "Claude Haiku 4.5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 200000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/mistralai/models/mistral-large-2411": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "displayName": "Mistral Large (24.11)",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/mistralai/models/codestral-2501": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Codestral (25.01)",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-embedding-2": {
-    "format": "google",
-    "flavor": "embedding",
-    "multimodal": true,
-    "displayName": "Gemini embedding 2",
-    "available_providers": [
-      "vertex"
-    ]
-  },
-  "publishers/google/models/gemini-embedding-001": {
-    "format": "google",
-    "flavor": "embedding",
-    "displayName": "Gemini embedding 001",
-    "available_providers": [
-      "vertex"
     ]
   },
   "anthropic.claude-fable-5": {

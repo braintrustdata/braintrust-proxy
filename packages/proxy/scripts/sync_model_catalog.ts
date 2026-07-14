@@ -131,7 +131,10 @@ function extractLeadingSemanticNumbers(baseName: string): {
   remaining: string;
 } {
   const patterns = [
-    /^(claude-(?:opus|sonnet|haiku)-)(\d+)(?:-(\d+))?/,
+    // The minor version is 1-2 digits and must not be followed by more digits,
+    // so a date snapshot (e.g. claude-sonnet-4-20250514) is not mistaken for a
+    // minor version (4.20250514) instead of major 4 + date.
+    /^(claude-(?:fable|opus|sonnet|haiku)-)(\d+)(?:-(\d{1,2})(?!\d))?/,
     /^(grok-)(\d+)(?:-(\d+))?/,
     /^(qwen(?:-?v?)?)(\d+)(?:[.p](\d+))?/,
     /^(kimi-k)(\d+)(?:[.p](\d+))?/,
@@ -634,6 +637,101 @@ export function getPrimaryProvider(spec: {
   return spec.available_providers?.[0];
 }
 
+// AWS region prefixes on bedrock ids ("us.anthropic.claude-...", etc.). The
+// vendor prefixes (anthropic., amazon., meta., ...) are handled separately.
+const BEDROCK_REGION_PREFIXES = [
+  "us-gov",
+  "us",
+  "eu",
+  "apac",
+  "au",
+  "jp",
+  "global",
+];
+
+// Class tier for bedrock, keyed on the class group derived from the model name
+// with its region + vendor prefixes stripped.
+const BEDROCK_CLASS_ORDER = [
+  "claude-fable",
+  "claude-opus",
+  "claude-sonnet",
+  "claude-haiku",
+];
+
+// The leading AWS region token of a bedrock id, or "" when the id starts
+// directly with the vendor (e.g. "anthropic.claude-...").
+function getBedrockRegion(name: string): string {
+  const lower = name.toLowerCase();
+  for (const region of BEDROCK_REGION_PREFIXES) {
+    if (lower.startsWith(`${region}.`)) {
+      return region;
+    }
+  }
+  return "";
+}
+
+// The class model name inside a bedrock id, with region + vendor prefixes
+// removed (e.g. "us.anthropic.claude-opus-4-8" -> "claude-opus-4-8"). Only used
+// to derive the ordering group/version; the id itself is never rewritten.
+function getBedrockClassName(name: string): string {
+  const lower = name.toLowerCase();
+  const region = getBedrockRegion(lower);
+  const withoutRegion = region ? lower.slice(region.length + 1) : lower;
+  const dot = withoutRegion.indexOf(".");
+  return dot === -1 ? withoutRegion : withoutRegion.slice(dot + 1);
+}
+
+// Bedrock ordering: partition by region (first-appearance order), then within
+// each region lay families out in class-tier order (claude fable/opus/sonnet/
+// haiku first, others alphabetically), newest-first within a class.
+function orderBedrockModels(names: string[]): string[] {
+  const regionOrder: string[] = [];
+  const byRegion = new Map<string, string[]>();
+  for (const name of names) {
+    const region = getBedrockRegion(name);
+    const bucket = byRegion.get(region);
+    if (bucket) {
+      bucket.push(name);
+    } else {
+      byRegion.set(region, [name]);
+      regionOrder.push(region);
+    }
+  }
+
+  const ordered: string[] = [];
+  for (const region of regionOrder) {
+    const byClass = new Map<string, string[]>();
+    for (const name of byRegion.get(region) ?? []) {
+      const group = getOrderingGroup(getBedrockClassName(name));
+      const bucket = byClass.get(group);
+      if (bucket) {
+        bucket.push(name);
+      } else {
+        byClass.set(group, [name]);
+      }
+    }
+
+    const classGroups = [...byClass.keys()].sort((a, b) => {
+      const rankA = getClassRank(BEDROCK_CLASS_ORDER, a);
+      const rankB = getClassRank(BEDROCK_CLASS_ORDER, b);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      return a.localeCompare(b);
+    });
+
+    for (const group of classGroups) {
+      const classNames = byClass.get(group) ?? [];
+      ordered.push(
+        ...[...classNames].sort((a, b) =>
+          compareModelOrdering(getBedrockClassName(a), getBedrockClassName(b)),
+        ),
+      );
+    }
+  }
+  return ordered;
+}
+
 // Providers whose families are genuine parallel tiers released as generations,
 // so they read best interleaved column-major (newest of each tier together).
 // Every other tiered provider keeps each family as a contiguous version-series
@@ -644,8 +742,9 @@ const INTERLEAVE_PROVIDERS = new Set(["anthropic"]);
 // primary access provider, in first-appearance order). Within a block that has
 // a class tier, either interleave the families column-major (parallel-tier
 // providers) or lay each family out as a contiguous newest-first block, with
-// families in class-tier order. Blocks for providers without a tier (bedrock,
-// or models with no providers) keep their existing relative order.
+// families in class-tier order. Bedrock is partitioned by region and then
+// class-tiered within each region. Models with no provider keep their existing
+// relative order.
 export function orderModelsByProviderAndClass(
   catalog: Record<string, { available_providers?: readonly string[] | null }>,
 ): string[] {
@@ -667,7 +766,9 @@ export function orderModelsByProviderAndClass(
   const ordered: string[] = [];
   for (const provider of providerOrder) {
     const names = blocks.get(provider) ?? [];
-    if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
+    if (provider === "bedrock") {
+      ordered.push(...orderBedrockModels(names));
+    } else if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
       ordered.push(
         ...(INTERLEAVE_PROVIDERS.has(provider)
           ? interleaveProviderFamilies(provider, names)

@@ -135,6 +135,12 @@ describe("sync_model_catalog", () => {
     ]);
   });
 
+  it("treats a bare major version + date as major + snapshot, not a minor version", () => {
+    expect(
+      compareModelOrdering("claude-sonnet-4-6", "claude-sonnet-4-20250514"),
+    ).toBeLessThan(0);
+  });
+
   it("keeps the undated stable alias ahead of its dated snapshot after date collapsing", () => {
     expect(
       compareModelOrdering("claude-opus-4-6-2026-02-05", "claude-opus-4-6"),
@@ -206,7 +212,7 @@ describe("sync_model_catalog", () => {
     ).toEqual(["claude-opus-4-8", "claude-haiku-4-5", "gpt-5.6", "gpt-4o"]);
   });
 
-  it("orders tiered classes ahead of unlisted ones and leaves untabled providers untouched", () => {
+  it("orders tiered classes ahead of unlisted ones for a block provider", () => {
     expect(
       orderModelsByProviderAndClass({
         o3: { available_providers: ["openai", "azure"] },
@@ -215,13 +221,31 @@ describe("sync_model_catalog", () => {
         "dall-e-3": { available_providers: ["openai", "azure"] },
       }),
     ).toEqual(["gpt-5.6", "o3", "dall-e-3", "sora-2"]);
+  });
+
+  it("tier-orders bedrock claude models within each region", () => {
     expect(
       orderModelsByProviderAndClass({
-        "amazon.titan-text-express": { available_providers: ["bedrock"] },
-        "us.anthropic.claude-3-5-sonnet": {
+        "us.anthropic.claude-sonnet-4-6": { available_providers: ["bedrock"] },
+        "us.anthropic.claude-opus-4-8": { available_providers: ["bedrock"] },
+        "us.anthropic.claude-haiku-4-5": { available_providers: ["bedrock"] },
+        "us.anthropic.claude-sonnet-5": { available_providers: ["bedrock"] },
+        "us.meta.llama3-70b": { available_providers: ["bedrock"] },
+        "global.anthropic.claude-opus-4-7": {
+          available_providers: ["bedrock"],
+        },
+        "global.anthropic.claude-opus-4-8": {
           available_providers: ["bedrock"],
         },
       }),
-    ).toEqual(["amazon.titan-text-express", "us.anthropic.claude-3-5-sonnet"]);
+    ).toEqual([
+      "us.anthropic.claude-opus-4-8",
+      "us.anthropic.claude-sonnet-5",
+      "us.anthropic.claude-sonnet-4-6",
+      "us.anthropic.claude-haiku-4-5",
+      "us.meta.llama3-70b",
+      "global.anthropic.claude-opus-4-8",
+      "global.anthropic.claude-opus-4-7",
+    ]);
   });
 });

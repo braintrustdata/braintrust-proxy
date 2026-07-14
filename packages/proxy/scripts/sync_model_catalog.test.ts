@@ -223,6 +223,24 @@ describe("sync_model_catalog", () => {
     ).toEqual(["gpt-5.6", "o3", "dall-e-3", "sora-2"]);
   });
 
+  it("tiers publisher-format no-provider models and leaves others in place", () => {
+    expect(
+      orderModelsByProviderAndClass({
+        "some-legacy-model": {},
+        "publishers/anthropic/models/claude-sonnet-4-5@20250929": {},
+        "publishers/google/models/gemini-1.0-pro-002": {},
+        "publishers/anthropic/models/claude-opus-4@20250514": {},
+        "publishers/anthropic/models/claude-haiku-4-5@20251001": {},
+      }),
+    ).toEqual([
+      "publishers/google/models/gemini-1.0-pro-002",
+      "publishers/anthropic/models/claude-opus-4@20250514",
+      "publishers/anthropic/models/claude-sonnet-4-5@20250929",
+      "publishers/anthropic/models/claude-haiku-4-5@20251001",
+      "some-legacy-model",
+    ]);
+  });
+
   it("tier-orders bedrock claude models within each region", () => {
     expect(
       orderModelsByProviderAndClass({

@@ -16,6 +16,12 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      # Route Claude Code through the Braintrust gateway. The gateway
+      # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
+      # passed as anthropic_api_key below) and calls the provider on our behalf.
+      # https://www.braintrust.dev/docs/deploy/gateway
+      ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
 
     steps:
       - name: Checkout repository
@@ -31,7 +37,7 @@ jobs:
         timeout-minutes: 45
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
           display_report: "true"
           claude_args: |

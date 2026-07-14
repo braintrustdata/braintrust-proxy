@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   compareModelOrdering,
-  compareModelsForProvider,
   getFallbackCompleteOrdering,
   getProviderMappingForModel,
   getRemoteAccessProvider,
@@ -142,7 +141,7 @@ describe("sync_model_catalog", () => {
     ).toBeGreaterThan(0);
   });
 
-  it("orders anthropic classes by capability tier, not alphabetically", () => {
+  it("interleaves anthropic families column-major by capability tier", () => {
     expect(
       orderModelsByProviderAndClass({
         "claude-haiku-4-5": { available_providers: ["anthropic"] },
@@ -155,10 +154,32 @@ describe("sync_model_catalog", () => {
     ).toEqual([
       "claude-fable-5",
       "claude-opus-4-8",
-      "claude-opus-4-7",
       "claude-sonnet-5",
-      "claude-sonnet-4-6",
       "claude-haiku-4-5",
+      "claude-opus-4-7",
+      "claude-sonnet-4-6",
+    ]);
+  });
+
+  it("glues a dated snapshot to its alias within the same interleave slot", () => {
+    expect(
+      orderModelsByProviderAndClass({
+        "claude-opus-4-5": { available_providers: ["anthropic"] },
+        "claude-opus-4-5-20251101": { available_providers: ["anthropic"] },
+        "claude-opus-4-1": { available_providers: ["anthropic"] },
+        "claude-sonnet-5": { available_providers: ["anthropic"] },
+        "claude-sonnet-4-5": { available_providers: ["anthropic"] },
+        "claude-sonnet-4-5-20250929": { available_providers: ["anthropic"] },
+        "claude-haiku-4-5": { available_providers: ["anthropic"] },
+      }),
+    ).toEqual([
+      "claude-opus-4-5",
+      "claude-opus-4-5-20251101",
+      "claude-sonnet-5",
+      "claude-haiku-4-5",
+      "claude-opus-4-1",
+      "claude-sonnet-4-5",
+      "claude-sonnet-4-5-20250929",
     ]);
   });
 
@@ -173,11 +194,15 @@ describe("sync_model_catalog", () => {
     ).toEqual(["claude-opus-4-8", "claude-haiku-4-5", "gpt-5.6", "gpt-4o"]);
   });
 
-  it("sorts unlisted classes after tiered ones and leaves untabled providers untouched", () => {
-    expect(compareModelsForProvider("openai", "gpt-5.6", "o3")).toBeLessThan(0);
+  it("orders tiered classes ahead of unlisted ones and leaves untabled providers untouched", () => {
     expect(
-      compareModelsForProvider("openai", "dall-e-3", "sora-2"),
-    ).toBeLessThan(0);
+      orderModelsByProviderAndClass({
+        o3: { available_providers: ["openai", "azure"] },
+        "gpt-5.6": { available_providers: ["openai", "azure"] },
+        "sora-2": { available_providers: ["openai", "azure"] },
+        "dall-e-3": { available_providers: ["openai", "azure"] },
+      }),
+    ).toEqual(["gpt-5.6", "o3", "dall-e-3", "sora-2"]);
     expect(
       orderModelsByProviderAndClass({
         "amazon.titan-text-express": { available_providers: ["bedrock"] },

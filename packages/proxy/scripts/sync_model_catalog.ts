@@ -538,27 +538,72 @@ function getClassRank(order: string[] | undefined, group: string): number {
   return index === -1 ? Number.POSITIVE_INFINITY : index;
 }
 
-// Compare two model ids within a single provider block: order by the provider's
-// class tier first, then chronological/version ordering within the same class.
-export function compareModelsForProvider(
-  provider: string | undefined,
-  a: string,
-  b: string,
-): number {
-  const groupA = getOrderingGroup(a);
-  const groupB = getOrderingGroup(b);
+// The de-dated base id used to glue a dated snapshot to its stable alias so
+// they occupy the same interleaving slot (e.g. claude-opus-4-5 and
+// claude-opus-4-5-20251101 stay adjacent within one row).
+function getSlotBaseKey(name: string): string {
+  const base = collapseDateStamps(getOrderingBaseName(name));
+  return base.replace(/[-@](\d{8}|\d{6})$/, "");
+}
 
-  if (groupA !== groupB) {
-    const order = provider ? PROVIDER_CLASS_ORDER[provider] : undefined;
-    const rankA = getClassRank(order, groupA);
-    const rankB = getClassRank(order, groupB);
+// Group one family's models into slots: each slot holds a stable alias plus any
+// dated snapshots of it, ordered newest-first.
+function getFamilySlots(names: string[]): string[][] {
+  const slots = new Map<string, string[]>();
+  for (const name of [...names].sort(compareModelOrdering)) {
+    const key = getSlotBaseKey(name);
+    const slot = slots.get(key);
+    if (slot) {
+      slot.push(name);
+    } else {
+      slots.set(key, [name]);
+    }
+  }
+  return [...slots.values()];
+}
+
+// Interleave a provider's families column-major: the newest slot of every
+// family (ordered by class tier, then alphabetically) first, then the next slot
+// of each family, and so on. Families that run out are skipped in later rows.
+export function interleaveProviderFamilies(
+  provider: string,
+  names: string[],
+): string[] {
+  const families = new Map<string, string[]>();
+  for (const name of names) {
+    const group = getOrderingGroup(name);
+    const family = families.get(group);
+    if (family) {
+      family.push(name);
+    } else {
+      families.set(group, [name]);
+    }
+  }
+
+  const order = PROVIDER_CLASS_ORDER[provider];
+  const familyGroups = [...families.keys()].sort((a, b) => {
+    const rankA = getClassRank(order, a);
+    const rankB = getClassRank(order, b);
     if (rankA !== rankB) {
       return rankA - rankB;
     }
     return a.localeCompare(b);
-  }
+  });
 
-  return compareModelOrdering(a, b);
+  const slotsByFamily = familyGroups.map((group) =>
+    getFamilySlots(families.get(group) ?? []),
+  );
+  const rowCount = Math.max(0, ...slotsByFamily.map((slots) => slots.length));
+
+  const ordered: string[] = [];
+  for (let row = 0; row < rowCount; row++) {
+    for (const slots of slotsByFamily) {
+      if (row < slots.length) {
+        ordered.push(...slots[row]);
+      }
+    }
+  }
+  return ordered;
 }
 
 export function getPrimaryProvider(spec: {
@@ -568,10 +613,11 @@ export function getPrimaryProvider(spec: {
 }
 
 // Full catalog ordering: partition models into provider blocks (by their
-// primary access provider, in first-appearance order), then within each block
-// with a class tier, order by tier and then newest-release-first within a
-// class. Blocks for providers without a tier (bedrock, or models with no
-// providers) keep their existing relative order.
+// primary access provider, in first-appearance order). Within each block that
+// has a class tier, interleave the families column-major so the newest model of
+// each family sits together, then the next of each, and so on. Blocks for
+// providers without a tier (bedrock, or models with no providers) keep their
+// existing relative order.
 export function orderModelsByProviderAndClass(
   catalog: Record<string, { available_providers?: readonly string[] | null }>,
 ): string[] {
@@ -594,9 +640,7 @@ export function orderModelsByProviderAndClass(
   for (const provider of providerOrder) {
     const names = blocks.get(provider) ?? [];
     if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
-      ordered.push(
-        ...[...names].sort((a, b) => compareModelsForProvider(provider, a, b)),
-      );
+      ordered.push(...interleaveProviderFamilies(provider, names));
     } else {
       ordered.push(...names);
     }

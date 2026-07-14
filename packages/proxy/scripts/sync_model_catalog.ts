@@ -100,7 +100,7 @@ function getOrderingBaseName(modelName: string): string {
 function getOrderingGroup(modelName: string): string {
   const baseName = getOrderingBaseName(modelName);
   const matchers = [
-    /^(claude-(?:opus|sonnet|haiku))/,
+    /^(claude-(?:fable|opus|sonnet|haiku))/,
     /^(gpt-(?:image|audio|realtime))/,
     /^(gpt)/,
     /^(dall-e)/,
@@ -131,7 +131,10 @@ function extractLeadingSemanticNumbers(baseName: string): {
   remaining: string;
 } {
   const patterns = [
-    /^(claude-(?:opus|sonnet|haiku)-)(\d+)(?:-(\d+))?/,
+    // The minor version is 1-2 digits and must not be followed by more digits,
+    // so a date snapshot (e.g. claude-sonnet-4-20250514) is not mistaken for a
+    // minor version (4.20250514) instead of major 4 + date.
+    /^(claude-(?:fable|opus|sonnet|haiku)-)(\d+)(?:-(\d{1,2})(?!\d))?/,
     /^(grok-)(\d+)(?:-(\d+))?/,
     /^(qwen(?:-?v?)?)(\d+)(?:[.p](\d+))?/,
     /^(kimi-k)(\d+)(?:[.p](\d+))?/,
@@ -163,12 +166,25 @@ function extractLeadingSemanticNumbers(baseName: string): {
   };
 }
 
+// Collapse separated release-date stamps into the atomic YYYYMMDD / YYYYMM form
+// so a full date compares as a single chronological value. Without this, the
+// tokenizer buckets the year (>= 4 digits) as `dateish` and the month/day
+// (<= 3 digits) as `semantic`, and `compareModelOrdering` weighs `semantic`
+// before `dateish` — inverting chronology across a year boundary (e.g. a
+// 2024-11 snapshot would outrank a 2025-01 one). Gated on a 20xx year so
+// version pairs like `4-6` are never mistaken for a date.
+function collapseDateStamps(name: string): string {
+  return name
+    .replace(/(?<![0-9])(20\d{2})-(\d{2})-(\d{2})(?![0-9])/g, "$1$2$3")
+    .replace(/(?<![0-9])(20\d{2})-(\d{2})(?![0-9-])/g, "$1$2");
+}
+
 function getOrderingNumberGroups(modelName: string): {
   version: number[];
   semantic: number[];
   dateish: number[];
 } {
-  const normalized = getOrderingBaseName(modelName).replace(
+  const normalized = collapseDateStamps(getOrderingBaseName(modelName)).replace(
     /(\d)p(\d)/g,
     "$1.$2",
   );
@@ -412,4 +428,364 @@ export function getFallbackCompleteOrdering(
   }
 
   return orderedModels;
+}
+
+// Ordered class (model-family group) ranking within each provider, keyed by the
+// provider's primary access name (available_providers[0]). Groups are the
+// prefixes produced by getOrderingGroup. A group not listed for its provider
+// sorts after every listed group, keeping its existing alphabetical order.
+// Providers without an entry (e.g. bedrock, whose ids group by region/vendor
+// prefix rather than model class) keep their current order untouched.
+export const PROVIDER_CLASS_ORDER: Record<string, string[]> = {
+  anthropic: ["claude-fable", "claude-opus", "claude-sonnet", "claude-haiku"],
+  openai: [
+    "gpt",
+    "o",
+    "chatgpt",
+    "gpt-audio",
+    "gpt-realtime",
+    "gpt-image",
+    "chatgpt-image",
+    "dall-e",
+    "sora",
+    "tts",
+    "whisper",
+    "omni-moderation",
+    "text-moderation",
+    "babbage",
+    "davinci",
+    "ft",
+    "container",
+  ],
+  google: ["gemini", "gemini-pro", "gemini-embedding"],
+  xAI: ["grok"],
+  mistral: [
+    "mistral-large",
+    "mistral-medium",
+    "magistral-medium",
+    "codestral",
+    "codestral-latest",
+    "devstral-medium",
+    "devstral",
+    "devstral-latest",
+    "devstral-small",
+    "mistral-small",
+    "magistral-small",
+    "pixtral",
+    "voxtral-small",
+    "ministral",
+    "mistral-tiny",
+    "open-mistral",
+    "open-mixtral",
+    "labs-leanstral",
+  ],
+  perplexity: ["sonar-pro", "sonar-reasoning", "sonar-deep", "sonar"],
+  vertex: [
+    "gemini",
+    "gemini-pro",
+    "claude-fable",
+    "claude-opus",
+    "claude-sonnet",
+    "claude-haiku",
+    "mistral-large",
+    "codestral",
+    "gemini-embedding",
+  ],
+  fireworks: [
+    "deepseek",
+    "qwen",
+    "qwq",
+    "glm",
+    "kimi",
+    "minimax-m",
+    "llama-v",
+    "llama",
+    "code-llama",
+    "mixtral",
+    "mistral",
+    "gemma",
+    "yi",
+    "phi",
+  ],
+  together: [
+    "deepseek",
+    "qwen",
+    "glm",
+    "kimi",
+    "llama",
+    "meta-llama",
+    "minimax-m",
+    "gpt",
+    "mistral",
+    "gemma",
+    "lfm",
+  ],
+  baseten: ["deepseek", "glm", "kimi", "gpt", "nemotron", "nvidia-nemotron"],
+  groq: ["gpt", "llama", "qwen", "compound", "compound-mini"],
+  cerebras: ["gpt", "zai-glm", "gemma"],
+  databricks: [
+    "databricks-claude",
+    "databricks-gpt",
+    "databricks-gemini",
+    "databricks-meta",
+    "databricks-llama",
+    "databricks-qwen",
+  ],
+};
+
+function getClassRank(order: string[] | undefined, group: string): number {
+  if (!order) {
+    return Number.POSITIVE_INFINITY;
+  }
+  const index = order.indexOf(group);
+  return index === -1 ? Number.POSITIVE_INFINITY : index;
+}
+
+// The de-dated base id used to glue a dated snapshot to its stable alias so
+// they occupy the same interleaving slot (e.g. claude-opus-4-5 and
+// claude-opus-4-5-20251101 stay adjacent within one row).
+function getSlotBaseKey(name: string): string {
+  const base = collapseDateStamps(getOrderingBaseName(name));
+  return base.replace(/[-@](\d{8}|\d{6})$/, "");
+}
+
+// Group one family's models into slots: each slot holds a stable alias plus any
+// dated snapshots of it, ordered newest-first.
+function getFamilySlots(names: string[]): string[][] {
+  const slots = new Map<string, string[]>();
+  for (const name of [...names].sort(compareModelOrdering)) {
+    const key = getSlotBaseKey(name);
+    const slot = slots.get(key);
+    if (slot) {
+      slot.push(name);
+    } else {
+      slots.set(key, [name]);
+    }
+  }
+  return [...slots.values()];
+}
+
+// Group a provider's models by family and order the families by class tier,
+// then alphabetically for families outside the tier.
+function orderProviderFamilies(
+  provider: string,
+  names: string[],
+): { group: string; models: string[] }[] {
+  const families = new Map<string, string[]>();
+  for (const name of names) {
+    const group = getOrderingGroup(name);
+    const family = families.get(group);
+    if (family) {
+      family.push(name);
+    } else {
+      families.set(group, [name]);
+    }
+  }
+
+  const order = PROVIDER_CLASS_ORDER[provider];
+  return [...families.keys()]
+    .sort((a, b) => {
+      const rankA = getClassRank(order, a);
+      const rankB = getClassRank(order, b);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      return a.localeCompare(b);
+    })
+    .map((group) => ({ group, models: families.get(group) ?? [] }));
+}
+
+// Block layout: each family stays contiguous (newest-first), families emitted
+// in class-tier order. Used for providers whose families are independent
+// version series (e.g. openai gpt/o/image) rather than parallel tiers.
+function blockProviderFamilies(provider: string, names: string[]): string[] {
+  const ordered: string[] = [];
+  for (const { models } of orderProviderFamilies(provider, names)) {
+    ordered.push(...[...models].sort(compareModelOrdering));
+  }
+  return ordered;
+}
+
+// Interleave layout: column-major across families — the newest slot of every
+// family (in class-tier order) first, then the next slot of each, and so on.
+// Snapshots stay glued to their alias within a slot. Used for providers with
+// genuine parallel tiers released as generations (e.g. anthropic
+// fable/opus/sonnet/haiku).
+function interleaveProviderFamilies(
+  provider: string,
+  names: string[],
+): string[] {
+  const slotsByFamily = orderProviderFamilies(provider, names).map(
+    ({ models }) => getFamilySlots(models),
+  );
+  const rowCount = Math.max(0, ...slotsByFamily.map((slots) => slots.length));
+
+  const ordered: string[] = [];
+  for (let row = 0; row < rowCount; row++) {
+    for (const slots of slotsByFamily) {
+      if (row < slots.length) {
+        ordered.push(...slots[row]);
+      }
+    }
+  }
+  return ordered;
+}
+
+export function getPrimaryProvider(spec: {
+  available_providers?: readonly string[] | null;
+}): string | undefined {
+  return spec.available_providers?.[0];
+}
+
+// AWS region prefixes on bedrock ids ("us.anthropic.claude-...", etc.). The
+// vendor prefixes (anthropic., amazon., meta., ...) are handled separately.
+const BEDROCK_REGION_PREFIXES = [
+  "us-gov",
+  "us",
+  "eu",
+  "apac",
+  "au",
+  "jp",
+  "global",
+];
+
+// Class tier for bedrock, keyed on the class group derived from the model name
+// with its region + vendor prefixes stripped.
+const BEDROCK_CLASS_ORDER = [
+  "claude-fable",
+  "claude-opus",
+  "claude-sonnet",
+  "claude-haiku",
+];
+
+// The leading AWS region token of a bedrock id, or "" when the id starts
+// directly with the vendor (e.g. "anthropic.claude-...").
+function getBedrockRegion(name: string): string {
+  const lower = name.toLowerCase();
+  for (const region of BEDROCK_REGION_PREFIXES) {
+    if (lower.startsWith(`${region}.`)) {
+      return region;
+    }
+  }
+  return "";
+}
+
+// The class model name inside a bedrock id, with region + vendor prefixes
+// removed (e.g. "us.anthropic.claude-opus-4-8" -> "claude-opus-4-8"). Only used
+// to derive the ordering group/version; the id itself is never rewritten.
+function getBedrockClassName(name: string): string {
+  const lower = name.toLowerCase();
+  const region = getBedrockRegion(lower);
+  const withoutRegion = region ? lower.slice(region.length + 1) : lower;
+  const dot = withoutRegion.indexOf(".");
+  return dot === -1 ? withoutRegion : withoutRegion.slice(dot + 1);
+}
+
+// Bedrock ordering: partition by region (first-appearance order), then within
+// each region lay families out in class-tier order (claude fable/opus/sonnet/
+// haiku first, others alphabetically), newest-first within a class.
+function orderBedrockModels(names: string[]): string[] {
+  const regionOrder: string[] = [];
+  const byRegion = new Map<string, string[]>();
+  for (const name of names) {
+    const region = getBedrockRegion(name);
+    const bucket = byRegion.get(region);
+    if (bucket) {
+      bucket.push(name);
+    } else {
+      byRegion.set(region, [name]);
+      regionOrder.push(region);
+    }
+  }
+
+  const ordered: string[] = [];
+  for (const region of regionOrder) {
+    const byClass = new Map<string, string[]>();
+    for (const name of byRegion.get(region) ?? []) {
+      const group = getOrderingGroup(getBedrockClassName(name));
+      const bucket = byClass.get(group);
+      if (bucket) {
+        bucket.push(name);
+      } else {
+        byClass.set(group, [name]);
+      }
+    }
+
+    const classGroups = [...byClass.keys()].sort((a, b) => {
+      const rankA = getClassRank(BEDROCK_CLASS_ORDER, a);
+      const rankB = getClassRank(BEDROCK_CLASS_ORDER, b);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      return a.localeCompare(b);
+    });
+
+    for (const group of classGroups) {
+      const classNames = byClass.get(group) ?? [];
+      ordered.push(
+        ...[...classNames].sort((a, b) =>
+          compareModelOrdering(getBedrockClassName(a), getBedrockClassName(b)),
+        ),
+      );
+    }
+  }
+  return ordered;
+}
+
+// Providers whose families are genuine parallel tiers released as generations,
+// so they read best interleaved column-major (newest of each tier together).
+// Every other tiered provider keeps each family as a contiguous version-series
+// block.
+const INTERLEAVE_PROVIDERS = new Set(["anthropic"]);
+
+// Publisher-format ids ("publishers/<vendor>/models/<model>") are vertex models
+// even when they carry no available_providers tag, so they are grouped with the
+// vertex block (see orderModelsByProviderAndClass) and tiered alongside it.
+const PUBLISHER_FORMAT_RE = /^publishers\/[^/]+\/models\//;
+
+// Full catalog ordering: partition models into provider blocks (by their
+// primary access provider, in first-appearance order). Within a block that has
+// a class tier, either interleave the families column-major (parallel-tier
+// providers) or lay each family out as a contiguous newest-first block, with
+// families in class-tier order. Bedrock is partitioned by region and then
+// class-tiered within each region. Publisher-format ids with no provider are
+// folded into the vertex block so they tier alongside real vertex models; any
+// other no-provider models keep their existing relative order.
+export function orderModelsByProviderAndClass(
+  catalog: Record<string, { available_providers?: readonly string[] | null }>,
+): string[] {
+  const noProviderKey = " no-provider";
+  const providerOrder: string[] = [];
+  const blocks = new Map<string, string[]>();
+
+  for (const name of Object.keys(catalog)) {
+    const primary = getPrimaryProvider(catalog[name]);
+    const provider =
+      primary ?? (PUBLISHER_FORMAT_RE.test(name) ? "vertex" : noProviderKey);
+    const existing = blocks.get(provider);
+    if (existing) {
+      existing.push(name);
+    } else {
+      blocks.set(provider, [name]);
+      providerOrder.push(provider);
+    }
+  }
+
+  const ordered: string[] = [];
+  for (const provider of providerOrder) {
+    const names = blocks.get(provider) ?? [];
+    if (provider === "bedrock") {
+      ordered.push(...orderBedrockModels(names));
+    } else if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
+      ordered.push(
+        ...(INTERLEAVE_PROVIDERS.has(provider)
+          ? interleaveProviderFamilies(provider, names)
+          : blockProviderFamilies(provider, names)),
+      );
+    } else {
+      ordered.push(...names);
+    }
+  }
+
+  return ordered;
 }

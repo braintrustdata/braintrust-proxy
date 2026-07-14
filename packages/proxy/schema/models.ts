@@ -214,6 +214,39 @@ async function loadModelsFromControlPlane(
   }
 }
 
+const COST_MODEL_SUFFIX_TOKENS = new Set([
+  "thinking",
+  "none",
+  "low",
+  "medium",
+  "high",
+  "xhigh",
+  "max",
+]);
+
+export function normalizeModelNameForCost(
+  modelName: string,
+  isKnownModel: (name: string) => boolean,
+): string | undefined {
+  if (isKnownModel(modelName)) {
+    return modelName;
+  }
+  let candidate = modelName.trim().toLowerCase();
+  while (true) {
+    const dash = candidate.lastIndexOf("-");
+    if (dash <= 0) {
+      return undefined;
+    }
+    if (!COST_MODEL_SUFFIX_TOKENS.has(candidate.slice(dash + 1))) {
+      return undefined;
+    }
+    candidate = candidate.slice(0, dash);
+    if (isKnownModel(candidate)) {
+      return candidate;
+    }
+  }
+}
+
 export function markModelsPastDeprecationDate(models: {
   [name: string]: ModelSpec;
 }): { [name: string]: ModelSpec } {

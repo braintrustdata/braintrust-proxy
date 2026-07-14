@@ -2,7 +2,11 @@ import { expect } from "vitest";
 import { it } from "vitest";
 import raw_models from "./model_list.json";
 import { getModelEndpointTypes } from "./index";
-import { markModelsPastDeprecationDate, ModelSchema } from "./models";
+import {
+  markModelsPastDeprecationDate,
+  ModelSchema,
+  normalizeModelNameForCost,
+} from "./models";
 import { z } from "zod";
 
 it("parse model list", () => {
@@ -74,6 +78,54 @@ it("Does not deprecate models if deprecation date has not yet passed", () => {
     },
   });
   expect(result["testModel"].deprecated).toBe(undefined);
+});
+
+it("normalizes Cursor CLI reasoning-effort slugs to the base model for cost", () => {
+  const known = new Set(["claude-opus-4-8", "gpt-5.3-codex", "gemini-2.5-pro"]);
+  const isKnown = (name: string) => known.has(name);
+
+  expect(normalizeModelNameForCost("claude-opus-4-8", isKnown)).toBe(
+    "claude-opus-4-8",
+  );
+
+  for (const slug of [
+    "claude-opus-4-8-low",
+    "claude-opus-4-8-medium",
+    "claude-opus-4-8-high",
+    "claude-opus-4-8-xhigh",
+    "claude-opus-4-8-max",
+    "claude-opus-4-8-thinking-high",
+    "claude-opus-4-8-thinking-max",
+  ]) {
+    expect(normalizeModelNameForCost(slug, isKnown)).toBe("claude-opus-4-8");
+  }
+  expect(normalizeModelNameForCost("gpt-5.3-codex-low", isKnown)).toBe(
+    "gpt-5.3-codex",
+  );
+  expect(
+    normalizeModelNameForCost(" Claude-Opus-4-8-Thinking-High ", isKnown),
+  ).toBe("claude-opus-4-8");
+
+  expect(
+    normalizeModelNameForCost("some-unknown-model-high", isKnown),
+  ).toBeUndefined();
+  expect(normalizeModelNameForCost("gpt-9-max", isKnown)).toBeUndefined();
+  expect(normalizeModelNameForCost("gemini-2.5-pro-high", isKnown)).toBe(
+    "gemini-2.5-pro",
+  );
+});
+
+it("prefers exact catalog entries over Cursor model normalization", () => {
+  const known = new Set(["gpt-5.3-codex", "gpt-5.3-codex-low"]);
+  expect(
+    normalizeModelNameForCost("gpt-5.3-codex-low", (name) => known.has(name)),
+  ).toBe("gpt-5.3-codex-low");
+});
+
+it("does not strip -fast, which can denote a distinct model", () => {
+  const known = new Set(["grok-4"]);
+  const isKnown = (name: string) => known.has(name);
+  expect(normalizeModelNameForCost("grok-4-fast", isKnown)).toBeUndefined();
 });
 
 it("Ignores malformed deprecation dates", () => {

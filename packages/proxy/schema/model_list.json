@@ -91,7 +91,6 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
-    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.5 Pro (2026-04-23)",
     "reasoning": true,
     "parent": "gpt-5.5-pro",
@@ -193,7 +192,6 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
-    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.4 Pro (2026-03-05)",
     "reasoning": true,
     "parent": "gpt-5.4-pro",
@@ -532,7 +530,7 @@
     "displayName": "GPT-5 Pro (2025-10-06)",
     "reasoning": true,
     "parent": "gpt-5-pro",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 272000,
     "available_providers": [
       "openai",
@@ -550,7 +548,7 @@
     "reasoning": true,
     "deprecation_date": "2026-12-11",
     "parent": "gpt-5",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -568,7 +566,7 @@
     "reasoning": true,
     "deprecation_date": "2026-12-11",
     "parent": "gpt-5-mini",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",

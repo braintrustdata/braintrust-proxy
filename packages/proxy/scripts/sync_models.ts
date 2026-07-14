@@ -21,6 +21,7 @@ import {
   getFallbackCompleteOrdering,
   getProviderMappingForModel,
   matchesProviderFilter,
+  orderModelsByProviderAndClass,
 } from "./sync_model_catalog";
 import {
   fetchVertexSupportedRegions,
@@ -2219,8 +2220,6 @@ async function addModelsCommand(argv: any) {
       },
     );
 
-    const newModelNames = modelsToAdd.map((m) => m.name);
-
     // Prepare provider mapping data
     const providerMappingData = missingInLocal.map(
       ({ translatedName, remoteModel, mergedProviders }) => ({
@@ -2241,11 +2240,12 @@ async function addModelsCommand(argv: any) {
         localModels,
       );
     } else {
-      console.log("Using smart fallback ordering");
-      completeModelOrder = getFallbackCompleteOrdering(
-        Object.keys(localModels),
-        newModelNames,
-      );
+      console.log("Using provider/class ordering");
+      const mergedCatalog = { ...localModels };
+      for (const { name, model } of modelsToAdd) {
+        mergedCatalog[name] = model;
+      }
+      completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
     }
 
     // Rebuild the entire model list in the optimal order
@@ -2423,11 +2423,11 @@ async function syncBasetenModelsCommand(argv: any) {
     }
 
     // Rebuild the model list with new models inserted in a stable order.
-    const newModelNames = modelsToAdd.map((m) => m.name);
-    const completeModelOrder = getFallbackCompleteOrdering(
-      Object.keys(localModels),
-      newModelNames,
-    );
+    const mergedCatalog = { ...localModels };
+    for (const { name, model } of modelsToAdd) {
+      mergedCatalog[name] = model;
+    }
+    const completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
     const updatedModels: LocalModelList = {};
     for (const modelName of completeModelOrder) {
       if (localModels[modelName]) {

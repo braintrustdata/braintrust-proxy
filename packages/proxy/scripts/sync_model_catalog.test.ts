@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   compareModelOrdering,
+  compareModelsForProvider,
   getFallbackCompleteOrdering,
   getProviderMappingForModel,
   getRemoteAccessProvider,
   matchesProviderFilter,
+  orderModelsByProviderAndClass,
 } from "./sync_model_catalog";
 
 describe("sync_model_catalog", () => {
@@ -99,5 +101,90 @@ describe("sync_model_catalog", () => {
       "accounts/fireworks/models/qwen2p5-coder-32b-instruct",
       "accounts/fireworks/models/qwen2-72b-instruct",
     ]);
+  });
+
+  it("orders separated date snapshots by full release date across year boundaries", () => {
+    expect(
+      compareModelOrdering("gpt-4.1-2025-01-31", "gpt-4.1-2024-11-20"),
+    ).toBeLessThan(0);
+    expect(
+      compareModelOrdering("gpt-4o-2025-01-01", "gpt-4o-2024-11-20"),
+    ).toBeLessThan(0);
+    expect(
+      compareModelOrdering(
+        "gpt-image-1.5-2026-01-05",
+        "gpt-image-1.5-2025-12-16",
+      ),
+    ).toBeLessThan(0);
+  });
+
+  it("orders atomic and separated date snapshots consistently within a class", () => {
+    expect(
+      compareModelOrdering(
+        "claude-opus-4-5-20251101",
+        "claude-opus-4-5-20250805",
+      ),
+    ).toBeLessThan(0);
+    expect(
+      ["gpt-4.1-2024-11-20", "gpt-4.1-2025-04-14", "gpt-4.1-2025-01-31"].sort(
+        compareModelOrdering,
+      ),
+    ).toEqual([
+      "gpt-4.1-2025-04-14",
+      "gpt-4.1-2025-01-31",
+      "gpt-4.1-2024-11-20",
+    ]);
+  });
+
+  it("keeps the undated stable alias ahead of its dated snapshot after date collapsing", () => {
+    expect(
+      compareModelOrdering("claude-opus-4-6-2026-02-05", "claude-opus-4-6"),
+    ).toBeGreaterThan(0);
+  });
+
+  it("orders anthropic classes by capability tier, not alphabetically", () => {
+    expect(
+      orderModelsByProviderAndClass({
+        "claude-haiku-4-5": { available_providers: ["anthropic"] },
+        "claude-opus-4-8": { available_providers: ["anthropic"] },
+        "claude-sonnet-4-6": { available_providers: ["anthropic"] },
+        "claude-fable-5": { available_providers: ["anthropic"] },
+        "claude-sonnet-5": { available_providers: ["anthropic"] },
+        "claude-opus-4-7": { available_providers: ["anthropic"] },
+      }),
+    ).toEqual([
+      "claude-fable-5",
+      "claude-opus-4-8",
+      "claude-opus-4-7",
+      "claude-sonnet-5",
+      "claude-sonnet-4-6",
+      "claude-haiku-4-5",
+    ]);
+  });
+
+  it("keeps provider blocks contiguous in first-appearance order", () => {
+    expect(
+      orderModelsByProviderAndClass({
+        "claude-haiku-4-5": { available_providers: ["anthropic"] },
+        "gpt-4o": { available_providers: ["openai", "azure"] },
+        "claude-opus-4-8": { available_providers: ["anthropic"] },
+        "gpt-5.6": { available_providers: ["openai", "azure"] },
+      }),
+    ).toEqual(["claude-opus-4-8", "claude-haiku-4-5", "gpt-5.6", "gpt-4o"]);
+  });
+
+  it("sorts unlisted classes after tiered ones and leaves untabled providers untouched", () => {
+    expect(compareModelsForProvider("openai", "gpt-5.6", "o3")).toBeLessThan(0);
+    expect(
+      compareModelsForProvider("openai", "dall-e-3", "sora-2"),
+    ).toBeLessThan(0);
+    expect(
+      orderModelsByProviderAndClass({
+        "amazon.titan-text-express": { available_providers: ["bedrock"] },
+        "us.anthropic.claude-3-5-sonnet": {
+          available_providers: ["bedrock"],
+        },
+      }),
+    ).toEqual(["amazon.titan-text-express", "us.anthropic.claude-3-5-sonnet"]);
   });
 });

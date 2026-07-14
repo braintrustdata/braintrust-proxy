@@ -100,7 +100,7 @@ function getOrderingBaseName(modelName: string): string {
 function getOrderingGroup(modelName: string): string {
   const baseName = getOrderingBaseName(modelName);
   const matchers = [
-    /^(claude-(?:opus|sonnet|haiku))/,
+    /^(claude-(?:fable|opus|sonnet|haiku))/,
     /^(gpt-(?:image|audio|realtime))/,
     /^(gpt)/,
     /^(dall-e)/,
@@ -163,12 +163,25 @@ function extractLeadingSemanticNumbers(baseName: string): {
   };
 }
 
+// Collapse separated release-date stamps into the atomic YYYYMMDD / YYYYMM form
+// so a full date compares as a single chronological value. Without this, the
+// tokenizer buckets the year (>= 4 digits) as `dateish` and the month/day
+// (<= 3 digits) as `semantic`, and `compareModelOrdering` weighs `semantic`
+// before `dateish` — inverting chronology across a year boundary (e.g. a
+// 2024-11 snapshot would outrank a 2025-01 one). Gated on a 20xx year so
+// version pairs like `4-6` are never mistaken for a date.
+function collapseDateStamps(name: string): string {
+  return name
+    .replace(/(?<![0-9])(20\d{2})-(\d{2})-(\d{2})(?![0-9])/g, "$1$2$3")
+    .replace(/(?<![0-9])(20\d{2})-(\d{2})(?![0-9-])/g, "$1$2");
+}
+
 function getOrderingNumberGroups(modelName: string): {
   version: number[];
   semantic: number[];
   dateish: number[];
 } {
-  const normalized = getOrderingBaseName(modelName).replace(
+  const normalized = collapseDateStamps(getOrderingBaseName(modelName)).replace(
     /(\d)p(\d)/g,
     "$1.$2",
   );
@@ -412,4 +425,182 @@ export function getFallbackCompleteOrdering(
   }
 
   return orderedModels;
+}
+
+// Ordered class (model-family group) ranking within each provider, keyed by the
+// provider's primary access name (available_providers[0]). Groups are the
+// prefixes produced by getOrderingGroup. A group not listed for its provider
+// sorts after every listed group, keeping its existing alphabetical order.
+// Providers without an entry (e.g. bedrock, whose ids group by region/vendor
+// prefix rather than model class) keep their current order untouched.
+export const PROVIDER_CLASS_ORDER: Record<string, string[]> = {
+  anthropic: ["claude-fable", "claude-opus", "claude-sonnet", "claude-haiku"],
+  openai: [
+    "gpt",
+    "o",
+    "chatgpt",
+    "gpt-audio",
+    "gpt-realtime",
+    "gpt-image",
+    "chatgpt-image",
+    "dall-e",
+    "sora",
+    "tts",
+    "whisper",
+    "omni-moderation",
+    "text-moderation",
+    "babbage",
+    "davinci",
+    "ft",
+    "container",
+  ],
+  google: ["gemini", "gemini-pro", "gemini-embedding"],
+  xAI: ["grok"],
+  mistral: [
+    "mistral-large",
+    "mistral-medium",
+    "magistral-medium",
+    "codestral",
+    "codestral-latest",
+    "devstral-medium",
+    "devstral",
+    "devstral-latest",
+    "devstral-small",
+    "mistral-small",
+    "magistral-small",
+    "pixtral",
+    "voxtral-small",
+    "ministral",
+    "mistral-tiny",
+    "open-mistral",
+    "open-mixtral",
+    "labs-leanstral",
+  ],
+  perplexity: ["sonar-pro", "sonar-reasoning", "sonar-deep", "sonar"],
+  vertex: [
+    "gemini",
+    "gemini-pro",
+    "claude-fable",
+    "claude-opus",
+    "claude-sonnet",
+    "claude-haiku",
+    "mistral-large",
+    "codestral",
+    "gemini-embedding",
+  ],
+  fireworks: [
+    "deepseek",
+    "qwen",
+    "qwq",
+    "glm",
+    "kimi",
+    "minimax-m",
+    "llama-v",
+    "llama",
+    "code-llama",
+    "mixtral",
+    "mistral",
+    "gemma",
+    "yi",
+    "phi",
+  ],
+  together: [
+    "deepseek",
+    "qwen",
+    "glm",
+    "kimi",
+    "llama",
+    "meta-llama",
+    "minimax-m",
+    "gpt",
+    "mistral",
+    "gemma",
+    "lfm",
+  ],
+  baseten: ["deepseek", "glm", "kimi", "gpt", "nemotron", "nvidia-nemotron"],
+  groq: ["gpt", "llama", "qwen", "compound", "compound-mini"],
+  cerebras: ["gpt", "zai-glm", "gemma"],
+  databricks: [
+    "databricks-claude",
+    "databricks-gpt",
+    "databricks-gemini",
+    "databricks-meta",
+    "databricks-llama",
+    "databricks-qwen",
+  ],
+};
+
+function getClassRank(order: string[] | undefined, group: string): number {
+  if (!order) {
+    return Number.POSITIVE_INFINITY;
+  }
+  const index = order.indexOf(group);
+  return index === -1 ? Number.POSITIVE_INFINITY : index;
+}
+
+// Compare two model ids within a single provider block: order by the provider's
+// class tier first, then chronological/version ordering within the same class.
+export function compareModelsForProvider(
+  provider: string | undefined,
+  a: string,
+  b: string,
+): number {
+  const groupA = getOrderingGroup(a);
+  const groupB = getOrderingGroup(b);
+
+  if (groupA !== groupB) {
+    const order = provider ? PROVIDER_CLASS_ORDER[provider] : undefined;
+    const rankA = getClassRank(order, groupA);
+    const rankB = getClassRank(order, groupB);
+    if (rankA !== rankB) {
+      return rankA - rankB;
+    }
+    return a.localeCompare(b);
+  }
+
+  return compareModelOrdering(a, b);
+}
+
+export function getPrimaryProvider(spec: {
+  available_providers?: readonly string[] | null;
+}): string | undefined {
+  return spec.available_providers?.[0];
+}
+
+// Full catalog ordering: partition models into provider blocks (by their
+// primary access provider, in first-appearance order), then within each block
+// with a class tier, order by tier and then newest-release-first within a
+// class. Blocks for providers without a tier (bedrock, or models with no
+// providers) keep their existing relative order.
+export function orderModelsByProviderAndClass(
+  catalog: Record<string, { available_providers?: readonly string[] | null }>,
+): string[] {
+  const noProviderKey = " no-provider";
+  const providerOrder: string[] = [];
+  const blocks = new Map<string, string[]>();
+
+  for (const name of Object.keys(catalog)) {
+    const provider = getPrimaryProvider(catalog[name]) ?? noProviderKey;
+    const existing = blocks.get(provider);
+    if (existing) {
+      existing.push(name);
+    } else {
+      blocks.set(provider, [name]);
+      providerOrder.push(provider);
+    }
+  }
+
+  const ordered: string[] = [];
+  for (const provider of providerOrder) {
+    const names = blocks.get(provider) ?? [];
+    if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
+      ordered.push(
+        ...[...names].sort((a, b) => compareModelsForProvider(provider, a, b)),
+      );
+    } else {
+      ordered.push(...names);
+    }
+  }
+
+  return ordered;
 }

@@ -183,6 +183,18 @@ describe("sync_model_catalog", () => {
     ]);
   });
 
+  it("keeps a version-series family (openai gpt) contiguous, newest-first", () => {
+    expect(
+      orderModelsByProviderAndClass({
+        "gpt-4o": { available_providers: ["openai", "azure"] },
+        "gpt-5.6": { available_providers: ["openai", "azure"] },
+        "gpt-5.6-luna": { available_providers: ["openai", "azure"] },
+        "gpt-5.5": { available_providers: ["openai", "azure"] },
+        o3: { available_providers: ["openai", "azure"] },
+      }),
+    ).toEqual(["gpt-5.6", "gpt-5.6-luna", "gpt-5.5", "gpt-4o", "o3"]);
+  });
+
   it("keeps provider blocks contiguous in first-appearance order", () => {
     expect(
       orderModelsByProviderAndClass({

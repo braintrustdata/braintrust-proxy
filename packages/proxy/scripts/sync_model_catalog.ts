@@ -562,13 +562,12 @@ function getFamilySlots(names: string[]): string[][] {
   return [...slots.values()];
 }
 
-// Interleave a provider's families column-major: the newest slot of every
-// family (ordered by class tier, then alphabetically) first, then the next slot
-// of each family, and so on. Families that run out are skipped in later rows.
-export function interleaveProviderFamilies(
+// Group a provider's models by family and order the families by class tier,
+// then alphabetically for families outside the tier.
+function orderProviderFamilies(
   provider: string,
   names: string[],
-): string[] {
+): { group: string; models: string[] }[] {
   const families = new Map<string, string[]>();
   for (const name of names) {
     const group = getOrderingGroup(name);
@@ -581,17 +580,40 @@ export function interleaveProviderFamilies(
   }
 
   const order = PROVIDER_CLASS_ORDER[provider];
-  const familyGroups = [...families.keys()].sort((a, b) => {
-    const rankA = getClassRank(order, a);
-    const rankB = getClassRank(order, b);
-    if (rankA !== rankB) {
-      return rankA - rankB;
-    }
-    return a.localeCompare(b);
-  });
+  return [...families.keys()]
+    .sort((a, b) => {
+      const rankA = getClassRank(order, a);
+      const rankB = getClassRank(order, b);
+      if (rankA !== rankB) {
+        return rankA - rankB;
+      }
+      return a.localeCompare(b);
+    })
+    .map((group) => ({ group, models: families.get(group) ?? [] }));
+}
 
-  const slotsByFamily = familyGroups.map((group) =>
-    getFamilySlots(families.get(group) ?? []),
+// Block layout: each family stays contiguous (newest-first), families emitted
+// in class-tier order. Used for providers whose families are independent
+// version series (e.g. openai gpt/o/image) rather than parallel tiers.
+function blockProviderFamilies(provider: string, names: string[]): string[] {
+  const ordered: string[] = [];
+  for (const { models } of orderProviderFamilies(provider, names)) {
+    ordered.push(...[...models].sort(compareModelOrdering));
+  }
+  return ordered;
+}
+
+// Interleave layout: column-major across families — the newest slot of every
+// family (in class-tier order) first, then the next slot of each, and so on.
+// Snapshots stay glued to their alias within a slot. Used for providers with
+// genuine parallel tiers released as generations (e.g. anthropic
+// fable/opus/sonnet/haiku).
+function interleaveProviderFamilies(
+  provider: string,
+  names: string[],
+): string[] {
+  const slotsByFamily = orderProviderFamilies(provider, names).map(
+    ({ models }) => getFamilySlots(models),
   );
   const rowCount = Math.max(0, ...slotsByFamily.map((slots) => slots.length));
 
@@ -612,12 +634,18 @@ export function getPrimaryProvider(spec: {
   return spec.available_providers?.[0];
 }
 
+// Providers whose families are genuine parallel tiers released as generations,
+// so they read best interleaved column-major (newest of each tier together).
+// Every other tiered provider keeps each family as a contiguous version-series
+// block.
+const INTERLEAVE_PROVIDERS = new Set(["anthropic"]);
+
 // Full catalog ordering: partition models into provider blocks (by their
-// primary access provider, in first-appearance order). Within each block that
-// has a class tier, interleave the families column-major so the newest model of
-// each family sits together, then the next of each, and so on. Blocks for
-// providers without a tier (bedrock, or models with no providers) keep their
-// existing relative order.
+// primary access provider, in first-appearance order). Within a block that has
+// a class tier, either interleave the families column-major (parallel-tier
+// providers) or lay each family out as a contiguous newest-first block, with
+// families in class-tier order. Blocks for providers without a tier (bedrock,
+// or models with no providers) keep their existing relative order.
 export function orderModelsByProviderAndClass(
   catalog: Record<string, { available_providers?: readonly string[] | null }>,
 ): string[] {
@@ -640,7 +668,11 @@ export function orderModelsByProviderAndClass(
   for (const provider of providerOrder) {
     const names = blocks.get(provider) ?? [];
     if (provider !== noProviderKey && PROVIDER_CLASS_ORDER[provider]) {
-      ordered.push(...interleaveProviderFamilies(provider, names));
+      ordered.push(
+        ...(INTERLEAVE_PROVIDERS.has(provider)
+          ? interleaveProviderFamilies(provider, names)
+          : blockProviderFamilies(provider, names)),
+      );
     } else {
       ordered.push(...names);
     }

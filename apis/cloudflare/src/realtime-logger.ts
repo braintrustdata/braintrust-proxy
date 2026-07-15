@@ -5,6 +5,7 @@ import {
   PcmAudioFormat,
   ProxyLoggingParam,
 } from "@braintrust/proxy/schema";
+import { exactArrayBuffer } from "./array-buffer";
 
 // The maximum audio buffer size after pushing.
 const maxAudioBufferBytes = 50 * 1024 * 1024;
@@ -32,7 +33,9 @@ class AudioBuffer {
   }
 
   push(base64AudioBuffer: string): void {
-    const binaryAudioBuffer = Buffer.from(base64AudioBuffer, "base64").buffer;
+    const binaryAudioBuffer = exactArrayBuffer(
+      Buffer.from(base64AudioBuffer, "base64"),
+    );
     this.audioBuffers.push(binaryAudioBuffer);
     this.totalByteLength += binaryAudioBuffer.byteLength;
 

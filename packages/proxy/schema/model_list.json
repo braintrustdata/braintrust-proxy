@@ -294,7 +294,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.3 Codex",
     "reasoning": true,
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -11944,6 +11944,7 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok Code Fast",
     "reasoning": true,
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,

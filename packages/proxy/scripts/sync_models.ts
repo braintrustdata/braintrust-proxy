@@ -5,7 +5,7 @@ import prettier from "prettier";
 import { z } from "zod";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
 import { ModelSchema, ModelSpec } from "../schema/models";
@@ -18,7 +18,6 @@ import {
 } from "./model_name_translation";
 import deprecatedModelIds from "./deprecated_model_ids.json";
 import {
-  getFallbackCompleteOrdering,
   getProviderMappingForModel,
   matchesProviderFilter,
   orderModelsByProviderAndClass,
@@ -1049,7 +1048,7 @@ async function updateProviderMapping(
         continue;
       }
 
-      const newEntry = `  "${name}": ${formatProviderMappingProviders(providers)},`;
+      const newEntry = `  ${JSON.stringify(name)}: ${formatProviderMappingProviders(providers)},`;
       let insertionIndex = -1;
 
       if (completeModelOrder) {
@@ -1155,7 +1154,7 @@ export function addProviderToProviderMappingContent(
     providers.push(provider);
     const commentMatch = entryText.match(/\],\s*(\/\/.*)$/);
     const comment = commentMatch ? ` ${commentMatch[1]}` : "";
-    const newLine = `  "${name}": ${formatProviderMappingProviders(providers)},${comment}`;
+    const newLine = `  ${JSON.stringify(name)}: ${formatProviderMappingProviders(providers)},${comment}`;
     lines.splice(range.start, range.end - range.start + 1, newLine);
     updated.push(name);
   }
@@ -1362,153 +1361,6 @@ export function applyBasetenPricing(
   );
 
   return changed ? updated : null;
-}
-
-async function getOptimalModelOrderingFromClaude(
-  modelsToAdd: Array<{ name: string; model: ModelSpec }>,
-  existingModels: LocalModelList,
-): Promise<string[]> {
-  const existingModelNames = Object.keys(existingModels);
-  const newModelNames = modelsToAdd.map((m) => m.name);
-
-  // Focus on grok models for validation
-  const grokModels = existingModelNames.filter((name) => name.includes("grok"));
-
-  const prompt = `Order these Grok models optimally:
-
-EXISTING: ${grokModels.join(", ")}
-NEW: ${newModelNames.join(", ")}
-
-Rules: version desc (4→3→2), then base→latest→variants, then larger→smaller sizes.
-
-JSON array only:`;
-
-  try {
-    const output = await callClaudeWithSpawn(prompt);
-
-    // Try to extract JSON from the output
-    const jsonMatch = output.match(/\[[\s\S]*\]/);
-    if (jsonMatch) {
-      try {
-        const parsedOrder = JSON.parse(jsonMatch[0]);
-
-        // Validate that all grok models are included
-        const allGrokModels = [...grokModels, ...newModelNames];
-        if (
-          parsedOrder.length === allGrokModels.length &&
-          parsedOrder.every((name) => allGrokModels.includes(name)) &&
-          allGrokModels.every((name) => parsedOrder.includes(name))
-        ) {
-          console.log("✅ Claude Code provided optimal Grok ordering");
-          // Rebuild complete model list with optimally ordered grok models
-          return rebuildCompleteModelList(existingModelNames, parsedOrder);
-        } else {
-          console.warn(
-            `Claude response validation failed: got ${parsedOrder.length} grok models, expected ${allGrokModels.length}`,
-          );
-        }
-      } catch (parseError) {
-        console.warn(
-          "Failed to parse Claude's JSON response:",
-          parseError.message,
-        );
-      }
-    } else {
-      console.warn("No JSON array found in Claude's response");
-    }
-
-    console.warn(
-      "Could not use Claude's response, falling back to smart ordering",
-    );
-    return getFallbackCompleteOrdering(existingModelNames, newModelNames);
-  } catch (error) {
-    console.warn("Failed to get ordering from Claude:", error.message);
-    return getFallbackCompleteOrdering(existingModelNames, newModelNames);
-  }
-}
-
-function callClaudeWithSpawn(prompt: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const claude = spawn("claude", [], {
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-
-    let stdout = "";
-    let stderr = "";
-    let isResolved = false;
-
-    // Set up timeout
-    const timeout = setTimeout(() => {
-      if (!isResolved) {
-        claude.kill("SIGTERM");
-        isResolved = true;
-        reject(new Error("Claude CLI timeout after 15 seconds"));
-      }
-    }, 15000);
-
-    claude.stdout.on("data", (data) => {
-      stdout += data.toString();
-    });
-
-    claude.stderr.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    claude.on("close", (code) => {
-      clearTimeout(timeout);
-      if (!isResolved) {
-        isResolved = true;
-        if (code === 0) {
-          // Try stderr first, then stdout
-          const output = stderr.trim() || stdout.trim();
-          resolve(output);
-        } else {
-          reject(new Error(`Claude CLI exited with code ${code}`));
-        }
-      }
-    });
-
-    claude.on("error", (error) => {
-      clearTimeout(timeout);
-      if (!isResolved) {
-        isResolved = true;
-        reject(error);
-      }
-    });
-
-    // Send the prompt to stdin and close it
-    claude.stdin.write(prompt);
-    claude.stdin.end();
-  });
-}
-
-function rebuildCompleteModelList(
-  existingModelNames: string[],
-  orderedGrokModels: string[],
-): string[] {
-  // Start with existing models, replace grok models with the optimally ordered ones
-  const result: string[] = [];
-  const grokModelSet = new Set(orderedGrokModels);
-  let grokInserted = false;
-
-  for (const modelName of existingModelNames) {
-    if (modelName.includes("grok")) {
-      // Skip individual grok models, we'll insert them all at once
-      if (!grokInserted) {
-        result.push(...orderedGrokModels);
-        grokInserted = true;
-      }
-    } else {
-      result.push(modelName);
-    }
-  }
-
-  // If no grok models were in the original list, add them at the end
-  if (!grokInserted) {
-    result.push(...orderedGrokModels);
-  }
-
-  return result;
 }
 
 async function findMissingCommand(argv: any) {
@@ -2229,24 +2081,13 @@ async function addModelsCommand(argv: any) {
       }),
     );
 
-    // Get complete optimal ordering
+    // Get complete deterministic ordering.
     console.log("\nDetermining optimal model ordering...");
-    let completeModelOrder;
-
-    if (process.env.USE_CLAUDE === "true") {
-      console.log("Using Claude Code for ordering (USE_CLAUDE=true)");
-      completeModelOrder = await getOptimalModelOrderingFromClaude(
-        modelsToAdd,
-        localModels,
-      );
-    } else {
-      console.log("Using provider/class ordering");
-      const mergedCatalog = { ...localModels };
-      for (const { name, model } of modelsToAdd) {
-        mergedCatalog[name] = model;
-      }
-      completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
+    const mergedCatalog = { ...localModels };
+    for (const { name, model } of modelsToAdd) {
+      mergedCatalog[name] = model;
     }
+    const completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
 
     // Rebuild the entire model list in the optimal order
     const updatedModels: LocalModelList = {};
@@ -2345,6 +2186,10 @@ async function syncBasetenModelsCommand(argv: any) {
 
     for (const basetenModel of basetenModels) {
       const id = basetenModel.id;
+      if (!isSupportedTranslatedModelName(id, "baseten")) {
+        console.warn(`  [INVALID] Skipping unsupported model id: ${id}`);
+        continue;
+      }
       if (isModelExcludedFromSync(id)) {
         console.log(`  [EXCLUDED] Skipping ${id} (in SYNC_EXCLUDED_MODELS)`);
         continue;

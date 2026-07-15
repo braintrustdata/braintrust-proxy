@@ -28,8 +28,8 @@ jobs:
       # passed as anthropic_api_key below) and calls the provider on our behalf.
       # https://www.braintrust.dev/docs/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the proxy-automations-spend-control project.
-      ANTHROPIC_CUSTOM_HEADERS: "x-bt-project-name: proxy-automations-spend-control"
+      # Attribute gateway spend to the automations-spend-control project.
+      ANTHROPIC_CUSTOM_HEADERS: "x-bt-project-name: automations-spend-control"
       DEFAULT_PROVIDERS: "fireworks openai anthropic baseten xai"
       BRANCH_NAME: chore/sync-new-models
       COMMIT_MESSAGE: "chore: sync new models"

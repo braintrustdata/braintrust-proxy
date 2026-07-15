@@ -23,6 +23,13 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
+      # Route Claude Code through the Braintrust gateway. The gateway
+      # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
+      # passed as anthropic_api_key below) and calls the provider on our behalf.
+      # https://www.braintrust.dev/docs/deploy/gateway
+      ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
+      # Attribute gateway spend to the proxy-automations-spend-control project.
+      ANTHROPIC_CUSTOM_HEADERS: "x-bt-project-name: proxy-automations-spend-control"
       DEFAULT_PROVIDERS: "fireworks openai anthropic baseten xai"
       BRANCH_NAME: chore/sync-new-models
       COMMIT_MESSAGE: "chore: sync new models"
@@ -109,7 +116,7 @@ jobs:
         timeout-minutes: 15
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
           display_report: "true"
           claude_args: |

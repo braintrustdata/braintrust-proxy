@@ -78,6 +78,15 @@ describe("translateToBraintrust", () => {
     ).toBe(true);
   });
 
+  it("rejects model ids that cannot be emitted safely into generated source", () => {
+    expect(
+      isSupportedTranslatedModelName(`model\"; process.exit(1); //`, "baseten"),
+    ).toBe(false);
+    expect(isSupportedTranslatedModelName("model\nnext", "baseten")).toBe(
+      false,
+    );
+  });
+
   it("canonicalizes legacy Fireworks local keys", () => {
     expect(
       canonicalizeLocalModelName(

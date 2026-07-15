@@ -93,6 +93,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.5 Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,
@@ -125,6 +126,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.5 Pro (2026-04-23)",
     "reasoning": true,
     "parent": "gpt-5.5-pro",
@@ -192,6 +194,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.4 Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,
@@ -258,6 +261,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "input_cache_read_cost_per_mil_tokens": 3,
     "displayName": "GPT-5.4 Pro (2026-03-05)",
     "reasoning": true,
     "parent": "gpt-5.4-pro",
@@ -294,7 +298,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.175,
     "displayName": "GPT-5.3 Codex",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -514,7 +518,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-5",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -564,7 +568,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-5 mini",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -595,7 +599,7 @@
     "output_cost_per_mil_tokens": 120,
     "displayName": "GPT-5 Pro",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000,
     "available_providers": [
       "openai",
@@ -642,7 +646,7 @@
     "displayName": "GPT-5 Pro (2025-10-06)",
     "reasoning": true,
     "parent": "gpt-5-pro",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 128000,
     "max_output_tokens": 272000,
     "available_providers": [
       "openai",
@@ -660,7 +664,7 @@
     "reasoning": true,
     "deprecation_date": "2026-12-11",
     "parent": "gpt-5",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -678,7 +682,7 @@
     "reasoning": true,
     "deprecation_date": "2026-12-11",
     "parent": "gpt-5-mini",
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -3844,7 +3848,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -10451,6 +10455,20 @@
       "baseten"
     ]
   },
+  "thinkingmachines/inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 4.05,
+    "input_cache_read_cost_per_mil_tokens": 0.17,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "mistral-large-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -11941,9 +11959,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "Grok Code Fast",
     "reasoning": true,
     "max_input_tokens": 256000,

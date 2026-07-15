@@ -447,6 +447,27 @@ describe("isFieldManuallyPreserved", () => {
         "input_cost_per_mil_tokens",
       ),
     ).toBe(true);
+    // recurring sync reversions pinned (gpt-5 400k, Pro no-cache, grok-code-fast
+    // grok-build pricing, fireworks GLM 5.2 cached input)
+    expect(isFieldManuallyPreserved("gpt-5", "max_input_tokens")).toBe(true);
+    expect(isFieldManuallyPreserved("gpt-5.3-codex", "max_input_tokens")).toBe(
+      true,
+    );
+    expect(
+      isFieldManuallyPreserved(
+        "gpt-5.5-pro-2026-04-23",
+        "input_cache_read_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved("grok-code-fast", "output_cost_per_mil_tokens"),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "accounts/fireworks/models/glm-5p2",
+        "input_cache_read_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
   });
 
   it("does not preserve fields outside the override list", () => {

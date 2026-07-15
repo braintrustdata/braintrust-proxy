@@ -55,6 +55,12 @@ const GROK_420_FIELDS = [
   "output_cost_per_mil_tokens",
   "max_input_tokens",
 ] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const GPT5_CONTEXT_FIELDS = [
+  "max_input_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const CACHE_READ_FIELD = [
+  "input_cache_read_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
 
 export const SYNC_PRESERVED_FIELDS: Record<
   string,
@@ -93,6 +99,30 @@ export const SYNC_PRESERVED_FIELDS: Record<
   // Claude Sonnet 4.6 max output is 128k per Anthropic's model card; LiteLLM
   // carries the stale 64k, so the sync keeps trying to lower it.
   "claude-sonnet-4-6": ["max_output_tokens"],
+  // GPT-5 family context window is 400k per OpenAI's model pages, but LiteLLM
+  // still reports 272000/128000, so update-models reverts these every OpenAI
+  // sync run (the recurring gpt-5 churn on #967/#972/#973/#979). Pin max_input.
+  "gpt-5": GPT5_CONTEXT_FIELDS,
+  "gpt-5-2025-08-07": GPT5_CONTEXT_FIELDS,
+  "gpt-5-mini": GPT5_CONTEXT_FIELDS,
+  "gpt-5-mini-2025-08-07": GPT5_CONTEXT_FIELDS,
+  "gpt-5-pro": GPT5_CONTEXT_FIELDS,
+  "gpt-5-pro-2025-10-06": GPT5_CONTEXT_FIELDS,
+  "gpt-5.3-codex": GPT5_CONTEXT_FIELDS,
+  // GPT-5 Pro tier has no cached-input pricing per OpenAI, but LiteLLM keeps
+  // re-adding a $3/M cache-read. Pin the field so the sync leaves it unset.
+  "gpt-5.4-pro": CACHE_READ_FIELD,
+  "gpt-5.4-pro-2026-03-05": CACHE_READ_FIELD,
+  "gpt-5.5-pro": CACHE_READ_FIELD,
+  "gpt-5.5-pro-2026-04-23": CACHE_READ_FIELD,
+  // grok-code-fast is an xAI alias of grok-build-0.1 ($1 in / $0.20 cached /
+  // $2 out per 1M); LiteLLM lists the old $0.20/$0.02/$1.50 and the sync keeps
+  // reverting to it.
+  "grok-code-fast": GROK_FAST_COST_FIELDS,
+  // Fireworks GLM 5.2 cached input is $0.14/M per Fireworks' pricing page;
+  // LiteLLM carries the GLM 5.1 $0.26 rate and the sync keeps re-applying it.
+  // (The baseten-served zai-org/GLM-5.2 is left to applyBasetenPricing.)
+  "accounts/fireworks/models/glm-5p2": CACHE_READ_FIELD,
 };
 
 // Returns true if `field` of `modelName` is hand-maintained and must not be

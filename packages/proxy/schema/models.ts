@@ -37,6 +37,7 @@ export const ModelEndpointType = [
   "cerebras",
   "ollama",
   "replicate",
+  "wafer",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];

@@ -12397,5 +12397,94 @@
     "available_providers": [
       "baseten"
     ]
+  },
+  "GLM-5.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 3.6,
+    "input_cache_read_cost_per_mil_tokens": 0.12,
+    "displayName": "GLM-5.1",
+    "reasoning": true,
+    "max_input_tokens": 202752,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "Kimi-K2.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.88,
+    "output_cost_per_mil_tokens": 3.84,
+    "input_cache_read_cost_per_mil_tokens": 0.09,
+    "displayName": "Kimi K2.6",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "Qwen3.5-397B-A17B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.48,
+    "output_cost_per_mil_tokens": 2.88,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Qwen3.5 397B A17B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "Qwen3.6-35B-A3B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 1.0,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "displayName": "Qwen3.6 35B A3B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "qwen3.7-max": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5.0,
+    "output_cost_per_mil_tokens": 15.0,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Qwen3.7 Max",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "deepseek-v4-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.28,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "displayName": "DeepSeek V4 Flash",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "wafer"
+    ]
+  },
+  "deepseek-v4-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.74,
+    "output_cost_per_mil_tokens": 3.48,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "displayName": "DeepSeek V4 Pro",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "wafer"
+    ]
   }
 }

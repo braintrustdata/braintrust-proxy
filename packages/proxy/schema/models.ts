@@ -37,6 +37,8 @@ export const ModelEndpointType = [
   "cerebras",
   "ollama",
   "replicate",
+  "cohere",
+  "openrouter",
   "js",
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];

@@ -1140,6 +1140,8 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   CEREBRAS_API_KEY: "cerebras",
   REPLICATE_API_KEY: "replicate",
   BASETEN_API_KEY: "baseten",
+  COHERE_API_KEY: "cohere",
+  OPENROUTER_API_KEY: "openrouter",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -1147,6 +1149,7 @@ export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
   GOOGLE_DEFAULT_CREDENTIALS: "vertex",
   AZURE_DEFAULT_CREDENTIALS: "azure",
   DATABRICKS_DEFAULT_CREDENTIALS: "databricks",
+  OLLAMA_DEFAULT_CREDENTIALS: "ollama",
 };
 
 export const EndpointProviderToBaseURL: {
@@ -1167,6 +1170,8 @@ export const EndpointProviderToBaseURL: {
   baseten: "https://inference.baseten.co/v1",
   cerebras: "https://api.cerebras.ai/v1",
   xAI: "https://api.x.ai/v1",
+  cohere: "https://api.cohere.com/compatibility/v1",
+  openrouter: "https://openrouter.ai/api/v1",
   bedrock: null,
   vertex: null,
   azure: null,

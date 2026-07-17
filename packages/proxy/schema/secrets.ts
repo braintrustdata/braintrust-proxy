@@ -177,6 +177,12 @@ export const MistralMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).passthrough();
 
+export const CohereMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.union([z.string().url(), z.string().length(0)]).nullish(),
+  }),
+).passthrough();
+
 export const OllamaMetadataSchema = BaseMetadataSchema.merge(
   z.object({
     api_base: z
@@ -217,7 +223,6 @@ export const APISecretSchema = z.union([
         "fireworks",
         "cerebras",
         "xAI",
-        "cohere",
         "openrouter",
         "js",
       ]),
@@ -270,6 +275,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("mistral"),
       metadata: MistralMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("cohere"),
+      metadata: CohereMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(

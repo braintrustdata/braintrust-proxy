@@ -1149,6 +1149,9 @@ export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
   GOOGLE_DEFAULT_CREDENTIALS: "vertex",
   AZURE_DEFAULT_CREDENTIALS: "azure",
   DATABRICKS_DEFAULT_CREDENTIALS: "databricks",
+};
+
+export const SelfHostedSecretTypes: { [keyName: string]: ModelEndpointType } = {
   OLLAMA_DEFAULT_CREDENTIALS: "ollama",
 };
 

@@ -1075,6 +1075,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "google.gemma-4-26b-a4b": ["bedrock"],
   "google.gemma-4-e2b": ["bedrock"],
   "accounts/fireworks/models/nemotron-3-ultra-nvfp4": ["fireworks"],
+  "command-a-03-2025": ["cohere"],
+  "command-r-plus-08-2024": ["cohere"],
+  "command-r-08-2024": ["cohere"],
+  "command-r7b-12-2024": ["cohere"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

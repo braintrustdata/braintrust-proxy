@@ -8535,6 +8535,54 @@
       "bedrock"
     ]
   },
+  "command-a-03-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command A",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r-plus-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command R+ (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Command R (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r7b-12-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.0375,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Command R7B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere"
+    ]
+  },
   "mistral.devstral-2-123b": {
     "format": "converse",
     "flavor": "chat",

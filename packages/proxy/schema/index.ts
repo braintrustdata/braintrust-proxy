@@ -1075,6 +1075,15 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "google.gemma-4-26b-a4b": ["bedrock"],
   "google.gemma-4-e2b": ["bedrock"],
   "accounts/fireworks/models/nemotron-3-ultra-nvfp4": ["fireworks"],
+  "databricks-gpt-5-5-pro": ["databricks"],
+  "databricks-gpt-5-4-mini": ["databricks"],
+  "databricks-gemini-3-5-flash": ["databricks"],
+  "claude-mythos-5": ["anthropic"],
+  "claude-mythos-preview": ["anthropic"],
+  "databricks-gpt-5-3-codex": ["databricks"],
+  "databricks-gemma-3-12b": ["databricks"],
+  "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas": ["vertex"],
+  "publishers/meta/models/llama-4-scout-17b-16e-instruct-maas": ["vertex"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -5918,9 +5918,9 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -7439,6 +7439,36 @@
     "max_input_tokens": 262144,
     "max_output_tokens": 16384
   },
+  "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Llama 4 Maverick (17Bx128E) Instruct",
+    "locations": [
+      "us-east5"
+    ],
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/meta/models/llama-4-scout-17b-16e-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Llama 4 Scout (17Bx16E) Instruct",
+    "locations": [
+      "us-east5"
+    ],
+    "max_input_tokens": 10485760,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "text-davinci-003": {
     "format": "openai",
     "flavor": "completion",
@@ -8257,6 +8287,35 @@
     "parent": "claude-opus-4-1",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-mythos-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "displayName": "Claude Mythos 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-mythos-preview": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Mythos Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
     ]
@@ -10716,6 +10775,8 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Mistral Small (2603)",
+    "reasoning": true,
+    "reasoning_budget": true,
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -11546,6 +11607,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 (Non-Reasoning)",
     "max_input_tokens": 1000000,
     "available_providers": [
@@ -12380,6 +12442,64 @@
     "experimental": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.5 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-4-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.4 mini",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-3-5-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-3-codex": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.3 Codex",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemma-3-12b": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Gemma 3 12B",
+    "max_input_tokens": 131072,
     "available_providers": [
       "databricks"
     ]

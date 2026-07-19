@@ -740,6 +740,7 @@
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-4.1 nano",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -815,6 +816,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
     "displayName": "GPT-4 Turbo",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -830,6 +832,7 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-4o",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -1346,6 +1349,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.275,
     "displayName": "o4-mini",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -1443,6 +1447,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "displayName": "o3 mini",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -1542,6 +1547,7 @@
     "input_cache_read_cost_per_mil_tokens": 7.5,
     "displayName": "o1",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -5888,6 +5894,34 @@
       "cerebras"
     ]
   },
+  "gpt-realtime-2.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 24,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "displayName": "GPT Realtime 2.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-realtime-2.1-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "GPT Realtime 2.1 mini",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "zai-glm-4.7": {
     "format": "openai",
     "flavor": "chat",
@@ -7438,6 +7472,116 @@
     ],
     "max_input_tokens": 262144,
     "max_output_tokens": 16384
+  },
+  "publishers/mistralai/models/mistral-medium-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium 3 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/mistralai/models/mistral-small-2503": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Mistral Small 3.1 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/mistralai/models/codestral-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral 2 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/openai/models/gpt-oss-120b-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "GPT-OSS 120B (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/openai/models/gpt-oss-20b-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "GPT-OSS 20B (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/xai/models/grok-4.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.3 (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/xai/models/grok-4.20-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Grok 4.20 Non-Reasoning (Vertex)",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "vertex"
+    ]
   },
   "text-davinci-003": {
     "format": "openai",
@@ -11619,7 +11763,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok 4.5",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -11634,7 +11778,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok 4.5 (Latest)",
     "reasoning": true,
     "parent": "grok-4.5",
@@ -12395,7 +12539,8 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   }
 }

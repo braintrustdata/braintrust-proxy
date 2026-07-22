@@ -7884,14 +7884,22 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "parent": "ministral-8b-latest"
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-8b-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "ministral-3b-2410": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.04,
     "output_cost_per_mil_tokens": 0.04,
-    "parent": "ministral-3b-latest"
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-3b-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "mistral-saba-latest": {
     "format": "openai",
@@ -10764,6 +10772,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
+    "deprecation_date": "2025-11-30",
     "parent": "codestral-latest",
     "fallback_models": [
       "publishers/mistralai/models/codestral-2501"
@@ -10904,6 +10913,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "displayName": "Pixtral 12B",
+    "deprecation_date": "2025-12-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -11223,6 +11233,7 @@
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecated": true,
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite-preview"
     ],

@@ -2342,9 +2342,11 @@ async function fetchOpenAI(
   if (
     secret.type === "mistral" ||
     secret.type === "databricks" ||
-    secret.type === "azure"
+    secret.type === "azure" ||
+    secret.type === "cohere"
   ) {
     // Azure doesn't support parallel_tool_calls: https://github.com/Azure/azure-rest-api-specs/issues/29545
+    // Cohere's Compatibility API doesn't support it either: https://docs.cohere.com/docs/compatibility-api
     delete bodyData["parallel_tool_calls"];
   }
 

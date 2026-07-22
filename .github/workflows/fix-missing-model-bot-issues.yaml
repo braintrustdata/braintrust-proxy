@@ -259,7 +259,7 @@ jobs:
 
       - name: Verify proposed changes and document sync_models deviations
         if: steps.fix_initial.outputs.unsupported_count != '0'
-        timeout-minutes: 15
+        timeout-minutes: 30
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
@@ -267,7 +267,7 @@ jobs:
 
           display_report: "true"
           claude_args: |
-            --model claude-opus-4-6
+            --model claude-sonnet-5
             --max-turns 80
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
             --disallowedTools "Bash,MultiEdit,Replace,NotebookEditCell,mcp__github__create_issue,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
@@ -298,7 +298,7 @@ jobs:
             1. Read the unsupported issue numbers file, then process each listed issue independently.
             2. For each issue, read its initial result file and original issue body. Use the resolver message to identify exactly which field(s) caused the bail. Focus your research on those fields first.
             3. Fetch the official source URLs already listed in the issue first. Search additional official provider docs or APIs only if the listed sources don't provide the missing field.
-            4. For each model in the issue, build the most complete verified spec you can, not just the missing field. Verify all fields that official sources support:
+            4. For each model in the issue, focus on the field(s) that caused the bail (identified in step 2). Fill in additional fields only when the official source you are already reading readily provides them — do not open extra sources or spend turns exhaustively re-verifying fields that are unlikely to be wrong. Fields to consider, bail field(s) first:
                - `format`, `flavor`, `displayName`
                - `parent` when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json` — patterns include: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`), `@NNN`/`-vN` versioned snapshots, location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI)
                - `available_providers` and provider mapping
@@ -313,7 +313,7 @@ jobs:
                - Always include `"global"` first if Google lists the model as available on the global endpoint, followed by per-region codes sorted alphabetically. Match the ordering used by existing vertex entries in `model_list.json`.
                - If the model id is not listed on the Google docs page (e.g. preview-only or recently announced), check the model's product page or release notes for explicit region availability. If you still cannot find an official region list, omit `supported_regions` entirely and call this out in the `## Verification` section — do not invent regions.
                - Do not copy `supported_regions` from sync_models; sync_models does not track Vertex regions accurately.
-            6. **Cross-check against sync_models**: Fetch the sync_models reference catalog at `https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json`. For each numeric field in your proposed spec (token limits, pricing), compare it against the sync_models value for the same model. In the `## Verification` section, for every field that differs from sync_models, you must:
+            6. **Cross-check against sync_models (only the fields you added or changed)**: For just the numeric field(s) you set or corrected in this fix — not the whole spec — compare against the sync_models value for the same model. Look the model up in the sync_models catalog (`https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json`) for those specific fields; do not scan or diff the entire file. In the `## Verification` section, for every changed field that differs from sync_models, you must:
                - State the sync_models value explicitly
                - State the official source URL that justifies the deviation
                - Briefly explain why the official source should be preferred (e.g., sync_models lags, collapses aliases, or has an incorrect mapping)

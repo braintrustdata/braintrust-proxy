@@ -7320,6 +7320,8 @@
     "format": "google",
     "flavor": "embedding",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "Gemini embedding 2",
     "available_providers": [
       "vertex"
@@ -7328,6 +7330,8 @@
   "publishers/google/models/gemini-embedding-001": {
     "format": "google",
     "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "Gemini embedding 001",
     "available_providers": [
       "vertex"
@@ -11614,6 +11618,8 @@
     "format": "google",
     "flavor": "embedding",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "Gemini embedding 2",
     "fallback_models": [
       "publishers/google/models/gemini-embedding-2"
@@ -11626,6 +11632,8 @@
   "gemini-embedding-001": {
     "format": "google",
     "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "Gemini embedding 001",
     "fallback_models": [
       "publishers/google/models/gemini-embedding-001"

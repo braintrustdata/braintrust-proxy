@@ -27,6 +27,9 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-5.6 Luna",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-luna"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -45,6 +48,9 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "GPT-5.6 Sol",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-sol"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -63,6 +69,9 @@
     "input_cache_write_cost_per_mil_tokens": 3.125,
     "displayName": "GPT-5.6 Terra",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-terra"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -8721,6 +8730,32 @@
       "bedrock"
     ]
   },
+  "google.gemma-3-12b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.29,
+    "displayName": "Gemma 3 12B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "google.gemma-3-4b-it": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.08,
+    "displayName": "Gemma 3 4B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "zai.glm-5": {
     "format": "converse",
     "flavor": "chat",
@@ -8828,6 +8863,48 @@
     "displayName": "OpenAI GPT-OSS Safeguard (20B)",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 33,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.75,
+    "output_cost_per_mil_tokens": 16.5,
+    "input_cache_read_cost_per_mil_tokens": 0.28,
+    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
     ]
@@ -9132,6 +9209,18 @@
     "displayName": "NVIDIA Nemotron 3 Super 120B",
     "max_input_tokens": 256000,
     "max_output_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-9b-v2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.23,
+    "displayName": "NVIDIA Nemotron Nano 9B v2",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
     ]
@@ -12577,6 +12666,41 @@
     "experimental": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-3-6-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.6 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-glm-5-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GLM 5.2",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
     ]

@@ -76,6 +76,7 @@
   "magistral-small-2506",
   "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
   "meta-llama/llama-4-maverick-17b-128e-instruct",
+  "meta-llama/llama-4-scout-17b-16e-instruct",
   "mistral-large-2411",
   "mistral-medium-3-5-26-04",
   "mistral-saba-24b",
@@ -96,6 +97,7 @@
   "qwen-2.5-32b",
   "qwen-2.5-coder-32b",
   "qwen-qwq-32b",
+  "qwen/qwen3-32b",
   "r1-1776",
   "sonar-reasoning",
   "zai-org/GLM-4.6"

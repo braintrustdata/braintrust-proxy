@@ -6093,25 +6093,6 @@
       "groq"
     ]
   },
-  "publishers/google/models/gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -6127,6 +6108,25 @@
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
     "available_providers": [
       "vertex"
     ]
@@ -7967,16 +7967,6 @@
     "output_cost_per_mil_tokens": 0.07,
     "displayName": "WizardLM-2 7B"
   },
-  "wizardlm-2-8x22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 1,
-    "displayName": "WizardLM-2 8x22B",
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "dolphin-mixtral-8x7b": {
     "format": "openai",
     "flavor": "chat",
@@ -8046,6 +8036,16 @@
     "displayName": "Llama 4 Maverick",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000
+  },
+  "wizardlm-2-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 1,
+    "displayName": "WizardLM-2 8x22B",
+    "available_providers": [
+      "openrouter"
+    ]
   },
   "claude-fable-5": {
     "format": "anthropic",
@@ -8627,57 +8627,6 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
-  },
-  "command-a-03-2025": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Command A",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "cohere"
-    ]
-  },
-  "command-r-plus-08-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Command R+ (08-2024)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
-    ]
-  },
-  "command-r-08-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Command R (08-2024)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
-    ]
-  },
-  "command-r7b-12-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0375,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Command R7B",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
     ]
   },
   "mistral.devstral-2-123b": {
@@ -10060,6 +10009,57 @@
       "bedrock"
     ]
   },
+  "command-a-03-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command A",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r-plus-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command R+ (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
+    ]
+  },
+  "command-r-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Command R (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
+    ]
+  },
+  "command-r7b-12-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.0375,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Command R7B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
+    ]
+  },
   "deepseek-ai/DeepSeek-V4-Pro": {
     "format": "openai",
     "flavor": "chat",
@@ -10508,7 +10508,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10516,6 +10516,20 @@
     "available_providers": [
       "baseten",
       "together"
+    ]
+  },
+  "zai-org/GLM-5.2-Fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.21,
+    "displayName": "GLM 5.2 Fast",
+    "reasoning": true,
+    "parent": "zai-org/GLM-5.2",
+    "max_input_tokens": 524288,
+    "available_providers": [
+      "baseten"
     ]
   },
   "zai-org/GLM-5.1": {
@@ -10596,6 +10610,20 @@
     "displayName": "NVIDIA Nemotron 3 Ultra 550B",
     "reasoning": true,
     "max_input_tokens": 202800,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "thinkingmachines/inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 4.05,
+    "input_cache_read_cost_per_mil_tokens": 0.17,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
     ]
@@ -11074,26 +11102,6 @@
       "mistral"
     ]
   },
-  "gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "fallback_models": [
-      "publishers/google/models/gemini-3.5-flash"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "google",
-      "vertex"
-    ]
-  },
   "gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -11106,6 +11114,26 @@
     "reasoning_budget": true,
     "fallback_models": [
       "publishers/google/models/gemini-3.6-flash"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
+  "gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "publishers/google/models/gemini-3.5-flash"
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
@@ -12587,20 +12615,6 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "thinkingmachines/inkling": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 4.05,
-    "input_cache_read_cost_per_mil_tokens": 0.17,
-    "displayName": "Inkling",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "baseten"
     ]
   }
 }

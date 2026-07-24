@@ -682,6 +682,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "Qwen/Qwen3.6-Plus": ["together"],
   "zai-org/GLM-5.1": ["baseten", "together"],
   "zai-org/GLM-5.2": ["baseten", "together"],
+  "zai-org/GLM-5.2-Fast": ["baseten"],
   "MiniMaxAI/MiniMax-M2.7": ["together"],
   "MiniMaxAI/MiniMax-M3": ["together"],
   "mistral-medium-2508": ["mistral"],

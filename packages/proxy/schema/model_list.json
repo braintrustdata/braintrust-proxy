@@ -6008,20 +6008,6 @@
       "groq"
     ]
   },
-  "meta-llama/llama-4-scout-17b-16e-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.11,
-    "output_cost_per_mil_tokens": 0.34,
-    "displayName": "Llama 4 Scout (17Bx16E)",
-    "experimental": true,
-    "deprecation_date": "2026-07-17",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "groq"
-    ]
-  },
   "llama-3.3-70b-versatile": {
     "format": "openai",
     "flavor": "chat",
@@ -6056,21 +6042,6 @@
     "experimental": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
-    "available_providers": [
-      "groq"
-    ]
-  },
-  "qwen/qwen3-32b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.29,
-    "output_cost_per_mil_tokens": 0.59,
-    "displayName": "Qwen3-32B",
-    "reasoning": true,
-    "experimental": true,
-    "deprecation_date": "2026-07-17",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 40960,
     "available_providers": [
       "groq"
     ]
@@ -8128,11 +8099,10 @@
     "reasoning_budget": true,
     "fallback_models": [
       "anthropic.claude-opus-5",
+      "eu.anthropic.claude-opus-5",
       "global.anthropic.claude-opus-5",
       "publishers/anthropic/models/claude-opus-5",
-      "us.anthropic.claude-opus-5",
-      "eu.anthropic.claude-opus-5",
-      "au.anthropic.claude-opus-5"
+      "us.anthropic.claude-opus-5"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -10662,7 +10632,6 @@
     "max_input_tokens": 202752,
     "max_output_tokens": 128000,
     "available_providers": [
-      "baseten",
       "together"
     ]
   },
@@ -10673,7 +10642,6 @@
     "output_cost_per_mil_tokens": 3.15,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "available_providers": [
-      "baseten",
       "together"
     ]
   },
@@ -10706,18 +10674,7 @@
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "available_providers": [
-      "baseten",
       "together"
-    ]
-  },
-  "nvidia/Nemotron-120B-A12B": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.75,
-    "input_cache_read_cost_per_mil_tokens": 0.06,
-    "available_providers": [
-      "baseten"
     ]
   },
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": {

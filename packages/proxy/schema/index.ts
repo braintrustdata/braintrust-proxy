@@ -1114,6 +1114,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "command-r-plus-08-2024": ["cohere", "openrouter"],
   "command-r-08-2024": ["cohere", "openrouter"],
   "command-r7b-12-2024": ["cohere", "openrouter"],
+  "gemini-3.1-flash-live-preview": ["google"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

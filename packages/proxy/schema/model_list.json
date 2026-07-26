@@ -8128,11 +8128,10 @@
     "reasoning_budget": true,
     "fallback_models": [
       "anthropic.claude-opus-5",
+      "eu.anthropic.claude-opus-5",
       "global.anthropic.claude-opus-5",
       "publishers/anthropic/models/claude-opus-5",
-      "us.anthropic.claude-opus-5",
-      "eu.anthropic.claude-opus-5",
-      "au.anthropic.claude-opus-5"
+      "us.anthropic.claude-opus-5"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -11774,6 +11773,22 @@
     "available_providers": [
       "google",
       "vertex"
+    ]
+  },
+  "gemini-3.1-flash-live-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.75,
+    "output_cost_per_mil_tokens": 4.5,
+    "displayName": "Gemini 3.1 Flash Live Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google"
     ]
   },
   "grok-4-0709": {

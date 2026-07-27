@@ -6064,25 +6064,6 @@
       "groq"
     ]
   },
-  "publishers/google/models/gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "vertex"
-    ]
-  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -6098,6 +6079,25 @@
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/google/models/gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65535,
     "available_providers": [
       "vertex"
     ]
@@ -7018,23 +7018,6 @@
       "vertex"
     ]
   },
-  "publishers/anthropic/models/claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Claude Opus 4.8",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ]
-  },
   "publishers/anthropic/models/claude-opus-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -7044,6 +7027,23 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "Claude Opus 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Claude Opus 4.8",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
@@ -7955,16 +7955,6 @@
     "output_cost_per_mil_tokens": 0.07,
     "displayName": "WizardLM-2 7B"
   },
-  "wizardlm-2-8x22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 1,
-    "displayName": "WizardLM-2 8x22B",
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "dolphin-mixtral-8x7b": {
     "format": "openai",
     "flavor": "chat",
@@ -8035,6 +8025,16 @@
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000
   },
+  "wizardlm-2-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 1,
+    "displayName": "WizardLM-2 8x22B",
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "claude-fable-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8052,31 +8052,6 @@
       "anthropic.claude-fable-5",
       "global.anthropic.claude-fable-5",
       "publishers/anthropic/models/claude-fable-5"
-    ],
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
-  },
-  "claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
-    "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude Opus 4.8",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "fallback_models": [
-      "anthropic.claude-opus-4-8",
-      "global.anthropic.claude-opus-4-8",
-      "publishers/anthropic/models/claude-opus-4-8",
-      "us.anthropic.claude-opus-4-8"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -8177,7 +8152,7 @@
       "anthropic"
     ]
   },
-  "claude-opus-4-7": {
+  "claude-opus-4-8": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -8187,14 +8162,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude Opus 4.7",
+    "displayName": "Claude Opus 4.8",
     "reasoning": true,
     "reasoning_budget": true,
     "fallback_models": [
-      "anthropic.claude-opus-4-7",
-      "global.anthropic.claude-opus-4-7",
-      "publishers/anthropic/models/claude-opus-4-7",
-      "us.anthropic.claude-opus-4-7"
+      "anthropic.claude-opus-4-8",
+      "global.anthropic.claude-opus-4-8",
+      "publishers/anthropic/models/claude-opus-4-8",
+      "us.anthropic.claude-opus-4-8"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -8227,7 +8202,7 @@
       "anthropic"
     ]
   },
-  "claude-opus-4-6": {
+  "claude-opus-4-7": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -8237,11 +8212,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
-    "displayName": "Claude Opus 4.6",
+    "displayName": "Claude Opus 4.7",
     "reasoning": true,
     "reasoning_budget": true,
     "fallback_models": [
-      "publishers/anthropic/models/claude-opus-4-6"
+      "anthropic.claude-opus-4-7",
+      "global.anthropic.claude-opus-4-7",
+      "publishers/anthropic/models/claude-opus-4-7",
+      "us.anthropic.claude-opus-4-7"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
@@ -8287,6 +8265,28 @@
     "parent": "claude-sonnet-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-opus-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+    "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "displayName": "Claude Opus 4.6",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "publishers/anthropic/models/claude-opus-4-6"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
     ]
@@ -8386,23 +8386,6 @@
       "bedrock"
     ]
   },
-  "anthropic.claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Claude Opus 4.8",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
   "anthropic.claude-opus-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8420,7 +8403,7 @@
       "bedrock"
     ]
   },
-  "global.anthropic.claude-opus-5": {
+  "anthropic.claude-opus-4-8": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -8428,64 +8411,9 @@
     "output_cost_per_mil_tokens": 25,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Global Claude Opus 5",
+    "displayName": "Claude Opus 4.8",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-5",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.anthropic.claude-opus-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5.5,
-    "output_cost_per_mil_tokens": 27.5,
-    "input_cache_read_cost_per_mil_tokens": 0.55,
-    "input_cache_write_cost_per_mil_tokens": 6.875,
-    "displayName": "US Claude Opus 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-5",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "eu.anthropic.claude-opus-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5.5,
-    "output_cost_per_mil_tokens": 27.5,
-    "input_cache_read_cost_per_mil_tokens": 0.55,
-    "input_cache_write_cost_per_mil_tokens": 6.875,
-    "displayName": "EU Claude Opus 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-5",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "au.anthropic.claude-opus-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5.5,
-    "output_cost_per_mil_tokens": 27.5,
-    "input_cache_read_cost_per_mil_tokens": 0.55,
-    "input_cache_write_cost_per_mil_tokens": 6.875,
-    "displayName": "AU Claude Opus 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -8730,57 +8658,6 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
-  },
-  "command-a-03-2025": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Command A",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "cohere"
-    ]
-  },
-  "command-r-plus-08-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 10,
-    "displayName": "Command R+ (08-2024)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
-    ]
-  },
-  "command-r-08-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Command R (08-2024)",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
-    ]
-  },
-  "command-r7b-12-2024": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0375,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Command R7B",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "cohere",
-      "openrouter"
     ]
   },
   "mistral.devstral-2-123b": {
@@ -9453,6 +9330,186 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Global Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-fable-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-opus-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Global Claude Opus 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-opus-4-8": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Global Claude 4.8 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-8",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-opus-4-7": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Global Claude 4.7 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-7",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-opus-4-6-v1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Global Claude 4.6 Opus",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-6-v1",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-4-6": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.6 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-6",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-4-5-20250929-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Global Claude 4.5 Sonnet",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-haiku-4-5-20251001-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "Global Claude 4.5 Haiku",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-opus-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 27.5,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "US Claude Opus 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "us.anthropic.claude-opus-4-8": {
     "format": "anthropic",
     "flavor": "chat",
@@ -9877,214 +9934,20 @@
       "bedrock"
     ]
   },
-  "global.anthropic.claude-fable-5": {
+  "eu.anthropic.claude-opus-5": {
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Global Claude Fable 5",
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 27.5,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "EU Claude Opus 5",
     "reasoning": true,
     "reasoning_budget": true,
-    "parent": "anthropic.claude-fable-5",
+    "parent": "anthropic.claude-opus-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-opus-4-8": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Global Claude 4.8 Opus",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-8",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-opus-4-7": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Global Claude 4.7 Opus",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-7",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-opus-4-6-v1": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "displayName": "Global Claude 4.6 Opus",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-6-v1",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-sonnet-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "Global Claude Sonnet 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-sonnet-5",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-sonnet-4-6": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "Global Claude 4.6 Sonnet",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-sonnet-4-6",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-sonnet-4-5-20250929-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "Global Claude 4.5 Sonnet",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-haiku-4-5-20251001-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
-    "input_cache_write_cost_per_mil_tokens": 1.25,
-    "displayName": "Global Claude 4.5 Haiku",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-haiku-4-5-20251001-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "apac.anthropic.claude-3-5-sonnet-20241022-v2:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "APAC Claude 3.5 Sonnet v2",
-    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "apac.anthropic.claude-3-5-sonnet-20240620-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "APAC Claude 3.5 Sonnet",
-    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "apac.anthropic.claude-3-haiku-20240307-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.25,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
-    "input_cache_write_cost_per_mil_tokens": 0.3125,
-    "displayName": "APAC Claude 3 Haiku",
-    "deprecated": true,
-    "deprecation_date": "2026-04-20",
-    "parent": "anthropic.claude-3-haiku-20240307-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "apac.anthropic.claude-3-sonnet-20240229-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "APAC Claude 3 Sonnet",
-    "deprecated": true,
-    "deprecation_date": "2025-07-21",
-    "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
     ]
@@ -10161,6 +10024,143 @@
     "max_output_tokens": 16000,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "au.anthropic.claude-opus-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 27.5,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "AU Claude Opus 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "apac.anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "APAC Claude 3.5 Sonnet v2",
+    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "apac.anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "APAC Claude 3.5 Sonnet",
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "apac.anthropic.claude-3-haiku-20240307-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cache_write_cost_per_mil_tokens": 0.3125,
+    "displayName": "APAC Claude 3 Haiku",
+    "deprecated": true,
+    "deprecation_date": "2026-04-20",
+    "parent": "anthropic.claude-3-haiku-20240307-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "apac.anthropic.claude-3-sonnet-20240229-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "APAC Claude 3 Sonnet",
+    "deprecated": true,
+    "deprecation_date": "2025-07-21",
+    "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "command-a-03-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command A",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r-plus-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.5,
+    "output_cost_per_mil_tokens": 10,
+    "displayName": "Command R+ (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
+    ]
+  },
+  "command-r-08-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Command R (08-2024)",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
+    ]
+  },
+  "command-r7b-12-2024": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.0375,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Command R7B",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cohere",
+      "openrouter"
     ]
   },
   "deepseek-ai/DeepSeek-V4-Pro": {
@@ -10611,7 +10611,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10619,6 +10619,20 @@
     "available_providers": [
       "baseten",
       "together"
+    ]
+  },
+  "zai-org/GLM-5.2-Fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.21,
+    "displayName": "GLM 5.2 Fast",
+    "reasoning": true,
+    "parent": "zai-org/GLM-5.2",
+    "max_input_tokens": 524288,
+    "available_providers": [
+      "baseten"
     ]
   },
   "zai-org/GLM-5.1": {
@@ -10686,6 +10700,20 @@
     "displayName": "NVIDIA Nemotron 3 Ultra 550B",
     "reasoning": true,
     "max_input_tokens": 202800,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "thinkingmachines/inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 4.05,
+    "input_cache_read_cost_per_mil_tokens": 0.17,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
     ]
@@ -11164,26 +11192,6 @@
       "mistral"
     ]
   },
-  "gemini-3.5-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "fallback_models": [
-      "publishers/google/models/gemini-3.5-flash"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "google",
-      "vertex"
-    ]
-  },
   "gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -11196,6 +11204,26 @@
     "reasoning_budget": true,
     "fallback_models": [
       "publishers/google/models/gemini-3.6-flash"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
+  "gemini-3.5-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "publishers/google/models/gemini-3.5-flash"
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
@@ -12677,20 +12705,6 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "thinkingmachines/inkling": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 4.05,
-    "input_cache_read_cost_per_mil_tokens": 0.17,
-    "displayName": "Inkling",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "baseten"
     ]
   }
 }

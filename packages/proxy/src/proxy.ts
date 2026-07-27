@@ -2201,12 +2201,10 @@ async function fetchOpenAI(
 
     if (
       bodyData?.model?.startsWith("publishers/meta") ||
-      bodyData?.model?.startsWith("publishers/qwen") ||
-      bodyData?.model?.startsWith("publishers/openai") ||
-      bodyData?.model?.startsWith("publishers/xai")
+      bodyData?.model?.startsWith("publishers/qwen")
     ) {
       // Use the OpenAPI endpoint.
-      // Meta models use v1beta1; Qwen/OpenAI/xAI models use v1
+      // Meta models use v1beta1, Qwen models use v1
       const apiVersion = bodyData.model.startsWith("publishers/meta")
         ? "v1beta1"
         : "v1";

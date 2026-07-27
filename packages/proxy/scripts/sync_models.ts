@@ -163,6 +163,25 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // chat/completions model. Excluded permanently (see PR that trimmed it from
   // the daily catalog batch).
   "gemini-3.1-flash-live-preview",
+  // Not deployed on the Braintrust Databricks account: these return
+  // ENDPOINT_NOT_FOUND from Databricks (the endpoint does not exist), so they are
+  // not invocable, but the daily bot keeps re-proposing them.
+  "databricks-gpt-5-4-mini",
+  "databricks-gemini-3-6-flash",
+  // Vertex MaaS (OpenAI/xAI/Mistral/Meta): these are real models, but routing them
+  // requires a gateway OpenAPI change, so they are added deliberately via a
+  // dedicated PR (with that routing) rather than by the daily automation, which
+  // otherwise auto-adds them without the routing change and produces entries that
+  // 400 through the gateway. Exclude from auto-add.
+  "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas",
+  "publishers/meta/models/llama-4-scout-17b-16e-instruct-maas",
+  "publishers/mistralai/models/mistral-medium-3",
+  "publishers/mistralai/models/mistral-small-2503",
+  "publishers/mistralai/models/codestral-2",
+  "publishers/openai/models/gpt-oss-120b-maas",
+  "publishers/openai/models/gpt-oss-20b-maas",
+  "publishers/xai/models/grok-4.3",
+  "publishers/xai/models/grok-4.20-non-reasoning",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

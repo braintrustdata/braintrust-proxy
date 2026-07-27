@@ -92,6 +92,10 @@ export const SYNC_PRESERVED_FIELDS: Record<
   // gpt-oss pricing taken from the provider pricing pages; LiteLLM is stale
   // (lists lower rates).
   "openai/gpt-oss-120b": INPUT_OUTPUT_COST_FIELDS,
+  // Groq's public GPT-OSS 20B price is $0.075/$0.30; LiteLLM carries Together's
+  // lower $0.05/$0.20 and the sync keeps re-applying it. This id is pinned to
+  // Groq (its priced/routable provider), so preserve its input/output cost.
+  "openai/gpt-oss-20b": INPUT_OUTPUT_COST_FIELDS,
   "accounts/fireworks/models/gpt-oss-20b": INPUT_OUTPUT_COST_FIELDS,
   // mistral-small-latest = Mistral Small 4 ($0.15/$0.60 per the model card);
   // LiteLLM is stale at $0.10/$0.30.
@@ -121,8 +125,11 @@ export const SYNC_PRESERVED_FIELDS: Record<
   "grok-code-fast": GROK_FAST_COST_FIELDS,
   // Fireworks GLM 5.2 cached input is $0.14/M per Fireworks' pricing page;
   // LiteLLM carries the GLM 5.1 $0.26 rate and the sync keeps re-applying it.
-  // (The baseten-served zai-org/GLM-5.2 is left to applyBasetenPricing.)
   "accounts/fireworks/models/glm-5p2": CACHE_READ_FIELD,
+  // The Baseten/Together-served zai-org/GLM-5.2 publishes $0.26/M cached input
+  // (Fireworks' $0.14 belongs to glm-5p2 above); pin it so applyBasetenPricing /
+  // the sync stop re-applying Fireworks' $0.14 to this id.
+  "zai-org/GLM-5.2": CACHE_READ_FIELD,
 };
 
 // Returns true if `field` of `modelName` is hand-maintained and must not be
@@ -843,7 +850,15 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
-  for (const modelName in localModels) {
+  // Write the top-level model ids in a stable, deterministic (sorted) order.
+  // Without this, sync/bot writes emit model_list.json in whatever insertion
+  // order each run produces, so a one-field change shows up as thousands of
+  // lines of pure reordering. Sorting keeps every future diff to the real change.
+  const modelNames = Object.keys(localModels).sort((a, b) =>
+    a.localeCompare(b),
+  );
+
+  for (const modelName of modelNames) {
     const originalModel = localModels[modelName];
     const orderedModel: Partial<ModelSpec> = {};
 

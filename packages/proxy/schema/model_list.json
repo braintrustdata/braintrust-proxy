@@ -27,6 +27,9 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-5.6 Luna",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-luna"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -45,6 +48,9 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "GPT-5.6 Sol",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-sol"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -63,6 +69,9 @@
     "input_cache_write_cost_per_mil_tokens": 3.125,
     "displayName": "GPT-5.6 Terra",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-terra"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -764,12 +773,12 @@
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-4.1 nano",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-4.1-2025-04-14": {
@@ -841,12 +850,12 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
     "displayName": "GPT-4 Turbo",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-4o": {
@@ -857,12 +866,12 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-4o",
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-4o-audio-preview": {
@@ -1384,12 +1393,12 @@
     "input_cache_read_cost_per_mil_tokens": 0.275,
     "displayName": "o4-mini",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "o4-mini-deep-research": {
@@ -1485,12 +1494,12 @@
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "displayName": "o3 mini",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "o3-pro": {
@@ -1586,12 +1595,12 @@
     "input_cache_read_cost_per_mil_tokens": 7.5,
     "displayName": "o1",
     "reasoning": true,
+    "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "o1-pro": {
@@ -5967,9 +5976,9 @@
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -5991,8 +6000,7 @@
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
     "available_providers": [
-      "groq",
-      "together"
+      "groq"
     ]
   },
   "openai/gpt-oss-safeguard-20b": {
@@ -7869,35 +7877,55 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.3,
-    "parent": "mistral-small-latest"
+    "deprecation_date": "2025-11-30",
+    "parent": "mistral-small-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "ministral-8b-2410": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
-    "parent": "ministral-8b-latest"
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-8b-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "ministral-3b-2410": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.04,
     "output_cost_per_mil_tokens": 0.04,
-    "parent": "ministral-3b-latest"
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-3b-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "mistral-saba-latest": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Mistral Saba"
+    "displayName": "Mistral Saba",
+    "deprecation_date": "2025-09-30",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "mistral-saba-2502": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.6,
-    "parent": "mistral-saba-latest"
+    "deprecation_date": "2025-09-30",
+    "parent": "mistral-saba-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "llama3-3-70b": {
     "format": "openai",
@@ -10611,7 +10639,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10886,6 +10914,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
+    "deprecation_date": "2025-11-30",
     "parent": "codestral-latest",
     "fallback_models": [
       "publishers/mistralai/models/codestral-2501"
@@ -10987,11 +11016,12 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Mistral Small (2603)",
+    "reasoning": true,
+    "reasoning_budget": true,
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
-      "mistral",
-      "openrouter"
+      "mistral"
     ]
   },
   "magistral-small-latest": {
@@ -11026,6 +11056,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "displayName": "Pixtral 12B",
+    "deprecation_date": "2025-12-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -11345,6 +11376,7 @@
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecated": true,
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite-preview"
     ],
@@ -11865,6 +11897,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.20 (Non-Reasoning)",
     "max_input_tokens": 1000000,
     "available_providers": [
@@ -12705,6 +12738,398 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "databricks"
+    ]
+  },
+  "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.15,
+    "displayName": "Llama 4 Maverick (17Bx128E) Instruct",
+    "locations": [
+      "us-east5"
+    ],
+    "max_input_tokens": 524288,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/meta/models/llama-4-scout-17b-16e-instruct-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 0.7,
+    "displayName": "Llama 4 Scout (17Bx16E) Instruct",
+    "locations": [
+      "us-east5"
+    ],
+    "max_input_tokens": 1310720,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "claude-mythos-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Mythos 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-mythos-preview": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Mythos Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "databricks-gpt-5-5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.5 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-4-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.4 mini",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-3-5-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-3-codex": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.3 Codex",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemma-3-12b": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Gemma 3 12B",
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "gpt-realtime-2.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 24,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "displayName": "GPT Realtime 2.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-realtime-2.1-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "GPT Realtime 2.1 mini",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "publishers/mistralai/models/mistral-medium-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium 3 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/mistralai/models/mistral-small-2503": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Mistral Small 3.1 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/mistralai/models/codestral-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral 2 (Vertex)",
+    "locations": [
+      "europe-west4",
+      "us-central1"
+    ],
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/openai/models/gpt-oss-120b-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "GPT-OSS 120B (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/openai/models/gpt-oss-20b-maas": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "GPT-OSS 20B (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "us-central1"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/xai/models/grok-4.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.3 (Vertex)",
+    "reasoning": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/xai/models/grok-4.20-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "displayName": "Grok 4.20 Non-Reasoning (Vertex)",
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "google.gemma-3-12b-it": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.29,
+    "displayName": "Gemma 3 12B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "google.gemma-3-4b-it": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.08,
+    "displayName": "Gemma 3 4B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 33,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.88,
+    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.75,
+    "output_cost_per_mil_tokens": 16.5,
+    "input_cache_read_cost_per_mil_tokens": 0.28,
+    "input_cache_write_cost_per_mil_tokens": 3.44,
+    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cache_write_cost_per_mil_tokens": 1.38,
+    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-9b-v2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.23,
+    "displayName": "NVIDIA Nemotron Nano 9B v2",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "databricks-gemini-3-6-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.6 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-glm-5-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GLM 5.2",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "gemini-3.1-flash-live-preview": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.75,
+    "output_cost_per_mil_tokens": 4.5,
+    "displayName": "Gemini 3.1 Flash Live Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google"
     ]
   }
 }

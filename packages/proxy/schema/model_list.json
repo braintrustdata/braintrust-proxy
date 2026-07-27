@@ -6012,16 +6012,15 @@
   "openai/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.05,
-    "output_cost_per_mil_tokens": 0.2,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.0375,
     "displayName": "OpenAI GPT-OSS (20B)",
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
     "available_providers": [
-      "groq",
-      "together"
+      "groq"
     ]
   },
   "openai/gpt-oss-safeguard-20b": {
@@ -10964,8 +10963,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GLM 5",
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "moonshotai/Kimi-K2.7-Code": {
@@ -10989,8 +10987,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "displayName": "Kimi K2.5",
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "moonshotai/Kimi-K2-Instruct": {
@@ -11289,7 +11286,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -11373,8 +11370,7 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "available_providers": [
-      "baseten",
-      "together"
+      "baseten"
     ]
   },
   "gemini-3.6-flash": {

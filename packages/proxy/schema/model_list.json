@@ -778,7 +778,8 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4.1-2025-04-14": {
@@ -855,7 +856,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4o": {
@@ -871,7 +873,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4o-audio-preview": {
@@ -1398,7 +1401,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o4-mini-deep-research": {
@@ -1499,7 +1503,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o3-pro": {
@@ -1600,7 +1605,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o1-pro": {
@@ -11037,7 +11043,8 @@
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
-      "mistral"
+      "mistral",
+      "openrouter"
     ]
   },
   "magistral-small-latest": {
@@ -11993,7 +12000,8 @@
     "max_input_tokens": 500000,
     "max_output_tokens": 500000,
     "available_providers": [
-      "xAI"
+      "xAI",
+      "openrouter"
     ]
   },
   "grok-4.5-latest": {

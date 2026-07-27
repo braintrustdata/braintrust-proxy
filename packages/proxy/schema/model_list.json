@@ -778,7 +778,8 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4.1-2025-04-14": {
@@ -855,7 +856,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4o": {
@@ -871,7 +873,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4o-audio-preview": {
@@ -1398,7 +1401,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o4-mini-deep-research": {
@@ -1499,7 +1503,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o3-pro": {
@@ -1600,7 +1605,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o1-pro": {
@@ -5932,6 +5938,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/kimi-k3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Kimi K3",
+    "reasoning": true,
+    "max_input_tokens": 1040000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
@@ -5992,15 +6012,16 @@
   "openai/gpt-oss-20b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
     "input_cache_read_cost_per_mil_tokens": 0.0375,
     "displayName": "OpenAI GPT-OSS (20B)",
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
     "available_providers": [
-      "groq"
+      "groq",
+      "together"
     ]
   },
   "openai/gpt-oss-safeguard-20b": {
@@ -10743,7 +10764,8 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   },
   "mistral-large-latest": {
@@ -11021,7 +11043,8 @@
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
     "available_providers": [
-      "mistral"
+      "mistral",
+      "openrouter"
     ]
   },
   "magistral-small-latest": {
@@ -11971,7 +11994,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok 4.5",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -11987,7 +12010,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok 4.5 (Latest)",
     "reasoning": true,
     "parent": "grok-4.5",

@@ -9,6 +9,7 @@ import {
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
+import { isModelExcludedFromSync } from "./sync_models";
 import {
   type ModelEndpointType,
   type ModelFormat,
@@ -1599,15 +1600,43 @@ async function resolveIssueCommand(argv: {
   const body = await fs.promises.readFile(argv.bodyFile, "utf-8");
   const parsedIssue = parseIssue(argv.title, body);
   const issueKind = getIssueKind(parsedIssue.metadata);
-  const targetModels = uniqueModels(parsedIssue.models);
-  const primaryModel = targetModels[0];
+  const requestedModels = uniqueModels(parsedIssue.models);
+  // Permanent exclusions (MANUAL_SYNC_EXCLUDED_MODELS + provider-confirmed
+  // deprecations): never auto-add these from a bot issue, even if the ticket asks
+  // for them. Drop them from the actionable set and close the issue if nothing
+  // else remains, so the daily bot stops re-proposing them.
+  const excludedModels = requestedModels.filter((model) =>
+    isModelExcludedFromSync(model),
+  );
+  const targetModels = requestedModels.filter(
+    (model) => !isModelExcludedFromSync(model),
+  );
+  const primaryModel = targetModels[0] ?? requestedModels[0];
   const sourceUrls = getVerificationSourceUrls(parsedIssue, body);
 
-  if (!parsedIssue.provider || targetModels.length === 0) {
+  if (!parsedIssue.provider || requestedModels.length === 0) {
     await writeResult(argv.resultPath, {
       action: "unsupported",
       message:
         "Autofix skipped because the issue body/title did not contain parseable bot metadata for a model catalog change.",
+      changed_models: [],
+      added_models: [],
+      updated_models: [],
+      source_urls: sourceUrls,
+    });
+    return;
+  }
+
+  if (targetModels.length === 0) {
+    await writeResult(argv.resultPath, {
+      action: "unsupported",
+      message: `Closing this bot issue because ${formatModelList(
+        excludedModels,
+      )} ${
+        excludedModels.length === 1 ? "is" : "are"
+      } on the permanent sync-exclusion list (MANUAL_SYNC_EXCLUDED_MODELS / deprecated_model_ids.json in sync_models.ts) and must not be auto-added to the catalog.`,
+      provider: parsedIssue.provider,
+      model: primaryModel,
       changed_models: [],
       added_models: [],
       updated_models: [],

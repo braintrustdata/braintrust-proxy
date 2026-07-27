@@ -648,7 +648,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-gpt-oss-20b": ["databricks"],
   "databricks-qwen35-122b-a10b": ["databricks"],
   "databricks-qwen3-next-80b-a3b-instruct": ["databricks"],
-  "thinkingmachines/inkling": ["baseten"],
+  "thinkingmachines/inkling": ["baseten", "together"],
   "databricks-claude-opus-4-8": ["databricks"],
   "databricks-gpt-oss-120b": ["databricks"],
   "databricks-llama-4-maverick": ["databricks"],
@@ -1043,7 +1043,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-meta-llama-3-1-405b-instruct": ["databricks"],
   "databricks-meta-llama-3-1-8b-instruct": ["databricks"],
   "openai/gpt-oss-120b": ["groq", "together", "baseten"],
-  "openai/gpt-oss-20b": ["groq"], // NOTE: We use groq pricing for this and Together pricing for the 120B model
+  "openai/gpt-oss-20b": ["groq", "together"],
   "o4-mini-deep-research-2025-06-26": ["openai", "azure"],
   "o4-mini-deep-research": ["openai", "azure", "openrouter"],
   "o3-deep-research-2025-06-26": ["openai", "azure"],
@@ -1126,6 +1126,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia.nemotron-nano-9b-v2": ["bedrock"],
   "databricks-glm-5-2": ["databricks"],
   "databricks-inkling": ["databricks"],
+  "accounts/fireworks/models/kimi-k3": ["fireworks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -523,6 +523,21 @@ describe("isModelExcludedFromSync", () => {
     expect(isModelExcludedFromSync("gpt-5")).toBe(false);
     expect(isModelExcludedFromSync("")).toBe(false);
   });
+
+  it("excludes the Live model, ENDPOINT_NOT_FOUND Databricks, and Vertex MaaS ids", () => {
+    for (const id of [
+      "gemini-3.1-flash-live-preview",
+      "databricks-gpt-5-4-mini",
+      "databricks-gemini-3-6-flash",
+      "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas",
+      "publishers/openai/models/gpt-oss-120b-maas",
+      "publishers/xai/models/grok-4.3",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+    // A real Databricks model we intentionally keep is not excluded.
+    expect(isModelExcludedFromSync("databricks-gpt-5-5-pro")).toBe(false);
+  });
 });
 
 describe("convertBasetenToLocalModel", () => {

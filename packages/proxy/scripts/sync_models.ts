@@ -158,6 +158,11 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // "realtime") keeps surfacing them so the sync re-adds them each run.
   "gpt-realtime-2.1",
   "gpt-realtime-2.1-mini",
+  // Live model: Gemini Live uses a bidirectional API and is rejected by
+  // generateContent ("not supported for generateContent"), so it is not a
+  // chat/completions model. Excluded permanently (see PR that trimmed it from
+  // the daily catalog batch).
+  "gemini-3.1-flash-live-preview",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

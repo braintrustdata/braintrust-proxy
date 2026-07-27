@@ -1112,6 +1112,20 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "command-r-plus-08-2024": ["cohere", "openrouter"],
   "command-r-08-2024": ["cohere", "openrouter"],
   "command-r7b-12-2024": ["cohere", "openrouter"],
+  "claude-mythos-5": ["anthropic"],
+  "claude-mythos-preview": ["anthropic"],
+  "databricks-gpt-5-5-pro": ["databricks"],
+  "databricks-gemini-3-5-flash": ["databricks"],
+  "databricks-gpt-5-3-codex": ["databricks"],
+  "databricks-gemma-3-12b": ["databricks"],
+  "google.gemma-3-12b-it": ["bedrock"],
+  "google.gemma-3-4b-it": ["bedrock"],
+  "openai.gpt-5.6-sol": ["bedrock"],
+  "openai.gpt-5.6-terra": ["bedrock"],
+  "openai.gpt-5.6-luna": ["bedrock"],
+  "nvidia.nemotron-nano-9b-v2": ["bedrock"],
+  "databricks-glm-5-2": ["databricks"],
+  "databricks-inkling": ["databricks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -850,7 +850,15 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
-  for (const modelName in localModels) {
+  // Write the top-level model ids in a stable, deterministic (sorted) order.
+  // Without this, sync/bot writes emit model_list.json in whatever insertion
+  // order each run produces, so a one-field change shows up as thousands of
+  // lines of pure reordering. Sorting keeps every future diff to the real change.
+  const modelNames = Object.keys(localModels).sort((a, b) =>
+    a.localeCompare(b),
+  );
+
+  for (const modelName of modelNames) {
     const originalModel = localModels[modelName];
     const orderedModel: Partial<ModelSpec> = {};
 

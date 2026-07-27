@@ -1126,17 +1126,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia.nemotron-nano-9b-v2": ["bedrock"],
   "databricks-glm-5-2": ["databricks"],
   "databricks-inkling": ["databricks"],
-  "databricks-gpt-5-4-mini": ["databricks"],
-  "databricks-gemini-3-6-flash": ["databricks"],
-  "publishers/meta/models/llama-4-maverick-17b-128e-instruct-maas": ["vertex"],
-  "publishers/meta/models/llama-4-scout-17b-16e-instruct-maas": ["vertex"],
-  "gpt-realtime-2.1": ["openai", "azure"],
-  "gpt-realtime-2.1-mini": ["openai", "azure"],
-  "publishers/mistralai/models/mistral-medium-3": ["vertex"],
-  "publishers/mistralai/models/mistral-small-2503": ["vertex"],
-  "publishers/mistralai/models/codestral-2": ["vertex"],
-  "publishers/openai/models/gpt-oss-120b-maas": ["vertex"],
-  "publishers/openai/models/gpt-oss-20b-maas": ["vertex"],
   "accounts/fireworks/models/kimi-k3": ["fireworks"],
 };
 

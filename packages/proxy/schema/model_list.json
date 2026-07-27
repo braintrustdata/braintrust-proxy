@@ -4003,6 +4003,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/kimi-k3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Kimi K3",
+    "reasoning": true,
+    "max_input_tokens": 1040000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/kimi-k2p7-code": {
     "format": "openai",
     "flavor": "chat",
@@ -5938,20 +5952,6 @@
       "fireworks"
     ]
   },
-  "accounts/fireworks/models/kimi-k3": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "displayName": "Kimi K3",
-    "reasoning": true,
-    "max_input_tokens": 1040000,
-    "available_providers": [
-      "fireworks"
-    ]
-  },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
@@ -5998,7 +5998,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -7893,61 +7893,6 @@
     "displayName": "Qwen QwQ 32B Preview",
     "deprecated": true
   },
-  "mistral-small-2501": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.3,
-    "deprecation_date": "2025-11-30",
-    "parent": "mistral-small-latest",
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-8b-2410": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.1,
-    "deprecation_date": "2025-12-31",
-    "parent": "ministral-8b-latest",
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-3b-2410": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.04,
-    "output_cost_per_mil_tokens": 0.04,
-    "deprecation_date": "2025-12-31",
-    "parent": "ministral-3b-latest",
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-saba-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Mistral Saba",
-    "deprecation_date": "2025-09-30",
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-saba-2502": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.6,
-    "deprecation_date": "2025-09-30",
-    "parent": "mistral-saba-latest",
-    "available_providers": [
-      "mistral"
-    ]
-  },
   "llama3-3-70b": {
     "format": "openai",
     "flavor": "chat",
@@ -8073,6 +8018,539 @@
     "displayName": "Llama 4 Maverick",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000
+  },
+  "mistral-large-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Mistral Large",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-large-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Mistral Large (2512)",
+    "parent": "mistral-large-latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "mistral-medium-3.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3",
+    "parent": "mistral-medium-3.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "mistral-medium": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.7,
+    "output_cost_per_mil_tokens": 8.1,
+    "displayName": "Mistral Medium",
+    "deprecated": true,
+    "max_input_tokens": 32000,
+    "max_output_tokens": 8191,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-2604": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Mistral Medium 3.5 (2604)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Mistral Medium (2508)",
+    "deprecation_date": "2026-05-22",
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-2505": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "deprecation_date": "2026-05-22",
+    "parent": "mistral-medium-latest",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 8191,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Magistral Medium Latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 40000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-medium-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 5,
+    "displayName": "Magistral Medium (2509)",
+    "deprecation_date": "2026-07-31",
+    "parent": "magistral-medium-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "codestral-2508": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral 2508",
+    "parent": "codestral-latest",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "codestral-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "deprecation_date": "2025-11-30",
+    "parent": "codestral-latest",
+    "fallback_models": [
+      "publishers/mistralai/models/codestral-2501"
+    ],
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "codestral-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "displayName": "Codestral",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-medium-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral Medium Latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral 2512",
+    "deprecation_date": "2026-07-31",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "devstral-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "displayName": "Devstral Latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "devstral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Devstral Small Latest",
+    "max_input_tokens": 256000,
+    "max_output_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Mistral Small",
+    "deprecated": true,
+    "max_input_tokens": 32000,
+    "max_output_tokens": 8191,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Small",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-small-2603": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Small (2603)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "mistral-small-latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "mistral-small-2501": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "deprecation_date": "2025-11-30",
+    "parent": "mistral-small-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Magistral Small Latest",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 40000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "magistral-small-2509": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1.5,
+    "displayName": "Magistral Small (2509)",
+    "deprecation_date": "2026-07-31",
+    "parent": "magistral-small-latest",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "pixtral-12b-2409": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Pixtral 12B",
+    "deprecation_date": "2025-12-31",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Voxtral Small",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-2507": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.4,
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-14b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14B",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-14b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Ministral 14B 2512",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "ministral-8b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Ministral 8B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-8b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Ministral 8B (2512)",
+    "parent": "ministral-8b-latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "ministral-8b-2410": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-8b-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-3b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 3B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "ministral-3b-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.1,
+    "displayName": "Ministral 3B (2512)",
+    "parent": "ministral-3b-latest",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "mistral",
+      "openrouter"
+    ]
+  },
+  "ministral-3b-2410": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "deprecation_date": "2025-12-31",
+    "parent": "ministral-3b-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-tiny": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 0.25,
+    "displayName": "Mistral Tiny",
+    "deprecated": true,
+    "max_input_tokens": 32000,
+    "max_output_tokens": 8191,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "open-mistral-nemo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "displayName": "Mistral NeMo",
+    "deprecation_date": "2026-07-31",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "open-mistral-nemo-2407": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.15,
+    "deprecation_date": "2026-07-31",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "open-mixtral-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "displayName": "Mixtral 8x22B",
+    "deprecated": true,
+    "max_input_tokens": 65336,
+    "max_output_tokens": 8191,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "labs-leanstral-1-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Leanstral 1.5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-saba-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Mistral Saba",
+    "deprecation_date": "2025-09-30",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-saba-2502": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "deprecation_date": "2025-09-30",
+    "parent": "mistral-saba-latest",
+    "available_providers": [
+      "mistral"
+    ]
   },
   "wizardlm-2-8x22b": {
     "format": "openai",
@@ -8201,6 +8679,23 @@
       "anthropic"
     ]
   },
+  "claude-mythos-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Mythos 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "claude-opus-4-8": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8245,6 +8740,19 @@
       "publishers/anthropic/models/claude-sonnet-4-6",
       "us.anthropic.claude-sonnet-4-6"
     ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-mythos-preview": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Mythos Preview",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -8754,6 +9262,32 @@
       "bedrock"
     ]
   },
+  "google.gemma-3-12b-it": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.29,
+    "displayName": "Gemma 3 12B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "google.gemma-3-4b-it": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.08,
+    "displayName": "Gemma 3 4B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "zai.glm-5": {
     "format": "converse",
     "flavor": "chat",
@@ -8789,6 +9323,51 @@
     "displayName": "GLM 4.7 Flash",
     "max_input_tokens": 203000,
     "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cache_write_cost_per_mil_tokens": 1.38,
+    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 33,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.88,
+    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.75,
+    "output_cost_per_mil_tokens": 16.5,
+    "input_cache_read_cost_per_mil_tokens": 0.28,
+    "input_cache_write_cost_per_mil_tokens": 3.44,
+    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
+    "reasoning": true,
+    "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
     ]
@@ -9140,6 +9719,18 @@
     "displayName": "Mixtral 8x7B",
     "max_input_tokens": 32000,
     "max_output_tokens": 8191,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-9b-v2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.23,
+    "displayName": "NVIDIA Nemotron Nano 9B v2",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
     ]
@@ -10351,6 +10942,32 @@
       "together"
     ]
   },
+  "zai-org/GLM-5.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.3,
+    "output_cost_per_mil_tokens": 4.3,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "displayName": "GLM 5.1",
+    "reasoning": true,
+    "max_input_tokens": 202752,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "zai-org/GLM-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 3.15,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "GLM 5",
+    "available_providers": [
+      "together",
+      "baseten"
+    ]
+  },
   "moonshotai/Kimi-K2.7-Code": {
     "format": "openai",
     "flavor": "chat",
@@ -10359,6 +10976,18 @@
     "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.7 Code",
     "max_input_tokens": 262144,
+    "available_providers": [
+      "together",
+      "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K2.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
+    "input_cache_read_cost_per_mil_tokens": 0.12,
+    "displayName": "Kimi K2.5",
     "available_providers": [
       "together",
       "baseten"
@@ -10660,7 +11289,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10684,36 +11313,26 @@
       "baseten"
     ]
   },
-  "zai-org/GLM-5.1": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.3,
-    "output_cost_per_mil_tokens": 4.3,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
-    "displayName": "GLM 5.1",
-    "reasoning": true,
-    "max_input_tokens": 202752,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "together"
-    ]
-  },
-  "zai-org/GLM-5": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.95,
-    "output_cost_per_mil_tokens": 3.15,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "available_providers": [
-      "together"
-    ]
-  },
   "zai-org/GLM-4.7": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.2,
     "input_cache_read_cost_per_mil_tokens": 0.12,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Kimi K3",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
     ]
@@ -10727,16 +11346,6 @@
     "displayName": "Kimi K2.6",
     "available_providers": [
       "baseten",
-      "together"
-    ]
-  },
-  "moonshotai/Kimi-K2.5": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 3,
-    "input_cache_read_cost_per_mil_tokens": 0.12,
-    "available_providers": [
       "together"
     ]
   },
@@ -10766,484 +11375,6 @@
     "available_providers": [
       "baseten",
       "together"
-    ]
-  },
-  "mistral-large-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Mistral Large",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 262144,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-large-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Mistral Large (2512)",
-    "parent": "mistral-large-latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "mistral-medium-3.5": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "displayName": "Mistral Medium 3.5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-medium-3": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "displayName": "Mistral Medium 3",
-    "parent": "mistral-medium-3.5",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "mistral-medium": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.7,
-    "output_cost_per_mil_tokens": 8.1,
-    "displayName": "Mistral Medium",
-    "deprecated": true,
-    "max_input_tokens": 32000,
-    "max_output_tokens": 8191,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-medium-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "displayName": "Mistral Medium 3.5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-medium-2604": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "displayName": "Mistral Medium 3.5 (2604)",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "mistral-medium-latest",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-medium-2508": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "Mistral Medium (2508)",
-    "deprecation_date": "2026-05-22",
-    "parent": "mistral-medium-latest",
-    "max_input_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-medium-2505": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "deprecation_date": "2026-05-22",
-    "parent": "mistral-medium-latest",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8191,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "magistral-medium-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 5,
-    "displayName": "Magistral Medium Latest",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 40000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "magistral-medium-2509": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 5,
-    "displayName": "Magistral Medium (2509)",
-    "deprecation_date": "2026-07-31",
-    "parent": "magistral-medium-latest",
-    "max_input_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "codestral-2508": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Codestral 2508",
-    "parent": "codestral-latest",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "codestral-2501": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.9,
-    "deprecation_date": "2025-11-30",
-    "parent": "codestral-latest",
-    "fallback_models": [
-      "publishers/mistralai/models/codestral-2501"
-    ],
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "codestral-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.9,
-    "displayName": "Codestral",
-    "max_input_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "devstral-medium-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "Devstral Medium Latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "devstral-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "Devstral 2512",
-    "deprecation_date": "2026-07-31",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "devstral-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "Devstral Latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "devstral-small-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.3,
-    "displayName": "Devstral Small Latest",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 256000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-small": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.3,
-    "displayName": "Mistral Small",
-    "deprecated": true,
-    "max_input_tokens": 32000,
-    "max_output_tokens": 8191,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-small-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Mistral Small",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "mistral-small-2603": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "displayName": "Mistral Small (2603)",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "mistral-small-latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "magistral-small-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Magistral Small Latest",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 40000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "magistral-small-2509": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "displayName": "Magistral Small (2509)",
-    "deprecation_date": "2026-07-31",
-    "parent": "magistral-small-latest",
-    "max_input_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "pixtral-12b-2409": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Pixtral 12B",
-    "deprecation_date": "2025-12-31",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "voxtral-small-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "displayName": "Voxtral Small",
-    "max_input_tokens": 32000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "voxtral-small-2507": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.4,
-    "max_input_tokens": 32000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-14b-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.2,
-    "displayName": "Ministral 14B",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-14b-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.2,
-    "displayName": "Ministral 14B 2512",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "ministral-8b-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Ministral 8B",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-8b-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Ministral 8B (2512)",
-    "parent": "ministral-8b-latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "ministral-3b-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.1,
-    "displayName": "Ministral 3B",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "ministral-3b-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.1,
-    "displayName": "Ministral 3B (2512)",
-    "parent": "ministral-3b-latest",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "mistral",
-      "openrouter"
-    ]
-  },
-  "mistral-tiny": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 0.25,
-    "displayName": "Mistral Tiny",
-    "deprecated": true,
-    "max_input_tokens": 32000,
-    "max_output_tokens": 8191,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "open-mistral-nemo": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.15,
-    "displayName": "Mistral NeMo",
-    "deprecation_date": "2026-07-31",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "open-mistral-nemo-2407": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.15,
-    "deprecation_date": "2026-07-31",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "open-mixtral-8x22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "displayName": "Mixtral 8x22B",
-    "deprecated": true,
-    "max_input_tokens": 65336,
-    "max_output_tokens": 8191,
-    "available_providers": [
-      "mistral"
-    ]
-  },
-  "labs-leanstral-1-5": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Leanstral 1.5",
-    "max_input_tokens": 256000,
-    "available_providers": [
-      "mistral"
     ]
   },
   "gemini-3.6-flash": {
@@ -11994,7 +12125,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Grok 4.5",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -12010,7 +12141,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Grok 4.5 (Latest)",
     "reasoning": true,
     "parent": "grok-4.5",
@@ -12565,6 +12696,18 @@
       "databricks"
     ]
   },
+  "databricks-gpt-5-5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.5 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-gpt-5-4": {
     "format": "openai",
     "flavor": "chat",
@@ -12582,6 +12725,18 @@
     "multimodal": true,
     "displayName": "GPT-5.4 nano",
     "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-5-3-codex": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-5.3 Codex",
+    "reasoning": true,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
@@ -12638,6 +12793,19 @@
     "displayName": "GPT-5 nano",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-3-5-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Gemini 3.5 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
     "available_providers": [
       "databricks"
     ]
@@ -12763,73 +12931,6 @@
       "databricks"
     ]
   },
-  "claude-mythos-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Mythos 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
-  },
-  "claude-mythos-preview": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Claude Mythos Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
-  },
-  "databricks-gpt-5-5-pro": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "GPT-5.5 Pro",
-    "reasoning": true,
-    "max_input_tokens": 1050000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "databricks"
-    ]
-  },
-  "databricks-gemini-3-5-flash": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Gemini 3.5 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "databricks"
-    ]
-  },
-  "databricks-gpt-5-3-codex": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "GPT-5.3 Codex",
-    "reasoning": true,
-    "max_input_tokens": 400000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "databricks"
-    ]
-  },
   "databricks-gemma-3-12b": {
     "format": "openai",
     "flavor": "chat",
@@ -12837,89 +12938,6 @@
     "max_input_tokens": 131072,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "google.gemma-3-12b-it": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.29,
-    "displayName": "Gemma 3 12B IT",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "google.gemma-3-4b-it": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.04,
-    "output_cost_per_mil_tokens": 0.08,
-    "displayName": "Gemma 3 4B IT",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "openai.gpt-5.6-sol": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5.5,
-    "output_cost_per_mil_tokens": 33,
-    "input_cache_read_cost_per_mil_tokens": 0.55,
-    "input_cache_write_cost_per_mil_tokens": 6.88,
-    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
-    "reasoning": true,
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "openai.gpt-5.6-terra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2.75,
-    "output_cost_per_mil_tokens": 16.5,
-    "input_cache_read_cost_per_mil_tokens": 0.28,
-    "input_cache_write_cost_per_mil_tokens": 3.44,
-    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
-    "reasoning": true,
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "openai.gpt-5.6-luna": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.1,
-    "output_cost_per_mil_tokens": 6.6,
-    "input_cache_read_cost_per_mil_tokens": 0.11,
-    "input_cache_write_cost_per_mil_tokens": 1.38,
-    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
-    "reasoning": true,
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "nvidia.nemotron-nano-9b-v2": {
-    "format": "converse",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.23,
-    "displayName": "NVIDIA Nemotron Nano 9B v2",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
     ]
   },
   "databricks-glm-5-2": {

@@ -8770,6 +8770,16 @@
       "azure"
     ]
   },
+  "inception/mercury-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Mercury 2",
+    "reasoning": true,
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "labs-leanstral-1-5": {
     "format": "openai",
     "flavor": "chat",
@@ -10057,7 +10067,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "displayName": "Kimi K2.5",
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "moonshotai/Kimi-K2.6": {
@@ -10649,8 +10660,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
-    "displayName": "OpenAI GPT-OSS (120B)",
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
@@ -12067,6 +12078,16 @@
     "displayName": "Qwen QwQ 32B Preview",
     "deprecated": true
   },
+  "sid/sid-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "SID-1",
+    "reasoning": true,
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "sonar": {
     "format": "openai",
     "flavor": "chat",
@@ -12873,7 +12894,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GLM 5",
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "zai-org/GLM-5.1": {

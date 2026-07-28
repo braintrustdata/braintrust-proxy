@@ -649,6 +649,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-qwen35-122b-a10b": ["databricks"],
   "databricks-qwen3-next-80b-a3b-instruct": ["databricks"],
   "thinkingmachines/inkling": ["baseten"],
+  "inception/mercury-2": ["baseten"],
+  "sid/sid-1": ["baseten"],
   "databricks-claude-opus-4-8": ["databricks"],
   "databricks-gpt-oss-120b": ["databricks"],
   "databricks-llama-4-maverick": ["databricks"],

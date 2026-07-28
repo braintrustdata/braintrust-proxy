@@ -189,6 +189,12 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   "publishers/openai/models/gpt-oss-20b-maas",
   "publishers/xai/models/grok-4.3",
   "publishers/xai/models/grok-4.20-non-reasoning",
+  // Not accessible on the Braintrust Baseten account: these return 403
+  // ("please check the api-key you provided") on invocation even though the key
+  // works for other Baseten models, so they are not usable but the sync keeps
+  // surfacing them from Baseten's model list.
+  "inception/mercury-2",
+  "sid/sid-1",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

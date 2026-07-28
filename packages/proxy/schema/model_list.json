@@ -10645,26 +10645,6 @@
       "openrouter"
     ]
   },
-  "inception/mercury-2": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Mercury 2",
-    "reasoning": true,
-    "max_input_tokens": 8192,
-    "available_providers": [
-      "baseten"
-    ]
-  },
-  "sid/sid-1": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "SID-1",
-    "reasoning": true,
-    "max_input_tokens": 32768,
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "deepseek-ai/DeepSeek-V3.1": {
     "format": "openai",
     "flavor": "chat",

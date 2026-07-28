@@ -1126,8 +1126,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-glm-5-2": ["databricks"],
   "databricks-inkling": ["databricks"],
   "accounts/fireworks/models/kimi-k3": ["fireworks"],
-  "inception/mercury-2": ["baseten"],
-  "sid/sid-1": ["baseten"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

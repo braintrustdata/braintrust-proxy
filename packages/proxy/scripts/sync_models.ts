@@ -201,6 +201,12 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   "publishers/openai/models/gpt-oss-20b-maas",
   "publishers/xai/models/grok-4.3",
   "publishers/xai/models/grok-4.20-non-reasoning",
+  // Not accessible on the Braintrust Baseten account: these return 403
+  // ("please check the api-key you provided") on invocation even though the key
+  // works for other Baseten models, so they are not usable but the sync keeps
+  // surfacing them from Baseten's model list.
+  "inception/mercury-2",
+  "sid/sid-1",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed
@@ -862,15 +868,7 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
-  // Write the top-level model ids in a stable, deterministic (sorted) order.
-  // Without this, sync/bot writes emit model_list.json in whatever insertion
-  // order each run produces, so a one-field change shows up as thousands of
-  // lines of pure reordering. Sorting keeps every future diff to the real change.
-  const modelNames = Object.keys(localModels).sort((a, b) =>
-    a.localeCompare(b),
-  );
-
-  for (const modelName of modelNames) {
+  for (const modelName in localModels) {
     const originalModel = localModels[modelName];
     const orderedModel: Partial<ModelSpec> = {};
 
@@ -895,11 +893,68 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
-  const orderedModelsToWrite = reorderModelProperties(localModels);
+  const orderedModelsToWrite = reorderModelProperties(
+    stablyOrderByExisting(localModels),
+  );
   await fs.promises.writeFile(
     LOCAL_MODEL_LIST_PATH,
     JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
   );
+}
+
+// Preserve the existing on-disk top-level key order so a sync/bot write does not
+// reshuffle the whole file. Existing ids keep their positions (the order stops
+// "flopping"); a genuinely-new id is inserted at the FRONT of its group — before
+// the first existing model that shares its primary provider — so newer models
+// display first within their provider grouping. Falls back to appending if the
+// provider group does not exist yet.
+function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
+  let existingOrder: string[] = [];
+  try {
+    existingOrder = Object.keys(
+      JSON.parse(fs.readFileSync(LOCAL_MODEL_LIST_PATH, "utf-8")),
+    );
+  } catch {
+    // No existing catalog on disk (or unreadable) — fall back to insertion order.
+    return localModels;
+  }
+  const primaryProvider = (name: string): string | undefined =>
+    localModels[name]?.available_providers?.[0];
+  const idNamespace = (name: string): string =>
+    name.includes("/") ? name.slice(0, name.lastIndexOf("/")) : "";
+  // Existing models first, in their current on-disk order.
+  const orderedNames = existingOrder.filter((name) =>
+    Object.prototype.hasOwnProperty.call(localModels, name),
+  );
+  // Insert each new model at the front of its group (newest-first). The catalog
+  // is grouped by primary provider, then by namespace within a provider region,
+  // so prefer the same (provider, namespace) sub-group; otherwise fall back to
+  // the front of the provider region; otherwise append.
+  for (const name in localModels) {
+    if (orderedNames.includes(name)) {
+      continue;
+    }
+    const provider = primaryProvider(name);
+    const ns = idNamespace(name);
+    let insertAt = orderedNames.findIndex(
+      (existing) =>
+        primaryProvider(existing) === provider && idNamespace(existing) === ns,
+    );
+    if (insertAt < 0) {
+      insertAt = orderedNames.findIndex(
+        (existing) => primaryProvider(existing) === provider,
+      );
+    }
+    if (insertAt < 0) {
+      insertAt = orderedNames.length;
+    }
+    orderedNames.splice(insertAt, 0, name);
+  }
+  const ordered: LocalModelList = {};
+  for (const name of orderedNames) {
+    ordered[name] = localModels[name];
+  }
+  return ordered;
 }
 
 function getNonZeroNumber(value: number | undefined): number | undefined {

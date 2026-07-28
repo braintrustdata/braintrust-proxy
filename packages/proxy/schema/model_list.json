@@ -8001,12 +8001,14 @@
   "gpt-realtime-2": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 16,
+    "output_cost_per_mil_tokens": 24,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "displayName": "GPT Realtime 2",
-    "max_input_tokens": 32000,
-    "max_output_tokens": 4096,
+    "reasoning": true,
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
     "available_providers": [
       "openai",
       "azure"

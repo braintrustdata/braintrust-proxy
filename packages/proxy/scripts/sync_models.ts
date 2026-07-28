@@ -160,11 +160,23 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Not a chat model: OpenAI's realtime transcription model is rejected by
   // /v1/chat/completions ("This is not a chat model").
   "gpt-realtime-whisper",
-  // Realtime models: not supported yet. They are rejected by
-  // /v1/chat/completions ("This is not a chat model"), but LiteLLM (mode
-  // "realtime") keeps surfacing them so the sync re-adds them each run.
+  // Realtime models: not supported — Braintrust has no realtime endpoint, so
+  // none of these invoke via /v1/chat/completions ("This is not a chat model"),
+  // but LiteLLM (mode "realtime") keeps surfacing them so the sync re-adds them.
   "gpt-realtime-2.1",
   "gpt-realtime-2.1-mini",
+  "gpt-realtime-2",
+  "gpt-realtime-2025-08-28",
+  "gpt-realtime-1.5",
+  "gpt-realtime",
+  "gpt-realtime-mini",
+  "gpt-realtime-mini-2025-12-15",
+  "gpt-realtime-mini-2025-10-06",
+  "gpt-4o-realtime-preview",
+  "gpt-4o-realtime-preview-2025-06-03",
+  "gpt-4o-realtime-preview-2024-12-17",
+  "gpt-4o-mini-realtime-preview",
+  "gpt-4o-mini-realtime-preview-2024-12-17",
   // Live model: Gemini Live uses a bidirectional API and is rejected by
   // generateContent ("not supported for generateContent"), so it is not a
   // chat/completions model. Excluded permanently (see PR that trimmed it from

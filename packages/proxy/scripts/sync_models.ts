@@ -850,15 +850,7 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
-  // Write the top-level model ids in a stable, deterministic (sorted) order.
-  // Without this, sync/bot writes emit model_list.json in whatever insertion
-  // order each run produces, so a one-field change shows up as thousands of
-  // lines of pure reordering. Sorting keeps every future diff to the real change.
-  const modelNames = Object.keys(localModels).sort((a, b) =>
-    a.localeCompare(b),
-  );
-
-  for (const modelName of modelNames) {
+  for (const modelName in localModels) {
     const originalModel = localModels[modelName];
     const orderedModel: Partial<ModelSpec> = {};
 
@@ -883,11 +875,41 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
-  const orderedModelsToWrite = reorderModelProperties(localModels);
+  const orderedModelsToWrite = reorderModelProperties(
+    stablyOrderByExisting(localModels),
+  );
   await fs.promises.writeFile(
     LOCAL_MODEL_LIST_PATH,
     JSON.stringify(orderedModelsToWrite, null, 2) + "\n",
   );
+}
+
+// Preserve the existing on-disk top-level key order so a sync/bot write only
+// appends genuinely-new model ids (at the end) instead of reshuffling the whole
+// file. This keeps the catalog's established grouping stable across runs — the
+// order stops "flopping" and every diff stays scoped to the real change.
+function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
+  let existingOrder: string[] = [];
+  try {
+    existingOrder = Object.keys(
+      JSON.parse(fs.readFileSync(LOCAL_MODEL_LIST_PATH, "utf-8")),
+    );
+  } catch {
+    // No existing catalog on disk (or unreadable) — fall back to insertion order.
+    return localModels;
+  }
+  const ordered: LocalModelList = {};
+  for (const name of existingOrder) {
+    if (Object.prototype.hasOwnProperty.call(localModels, name)) {
+      ordered[name] = localModels[name];
+    }
+  }
+  for (const name in localModels) {
+    if (!Object.prototype.hasOwnProperty.call(ordered, name)) {
+      ordered[name] = localModels[name];
+    }
+  }
+  return ordered;
 }
 
 function getNonZeroNumber(value: number | undefined): number | undefined {

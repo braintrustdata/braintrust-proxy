@@ -10738,18 +10738,6 @@
       "baseten"
     ]
   },
-  "moonshotai/Kimi-K2.6": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.95,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.16,
-    "displayName": "Kimi K2.6",
-    "available_providers": [
-      "baseten",
-      "together"
-    ]
-  },
   "moonshotai/Kimi-K3": {
     "format": "openai",
     "flavor": "chat",
@@ -10762,6 +10750,18 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
+    ]
+  },
+  "moonshotai/Kimi-K2.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.16,
+    "displayName": "Kimi K2.6",
+    "available_providers": [
+      "baseten",
+      "together"
     ]
   },
   "moonshotai/Kimi-K2.5": {

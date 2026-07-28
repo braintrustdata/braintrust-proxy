@@ -902,19 +902,31 @@ function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
   }
   const primaryProvider = (name: string): string | undefined =>
     localModels[name]?.available_providers?.[0];
+  const idNamespace = (name: string): string =>
+    name.includes("/") ? name.slice(0, name.lastIndexOf("/")) : "";
   // Existing models first, in their current on-disk order.
   const orderedNames = existingOrder.filter((name) =>
     Object.prototype.hasOwnProperty.call(localModels, name),
   );
-  // Insert each new model at the front of its provider group (newest-first).
+  // Insert each new model at the front of its group (newest-first). The catalog
+  // is grouped by primary provider, then by namespace within a provider region,
+  // so prefer the same (provider, namespace) sub-group; otherwise fall back to
+  // the front of the provider region; otherwise append.
   for (const name in localModels) {
     if (orderedNames.includes(name)) {
       continue;
     }
     const provider = primaryProvider(name);
+    const ns = idNamespace(name);
     let insertAt = orderedNames.findIndex(
-      (existing) => primaryProvider(existing) === provider,
+      (existing) =>
+        primaryProvider(existing) === provider && idNamespace(existing) === ns,
     );
+    if (insertAt < 0) {
+      insertAt = orderedNames.findIndex(
+        (existing) => primaryProvider(existing) === provider,
+      );
+    }
     if (insertAt < 0) {
       insertAt = orderedNames.length;
     }

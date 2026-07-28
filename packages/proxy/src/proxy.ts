@@ -1196,6 +1196,7 @@ export async function proxyV1({
               case "embedding":
                 {
                   const data = dataRaw as CreateEmbeddingResponse;
+                  inputTokens = sanitizeUsageField(data.usage?.prompt_tokens);
                   spanLogger?.log({
                     output: {
                       embedding_length: data.data?.[0].embedding.length,

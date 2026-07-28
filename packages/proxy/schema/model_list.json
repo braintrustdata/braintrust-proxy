@@ -7382,6 +7382,42 @@
     "displayName": "Text Davinci 003",
     "deprecated": true
   },
+  "text-embedding-3-small": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.02,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Text Embedding 3 Small",
+    "max_input_tokens": 8191,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "text-embedding-3-large": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Text Embedding 3 Large",
+    "max_input_tokens": 8191,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "text-embedding-ada-002": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Text Embedding Ada 002",
+    "max_input_tokens": 8191,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "claude-instant-1.2": {
     "format": "anthropic",
     "flavor": "chat",

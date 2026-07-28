@@ -884,10 +884,12 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
   );
 }
 
-// Preserve the existing on-disk top-level key order so a sync/bot write only
-// appends genuinely-new model ids (at the end) instead of reshuffling the whole
-// file. This keeps the catalog's established grouping stable across runs — the
-// order stops "flopping" and every diff stays scoped to the real change.
+// Preserve the existing on-disk top-level key order so a sync/bot write does not
+// reshuffle the whole file. Existing ids keep their positions (the order stops
+// "flopping"); a genuinely-new id is inserted at the FRONT of its group — before
+// the first existing model that shares its primary provider — so newer models
+// display first within their provider grouping. Falls back to appending if the
+// provider group does not exist yet.
 function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
   let existingOrder: string[] = [];
   try {
@@ -898,16 +900,29 @@ function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
     // No existing catalog on disk (or unreadable) — fall back to insertion order.
     return localModels;
   }
-  const ordered: LocalModelList = {};
-  for (const name of existingOrder) {
-    if (Object.prototype.hasOwnProperty.call(localModels, name)) {
-      ordered[name] = localModels[name];
-    }
-  }
+  const primaryProvider = (name: string): string | undefined =>
+    localModels[name]?.available_providers?.[0];
+  // Existing models first, in their current on-disk order.
+  const orderedNames = existingOrder.filter((name) =>
+    Object.prototype.hasOwnProperty.call(localModels, name),
+  );
+  // Insert each new model at the front of its provider group (newest-first).
   for (const name in localModels) {
-    if (!Object.prototype.hasOwnProperty.call(ordered, name)) {
-      ordered[name] = localModels[name];
+    if (orderedNames.includes(name)) {
+      continue;
     }
+    const provider = primaryProvider(name);
+    let insertAt = orderedNames.findIndex(
+      (existing) => primaryProvider(existing) === provider,
+    );
+    if (insertAt < 0) {
+      insertAt = orderedNames.length;
+    }
+    orderedNames.splice(insertAt, 0, name);
+  }
+  const ordered: LocalModelList = {};
+  for (const name of orderedNames) {
+    ordered[name] = localModels[name];
   }
   return ordered;
 }

@@ -12777,36 +12777,6 @@
       "databricks"
     ]
   },
-  "claude-mythos-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Mythos 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
-  },
-  "claude-mythos-preview": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Claude Mythos Preview",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "anthropic"
-    ]
-  },
   "databricks-gpt-5-5-pro": {
     "format": "openai",
     "flavor": "chat",
@@ -12956,6 +12926,26 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
+    ]
+  },
+  "inception/mercury-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Mercury 2",
+    "reasoning": true,
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "sid/sid-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "SID-1",
+    "reasoning": true,
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "baseten"
     ]
   }
 }

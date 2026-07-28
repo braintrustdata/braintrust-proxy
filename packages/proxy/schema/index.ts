@@ -1113,8 +1113,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "command-r-plus-08-2024": ["cohere", "openrouter"],
   "command-r-08-2024": ["cohere", "openrouter"],
   "command-r7b-12-2024": ["cohere", "openrouter"],
-  "claude-mythos-5": ["anthropic"],
-  "claude-mythos-preview": ["anthropic"],
   "databricks-gpt-5-5-pro": ["databricks"],
   "databricks-gemini-3-5-flash": ["databricks"],
   "databricks-gpt-5-3-codex": ["databricks"],
@@ -1128,6 +1126,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-glm-5-2": ["databricks"],
   "databricks-inkling": ["databricks"],
   "accounts/fireworks/models/kimi-k3": ["fireworks"],
+  "inception/mercury-2": ["baseten"],
+  "sid/sid-1": ["baseten"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

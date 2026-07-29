@@ -50,6 +50,11 @@ const INPUT_OUTPUT_COST_FIELDS = [
   "input_cost_per_mil_tokens",
   "output_cost_per_mil_tokens",
 ] as const satisfies ReadonlyArray<keyof ModelSpec>;
+const INPUT_OUTPUT_CACHE_COST_FIELDS = [
+  "input_cost_per_mil_tokens",
+  "output_cost_per_mil_tokens",
+  "input_cache_read_cost_per_mil_tokens",
+] as const satisfies ReadonlyArray<keyof ModelSpec>;
 const GROK_420_FIELDS = [
   "input_cost_per_mil_tokens",
   "output_cost_per_mil_tokens",
@@ -90,8 +95,9 @@ export const SYNC_PRESERVED_FIELDS: Record<
   "claude-sonnet-4-20250514": ["max_input_tokens"],
   "claude-4-sonnet-20250514": ["max_input_tokens"],
   // gpt-oss pricing taken from the provider pricing pages; LiteLLM is stale
-  // (lists lower rates).
-  "openai/gpt-oss-120b": INPUT_OUTPUT_COST_FIELDS,
+  // (lists lower rates). Groq's gpt-oss-120b cached-input rate is $0.075 (50% of
+  // input); LiteLLM reports $0.10, so pin the cache-read field too.
+  "openai/gpt-oss-120b": INPUT_OUTPUT_CACHE_COST_FIELDS,
   // Groq's public GPT-OSS 20B price is $0.075/$0.30; LiteLLM carries Together's
   // lower $0.05/$0.20 and the sync keeps re-applying it. This id is pinned to
   // Groq (its priced/routable provider), so preserve its input/output cost.
@@ -220,6 +226,22 @@ export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set<string>([
 // Returns true if `modelName` must not be auto-added by the sync.
 export function isModelExcludedFromSync(modelName: string): boolean {
   return SYNC_EXCLUDED_MODELS.has(modelName);
+}
+
+// Models Baseten still lists in /v1/models but has DEPRECATED for invocation
+// (calls return HTTP 410 "the model version ... has been deprecated"). They are
+// NOT excluded from the sync entirely because other providers (e.g. Together)
+// still serve them — we only stop the Baseten sync from re-unioning the dead
+// `baseten` provider back onto them each run.
+const BASETEN_DEPRECATED_MODELS: ReadonlySet<string> = new Set<string>([
+  "zai-org/GLM-5",
+  "moonshotai/Kimi-K2.5",
+]);
+
+// Returns true if Baseten has deprecated `modelName` for invocation (so the
+// Baseten sync must not add/keep `baseten` as one of its providers).
+export function isBasetenDeprecated(modelName: string): boolean {
+  return BASETEN_DEPRECATED_MODELS.has(modelName);
 }
 
 // Zod schema for individual model details
@@ -2328,6 +2350,12 @@ async function syncBasetenModelsCommand(argv: any) {
       }
       if (isModelExcludedFromSync(id)) {
         console.log(`  [EXCLUDED] Skipping ${id} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+      if (isBasetenDeprecated(id)) {
+        console.log(
+          `  [BASETEN-DEPRECATED] Skipping ${id} (still listed but returns 410; served by other providers)`,
+        );
         continue;
       }
 

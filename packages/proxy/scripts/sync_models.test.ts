@@ -668,19 +668,19 @@ describe("applyBasetenPricing", () => {
   });
 
   it("never overwrites a manually preserved field (SYNC_PRESERVED_FIELDS)", () => {
-    // openai/gpt-oss-120b pins input/output cost via SYNC_PRESERVED_FIELDS; only
+    // openai/gpt-oss-20b pins input/output cost via SYNC_PRESERVED_FIELDS; only
     // the non-preserved cached price may be updated from Baseten.
     const priced = applyBasetenPricing(
-      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
       {
         format: "openai",
         flavor: "chat",
-        input_cost_per_mil_tokens: 0.15,
-        output_cost_per_mil_tokens: 0.6,
+        input_cost_per_mil_tokens: 0.075,
+        output_cost_per_mil_tokens: 0.3,
         available_providers: ["groq", "together", "baseten"],
       },
       {
-        id: "openai/gpt-oss-120b",
+        id: "openai/gpt-oss-20b",
         pricing: {
           prompt: "0.0000001",
           completion: "0.0000005",
@@ -688,9 +688,35 @@ describe("applyBasetenPricing", () => {
         },
       },
     );
-    expect(priced?.input_cost_per_mil_tokens).toBe(0.15);
-    expect(priced?.output_cost_per_mil_tokens).toBe(0.6);
+    expect(priced?.input_cost_per_mil_tokens).toBe(0.075);
+    expect(priced?.output_cost_per_mil_tokens).toBe(0.3);
     expect(priced?.input_cache_read_cost_per_mil_tokens).toBe(0.1);
+  });
+
+  it("leaves a fully-pinned model (incl. cache) untouched", () => {
+    // openai/gpt-oss-120b pins input/output AND input_cache_read via
+    // SYNC_PRESERVED_FIELDS, so Baseten pricing must not change any of them.
+    expect(
+      applyBasetenPricing(
+        "openai/gpt-oss-120b",
+        {
+          format: "openai",
+          flavor: "chat",
+          input_cost_per_mil_tokens: 0.15,
+          output_cost_per_mil_tokens: 0.6,
+          input_cache_read_cost_per_mil_tokens: 0.075,
+          available_providers: ["groq", "together", "baseten"],
+        },
+        {
+          id: "openai/gpt-oss-120b",
+          pricing: {
+            prompt: "0.0000001",
+            completion: "0.0000005",
+            input_cache_read: "0.0000001",
+          },
+        },
+      ),
+    ).toBeNull();
   });
 });
 

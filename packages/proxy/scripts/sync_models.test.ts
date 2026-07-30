@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
 import {
   addProviderToProviderMappingContent,
+  removeProviderMappingEntriesFromContent,
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
@@ -765,6 +766,31 @@ describe("applyBasetenPricing", () => {
         },
       ),
     ).toBeNull();
+  });
+});
+
+describe("removeProviderMappingEntriesFromContent", () => {
+  const schema = `export const AvailableEndpointTypes = {
+  "x-ai/grok-4.5": ["openrouter"],
+  "openai/gpt-5": ["openrouter"],
+  "gryphe/mythomax-l2-13b": ["openrouter"],
+};
+`;
+
+  it("removes named entries and leaves the rest intact", () => {
+    const out = removeProviderMappingEntriesFromContent(schema, [
+      "openai/gpt-5",
+    ]);
+    expect(out).not.toContain('"openai/gpt-5"');
+    expect(out).toContain('"x-ai/grok-4.5": ["openrouter"],');
+    expect(out).toContain('"gryphe/mythomax-l2-13b": ["openrouter"],');
+  });
+
+  it("is a no-op for ids with no entry", () => {
+    expect(removeProviderMappingEntriesFromContent(schema, ["not/here"])).toBe(
+      schema,
+    );
+    expect(removeProviderMappingEntriesFromContent(schema, [])).toBe(schema);
   });
 });
 

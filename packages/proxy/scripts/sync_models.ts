@@ -1284,6 +1284,32 @@ export function getMissingProviderMappings(
   return missingProviderMappings;
 }
 
+// Delete the AvailableEndpointTypes entries for the given model ids from
+// schema/index.ts (used when a model_list.json key is removed, so its mapping
+// does not dangle). No-op for ids that have no entry.
+export function removeProviderMappingEntriesFromContent(
+  content: string,
+  names: string[],
+): string {
+  let out = content;
+  for (const name of names) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`^  "${escaped}":[^\\n]*\\n`, "m"), "");
+  }
+  return out;
+}
+
+async function removeProviderMappingEntries(names: string[]): Promise<void> {
+  if (names.length === 0) {
+    return;
+  }
+  const content = await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8");
+  await fs.promises.writeFile(
+    SCHEMA_INDEX_PATH,
+    removeProviderMappingEntriesFromContent(content, names),
+  );
+}
+
 async function syncProviderMappingsForLocalModels(
   localModels: LocalModelList,
   modelNames: string[] = Object.keys(localModels),
@@ -2764,6 +2790,9 @@ async function syncOpenRouterModelsCommand(argv: any) {
     const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
     const providerUnions: string[] = [];
     const pricingUpdates: string[] = [];
+    // Full-slug openrouter-only entries removed because a canonical key (served
+    // by a first-class provider) now exists for the same model.
+    const migratedSlugs: string[] = [];
     let variantSkipped = 0;
 
     for (const openRouterModel of openRouterModels) {
@@ -2827,6 +2856,29 @@ async function syncOpenRouterModelsCommand(argv: any) {
             console.log(`  [PRICING] refresh OpenRouter pricing on ${target}`);
           }
         }
+
+        // Invariant: the full slug entry exists ONLY while no first-class
+        // provider serves the model. When we attach to the canonical key, a
+        // stale openrouter-only `vendor/model` entry for the same model (added
+        // before the canonical existed) is now a duplicate — remove it (its
+        // openrouter coverage is preserved on the canonical via the union above).
+        if (
+          target === canonical &&
+          slug !== canonical &&
+          Object.prototype.hasOwnProperty.call(localModels, slug)
+        ) {
+          const staleProviders = localModels[slug].available_providers ?? [];
+          if (
+            staleProviders.length === 1 &&
+            staleProviders[0] === "openrouter"
+          ) {
+            delete localModels[slug];
+            migratedSlugs.push(slug);
+            console.log(
+              `  [MIGRATE] remove openrouter-only ${slug} (canonical ${canonical} now exists)`,
+            );
+          }
+        }
         continue;
       }
 
@@ -2845,14 +2897,15 @@ async function syncOpenRouterModelsCommand(argv: any) {
     if (
       modelsToAdd.length === 0 &&
       providerUnions.length === 0 &&
-      pricingUpdates.length === 0
+      pricingUpdates.length === 0 &&
+      migratedSlugs.length === 0
     ) {
       console.log("OpenRouter catalog already in sync. No changes needed.");
       return;
     }
 
     console.log(
-      `${modelsToAdd.length} new openrouter-only model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing refresh(es).`,
+      `${modelsToAdd.length} new openrouter-only model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing refresh(es), ${migratedSlugs.length} slug(s) migrated to canonical.`,
     );
 
     if (!argv.write) {
@@ -2865,6 +2918,9 @@ async function syncOpenRouterModelsCommand(argv: any) {
       }
       for (const name of pricingUpdates) {
         console.log(`  would refresh OpenRouter pricing on: ${name}`);
+      }
+      for (const name of migratedSlugs) {
+        console.log(`  would remove stale openrouter-only slug: ${name}`);
       }
       return;
     }
@@ -2889,6 +2945,12 @@ async function syncOpenRouterModelsCommand(argv: any) {
     await writeLocalModels(updatedModels);
     console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
 
+    if (migratedSlugs.length > 0) {
+      await removeProviderMappingEntries(migratedSlugs);
+      console.log(
+        `✅ Removed ${migratedSlugs.length} stale openrouter-only slug mapping(s) from index.ts`,
+      );
+    }
     if (modelsToAdd.length > 0) {
       await updateProviderMapping(
         modelsToAdd.map(({ name, model }) => ({

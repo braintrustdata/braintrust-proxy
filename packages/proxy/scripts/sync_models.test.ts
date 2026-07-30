@@ -7,6 +7,9 @@ import {
   convertBasetenToLocalModel,
   convertRemoteToLocalModel,
   applyBasetenPricing,
+  applyOpenRouterPricing,
+  convertOpenRouterToLocalModel,
+  openRouterCanonicalId,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getMissingProviderMappings,
@@ -246,6 +249,50 @@ export const AvailableEndpointTypes = {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
+  });
+
+  it("keeps openrouter out of a multi-provider model's direct mapping, but maps openrouter-only entries", () => {
+    const localModels = {
+      // Native model with openrouter unioned in: openrouter must be excluded
+      // from the DIRECT index.ts mapping (BT-5895), so the exact providers match
+      // the google default and no mapping is emitted.
+      "gemini-2.5-flash": {
+        format: "google",
+        flavor: "chat",
+        available_providers: ["google", "openrouter"],
+      },
+      // openai-format model gaining openrouter: exact providers drop openrouter.
+      "some-openai-model": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["groq", "openrouter"],
+      },
+      // Openrouter-only entry: openrouter is the sole provider, so it is kept.
+      "vendor/openrouter-only": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openrouter"],
+      },
+    } satisfies Record<string, ModelSpec>;
+    const schemaContent = `const AvailableEndpointTypes = {\n};\n`;
+
+    const missing = getMissingProviderMappings(localModels, schemaContent);
+    expect(missing).toContainEqual({
+      name: "some-openai-model",
+      providers: ["groq"],
+    });
+    expect(missing).toContainEqual({
+      name: "vendor/openrouter-only",
+      providers: ["openrouter"],
+    });
+    expect(missing).not.toContainEqual(
+      expect.objectContaining({ name: "gemini-2.5-flash" }),
+    );
+    for (const entry of missing) {
+      if (entry.name !== "vendor/openrouter-only") {
+        expect(entry.providers).not.toContain("openrouter");
+      }
+    }
   });
 
   it("filters embedding models out of the playground catalog sync flow", () => {
@@ -761,5 +808,90 @@ describe("addProviderToProviderMappingContent", () => {
     );
     expect(updated).toEqual([]);
     expect(content).toContain(`"zai-org/GLM-5.2": ["baseten", "together"],`);
+  });
+});
+
+describe("openRouterCanonicalId", () => {
+  it("strips the vendor prefix to the canonical id", () => {
+    expect(openRouterCanonicalId("x-ai/grok-4.5")).toBe("grok-4.5");
+    expect(openRouterCanonicalId("openai/gpt-5")).toBe("gpt-5");
+    expect(openRouterCanonicalId("cohere/command-r-08-2024")).toBe(
+      "command-r-08-2024",
+    );
+  });
+
+  it("rejects :variant slugs", () => {
+    expect(openRouterCanonicalId("deepseek/deepseek-r1:free")).toBeNull();
+    expect(openRouterCanonicalId("x-ai/grok-4.5:nitro")).toBeNull();
+  });
+
+  it("rejects slugs without a vendor prefix", () => {
+    expect(openRouterCanonicalId("grok-4.5")).toBeNull();
+    expect(openRouterCanonicalId("gpt-5")).toBeNull();
+  });
+});
+
+describe("convertOpenRouterToLocalModel", () => {
+  it("maps pricing, context, modality and reasoning", () => {
+    const spec = convertOpenRouterToLocalModel({
+      id: "x-ai/grok-4.5",
+      name: "xAI: Grok 4.5",
+      context_length: 500000,
+      pricing: {
+        prompt: "0.000002",
+        completion: "0.000006",
+        input_cache_read: "0.0000003",
+      },
+      architecture: { input_modalities: ["text", "image", "file"] },
+      supported_parameters: ["reasoning", "reasoning_effort"],
+      top_provider: { context_length: 500000, max_completion_tokens: 64000 },
+    });
+    expect(spec.format).toBe("openai");
+    expect(spec.flavor).toBe("chat");
+    expect(spec.multimodal).toBe(true);
+    expect(spec.reasoning).toBe(true);
+    expect(spec.displayName).toBe("xAI: Grok 4.5");
+    expect(spec.input_cost_per_mil_tokens).toBe(2);
+    expect(spec.output_cost_per_mil_tokens).toBe(6);
+    expect(spec.input_cache_read_cost_per_mil_tokens).toBe(0.3);
+    expect(spec.max_input_tokens).toBe(500000);
+    expect(spec.max_output_tokens).toBe(64000);
+    expect(spec.available_providers).toEqual(["openrouter"]);
+  });
+
+  it("omits fields OpenRouter does not report", () => {
+    const spec = convertOpenRouterToLocalModel({
+      id: "some-vendor/plain-model",
+      pricing: { prompt: "0.000001", completion: "0.000002" },
+    });
+    expect(spec.multimodal).toBeUndefined();
+    expect(spec.reasoning).toBeUndefined();
+    expect(spec.input_cache_read_cost_per_mil_tokens).toBeUndefined();
+    expect(spec.max_input_tokens).toBeUndefined();
+    expect(spec.max_output_tokens).toBeUndefined();
+    expect(spec.available_providers).toEqual(["openrouter"]);
+  });
+});
+
+describe("applyOpenRouterPricing", () => {
+  it("overwrites prices that differ and returns null when unchanged", () => {
+    const model: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 1,
+      output_cost_per_mil_tokens: 2,
+      available_providers: ["openrouter"],
+    };
+    const orModel = {
+      id: "x-ai/grok-4.5",
+      pricing: { prompt: "0.000002", completion: "0.000006" },
+    };
+    const priced = applyOpenRouterPricing("x-ai/grok-4.5", model, orModel);
+    expect(priced?.input_cost_per_mil_tokens).toBe(2);
+    expect(priced?.output_cost_per_mil_tokens).toBe(6);
+    // Re-applying the same pricing is a no-op.
+    expect(
+      applyOpenRouterPricing("x-ai/grok-4.5", priced as ModelSpec, orModel),
+    ).toBeNull();
   });
 });

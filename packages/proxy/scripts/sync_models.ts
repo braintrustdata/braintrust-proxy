@@ -1661,6 +1661,19 @@ export function openRouterCanonicalId(slug: string): string | null {
   return canonical;
 }
 
+// An OpenRouter slug is excluded when EITHER the full slug or its stripped
+// canonical id is in SYNC_EXCLUDED_MODELS. OpenRouter frequently lists a
+// deprecated model (e.g. `gpt-4-turbo-preview`, in deprecated_model_ids.json)
+// under a vendor slug (`openai/gpt-4-turbo-preview`); checking only the slug
+// would re-expose the deprecated model as an active openrouter-only entry.
+export function isOpenRouterSlugExcluded(slug: string): boolean {
+  if (isModelExcludedFromSync(slug)) {
+    return true;
+  }
+  const canonical = openRouterCanonicalId(slug);
+  return canonical !== null && isModelExcludedFromSync(canonical);
+}
+
 export function convertOpenRouterToLocalModel(
   model: OpenRouterModel,
 ): ModelSpec {
@@ -2765,8 +2778,13 @@ async function syncOpenRouterModelsCommand(argv: any) {
         console.warn(`  [INVALID] Skipping unsupported model id: ${slug}`);
         continue;
       }
-      if (isModelExcludedFromSync(slug)) {
-        console.log(`  [EXCLUDED] Skipping ${slug} (in SYNC_EXCLUDED_MODELS)`);
+      // Skip if EITHER the openrouter slug or its stripped canonical id is
+      // excluded/deprecated (see isOpenRouterSlugExcluded).
+      if (isOpenRouterSlugExcluded(slug)) {
+        const excludedId = isModelExcludedFromSync(slug) ? slug : canonical;
+        console.log(
+          `  [EXCLUDED] Skipping ${slug} (${excludedId} in SYNC_EXCLUDED_MODELS)`,
+        );
         continue;
       }
 

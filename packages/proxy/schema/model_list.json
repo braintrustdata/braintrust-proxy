@@ -13572,19 +13572,6 @@
       "openrouter"
     ]
   },
-  "deepseek/deepseek-r1-distill-llama-70b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 0.8,
-    "displayName": "DeepSeek: R1 Distill Llama 70B",
-    "reasoning": true,
-    "max_input_tokens": 8192,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "deepseek/deepseek-chat-v3-0324": {
     "format": "openai",
     "flavor": "chat",
@@ -14353,30 +14340,6 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "openai/gpt-4-turbo-preview": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 30,
-    "displayName": "OpenAI: GPT-4 Turbo Preview",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "openai/gpt-3.5-turbo-0613": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 2,
-    "displayName": "OpenAI: GPT-3.5 Turbo (older v0613)",
-    "max_input_tokens": 4095,
-    "max_output_tokens": 4096,
     "available_providers": [
       "openrouter"
     ]

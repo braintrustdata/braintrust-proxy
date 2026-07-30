@@ -10,6 +10,7 @@ import {
   applyOpenRouterPricing,
   convertOpenRouterToLocalModel,
   openRouterCanonicalId,
+  isOpenRouterSlugExcluded,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getMissingProviderMappings,
@@ -828,6 +829,21 @@ describe("openRouterCanonicalId", () => {
   it("rejects slugs without a vendor prefix", () => {
     expect(openRouterCanonicalId("grok-4.5")).toBeNull();
     expect(openRouterCanonicalId("gpt-5")).toBeNull();
+  });
+});
+
+describe("isOpenRouterSlugExcluded", () => {
+  it("excludes a slug whose stripped canonical id is excluded/deprecated", () => {
+    // gpt-realtime-2.1 is in the manual exclusion set; the bare slug
+    // openai/gpt-realtime-2.1 is not, but its canonical is — so it must be caught.
+    expect(isModelExcludedFromSync("gpt-realtime-2.1")).toBe(true);
+    expect(isModelExcludedFromSync("openai/gpt-realtime-2.1")).toBe(false);
+    expect(isOpenRouterSlugExcluded("openai/gpt-realtime-2.1")).toBe(true);
+  });
+
+  it("does not exclude a live slug or one that strips to a carried model", () => {
+    expect(isOpenRouterSlugExcluded("x-ai/grok-4.5")).toBe(false);
+    expect(isOpenRouterSlugExcluded("openai/gpt-5")).toBe(false);
   });
 });
 

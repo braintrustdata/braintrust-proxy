@@ -25,6 +25,11 @@ describe("openrouter deprecation adapter", () => {
     expect(api.listModels).not.toBeNull();
     // Must NOT be report-only, or deprecations would never be applied.
     expect(REPORT_ONLY_PROVIDERS.has("openrouter")).toBe(false);
+    // The /api/v1/models directory is public, so the audit must run even when
+    // the org has no openrouter secret (otherwise openrouter-only entries would
+    // go unaudited). Public lists are only valid together with probeModel: null.
+    expect(api.listRequiresSecret).toBe(false);
+    expect(api.probeModel).toBeNull();
   });
 });
 

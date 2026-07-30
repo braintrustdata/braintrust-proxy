@@ -132,6 +132,11 @@ export type ProviderApi = {
   // When true, absence from listModels alone is treated as deprecated (no probe
   // needed because the list is authoritative for what is currently served).
   listIsAuthoritative?: boolean;
+  // When false, listModels does NOT require a provider secret (the list endpoint
+  // is public, e.g. OpenRouter). The audit then runs even when the Braintrust org
+  // has no secret configured for the provider. Only valid together with
+  // probeModel: null (a public list cannot fall back to an authenticated probe).
+  listRequiresSecret?: boolean;
 };
 
 // OpenAI-compatible providers: GET /models to list, POST /chat/completions to
@@ -306,6 +311,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
   // directory is public, so the secret is unused.
   openrouter: {
     listIsAuthoritative: true,
+    listRequiresSecret: false,
     probeModel: null,
     listModels: async (_secret) => {
       const { status, body } = await request(

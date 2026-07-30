@@ -579,8 +579,7 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-5-mini": {
@@ -932,8 +931,7 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-4o-mini-transcribe": {
@@ -973,8 +971,7 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-4o-transcribe": {
@@ -1344,8 +1341,7 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "o4-mini-deep-research-2025-06-26": {
@@ -1412,8 +1408,7 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "o3-mini": {

@@ -10569,7 +10569,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GLM 5",
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "zai-org/GLM-4.7": {
@@ -10616,7 +10617,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "displayName": "Kimi K2.5",
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": {

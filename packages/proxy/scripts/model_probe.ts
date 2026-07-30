@@ -1,6 +1,7 @@
 import https from "https";
 import { z } from "zod";
 import type { ProviderSecret } from "./braintrust_secrets";
+import { openRouterCanonicalId } from "./sync_models";
 
 // Per-provider model-list and direct-probe adapters used by the deprecation
 // audit. Probes hit the provider directly (not the gateway) because the gateway
@@ -139,6 +140,11 @@ export type ProviderApi = {
   // When true, absence from listModels alone is treated as deprecated (no probe
   // needed because the list is authoritative for what is currently served).
   listIsAuthoritative?: boolean;
+  // When false, listModels does NOT require a provider secret (the list endpoint
+  // is public, e.g. OpenRouter). The audit then runs even when the Braintrust org
+  // has no secret configured for the provider. Only valid together with
+  // probeModel: null (a public list cannot fall back to an authenticated probe).
+  listRequiresSecret?: boolean;
 };
 
 // OpenAI-compatible providers: GET /models to list, POST /chat/completions to
@@ -191,6 +197,8 @@ function anthropicAuthHeaders(secret: ProviderSecret): Record<string, string> {
 
 // Provider id (catalog ModelEndpointType) -> adapter. Providers absent from
 // this map (bedrock, vertex) have no automated source and are report-only.
+// openrouter has a public authoritative directory, so it is audited and applied
+// (not report-only).
 export const PROVIDER_APIS: Record<string, ProviderApi> = {
   openai: openAiCompatible("https://api.openai.com/v1"),
   together: openAiCompatible("https://api.together.xyz/v1"),
@@ -338,6 +346,42 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
         pageToken = parsed.next_page_token;
       }
       return names;
+    },
+  },
+  // OpenRouter's /api/v1/models is a public, authoritative directory of what it
+  // serves. The audit uses it to proactively prune openrouter: a catalog model
+  // with the openrouter provider that is no longer listed loses openrouter (and
+  // is removed outright if openrouter was its only provider). The live set holds
+  // BOTH each raw `<vendor>/<model>` slug (matches openrouter-only entries keyed
+  // by the slug) AND its stripped canonical id (matches models we carry under the
+  // canonical id, where openrouter was unioned in). Uses the SAME
+  // openRouterCanonicalId as sync-openrouter so the two never disagree. The
+  // directory is public, so the secret is unused.
+  openrouter: {
+    listIsAuthoritative: true,
+    listRequiresSecret: false,
+    probeModel: null,
+    listModels: async (_secret) => {
+      const { status, body } = await request(
+        "GET",
+        "https://openrouter.ai/api/v1/models",
+        {},
+      );
+      if (status >= 400) {
+        throw new Error(
+          `list openrouter /api/v1/models -> HTTP ${status}: ${body.slice(0, 160)}`,
+        );
+      }
+      const parsed = listSchema.parse(JSON.parse(body));
+      const ids = new Set<string>();
+      for (const model of parsed.data ?? []) {
+        ids.add(model.id);
+        const canonical = openRouterCanonicalId(model.id);
+        if (canonical) {
+          ids.add(canonical);
+        }
+      }
+      return ids;
     },
   },
 };

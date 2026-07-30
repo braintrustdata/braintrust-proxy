@@ -154,18 +154,28 @@ async function auditProvider(
   if (!api) {
     return { deprecations: [], skipped: { provider, reason: "no adapter" } };
   }
-  if (!secret) {
+  // A provider whose list endpoint is public (listRequiresSecret === false, e.g.
+  // OpenRouter) can be audited even when the Braintrust org has no secret for it;
+  // every other provider needs a secret for the list / probe.
+  if (!secret && api.listRequiresSecret !== false) {
     return {
       deprecations: [],
       skipped: { provider, reason: "no secret in Braintrust org" },
     };
   }
+  // listModels/probeModel take a ProviderSecret; for a public list with no
+  // configured secret, pass a placeholder the adapter ignores.
+  const effectiveSecret: ProviderSecret = secret ?? {
+    type: adapterKey,
+    secret: "",
+    metadata: {},
+  };
 
   // Step 1: narrow to suspects via the live list when one exists.
   let liveList: Set<string> | null = null;
   if (api.listModels) {
     try {
-      liveList = await api.listModels(secret);
+      liveList = await api.listModels(effectiveSecret);
       console.log(`  ${provider}: live list has ${liveList.size} models`);
     } catch (error) {
       const message = (error as Error).message;
@@ -227,7 +237,7 @@ async function auditProvider(
     concurrency,
     async (model) => {
       try {
-        const { status, body } = await probe(secret, model);
+        const { status, body } = await probe(effectiveSecret, model);
         const outcome: ProbeOutcome = classifyProbe(status, body);
         return { model, outcome, status, detail: body.slice(0, 160) };
       } catch (error) {

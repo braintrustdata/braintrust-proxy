@@ -475,6 +475,108 @@ async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
   });
 }
 
+// Cohere hosts only its own models, keyed by their bare name (e.g.
+// `command-a-03-2025`). GET /v1/models is the authoritative, paginated directory;
+// filtering by `endpoint=chat` returns the chat-capable models.
+const COHERE_MODEL_URL = "https://api.cohere.com/v1/models";
+
+const cohereModelSchema = z
+  .object({
+    name: z.string(),
+    endpoints: z.array(z.string()).optional(),
+    finetuned: z.boolean().optional(),
+    is_deprecated: z.boolean().optional(),
+    context_length: z.number().optional(),
+  })
+  .passthrough();
+
+const cohereModelListSchema = z
+  .object({
+    models: z.array(cohereModelSchema),
+    next_page_token: z.string().nullish(),
+  })
+  .passthrough();
+
+type CohereModel = z.infer<typeof cohereModelSchema>;
+
+function fetchCohereModelsPage(
+  apiKey: string,
+  pageToken?: string,
+): Promise<{ models: CohereModel[]; nextPageToken?: string }> {
+  return new Promise((resolve, reject) => {
+    const url = new URL(COHERE_MODEL_URL);
+    url.searchParams.set("endpoint", "chat");
+    url.searchParams.set("page_size", "1000");
+    if (pageToken) {
+      url.searchParams.set("page_token", pageToken);
+    }
+    https
+      .get(url, { headers: { Authorization: `Bearer ${apiKey}` } }, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(
+              new Error(
+                `Cohere /v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+              ),
+            );
+            return;
+          }
+          try {
+            const parsed = cohereModelListSchema.parse(JSON.parse(data));
+            resolve({
+              models: parsed.models,
+              nextPageToken: parsed.next_page_token ?? undefined,
+            });
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              console.error(
+                "Zod validation errors in Cohere data:",
+                error.errors,
+              );
+              reject(
+                new Error(
+                  "Failed to parse Cohere /v1/models due to schema validation errors.",
+                ),
+              );
+            } else {
+              reject(
+                new Error(
+                  "Failed to parse Cohere /v1/models: " +
+                    (error as Error).message,
+                ),
+              );
+            }
+          }
+        });
+      })
+      .on("error", (err) => {
+        reject(new Error("Failed to fetch Cohere models: " + err.message));
+      });
+  });
+}
+
+async function fetchCohereModels(apiKey: string): Promise<CohereModel[]> {
+  const all: CohereModel[] = [];
+  let pageToken: string | undefined;
+  // Bound the pagination so a malformed next_page_token can never loop forever.
+  for (let page = 0; page < 100; page++) {
+    const { models, nextPageToken } = await fetchCohereModelsPage(
+      apiKey,
+      pageToken,
+    );
+    all.push(...models);
+    if (!nextPageToken) {
+      return all;
+    }
+    pageToken = nextPageToken;
+  }
+  return all;
+}
+
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
@@ -1470,6 +1572,33 @@ export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
 
   baseModel.available_providers = ["baseten"];
   return baseModel as ModelSpec;
+}
+
+// Convert a Cohere /v1/models entry to a catalog spec. Cohere exposes its chat
+// models through an OpenAI-compatible API, so format is "openai". The models
+// endpoint carries no pricing, so pricing is left unset (filled later by the
+// enrichment step / manual review — never fabricated).
+export function convertCohereToLocalModel(model: CohereModel): ModelSpec {
+  const baseModel: Partial<ModelSpec> = {
+    format: "openai",
+    flavor: "chat",
+  };
+  const maxInputTokens = getNonZeroNumber(model.context_length);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+  baseModel.available_providers = ["cohere"];
+  return baseModel as ModelSpec;
+}
+
+// A Cohere model is a chat model we should carry when it advertises the chat
+// endpoint and is neither fine-tuned (account-specific) nor deprecated.
+export function isSupportedCohereChatModel(model: CohereModel): boolean {
+  return (
+    (model.endpoints?.includes("chat") ?? false) &&
+    !model.finetuned &&
+    !model.is_deprecated
+  );
 }
 
 // Apply Baseten's authoritative /v1/models pricing to a model Baseten serves.
@@ -2478,6 +2607,143 @@ async function syncBasetenModelsCommand(argv: any) {
   }
 }
 
+// Sync the catalog against Cohere's /v1/models. Cohere hosts only its own models
+// (keyed by their bare name), so this simply adds any chat model we do not yet
+// carry as a new `["cohere"]` entry, and unions the cohere provider onto an
+// existing entry that is missing it. Fine-tuned and deprecated models are
+// skipped. Requires COHERE_API_KEY.
+async function syncCohereModelsCommand(argv: any) {
+  try {
+    const apiKey = process.env.COHERE_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "COHERE_API_KEY environment variable is required to sync Cohere models.",
+      );
+    }
+
+    console.log("Fetching Cohere models from:", COHERE_MODEL_URL);
+    const cohereModels = await fetchCohereModels(apiKey);
+    console.log(`Fetched ${cohereModels.length} Cohere models.`);
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
+    const providerUnions: string[] = [];
+    let skippedNonChat = 0;
+
+    for (const cohereModel of cohereModels) {
+      const name = cohereModel.name;
+      if (!isSupportedCohereChatModel(cohereModel)) {
+        skippedNonChat++;
+        continue;
+      }
+      if (!isSupportedTranslatedModelName(name, "cohere")) {
+        console.warn(`  [INVALID] Skipping unsupported model id: ${name}`);
+        continue;
+      }
+      if (isModelExcludedFromSync(name)) {
+        console.log(`  [EXCLUDED] Skipping ${name} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+
+      const existing = localModels[name];
+      if (existing) {
+        const providers = existing.available_providers ?? [];
+        if (!providers.includes("cohere")) {
+          localModels[name] = {
+            ...existing,
+            available_providers: [
+              ...providers,
+              "cohere",
+            ] as ModelSpec["available_providers"],
+          };
+          providerUnions.push(name);
+          console.log(`  [UNION] add cohere to ${name}`);
+        }
+        continue;
+      }
+
+      modelsToAdd.push({
+        name,
+        model: convertCohereToLocalModel(cohereModel),
+      });
+      console.log(`  [NEW] ${name}`);
+    }
+
+    console.log(
+      `\nSkipped ${skippedNonChat} non-chat/finetuned/deprecated model(s).`,
+    );
+
+    if (modelsToAdd.length === 0 && providerUnions.length === 0) {
+      console.log("Cohere catalog already in sync. No changes needed.");
+      return;
+    }
+
+    console.log(
+      `${modelsToAdd.length} new Cohere model(s), ${providerUnions.length} provider union(s).`,
+    );
+
+    if (!argv.write) {
+      console.log("\n📋 Dry run. Re-run with --write to apply.");
+      for (const { name } of modelsToAdd) {
+        console.log(`  would add: ${name}`);
+      }
+      for (const name of providerUnions) {
+        console.log(`  would add cohere to: ${name}`);
+      }
+      return;
+    }
+
+    const mergedCatalog = { ...localModels };
+    for (const { name, model } of modelsToAdd) {
+      mergedCatalog[name] = model;
+    }
+    const completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
+    const updatedModels: LocalModelList = {};
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        const toAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (toAdd) {
+          updatedModels[modelName] = toAdd.model;
+        }
+      }
+    }
+
+    await writeLocalModels(updatedModels);
+    console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+
+    if (modelsToAdd.length > 0) {
+      await updateProviderMapping(
+        modelsToAdd.map(({ name, model }) => ({
+          name,
+          providers: (model.available_providers ?? []) as string[],
+        })),
+        completeModelOrder,
+      );
+    }
+    if (providerUnions.length > 0) {
+      const widened = await addProviderToExistingMappings(
+        providerUnions,
+        "cohere",
+      );
+      console.log(
+        `✅ Widened ${widened.length} existing provider mapping(s) with cohere`,
+      );
+    }
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
+  } catch (error) {
+    console.error("Error during sync-cohere command:", error);
+    process.exit(1);
+  }
+}
+
 // Format schema/index.ts with Prettier so the catalog scripts never emit
 // unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
 // steps, and older writers can all leave entries like ["openai","azure"]
@@ -2672,9 +2938,24 @@ async function main() {
         await syncBasetenModelsCommand(argv);
       },
     )
+    .command(
+      "sync-cohere",
+      "Sync the catalog against Cohere's /v1/models (add missing Cohere chat models keyed by name and union the cohere provider into existing ids). Requires COHERE_API_KEY.",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description:
+            "Write the new models and provider mappings to model_list.json / index.ts",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await syncCohereModelsCommand(argv);
+      },
+    )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing, update-models, add-models, or sync-baseten).",
+      "You need to specify a command (e.g., find-missing, update-models, add-models, sync-baseten, or sync-cohere).",
     )
     .help()
     .alias("help", "h")

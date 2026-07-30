@@ -1733,9 +1733,6 @@ export function convertCohereToLocalModel(
   model: CohereModel,
   litellm?: LiteLLMModelDetail,
 ): ModelSpec {
-  const roundCost = (costPerToken: number): number =>
-    parseFloat((costPerToken * 1_000_000).toFixed(8));
-
   const baseModel: Partial<ModelSpec> = {
     format: "openai",
     flavor: "chat",
@@ -1744,25 +1741,63 @@ export function convertCohereToLocalModel(
   if (maxInputTokens !== undefined) {
     baseModel.max_input_tokens = maxInputTokens;
   }
-
-  // LiteLLM pricing overlay (per-token -> per-mil), when LiteLLM knows this id.
-  if (litellm) {
-    const inputCost = getNonZeroNumber(litellm.input_cost_per_token);
-    if (inputCost !== undefined) {
-      baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
-    }
-    const outputCost = getNonZeroNumber(litellm.output_cost_per_token);
-    if (outputCost !== undefined) {
-      baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
-    }
-    const cacheReadCost = getNonZeroNumber(litellm.cache_read_input_token_cost);
-    if (cacheReadCost !== undefined) {
-      baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
-    }
-  }
-
   baseModel.available_providers = ["cohere"];
-  return baseModel as ModelSpec;
+
+  // Cohere's models endpoint carries no pricing, so overlay it from LiteLLM when
+  // LiteLLM knows this id (else the entry is left price-less, never fabricated).
+  const spec = baseModel as ModelSpec;
+  const priced = applyCohereLiteLLMPricing(model.name, spec, litellm);
+  return priced ?? spec;
+}
+
+// Overlay LiteLLM pricing (per-token -> per-mil) onto a Cohere model. Fills /
+// refreshes input, output and cache-read cost when LiteLLM carries the id, so a
+// model added before LiteLLM knew its price gets cost metadata on a later run
+// (never touching a manually preserved field). Returns a new ModelSpec if
+// anything changed, else null.
+export function applyCohereLiteLLMPricing(
+  name: string,
+  model: ModelSpec,
+  litellm?: LiteLLMModelDetail,
+): ModelSpec | null {
+  if (!litellm) {
+    return null;
+  }
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const updated: ModelSpec = { ...model };
+  let changed = false;
+
+  const apply = (
+    field:
+      | "input_cost_per_mil_tokens"
+      | "output_cost_per_mil_tokens"
+      | "input_cache_read_cost_per_mil_tokens",
+    perToken: number | undefined,
+  ): void => {
+    if (isFieldManuallyPreserved(name, field)) {
+      return;
+    }
+    const value = getNonZeroNumber(perToken);
+    if (value === undefined) {
+      return;
+    }
+    const rounded = roundCost(value);
+    if (updated[field] === rounded) {
+      return;
+    }
+    updated[field] = rounded;
+    changed = true;
+  };
+
+  apply("input_cost_per_mil_tokens", litellm.input_cost_per_token);
+  apply("output_cost_per_mil_tokens", litellm.output_cost_per_token);
+  apply(
+    "input_cache_read_cost_per_mil_tokens",
+    litellm.cache_read_input_token_cost,
+  );
+
+  return changed ? updated : null;
 }
 
 // A Cohere model is a chat model we should carry when it advertises the chat
@@ -3173,6 +3208,7 @@ async function syncCohereModelsCommand(argv: any) {
 
     const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
     const providerUnions: string[] = [];
+    const pricingUpdates: string[] = [];
     let skippedNonChat = 0;
     let pricedFromLiteLLM = 0;
 
@@ -3193,10 +3229,11 @@ async function syncCohereModelsCommand(argv: any) {
 
       const existing = localModels[name];
       if (existing) {
-        const providers = existing.available_providers ?? [];
+        let next = existing;
+        const providers = next.available_providers ?? [];
         if (!providers.includes("cohere")) {
-          localModels[name] = {
-            ...existing,
+          next = {
+            ...next,
             available_providers: [
               ...providers,
               "cohere",
@@ -3204,6 +3241,23 @@ async function syncCohereModelsCommand(argv: any) {
           };
           providerUnions.push(name);
           console.log(`  [UNION] add cohere to ${name}`);
+        }
+        // Overlay LiteLLM pricing onto the existing entry too, so a model added
+        // before LiteLLM knew its price (e.g. Cohere's newest ids) gets cost
+        // metadata once LiteLLM publishes it — this branch must not `continue`
+        // without consulting remoteModels.
+        const priced = applyCohereLiteLLMPricing(
+          name,
+          next,
+          remoteModels[name],
+        );
+        if (priced) {
+          next = priced;
+          pricingUpdates.push(name);
+          console.log(`  [PRICING] overlay LiteLLM pricing on ${name}`);
+        }
+        if (next !== existing) {
+          localModels[name] = next;
         }
         continue;
       }
@@ -3223,13 +3277,17 @@ async function syncCohereModelsCommand(argv: any) {
       `\nSkipped ${skippedNonChat} non-chat/finetuned/deprecated model(s). ${pricedFromLiteLLM}/${modelsToAdd.length} new model(s) priced from LiteLLM.`,
     );
 
-    if (modelsToAdd.length === 0 && providerUnions.length === 0) {
+    if (
+      modelsToAdd.length === 0 &&
+      providerUnions.length === 0 &&
+      pricingUpdates.length === 0
+    ) {
       console.log("Cohere catalog already in sync. No changes needed.");
       return;
     }
 
     console.log(
-      `${modelsToAdd.length} new Cohere model(s), ${providerUnions.length} provider union(s).`,
+      `${modelsToAdd.length} new Cohere model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing overlay(s).`,
     );
 
     if (!argv.write) {
@@ -3241,6 +3299,9 @@ async function syncCohereModelsCommand(argv: any) {
       }
       for (const name of providerUnions) {
         console.log(`  would add cohere to: ${name}`);
+      }
+      for (const name of pricingUpdates) {
+        console.log(`  would overlay LiteLLM pricing on: ${name}`);
       }
       return;
     }

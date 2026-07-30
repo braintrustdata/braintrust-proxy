@@ -7,6 +7,7 @@ import {
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
   convertCohereToLocalModel,
+  applyCohereLiteLLMPricing,
   isSupportedCohereChatModel,
   convertRemoteToLocalModel,
   applyBasetenPricing,
@@ -1019,5 +1020,32 @@ describe("isSupportedCohereChatModel", () => {
         is_deprecated: true,
       }),
     ).toBe(false);
+  });
+});
+
+describe("applyCohereLiteLLMPricing", () => {
+  const priceless: ModelSpec = {
+    format: "openai",
+    flavor: "chat",
+    available_providers: ["cohere"],
+  };
+
+  it("fills pricing on an existing price-less entry when LiteLLM has it", () => {
+    const priced = applyCohereLiteLLMPricing("command-a-03-2025", priceless, {
+      input_cost_per_token: 2.5e-6,
+      output_cost_per_token: 1e-5,
+      cache_read_input_token_cost: 1.25e-6,
+    });
+    expect(priced?.input_cost_per_mil_tokens).toBe(2.5);
+    expect(priced?.output_cost_per_mil_tokens).toBe(10);
+    expect(priced?.input_cache_read_cost_per_mil_tokens).toBe(1.25);
+  });
+
+  it("returns null when LiteLLM has no entry or pricing is unchanged", () => {
+    expect(applyCohereLiteLLMPricing("x", priceless, undefined)).toBeNull();
+    const already: ModelSpec = { ...priceless, input_cost_per_mil_tokens: 2.5 };
+    expect(
+      applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
+    ).toBeNull();
   });
 });

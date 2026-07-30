@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { classifyProbe } from "./model_probe";
+import {
+  classifyProbe,
+  PROVIDER_APIS,
+  REPORT_ONLY_PROVIDERS,
+} from "./model_probe";
 import {
   effectiveProviders,
   parseIndexEndpointTypes,
@@ -9,6 +13,25 @@ import {
   applyDeprecations,
   rewriteIndexEntry,
 } from "./apply_deprecations";
+
+describe("openrouter deprecation adapter", () => {
+  it("is registered as an authoritative, list-only, non-report-only provider", () => {
+    const api = PROVIDER_APIS.openrouter;
+    expect(api).toBeDefined();
+    // Absence from OpenRouter's public directory alone marks a model deprecated
+    // (proactive removal), so the list is authoritative and there is no probe.
+    expect(api.listIsAuthoritative).toBe(true);
+    expect(api.probeModel).toBeNull();
+    expect(api.listModels).not.toBeNull();
+    // Must NOT be report-only, or deprecations would never be applied.
+    expect(REPORT_ONLY_PROVIDERS.has("openrouter")).toBe(false);
+    // The /api/v1/models directory is public, so the audit must run even when
+    // the org has no openrouter secret (otherwise openrouter-only entries would
+    // go unaudited). Public lists are only valid together with probeModel: null.
+    expect(api.listRequiresSecret).toBe(false);
+    expect(api.probeModel).toBeNull();
+  });
+});
 
 describe("classifyProbe", () => {
   it("treats 2xx as active", () => {

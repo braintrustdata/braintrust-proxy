@@ -12811,7 +12811,6 @@
     "multimodal": true,
     "displayName": "Gemini 3.5 Flash-Lite",
     "reasoning": true,
-    "reasoning_budget": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [

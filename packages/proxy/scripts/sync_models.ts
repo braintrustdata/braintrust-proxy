@@ -1724,6 +1724,14 @@ export function applyOpenRouterPricing(
   model: ModelSpec,
   openRouterModel: OpenRouterModel,
 ): ModelSpec | null {
+  // Only ever write OpenRouter pricing when openrouter is the model's ONLY
+  // provider. For a model any first-class provider also serves, that provider's
+  // pricing is authoritative and must not be overwritten with OpenRouter's
+  // (which carries an aggregator markup).
+  const providers = model.available_providers ?? [];
+  if (providers.length !== 1 || providers[0] !== "openrouter") {
+    return null;
+  }
   const roundCost = (costPerToken: number): number =>
     parseFloat((costPerToken * 1_000_000).toFixed(8));
   const updated: ModelSpec = { ...model };

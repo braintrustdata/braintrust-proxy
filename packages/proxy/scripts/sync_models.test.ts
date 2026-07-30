@@ -894,4 +894,20 @@ describe("applyOpenRouterPricing", () => {
       applyOpenRouterPricing("x-ai/grok-4.5", priced as ModelSpec, orModel),
     ).toBeNull();
   });
+
+  it("never overwrites pricing when a first-class provider also serves the model", () => {
+    const model: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 1,
+      output_cost_per_mil_tokens: 2,
+      // xAI is the first-class provider; openrouter is an additional one.
+      available_providers: ["xAI", "openrouter"],
+    };
+    const orModel = {
+      id: "x-ai/grok-4.5",
+      pricing: { prompt: "0.000009", completion: "0.000009" },
+    };
+    expect(applyOpenRouterPricing("x-ai/grok-4.5", model, orModel)).toBeNull();
+  });
 });

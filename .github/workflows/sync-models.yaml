@@ -100,8 +100,6 @@ jobs:
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-baseten --write
 
       - name: Sync OpenRouter alternates from /api/v1/models
-        env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           set -euo pipefail
 
@@ -110,7 +108,7 @@ jobs:
           # models we already carry (matched by stripped canonical id or full
           # slug) and adds any model no first-class provider serves as a new
           # full-slug entry sunk to the bottom of the catalog. :variant slugs are
-          # skipped. The endpoint is public, so no key is required (sent when set).
+          # skipped. The endpoint is public, so no API key is required.
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write
 
       - name: Collect changed model ids

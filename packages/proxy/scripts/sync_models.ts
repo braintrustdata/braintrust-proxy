@@ -522,15 +522,11 @@ const openRouterModelListSchema = z
 
 type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
 
-// The /api/v1/models directory is public; OPENROUTER_API_KEY is sent when set
-// but is not required to list models.
-async function fetchOpenRouterModels(
-  apiKey?: string,
-): Promise<OpenRouterModel[]> {
+// The /api/v1/models directory is public; no API key is required to list models.
+async function fetchOpenRouterModels(): Promise<OpenRouterModel[]> {
   return new Promise((resolve, reject) => {
-    const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined;
     https
-      .get(OPENROUTER_MODEL_URL, headers ? { headers } : {}, (res) => {
+      .get(OPENROUTER_MODEL_URL, (res) => {
         let data = "";
         res.on("data", (chunk) => {
           data += chunk;
@@ -2734,10 +2730,8 @@ async function syncBasetenModelsCommand(argv: any) {
 // `:nitro`/etc. variant slugs are skipped.
 async function syncOpenRouterModelsCommand(argv: any) {
   try {
-    const apiKey = process.env.OPENROUTER_API_KEY;
-
     console.log("Fetching OpenRouter models from:", OPENROUTER_MODEL_URL);
-    const openRouterModels = await fetchOpenRouterModels(apiKey);
+    const openRouterModels = await fetchOpenRouterModels();
     console.log(`Fetched ${openRouterModels.length} OpenRouter models.`);
 
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -3087,7 +3081,7 @@ async function main() {
     )
     .command(
       "sync-openrouter",
-      "Sync the catalog against OpenRouter's /api/v1/models. Unions the openrouter provider into models we already carry (matched by stripped canonical id or full slug); models no first-class provider serves are added as new full-slug entries sunk to the bottom of the catalog. Skips :variant slugs. OPENROUTER_API_KEY optional.",
+      "Sync the catalog against OpenRouter's /api/v1/models. Unions the openrouter provider into models we already carry (matched by stripped canonical id or full slug); models no first-class provider serves are added as new full-slug entries sunk to the bottom of the catalog. Skips :variant slugs. The endpoint is public; no API key required.",
       (y) => {
         return y.option("write", {
           type: "boolean",

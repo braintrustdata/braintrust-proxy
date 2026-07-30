@@ -96,6 +96,14 @@ const listSchema = z
   })
   .passthrough();
 
+// Cohere's /v1/models is paginated: { models: [{ name }], next_page_token }.
+const cohereListSchema = z
+  .object({
+    models: z.array(z.object({ name: z.string() }).passthrough()),
+    next_page_token: z.string().nullish(),
+  })
+  .passthrough();
+
 // OpenAI-compatible /models responses come back either as { data: [{id}] } or,
 // for some providers (e.g. Together), as a bare array of { id }.
 function extractOpenAiModelIds(body: string): Set<string> {
@@ -290,6 +298,46 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
       }
       const parsed = listSchema.parse(JSON.parse(body));
       return new Set((parsed.endpoints ?? []).map((e) => e.name));
+    },
+  },
+  // Cohere hosts only its own models and its paginated /v1/models is the
+  // authoritative directory of what it currently serves. A catalog model with
+  // the cohere provider that is no longer listed is deprecated (list-only, no
+  // probe) — this is what catches models Cohere removes (e.g. `command-r`,
+  // removed 2025-09-15) that LiteLLM still lists. We list ALL models (no endpoint
+  // filter) so a model still served on any endpoint is not falsely deprecated;
+  // Cohere ids are bare names, matching catalog keys directly.
+  cohere: {
+    listIsAuthoritative: true,
+    probeModel: null,
+    listModels: async (secret) => {
+      const names = new Set<string>();
+      let pageToken: string | undefined;
+      // Bound the pagination so a malformed next_page_token cannot loop forever.
+      for (let page = 0; page < 100; page++) {
+        const url = new URL("https://api.cohere.com/v1/models");
+        url.searchParams.set("page_size", "1000");
+        if (pageToken) {
+          url.searchParams.set("page_token", pageToken);
+        }
+        const { status, body } = await request("GET", url.toString(), {
+          authorization: `Bearer ${secret.secret}`,
+        });
+        if (status >= 400) {
+          throw new Error(
+            `list cohere /v1/models -> HTTP ${status}: ${body.slice(0, 160)}`,
+          );
+        }
+        const parsed = cohereListSchema.parse(JSON.parse(body));
+        for (const model of parsed.models) {
+          names.add(model.name);
+        }
+        if (!parsed.next_page_token) {
+          return names;
+        }
+        pageToken = parsed.next_page_token;
+      }
+      return names;
     },
   },
 };

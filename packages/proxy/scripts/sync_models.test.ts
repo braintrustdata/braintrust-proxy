@@ -5,6 +5,8 @@ import {
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
+  convertCohereToLocalModel,
+  isSupportedCohereChatModel,
   convertRemoteToLocalModel,
   applyBasetenPricing,
   findDuplicateJsonKeys,
@@ -761,5 +763,71 @@ describe("addProviderToProviderMappingContent", () => {
     );
     expect(updated).toEqual([]);
     expect(content).toContain(`"zai-org/GLM-5.2": ["baseten", "together"],`);
+  });
+});
+
+describe("convertCohereToLocalModel", () => {
+  it("maps a Cohere chat model to an openai-format cohere entry (no LiteLLM = no pricing)", () => {
+    const spec = convertCohereToLocalModel({
+      name: "command-a-reasoning-08-2025",
+      endpoints: ["chat"],
+      context_length: 288768,
+    });
+    expect(spec.format).toBe("openai");
+    expect(spec.flavor).toBe("chat");
+    expect(spec.max_input_tokens).toBe(288768);
+    expect(spec.available_providers).toEqual(["cohere"]);
+    // No LiteLLM overlay -> no fabricated pricing.
+    expect(spec.input_cost_per_mil_tokens).toBeUndefined();
+    expect(spec.output_cost_per_mil_tokens).toBeUndefined();
+  });
+
+  it("overlays LiteLLM pricing (per-token -> per-mil) when available", () => {
+    const spec = convertCohereToLocalModel(
+      {
+        name: "command-a-03-2025",
+        endpoints: ["chat"],
+        context_length: 256000,
+      },
+      {
+        input_cost_per_token: 2.5e-6,
+        output_cost_per_token: 1e-5,
+        cache_read_input_token_cost: 1.25e-6,
+      },
+    );
+    expect(spec.input_cost_per_mil_tokens).toBe(2.5);
+    expect(spec.output_cost_per_mil_tokens).toBe(10);
+    expect(spec.input_cache_read_cost_per_mil_tokens).toBe(1.25);
+  });
+});
+
+describe("isSupportedCohereChatModel", () => {
+  it("accepts a live chat model", () => {
+    expect(
+      isSupportedCohereChatModel({
+        name: "command-a-03-2025",
+        endpoints: ["chat"],
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects non-chat, fine-tuned, and deprecated models", () => {
+    expect(
+      isSupportedCohereChatModel({ name: "embed-v4.0", endpoints: ["embed"] }),
+    ).toBe(false);
+    expect(
+      isSupportedCohereChatModel({
+        name: "my-finetune",
+        endpoints: ["chat"],
+        finetuned: true,
+      }),
+    ).toBe(false);
+    expect(
+      isSupportedCohereChatModel({
+        name: "command-r",
+        endpoints: ["chat"],
+        is_deprecated: true,
+      }),
+    ).toBe(false);
   });
 });

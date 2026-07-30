@@ -99,6 +99,23 @@ jobs:
 
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-baseten --write
 
+      - name: Sync Cohere models from /v1/models
+        env:
+          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          # Cohere's /v1/models is authoritative for the Cohere-hosted chat models
+          # (LiteLLM lags it and even carries models Cohere has removed). Pricing
+          # is overlaid from LiteLLM where available. Skip cleanly if the key is
+          # not configured yet so the rest of the sync still runs.
+          if [ -z "${COHERE_API_KEY:-}" ]; then
+            echo "COHERE_API_KEY not set; skipping Cohere model sync."
+            exit 0
+          fi
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-cohere --write
+
       - name: Collect changed model ids
         id: changed_models
         run: |

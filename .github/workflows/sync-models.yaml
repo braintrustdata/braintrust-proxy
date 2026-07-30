@@ -99,6 +99,20 @@ jobs:
 
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-baseten --write
 
+      - name: Sync OpenRouter alternates from /api/v1/models
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          # OpenRouter's /api/v1/models is the authoritative source for the
+          # openrouter slug + pricing/context of models we already carry. This
+          # creates slug-keyed openrouter alternates (Bedrock-style separate
+          # entries) and refreshes their pricing; openrouter-only models and
+          # :variant slugs are skipped. The endpoint is public, so no key is
+          # required (it is sent when configured).
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write
+
       - name: Collect changed model ids
         id: changed_models
         run: |

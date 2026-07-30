@@ -475,6 +475,106 @@ async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
   });
 }
 
+// OpenRouter's public model directory (https://openrouter.ai/api/v1/models).
+// Prices are per-token decimal strings; context_length / top_provider carry the
+// window and max output. We only mirror models we ALREADY carry under a
+// different (openrouter slug) id, so the directory is used as an authoritative
+// source of the slug + pricing/context for those alternates.
+const OPENROUTER_MODEL_URL = "https://openrouter.ai/api/v1/models";
+
+const openRouterPricingSchema = z
+  .object({
+    prompt: z.string().optional(),
+    completion: z.string().optional(),
+    input_cache_read: z.string().optional(),
+  })
+  .passthrough();
+
+const openRouterArchitectureSchema = z
+  .object({
+    input_modalities: z.array(z.string()).optional(),
+    output_modalities: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const openRouterTopProviderSchema = z
+  .object({
+    context_length: z.number().nullish(),
+    max_completion_tokens: z.number().nullish(),
+  })
+  .passthrough();
+
+const openRouterModelSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    context_length: z.number().nullish(),
+    pricing: openRouterPricingSchema.optional(),
+    architecture: openRouterArchitectureSchema.optional(),
+    supported_parameters: z.array(z.string()).optional(),
+    top_provider: openRouterTopProviderSchema.optional(),
+  })
+  .passthrough();
+
+const openRouterModelListSchema = z
+  .object({ data: z.array(openRouterModelSchema) })
+  .passthrough();
+
+type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
+
+// The /api/v1/models directory is public; OPENROUTER_API_KEY is sent when set
+// but is not required to list models.
+async function fetchOpenRouterModels(
+  apiKey?: string,
+): Promise<OpenRouterModel[]> {
+  return new Promise((resolve, reject) => {
+    const headers = apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined;
+    https
+      .get(OPENROUTER_MODEL_URL, headers ? { headers } : {}, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(
+              new Error(
+                `OpenRouter /api/v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+              ),
+            );
+            return;
+          }
+          try {
+            const parsed = openRouterModelListSchema.parse(JSON.parse(data));
+            resolve(parsed.data);
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              console.error(
+                "Zod validation errors in OpenRouter data:",
+                error.errors,
+              );
+              reject(
+                new Error(
+                  "Failed to parse OpenRouter /api/v1/models due to schema validation errors.",
+                ),
+              );
+            } else {
+              reject(
+                new Error(
+                  "Failed to parse OpenRouter /api/v1/models: " +
+                    (error as Error).message,
+                ),
+              );
+            }
+          }
+        });
+      })
+      .on("error", (err) => {
+        reject(new Error("Failed to fetch OpenRouter models: " + err.message));
+      });
+  });
+}
+
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
@@ -1521,6 +1621,126 @@ export function applyBasetenPricing(
   return changed ? updated : null;
 }
 
+// OpenRouter keys models by a `<vendor>/<model>` slug (e.g. `x-ai/grok-4.5`,
+// `openai/gpt-5`) and also exposes `:free`/`:nitro`/etc. routing variants. Strip
+// the vendor prefix (and reject variant slugs) to get the candidate canonical id
+// we might already carry. Returns null when the slug is a variant, has no vendor
+// prefix, or strips to an empty id.
+export function openRouterCanonicalId(slug: string): string | null {
+  if (slug.includes(":")) {
+    return null;
+  }
+  const slash = slug.indexOf("/");
+  if (slash < 0) {
+    return null;
+  }
+  const canonical = slug.slice(slash + 1);
+  if (!canonical || canonical === slug) {
+    return null;
+  }
+  return canonical;
+}
+
+export function convertOpenRouterToLocalModel(
+  model: OpenRouterModel,
+): ModelSpec {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+
+  if (model.architecture?.input_modalities?.includes("image")) {
+    baseModel.multimodal = true;
+  }
+  const params = model.supported_parameters ?? [];
+  if (params.includes("reasoning") || params.includes("reasoning_effort")) {
+    baseModel.reasoning = true;
+  }
+
+  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
+  if (inputCost !== undefined) {
+    baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
+  }
+  const outputCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.completion),
+  );
+  if (outputCost !== undefined) {
+    baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
+  }
+  const cacheReadCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.input_cache_read),
+  );
+  if (cacheReadCost !== undefined) {
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
+  }
+
+  if (model.name) {
+    baseModel.displayName = model.name;
+  }
+
+  const maxInputTokens = getNonZeroNumber(
+    model.context_length ?? model.top_provider?.context_length ?? undefined,
+  );
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+  const maxOutputTokens = getNonZeroNumber(
+    model.top_provider?.max_completion_tokens ?? undefined,
+  );
+  if (maxOutputTokens !== undefined) {
+    baseModel.max_output_tokens = maxOutputTokens;
+  }
+
+  baseModel.available_providers = ["openrouter"];
+  return baseModel as ModelSpec;
+}
+
+// Refresh an openrouter-managed alternate's pricing from OpenRouter's directory.
+// Mirrors applyBasetenPricing: overwrites input/output/cached prices, never
+// touches a field in SYNC_PRESERVED_FIELDS. Returns a new ModelSpec if anything
+// changed, else null.
+export function applyOpenRouterPricing(
+  name: string,
+  model: ModelSpec,
+  openRouterModel: OpenRouterModel,
+): ModelSpec | null {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const updated: ModelSpec = { ...model };
+  let changed = false;
+
+  const apply = (
+    field:
+      | "input_cost_per_mil_tokens"
+      | "output_cost_per_mil_tokens"
+      | "input_cache_read_cost_per_mil_tokens",
+    raw: string | undefined,
+  ): void => {
+    if (isFieldManuallyPreserved(name, field)) {
+      return;
+    }
+    const value = getNonZeroNumber(parseBasetenPrice(raw));
+    if (value === undefined) {
+      return;
+    }
+    const rounded = roundCost(value);
+    if (updated[field] === rounded) {
+      return;
+    }
+    updated[field] = rounded;
+    changed = true;
+  };
+
+  apply("input_cost_per_mil_tokens", openRouterModel.pricing?.prompt);
+  apply("output_cost_per_mil_tokens", openRouterModel.pricing?.completion);
+  apply(
+    "input_cache_read_cost_per_mil_tokens",
+    openRouterModel.pricing?.input_cache_read,
+  );
+
+  return changed ? updated : null;
+}
+
 async function findMissingCommand(argv: any) {
   try {
     console.log("Fetching remote models from:", REMOTE_MODEL_URL);
@@ -2478,6 +2698,144 @@ async function syncBasetenModelsCommand(argv: any) {
   }
 }
 
+// Sync openrouter-slug alternates for models we ALREADY carry. OpenRouter serves
+// many models under a `<vendor>/<model>` slug that differs from the canonical id
+// in our catalog (e.g. openrouter `x-ai/grok-4.5` == our `grok-4.5`). Rather than
+// union `openrouter` onto the canonical, we mirror the Bedrock pattern: create a
+// SEPARATE entry keyed by openrouter's slug, `available_providers: ["openrouter"]`,
+// with pricing/context pulled from OpenRouter. This lets the slug be selected and
+// routed to OpenRouter without disturbing the canonical entry. Openrouter-only
+// models (canonical not carried) and `:free`/`:nitro`/etc. variant slugs are
+// skipped. Existing non-openrouter entries that happen to share a slug (e.g. the
+// multi-provider `openai/gpt-oss-120b`) are never touched.
+async function syncOpenRouterModelsCommand(argv: any) {
+  try {
+    const apiKey = process.env.OPENROUTER_API_KEY;
+
+    console.log("Fetching OpenRouter models from:", OPENROUTER_MODEL_URL);
+    const openRouterModels = await fetchOpenRouterModels(apiKey);
+    console.log(`Fetched ${openRouterModels.length} OpenRouter models.`);
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
+    const pricingUpdates: string[] = [];
+    let variantSkipped = 0;
+    let openRouterOnlySkipped = 0;
+
+    for (const openRouterModel of openRouterModels) {
+      const slug = openRouterModel.id;
+      const canonical = openRouterCanonicalId(slug);
+      if (canonical === null) {
+        variantSkipped++;
+        continue;
+      }
+      if (!isSupportedTranslatedModelName(slug, "openrouter")) {
+        console.warn(`  [INVALID] Skipping unsupported model id: ${slug}`);
+        continue;
+      }
+      if (isModelExcludedFromSync(slug)) {
+        console.log(`  [EXCLUDED] Skipping ${slug} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+      // Only mirror models we already carry under their canonical id.
+      if (!Object.prototype.hasOwnProperty.call(localModels, canonical)) {
+        openRouterOnlySkipped++;
+        continue;
+      }
+
+      if (Object.prototype.hasOwnProperty.call(localModels, slug)) {
+        // The slug is already a catalog key. Only refresh it when it is an
+        // openrouter-managed alternate; never clobber a real multi-provider
+        // entry that happens to share the slug (e.g. openai/gpt-oss-120b).
+        const existing = localModels[slug];
+        const providers = existing.available_providers ?? [];
+        const openRouterManaged =
+          providers.length === 1 && providers[0] === "openrouter";
+        if (!openRouterManaged) {
+          continue;
+        }
+        const priced = applyOpenRouterPricing(slug, existing, openRouterModel);
+        if (priced) {
+          localModels[slug] = priced;
+          pricingUpdates.push(slug);
+          console.log(`  [PRICING] refresh OpenRouter pricing on ${slug}`);
+        }
+        continue;
+      }
+
+      modelsToAdd.push({
+        name: slug,
+        model: convertOpenRouterToLocalModel(openRouterModel),
+      });
+      console.log(`  [NEW] ${slug} (openrouter alt of ${canonical})`);
+    }
+
+    console.log(
+      `\nSkipped ${variantSkipped} variant slug(s) and ${openRouterOnlySkipped} openrouter-only model(s) we do not carry.`,
+    );
+
+    if (modelsToAdd.length === 0 && pricingUpdates.length === 0) {
+      console.log("OpenRouter catalog already in sync. No changes needed.");
+      return;
+    }
+
+    console.log(
+      `${modelsToAdd.length} new OpenRouter alternate(s), ${pricingUpdates.length} pricing refresh(es).`,
+    );
+
+    if (!argv.write) {
+      console.log("\n📋 Dry run. Re-run with --write to apply.");
+      for (const { name } of modelsToAdd) {
+        console.log(`  would add: ${name}`);
+      }
+      for (const name of pricingUpdates) {
+        console.log(`  would refresh OpenRouter pricing on: ${name}`);
+      }
+      return;
+    }
+
+    const mergedCatalog = { ...localModels };
+    for (const { name, model } of modelsToAdd) {
+      mergedCatalog[name] = model;
+    }
+    const completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
+    const updatedModels: LocalModelList = {};
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        const toAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (toAdd) {
+          updatedModels[modelName] = toAdd.model;
+        }
+      }
+    }
+
+    await writeLocalModels(updatedModels);
+    console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+
+    if (modelsToAdd.length > 0) {
+      await updateProviderMapping(
+        modelsToAdd.map(({ name, model }) => ({
+          name,
+          providers: (model.available_providers ?? []) as string[],
+        })),
+        completeModelOrder,
+      );
+    }
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
+  } catch (error) {
+    console.error("Error during sync-openrouter command:", error);
+    process.exit(1);
+  }
+}
+
 // Format schema/index.ts with Prettier so the catalog scripts never emit
 // unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
 // steps, and older writers can all leave entries like ["openai","azure"]
@@ -2672,9 +3030,24 @@ async function main() {
         await syncBasetenModelsCommand(argv);
       },
     )
+    .command(
+      "sync-openrouter",
+      "Sync the catalog against OpenRouter's /api/v1/models. Creates slug-keyed openrouter alternates for models we already carry under a different id (Bedrock-style separate entries); skips openrouter-only models and :variant slugs. OPENROUTER_API_KEY optional.",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description:
+            "Write the new models and provider mappings to model_list.json / index.ts",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await syncOpenRouterModelsCommand(argv);
+      },
+    )
     .demandCommand(
       1,
-      "You need to specify a command (e.g., find-missing, update-models, add-models, or sync-baseten).",
+      "You need to specify a command (e.g., find-missing, update-models, add-models, sync-baseten, or sync-openrouter).",
     )
     .help()
     .alias("help", "h")

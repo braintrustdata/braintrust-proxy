@@ -10008,6 +10008,102 @@
       "bedrock"
     ]
   },
+  "tiny-aya-water": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "tiny-aya-global": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "tiny-aya-fire": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "tiny-aya-earth": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 8192,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "north-mini-code-1-0": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 436000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-r7b-arabic-02-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-a-vision-07-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-a-translate-08-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 8992,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-a-reasoning-08-2025": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 288768,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "command-a-plus-05-2026": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 436000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "c4ai-aya-vision-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 16384,
+    "available_providers": [
+      "cohere"
+    ]
+  },
+  "c4ai-aya-expanse-32b": {
+    "format": "openai",
+    "flavor": "chat",
+    "max_input_tokens": 128000,
+    "available_providers": [
+      "cohere"
+    ]
+  },
   "command-a-03-2025": {
     "format": "openai",
     "flavor": "chat",

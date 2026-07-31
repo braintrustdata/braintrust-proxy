@@ -5775,6 +5775,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/inkling": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 4.05,
+    "input_cache_read_cost_per_mil_tokens": 0.17,
+    "displayName": "Inkling",
+    "reasoning": true,
+    "max_input_tokens": 1040000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",

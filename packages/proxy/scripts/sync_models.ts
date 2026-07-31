@@ -571,6 +571,112 @@ async function fetchOpenRouterModels(): Promise<OpenRouterModel[]> {
   });
 }
 
+// Cohere hosts only its own models, keyed by their bare name (e.g.
+// `command-a-03-2025`). GET /v1/models is the authoritative, paginated directory
+// of what Cohere currently serves; filtering by `endpoint=chat` returns the
+// chat-capable models. Cohere's models endpoint carries NO pricing, so the sync
+// overlays pricing from LiteLLM where LiteLLM has the model (see
+// convertCohereToLocalModel); the newest models Cohere has not yet published
+// pricing for anywhere are left price-less rather than fabricated.
+const COHERE_MODEL_URL = "https://api.cohere.com/v1/models";
+
+const cohereModelSchema = z
+  .object({
+    name: z.string(),
+    endpoints: z.array(z.string()).optional(),
+    finetuned: z.boolean().optional(),
+    is_deprecated: z.boolean().optional(),
+    context_length: z.number().optional(),
+  })
+  .passthrough();
+
+const cohereModelListSchema = z
+  .object({
+    models: z.array(cohereModelSchema),
+    next_page_token: z.string().nullish(),
+  })
+  .passthrough();
+
+type CohereModel = z.infer<typeof cohereModelSchema>;
+
+function fetchCohereModelsPage(
+  apiKey: string,
+  pageToken?: string,
+): Promise<{ models: CohereModel[]; nextPageToken?: string }> {
+  return new Promise((resolve, reject) => {
+    const url = new URL(COHERE_MODEL_URL);
+    url.searchParams.set("endpoint", "chat");
+    url.searchParams.set("page_size", "1000");
+    if (pageToken) {
+      url.searchParams.set("page_token", pageToken);
+    }
+    https
+      .get(url, { headers: { Authorization: `Bearer ${apiKey}` } }, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(
+              new Error(
+                `Cohere /v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+              ),
+            );
+            return;
+          }
+          try {
+            const parsed = cohereModelListSchema.parse(JSON.parse(data));
+            resolve({
+              models: parsed.models,
+              nextPageToken: parsed.next_page_token ?? undefined,
+            });
+          } catch (error) {
+            if (error instanceof z.ZodError) {
+              console.error(
+                "Zod validation errors in Cohere data:",
+                error.errors,
+              );
+              reject(
+                new Error(
+                  "Failed to parse Cohere /v1/models due to schema validation errors.",
+                ),
+              );
+            } else {
+              reject(
+                new Error(
+                  "Failed to parse Cohere /v1/models: " +
+                    (error as Error).message,
+                ),
+              );
+            }
+          }
+        });
+      })
+      .on("error", (err) => {
+        reject(new Error("Failed to fetch Cohere models: " + err.message));
+      });
+  });
+}
+
+async function fetchCohereModels(apiKey: string): Promise<CohereModel[]> {
+  const all: CohereModel[] = [];
+  let pageToken: string | undefined;
+  // Bound the pagination so a malformed next_page_token can never loop forever.
+  for (let page = 0; page < 100; page++) {
+    const { models, nextPageToken } = await fetchCohereModelsPage(
+      apiKey,
+      pageToken,
+    );
+    all.push(...models);
+    if (!nextPageToken) {
+      return all;
+    }
+    pageToken = nextPageToken;
+  }
+  return all;
+}
+
 async function readLocalModels(filePath: string): Promise<LocalModelList> {
   try {
     const fileContent = await fs.promises.readFile(filePath, "utf-8");
@@ -1616,6 +1722,92 @@ export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
 
   baseModel.available_providers = ["baseten"];
   return baseModel as ModelSpec;
+}
+
+// Convert a Cohere /v1/models entry to a catalog spec. Cohere exposes its chat
+// models through an OpenAI-compatible API, so format is "openai". Cohere's models
+// endpoint carries no pricing, so pricing is overlaid from the matching LiteLLM
+// entry when one exists (`litellm`); models LiteLLM does not yet carry are left
+// price-less rather than fabricated.
+export function convertCohereToLocalModel(
+  model: CohereModel,
+  litellm?: LiteLLMModelDetail,
+): ModelSpec {
+  const baseModel: Partial<ModelSpec> = {
+    format: "openai",
+    flavor: "chat",
+  };
+  const maxInputTokens = getNonZeroNumber(model.context_length);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+  baseModel.available_providers = ["cohere"];
+
+  // Cohere's models endpoint carries no pricing, so overlay it from LiteLLM when
+  // LiteLLM knows this id (else the entry is left price-less, never fabricated).
+  const spec = baseModel as ModelSpec;
+  const priced = applyCohereLiteLLMPricing(model.name, spec, litellm);
+  return priced ?? spec;
+}
+
+// Overlay LiteLLM pricing (per-token -> per-mil) onto a Cohere model. Fills /
+// refreshes input, output and cache-read cost when LiteLLM carries the id, so a
+// model added before LiteLLM knew its price gets cost metadata on a later run
+// (never touching a manually preserved field). Returns a new ModelSpec if
+// anything changed, else null.
+export function applyCohereLiteLLMPricing(
+  name: string,
+  model: ModelSpec,
+  litellm?: LiteLLMModelDetail,
+): ModelSpec | null {
+  if (!litellm) {
+    return null;
+  }
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const updated: ModelSpec = { ...model };
+  let changed = false;
+
+  const apply = (
+    field:
+      | "input_cost_per_mil_tokens"
+      | "output_cost_per_mil_tokens"
+      | "input_cache_read_cost_per_mil_tokens",
+    perToken: number | undefined,
+  ): void => {
+    if (isFieldManuallyPreserved(name, field)) {
+      return;
+    }
+    const value = getNonZeroNumber(perToken);
+    if (value === undefined) {
+      return;
+    }
+    const rounded = roundCost(value);
+    if (updated[field] === rounded) {
+      return;
+    }
+    updated[field] = rounded;
+    changed = true;
+  };
+
+  apply("input_cost_per_mil_tokens", litellm.input_cost_per_token);
+  apply("output_cost_per_mil_tokens", litellm.output_cost_per_token);
+  apply(
+    "input_cache_read_cost_per_mil_tokens",
+    litellm.cache_read_input_token_cost,
+  );
+
+  return changed ? updated : null;
+}
+
+// A Cohere model is a chat model we should carry when it advertises the chat
+// endpoint and is neither fine-tuned (account-specific) nor deprecated.
+export function isSupportedCohereChatModel(model: CohereModel): boolean {
+  return (
+    (model.endpoints?.includes("chat") ?? false) &&
+    !model.finetuned &&
+    !model.is_deprecated
+  );
 }
 
 // Apply Baseten's authoritative /v1/models pricing to a model Baseten serves.
@@ -2973,6 +3165,193 @@ async function syncOpenRouterModelsCommand(argv: any) {
   }
 }
 
+// Sync the catalog against Cohere's /v1/models (authoritative for the current,
+// live set of Cohere-hosted chat models). Cohere hosts only its own models keyed
+// by their bare name, so this adds any chat model we do not yet carry as a new
+// `["cohere"]` entry and unions the cohere provider onto an existing entry that
+// is missing it. Fine-tuned and deprecated models are skipped. Pricing is
+// overlaid from LiteLLM where LiteLLM carries the model; the newest models Cohere
+// has not published pricing for anywhere are left price-less. Deprecation (models
+// Cohere removes) is handled separately by the deprecation audit's cohere
+// adapter. Requires COHERE_API_KEY.
+async function syncCohereModelsCommand(argv: any) {
+  try {
+    const apiKey = process.env.COHERE_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "COHERE_API_KEY environment variable is required to sync Cohere models.",
+      );
+    }
+
+    console.log("Fetching Cohere models from:", COHERE_MODEL_URL);
+    const cohereModels = await fetchCohereModels(apiKey);
+    console.log(`Fetched ${cohereModels.length} Cohere models.`);
+
+    // LiteLLM is the pricing source (Cohere's models endpoint carries none). It
+    // is best-effort: if the fetch fails, new models are still added, just
+    // without a pricing overlay.
+    let remoteModels: LiteLLMModelList = {};
+    try {
+      console.log("Fetching LiteLLM pricing from:", REMOTE_MODEL_URL);
+      remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
+    } catch (error) {
+      console.warn(
+        `Could not fetch LiteLLM pricing (${(error as Error).message}); adding Cohere models without a pricing overlay.`,
+      );
+    }
+
+    console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    console.log(`Read ${Object.keys(localModels).length} local models.`);
+
+    const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
+    const providerUnions: string[] = [];
+    const pricingUpdates: string[] = [];
+    let skippedNonChat = 0;
+    let pricedFromLiteLLM = 0;
+
+    for (const cohereModel of cohereModels) {
+      const name = cohereModel.name;
+      if (!isSupportedCohereChatModel(cohereModel)) {
+        skippedNonChat++;
+        continue;
+      }
+      if (!isSupportedTranslatedModelName(name, "cohere")) {
+        console.warn(`  [INVALID] Skipping unsupported model id: ${name}`);
+        continue;
+      }
+      if (isModelExcludedFromSync(name)) {
+        console.log(`  [EXCLUDED] Skipping ${name} (in SYNC_EXCLUDED_MODELS)`);
+        continue;
+      }
+
+      const existing = localModels[name];
+      if (existing) {
+        let next = existing;
+        const providers = next.available_providers ?? [];
+        if (!providers.includes("cohere")) {
+          next = {
+            ...next,
+            available_providers: [
+              ...providers,
+              "cohere",
+            ] as ModelSpec["available_providers"],
+          };
+          providerUnions.push(name);
+          console.log(`  [UNION] add cohere to ${name}`);
+        }
+        // Overlay LiteLLM pricing onto the existing entry too, so a model added
+        // before LiteLLM knew its price (e.g. Cohere's newest ids) gets cost
+        // metadata once LiteLLM publishes it — this branch must not `continue`
+        // without consulting remoteModels.
+        const priced = applyCohereLiteLLMPricing(
+          name,
+          next,
+          remoteModels[name],
+        );
+        if (priced) {
+          next = priced;
+          pricingUpdates.push(name);
+          console.log(`  [PRICING] overlay LiteLLM pricing on ${name}`);
+        }
+        if (next !== existing) {
+          localModels[name] = next;
+        }
+        continue;
+      }
+
+      const litellm = remoteModels[name];
+      const spec = convertCohereToLocalModel(cohereModel, litellm);
+      if (spec.input_cost_per_mil_tokens !== undefined) {
+        pricedFromLiteLLM++;
+      }
+      modelsToAdd.push({ name, model: spec });
+      console.log(
+        `  [NEW] ${name}${litellm ? " (pricing from LiteLLM)" : " (no pricing available)"}`,
+      );
+    }
+
+    console.log(
+      `\nSkipped ${skippedNonChat} non-chat/finetuned/deprecated model(s). ${pricedFromLiteLLM}/${modelsToAdd.length} new model(s) priced from LiteLLM.`,
+    );
+
+    if (
+      modelsToAdd.length === 0 &&
+      providerUnions.length === 0 &&
+      pricingUpdates.length === 0
+    ) {
+      console.log("Cohere catalog already in sync. No changes needed.");
+      return;
+    }
+
+    console.log(
+      `${modelsToAdd.length} new Cohere model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing overlay(s).`,
+    );
+
+    if (!argv.write) {
+      console.log("\n📋 Dry run. Re-run with --write to apply.");
+      for (const { name, model } of modelsToAdd) {
+        console.log(
+          `  would add: ${name} (in=${model.input_cost_per_mil_tokens ?? "?"} out=${model.output_cost_per_mil_tokens ?? "?"})`,
+        );
+      }
+      for (const name of providerUnions) {
+        console.log(`  would add cohere to: ${name}`);
+      }
+      for (const name of pricingUpdates) {
+        console.log(`  would overlay LiteLLM pricing on: ${name}`);
+      }
+      return;
+    }
+
+    const mergedCatalog = { ...localModels };
+    for (const { name, model } of modelsToAdd) {
+      mergedCatalog[name] = model;
+    }
+    const completeModelOrder = orderModelsByProviderAndClass(mergedCatalog);
+    const updatedModels: LocalModelList = {};
+    for (const modelName of completeModelOrder) {
+      if (localModels[modelName]) {
+        updatedModels[modelName] = localModels[modelName];
+      } else {
+        const toAdd = modelsToAdd.find((m) => m.name === modelName);
+        if (toAdd) {
+          updatedModels[modelName] = toAdd.model;
+        }
+      }
+    }
+
+    await writeLocalModels(updatedModels);
+    console.log(`\n✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+
+    if (modelsToAdd.length > 0) {
+      await updateProviderMapping(
+        modelsToAdd.map(({ name, model }) => ({
+          name,
+          providers: (model.available_providers ?? []) as string[],
+        })),
+        completeModelOrder,
+      );
+    }
+    if (providerUnions.length > 0) {
+      const widened = await addProviderToExistingMappings(
+        providerUnions,
+        "cohere",
+      );
+      console.log(
+        `✅ Widened ${widened.length} existing provider mapping(s) with cohere`,
+      );
+    }
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
+  } catch (error) {
+    console.error("Error during sync-cohere command:", error);
+    process.exit(1);
+  }
+}
+
 // Format schema/index.ts with Prettier so the catalog scripts never emit
 // unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
 // steps, and older writers can all leave entries like ["openai","azure"]
@@ -3182,6 +3561,22 @@ async function main() {
         await syncOpenRouterModelsCommand(argv);
       },
     )
+    .command(
+      "sync-cohere",
+      "Sync the catalog against Cohere's /v1/models (add missing Cohere chat models keyed by name; overlay pricing from LiteLLM where available; union the cohere provider into existing ids). Requires COHERE_API_KEY.",
+      (y) => {
+        return y.option("write", {
+          type: "boolean",
+          description:
+            "Write the new models and provider mappings to model_list.json / index.ts",
+          default: false,
+        });
+      },
+      async (argv) => {
+        await syncCohereModelsCommand(argv);
+      },
+    )
+
     .demandCommand(
       1,
       "You need to specify a command (e.g., find-missing, update-models, add-models, sync-baseten, or sync-openrouter).",

@@ -6,6 +6,9 @@ import {
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
+  convertCohereToLocalModel,
+  applyCohereLiteLLMPricing,
+  isSupportedCohereChatModel,
   convertRemoteToLocalModel,
   applyBasetenPricing,
   applyOpenRouterPricing,
@@ -951,5 +954,98 @@ describe("applyOpenRouterPricing", () => {
       pricing: { prompt: "0.000009", completion: "0.000009" },
     };
     expect(applyOpenRouterPricing("x-ai/grok-4.5", model, orModel)).toBeNull();
+  });
+});
+
+describe("convertCohereToLocalModel", () => {
+  it("maps a Cohere chat model to an openai-format cohere entry (no LiteLLM = no pricing)", () => {
+    const spec = convertCohereToLocalModel({
+      name: "command-a-reasoning-08-2025",
+      endpoints: ["chat"],
+      context_length: 288768,
+    });
+    expect(spec.format).toBe("openai");
+    expect(spec.flavor).toBe("chat");
+    expect(spec.max_input_tokens).toBe(288768);
+    expect(spec.available_providers).toEqual(["cohere"]);
+    // No LiteLLM overlay -> no fabricated pricing.
+    expect(spec.input_cost_per_mil_tokens).toBeUndefined();
+    expect(spec.output_cost_per_mil_tokens).toBeUndefined();
+  });
+
+  it("overlays LiteLLM pricing (per-token -> per-mil) when available", () => {
+    const spec = convertCohereToLocalModel(
+      {
+        name: "command-a-03-2025",
+        endpoints: ["chat"],
+        context_length: 256000,
+      },
+      {
+        input_cost_per_token: 2.5e-6,
+        output_cost_per_token: 1e-5,
+        cache_read_input_token_cost: 1.25e-6,
+      },
+    );
+    expect(spec.input_cost_per_mil_tokens).toBe(2.5);
+    expect(spec.output_cost_per_mil_tokens).toBe(10);
+    expect(spec.input_cache_read_cost_per_mil_tokens).toBe(1.25);
+  });
+});
+
+describe("isSupportedCohereChatModel", () => {
+  it("accepts a live chat model", () => {
+    expect(
+      isSupportedCohereChatModel({
+        name: "command-a-03-2025",
+        endpoints: ["chat"],
+      }),
+    ).toBe(true);
+  });
+
+  it("rejects non-chat, fine-tuned, and deprecated models", () => {
+    expect(
+      isSupportedCohereChatModel({ name: "embed-v4.0", endpoints: ["embed"] }),
+    ).toBe(false);
+    expect(
+      isSupportedCohereChatModel({
+        name: "my-finetune",
+        endpoints: ["chat"],
+        finetuned: true,
+      }),
+    ).toBe(false);
+    expect(
+      isSupportedCohereChatModel({
+        name: "command-r",
+        endpoints: ["chat"],
+        is_deprecated: true,
+      }),
+    ).toBe(false);
+  });
+});
+
+describe("applyCohereLiteLLMPricing", () => {
+  const priceless: ModelSpec = {
+    format: "openai",
+    flavor: "chat",
+    available_providers: ["cohere"],
+  };
+
+  it("fills pricing on an existing price-less entry when LiteLLM has it", () => {
+    const priced = applyCohereLiteLLMPricing("command-a-03-2025", priceless, {
+      input_cost_per_token: 2.5e-6,
+      output_cost_per_token: 1e-5,
+      cache_read_input_token_cost: 1.25e-6,
+    });
+    expect(priced?.input_cost_per_mil_tokens).toBe(2.5);
+    expect(priced?.output_cost_per_mil_tokens).toBe(10);
+    expect(priced?.input_cache_read_cost_per_mil_tokens).toBe(1.25);
+  });
+
+  it("returns null when LiteLLM has no entry or pricing is unchanged", () => {
+    expect(applyCohereLiteLLMPricing("x", priceless, undefined)).toBeNull();
+    const already: ModelSpec = { ...priceless, input_cost_per_mil_tokens: 2.5 };
+    expect(
+      applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
+    ).toBeNull();
   });
 });

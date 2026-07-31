@@ -1332,6 +1332,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/kimi-k3": ["fireworks"],
   "databricks-claude-opus-5": ["databricks"],
   "databricks-gemini-3-5-flash-lite": ["databricks"],
+  "accounts/fireworks/models/inkling": ["fireworks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

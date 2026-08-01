@@ -972,7 +972,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai-org/GLM-5": ["together"],
   "accounts/fireworks/models/glm-4p7": ["fireworks"],
   "zai-org/GLM-4.7": ["baseten"],
-  "moonshotai/Kimi-K3": ["baseten"],
+  "moonshotai/Kimi-K3": ["baseten", "together"],
   "accounts/fireworks/models/glm-4p6": ["fireworks"],
   "accounts/fireworks/models/glm-4p5": ["fireworks"],
   "accounts/fireworks/models/glm-4p5-air": ["fireworks"],
@@ -1347,6 +1347,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-claude-opus-5": ["databricks"],
   "databricks-gemini-3-5-flash-lite": ["databricks"],
   "accounts/fireworks/models/inkling": ["fireworks"],
+  "anthropic.claude-mythos-5": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

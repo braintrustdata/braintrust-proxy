@@ -1,6 +1,6 @@
-import { defineConfig } from "tsup";
+import { type Options } from "tsup";
 
-export default defineConfig([
+export default [
   {
     entry: ["src/index.ts"],
     format: ["cjs", "esm"],
@@ -43,4 +43,4 @@ export default defineConfig([
     outDir: "providers/dist",
     dts: true,
   },
-]);
+] satisfies Options[];

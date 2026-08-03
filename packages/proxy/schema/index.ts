@@ -973,7 +973,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai-org/GLM-5": ["together"],
   "accounts/fireworks/models/glm-4p7": ["fireworks"],
   "zai-org/GLM-4.7": ["baseten"],
-  "moonshotai/Kimi-K3": ["baseten"],
+  "moonshotai/Kimi-K3": ["baseten", "together"],
   "accounts/fireworks/models/glm-4p6": ["fireworks"],
   "accounts/fireworks/models/glm-4p5": ["fireworks"],
   "accounts/fireworks/models/glm-4p5-air": ["fireworks"],

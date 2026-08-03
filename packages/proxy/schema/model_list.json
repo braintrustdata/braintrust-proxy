@@ -10715,7 +10715,8 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "together"
     ]
   },
   "moonshotai/Kimi-K2.6": {

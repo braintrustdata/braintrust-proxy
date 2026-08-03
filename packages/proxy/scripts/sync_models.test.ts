@@ -19,6 +19,7 @@ import {
   formatProviderMappingProviders,
   getMissingProviderMappings,
   getUpdatedAvailableProviders,
+  isBasetenDeprecated,
   isFieldManuallyPreserved,
   isModelExcludedFromSync,
   isSupportedRemoteModel,
@@ -254,6 +255,26 @@ export const AvailableEndpointTypes = {
     expect(
       getUpdatedAvailableProviders(["groq", "together"], ["baseten"], false),
     ).toEqual(["baseten"]);
+  });
+
+  it("strips baseten from the update-models result for Baseten-deprecated ids", () => {
+    // LiteLLM still lists baseten for zai-org/GLM-5 and moonshotai/Kimi-K2.5,
+    // but Baseten 410s them. The update-models path must not re-add the dead
+    // provider (mirrors the guard in the loop; see isBasetenDeprecated).
+    expect(isBasetenDeprecated("zai-org/GLM-5")).toBe(true);
+    expect(isBasetenDeprecated("moonshotai/Kimi-K2.5")).toBe(true);
+    expect(isBasetenDeprecated("deepseek-ai/DeepSeek-V4-Flash-0731")).toBe(
+      false,
+    );
+    const remote = getUpdatedAvailableProviders(
+      ["together"],
+      ["together", "baseten"],
+      false,
+    );
+    const guarded = isBasetenDeprecated("zai-org/GLM-5")
+      ? remote.filter((provider) => provider !== "baseten")
+      : remote;
+    expect(guarded).toEqual(["together"]);
   });
 
   it("keeps openrouter out of a multi-provider model's direct mapping, but maps openrouter-only entries", () => {

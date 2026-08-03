@@ -2499,13 +2499,22 @@ async function updateModelsCommand(argv: any) {
       );
 
       // Set available_providers from remote (using merged providers across all colliding remote entries)
-      const remoteProviders = getUpdatedAvailableProviders(
+      let remoteProviders = getUpdatedAvailableProviders(
         Array.isArray(modelInUpdatedList.available_providers)
           ? modelInUpdatedList.available_providers
           : undefined,
         mergedProviders,
         Boolean(argv.provider),
       );
+      // LiteLLM can still list `baseten` for ids Baseten has since deprecated
+      // (they return 410 on invocation). The sync-baseten guard only covers its
+      // own path, so strip the dead provider here too — otherwise the LiteLLM
+      // refresh keeps re-adding it onto these ids every run.
+      if (isBasetenDeprecated(localModelName)) {
+        remoteProviders = remoteProviders.filter(
+          (provider) => provider !== "baseten",
+        );
+      }
       if (remoteProviders.length > 0) {
         const currentProviders = (modelInUpdatedList as any)
           .available_providers;

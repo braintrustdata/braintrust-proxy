@@ -2641,6 +2641,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/deepseek-v4-flash-0731": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.28,
+    "input_cache_read_cost_per_mil_tokens": 0.028,
+    "displayName": "DeepSeek V4 Flash 0731",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",

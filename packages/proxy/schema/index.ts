@@ -874,6 +874,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],
   "qwen.qwen3-coder-next": ["bedrock"],
   "accounts/fireworks/models/deepseek-v4-flash": ["fireworks"],
+  "accounts/fireworks/models/deepseek-v4-flash-0731": ["fireworks"],
   "accounts/fireworks/models/kimi-k2p7-code": ["fireworks"],
   "accounts/fireworks/models/qwen3p7-plus": ["fireworks"],
   "accounts/fireworks/models/minimax-m3": ["fireworks"],

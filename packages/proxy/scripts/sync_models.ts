@@ -213,6 +213,13 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // surfacing them from Baseten's model list.
   "inception/mercury-2",
   "sid/sid-1",
+  // bedrock-mantle only: AWS serves Claude Mythos 5 exclusively through the
+  // `bedrock-mantle` messages endpoint and marks bedrock-runtime / Invoke /
+  // Converse unsupported (model card:
+  // model-card-anthropic-claude-mythos-5.html). Our `bedrock` provider uses the
+  // Bedrock runtime (InvokeModel/Converse), so this id is not invocable via the
+  // gateway and must not be auto-added until Mantle routing exists.
+  "anthropic.claude-mythos-5",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

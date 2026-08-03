@@ -8546,23 +8546,6 @@
       "bedrock"
     ]
   },
-  "anthropic.claude-mythos-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Mythos 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
   "cohere.command-r-plus-v1:0": {
     "format": "converse",
     "flavor": "chat",

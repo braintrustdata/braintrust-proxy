@@ -590,6 +590,13 @@ describe("isModelExcludedFromSync", () => {
     // A real Databricks model we intentionally keep is not excluded.
     expect(isModelExcludedFromSync("databricks-gpt-5-5-pro")).toBe(false);
   });
+
+  it("excludes the bedrock-mantle-only Claude Mythos 5 id", () => {
+    // AWS serves it only via the bedrock-mantle messages endpoint; our bedrock
+    // provider uses the Bedrock runtime, so it is not invocable and must not be
+    // auto-added by the daily bot.
+    expect(isModelExcludedFromSync("anthropic.claude-mythos-5")).toBe(true);
+  });
 });
 
 describe("convertBasetenToLocalModel", () => {

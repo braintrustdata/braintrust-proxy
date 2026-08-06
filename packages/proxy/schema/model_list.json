@@ -13827,9 +13827,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.14,
-    "output_cost_per_mil_tokens": 0.28,
-    "input_cache_read_cost_per_mil_tokens": 0.028,
+    "input_cost_per_mil_tokens": 0.0882,
+    "output_cost_per_mil_tokens": 0.1764,
+    "input_cache_read_cost_per_mil_tokens": 0.01764,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14013,6 +14013,20 @@
       "openrouter"
     ]
   },
+  "inclusionai/ling-3.0-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.22,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "displayName": "inclusionAI: Ling-3.0-flash",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "inclusionai/ling-2.6-flash": {
     "format": "openai",
     "flavor": "chat",
@@ -14164,7 +14178,7 @@
   "minimax/minimax-m2.5": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.9,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "MiniMax: MiniMax M2.5",
@@ -14350,9 +14364,9 @@
   "z-ai/glm-5.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.966,
-    "output_cost_per_mil_tokens": 3.036,
-    "input_cache_read_cost_per_mil_tokens": 0.1794,
+    "input_cost_per_mil_tokens": 0.952,
+    "output_cost_per_mil_tokens": 2.992,
+    "input_cache_read_cost_per_mil_tokens": 0.1768,
     "displayName": "Z.ai: GLM 5.1",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -14714,6 +14728,20 @@
       "openrouter"
     ]
   },
+  "meta/muse-spark-1.2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 4.25,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Meta: Muse Spark 1.2",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "meta/muse-spark-1.1": {
     "format": "openai",
     "flavor": "chat",
@@ -14800,7 +14828,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.73,
+    "input_cost_per_mil_tokens": 0.7,
     "output_cost_per_mil_tokens": 3.5,
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
@@ -15279,9 +15307,10 @@
   "qwen/qwen3-235b-a22b-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1495,
-    "output_cost_per_mil_tokens": 0.598,
-    "displayName": "Qwen: Qwen3 235B A22B Instruct 2507",
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.55,
+    "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
+    "parent": "qwen/qwen3-235b-a22b",
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,
     "available_providers": [

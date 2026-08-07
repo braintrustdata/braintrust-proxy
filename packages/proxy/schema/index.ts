@@ -1418,13 +1418,13 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   BASETEN_API_KEY: "baseten",
   COHERE_API_KEY: "cohere",
   OPENROUTER_API_KEY: "openrouter",
-  AZURE_AI_GATEWAY_API_KEY: "azure_ai_gateway",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
   AWS_DEFAULT_CREDENTIALS: "bedrock",
   GOOGLE_DEFAULT_CREDENTIALS: "vertex",
   AZURE_DEFAULT_CREDENTIALS: "azure",
+  AZURE_AI_GATEWAY_API_KEY: "azure_ai_gateway",
   DATABRICKS_DEFAULT_CREDENTIALS: "databricks",
 };
 

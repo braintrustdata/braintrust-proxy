@@ -263,6 +263,12 @@ export const APISecretSchema = z.union([
   ).passthrough(),
   APISecretBaseSchema.merge(
     z.object({
+      type: z.literal("azure_ai_gateway"),
+      metadata: AzureAiGatewayMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
       type: z.literal("bedrock"),
       metadata: BedrockMetadataSchema.nullish(),
     }),

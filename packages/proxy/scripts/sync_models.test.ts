@@ -618,6 +618,14 @@ describe("isModelExcludedFromSync", () => {
     // auto-added by the daily bot.
     expect(isModelExcludedFromSync("anthropic.claude-mythos-5")).toBe(true);
   });
+
+  it("excludes the Perplexity Gateway (router) models", () => {
+    // Perplexity gateway third-party ids need the /router/v1 endpoint; the
+    // perplexity provider points at the standard api.perplexity.ai, so they are
+    // not invocable until router routing exists.
+    expect(isModelExcludedFromSync("perplexity/kimi-k3")).toBe(true);
+    expect(isModelExcludedFromSync("perplexity/glm-5.2")).toBe(true);
+  });
 });
 
 describe("convertBasetenToLocalModel", () => {

@@ -13332,34 +13332,6 @@
       "openrouter"
     ]
   },
-  "perplexity/kimi-k3": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "displayName": "Perplexity: Kimi K3",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "perplexity"
-    ]
-  },
-  "perplexity/glm-5.2": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.4,
-    "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
-    "displayName": "Perplexity: GLM 5.2",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "perplexity"
-    ]
-  },
   "deepcogito/cogito-v2.1-671b": {
     "format": "openai",
     "flavor": "chat",

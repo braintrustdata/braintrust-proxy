@@ -220,6 +220,14 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Bedrock runtime (InvokeModel/Converse), so this id is not invocable via the
   // gateway and must not be auto-added until Mantle routing exists.
   "anthropic.claude-mythos-5",
+  // Perplexity Gateway (router) models: these third-party ids (Kimi/GLM served
+  // by Perplexity's gateway) are only reachable at
+  // https://api.perplexity.ai/router/v1/chat/completions, but the `perplexity`
+  // provider (TS proxy EndpointProviderToBaseURL + lingua) points at the standard
+  // https://api.perplexity.ai, which only serves Sonar. Not invocable until a
+  // perplexity-router base URL/provider exists. (Perplexity gateway quickstart.)
+  "perplexity/kimi-k3",
+  "perplexity/glm-5.2",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

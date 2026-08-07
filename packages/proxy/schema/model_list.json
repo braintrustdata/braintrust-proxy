@@ -10746,7 +10746,8 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten",
-      "openrouter"
+      "openrouter",
+      "together"
     ]
   },
   "mistral-large-latest": {

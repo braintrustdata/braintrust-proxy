@@ -1418,6 +1418,7 @@ export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   BASETEN_API_KEY: "baseten",
   COHERE_API_KEY: "cohere",
   OPENROUTER_API_KEY: "openrouter",
+  AZURE_AI_GATEWAY_API_KEY: "azure_ai_gateway",
 };
 
 export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
@@ -1454,6 +1455,7 @@ export const EndpointProviderToBaseURL: {
   bedrock: null,
   vertex: null,
   azure: null,
+  azure_ai_gateway: null,
   databricks: null,
   js: null,
 };

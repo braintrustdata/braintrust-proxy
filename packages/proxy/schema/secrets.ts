@@ -40,6 +40,14 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).passthrough();
 
+export const AzureAiGatewayMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.string().url(),
+    auth_type: z.literal("api_key").default("api_key"),
+    auth_source: z.string().nullish(),
+  }),
+).passthrough();
+
 export const AzureEntraSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),
   client_secret: z.string().min(1, "Client secret cannot be empty"),

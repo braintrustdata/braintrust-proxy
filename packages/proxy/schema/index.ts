@@ -863,7 +863,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-gpt-oss-20b": ["databricks"],
   "databricks-qwen35-122b-a10b": ["databricks"],
   "databricks-qwen3-next-80b-a3b-instruct": ["databricks"],
-  "thinkingmachines/inkling": ["baseten"],
+  "thinkingmachines/inkling": ["baseten", "openrouter", "together"],
   "thinkingmachines/inkling-small": ["baseten", "openrouter", "together"],
   "databricks-claude-opus-4-8": ["databricks"],
   "databricks-gpt-oss-120b": ["databricks"],
@@ -1350,6 +1350,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-claude-opus-5": ["databricks"],
   "databricks-gemini-3-5-flash-lite": ["databricks"],
   "accounts/fireworks/models/inkling": ["fireworks"],
+  "perplexity/kimi-k3": ["perplexity"],
+  "perplexity/glm-5.2": ["perplexity"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

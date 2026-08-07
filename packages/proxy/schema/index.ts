@@ -1424,6 +1424,7 @@ export const CloudSecretTypes: { [keyName: string]: ModelEndpointType } = {
   AWS_DEFAULT_CREDENTIALS: "bedrock",
   GOOGLE_DEFAULT_CREDENTIALS: "vertex",
   AZURE_DEFAULT_CREDENTIALS: "azure",
+  AZURE_AI_GATEWAY_API_KEY: "azure_ai_gateway",
   DATABRICKS_DEFAULT_CREDENTIALS: "databricks",
 };
 
@@ -1454,6 +1455,7 @@ export const EndpointProviderToBaseURL: {
   bedrock: null,
   vertex: null,
   azure: null,
+  azure_ai_gateway: null,
   databricks: null,
   js: null,
 };

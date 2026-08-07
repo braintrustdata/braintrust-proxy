@@ -40,6 +40,14 @@ export const AzureMetadataSchema = BaseMetadataSchema.merge(
   }),
 ).passthrough();
 
+export const AzureAiGatewayMetadataSchema = BaseMetadataSchema.merge(
+  z.object({
+    api_base: z.string().url(),
+    auth_type: z.literal("api_key").default("api_key"),
+    auth_source: z.string().nullish(),
+  }),
+).passthrough();
+
 export const AzureEntraSecretSchema = z.object({
   client_id: z.string().min(1, "Client ID cannot be empty"),
   client_secret: z.string().min(1, "Client secret cannot be empty"),
@@ -251,6 +259,12 @@ export const APISecretSchema = z.union([
     z.object({
       type: z.literal("azure"),
       metadata: AzureMetadataSchema.nullish(),
+    }),
+  ).passthrough(),
+  APISecretBaseSchema.merge(
+    z.object({
+      type: z.literal("azure_ai_gateway"),
+      metadata: AzureAiGatewayMetadataSchema.nullish(),
     }),
   ).passthrough(),
   APISecretBaseSchema.merge(

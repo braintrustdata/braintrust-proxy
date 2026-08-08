@@ -5923,7 +5923,7 @@
     "displayName": "Qwen 3.6 27B",
     "experimental": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
+    "max_output_tokens": 16384,
     "available_providers": [
       "groq",
       "openrouter"
@@ -6508,6 +6508,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -6555,6 +6556,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.13,
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
@@ -7947,7 +7949,10 @@
     "multimodal": true,
     "displayName": "Llama 4 Scout",
     "max_input_tokens": 10000000,
-    "max_output_tokens": 8000
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   },
   "meta.llama4-maverick-17b-instruct-v1:0": {
     "format": "converse",
@@ -7955,7 +7960,10 @@
     "multimodal": true,
     "displayName": "Llama 4 Maverick",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 8000
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
   },
   "claude-fable-5": {
     "format": "anthropic",
@@ -8462,10 +8470,10 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "input_cost_per_mil_tokens": 6,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.6,
+    "input_cache_write_cost_per_mil_tokens": 7.5,
     "displayName": "Claude Sonnet 3.5 v2",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192,
@@ -8477,8 +8485,8 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
+    "input_cost_per_mil_tokens": 6,
+    "output_cost_per_mil_tokens": 30,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude Sonnet 3.5",
@@ -8562,6 +8570,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.4,
     "displayName": "Gemma 4 31B",
     "reasoning": true,
     "max_input_tokens": 256000,
@@ -8573,6 +8583,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0.4,
     "displayName": "Gemma 4 26B A4B",
     "reasoning": true,
     "max_input_tokens": 256000,
@@ -8584,6 +8596,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.08,
     "displayName": "Gemma 4 E2B",
     "reasoning": true,
     "max_input_tokens": 128000,
@@ -10907,7 +10921,7 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
-    "max_input_tokens": 256000,
+    "max_input_tokens": 128000,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -12936,6 +12950,17 @@
       "databricks"
     ]
   },
+  "databricks-kimi-k3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Kimi K3",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "gryphe/mythomax-l2-13b": {
     "format": "openai",
     "flavor": "chat",
@@ -13330,6 +13355,18 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "openrouter"
+    ]
+  },
+  "perplexity/kimi-k2.7-code": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.19,
+    "displayName": "Perplexity: Kimi K2.7 Code",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "perplexity"
     ]
   },
   "deepcogito/cogito-v2.1-671b": {

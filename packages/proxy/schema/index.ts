@@ -1350,6 +1350,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-claude-opus-5": ["databricks"],
   "databricks-gemini-3-5-flash-lite": ["databricks"],
   "accounts/fireworks/models/inkling": ["fireworks"],
+  "databricks-kimi-k3": ["databricks"],
+  "meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
+  "meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

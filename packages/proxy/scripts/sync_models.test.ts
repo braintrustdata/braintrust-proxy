@@ -541,6 +541,19 @@ describe("isFieldManuallyPreserved", () => {
         "input_cache_read_cost_per_mil_tokens",
       ),
     ).toBe(true);
+    // grok-4.5 pins only the cached-input rate ($0.30 per xAI; LiteLLM lists $0.50)
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4.5",
+        "input_cache_read_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
+    expect(
+      isFieldManuallyPreserved(
+        "grok-4.5-latest",
+        "input_cache_read_cost_per_mil_tokens",
+      ),
+    ).toBe(true);
   });
 
   it("does not preserve fields outside the override list", () => {
@@ -558,6 +571,10 @@ describe("isFieldManuallyPreserved", () => {
     // grok "fast" models preserve cost, not token limits
     expect(
       isFieldManuallyPreserved("grok-4-fast-reasoning", "max_input_tokens"),
+    ).toBe(false);
+    // grok-4.5 pins ONLY cache-read; input/output already match LiteLLM
+    expect(
+      isFieldManuallyPreserved("grok-4.5", "input_cost_per_mil_tokens"),
     ).toBe(false);
   });
 

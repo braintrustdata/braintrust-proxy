@@ -90,6 +90,12 @@ export const SYNC_PRESERVED_FIELDS: Record<
   "grok-4.20-beta-0309-non-reasoning": GROK_420_FIELDS,
   "grok-4.20-beta-0309-reasoning": GROK_420_FIELDS,
   "grok-4.20-multi-agent-beta-0309": GROK_420_FIELDS,
+  // Grok 4.5 cached-input is $0.30/1M per xAI (docs.x.ai/docs/models: $2 in /
+  // $6 out / $0.30 cache-read for sub-200k prompts). LiteLLM lists $0.50 and the
+  // sync keeps re-raising the cache-read cost; input/output already match, so
+  // pin only the cache-read field.
+  "grok-4.5": ["input_cache_read_cost_per_mil_tokens"],
+  "grok-4.5-latest": ["input_cache_read_cost_per_mil_tokens"],
   // Claude Sonnet 4's documented standard context window is 200k (1M is a
   // beta tier); LiteLLM reports the 1M beta window.
   "claude-sonnet-4-20250514": ["max_input_tokens"],

@@ -625,6 +625,7 @@ describe("isModelExcludedFromSync", () => {
     // not invocable until router routing exists.
     expect(isModelExcludedFromSync("perplexity/kimi-k3")).toBe(true);
     expect(isModelExcludedFromSync("perplexity/glm-5.2")).toBe(true);
+    expect(isModelExcludedFromSync("perplexity/kimi-k2.7-code")).toBe(true);
   });
 });
 

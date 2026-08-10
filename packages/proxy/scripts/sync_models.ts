@@ -228,6 +228,7 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // perplexity-router base URL/provider exists. (Perplexity gateway quickstart.)
   "perplexity/kimi-k3",
   "perplexity/glm-5.2",
+  "perplexity/kimi-k2.7-code",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed

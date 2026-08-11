@@ -226,15 +226,6 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   // Bedrock runtime (InvokeModel/Converse), so this id is not invocable via the
   // gateway and must not be auto-added until Mantle routing exists.
   "anthropic.claude-mythos-5",
-  // Perplexity Gateway (router) models: these third-party ids (Kimi/GLM served
-  // by Perplexity's gateway) are only reachable at
-  // https://api.perplexity.ai/router/v1/chat/completions, but the `perplexity`
-  // provider (TS proxy EndpointProviderToBaseURL + lingua) points at the standard
-  // https://api.perplexity.ai, which only serves Sonar. Not invocable until a
-  // perplexity-router base URL/provider exists. (Perplexity gateway quickstart.)
-  "perplexity/kimi-k3",
-  "perplexity/glm-5.2",
-  "perplexity/kimi-k2.7-code",
 ];
 
 // The full exclusion set: manual quirks above + the provider-confirmed
@@ -248,6 +239,25 @@ export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set<string>([
 // Returns true if `modelName` must not be auto-added by the sync.
 export function isModelExcludedFromSync(modelName: string): boolean {
   return SYNC_EXCLUDED_MODELS.has(modelName);
+}
+
+// Perplexity Gateway (router) models are third-party ids (e.g.
+// `perplexity/kimi-k3`, `perplexity/glm-5.2`) that Perplexity serves only through
+// its gateway at https://api.perplexity.ai/router/v1/chat/completions. The
+// `perplexity` provider (TS proxy EndpointProviderToBaseURL + lingua) points at
+// the standard https://api.perplexity.ai, which serves only Sonar, so these ids
+// are not routable and must never be auto-added. Match on the `perplexity/`
+// prefix scoped to the `perplexity` provider so openrouter-served slugs such as
+// `perplexity/sonar-pro-search` (available_providers ["openrouter"]) are kept.
+export function isPerplexityGatewayModel(
+  modelName: string,
+  providers: string | ReadonlyArray<string> | undefined,
+): boolean {
+  if (!modelName.startsWith("perplexity/")) {
+    return false;
+  }
+  const list = typeof providers === "string" ? [providers] : providers ?? [];
+  return list.length > 0 && list.every((provider) => provider === "perplexity");
 }
 
 // Models Baseten still lists in /v1/models but has DEPRECATED for invocation

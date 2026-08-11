@@ -1353,6 +1353,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-kimi-k3": ["databricks"],
   "meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
   "meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
+  "perplexity/deepseek-v4-flash-0731": ["perplexity"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

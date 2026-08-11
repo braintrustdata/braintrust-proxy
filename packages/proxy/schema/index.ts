@@ -464,7 +464,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia/nemotron-3-super-120b-a12b": ["openrouter"],
   "bytedance-seed/seed-2.0-lite": ["openrouter"],
   "qwen/qwen3.5-9b": ["openrouter"],
-  "openai/gpt-5.3-chat": ["openrouter"],
   "bytedance-seed/seed-2.0-mini": ["openrouter"],
   "qwen/qwen3.5-35b-a3b": ["openrouter"],
   "qwen/qwen3.5-27b": ["openrouter"],

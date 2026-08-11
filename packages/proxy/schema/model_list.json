@@ -13484,6 +13484,20 @@
       "openrouter"
     ]
   },
+  "upstage/solar-pro4": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.12,
+    "input_cache_read_cost_per_mil_tokens": 0.006,
+    "displayName": "Upstage: Solar Pro 4",
+    "reasoning": true,
+    "max_input_tokens": 524288,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "upstage/solar-pro-3": {
     "format": "openai",
     "flavor": "chat",
@@ -13828,9 +13842,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.435,
-    "output_cost_per_mil_tokens": 0.87,
-    "input_cache_read_cost_per_mil_tokens": 0.003625,
+    "input_cost_per_mil_tokens": 0.63168,
+    "output_cost_per_mil_tokens": 1.26336,
+    "input_cache_read_cost_per_mil_tokens": 0.053298,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14251,9 +14265,9 @@
   "z-ai/glm-4.6": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 0.55,
+    "output_cost_per_mil_tokens": 2.2,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
     "displayName": "Z.ai: GLM 4.6",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -14372,6 +14386,21 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "sakana/sakana-namazu": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Sakana: Namazu",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -14711,6 +14740,20 @@
     "displayName": "Kwaipilot: KAT-Coder-Air V2.5",
     "max_input_tokens": 256000,
     "max_output_tokens": 80000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "meta/muse-glimmer-30b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "displayName": "Meta: Muse Glimmer 30B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -15346,8 +15389,8 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.07,
-    "output_cost_per_mil_tokens": 0.27,
-    "displayName": "Qwen: Qwen3 Coder 30B A3B Instruct",
+    "output_cost_per_mil_tokens": 0.28,
+    "displayName": "Qwen: Qwen3-Coder-30B-A3B-Instruct",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -15569,9 +15612,10 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.39,
-    "output_cost_per_mil_tokens": 2.34,
-    "displayName": "Qwen: Qwen3.5 397B A17B",
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3.6,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Qwen: Qwen3.5-397B-A17B",
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 65536,

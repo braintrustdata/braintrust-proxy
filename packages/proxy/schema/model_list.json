@@ -13357,19 +13357,6 @@
       "openrouter"
     ]
   },
-  "perplexity/deepseek-v4-flash-0731": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.13,
-    "output_cost_per_mil_tokens": 0.26,
-    "input_cache_read_cost_per_mil_tokens": 0.028,
-    "displayName": "DeepSeek V4 Flash (0731)",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "perplexity"
-    ]
-  },
   "deepcogito/cogito-v2.1-671b": {
     "format": "openai",
     "flavor": "chat",

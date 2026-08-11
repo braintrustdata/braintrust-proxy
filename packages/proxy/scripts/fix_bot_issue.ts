@@ -9,7 +9,10 @@ import {
   isSupportedTranslatedModelName,
   translateToBraintrust,
 } from "./model_name_translation";
-import { isModelExcludedFromSync } from "./sync_models";
+import {
+  isModelExcludedFromSync,
+  isPerplexityGatewayModel,
+} from "./sync_models";
 import {
   type ModelEndpointType,
   type ModelFormat,
@@ -1601,16 +1604,17 @@ async function resolveIssueCommand(argv: {
   const parsedIssue = parseIssue(argv.title, body);
   const issueKind = getIssueKind(parsedIssue.metadata);
   const requestedModels = uniqueModels(parsedIssue.models);
-  // Permanent exclusions (MANUAL_SYNC_EXCLUDED_MODELS + provider-confirmed
-  // deprecations): never auto-add these from a bot issue, even if the ticket asks
-  // for them. Drop them from the actionable set and close the issue if nothing
-  // else remains, so the daily bot stops re-proposing them.
-  const excludedModels = requestedModels.filter((model) =>
-    isModelExcludedFromSync(model),
-  );
-  const targetModels = requestedModels.filter(
-    (model) => !isModelExcludedFromSync(model),
-  );
+  // Permanent exclusions: never auto-add these from a bot issue, even if the
+  // ticket asks for them. Drop them from the actionable set and close the issue
+  // if nothing else remains, so the daily bot stops re-proposing them. Two
+  // sources: MANUAL_SYNC_EXCLUDED_MODELS / provider-confirmed deprecations, and
+  // Perplexity Gateway (router) models, which are `perplexity/<model>` ids on the
+  // `perplexity` provider that the proxy cannot route (see isPerplexityGatewayModel).
+  const isExcluded = (model: string): boolean =>
+    isModelExcludedFromSync(model) ||
+    isPerplexityGatewayModel(model, parsedIssue.provider);
+  const excludedModels = requestedModels.filter(isExcluded);
+  const targetModels = requestedModels.filter((model) => !isExcluded(model));
   const primaryModel = targetModels[0] ?? requestedModels[0];
   const sourceUrls = getVerificationSourceUrls(parsedIssue, body);
 
@@ -1634,7 +1638,7 @@ async function resolveIssueCommand(argv: {
         excludedModels,
       )} ${
         excludedModels.length === 1 ? "is" : "are"
-      } on the permanent sync-exclusion list (MANUAL_SYNC_EXCLUDED_MODELS / deprecated_model_ids.json in sync_models.ts) and must not be auto-added to the catalog.`,
+      } on the permanent sync-exclusion list (MANUAL_SYNC_EXCLUDED_MODELS / deprecated_model_ids.json in sync_models.ts) or a Perplexity Gateway (router) model the proxy cannot route, and must not be auto-added to the catalog.`,
       provider: parsedIssue.provider,
       model: primaryModel,
       changed_models: [],

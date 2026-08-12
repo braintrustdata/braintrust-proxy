@@ -1348,6 +1348,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-kimi-k3": ["databricks"],
   "meta.llama4-scout-17b-instruct-v1:0": ["bedrock"],
   "meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
+  "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": ["fireworks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

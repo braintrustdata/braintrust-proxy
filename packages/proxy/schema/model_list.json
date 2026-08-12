@@ -5803,6 +5803,17 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "NVIDIA Nemotron 3.5 Lightning 30B A3B",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",

@@ -11838,8 +11838,7 @@
     "max_output_tokens": 1000000,
     "available_providers": [
       "xAI",
-      "openrouter",
-      "bedrock"
+      "openrouter"
     ]
   },
   "grok-4.3-latest": {
@@ -11854,8 +11853,7 @@
     "max_input_tokens": 1000000,
     "max_output_tokens": 1000000,
     "available_providers": [
-      "xAI",
-      "bedrock"
+      "xAI"
     ]
   },
   "grok-4": {

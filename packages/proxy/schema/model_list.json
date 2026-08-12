@@ -10570,6 +10570,20 @@
       "baseten"
     ]
   },
+  "zai-glm-5-2": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.4,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "displayName": "Mistral: Z.ai GLM 5.2",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "moonshotai/Kimi-K3": {
     "format": "openai",
     "flavor": "chat",
@@ -12149,6 +12163,20 @@
     "available_providers": [
       "xAI",
       "openrouter"
+    ]
+  },
+  "grok-4.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok 4.6",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "available_providers": [
+      "xAI"
     ]
   },
   "databricks-claude-fable-5": {

@@ -1351,6 +1351,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": ["fireworks"],
   "grok-4.6": ["xAI"],
   "zai-glm-5-2": ["mistral"],
+  "gemini-3.7-flash": ["google", "vertex"],
+  "publishers/google/models/gemini-3.7-flash": ["vertex"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

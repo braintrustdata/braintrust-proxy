@@ -12,6 +12,7 @@ import {
 import {
   isModelExcludedFromSync,
   isPerplexityGatewayModel,
+  stablyOrderByExisting,
 } from "./sync_models";
 import {
   type ModelEndpointType,
@@ -975,8 +976,14 @@ function serializeModel(model: ModelSpec): Record<string, unknown> {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
+  // Group newly-added models with their siblings the same way the sync does
+  // (by primary provider + id namespace, openrouter-only sunk to the bottom).
+  // Without this, a bot-added model lands wherever it was inserted into the map
+  // instead of next to its family (e.g. gemini-3.7-flash ending up beside the
+  // grok entries instead of the other gemini-3.x models).
+  const orderedInput = stablyOrderByExisting(localModels);
   const orderedModels: Record<string, Record<string, unknown>> = {};
-  for (const [modelName, model] of Object.entries(localModels)) {
+  for (const [modelName, model] of Object.entries(orderedInput)) {
     orderedModels[modelName] = serializeModel(model);
   }
   await fs.promises.writeFile(

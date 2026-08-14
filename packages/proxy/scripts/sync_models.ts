@@ -1171,7 +1171,9 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
 // the first existing model that shares its primary provider — so newer models
 // display first within their provider grouping. Falls back to appending if the
 // provider group does not exist yet.
-function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
+export function stablyOrderByExisting(
+  localModels: LocalModelList,
+): LocalModelList {
   let existingOrder: string[] = [];
   try {
     existingOrder = Object.keys(

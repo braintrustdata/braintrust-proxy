@@ -6013,6 +6013,25 @@
       "groq"
     ]
   },
+  "publishers/google/models/gemini-3.7-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.7 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -7347,25 +7366,6 @@
     ],
     "max_input_tokens": 262144,
     "max_output_tokens": 16384
-  },
-  "publishers/google/models/gemini-3.7-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.7 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "locations": [
-      "global"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "vertex"
-    ]
   },
   "text-davinci-003": {
     "format": "openai",
@@ -11218,6 +11218,26 @@
       "mistral"
     ]
   },
+  "gemini-3.7-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 3.7 Flash",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "publishers/google/models/gemini-3.7-flash"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex"
+    ]
+  },
   "gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -11721,26 +11741,6 @@
     "max_output_tokens": 1000000,
     "available_providers": [
       "xAI"
-    ]
-  },
-  "gemini-3.7-flash": {
-    "format": "google",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
-    "displayName": "Gemini 3.7 Flash",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "fallback_models": [
-      "publishers/google/models/gemini-3.7-flash"
-    ],
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "google",
-      "vertex"
     ]
   },
   "grok-4-0709": {

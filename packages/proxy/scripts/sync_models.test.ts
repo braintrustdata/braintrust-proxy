@@ -630,6 +630,17 @@ describe("isModelExcludedFromSync", () => {
     expect(isModelExcludedFromSync("databricks-gpt-5-5-pro")).toBe(false);
   });
 
+  it("excludes the realtime-translate and transcription (non-chat) ids", () => {
+    // Rejected by /v1/chat/completions ("This is not a chat model").
+    for (const id of [
+      "gpt-realtime-translate",
+      "gpt-transcribe",
+      "gpt-live-transcribe",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+  });
+
   it("excludes the bedrock-mantle-only Claude Mythos 5 id", () => {
     // AWS serves it only via the bedrock-mantle messages endpoint; our bedrock
     // provider uses the Bedrock runtime, so it is not invocable and must not be

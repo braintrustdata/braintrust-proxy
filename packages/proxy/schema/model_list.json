@@ -1,33 +1,4 @@
 {
-  "gpt-realtime-translate": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "GPT Realtime Translate",
-    "max_input_tokens": 16000,
-    "max_output_tokens": 2000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-transcribe": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "GPT Transcribe",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-live-transcribe": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "GPT Live Transcribe",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "gpt-5.6": {
     "format": "openai",
     "flavor": "chat",

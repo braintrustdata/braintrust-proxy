@@ -189,6 +189,13 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   "gpt-4o-realtime-preview-2024-12-17",
   "gpt-4o-mini-realtime-preview",
   "gpt-4o-mini-realtime-preview-2024-12-17",
+  // Realtime translation + audio transcription models: rejected by
+  // /v1/chat/completions ("This is not a chat model and thus not supported in
+  // the v1/chat/completions endpoint"), but LiteLLM surfaces them so the sync
+  // re-adds them.
+  "gpt-realtime-translate",
+  "gpt-transcribe",
+  "gpt-live-transcribe",
   // Live model: Gemini Live uses a bidirectional API and is rejected by
   // generateContent ("not supported for generateContent"), so it is not a
   // chat/completions model. Excluded permanently (see PR that trimmed it from
@@ -1164,7 +1171,9 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
 // the first existing model that shares its primary provider — so newer models
 // display first within their provider grouping. Falls back to appending if the
 // provider group does not exist yet.
-function stablyOrderByExisting(localModels: LocalModelList): LocalModelList {
+export function stablyOrderByExisting(
+  localModels: LocalModelList,
+): LocalModelList {
   let existingOrder: string[] = [];
   try {
     existingOrder = Object.keys(

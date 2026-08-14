@@ -1358,6 +1358,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai-glm-5-2": ["mistral"],
   "gemini-3.7-flash": ["google", "vertex"],
   "publishers/google/models/gemini-3.7-flash": ["vertex"],
+  "accounts/fireworks/models/qwen3p8-max": ["fireworks"],
+  "databricks-gemini-3-7-flash": ["databricks"],
+  "databricks-gemini-3-1-flash-image": ["databricks"],
+  "databricks-gemini-3-pro-image": ["databricks"],
+  "Qwen/Qwen3.8-2.4T-A95B": ["together"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

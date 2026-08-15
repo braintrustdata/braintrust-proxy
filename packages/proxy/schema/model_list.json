@@ -2683,6 +2683,33 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/muse-glimmer-30b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "displayName": "Muse Glimmer 30B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/deepseek-v4-pro-0813": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.32,
+    "output_cost_per_mil_tokens": 3.96,
+    "input_cache_read_cost_per_mil_tokens": 0.044,
+    "displayName": "DeepSeek V4 Pro 0813",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/qwen3p8-max": {
     "format": "openai",
     "flavor": "chat",

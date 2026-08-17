@@ -1,4 +1,4 @@
-import type { ModelFormat, ModelName } from "./models";
+import { getAvailableModels, type ModelFormat } from "./models";
 
 const IMAGE_MEDIA_TYPES = [
   "image/jpeg",
@@ -39,6 +39,10 @@ const AUDIO_MEDIA_TYPES = [
   "audio/mpeg",
   "audio/mp4",
   "audio/webm",
+  "audio/flac",
+  "audio/ogg",
+  "audio/m4a",
+  "audio/x-m4a",
 ] as const;
 
 const VIDEO_MEDIA_TYPES = [
@@ -132,20 +136,25 @@ export const ModelFormatMediaTypes: {
 /**
  * Overrides for specific models to support additional media types.
  */
-export const ModelMediaTypeOverrides: {
-  [model in ModelName]?: MediaTypeSupport;
-} = {
+export const ModelMediaTypeOverrides: Partial<
+  Record<string, MediaTypeSupport>
+> = {
   // will be useful for gpt-audio
 };
 
 export function getSupportedMediaTypes(
   format: ModelFormat,
-  model?: ModelName,
+  model?: string,
 ): Set<string> {
   const baseSupport = { ...ModelFormatMediaTypes[format] };
 
   if (model && ModelMediaTypeOverrides[model]) {
     Object.assign(baseSupport, ModelMediaTypeOverrides[model]);
+  }
+
+  // Transcription models take an audio file regardless of provider format.
+  if (model && getAvailableModels()[model]?.transcription) {
+    Object.assign(baseSupport, toMediaTypeSupport(AUDIO_MEDIA_TYPES));
   }
 
   return new Set(
@@ -158,7 +167,7 @@ export function getSupportedMediaTypes(
 export function isMediaTypeSupported(
   mediaType: string,
   format: ModelFormat,
-  model?: ModelName,
+  model?: string,
 ): boolean {
   return getSupportedMediaTypes(format, model).has(mediaType);
 }

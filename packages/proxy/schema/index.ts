@@ -82,6 +82,13 @@ export const sliderSpecs: {
   topK: [1, 100, 1, false],
 };
 
+const openAIModelSliderSpecs: {
+  [paramName: string]: [number, number, number, boolean];
+} = {
+  frequency_penalty: [-2, 2, 0.01, false],
+  presence_penalty: [-2, 2, 0.01, false],
+};
+
 // Format-specific slider specification overrides
 const formatSpecificSliderSpecs: {
   [format in ModelFormat]?: {
@@ -100,12 +107,22 @@ const formatSpecificSliderSpecs: {
  * Get slider specifications for a parameter, with format-specific overrides
  * @param format - The model format (openai, anthropic, google, etc.)
  * @param paramName - The parameter name (temperature, max_tokens, etc.)
+ * @param model - The model name, used for model-provider-specific overrides
  * @returns Slider spec as [min, max, step, required] or undefined if not found
  */
 export function getSliderSpecs(
   format: ModelFormat,
   paramName: string,
+  model?: string,
 ): [number, number, number, boolean] | undefined {
+  if (
+    model &&
+    getDirectModelEndpointTypes(model).includes("openai") &&
+    openAIModelSliderSpecs[paramName]
+  ) {
+    return openAIModelSliderSpecs[paramName];
+  }
+
   const formatOverrides = formatSpecificSliderSpecs[format];
   if (formatOverrides && formatOverrides[paramName]) {
     return formatOverrides[paramName];

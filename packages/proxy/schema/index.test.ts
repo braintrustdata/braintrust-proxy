@@ -6,9 +6,33 @@ import { APISecretSchema } from "./secrets";
 import {
   getModelEndpointTypes,
   getDirectModelEndpointTypes,
+  getSliderSpecs,
   ModelFormat,
 } from "./index";
 import { translateParams } from "./translate";
+
+describe("getSliderSpecs", () => {
+  it.each(["frequency_penalty", "presence_penalty"])(
+    "uses OpenAI's range for %s on OpenAI models",
+    (paramName) => {
+      expect(getSliderSpecs("openai", paramName, "gpt-4o")).toEqual([
+        -2,
+        2,
+        0.01,
+        false,
+      ]);
+    },
+  );
+
+  it.each(["frequency_penalty", "presence_penalty"])(
+    "uses the default range for %s on non-OpenAI models with OpenAI format",
+    (paramName) => {
+      expect(
+        getSliderSpecs("openai", paramName, "databricks-claude-sonnet-4-6"),
+      ).toEqual([0, 1, 0.01, false]);
+    },
+  );
+});
 
 const examples: Record<
   string,

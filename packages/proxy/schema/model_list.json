@@ -10170,6 +10170,7 @@
     "output_cost_per_mil_tokens": 3.48,
     "input_cache_read_cost_per_mil_tokens": 0.145,
     "displayName": "DeepSeek V4 Pro",
+    "reasoning": true,
     "max_input_tokens": 512000,
     "available_providers": [
       "together",

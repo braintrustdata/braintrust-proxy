@@ -5145,7 +5145,8 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "fireworks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "accounts/fireworks/models/gpt-oss-safeguard-120b": {
     "format": "openai",
@@ -5156,7 +5157,8 @@
     "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "accounts/fireworks/models/gpt-oss-20b": {
     "format": "openai",
@@ -5170,7 +5172,8 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "fireworks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "accounts/fireworks/models/gpt-oss-safeguard-20b": {
     "format": "openai",
@@ -5181,7 +5184,8 @@
     "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "fireworks_ai/thenlper/gte-base": {
     "format": "openai",
@@ -5894,7 +5898,8 @@
     "available_providers": [
       "cerebras",
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "zai-glm-4.7": {
     "format": "openai",
@@ -5937,7 +5942,8 @@
       "groq",
       "together",
       "baseten"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-oss-20b": {
     "format": "openai",
@@ -5953,7 +5959,8 @@
       "groq",
       "openrouter",
       "together"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-oss-safeguard-20b": {
     "format": "openai",
@@ -5967,7 +5974,8 @@
     "available_providers": [
       "groq",
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "llama-3.3-70b-versatile": {
     "format": "openai",
@@ -8632,7 +8640,8 @@
     "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-5.4": {
     "format": "openai",
@@ -8646,7 +8655,8 @@
     "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-oss-120b-1:0": {
     "format": "converse",
@@ -8656,7 +8666,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-oss-safeguard-120b": {
     "format": "converse",
@@ -8668,7 +8679,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-oss-20b-1:0": {
     "format": "converse",
@@ -8678,7 +8690,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-oss-safeguard-20b": {
     "format": "converse",
@@ -8690,7 +8703,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "xai.grok-4.3": {
     "format": "openai",
@@ -12515,7 +12529,8 @@
     "max_input_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-oss-20b": {
     "format": "openai",
@@ -12525,7 +12540,8 @@
     "max_input_tokens": 131072,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-6-luna": {
     "format": "openai",
@@ -12537,7 +12553,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-6-sol": {
     "format": "openai",
@@ -12549,7 +12566,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-6-terra": {
     "format": "openai",
@@ -12561,7 +12579,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-5": {
     "format": "openai",
@@ -12572,7 +12591,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-4": {
     "format": "openai",
@@ -12583,7 +12603,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-4-nano": {
     "format": "openai",
@@ -12594,7 +12615,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-2": {
     "format": "openai",
@@ -12605,7 +12627,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-1": {
     "format": "openai",
@@ -12616,7 +12639,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5": {
     "format": "openai",
@@ -12627,7 +12651,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-mini": {
     "format": "openai",
@@ -12638,7 +12663,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gpt-5-nano": {
     "format": "openai",
@@ -12649,7 +12675,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gemini-3-1-flash-lite": {
     "format": "openai",
@@ -12782,7 +12809,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gemini-3-5-flash": {
     "format": "openai",
@@ -12806,7 +12834,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "databricks-gemma-3-12b": {
     "format": "openai",
@@ -12856,7 +12885,8 @@
     "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-5.6-terra": {
     "format": "openai",
@@ -12871,7 +12901,8 @@
     "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai.gpt-5.6-luna": {
     "format": "openai",
@@ -12886,7 +12917,8 @@
     "max_input_tokens": 272000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "nvidia.nemotron-nano-9b-v2": {
     "format": "converse",
@@ -14610,7 +14642,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/o4-mini-high": {
     "format": "openai",
@@ -14625,7 +14658,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5-image": {
     "format": "openai",
@@ -14640,7 +14674,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5-image-mini": {
     "format": "openai",
@@ -14655,7 +14690,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5.2-chat": {
     "format": "openai",
@@ -14669,7 +14705,8 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5.4-image-2": {
     "format": "openai",
@@ -14684,7 +14721,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-chat-latest": {
     "format": "openai",
@@ -14698,7 +14736,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5.6-sol-pro": {
     "format": "openai",
@@ -14713,7 +14752,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5.6-terra-pro": {
     "format": "openai",
@@ -14728,7 +14768,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "openai/gpt-5.6-luna-pro": {
     "format": "openai",
@@ -14743,7 +14784,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "origin_provider": "openai"
   },
   "kwaipilot/kat-coder-pro-v2": {
     "format": "openai",

@@ -13,9 +13,18 @@ import { translateParams } from "./translate";
 
 describe("getSliderSpecs", () => {
   it.each(["frequency_penalty", "presence_penalty"])(
-    "uses OpenAI's range for %s on OpenAI models",
+    "uses OpenAI's range for %s on OpenAI models across providers",
     (paramName) => {
       expect(getSliderSpecs("openai", paramName, "gpt-4o")).toEqual([
+        -2,
+        2,
+        0.01,
+        false,
+      ]);
+      expect(
+        getSliderSpecs("openai", paramName, "databricks-gpt-5"),
+      ).toEqual([-2, 2, 0.01, false]);
+      expect(getSliderSpecs("openai", paramName, "openai.gpt-5.5")).toEqual([
         -2,
         2,
         0.01,

@@ -89,6 +89,16 @@ const openAIModelSliderSpecs: {
   presence_penalty: [-2, 2, 0.01, false],
 };
 
+function isModelFromProvider(
+  model: string,
+  provider: ModelEndpointType,
+): boolean {
+  return (
+    getAvailableModels()[model]?.origin_provider === provider ||
+    getDirectModelEndpointTypes(model).includes(provider)
+  );
+}
+
 // Format-specific slider specification overrides
 const formatSpecificSliderSpecs: {
   [format in ModelFormat]?: {
@@ -107,7 +117,7 @@ const formatSpecificSliderSpecs: {
  * Get slider specifications for a parameter, with format-specific overrides
  * @param format - The model format (openai, anthropic, google, etc.)
  * @param paramName - The parameter name (temperature, max_tokens, etc.)
- * @param model - The model name, used for model-provider-specific overrides
+ * @param model - The model name, used for model-specific overrides
  * @returns Slider spec as [min, max, step, required] or undefined if not found
  */
 export function getSliderSpecs(
@@ -116,8 +126,9 @@ export function getSliderSpecs(
   model?: string,
 ): [number, number, number, boolean] | undefined {
   if (
+    format === "openai" &&
     model &&
-    getDirectModelEndpointTypes(model).includes("openai") &&
+    isModelFromProvider(model, "openai") &&
     openAIModelSliderSpecs[paramName]
   ) {
     return openAIModelSliderSpecs[paramName];

@@ -3,6 +3,7 @@ import os
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
 import model_drop_watch
@@ -43,6 +44,54 @@ def entry() -> dict[str, object]:
 
 
 class ModelDropWatchTest(unittest.TestCase):
+    def test_reads_all_gemini_model_pages(self) -> None:
+        requests: list[str] = []
+        responses = iter(
+            [
+                {"data": []},
+                {"data": [], "has_more": False},
+                {
+                    "models": [
+                        {
+                            "name": "models/gemini-first-page",
+                            "supportedGenerationMethods": ["generateContent"],
+                        },
+                    ],
+                    "nextPageToken": "second page",
+                },
+                {
+                    "models": [
+                        {
+                            "name": "models/gemini-second-page",
+                            "supportedGenerationMethods": ["generateContent"],
+                        },
+                    ],
+                },
+            ],
+        )
+
+        def request_json(url: str, _headers: dict[str, str]) -> object:
+            requests.append(url)
+            return next(responses)
+
+        with patch.dict(
+            os.environ,
+            {
+                "OPENAI_API_KEY": "test",
+                "ANTHROPIC_API_KEY": "test",
+                "GEMINI_API_KEY": "test",
+            },
+        ), patch.object(model_drop_watch, "request_json", side_effect=request_json):
+            self.assertEqual(
+                model_drop_watch.provider_models(),
+                [
+                    {"model_slug": "gemini-first-page", "provider": "google"},
+                    {"model_slug": "gemini-second-page", "provider": "google"},
+                ],
+            )
+
+        self.assertEqual(parse_qs(urlparse(requests[-1]).query)["pageToken"], ["second page"])
+
     def test_builds_provider_routing_fields_deterministically(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             model_list = Path(directory) / "model_list.json"

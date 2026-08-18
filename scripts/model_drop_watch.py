@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 
@@ -138,10 +139,22 @@ def provider_models() -> list[dict[str, str]]:
         if not isinstance(last_id, str) or not last_id:
             raise ValueError("Anthropic models pagination omitted last_id")
         anthropic_url = f"https://api.anthropic.com/v1/models?after_id={last_id}"
-    gemini = request_json(
-        f"https://generativelanguage.googleapis.com/v1beta/models?key={os.environ['GEMINI_API_KEY']}",
-        {},
-    )
+    gemini_pages: list[object] = []
+    gemini_params = {"key": os.environ["GEMINI_API_KEY"], "pageSize": "1000"}
+    seen_gemini_page_tokens: set[str] = set()
+    while True:
+        gemini = request_json(
+            f"https://generativelanguage.googleapis.com/v1beta/models?{urlencode(gemini_params)}",
+            {},
+        )
+        gemini_pages.append(gemini)
+        if not isinstance(gemini, dict) or "nextPageToken" not in gemini:
+            break
+        page_token = gemini["nextPageToken"]
+        if not isinstance(page_token, str) or not page_token or page_token in seen_gemini_page_tokens:
+            raise ValueError("Gemini models pagination returned an invalid nextPageToken")
+        seen_gemini_page_tokens.add(page_token)
+        gemini_params["pageToken"] = page_token
 
     candidates: list[dict[str, str]] = []
     responses: list[tuple[str, object, str]] = [("openai", openai, "id")]
@@ -152,14 +165,15 @@ def provider_models() -> list[dict[str, str]]:
         for item in response["data"]:
             if isinstance(item, dict) and isinstance(item.get(key), str) and is_chat_model(item[key], provider, item):
                 candidates.append({"model_slug": item[key], "provider": provider})
-    if not isinstance(gemini, dict) or not isinstance(gemini.get("models"), list):
-        raise ValueError("invalid Gemini models response")
-    for item in gemini["models"]:
-        if not isinstance(item, dict) or not isinstance(item.get("name"), str):
-            continue
-        slug = item["name"].removeprefix("models/")
-        if is_chat_model(slug, "gemini", item):
-            candidates.append({"model_slug": slug, "provider": "google"})
+    for gemini in gemini_pages:
+        if not isinstance(gemini, dict) or not isinstance(gemini.get("models"), list):
+            raise ValueError("invalid Gemini models response")
+        for item in gemini["models"]:
+            if not isinstance(item, dict) or not isinstance(item.get("name"), str):
+                continue
+            slug = item["name"].removeprefix("models/")
+            if is_chat_model(slug, "gemini", item):
+                candidates.append({"model_slug": slug, "provider": "google"})
     return candidates
 
 

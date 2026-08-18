@@ -118,7 +118,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NEW_MODEL_DROPS_WEBHOOK_URL }}
           PR_URL: ${{ steps.pr.outputs.pull-request-url }}
         run: |
-          python -c 'import json, os, urllib.request; text="Action required: review and approve the proxy model PR: " + os.environ["PR_URL"] + ". After it merges, run Sync proxy submodule, then add the skip-backend-tests label to the resulting bump PR."; request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
+          python -c 'import json, os, urllib.request; text="Action required: review and approve the proxy model PR: " + os.environ["PR_URL"] + ". After it merges, run <https://github.com/braintrustdata/braintrust/actions/workflows/sync-proxy-submodule.yaml|Sync proxy submodule>, then add the skip-backend-tests label to the resulting bump PR."; request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
 
       - name: Record handled model drops
         if: success() && steps.state.outputs.found == 'true'

@@ -772,6 +772,7 @@ export async function proxyV1({
       const lowerName = name.toLowerCase();
       if (
         lowerName === "transfer-encoding" ||
+        lowerName === "content-length" ||
         lowerName === "connection" ||
         lowerName === "keep-alive" ||
         lowerName === "date" ||

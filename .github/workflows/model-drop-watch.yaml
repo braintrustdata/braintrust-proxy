@@ -1,0 +1,136 @@
+name: Model drop watch
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: model-drop-watch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 1
+
+      - name: Detect new provider models
+        id: detect
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python scripts/model_drop_watch.py detect --output "$RUNNER_TEMP/model-drop-candidates.json"
+          if [ "$(cat "$RUNNER_TEMP/model-drop-candidates.json")" = "[]" ]; then
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Filter previously handled model drops
+        id: state
+        if: steps.detect.outputs.found == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require("fs");
+            const title = "[BOT STATE] model drop watch";
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: "open",
+              per_page: 100,
+            });
+            let issue = issues.find((candidate) => candidate.title === title);
+            if (!issue) {
+              const created = await github.rest.issues.create({owner: context.repo.owner, repo: context.repo.repo, title, body: "{\"handled\":[]}"});
+              issue = created.data;
+            }
+            const state = JSON.parse(issue.body || "");
+            if (!Array.isArray(state.handled) || !state.handled.every((entry) => typeof entry === "string")) throw new Error("Invalid model drop watch state");
+            const path = `${process.env.RUNNER_TEMP}/model-drop-candidates.json`;
+            const fresh = JSON.parse(fs.readFileSync(path, "utf8")).filter((candidate) => !state.handled.includes(`${candidate.provider}:${candidate.model_slug}`));
+            fs.writeFileSync(path, JSON.stringify(fresh));
+            core.setOutput("found", fresh.length > 0 ? "true" : "false");
+            core.setOutput("issue_number", String(issue.number));
+
+      - name: Notify Slack about new model drops
+        if: steps.state.outputs.found == 'true'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NEW_MODEL_DROPS_WEBHOOK_URL }}
+        run: |
+          python -c 'import json, os, urllib.request; cases=json.load(open(os.environ["RUNNER_TEMP"] + "/model-drop-candidates.json")); payload=json.dumps({"text": "New model drops detected: " + ", ".join(case["model_slug"] for case in cases)}).encode(); request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=payload, headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
+
+      - name: Research and apply verified model metadata
+        if: steps.state.outputs.found == 'true'
+        env:
+          OPENAI_BASE_URL: https://gateway.braintrust.dev/v1
+          BRAINTRUST_GATEWAY_API_KEY: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
+        run: python scripts/model_drop_watch.py research-and-apply --candidates "$RUNNER_TEMP/model-drop-candidates.json"
+
+      - name: Setup Node.js
+        if: steps.state.outputs.found == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        if: steps.state.outputs.found == 'true'
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Validate proxy catalog
+        if: steps.state.outputs.found == 'true'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+          pnpm --filter @braintrust/proxy run build
+          pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts
+
+      - name: Create proxy PR
+        id: pr
+        if: steps.state.outputs.found == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ github.token }}
+          branch: chore/model-drop-watch
+          title: "chore: add newly detected models"
+          commit-message: "chore: add newly detected models"
+          body: "Automated model-drop update. Pricing research was routed through the Braintrust gateway under automations-spend-control."
+          labels: auto-sync
+          add-paths: |
+            packages/proxy/schema/model_list.json
+            packages/proxy/schema/index.ts
+
+      - name: Notify Slack with proxy PR
+        if: steps.pr.outputs.pull-request-url != ''
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NEW_MODEL_DROPS_WEBHOOK_URL }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          python -c 'import json, os, urllib.request; text="Proxy model PR ready for approval: " + os.environ["PR_URL"] + ". After merge, run Sync proxy submodule; the bump PR runs Basic model validate."; request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
+
+      - name: Record handled model drops
+        if: success() && steps.state.outputs.found == 'true'
+        env:
+          ISSUE_NUMBER: ${{ steps.state.outputs.issue_number }}
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const fs = require("fs");
+            const issue = await github.rest.issues.get({owner: context.repo.owner, repo: context.repo.repo, issue_number: Number(process.env.ISSUE_NUMBER)});
+            const state = JSON.parse(issue.data.body || "");
+            const candidates = JSON.parse(fs.readFileSync(`${process.env.RUNNER_TEMP}/model-drop-candidates.json`, "utf8"));
+            const handled = new Set(state.handled);
+            for (const candidate of candidates) handled.add(`${candidate.provider}:${candidate.model_slug}`);
+            await github.rest.issues.update({owner: context.repo.owner, repo: context.repo.repo, issue_number: Number(process.env.ISSUE_NUMBER), body: JSON.stringify({handled: [...handled].sort()})});

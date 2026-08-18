@@ -68,7 +68,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NEW_MODEL_DROPS_WEBHOOK_URL }}
         run: |
-          python -c 'import json, os, urllib.request; cases=json.load(open(os.environ["RUNNER_TEMP"] + "/model-drop-candidates.json")); payload=json.dumps({"text": "New model drops detected: " + ", ".join(case["model_slug"] for case in cases)}).encode(); request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=payload, headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
+          python -c 'import json, os, urllib.request; cases=json.load(open(os.environ["RUNNER_TEMP"] + "/model-drop-candidates.json")); payload=json.dumps({"text": "New models need review: " + ", ".join(case["model_slug"] for case in cases) + ". Next: a proxy PR will be posted here for approval; no action is needed yet."}).encode(); request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=payload, headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
 
       - name: Research and apply verified model metadata
         if: steps.state.outputs.found == 'true'
@@ -118,7 +118,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_NEW_MODEL_DROPS_WEBHOOK_URL }}
           PR_URL: ${{ steps.pr.outputs.pull-request-url }}
         run: |
-          python -c 'import json, os, urllib.request; text="Proxy model PR ready for approval: " + os.environ["PR_URL"] + ". After merge, run Sync proxy submodule; the bump PR runs Basic model validate."; request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
+          python -c 'import json, os, urllib.request; text="Action required: review and approve the proxy model PR: " + os.environ["PR_URL"] + ". After it merges, run Sync proxy submodule, then add the skip-backend-tests label to the resulting bump PR."; request=urllib.request.Request(os.environ["SLACK_WEBHOOK_URL"], data=json.dumps({"text": text}).encode(), headers={"Content-Type": "application/json"}, method="POST"); urllib.request.urlopen(request, timeout=30).read()'
 
       - name: Record handled model drops
         if: success() && steps.state.outputs.found == 'true'

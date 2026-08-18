@@ -5929,19 +5929,6 @@
       "openrouter"
     ]
   },
-  "zai-glm-4.7": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.25,
-    "output_cost_per_mil_tokens": 2.75,
-    "displayName": "Z.ai GLM 4.7",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 40960,
-    "available_providers": [
-      "cerebras"
-    ]
-  },
   "gemma-4-31b": {
     "format": "openai",
     "flavor": "chat",
@@ -6000,31 +5987,6 @@
     "available_providers": [
       "groq",
       "openrouter"
-    ]
-  },
-  "llama-3.3-70b-versatile": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.59,
-    "output_cost_per_mil_tokens": 0.79,
-    "displayName": "Llama 3.3 70B Versatile 128k",
-    "deprecation_date": "2026-08-16",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "groq"
-    ]
-  },
-  "llama-3.1-8b-instant": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.05,
-    "output_cost_per_mil_tokens": 0.08,
-    "displayName": "Llama 3.1 8B Instant 128k",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "groq"
     ]
   },
   "qwen/qwen3.6-27b": {

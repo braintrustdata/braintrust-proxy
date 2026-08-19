@@ -107,9 +107,9 @@ describe("media-types helpers for playground file upload validation", () => {
       expect(result.allowedTypes?.has("video/mp4")).toBe(false);
     });
 
-    it("should allow video upload when using gemini-2.0-flash (google format)", () => {
+    it("should allow video upload when using gemini-2.5-flash (google format)", () => {
       const videoFile = { name: "video.mp4", type: "video/mp4" };
-      const result = canUploadFile(videoFile, "gemini-2.0-flash");
+      const result = canUploadFile(videoFile, "gemini-2.5-flash");
       expect(result.allowed).toBe(true);
       expect(result.allowedTypes?.has("video/mp4")).toBe(true);
       expect(result.allowedTypes?.has("audio/mp3")).toBe(true);
@@ -141,7 +141,7 @@ describe("media-types helpers for playground file upload validation", () => {
     it("should provide allowedTypes for building file input accept attribute", () => {
       const result = canUploadFile(
         { name: "any.txt", type: "text/plain" },
-        "gemini-2.0-flash",
+        "gemini-2.5-flash",
       );
       expect(result.allowedTypes).toBeDefined();
       const acceptAttribute = [...result.allowedTypes!].join(",");

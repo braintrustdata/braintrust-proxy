@@ -212,7 +212,7 @@ const APISecretBaseSchema = z
     org_id: z.string().nullish(),
     org_name: z.string().nullish(),
     name: z.string().nullish(),
-    secret: z.string(),
+    secret: z.string().nullable(),
     metadata: z.record(z.unknown()).nullish(),
   })
   .passthrough();

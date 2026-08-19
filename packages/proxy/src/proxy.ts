@@ -220,6 +220,10 @@ function isAnthropicOAuthBearerSecret(secret: APISecret) {
 export function anthropicAuthHeaders(
   secret: APISecret,
 ): Record<string, string> {
+  if (secret.secret === null) {
+    return {};
+  }
+
   if (isAnthropicOAuthBearerSecret(secret)) {
     return {
       authorization: `Bearer ${secret.secret}`,
@@ -1507,7 +1511,12 @@ async function fetchModelLoop(
       attributes: loggableInfo,
     });
     try {
-      const forwardedHeaders = { ...headers, ...additionalHeaders };
+      const forwardedHeaders = Object.fromEntries(
+        Object.entries(headers).filter(
+          ([name]) => name.toLowerCase() !== "authorization",
+        ),
+      );
+      Object.assign(forwardedHeaders, additionalHeaders);
       if (secret.type === "braintrust") {
         const forwardedOrgName = orgName || secret.org_name;
         if (forwardedOrgName) {
@@ -2364,10 +2373,12 @@ async function fetchOpenAI(
     secret.metadata.auth_format === "api_key"
       ? "api_key"
       : "bearer";
-  headers["authorization"] =
-    authFormat === "api_key"
-      ? `Api-Key ${bearerToken}`
-      : `Bearer ${bearerToken}`;
+  if (bearerToken !== null && bearerToken !== undefined) {
+    headers["authorization"] =
+      authFormat === "api_key"
+        ? `Api-Key ${bearerToken}`
+        : `Bearer ${bearerToken}`;
+  }
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);

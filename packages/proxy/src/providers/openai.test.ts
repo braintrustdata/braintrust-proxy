@@ -378,6 +378,9 @@ it("routes null-secret endpoints using their metadata", async () => {
       stream: false,
     },
     fetch,
+    proxyHeaders: {
+      Authorization: "Bearer braintrust-api-key",
+    },
     getApiSecrets: async () => [
       {
         type: "openai",
@@ -398,6 +401,7 @@ it("routes null-secret endpoints using their metadata", async () => {
   expect(requests[0].headers["x-model-gateway-auth"]).toBe(
     "gateway-credential",
   );
+  expect(requests[0].headers.authorization).toBeUndefined();
 });
 
 it("preserves temperature for GPT-5.1+ when reasoning_effort is none", async () => {

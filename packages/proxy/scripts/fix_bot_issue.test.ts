@@ -3,6 +3,8 @@ import {
   applyAvailableEndpointTypeMappings,
   buildUpdatedLocalModel,
   isDateWithinDays,
+  issueMetadataSchema,
+  normalizeModelSpecs,
   UPCOMING_DEPRECATION_WINDOW_DAYS,
 } from "./fix_bot_issue";
 
@@ -100,6 +102,66 @@ describe("fix_bot_issue", () => {
           },
         ),
       ).toThrow("without explicit location metadata");
+    });
+  });
+
+  describe("model_specs array tolerance", () => {
+    it("normalizes an array of { id, ...spec } into a record keyed by id", () => {
+      expect(
+        normalizeModelSpecs([
+          {
+            id: "deepseek-ai/DeepSeek-V4-Pro-0813",
+            format: "openai",
+            flavor: "chat",
+            available_providers: ["baseten"],
+          },
+        ]),
+      ).toEqual({
+        "deepseek-ai/DeepSeek-V4-Pro-0813": {
+          format: "openai",
+          flavor: "chat",
+          available_providers: ["baseten"],
+        },
+      });
+    });
+
+    it("leaves a record-form value untouched", () => {
+      const record = {
+        "publishers/google/models/gemini-3.1-pro-preview": {
+          format: "google",
+          flavor: "chat",
+        },
+      };
+      expect(normalizeModelSpecs(record)).toBe(record);
+    });
+
+    it("parses issue metadata emitted with model_specs as an array", () => {
+      const parsed = issueMetadataSchema.parse({
+        kind: "missing_model",
+        provider: "baseten",
+        models: ["deepseek-ai/DeepSeek-V4-Pro-0813"],
+        model_specs: [
+          {
+            id: "deepseek-ai/DeepSeek-V4-Pro-0813",
+            format: "openai",
+            flavor: "chat",
+            input_cost_per_mil_tokens: 1.32,
+            output_cost_per_mil_tokens: 3.96,
+            max_input_tokens: 1048576,
+            reasoning: true,
+            available_providers: ["baseten"],
+          },
+        ],
+      });
+
+      expect(
+        parsed.model_specs?.["deepseek-ai/DeepSeek-V4-Pro-0813"],
+      ).toMatchObject({
+        format: "openai",
+        flavor: "chat",
+        input_cost_per_mil_tokens: 1.32,
+        available_providers: ["baseten"],
+      });
     });
   });
 });

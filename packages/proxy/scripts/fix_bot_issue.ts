@@ -23,7 +23,32 @@ import {
 
 const partialModelSchema = ModelSchema.partial();
 export const UPCOMING_DEPRECATION_WINDOW_DAYS = 90;
-const issueMetadataSchema = z.object({
+
+// The gap-audit agent is instructed to emit `model_specs` as a record keyed by
+// model id, but it sometimes deviates and emits an array of `{ id, ...spec }`
+// objects instead. Normalize that array form back into the documented record so
+// the issue still resolves instead of being dropped as unparsable metadata.
+export function normalizeModelSpecs(value: unknown): unknown {
+  if (!Array.isArray(value)) {
+    return value;
+  }
+  const record: Record<string, unknown> = {};
+  for (const entry of value) {
+    if (
+      entry === null ||
+      typeof entry !== "object" ||
+      Array.isArray(entry) ||
+      !("id" in entry) ||
+      typeof entry.id !== "string"
+    ) {
+      continue;
+    }
+    const { id, ...spec } = entry;
+    record[id] = spec;
+  }
+  return record;
+}
+export const issueMetadataSchema = z.object({
   kind: z.enum(["missing_model", "stale_metadata"]).optional(),
   provider: z.string().optional(),
   model: z.string().optional(),
@@ -41,7 +66,9 @@ const issueMetadataSchema = z.object({
     .optional(),
   deprecation_date: z.string().optional(),
   model_spec: partialModelSchema.optional(),
-  model_specs: z.record(partialModelSchema).optional(),
+  model_specs: z
+    .preprocess(normalizeModelSpecs, z.record(partialModelSchema))
+    .optional(),
   source_urls: z.array(z.string().url()).optional(),
 });
 const fixResultSchema = z.object({

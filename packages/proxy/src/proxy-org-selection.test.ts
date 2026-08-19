@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BillingEvent, proxyV1 } from "./proxy";
+import { APISecretSchema } from "../schema";
 
 describe("proxy org selection", () => {
   it("rejects conflicting header and path org selectors before secret lookup", async () => {
@@ -100,5 +101,71 @@ describe("proxy org selection", () => {
       input_tokens: 7,
     });
     expect(billingEvents[0].output_tokens).toBeUndefined();
+  });
+
+  it("does not forward provider content-length onto a fake-streamed SSE response", async () => {
+    let streamClosed: () => void = () => {};
+    const closed = new Promise<void>((resolve) => {
+      streamClosed = resolve;
+    });
+
+    const forwardedHeaders: Record<string, string> = {};
+    const nonStreamingSecret = APISecretSchema.parse({
+      type: "openai",
+      name: "non-streaming-openai",
+      secret: "provider-token",
+      metadata: { supportsStreaming: false },
+    });
+    const providerBody = JSON.stringify({
+      id: "chatcmpl-1",
+      object: "chat.completion",
+      model: "gpt-fake",
+      choices: [
+        {
+          index: 0,
+          message: { role: "assistant", content: "hi" },
+          finish_reason: "stop",
+        },
+      ],
+      usage: { prompt_tokens: 1, completion_tokens: 1, total_tokens: 2 },
+    });
+
+    await proxyV1({
+      method: "POST",
+      url: "/chat/completions",
+      proxyHeaders: { authorization: "Bearer test-token" },
+      body: JSON.stringify({
+        model: "gpt-fake",
+        messages: [{ role: "user", content: "hi" }],
+        stream: true,
+      }),
+      setHeader: (name, value) => {
+        forwardedHeaders[name.toLowerCase()] = value;
+      },
+      setStatusCode: () => {},
+      res: new WritableStream<Uint8Array>({
+        write() {},
+        close() {
+          streamClosed();
+        },
+      }),
+      getApiSecrets: async () => [nonStreamingSecret],
+      cacheGet: async () => null,
+      cachePut: async () => {},
+      digest: async (message: string) => message,
+      customFetch: async () =>
+        new Response(providerBody, {
+          status: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Content-Length": String(Buffer.byteLength(providerBody)),
+          },
+        }),
+    });
+
+    await closed;
+
+    expect(forwardedHeaders["content-length"]).toBeUndefined();
+    expect(forwardedHeaders["content-type"]).toContain("text/event-stream");
   });
 });

@@ -316,6 +316,9 @@ const liteLLMModelDetailSchema = z
     cache_creation_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_write
     cache_read_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_read
     litellm_provider: z.string().optional(),
+    // Accept the known modes but tolerate any new value LiteLLM
+    // introduces (e.g. "guardrail"): one unknown mode must not fail the whole
+    // record-parse and break the entire sync.
     mode: z
       .enum([
         "chat",
@@ -334,6 +337,7 @@ const liteLLMModelDetailSchema = z
         "image_edit",
         "realtime",
       ])
+      .or(z.string())
       .optional(),
     supports_function_calling: z.boolean().optional(),
     supports_parallel_function_calling: z.boolean().optional(),
@@ -382,6 +386,16 @@ const SYNC_DEFAULT_ENDPOINT_TYPES = {
 const REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 
+// Strip LiteLLM's non-model `sample_spec` entry and validate the feed. Exported
+// so the parse contract (incl. tolerance of unknown `mode` values) is testable
+// without a network fetch.
+export function parseRemoteModelList(jsonData: unknown): LiteLLMModelList {
+  if (jsonData && typeof jsonData === "object" && "sample_spec" in jsonData) {
+    delete (jsonData as Record<string, unknown>).sample_spec;
+  }
+  return liteLLMModelListSchema.parse(jsonData);
+}
+
 async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
   return new Promise((resolve, reject) => {
     https
@@ -392,15 +406,7 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
         });
         res.on("end", () => {
           try {
-            const jsonData = JSON.parse(data);
-            if (
-              jsonData &&
-              typeof jsonData === "object" &&
-              "sample_spec" in jsonData
-            ) {
-              delete jsonData.sample_spec;
-            }
-            const parsedModels = liteLLMModelListSchema.parse(jsonData);
+            const parsedModels = parseRemoteModelList(JSON.parse(data));
             resolve(parsedModels);
           } catch (error) {
             if (error instanceof z.ZodError) {

@@ -25,6 +25,7 @@ import {
   isPerplexityGatewayModel,
   isSupportedRemoteModel,
   normalizeLocalModels,
+  parseRemoteModelList,
   normalizeProviderMappingContent,
   SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
@@ -326,6 +327,26 @@ export const AvailableEndpointTypes = {
     expect(isSupportedRemoteModel({ mode: "embedding" })).toBe(false);
     expect(isSupportedRemoteModel({ mode: "chat" })).toBe(true);
     expect(isSupportedRemoteModel({})).toBe(true);
+  });
+
+  it("tolerates unknown LiteLLM mode values instead of failing the whole feed", () => {
+    // LiteLLM introduces new `mode` values over time (e.g. "guardrail"); a single
+    // unknown mode must not fail the record-parse and break the entire sync.
+    const parsed = parseRemoteModelList({
+      sample_spec: { should: "be dropped" },
+      "bedrock/guardrails": { mode: "guardrail" },
+      "databricks/databricks-gpt-5": {
+        mode: "chat",
+        input_cost_per_token: 1.25e-6,
+        output_cost_per_token: 1e-5,
+        litellm_provider: "databricks",
+      },
+    });
+    expect(parsed["sample_spec"]).toBeUndefined();
+    expect(parsed["bedrock/guardrails"].mode).toBe("guardrail");
+    expect(parsed["databricks/databricks-gpt-5"].input_cost_per_token).toBe(
+      1.25e-6,
+    );
   });
 
   it("adds deterministic equivalent model groups for provider-native model ids", () => {

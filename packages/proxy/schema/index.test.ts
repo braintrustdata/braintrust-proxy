@@ -317,6 +317,16 @@ describe("getDirectModelEndpointTypes", () => {
 });
 
 describe("APISecretSchema compatibility", () => {
+  it("accepts null secrets from the control plane", () => {
+    const parsed = APISecretSchema.parse({
+      secret: null,
+      type: "openai",
+      metadata: {},
+    });
+
+    expect(parsed.secret).toBeNull();
+  });
+
   it("accepts and preserves unknown metadata keys", () => {
     const parsed = APISecretSchema.parse({
       secret: "provider-secret",

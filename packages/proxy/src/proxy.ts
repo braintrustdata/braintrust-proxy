@@ -227,7 +227,7 @@ export function anthropicAuthHeaders(
   }
 
   return {
-    "x-api-key": secret.secret,
+    "x-api-key": String(secret.secret),
   };
 }
 
@@ -2229,7 +2229,10 @@ async function fetchOpenAI(
       bearerToken = secret.secret;
     } else {
       // authType === "service_account_key"
-      bearerToken = await getGoogleAccessToken(secret.secret, customFetch);
+      bearerToken = await getGoogleAccessToken(
+        String(secret.secret),
+        customFetch,
+      );
     }
   } else {
     const metadataApiBase =
@@ -2291,7 +2294,7 @@ async function fetchOpenAI(
 
     if (secret.type === "azure" && secret.metadata?.auth_type === "entra_api") {
       const azureEntrySecret = AzureEntraSecretSchema.parse(
-        JSON.parse(secret.secret),
+        JSON.parse(String(secret.secret)),
       );
       bearerToken = await getAzureEntraAccessToken({
         secret: azureEntrySecret,
@@ -2305,7 +2308,9 @@ async function fetchOpenAI(
       secret.metadata?.auth_type === "service_principal_oauth"
     ) {
       bearerToken = await getDatabricksOAuthAccessToken({
-        secret: DatabricksOAuthSecretSchema.parse(JSON.parse(secret.secret)),
+        secret: DatabricksOAuthSecretSchema.parse(
+          JSON.parse(String(secret.secret)),
+        ),
         apiBase: baseURL,
         digest,
         cacheGet,
@@ -2366,7 +2371,7 @@ async function fetchOpenAI(
 
   if (secret.type === "azure" && secret.metadata?.api_version) {
     fullURL.searchParams.set("api-version", secret.metadata.api_version);
-    headers["api-key"] = secret.secret;
+    headers["api-key"] = String(secret.secret);
     delete bodyData["seed"];
   } else if (secret.type === "openai" && secret.metadata?.organization_id) {
     headers["OpenAI-Organization"] = secret.metadata.organization_id;
@@ -2711,7 +2716,7 @@ async function vertexEndpointInfo({
   const accessToken =
     authType === "access_token"
       ? secret
-      : await getGoogleAccessToken(secret, customFetch);
+      : await getGoogleAccessToken(String(secret), customFetch);
   if (!accessToken) {
     throw new Error("Failed to get Google access token");
   }
@@ -3345,7 +3350,7 @@ async function fetchGoogleGenerateContent({
         method: "POST",
         headers: {
           "content-type": "application/json",
-          [GOOGLE_API_KEY_HEADER]: secret.secret,
+          [GOOGLE_API_KEY_HEADER]: String(secret.secret),
         },
         body: JSON.stringify(body),
         signal,
@@ -3489,7 +3494,7 @@ async function fetchGoogleChatCompletions({
         }`,
     );
     delete headers["authorization"];
-    headers[GOOGLE_API_KEY_HEADER] = secret.secret;
+    headers[GOOGLE_API_KEY_HEADER] = String(secret.secret);
   } else {
     // secret.type === "vertex"
     const { baseUrl, accessToken } = await vertexEndpointInfo({

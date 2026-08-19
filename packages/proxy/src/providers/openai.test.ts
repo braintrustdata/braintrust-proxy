@@ -368,6 +368,38 @@ it("uses custom api base when routing appropriate models through responses", asy
   });
 });
 
+it("routes null-secret endpoints using their metadata", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+    body: {
+      model: "gpt-5.5",
+      messages: [{ role: "user", content: "hello" }],
+      stream: false,
+    },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "openai",
+        name: "model-gateway",
+        secret: null,
+        metadata: {
+          api_base: "http://model-gateway.test/v1",
+          additionalHeaders: {
+            "x-model-gateway-auth": "gateway-credential",
+          },
+        },
+      },
+    ],
+  });
+
+  expect(requests.length).toBe(1);
+  expect(requests[0].url).toBe("http://model-gateway.test/v1/responses");
+  expect(requests[0].headers["x-model-gateway-auth"]).toBe(
+    "gateway-credential",
+  );
+});
+
 it("preserves temperature for GPT-5.1+ when reasoning_effort is none", async () => {
   const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

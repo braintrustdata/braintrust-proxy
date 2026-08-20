@@ -1361,6 +1361,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/deepseek-v4-pro-0813": ["fireworks"],
   "accounts/fireworks/models/muse-glimmer-30b": ["fireworks"],
   "databricks-deepseek-v4-flash-0731": ["databricks"],
+  "xai.grok-4.6": ["bedrock"],
+  "us.xai.grok-4.6": ["bedrock"],
+  "global.xai.grok-4.6": ["bedrock"],
+  "openai.gpt-5.6-cyber": ["bedrock"],
+  "openai.gpt-daybreak-blue-5.6-sol": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

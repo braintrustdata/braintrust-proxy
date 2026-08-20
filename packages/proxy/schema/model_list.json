@@ -7914,6 +7914,83 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "openai.gpt-daybreak-blue-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5.5,
+    "output_cost_per_mil_tokens": 33,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cache_write_cost_per_mil_tokens": 6.875,
+    "displayName": "GPT-5.6 Sol (Daybreak Blue)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-5.6-cyber": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 13.75,
+    "output_cost_per_mil_tokens": 82.5,
+    "input_cache_read_cost_per_mil_tokens": 1.375,
+    "input_cache_write_cost_per_mil_tokens": 17.1875,
+    "displayName": "GPT-5.6 Cyber",
+    "reasoning": true,
+    "max_input_tokens": 272000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.xai.grok-4.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok 4.6",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.xai.grok-4.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "Grok 4.6",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "xai.grok-4.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "Grok 4.6",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "meta.llama4-scout-17b-instruct-v1:0": {
     "format": "converse",
     "flavor": "chat",
@@ -9194,6 +9271,8 @@
   "deepseek.v3-v1:0": {
     "format": "converse",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.5974,
+    "output_cost_per_mil_tokens": 1.7304,
     "displayName": "DeepSeek V3.1",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
@@ -10289,7 +10368,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.16,
+    "input_cache_read_cost_per_mil_tokens": 0.19,
     "displayName": "Kimi K2.7 Code",
     "max_input_tokens": 262144,
     "available_providers": [

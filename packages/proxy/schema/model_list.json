@@ -13074,6 +13074,18 @@
       "databricks"
     ]
   },
+  "stealth/ox-alpha": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Ox Alpha",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "gryphe/mythomax-l2-13b": {
     "format": "openai",
     "flavor": "chat",
@@ -13936,7 +13948,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.27,
     "output_cost_per_mil_tokens": 1,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "input_cache_read_cost_per_mil_tokens": 0.135,
     "displayName": "DeepSeek: DeepSeek V3.1 Terminus",
     "reasoning": true,
     "parent": "deepseek/deepseek-chat-v3.1",
@@ -13976,9 +13988,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.088606,
-    "output_cost_per_mil_tokens": 0.177212,
-    "input_cache_read_cost_per_mil_tokens": 0.0177212,
+    "input_cost_per_mil_tokens": 0.0784,
+    "output_cost_per_mil_tokens": 0.1568,
+    "input_cache_read_cost_per_mil_tokens": 0.01568,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -13997,6 +14009,17 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "mistralai/ministral-8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.11,
+    "output_cost_per_mil_tokens": 0.11,
+    "displayName": "Mistral: Ministral 8B",
+    "max_input_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -14612,6 +14635,30 @@
       "openrouter"
     ]
   },
+  "tencent/hy-mt2-30b-a3b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.074,
+    "output_cost_per_mil_tokens": 0.295,
+    "displayName": "Tencent: Hy-MT2-30B-A3B",
+    "max_input_tokens": 8192,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "tencent/hy-mt2-1.8b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.044,
+    "output_cost_per_mil_tokens": 0.177,
+    "displayName": "Tencent: Hy-MT2-1.8B",
+    "max_input_tokens": 8192,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "tencent/hunyuan-a13b-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -14995,9 +15042,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.95,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.16,
+    "input_cost_per_mil_tokens": 0.5415,
+    "output_cost_per_mil_tokens": 2.28,
+    "input_cache_read_cost_per_mil_tokens": 0.0912,
     "displayName": "MoonshotAI: Kimi K2.6",
     "reasoning": true,
     "max_input_tokens": 262144,

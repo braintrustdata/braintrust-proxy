@@ -142,6 +142,10 @@ export const SYNC_PRESERVED_FIELDS: Record<
   // (Fireworks' $0.14 belongs to glm-5p2 above); pin it so applyBasetenPricing /
   // the sync stop re-applying Fireworks' $0.14 to this id.
   "zai-org/GLM-5.2": CACHE_READ_FIELD,
+  // Kimi K2.7 Code cached input is $0.19/M (20% of the $0.95 input) per
+  // Together/Fireworks; LiteLLM carries a stale $0.16 and the sync keeps
+  // reverting the correction (the #1127 -> #1130 re-regression). Pin the field.
+  "moonshotai/Kimi-K2.7-Code": CACHE_READ_FIELD,
 };
 
 // Returns true if `field` of `modelName` is hand-maintained and must not be

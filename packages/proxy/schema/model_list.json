@@ -10252,13 +10252,14 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.32,
     "output_cost_per_mil_tokens": 3.96,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "input_cache_read_cost_per_mil_tokens": 0.132,
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
     "available_providers": [
-      "together"
+      "together",
+      "baseten"
     ]
   },
   "deepseek-ai/DeepSeek-V4-Pro": {

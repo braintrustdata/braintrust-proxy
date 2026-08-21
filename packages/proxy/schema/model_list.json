@@ -1,4 +1,58 @@
 {
+  "daybreak-red-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "Daybreak Red",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "daybreak-blue-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Daybreak Blue",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-5.6-cyber": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "GPT-5.6 Cyber",
+    "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-cyber"
+    ],
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-5.6": {
     "format": "openai",
     "flavor": "chat",
@@ -10,7 +64,7 @@
     "displayName": "GPT-5.6",
     "reasoning": true,
     "parent": "gpt-5.6-sol",
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -30,7 +84,7 @@
     "fallback_models": [
       "openai.gpt-5.6-luna"
     ],
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -51,7 +105,7 @@
     "fallback_models": [
       "openai.gpt-5.6-sol"
     ],
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -72,7 +126,7 @@
     "fallback_models": [
       "openai.gpt-5.6-terra"
     ],
-    "max_input_tokens": 1050000,
+    "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -1277,6 +1331,7 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "GPT 3.5T Instruct",
     "deprecated": true,
+    "deprecation_date": "2026-09-28",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -1669,6 +1724,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "displayName": "GPT Audio mini (2025-12-15)",
+    "deprecation_date": "2027-01-20",
     "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -1724,6 +1780,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1734,6 +1791,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1744,6 +1802,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1768,6 +1827,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1778,6 +1838,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1788,6 +1849,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1798,6 +1860,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1808,6 +1871,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1818,6 +1882,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1828,6 +1893,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1838,6 +1904,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1848,6 +1915,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1858,6 +1926,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1868,6 +1937,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -1878,6 +1948,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2090,6 +2161,8 @@
   "high/1024-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 High Square",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2098,6 +2171,8 @@
   "high/1024-x-1536/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 High Portrait",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2106,6 +2181,8 @@
   "high/1536-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 High Landscape",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2114,6 +2191,8 @@
   "low/1024-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Low Square",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2122,6 +2201,8 @@
   "low/1024-x-1024/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Low Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2130,6 +2211,8 @@
   "low/1024-x-1536/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Low Portrait",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2138,6 +2221,8 @@
   "low/1024-x-1536/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Low Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2146,6 +2231,8 @@
   "low/1536-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Low Landscape",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2154,6 +2241,8 @@
   "low/1536-x-1024/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Low Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2162,6 +2251,8 @@
   "medium/1024-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Medium Square",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2170,6 +2261,8 @@
   "medium/1024-x-1024/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Medium Square",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2178,6 +2271,8 @@
   "medium/1024-x-1536/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Medium Portrait",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2186,6 +2281,8 @@
   "medium/1024-x-1536/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Medium Portrait",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2194,6 +2291,8 @@
   "medium/1536-x-1024/gpt-image-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 Medium Landscape",
+    "deprecation_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -2202,6 +2301,8 @@
   "medium/1536-x-1024/gpt-image-1-mini": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "GPT Image 1 mini Medium Landscape",
+    "deprecation_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2232,6 +2333,8 @@
   "hd/1024-x-1024/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 HD Square",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2240,6 +2343,8 @@
   "hd/1024-x-1792/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 HD Portrait",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2248,6 +2353,8 @@
   "hd/1792-x-1024/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 HD Landscape",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2256,6 +2363,8 @@
   "standard/1024-x-1024/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 Standard Square",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2264,6 +2373,8 @@
   "standard/1024-x-1792/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 Standard Portrait",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2272,6 +2383,8 @@
   "standard/1792-x-1024/dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 3 Standard Landscape",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2280,6 +2393,8 @@
   "1024-x-1024/dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 2 1024x1024",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2288,6 +2403,8 @@
   "256-x-256/dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 2 256x256",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2296,6 +2413,8 @@
   "512-x-512/dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "DALL-E 2 512x512",
+    "deprecation_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -2428,6 +2547,8 @@
   "text-moderation-007": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Text Moderation 007",
+    "deprecation_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -2437,6 +2558,8 @@
   "text-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Text Moderation",
+    "deprecation_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -2446,6 +2569,8 @@
   "text-moderation-stable": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Text Moderation Stable",
+    "deprecation_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -2457,6 +2582,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 0.4,
+    "displayName": "Babbage 002",
+    "deprecation_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -2469,6 +2596,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
+    "displayName": "Davinci 002",
+    "deprecation_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -2681,8 +2810,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "GPT Chat Latest",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openai",
       "azure"
@@ -2736,6 +2865,7 @@
     "displayName": "Muse Glimmer 30B",
     "reasoning": true,
     "max_input_tokens": 131072,
+    "max_output_tokens": 16384,
     "available_providers": [
       "fireworks"
     ]
@@ -2788,8 +2918,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.028,
     "displayName": "DeepSeek V4 Flash 0731",
     "reasoning": true,
+    "parent": "accounts/fireworks/models/deepseek-v4-flash",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 384000,
+    "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
     ]
@@ -5512,7 +5643,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "displayName": "NVIDIA Nemotron 3 Ultra NVFP4",
     "reasoning": true,
-    "max_input_tokens": 262000,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
     "available_providers": [
       "fireworks"
     ]
@@ -5923,7 +6055,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Kimi K3",
     "reasoning": true,
-    "max_input_tokens": 1040000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
     ]
@@ -5947,8 +6080,10 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.2,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "NVIDIA Nemotron 3.5 Lightning 30B A3B",
     "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
     "available_providers": [
       "fireworks"
     ]
@@ -8064,6 +8199,7 @@
     "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-06-09",
     "fallback_models": [
       "anthropic.claude-fable-5",
       "global.anthropic.claude-fable-5",
@@ -8089,6 +8225,7 @@
     "displayName": "Claude Opus 5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-07-24",
     "fallback_models": [
       "anthropic.claude-opus-5",
       "eu.anthropic.claude-opus-5",
@@ -8116,6 +8253,7 @@
     "displayName": "Claude Sonnet 5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-06-30",
     "fallback_models": [
       "anthropic.claude-sonnet-5",
       "global.anthropic.claude-sonnet-5",
@@ -8142,6 +8280,7 @@
     "displayName": "Claude Haiku 4.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-15",
     "fallback_models": [
       "publishers/anthropic/models/claude-haiku-4-5"
     ],
@@ -8164,6 +8303,7 @@
     "displayName": "Claude Haiku 4.5 (2025-10-01)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-15",
     "parent": "claude-haiku-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
@@ -8184,6 +8324,7 @@
     "displayName": "Claude Opus 4.8",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-05-28",
     "fallback_models": [
       "anthropic.claude-opus-4-8",
       "global.anthropic.claude-opus-4-8",
@@ -8209,6 +8350,7 @@
     "displayName": "Claude Sonnet 4.6",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-02-17",
     "fallback_models": [
       "anthropic.claude-sonnet-4-6",
       "global.anthropic.claude-sonnet-4-6",
@@ -8234,6 +8376,7 @@
     "displayName": "Claude Opus 4.7",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-04-16",
     "fallback_models": [
       "anthropic.claude-opus-4-7",
       "global.anthropic.claude-opus-4-7",
@@ -8259,6 +8402,7 @@
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-09-29",
     "fallback_models": [
       "publishers/anthropic/models/claude-sonnet-4-5"
     ],
@@ -8281,6 +8425,7 @@
     "displayName": "Claude Sonnet 4.5 (2025-09-29)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-09-29",
     "parent": "claude-sonnet-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
@@ -8301,6 +8446,7 @@
     "displayName": "Claude Opus 4.6",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-02-05",
     "fallback_models": [
       "publishers/anthropic/models/claude-opus-4-6"
     ],
@@ -8323,6 +8469,7 @@
     "displayName": "Claude Opus 4.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-11-24",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -8342,6 +8489,7 @@
     "displayName": "Claude Opus 4.5 (2025-11-01)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-11-24",
     "parent": "claude-opus-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
@@ -12166,6 +12314,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "displayName": "Grok 4",
+    "deprecation_date": "2026-05-15",
     "parent": "grok-4",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
@@ -12229,6 +12379,9 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.75,
+    "displayName": "Grok 3",
+    "deprecation_date": "2026-05-15",
+    "parent": "grok-3",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12386,6 +12539,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok Code Fast",
     "reasoning": true,
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -13917,9 +14071,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.14,
-    "output_cost_per_mil_tokens": 0.28,
-    "input_cache_read_cost_per_mil_tokens": 0.028,
+    "input_cost_per_mil_tokens": 0.08,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.016,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -14041,9 +14195,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0784,
-    "output_cost_per_mil_tokens": 0.1568,
-    "input_cache_read_cost_per_mil_tokens": 0.01568,
+    "input_cost_per_mil_tokens": 0.0826,
+    "output_cost_per_mil_tokens": 0.1652,
+    "input_cache_read_cost_per_mil_tokens": 0.01652,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14403,9 +14557,9 @@
   "minimax/minimax-m2.5": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.225,
-    "output_cost_per_mil_tokens": 0.9,
-    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "input_cost_per_mil_tokens": 0.27,
+    "output_cost_per_mil_tokens": 0.95,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax: MiniMax M2.5",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -15000,8 +15154,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.35,
-    "output_cost_per_mil_tokens": 1.5,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.1,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Meta: Muse Glimmer 30B",
     "reasoning": true,
@@ -15095,9 +15249,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5415,
-    "output_cost_per_mil_tokens": 2.28,
-    "input_cache_read_cost_per_mil_tokens": 0.0912,
+    "input_cost_per_mil_tokens": 0.95,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "MoonshotAI: Kimi K2.6",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -15110,9 +15264,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.71,
-    "output_cost_per_mil_tokens": 3.5,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 0.67,
+    "output_cost_per_mil_tokens": 3.4,
+    "input_cache_read_cost_per_mil_tokens": 0.17,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -16195,10 +16349,10 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.09,
+    "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.34,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
-    "displayName": "Google: Gemma 4 31B",
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Google: Gemma 4 31B IT",
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,

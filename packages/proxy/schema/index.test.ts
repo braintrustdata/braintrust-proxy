@@ -304,9 +304,16 @@ describe("getModelEndpointTypes", () => {
 });
 
 describe("getDirectModelEndpointTypes", () => {
-  // BT-5895: native types must not union `fallback_models` providers.
-  it("maps the short Gemini id only to google", () => {
-    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual(["google"]);
+  // Native direct types still must not union `fallback_models` providers (vertex
+  // is reached via the publishers/ fallback id, not the short id's direct
+  // types). openrouter, however, is kept as a last-resort fallback provider so
+  // the model is reachable when openrouter is the customer's only configured
+  // provider.
+  it("maps the short Gemini id to google with openrouter last (no vertex union)", () => {
+    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual([
+      "google",
+      "openrouter",
+    ]);
   });
 
   it("maps the Vertex publisher id only to vertex", () => {

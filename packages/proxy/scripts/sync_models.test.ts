@@ -27,6 +27,7 @@ import {
   normalizeLocalModels,
   parseRemoteModelList,
   normalizeProviderMappingContent,
+  providersForExactModelName,
   SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
@@ -279,17 +280,57 @@ export const AvailableEndpointTypes = {
     expect(guarded).toEqual(["together"]);
   });
 
-  it("keeps openrouter out of a multi-provider model's direct mapping, but maps openrouter-only entries", () => {
+  describe("providersForExactModelName", () => {
+    it("keeps openrouter ordered last behind native providers", () => {
+      expect(
+        providersForExactModelName("some-model", ["openai", "openrouter"]),
+      ).toEqual(["openai", "openrouter"]);
+      // openrouter is moved to the end even if listed earlier.
+      expect(
+        providersForExactModelName("some-model", [
+          "openrouter",
+          "groq",
+          "together",
+        ]),
+      ).toEqual(["groq", "together", "openrouter"]);
+    });
+
+    it("drops vertex from non-publisher ids but keeps openrouter (fallback)", () => {
+      // Bare gemini id: vertex is reached via the publishers/ fallback, so it is
+      // dropped here, but openrouter stays as a last-resort provider.
+      expect(
+        providersForExactModelName("gemini-2.5-flash", [
+          "google",
+          "vertex",
+          "openrouter",
+        ]),
+      ).toEqual(["google", "openrouter"]);
+      // Publisher id keeps vertex.
+      expect(
+        providersForExactModelName(
+          "publishers/google/models/gemini-2.5-flash",
+          ["vertex", "openrouter"],
+        ),
+      ).toEqual(["vertex", "openrouter"]);
+    });
+
+    it("leaves openrouter-only entries as openrouter", () => {
+      expect(providersForExactModelName("vendor/x", ["openrouter"])).toEqual([
+        "openrouter",
+      ]);
+    });
+  });
+
+  it("keeps openrouter as a last-resort fallback in a model's direct mapping, and maps openrouter-only entries", () => {
     const localModels = {
-      // Native model with openrouter unioned in: openrouter must be excluded
-      // from the DIRECT index.ts mapping (BT-5895), so the exact providers match
-      // the google default and no mapping is emitted.
+      // Native model with openrouter unioned in: openrouter is kept as a
+      // fallback but ordered LAST so google stays the preferred provider.
       "gemini-2.5-flash": {
         format: "google",
         flavor: "chat",
         available_providers: ["google", "openrouter"],
       },
-      // openai-format model gaining openrouter: exact providers drop openrouter.
+      // openai-format model on groq gaining openrouter: openrouter kept last.
       "some-openai-model": {
         format: "openai",
         flavor: "chat",
@@ -306,19 +347,22 @@ export const AvailableEndpointTypes = {
 
     const missing = getMissingProviderMappings(localModels, schemaContent);
     expect(missing).toContainEqual({
+      name: "gemini-2.5-flash",
+      providers: ["google", "openrouter"],
+    });
+    expect(missing).toContainEqual({
       name: "some-openai-model",
-      providers: ["groq"],
+      providers: ["groq", "openrouter"],
     });
     expect(missing).toContainEqual({
       name: "vendor/openrouter-only",
       providers: ["openrouter"],
     });
-    expect(missing).not.toContainEqual(
-      expect.objectContaining({ name: "gemini-2.5-flash" }),
-    );
+    // When openrouter is present alongside native providers, it is ordered last.
     for (const entry of missing) {
-      if (entry.name !== "vendor/openrouter-only") {
-        expect(entry.providers).not.toContain("openrouter");
+      const idx = entry.providers.indexOf("openrouter");
+      if (idx !== -1) {
+        expect(idx).toBe(entry.providers.length - 1);
       }
     }
   });

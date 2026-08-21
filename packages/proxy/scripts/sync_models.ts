@@ -1386,21 +1386,24 @@ function isVertexModelName(modelName: string): boolean {
   );
 }
 
-function providersForExactModelName(
+export function providersForExactModelName(
   modelName: string,
   providers: NonNullable<ModelSpec["available_providers"]>,
 ): NonNullable<ModelSpec["available_providers"]> {
-  return providers.filter(
+  const nativeProviders = providers.filter(
     (provider) =>
       (provider !== "vertex" || isVertexModelName(modelName)) &&
-      // openrouter is an aggregator: it is a routable provider recorded in
-      // available_providers, but it must not enter a model's DIRECT index.ts
-      // endpoint types unless it is the model's only provider (an
-      // openrouter-only entry). This keeps native/first-class models
-      // native-only for getDirectModelEndpointTypes (BT-5895), mirroring how
-      // vertex is represented via its separate publishers/ fallback id.
-      (provider !== "openrouter" || providers.length === 1),
+      provider !== "openrouter",
   );
+  // openrouter is an aggregator fallback: keep it in a model's DIRECT index.ts
+  // endpoint types so the model is reachable when openrouter is the customer's
+  // only configured provider (and as a fallback behind native providers), but
+  // order it LAST so native/first-class providers are always preferred. (vertex
+  // is still represented via its separate publishers/ fallback id, so it is
+  // dropped from non-publisher ids.)
+  return providers.includes("openrouter")
+    ? [...nativeProviders, "openrouter"]
+    : nativeProviders;
 }
 
 export function getMissingProviderMappings(
@@ -3212,12 +3215,13 @@ async function syncOpenRouterModelsCommand(argv: any) {
         completeModelOrder,
       );
     }
-    // Catch-all: add any still-missing mappings and normalize index.ts. Unions
-    // are reflected in model_list.json available_providers (the routing source
-    // of truth); openrouter is deliberately kept out of a model's DIRECT
-    // index.ts endpoint types unless it is the sole provider (see
-    // providersForExactModelName / BT-5895), so there is no index.ts widening
-    // step for provider unions here.
+    // Catch-all: add any still-missing mappings and normalize index.ts.
+    // openrouter is kept in a model's DIRECT index.ts endpoint types (ordered
+    // last) as a fallback / only-configured-provider option — see
+    // providersForExactModelName. NOTE: this catch-all only ADDS entries that
+    // are absent; when a union appends openrouter to a model that already has an
+    // index.ts entry, that existing entry is not rewritten here, so a one-time
+    // regeneration is used to backfill openrouter onto pre-existing entries.
     await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
   } catch (error) {
     console.error("Error during sync-openrouter command:", error);

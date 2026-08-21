@@ -26,6 +26,9 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "displayName": "Daybreak Blue",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-daybreak-blue-5.6-sol"
+    ],
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [

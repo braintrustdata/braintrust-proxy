@@ -1377,6 +1377,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen3p5-27b": ["fireworks"],
   "accounts/fireworks/models/qwen3p5-9b": ["fireworks"],
   "accounts/fireworks/models/qwen3p8-27b": ["fireworks"],
+  "google.gemma-3-27b-it": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

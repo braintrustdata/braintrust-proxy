@@ -8090,6 +8090,19 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "google.gemma-3-27b-it": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.23,
+    "output_cost_per_mil_tokens": 0.38,
+    "displayName": "Gemma 3 27B IT",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "openai.gpt-daybreak-blue-5.6-sol": {
     "format": "openai",
     "flavor": "chat",

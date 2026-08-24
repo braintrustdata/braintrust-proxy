@@ -46,6 +46,22 @@ export type AuditReport = {
 // OpenAI list + probe (using the OpenAI secret) rather than a separate source.
 const PROVIDER_AUDIT_ALIAS: Record<string, string> = { azure: "openai" };
 
+// "Don't deprecate" list: model ids the audit must never flag for removal, even
+// when a provider returns not-found/absent for them. Use this for early-access /
+// preview models that are gated per-account, where the audit's CI credentials
+// get a false 404 that does not reflect a real deprecation. The deprecation job
+// filters its results against this set (see auditCatalog). Add an id here to
+// keep it in the catalog regardless of audit results.
+export const NEVER_DEPRECATE_MODELS: ReadonlySet<string> = new Set<string>([
+  // OpenAI GPT-5.6 preview family (Sol / Cyber / Daybreak Blue / Daybreak Red)
+  // — early-access, gated per OpenAI account, so the CI audit credentials probe
+  // 404 them even though they are live for entitled accounts. Keep until GA or
+  // a confirmed removal.
+  "gpt-5.6-cyber",
+  "daybreak-blue-latest",
+  "daybreak-red-latest",
+]);
+
 // Models that cannot be validated with a chat/completions probe (image, audio,
 // realtime, embedding, moderation), plus fine-tune placeholders (ft:* are id
 // prefixes for user fine-tunes, not standalone models). The catalog marks many
@@ -310,7 +326,15 @@ export async function runAudit(args: {
       secrets,
       args.concurrency,
     );
-    report.deprecations.push(...deprecations);
+    for (const deprecation of deprecations) {
+      if (NEVER_DEPRECATE_MODELS.has(deprecation.model)) {
+        console.log(
+          `  [PRESERVED] ${deprecation.provider}/${deprecation.model} is in NEVER_DEPRECATE_MODELS — not deprecating`,
+        );
+        continue;
+      }
+      report.deprecations.push(deprecation);
+    }
     if (skipped) {
       report.skipped.push(skipped);
     }

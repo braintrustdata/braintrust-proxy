@@ -1,4 +1,61 @@
 {
+  "daybreak-red-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "Daybreak Red",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "daybreak-blue-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "displayName": "Daybreak Blue",
+    "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-daybreak-blue-5.6-sol"
+    ],
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-5.6-cyber": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "GPT-5.6 Cyber",
+    "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-cyber"
+    ],
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-5.6": {
     "format": "openai",
     "flavor": "chat",

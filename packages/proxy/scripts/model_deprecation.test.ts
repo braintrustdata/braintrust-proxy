@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   classifyProbe,
@@ -6,6 +8,7 @@ import {
 } from "./model_probe";
 import {
   effectiveProviders,
+  NEVER_DEPRECATE_MODELS,
   parseIndexEndpointTypes,
 } from "./reconcile_provider_models";
 import {
@@ -216,5 +219,36 @@ describe("rewriteIndexEntry / addToSyncExcluded", () => {
   it("adds ids to the deprecated-ids list, sorted and de-duplicated", () => {
     expect(addToDeprecatedIds(["a"], ["b", "a"])).toEqual(["a", "b"]);
     expect(addToDeprecatedIds(["m"], ["c", "z"])).toEqual(["c", "m", "z"]);
+  });
+});
+
+describe("NEVER_DEPRECATE_MODELS (don't-deprecate list)", () => {
+  const readJson = (rel: string) =>
+    JSON.parse(fs.readFileSync(path.resolve(__dirname, rel), "utf-8"));
+
+  it("keeps the gated OpenAI GPT-5.6 preview family", () => {
+    for (const id of [
+      "gpt-5.6-cyber",
+      "daybreak-blue-latest",
+      "daybreak-red-latest",
+    ]) {
+      expect(NEVER_DEPRECATE_MODELS.has(id)).toBe(true);
+    }
+  });
+
+  it("never lists a preserved model as deprecated (no contradiction)", () => {
+    const deprecated: string[] = readJson("./deprecated_model_ids.json");
+    for (const id of NEVER_DEPRECATE_MODELS) {
+      expect(deprecated).not.toContain(id);
+    }
+  });
+
+  it("keeps every preserved model present in the catalog", () => {
+    const catalog: Record<string, unknown> = readJson(
+      "../schema/model_list.json",
+    );
+    for (const id of NEVER_DEPRECATE_MODELS) {
+      expect(catalog[id]).toBeDefined();
+    }
   });
 });

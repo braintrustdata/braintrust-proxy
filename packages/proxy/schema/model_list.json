@@ -13682,18 +13682,6 @@
       "openrouter"
     ]
   },
-  "deepcogito/cogito-v2.1-671b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 1.25,
-    "displayName": "Deep Cogito: Cogito v2.1 671B",
-    "reasoning": true,
-    "max_input_tokens": 128000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "allenai/olmo-3-32b-think": {
     "format": "openai",
     "flavor": "chat",

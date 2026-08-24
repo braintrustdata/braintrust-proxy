@@ -514,7 +514,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "deepseek/deepseek-v3.2": ["openrouter"],
   "anthropic/claude-opus-4.5": ["openrouter"],
   "allenai/olmo-3-32b-think": ["openrouter"],
-  "deepcogito/cogito-v2.1-671b": ["openrouter"],
   "moonshotai/kimi-k2-thinking": ["openrouter"],
   "amazon/nova-premier-v1": ["openrouter"],
   "perplexity/sonar-pro-search": ["openrouter"],

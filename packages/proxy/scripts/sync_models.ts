@@ -1397,10 +1397,7 @@ export function providersForExactModelName(
   );
   // openrouter is an aggregator fallback: keep it in a model's DIRECT index.ts
   // endpoint types so the model is reachable when openrouter is the customer's
-  // only configured provider (and as a fallback behind native providers), but
-  // order it LAST so native/first-class providers are always preferred. (vertex
-  // is still represented via its separate publishers/ fallback id, so it is
-  // dropped from non-publisher ids.)
+  // only configured provider.
   return providers.includes("openrouter")
     ? [...nativeProviders, "openrouter"]
     : nativeProviders;
@@ -3216,12 +3213,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
       );
     }
     // Catch-all: add any still-missing mappings and normalize index.ts.
-    // openrouter is kept in a model's DIRECT index.ts endpoint types (ordered
-    // last) as a fallback / only-configured-provider option — see
-    // providersForExactModelName. NOTE: this catch-all only ADDS entries that
-    // are absent; when a union appends openrouter to a model that already has an
-    // index.ts entry, that existing entry is not rewritten here, so a one-time
-    // regeneration is used to backfill openrouter onto pre-existing entries.
+    // openrouter is kept in a model's DIRECT index.ts endpoint types.
     await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
   } catch (error) {
     console.error("Error during sync-openrouter command:", error);

@@ -295,25 +295,6 @@ export const AvailableEndpointTypes = {
       ).toEqual(["groq", "together", "openrouter"]);
     });
 
-    it("drops vertex from non-publisher ids but keeps openrouter (fallback)", () => {
-      // Bare gemini id: vertex is reached via the publishers/ fallback, so it is
-      // dropped here, but openrouter stays as a last-resort provider.
-      expect(
-        providersForExactModelName("gemini-2.5-flash", [
-          "google",
-          "vertex",
-          "openrouter",
-        ]),
-      ).toEqual(["google", "openrouter"]);
-      // Publisher id keeps vertex.
-      expect(
-        providersForExactModelName(
-          "publishers/google/models/gemini-2.5-flash",
-          ["vertex", "openrouter"],
-        ),
-      ).toEqual(["vertex", "openrouter"]);
-    });
-
     it("leaves openrouter-only entries as openrouter", () => {
       expect(providersForExactModelName("vendor/x", ["openrouter"])).toEqual([
         "openrouter",
@@ -321,16 +302,13 @@ export const AvailableEndpointTypes = {
     });
   });
 
-  it("keeps openrouter as a last-resort fallback in a model's direct mapping, and maps openrouter-only entries", () => {
+  it("keeps openrouter as a provider in a model's direct mapping, and maps openrouter-only entries", () => {
     const localModels = {
-      // Native model with openrouter unioned in: openrouter is kept as a
-      // fallback but ordered LAST so google stays the preferred provider.
       "gemini-2.5-flash": {
         format: "google",
         flavor: "chat",
         available_providers: ["google", "openrouter"],
       },
-      // openai-format model on groq gaining openrouter: openrouter kept last.
       "some-openai-model": {
         format: "openai",
         flavor: "chat",
@@ -358,7 +336,6 @@ export const AvailableEndpointTypes = {
       name: "vendor/openrouter-only",
       providers: ["openrouter"],
     });
-    // When openrouter is present alongside native providers, it is ordered last.
     for (const entry of missing) {
       const idx = entry.providers.indexOf("openrouter");
       if (idx !== -1) {

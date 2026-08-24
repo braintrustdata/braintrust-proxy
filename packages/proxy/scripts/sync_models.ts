@@ -3212,6 +3212,15 @@ async function syncOpenRouterModelsCommand(argv: any) {
         completeModelOrder,
       );
     }
+    if (providerUnions.length > 0) {
+      const widened = await addProviderToExistingMappings(
+        providerUnions,
+        "openrouter",
+      );
+      console.log(
+        `✅ Widened ${widened.length} existing provider mapping(s) with openrouter`,
+      );
+    }
     // Catch-all: add any still-missing mappings and normalize index.ts.
     // openrouter is kept in a model's DIRECT index.ts endpoint types.
     await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);

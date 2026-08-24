@@ -1380,6 +1380,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen3p5-27b": ["fireworks"],
   "accounts/fireworks/models/qwen3p5-9b": ["fireworks"],
   "accounts/fireworks/models/qwen3p8-27b": ["fireworks"],
+  "google.gemma-3-27b-it": ["bedrock"],
   "gemini-2.5-pro-preview-05-06": ["openrouter"],
   "gemini-2.5-flash": ["google", "openrouter"],
   "gemini-2.5-flash-lite": ["google", "openrouter"],

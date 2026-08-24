@@ -304,9 +304,11 @@ describe("getModelEndpointTypes", () => {
 });
 
 describe("getDirectModelEndpointTypes", () => {
-  // BT-5895: native types must not union `fallback_models` providers.
-  it("maps the short Gemini id only to google", () => {
-    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual(["google"]);
+  it("maps the short Gemini id to google with openrouter last", () => {
+    expect(getDirectModelEndpointTypes("gemini-2.5-flash")).toEqual([
+      "google",
+      "openrouter",
+    ]);
   });
 
   it("maps the Vertex publisher id only to vertex", () => {

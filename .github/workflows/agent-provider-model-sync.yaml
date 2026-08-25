@@ -23,7 +23,9 @@ jobs:
       # https://www.braintrust.dev/docs/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
       # Attribute gateway spend to the automations-spend-control project.
-      ANTHROPIC_CUSTOM_HEADERS: "x-bt-project-name: automations-spend-control"
+      ANTHROPIC_CUSTOM_HEADERS: |-
+        x-bt-project-name: automations-spend-control
+        x-bt-spend-control-tags: {"job_name":"agent-provider-model-sync"}
 
     steps:
       - name: Checkout repository

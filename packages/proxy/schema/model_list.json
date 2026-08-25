@@ -14440,46 +14440,6 @@
       "openrouter"
     ]
   },
-  "inclusionai/ling-2.6-flash": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.01,
-    "output_cost_per_mil_tokens": 0.03,
-    "input_cache_read_cost_per_mil_tokens": 0.002,
-    "displayName": "inclusionAI: Ling-2.6-flash",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "inclusionai/ling-2.6-1t": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.625,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
-    "displayName": "inclusionAI: Ling-2.6-1T",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "inclusionai/ring-2.6-1t": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.625,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
-    "displayName": "inclusionAI: Ring-2.6-1T",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "perceptron/perceptron-mk1": {
     "format": "openai",
     "flavor": "chat",

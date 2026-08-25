@@ -12597,6 +12597,17 @@
       "openrouter"
     ]
   },
+  "databricks-deepseek-v4-pro-0813": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "DeepSeek V4 Pro (0813)",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",

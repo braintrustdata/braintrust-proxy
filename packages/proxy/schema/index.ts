@@ -1384,6 +1384,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-2.5-flash": ["google", "openrouter"],
   "gemini-2.5-flash-lite": ["google", "openrouter"],
   "gemini-2.5-pro": ["google", "openrouter"],
+  "databricks-deepseek-v4-pro-0813": ["databricks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

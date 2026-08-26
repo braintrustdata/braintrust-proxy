@@ -567,7 +567,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "deepseek/deepseek-r1-0528": ["openrouter"],
   "anthropic/claude-opus-4": ["openrouter"],
   "anthropic/claude-sonnet-4": ["openrouter"],
-  "google/gemma-3n-e4b-it": ["openrouter"],
   "arcee-ai/virtuoso-large": ["openrouter"],
   "meta-llama/llama-guard-4-12b": ["openrouter"],
   "qwen/qwen3-30b-a3b": ["openrouter"],

@@ -10900,6 +10900,21 @@
       "baseten"
     ]
   },
+  "zai-org/GLM-5.3-Flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "GLM 5.3 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "zai-org/GLM-5.2": {
     "format": "openai",
     "flavor": "chat",
@@ -15637,14 +15652,15 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.425,
-    "output_cost_per_mil_tokens": 2.55,
-    "input_cache_read_cost_per_mil_tokens": 0.085,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
     "displayName": "Qwen: Qwen3.8 27B",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
+    "max_input_tokens": 131042,
+    "max_output_tokens": 16384,
     "available_providers": [
+      "groq",
       "openrouter"
     ]
   },

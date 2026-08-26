@@ -3381,6 +3381,9 @@ async function syncGroqModelCommand(argv: any) {
     }
     await writeLocalModels(orderedModels);
     await syncProviderMappingsForLocalModels(orderedModels, completeModelOrder);
+    if (existingName) {
+      await addProviderToExistingMappings([existingName], "groq");
+    }
     console.log(`✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
   } catch (error) {
     console.error("Error during sync-groq-model command:", error);
@@ -3429,6 +3432,9 @@ async function writeTargetedProviderModel(args: {
   }
   await writeLocalModels(orderedModels);
   await syncProviderMappingsForLocalModels(orderedModels, completeModelOrder);
+  if (existingName) {
+    await addProviderToExistingMappings([existingName], args.provider);
+  }
   console.log(`✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
 }
 

@@ -51,6 +51,7 @@ jobs:
             const providers = new Set([
               "anthropic",
               "azure",
+              "baseten",
               "bedrock",
               "cerebras",
               "databricks",
@@ -215,8 +216,8 @@ jobs:
             # Scope
 
             - Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
-            - Do not add, remove, or update any other model, provider mapping, or source file.
-            - If the target slug already exists, do not change it.
+            - Do not add, remove, or update any other model or source file.
+            - If the target slug already exists for another provider, verify that the requested provider serves it, then add only that provider to the existing entry and provider mapping. Preserve every other field and provider.
 
             # Research and entry requirements
 

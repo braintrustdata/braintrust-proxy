@@ -393,6 +393,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mixtral-8x7b": ["lepton"],
   "wizardlm-2-7b": ["lepton"],
   "wizardlm-2-8x22b": ["lepton", "openrouter"],
+  "qwen/qwen3.8-flash": ["openrouter"],
+  "z-ai/glm-5.3-flash": ["openrouter"],
   "meta/muse-spark-1.2-contributor": ["openrouter"],
   "deepseek/deepseek-v4-flash-vision-exp": ["openrouter"],
   "tencent/hy-mt2-7b": ["openrouter"],

@@ -6120,6 +6120,77 @@
       "cerebras"
     ]
   },
+  "whisper-large-v3-turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Whisper Large V3 Turbo",
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "whisper-large-v3": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Whisper Large V3",
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "playai-tts": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "PlayAI Dialog v1.0",
+    "deprecation_date": "2025-12-31",
+    "max_input_tokens": 10000,
+    "max_output_tokens": 10000,
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "canopylabs/orpheus-v1-english": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Canopy Labs Orpheus V1 English",
+    "max_input_tokens": 4000,
+    "max_output_tokens": 50000,
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "canopylabs/orpheus-arabic-saudi": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Canopy Labs Orpheus Arabic Saudi",
+    "max_input_tokens": 4000,
+    "max_output_tokens": 50000,
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "meta-llama/llama-prompt-guard-2-22m": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.03,
+    "displayName": "Llama Prompt Guard 2 22M",
+    "max_input_tokens": 512,
+    "max_output_tokens": 512,
+    "available_providers": [
+      "groq"
+    ]
+  },
+  "meta-llama/llama-prompt-guard-2-86m": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "displayName": "Llama Prompt Guard 2 86M",
+    "max_input_tokens": 512,
+    "max_output_tokens": 512,
+    "available_providers": [
+      "groq"
+    ]
+  },
   "openai/gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
@@ -6157,7 +6228,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.075,
     "output_cost_per_mil_tokens": 0.3,
-    "displayName": "GPT-OSS Safeguard (20B)",
+    "input_cache_read_cost_per_mil_tokens": 0.037,
+    "displayName": "OpenAI GPT-OSS Safeguard (20B)",
     "experimental": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
@@ -13310,6 +13382,21 @@
       "databricks"
     ]
   },
+  "meta-llama/llama-guard-4-12b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "Meta: Llama Guard 4 12B",
+    "deprecation_date": "2026-03-05",
+    "max_input_tokens": 8192,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "openrouter",
+      "groq"
+    ]
+  },
   "stealth/ox-alpha": {
     "format": "openai",
     "flavor": "chat",
@@ -13501,19 +13588,6 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Meta: Llama 4 Maverick",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "meta-llama/llama-guard-4-12b": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.18,
-    "output_cost_per_mil_tokens": 0.18,
-    "displayName": "Meta: Llama Guard 4 12B",
     "max_input_tokens": 1048576,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -14231,9 +14305,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0826,
-    "output_cost_per_mil_tokens": 0.1652,
-    "input_cache_read_cost_per_mil_tokens": 0.01652,
+    "input_cost_per_mil_tokens": 0.08106,
+    "output_cost_per_mil_tokens": 0.16212,
+    "input_cache_read_cost_per_mil_tokens": 0.016212,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14589,6 +14663,21 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 512000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "z-ai/glm-5.3-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.25,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "displayName": "Z.ai: GLM 5.3 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]

@@ -10900,6 +10900,21 @@
       "baseten"
     ]
   },
+  "zai-org/GLM-5.3-Flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "GLM 5.3 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "zai-org/GLM-5.2": {
     "format": "openai",
     "flavor": "chat",
@@ -14231,9 +14246,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0826,
-    "output_cost_per_mil_tokens": 0.1652,
-    "input_cache_read_cost_per_mil_tokens": 0.01652,
+    "input_cost_per_mil_tokens": 0.07952,
+    "output_cost_per_mil_tokens": 0.15904,
+    "input_cache_read_cost_per_mil_tokens": 0.015904,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14593,6 +14608,21 @@
       "openrouter"
     ]
   },
+  "z-ai/glm-5.3-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.25,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "displayName": "Z.ai: GLM 5.3 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1310720,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "z-ai/glm-5.3": {
     "format": "openai",
     "flavor": "chat",
@@ -14904,9 +14934,9 @@
   "tencent/hy3": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.132,
-    "output_cost_per_mil_tokens": 0.528,
-    "input_cache_read_cost_per_mil_tokens": 0.033,
+    "input_cost_per_mil_tokens": 0.0825,
+    "output_cost_per_mil_tokens": 0.33,
+    "input_cache_read_cost_per_mil_tokens": 0.020625,
     "displayName": "Tencent: Hy3",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -15633,18 +15663,34 @@
       "openrouter"
     ]
   },
+  "qwen/qwen3.8-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.16,
+    "output_cost_per_mil_tokens": 0.47,
+    "input_cache_read_cost_per_mil_tokens": 0.016,
+    "displayName": "Qwen: Qwen3.8 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "qwen/qwen3.8-27b": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.425,
-    "output_cost_per_mil_tokens": 2.55,
-    "input_cache_read_cost_per_mil_tokens": 0.085,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
     "displayName": "Qwen: Qwen3.8 27B",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
+    "max_input_tokens": 131042,
+    "max_output_tokens": 16384,
     "available_providers": [
+      "groq",
       "openrouter"
     ]
   },

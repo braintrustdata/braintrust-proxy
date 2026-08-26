@@ -16319,17 +16319,6 @@
       "openrouter"
     ]
   },
-  "google/gemma-3n-e4b-it": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.12,
-    "displayName": "Google: Gemma 3n 4B",
-    "max_input_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "google/gemini-2.5-pro-preview": {
     "format": "openai",
     "flavor": "chat",

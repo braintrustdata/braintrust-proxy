@@ -1,0 +1,286 @@
+name: Add model
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: "Provider serving the model"
+        required: true
+        type: string
+      model_slug:
+        description: "Exact provider model slug"
+        required: true
+        type: string
+
+concurrency:
+  group: add-model
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  add:
+    runs-on: ubuntu-latest
+    env:
+      # Route Claude Code through the Braintrust gateway. The gateway
+      # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
+      # passed as anthropic_api_key below) and calls the provider on our behalf.
+      # https://www.braintrust.dev/docs/deploy/gateway
+      ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
+      # Attribute gateway spend to the automations-spend-control project.
+      ANTHROPIC_CUSTOM_HEADERS: |-
+        x-bt-project-name: automations-spend-control
+        x-bt-spend-control-tags: {"job_name":"add-model"}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Validate target model
+        id: target
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          INPUT_PROVIDER: ${{ inputs.provider }}
+          INPUT_MODEL_SLUG: ${{ inputs.model_slug }}
+        with:
+          script: |
+            const providers = new Set([
+              "anthropic",
+              "azure",
+              "bedrock",
+              "cerebras",
+              "databricks",
+              "fireworks",
+              "google",
+              "groq",
+              "mistral",
+              "openai",
+              "perplexity",
+              "together",
+              "vertex",
+              "xai",
+            ]);
+            const provider = (process.env.INPUT_PROVIDER || "").trim().toLowerCase();
+            const modelSlug = (process.env.INPUT_MODEL_SLUG || "").trim();
+            if (!providers.has(provider)) {
+              throw new Error(`Unsupported provider: ${provider}`);
+            }
+            if (
+              modelSlug.length === 0 ||
+              modelSlug.length > 160 ||
+              !/^[A-Za-z0-9._:/@+-]+$/.test(modelSlug)
+            ) {
+              throw new Error("Model slug must be 1-160 characters of [A-Za-z0-9._:/@+-]");
+            }
+            const branchSlug = modelSlug
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, "-")
+              .replace(/^-+|-+$/g, "")
+              .slice(0, 80);
+            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}-${context.runId}`);
+            core.setOutput("provider", provider);
+            core.setOutput("model_slug", modelSlug);
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320 # v5.0.0
+        with:
+          version: 10.33.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Select a priced provider endpoint
+        id: priced_endpoint
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PROVIDER: ${{ steps.target.outputs.provider }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        with:
+          script: |
+            const provider = process.env.PROVIDER;
+            const endpointAvailable =
+              (provider === "groq" && Boolean(process.env.GROQ_API_KEY)) ||
+              (provider === "baseten" && Boolean(process.env.BASETEN_API_KEY)) ||
+              (provider === "xai" && Boolean(process.env.XAI_API_KEY)) ||
+              provider === "cerebras";
+            core.setOutput("available", String(endpointAvailable));
+
+      - name: Add from Groq's priced model endpoint
+        if: steps.target.outputs.provider == 'groq' && steps.priced_endpoint.outputs.available == 'true'
+        shell: bash
+        env:
+          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-groq-model \
+            --model-slug "$INPUT_MODEL_SLUG" \
+            --write
+
+      - name: Add from Baseten's priced model endpoint
+        if: steps.target.outputs.provider == 'baseten' && steps.priced_endpoint.outputs.available == 'true'
+        shell: bash
+        env:
+          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-baseten \
+            --model-slug "$INPUT_MODEL_SLUG" \
+            --write
+
+      - name: Add from xAI's priced model endpoint
+        if: steps.target.outputs.provider == 'xai' && steps.priced_endpoint.outputs.available == 'true'
+        shell: bash
+        env:
+          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-xai-model \
+            --model-slug "$INPUT_MODEL_SLUG" \
+            --write
+
+      - name: Add from Cerebras's priced model endpoint
+        if: steps.target.outputs.provider == 'cerebras' && steps.priced_endpoint.outputs.available == 'true'
+        shell: bash
+        env:
+          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+        run: |
+          set -euo pipefail
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-cerebras-model \
+            --model-slug "$INPUT_MODEL_SLUG" \
+            --write
+
+      - name: Check whether a priced endpoint added the target
+        id: direct_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- packages/proxy/schema/model_list.json packages/proxy/schema/index.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Add from official provider sources with Claude Code
+        if: steps.direct_changes.outputs.changed == 'false'
+        timeout-minutes: 12
+        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
+        with:
+          anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
+          github_token: ${{ github.token }}
+          display_report: "true"
+          claude_args: |
+            --model claude-sonnet-5
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
+            --disallowedTools "Bash,MultiEdit,Replace,NotebookEditCell,mcp__github__create_issue,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"
+          prompt: |
+            # Goal
+
+            Add exactly one model to the Braintrust proxy catalog.
+
+            - Provider: `${{ steps.target.outputs.provider }}`
+            - Model slug: `${{ steps.target.outputs.model_slug }}`
+
+            # Scope
+
+            - Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
+            - Do not add, remove, or update any other model, provider mapping, or source file.
+            - If the target slug already exists, do not change it.
+
+            # Research and entry requirements
+
+            1. Read neighboring entries plus `packages/proxy/schema/models.ts` and `packages/proxy/schema/index.ts` to match the catalog schema and provider-mapping conventions.
+            2. Verify that this exact model is publicly available through the requested provider's shared inference surface using official provider sources.
+            3. No priced provider model endpoint added this target. Find the provider's official public on-demand pricing for this exact model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
+            4. Add a complete, schema-valid entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
+            5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
+
+            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
+
+      - name: Check whether the target changed the catalog
+        id: catalog_changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- packages/proxy/schema/model_list.json packages/proxy/schema/index.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Canonicalize model list and provider index
+        if: steps.catalog_changes.outputs.changed == 'true'
+        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
+      - name: Check expected files only
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Build proxy package
+        if: steps.changes.outputs.changed == 'true'
+        run: pnpm --filter @braintrust/proxy run build
+
+      - name: Validate model schema
+        if: steps.changes.outputs.changed == 'true'
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
+
+      - name: Create PR
+        if: steps.changes.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
+        with:
+          token: ${{ github.token }}
+          base: main
+          branch: ${{ steps.target.outputs.branch }}
+          commit-message: "chore: add model to catalog"
+          title: "chore: add model to catalog"
+          body: "Automated targeted model-catalog addition from the model-drop workflow."
+          labels: auto-sync
+          signoff: false

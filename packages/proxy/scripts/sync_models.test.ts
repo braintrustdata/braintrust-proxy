@@ -6,6 +6,9 @@ import {
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
+  convertCerebrasToLocalModel,
+  convertGroqToLocalModel,
+  convertXaiToLocalModel,
   convertCohereToLocalModel,
   applyCohereLiteLLMPricing,
   isSupportedCohereChatModel,
@@ -763,6 +766,89 @@ describe("convertBasetenToLocalModel", () => {
       multimodal: true,
       output_cost_per_mil_tokens: 1,
       available_providers: ["baseten"],
+    });
+  });
+});
+
+describe("convertGroqToLocalModel", () => {
+  it("converts Groq's priced model-list entry to a ModelSpec", () => {
+    expect(
+      convertGroqToLocalModel({
+        id: "qwen/qwen3.8-27b",
+        name: "Qwen/Qwen3.8-27B",
+        active: true,
+        context_length: 131042,
+        max_completion_tokens: 16384,
+        pricing: {
+          prompt: "0.0000008",
+          completion: "0.000004",
+          input_cache_read: "0.0000004",
+        },
+        supported_features: ["tools", "json_mode", "reasoning"],
+        input_modalities: ["text", "image"],
+        output_modalities: ["text"],
+      }),
+    ).toEqual({
+      format: "openai",
+      flavor: "chat",
+      multimodal: true,
+      reasoning: true,
+      input_cost_per_mil_tokens: 0.8,
+      output_cost_per_mil_tokens: 4,
+      input_cache_read_cost_per_mil_tokens: 0.4,
+      displayName: "Qwen/Qwen3.8-27B",
+      max_input_tokens: 131042,
+      max_output_tokens: 16384,
+      available_providers: ["groq"],
+    });
+  });
+});
+
+describe("convertXaiToLocalModel", () => {
+  it("converts xAI cents-per-100M pricing to dollars per million", () => {
+    expect(
+      convertXaiToLocalModel({
+        id: "grok-420-reasoning",
+        context_length: 256000,
+        input_modalities: ["text", "image"],
+        output_modalities: ["text"],
+        prompt_text_token_price: 20000,
+        cached_prompt_text_token_price: 2000,
+        completion_text_token_price: 80000,
+      }),
+    ).toEqual({
+      format: "openai",
+      flavor: "chat",
+      multimodal: true,
+      input_cost_per_mil_tokens: 2,
+      input_cache_read_cost_per_mil_tokens: 0.2,
+      output_cost_per_mil_tokens: 8,
+      max_input_tokens: 256000,
+      available_providers: ["xAI"],
+    });
+  });
+});
+
+describe("convertCerebrasToLocalModel", () => {
+  it("converts Cerebras's public priced model entry to a ModelSpec", () => {
+    expect(
+      convertCerebrasToLocalModel({
+        id: "gpt-oss-120b",
+        name: "OpenAI GPT OSS",
+        pricing: { prompt: "0.00000035", completion: "0.00000075" },
+        capabilities: { vision: false, reasoning: true },
+        limits: { max_context_length: 131072, max_completion_tokens: 40960 },
+      }),
+    ).toEqual({
+      format: "openai",
+      flavor: "chat",
+      reasoning: true,
+      input_cost_per_mil_tokens: 0.35,
+      output_cost_per_mil_tokens: 0.75,
+      displayName: "OpenAI GPT OSS",
+      max_input_tokens: 131072,
+      max_output_tokens: 40960,
+      available_providers: ["cerebras"],
     });
   });
 });

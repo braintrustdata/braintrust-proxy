@@ -472,6 +472,71 @@ const basetenModelListSchema = z
 
 type BasetenModel = z.infer<typeof basetenModelSchema>;
 
+// Groq's authenticated /openai/v1/models response has the same catalog data
+// we need for an automatic entry: per-token pricing, token limits, modalities,
+// and supported features. Keep this direct source separate from LiteLLM so a
+// newly released Groq model does not need an inference-model research pass.
+const GROQ_MODEL_URL = "https://api.groq.com/openai/v1/models";
+
+const groqModelSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    active: z.boolean().optional(),
+    context_length: z.number().optional(),
+    max_completion_tokens: z.number().optional(),
+    pricing: basetenPricingSchema.optional(),
+    supported_features: z.array(z.string()).optional(),
+    input_modalities: z.array(z.string()).optional(),
+    output_modalities: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+const groqModelListSchema = z.object({ data: z.array(groqModelSchema) });
+
+type GroqModel = z.infer<typeof groqModelSchema>;
+
+const XAI_MODEL_URL = "https://api.x.ai/v1/language-models";
+const xaiModelSchema = z
+  .object({
+    id: z.string(),
+    context_length: z.number().optional(),
+    input_modalities: z.array(z.string()).optional(),
+    output_modalities: z.array(z.string()).optional(),
+    prompt_text_token_price: z.number().optional(),
+    cached_prompt_text_token_price: z.number().optional(),
+    completion_text_token_price: z.number().optional(),
+  })
+  .passthrough();
+const xaiModelListSchema = z.object({ models: z.array(xaiModelSchema) });
+type XaiModel = z.infer<typeof xaiModelSchema>;
+
+const CEREBRAS_MODEL_URL = "https://api.cerebras.ai/public/v1/models";
+const cerebrasModelSchema = z
+  .object({
+    id: z.string(),
+    name: z.string().optional(),
+    pricing: basetenPricingSchema.optional(),
+    capabilities: z
+      .object({
+        vision: z.boolean().optional(),
+        reasoning: z.boolean().optional(),
+      })
+      .optional(),
+    limits: z
+      .object({
+        max_context_length: z.number().optional(),
+        max_completion_tokens: z.number().optional(),
+      })
+      .optional(),
+    deprecated: z.boolean().optional(),
+  })
+  .passthrough();
+const cerebrasModelListSchema = z.object({
+  data: z.array(cerebrasModelSchema),
+});
+type CerebrasModel = z.infer<typeof cerebrasModelSchema>;
+
 async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
   return new Promise((resolve, reject) => {
     https
@@ -520,6 +585,116 @@ async function fetchBasetenModels(apiKey: string): Promise<BasetenModel[]> {
       )
       .on("error", (err) => {
         reject(new Error("Failed to fetch Baseten models: " + err.message));
+      });
+  });
+}
+
+async function fetchGroqModels(apiKey: string): Promise<GroqModel[]> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(
+        GROQ_MODEL_URL,
+        { headers: { Authorization: `Bearer ${apiKey}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 400) {
+              reject(
+                new Error(
+                  `Groq /v1/models returned HTTP ${res.statusCode}: ${data.slice(0, 200)}`,
+                ),
+              );
+              return;
+            }
+            try {
+              resolve(groqModelListSchema.parse(JSON.parse(data)).data);
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              reject(new Error(`Failed to parse Groq /v1/models: ${message}`));
+            }
+          });
+        },
+      )
+      .on("error", (error) => {
+        reject(new Error(`Failed to fetch Groq models: ${error.message}`));
+      });
+  });
+}
+
+async function fetchXaiModels(apiKey: string): Promise<XaiModel[]> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(
+        XAI_MODEL_URL,
+        { headers: { Authorization: `Bearer ${apiKey}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (chunk) => {
+            data += chunk;
+          });
+          res.on("end", () => {
+            if (res.statusCode && res.statusCode >= 400) {
+              reject(
+                new Error(
+                  `xAI /v1/language-models returned HTTP ${res.statusCode}`,
+                ),
+              );
+              return;
+            }
+            try {
+              resolve(xaiModelListSchema.parse(JSON.parse(data)).models);
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              reject(
+                new Error(
+                  `Failed to parse xAI /v1/language-models: ${message}`,
+                ),
+              );
+            }
+          });
+        },
+      )
+      .on("error", (error) => {
+        reject(new Error(`Failed to fetch xAI models: ${error.message}`));
+      });
+  });
+}
+
+async function fetchCerebrasModels(): Promise<CerebrasModel[]> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(CEREBRAS_MODEL_URL, (res) => {
+        let data = "";
+        res.on("data", (chunk) => {
+          data += chunk;
+        });
+        res.on("end", () => {
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(
+              new Error(
+                `Cerebras public models returned HTTP ${res.statusCode}`,
+              ),
+            );
+            return;
+          }
+          try {
+            resolve(cerebrasModelListSchema.parse(JSON.parse(data)).data);
+          } catch (error) {
+            const message =
+              error instanceof Error ? error.message : String(error);
+            reject(
+              new Error(`Failed to parse Cerebras public models: ${message}`),
+            );
+          }
+        });
+      })
+      .on("error", (error) => {
+        reject(new Error(`Failed to fetch Cerebras models: ${error.message}`));
       });
   });
 }
@@ -1775,6 +1950,110 @@ export function convertBasetenToLocalModel(model: BasetenModel): ModelSpec {
   return baseModel as ModelSpec;
 }
 
+export function convertGroqToLocalModel(model: GroqModel): ModelSpec {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+
+  if (model.input_modalities?.includes("image")) {
+    baseModel.multimodal = true;
+  }
+  if (model.supported_features?.includes("reasoning")) {
+    baseModel.reasoning = true;
+  }
+
+  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
+  if (inputCost !== undefined) {
+    baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
+  }
+  const outputCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.completion),
+  );
+  if (outputCost !== undefined) {
+    baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
+  }
+  const cacheReadCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.input_cache_read),
+  );
+  if (cacheReadCost !== undefined) {
+    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
+  }
+
+  if (model.name) {
+    baseModel.displayName = model.name;
+  }
+  const maxInputTokens = getNonZeroNumber(model.context_length);
+  if (maxInputTokens !== undefined) {
+    baseModel.max_input_tokens = maxInputTokens;
+  }
+  const maxOutputTokens = getNonZeroNumber(model.max_completion_tokens);
+  if (maxOutputTokens !== undefined) {
+    baseModel.max_output_tokens = maxOutputTokens;
+  }
+
+  baseModel.available_providers = ["groq"];
+  return baseModel as ModelSpec;
+}
+
+export function convertXaiToLocalModel(model: XaiModel): ModelSpec {
+  const costPerMillion = (price: number): number => price / 10_000;
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+  if (model.input_modalities?.includes("image")) {
+    baseModel.multimodal = true;
+  }
+  if (model.prompt_text_token_price !== undefined) {
+    baseModel.input_cost_per_mil_tokens = costPerMillion(
+      model.prompt_text_token_price,
+    );
+  }
+  if (model.completion_text_token_price !== undefined) {
+    baseModel.output_cost_per_mil_tokens = costPerMillion(
+      model.completion_text_token_price,
+    );
+  }
+  if (model.cached_prompt_text_token_price) {
+    baseModel.input_cache_read_cost_per_mil_tokens = costPerMillion(
+      model.cached_prompt_text_token_price,
+    );
+  }
+  if (model.context_length) {
+    baseModel.max_input_tokens = model.context_length;
+  }
+  baseModel.available_providers = ["xAI"];
+  return baseModel as ModelSpec;
+}
+
+export function convertCerebrasToLocalModel(model: CerebrasModel): ModelSpec {
+  const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
+  if (model.capabilities?.vision) {
+    baseModel.multimodal = true;
+  }
+  if (model.capabilities?.reasoning) {
+    baseModel.reasoning = true;
+  }
+  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
+  if (inputCost !== undefined) {
+    baseModel.input_cost_per_mil_tokens = inputCost * 1_000_000;
+  }
+  const outputCost = getNonZeroNumber(
+    parseBasetenPrice(model.pricing?.completion),
+  );
+  if (outputCost !== undefined) {
+    baseModel.output_cost_per_mil_tokens = outputCost * 1_000_000;
+  }
+  if (model.name) {
+    baseModel.displayName = model.name;
+  }
+  if (model.limits?.max_context_length) {
+    baseModel.max_input_tokens = model.limits.max_context_length;
+  }
+  if (model.limits?.max_completion_tokens) {
+    baseModel.max_output_tokens = model.limits.max_completion_tokens;
+  }
+  baseModel.available_providers = ["cerebras"];
+  return baseModel as ModelSpec;
+}
+
 // Convert a Cohere /v1/models entry to a catalog spec. Cohere exposes its chat
 // models through an OpenAI-compatible API, so format is "openai". Cohere's models
 // endpoint carries no pricing, so pricing is overlaid from the matching LiteLLM
@@ -2693,6 +2972,13 @@ async function addModelsCommand(argv: any) {
           continue;
         }
       }
+      if (
+        argv.modelSlug &&
+        remoteModelName !== argv.modelSlug &&
+        translatedModelName !== argv.modelSlug
+      ) {
+        continue;
+      }
 
       if (
         isModelExcludedFromSync(translatedModelName) ||
@@ -2883,6 +3169,9 @@ async function syncBasetenModelsCommand(argv: any) {
 
     for (const basetenModel of basetenModels) {
       const id = basetenModel.id;
+      if (argv.modelSlug && id !== argv.modelSlug) {
+        continue;
+      }
       if (!isSupportedTranslatedModelName(id, "baseten")) {
         console.warn(`  [INVALID] Skipping unsupported model id: ${id}`);
         continue;
@@ -3013,6 +3302,193 @@ async function syncBasetenModelsCommand(argv: any) {
     await syncProviderMappingsForLocalModels(updatedModels, completeModelOrder);
   } catch (error) {
     console.error("Error during sync-baseten command:", error);
+    process.exit(1);
+  }
+}
+
+async function syncGroqModelCommand(argv: any) {
+  try {
+    const apiKey = process.env.GROQ_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "GROQ_API_KEY environment variable is required to sync Groq models.",
+      );
+    }
+
+    console.log("Fetching Groq models from:", GROQ_MODEL_URL);
+    const target = (await fetchGroqModels(apiKey)).find(
+      (model) => model.id === argv.modelSlug,
+    );
+    if (!target) {
+      console.log(`Groq does not list ${argv.modelSlug}. No changes needed.`);
+      return;
+    }
+    if (
+      target.active !== true ||
+      !target.input_modalities?.includes("text") ||
+      !target.output_modalities?.includes("text")
+    ) {
+      console.log(`${argv.modelSlug} is not an active text/chat Groq model.`);
+      return;
+    }
+    if (!target.pricing?.prompt || !target.pricing.completion) {
+      console.log(
+        `Groq lists ${argv.modelSlug} without input/output pricing. No changes needed.`,
+      );
+      return;
+    }
+    if (isModelExcludedFromSync(target.id)) {
+      console.log(`Skipping excluded Groq model ${target.id}.`);
+      return;
+    }
+
+    const localModels = normalizeLocalModels(
+      await readLocalModels(LOCAL_MODEL_LIST_PATH),
+    ).models;
+    const existingName = getEquivalentLocalModelNames(target.id).find((name) =>
+      Object.prototype.hasOwnProperty.call(localModels, name),
+    );
+    if (existingName) {
+      const existing = localModels[existingName];
+      if (existing.available_providers?.includes("groq")) {
+        console.log(
+          `${target.id} is already listed for Groq. No changes needed.`,
+        );
+        return;
+      }
+      localModels[existingName] = {
+        ...existing,
+        available_providers: [
+          ...(existing.available_providers ?? []),
+          "groq",
+        ] as ModelSpec["available_providers"],
+      };
+      console.log(`Adding Groq to ${existingName}.`);
+    } else {
+      localModels[target.id] = convertGroqToLocalModel(target);
+      console.log(`Adding ${target.id} from Groq's priced model list.`);
+    }
+
+    if (!argv.write) {
+      console.log("Dry run. Re-run with --write to apply.");
+      return;
+    }
+
+    const completeModelOrder = orderModelsByProviderAndClass(localModels);
+    const orderedModels: LocalModelList = {};
+    for (const name of completeModelOrder) {
+      orderedModels[name] = localModels[name];
+    }
+    await writeLocalModels(orderedModels);
+    await syncProviderMappingsForLocalModels(orderedModels, completeModelOrder);
+    console.log(`✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+  } catch (error) {
+    console.error("Error during sync-groq-model command:", error);
+    process.exit(1);
+  }
+}
+
+async function writeTargetedProviderModel(args: {
+  modelId: string;
+  provider: NonNullable<ModelSpec["available_providers"]>[number];
+  model: ModelSpec;
+  write: boolean;
+}): Promise<void> {
+  const localModels = normalizeLocalModels(
+    await readLocalModels(LOCAL_MODEL_LIST_PATH),
+  ).models;
+  const existingName = getEquivalentLocalModelNames(args.modelId).find((name) =>
+    Object.prototype.hasOwnProperty.call(localModels, name),
+  );
+  if (existingName) {
+    const existing = localModels[existingName];
+    if (existing.available_providers?.includes(args.provider)) {
+      console.log(`${args.modelId} is already listed for ${args.provider}.`);
+      return;
+    }
+    localModels[existingName] = {
+      ...existing,
+      available_providers: [
+        ...(existing.available_providers ?? []),
+        args.provider,
+      ] as ModelSpec["available_providers"],
+    };
+  } else {
+    localModels[args.modelId] = args.model;
+  }
+
+  if (!args.write) {
+    console.log("Dry run. Re-run with --write to apply.");
+    return;
+  }
+
+  const completeModelOrder = orderModelsByProviderAndClass(localModels);
+  const orderedModels: LocalModelList = {};
+  for (const name of completeModelOrder) {
+    orderedModels[name] = localModels[name];
+  }
+  await writeLocalModels(orderedModels);
+  await syncProviderMappingsForLocalModels(orderedModels, completeModelOrder);
+  console.log(`✅ Wrote ${LOCAL_MODEL_LIST_PATH}`);
+}
+
+async function syncXaiModelCommand(argv: any) {
+  try {
+    const apiKey = process.env.XAI_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "XAI_API_KEY environment variable is required to sync xAI models.",
+      );
+    }
+    const target = (await fetchXaiModels(apiKey)).find(
+      (model) => model.id === argv.modelSlug,
+    );
+    if (
+      !target ||
+      !target.input_modalities?.includes("text") ||
+      !target.output_modalities?.includes("text") ||
+      target.prompt_text_token_price === undefined ||
+      target.completion_text_token_price === undefined
+    ) {
+      console.log(`xAI has no priced text model named ${argv.modelSlug}.`);
+      return;
+    }
+    await writeTargetedProviderModel({
+      modelId: target.id,
+      provider: "xAI",
+      model: convertXaiToLocalModel(target),
+      write: argv.write,
+    });
+  } catch (error) {
+    console.error("Error during sync-xai-model command:", error);
+    process.exit(1);
+  }
+}
+
+async function syncCerebrasModelCommand(argv: any) {
+  try {
+    const target = (await fetchCerebrasModels()).find(
+      (model) => model.id === argv.modelSlug,
+    );
+    if (
+      !target ||
+      target.deprecated === true ||
+      !target.pricing?.prompt ||
+      !target.pricing.completion
+    ) {
+      console.log(
+        `Cerebras has no active priced model named ${argv.modelSlug}.`,
+      );
+      return;
+    }
+    await writeTargetedProviderModel({
+      modelId: target.id,
+      provider: "cerebras",
+      model: convertCerebrasToLocalModel(target),
+      write: argv.write,
+    });
+  } catch (error) {
+    console.error("Error during sync-cerebras-model command:", error);
     process.exit(1);
   }
 }
@@ -3579,6 +4055,11 @@ async function main() {
             type: "string",
             description: "Filter models by name substring (e.g., 'gpt-5')",
           })
+          .option("model-slug", {
+            type: "string",
+            description:
+              "Add only this exact remote or translated model id (for targeted automations)",
+          })
           .option("write", {
             type: "boolean",
             description:
@@ -3600,15 +4081,71 @@ async function main() {
       "sync-baseten",
       "Sync the catalog against Baseten's /v1/models (add missing Baseten models and union the baseten provider into existing ids). Requires BASETEN_API_KEY.",
       (y) => {
-        return y.option("write", {
-          type: "boolean",
-          description:
-            "Write the new models and provider mappings to model_list.json / index.ts",
-          default: false,
-        });
+        return y
+          .option("model-slug", {
+            type: "string",
+            description: "Sync only this exact Baseten model id",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write the new models and provider mappings to model_list.json / index.ts",
+            default: false,
+          });
       },
       async (argv) => {
         await syncBasetenModelsCommand(argv);
+      },
+    )
+    .command(
+      "sync-groq-model",
+      "Sync one Groq model from Groq's priced /v1/models endpoint. Requires GROQ_API_KEY.",
+      (y) => {
+        return y
+          .option("model-slug", {
+            type: "string",
+            demandOption: true,
+            description: "Exact Groq model id to sync",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write the model and provider mapping to model_list.json / index.ts",
+            default: false,
+          });
+      },
+      async (argv) => {
+        await syncGroqModelCommand(argv);
+      },
+    )
+    .command(
+      "sync-xai-model",
+      "Sync one xAI model from xAI's priced /v1/language-models endpoint. Requires XAI_API_KEY.",
+      (y) =>
+        y
+          .option("model-slug", {
+            type: "string",
+            demandOption: true,
+            description: "Exact xAI model id to sync",
+          })
+          .option("write", { type: "boolean", default: false }),
+      async (argv) => {
+        await syncXaiModelCommand(argv);
+      },
+    )
+    .command(
+      "sync-cerebras-model",
+      "Sync one Cerebras model from Cerebras's public priced models endpoint.",
+      (y) =>
+        y
+          .option("model-slug", {
+            type: "string",
+            demandOption: true,
+            description: "Exact Cerebras model id to sync",
+          })
+          .option("write", { type: "boolean", default: false }),
+      async (argv) => {
+        await syncCerebrasModelCommand(argv);
       },
     )
     .command(

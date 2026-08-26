@@ -11192,6 +11192,8 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 5,
     "displayName": "Magistral Medium Latest",
+    "deprecated": true,
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [
@@ -11242,6 +11244,8 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Devstral Medium Latest",
+    "deprecated": true,
+    "deprecation_date": "2026-05-31",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -11266,6 +11270,8 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Devstral Latest",
+    "deprecated": true,
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
@@ -11277,6 +11283,8 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "Devstral Small Latest",
+    "deprecated": true,
+    "deprecation_date": "2026-05-31",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -11333,6 +11341,8 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Magistral Small Latest",
+    "deprecated": true,
+    "deprecation_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [

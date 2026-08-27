@@ -914,7 +914,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai-org/GLM-5.1": ["together"],
   "zai-org/GLM-5.2": ["baseten", "together"],
   "zai-org/GLM-5.2-Fast": ["baseten"],
-  "zai-org/GLM-5.3-Flash": ["baseten"],
+  "zai-org/GLM-5.3-Flash": ["baseten", "together"],
   "MiniMaxAI/MiniMax-M2.7": ["together"],
   "MiniMaxAI/MiniMax-M3": ["together"],
   "mistral-medium-2508": ["mistral"],
@@ -1384,6 +1384,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-2.5-flash-lite": ["google", "openrouter"],
   "gemini-2.5-pro": ["google", "openrouter"],
   "databricks-deepseek-v4-pro-0813": ["databricks"],
+  "databricks-grok-4-6": ["databricks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

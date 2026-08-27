@@ -13325,6 +13325,22 @@
       "databricks"
     ]
   },
+  "qwen/qwen3.8-27b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 4,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "displayName": "Qwen: Qwen3.8 27B",
+    "reasoning": true,
+    "max_input_tokens": 131042,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "groq",
+      "openrouter"
+    ]
+  },
   "stealth/ox-alpha": {
     "format": "openai",
     "flavor": "chat",
@@ -13956,7 +13972,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.2,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "NVIDIA: Nemotron 3 Nano 30B A3B",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -14122,9 +14138,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.12,
-    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.1,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -14246,9 +14262,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.07952,
-    "output_cost_per_mil_tokens": 0.15904,
-    "input_cache_read_cost_per_mil_tokens": 0.015904,
+    "input_cost_per_mil_tokens": 0.07798,
+    "output_cost_per_mil_tokens": 0.15596,
+    "input_cache_read_cost_per_mil_tokens": 0.015596,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14683,9 +14699,9 @@
   "z-ai/glm-4.6": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 0.43,
+    "output_cost_per_mil_tokens": 1.75,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
     "displayName": "Z.ai: GLM 4.6",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -15317,9 +15333,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.67,
+    "input_cost_per_mil_tokens": 0.66,
     "output_cost_per_mil_tokens": 3.4,
-    "input_cache_read_cost_per_mil_tokens": 0.19,
+    "input_cache_read_cost_per_mil_tokens": 0.18,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -15667,7 +15683,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.16,
+    "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.47,
     "input_cache_read_cost_per_mil_tokens": 0.016,
     "displayName": "Qwen: Qwen3.8 Flash",
@@ -15675,22 +15691,6 @@
     "max_input_tokens": 1000000,
     "max_output_tokens": 131072,
     "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3.8-27b": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "displayName": "Qwen: Qwen3.8 27B",
-    "reasoning": true,
-    "max_input_tokens": 131042,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "groq",
       "openrouter"
     ]
   },
@@ -15840,8 +15840,9 @@
   "qwen/qwen3-235b-a22b-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.55,
+    "input_cost_per_mil_tokens": 0.0875,
+    "output_cost_per_mil_tokens": 0.35,
+    "input_cache_read_cost_per_mil_tokens": 0.0175,
     "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
     "parent": "qwen/qwen3-235b-a22b",
     "max_input_tokens": 262144,
@@ -16242,8 +16243,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.14,
-    "output_cost_per_mil_tokens": 1,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.9,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Qwen: Qwen3.6 35B A3B",
     "reasoning": true,

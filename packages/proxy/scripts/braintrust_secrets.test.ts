@@ -39,9 +39,14 @@ describe("secretServesDefaultModels", () => {
   });
 
   it("ignores excludeDefaultModels when there are no custom models", () => {
-    expect(secretServesDefaultModels({ excludeDefaultModels: true })).toBe(true);
+    expect(secretServesDefaultModels({ excludeDefaultModels: true })).toBe(
+      true,
+    );
     expect(
-      secretServesDefaultModels({ customModels: {}, excludeDefaultModels: true }),
+      secretServesDefaultModels({
+        customModels: {},
+        excludeDefaultModels: true,
+      }),
     ).toBe(true);
   });
 });
@@ -66,12 +71,18 @@ describe("selectProviderSecretsByType", () => {
     // Regression: the AI-secret reordering surfaced this by putting a custom
     // openai-format provider first, which then falsely 404'd real OpenAI models
     // during the deprecation audit (mirrors braintrust #19487).
-    const selected = selectProviderSecretsByType([customOnlyOpenai, realOpenai]);
+    const selected = selectProviderSecretsByType([
+      customOnlyOpenai,
+      realOpenai,
+    ]);
     expect(selected.get("openai")?.secret).toBe("openai_key");
   });
 
   it("still prefers the real key when it comes first", () => {
-    const selected = selectProviderSecretsByType([realOpenai, customOnlyOpenai]);
+    const selected = selectProviderSecretsByType([
+      realOpenai,
+      customOnlyOpenai,
+    ]);
     expect(selected.get("openai")?.secret).toBe("openai_key");
   });
 

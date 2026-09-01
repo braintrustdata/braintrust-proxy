@@ -1390,6 +1390,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-glm-5-3-flash": ["databricks"],
   "accounts/fireworks/models/glm-5p3": ["fireworks"],
   "accounts/fireworks/models/glm-5p3-flash": ["fireworks"],
+  "Qwen/Qwen3.8-Flash": ["together"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

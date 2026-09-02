@@ -998,9 +998,19 @@
       "azure"
     ]
   },
+  "gpt-transcribe": {
+    "format": "openai",
+    "flavor": "chat",
+    "transcription": true,
+    "displayName": "GPT Transcribe",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-4o-mini-transcribe": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe",
@@ -1041,6 +1051,7 @@
   "gpt-4o-transcribe": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "max_input_tokens": 16000,
@@ -1053,6 +1064,7 @@
   "gpt-4o-transcribe-diarize": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "max_input_tokens": 16000,
@@ -1065,6 +1077,7 @@
   "gpt-4o-mini-transcribe-2025-12-15": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe (2025-12-15)",
@@ -1106,6 +1119,7 @@
   "gpt-4o-mini-transcribe-2025-03-20": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe (2025-03-20)",
@@ -2525,6 +2539,7 @@
   "whisper-1": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "available_providers": [
       "openai",
       "azure"
@@ -6043,6 +6058,7 @@
   "accounts/fireworks/models/whisper-v3": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -6052,6 +6068,7 @@
   "accounts/fireworks/models/whisper-v3-turbo": {
     "format": "openai",
     "flavor": "chat",
+    "transcription": true,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [

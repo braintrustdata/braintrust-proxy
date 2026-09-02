@@ -47,6 +47,12 @@ export type ModelEndpointType = (typeof ModelEndpointType)[number];
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(ModelFlavors),
+  transcription: z
+    .boolean()
+    .nullish()
+    .describe(
+      "The model is a speech-to-text model served on /audio/transcriptions, not chat/completions.",
+    ),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),

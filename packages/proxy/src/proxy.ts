@@ -102,7 +102,6 @@ import {
 import {
   flattenChunks,
   flattenChunksArray,
-  getRandomInt,
   isEmpty,
   isNativeInferenceSecret,
   isObject,
@@ -1346,6 +1345,46 @@ const RATE_LIMITING_ERROR_CODES = [
 ];
 
 const loopIndex = 0;
+
+function isSecretEligibleForModel(
+  secret: APISecret,
+  model: string | null,
+): boolean {
+  const modelSpec =
+    model !== null
+      ? secret.metadata?.customModels?.[model] ?? getAvailableModels()[model]
+      : null;
+  if (
+    secret.type === "bedrock" &&
+    (modelSpec?.format ?? "openai") === "openai"
+  ) {
+    return false;
+  }
+  return (
+    isEmpty(model) ||
+    isEmpty(secret.metadata) ||
+    isEmpty(secret.metadata.models) ||
+    secret.metadata.models.includes(model)
+  );
+}
+
+function getDeterministicInitialSecretIndex(
+  secrets: APISecret[],
+  model: string | null,
+): number {
+  const firstEligibleOpenAI = secrets.findIndex(
+    (secret) =>
+      secret.type === "openai" && isSecretEligibleForModel(secret, model),
+  );
+  if (firstEligibleOpenAI !== -1) {
+    return firstEligibleOpenAI;
+  }
+  const firstEligibleAlternate = secrets.findIndex((secret) =>
+    isSecretEligibleForModel(secret, model),
+  );
+  return firstEligibleAlternate === -1 ? 0 : firstEligibleAlternate;
+}
+
 async function fetchModelLoop(
   logHistogram: LogHistogramFn | undefined,
   method: "GET" | "POST",
@@ -1375,7 +1414,6 @@ async function fetchModelLoop(
 }> {
   // model is now passed as a parameter
 
-  // TODO: Make this smarter. For now, just pick a random one.
   const secrets = await getApiSecrets(model);
 
   const customModelOverride =
@@ -1425,7 +1463,7 @@ async function fetchModelLoop(
     }
   }
 
-  const initialIdx = getRandomInt(secrets.length);
+  const initialIdx = getDeterministicInitialSecretIndex(secrets, model);
   const nativeInferenceSecret =
     model === null || model === undefined
       ? undefined

@@ -944,7 +944,7 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o Audio Preview",
-    "deprecation_date": "2027-01-20",
+    "deprecation_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -974,7 +974,7 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "GPT-4o mini Audio Preview",
-    "deprecation_date": "2027-01-20",
+    "deprecation_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -1004,6 +1004,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe",
+    "deprecation_date": "2027-02-26",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -1043,6 +1044,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "displayName": "GPT-4o Transcribe",
+    "deprecation_date": "2027-02-26",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -1055,6 +1058,8 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "displayName": "GPT-4o Transcribe Diarize",
+    "deprecation_date": "2027-02-26",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -1963,6 +1968,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Square (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -1974,6 +1980,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Portrait (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -1985,6 +1992,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Landscape (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2011,6 +2019,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Square (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "high/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2022,6 +2031,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Portrait (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "high/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2033,6 +2043,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Landscape (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "high/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2044,6 +2055,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Square (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "low/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2055,6 +2067,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Portrait (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "low/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2066,6 +2079,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Landscape (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "low/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2077,6 +2091,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Square (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "medium/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2088,6 +2103,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Portrait (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "medium/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2099,6 +2115,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Landscape (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "medium/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2110,6 +2127,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Square (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "standard/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2121,6 +2139,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Portrait (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "standard/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2132,6 +2151,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Landscape (2025-12-16)",
+    "deprecation_date": "2026-12-01",
     "parent": "standard/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -2525,6 +2545,8 @@
   "whisper-1": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Whisper 1",
+    "deprecation_date": "2027-02-26",
     "available_providers": [
       "openai",
       "azure"
@@ -2845,7 +2867,7 @@
     "displayName": "GLM 5.3",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
+    "max_output_tokens": 128000,
     "available_providers": [
       "fireworks"
     ]
@@ -8282,6 +8304,7 @@
     "displayName": "Claude Fable 5.1",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-09-01",
     "fallback_models": [
       "anthropic.claude-fable-5-1",
       "global.anthropic.claude-fable-5-1",
@@ -11727,7 +11750,8 @@
     "max_output_tokens": 65536,
     "available_providers": [
       "google",
-      "vertex"
+      "vertex",
+      "openrouter"
     ]
   },
   "gemini-3.6-flash": {
@@ -12220,6 +12244,182 @@
       "vertex"
     ]
   },
+  "low/1024-x-1024/grok-imagine-image-2.0": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image 2.0 Low Square",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-2026-03-02": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image (2026-03-02)",
+    "parent": "grok-imagine-image",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-quality-20260403": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image Quality (2026-04-03)",
+    "parent": "grok-imagine-image-quality",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-quality-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image Quality",
+    "parent": "grok-imagine-image-quality",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-quality": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image Quality",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image Pro",
+    "deprecation_date": "2026-05-15",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-image-2.0": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Image 2.0",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Reasoning",
+    "reasoning": true,
+    "parent": "grok-4.20-reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Reasoning",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-non-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Non-Reasoning",
+    "parent": "grok-4.20-non-reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Non-Reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-multi-agent-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Multi-Agent",
+    "reasoning": true,
+    "parent": "grok-4.20-multi-agent",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-multi-agent": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Multi-Agent",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI",
+      "openrouter"
+    ]
+  },
+  "grok-4.20": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI",
+      "openrouter"
+    ]
+  },
   "grok-4.20-multi-agent-0309": {
     "format": "openai",
     "flavor": "chat",
@@ -12239,8 +12439,10 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4 (0709)",
     "deprecated": true,
     "deprecation_date": "2026-05-15",
     "parent": "grok-4",
@@ -12254,13 +12456,12 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4.1 Fast",
     "deprecated": true,
     "deprecation_date": "2026-05-15",
-    "parent": "grok-4-1-fast",
     "max_input_tokens": 2000000,
     "max_output_tokens": 2000000,
     "available_providers": [
@@ -12477,8 +12678,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4",
     "deprecated": true,
     "deprecation_date": "2026-05-15",
@@ -12526,8 +12728,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 4",
     "deprecation_date": "2026-05-15",
     "parent": "grok-4",
@@ -12540,9 +12743,10 @@
   "grok-3": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.75,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3",
     "deprecated": true,
     "deprecation_date": "2026-05-15",
     "max_input_tokens": 131072,
@@ -12554,9 +12758,12 @@
   "grok-3-beta": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.75,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Beta",
+    "deprecation_date": "2026-05-15",
+    "parent": "grok-3",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12566,9 +12773,11 @@
   "grok-3-fast-beta": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Fast Beta",
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12578,9 +12787,11 @@
   "grok-3-fast-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Fast",
+    "deprecation_date": "2026-05-15",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12590,9 +12801,9 @@
   "grok-3-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.75,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Grok 3",
     "deprecation_date": "2026-05-15",
     "parent": "grok-3",
@@ -12605,9 +12816,10 @@
   "grok-3-mini": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini",
     "reasoning": true,
     "deprecation_date": "2026-02-28",
     "max_input_tokens": 131072,
@@ -12619,11 +12831,13 @@
   "grok-3-mini-beta": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini Beta",
     "reasoning": true,
     "deprecation_date": "2026-02-28",
+    "parent": "grok-3-mini",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12633,10 +12847,12 @@
   "grok-3-mini-fast": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini Fast",
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12646,10 +12862,13 @@
   "grok-3-mini-fast-beta": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini Fast Beta",
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
+    "parent": "grok-3-mini-fast",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12659,10 +12878,13 @@
   "grok-3-mini-fast-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 4,
-    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini Fast",
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
+    "parent": "grok-3-mini-fast",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -12672,10 +12894,13 @@
   "grok-3-mini-latest": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 3 Mini",
     "reasoning": true,
+    "deprecation_date": "2026-02-28",
+    "parent": "grok-3-mini",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -14252,34 +14477,6 @@
       "openrouter"
     ]
   },
-  "x-ai/grok-4.20": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "displayName": "xAI: Grok 4.20",
-    "reasoning": true,
-    "max_input_tokens": 2000000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "x-ai/grok-4.20-multi-agent": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 2.5,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "displayName": "xAI: Grok 4.20 Multi-Agent",
-    "reasoning": true,
-    "max_input_tokens": 2000000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "arcee-ai/virtuoso-large": {
     "format": "openai",
     "flavor": "chat",
@@ -14436,9 +14633,9 @@
   "deepseek/deepseek-chat-v3.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.55,
-    "output_cost_per_mil_tokens": 1.65,
-    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 0.95,
+    "input_cache_read_cost_per_mil_tokens": 0.13,
     "displayName": "DeepSeek: DeepSeek V3.1",
     "reasoning": true,
     "max_input_tokens": 163840,
@@ -14492,9 +14689,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.07476,
-    "output_cost_per_mil_tokens": 0.14952,
-    "input_cache_read_cost_per_mil_tokens": 0.014952,
+    "input_cost_per_mil_tokens": 0.07784,
+    "output_cost_per_mil_tokens": 0.15568,
+    "input_cache_read_cost_per_mil_tokens": 0.015568,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14506,9 +14703,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.6,
-    "output_cost_per_mil_tokens": 3.2,
-    "input_cache_read_cost_per_mil_tokens": 0.135,
+    "input_cost_per_mil_tokens": 0.87,
+    "output_cost_per_mil_tokens": 1.74,
+    "input_cache_read_cost_per_mil_tokens": 0.0725,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15057,9 +15254,9 @@
   "z-ai/glm-5.2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.19,
-    "output_cost_per_mil_tokens": 3.74,
-    "input_cache_read_cost_per_mil_tokens": 0.221,
+    "input_cost_per_mil_tokens": 0.966,
+    "output_cost_per_mil_tokens": 3.036,
+    "input_cache_read_cost_per_mil_tokens": 0.1932,
     "displayName": "Z.ai: GLM-5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15462,6 +15659,37 @@
       "openrouter"
     ]
   },
+  "meta/muse-spark-1.3": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 4.25,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Meta: Muse Spark 1.3",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 943718,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "meta/muse-spark-1.3-contributor": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.2,
+    "input_cache_read_cost_per_mil_tokens": 0.002,
+    "displayName": "Meta: Muse Spark 1.3 Contributor",
+    "reasoning": true,
+    "parent": "meta/muse-spark-1.3",
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 943718,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "meta/muse-spark-1.2-contributor": {
     "format": "openai",
     "flavor": "chat",
@@ -15728,6 +15956,21 @@
       "openrouter"
     ]
   },
+  "anthropic/claude-fable-5.1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "displayName": "Anthropic: Claude Fable 5.1",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "anthropic/claude-3-haiku": {
     "format": "openai",
     "flavor": "chat",
@@ -15957,7 +16200,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "Qwen: Qwen3.8 2.4T A95B",
     "reasoning": true,
     "max_input_tokens": 1000000,

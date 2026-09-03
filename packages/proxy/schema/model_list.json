@@ -8328,8 +8328,7 @@
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "anthropic",
-      "openrouter"
+      "anthropic"
     ]
   },
   "claude-fable-5": {
@@ -12259,54 +12258,10 @@
       "vertex"
     ]
   },
-  "low/1024-x-1024/grok-imagine-image-2.0": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Grok Imagine Image 2.0 Low Square",
-    "available_providers": [
-      "xAI"
-    ]
-  },
-  "grok-imagine-image-2026-03-02": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Grok Imagine Image (2026-03-02)",
-    "parent": "grok-imagine-image",
-    "available_providers": [
-      "xAI"
-    ]
-  },
-  "grok-imagine-image-quality-20260403": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Grok Imagine Image Quality (2026-04-03)",
-    "parent": "grok-imagine-image-quality",
-    "available_providers": [
-      "xAI"
-    ]
-  },
-  "grok-imagine-image-quality-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Grok Imagine Image Quality",
-    "parent": "grok-imagine-image-quality",
-    "available_providers": [
-      "xAI"
-    ]
-  },
   "grok-imagine-image-quality": {
     "format": "openai",
     "flavor": "chat",
     "displayName": "Grok Imagine Image Quality",
-    "available_providers": [
-      "xAI"
-    ]
-  },
-  "grok-imagine-image-pro": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Grok Imagine Image Pro",
-    "deprecation_date": "2026-05-15",
     "available_providers": [
       "xAI"
     ]
@@ -13824,18 +13779,6 @@
       "openrouter"
     ]
   },
-  "stealth/ox-alpha": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Ox Alpha",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "gryphe/mythomax-l2-13b": {
     "format": "openai",
     "flavor": "chat",
@@ -14146,18 +14089,6 @@
       "openrouter"
     ]
   },
-  "thedrummer/rocinante-12b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 0.5,
-    "displayName": "TheDrummer: Rocinante 12B",
-    "max_input_tokens": 65536,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "thedrummer/unslopnemo-12b": {
     "format": "openai",
     "flavor": "chat",
@@ -14206,19 +14137,6 @@
     "reasoning": true,
     "max_input_tokens": 200000,
     "max_output_tokens": 8000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "allenai/olmo-3-32b-think": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.5,
-    "displayName": "AllenAI: Olmo 3 32B Think",
-    "reasoning": true,
-    "max_input_tokens": 65536,
-    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -14505,18 +14423,6 @@
       "openrouter"
     ]
   },
-  "arcee-ai/virtuoso-large": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 1.2,
-    "displayName": "Arcee AI: Virtuoso Large",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "arcee-ai/trinity-large-thinking": {
     "format": "openai",
     "flavor": "chat",
@@ -14738,17 +14644,6 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "mistralai/ministral-8b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.11,
-    "output_cost_per_mil_tokens": 0.11,
-    "displayName": "Mistral: Ministral 8B",
-    "max_input_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -15674,19 +15569,6 @@
       "openrouter"
     ]
   },
-  "kwaipilot/kat-coder-air-v2.5": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
-    "displayName": "Kwaipilot: KAT-Coder-Air V2.5",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 80000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "meta/muse-spark-1.3": {
     "format": "openai",
     "flavor": "chat",
@@ -16148,21 +16030,6 @@
       "openrouter"
     ]
   },
-  "anthropic/claude-opus-4.7-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 30,
-    "output_cost_per_mil_tokens": 150,
-    "input_cache_read_cost_per_mil_tokens": 3,
-    "displayName": "Anthropic: Claude Opus 4.7 (Fast)",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "anthropic/claude-opus-4.8": {
     "format": "openai",
     "flavor": "chat",
@@ -16171,36 +16038,6 @@
     "output_cost_per_mil_tokens": 25,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Anthropic: Claude Opus 4.8",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "anthropic/claude-opus-4.8-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "displayName": "Anthropic: Claude Opus 4.8 (Fast)",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "anthropic/claude-opus-5-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "displayName": "Claude Opus 5 (Fast)",
     "reasoning": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,

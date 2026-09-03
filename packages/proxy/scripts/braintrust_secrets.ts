@@ -77,9 +77,56 @@ function postJson(
   });
 }
 
+// Whether a secret serves the provider's shared/default models. A custom-only
+// endpoint (its own api_base plus customModels and excludeDefaultModels) points
+// at a different inference surface than the canonical provider, so probing the
+// shared catalog's models against it returns spurious not-found responses. The
+// model-list / deprecation audit must therefore not select such a secret. This
+// mirrors the gateway's routing-secret eligibility rule (braintrust #19487).
+export function secretServesDefaultModels(
+  metadata: Record<string, unknown> | null | undefined,
+): boolean {
+  const meta = metadata ?? {};
+  const customModels = meta.customModels;
+  const hasCustomModels =
+    typeof customModels === "object" &&
+    customModels !== null &&
+    !Array.isArray(customModels) &&
+    Object.keys(customModels).length > 0;
+  return !(hasCustomModels && meta.excludeDefaultModels === true);
+}
+
+// Collapse the raw /api/secret entries to one secret per provider type. Only
+// entries with a non-empty secret are considered. When a type has multiple
+// secrets configured, the first one that serves the provider's default models
+// is used; custom-only endpoints are skipped so they cannot shadow the real
+// provider key and cause false deprecations. A type with no eligible secret is
+// left absent (the provider is then skipped by the audit rather than misprobed).
+export function selectProviderSecretsByType(
+  entries: z.infer<typeof providerSecretListSchema>,
+): Map<string, ProviderSecret> {
+  const byType = new Map<string, ProviderSecret>();
+  for (const entry of entries) {
+    if (!entry.type || !entry.secret) {
+      continue;
+    }
+    if (byType.has(entry.type)) {
+      continue;
+    }
+    if (!secretServesDefaultModels(entry.metadata)) {
+      continue;
+    }
+    byType.set(entry.type, {
+      type: entry.type,
+      secret: entry.secret,
+      metadata: (entry.metadata as Record<string, unknown>) ?? {},
+    });
+  }
+  return byType;
+}
+
 // Fetch provider secrets for the given provider types from Braintrust, keyed by
-// provider type. Only entries with a non-empty secret are returned. When a type
-// has multiple secrets configured, the first one is used.
+// provider type. See selectProviderSecretsByType for the per-type selection rule.
 export async function fetchProviderSecrets(
   braintrustApiKey: string,
   types: string[],
@@ -104,19 +151,5 @@ export async function fetchProviderSecrets(
     );
   }
 
-  const byType = new Map<string, ProviderSecret>();
-  for (const entry of parsed) {
-    if (!entry.type || !entry.secret) {
-      continue;
-    }
-    if (byType.has(entry.type)) {
-      continue;
-    }
-    byType.set(entry.type, {
-      type: entry.type,
-      secret: entry.secret,
-      metadata: (entry.metadata as Record<string, unknown>) ?? {},
-    });
-  }
-  return byType;
+  return selectProviderSecretsByType(parsed);
 }

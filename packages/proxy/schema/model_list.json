@@ -11075,6 +11075,20 @@
       "baseten"
     ]
   },
+  "zai-org/GLM-5.3-Fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.1,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.21,
+    "displayName": "GLM 5.3 Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "zai-org/GLM-5.3": {
     "format": "openai",
     "flavor": "chat",

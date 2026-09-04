@@ -1406,6 +1406,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "Qwen/Qwen3.8-Flash": ["together"],
   "databricks-gemini-3-8-flash": ["databricks"],
   "accounts/fireworks/models/deepseek-v4-flash-vision-exp": ["fireworks"],
+  "qwen-3.8-27b": ["cerebras"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

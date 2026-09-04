@@ -7,7 +7,7 @@ import {
   BraintrustModelParams as braintrustModelParamsSchema,
 } from "./generated_types";
 import { Attributes } from "@opentelemetry/api";
-import jsonSchemaToOpenAPISchema from "@openapi-contrib/json-schema-to-openapi-schema";
+import { convertSync as jsonSchemaToOpenAPISchema } from "@openapi-contrib/json-schema-to-openapi-schema";
 import * as dereferenceJsonSchema from "dereference-json-schema";
 const deref = dereferenceJsonSchema.dereferenceSync;
 import {
@@ -3177,38 +3177,62 @@ async function fetchAnthropicChatCompletions({
   };
 }
 
+function rejectExternalSchemaRefs(value: unknown): void {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      rejectExternalSchemaRefs(item);
+    }
+    return;
+  }
+
+  if (!isObject(value)) {
+    return;
+  }
+
+  if (
+    "$ref" in value &&
+    (typeof value.$ref !== "string" || !value.$ref.startsWith("#"))
+  ) {
+    throw new ProxyBadRequestError(
+      "External JSON Schema references are not supported",
+    );
+  }
+
+  for (const child of Object.values(value)) {
+    rejectExternalSchemaRefs(child);
+  }
+}
+
 async function googleSchemaFromJsonSchema(schema: any): Promise<any> {
   if (!schema || typeof schema !== "object") {
     return schema;
   }
 
-  // First, resolve any $ref references in the schema
-  let resolvedSchema = schema;
-  try {
-    // Dereference the schema to resolve $ref and $defs
-    // json-schema-deref-sync modifies in place, so we clone first
-    resolvedSchema = deref(structuredClone(schema));
+  rejectExternalSchemaRefs(schema);
 
-    // Remove x-$defs if present as it's not valid for Gemini
-    if ("x-$defs" in resolvedSchema) {
-      delete resolvedSchema["x-$defs"];
+  const resolvedSchema = (() => {
+    try {
+      return deref(structuredClone(schema));
+    } catch {
+      throw new ProxyBadRequestError("Invalid JSON Schema reference");
     }
-    // Remove $defs after dereferencing as they're no longer needed
-    if ("$defs" in resolvedSchema) {
-      delete resolvedSchema["$defs"];
-    }
-  } catch (refError) {
-    // If ref resolution fails, continue with original schema
-    console.warn("Failed to dereference schema:", refError);
+  })();
+
+  if ("x-$defs" in resolvedSchema) {
+    delete resolvedSchema["x-$defs"];
+  }
+  if ("$defs" in resolvedSchema) {
+    delete resolvedSchema["$defs"];
   }
 
-  // Now convert to OpenAPI format
-  const converted = await jsonSchemaToOpenAPISchema(resolvedSchema);
+  const converted = jsonSchemaToOpenAPISchema(resolvedSchema);
 
   stripFields(converted);
 
   return converted;
 }
+
+export const _googleSchemaFromJsonSchemaForTesting = googleSchemaFromJsonSchema;
 
 async function openAIToolsToGoogleTools(params: {
   tools?: ChatCompletionCreateParams["tools"];

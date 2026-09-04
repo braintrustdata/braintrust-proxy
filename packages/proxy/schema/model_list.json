@@ -6176,6 +6176,20 @@
       "fireworks"
     ]
   },
+  "qwen-3.8-27b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.99,
+    "output_cost_per_mil_tokens": 1.49,
+    "displayName": "Qwen 3.8 27B",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
+    "available_providers": [
+      "cerebras"
+    ]
+  },
   "gpt-oss-120b": {
     "format": "openai",
     "flavor": "chat",
@@ -6198,6 +6212,7 @@
     "output_cost_per_mil_tokens": 1.49,
     "displayName": "Gemma 4 31B",
     "reasoning": true,
+    "deprecated": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -10660,8 +10675,8 @@
   "Qwen/Qwen3.8-2.4T-A95B": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 6.25,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Qwen3.8 2.4T A95B",
     "reasoning": true,

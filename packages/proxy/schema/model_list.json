@@ -151,7 +151,8 @@
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-5.5": {
@@ -2880,7 +2881,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.029,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -6157,7 +6158,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.17,
     "displayName": "Inkling",
     "reasoning": true,
-    "max_input_tokens": 1040000,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "fireworks"
     ]
@@ -12959,12 +12960,13 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok Build (Latest)",
     "reasoning": true,
-    "max_input_tokens": 256000,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
     "available_providers": [
       "xAI"
     ]
@@ -13824,7 +13826,7 @@
   "undi95/remm-slerp-l2-13b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.45,
+    "input_cost_per_mil_tokens": 0.35,
     "output_cost_per_mil_tokens": 0.65,
     "displayName": "ReMM SLERP 13B",
     "max_input_tokens": 6144,
@@ -14384,6 +14386,20 @@
       "openrouter"
     ]
   },
+  "nvidia/nemotron-3.5-content-safety": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.2,
+    "displayName": "NVIDIA: Nemotron 3.5 Content Safety",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 117964,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "nvidia/nemotron-3.5-lightning": {
     "format": "openai",
     "flavor": "chat",
@@ -14597,9 +14613,9 @@
   "deepseek/deepseek-chat-v3.1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 0.95,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "input_cost_per_mil_tokens": 0.55,
+    "output_cost_per_mil_tokens": 1.65,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
     "displayName": "DeepSeek: DeepSeek V3.1",
     "reasoning": true,
     "max_input_tokens": 163840,
@@ -14849,6 +14865,21 @@
     "displayName": "IBM: Granite 4.1 8B",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "inclusionai/ling-3.0-flash-fin": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "displayName": "Ling 3.0 Flash Fin",
+    "reasoning": true,
+    "parent": "inclusionai/ling-3.0-flash",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 235929,
     "available_providers": [
       "openrouter"
     ]
@@ -16172,8 +16203,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 0.75,
+    "input_cost_per_mil_tokens": 0.8,
+    "output_cost_per_mil_tokens": 1,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
     "displayName": "Qwen: Qwen2.5 VL 72B Instruct",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,

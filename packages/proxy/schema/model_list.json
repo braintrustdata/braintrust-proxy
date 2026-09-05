@@ -14871,19 +14871,6 @@
       "openrouter"
     ]
   },
-  "ibm-granite/granite-4.1-8b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.05,
-    "output_cost_per_mil_tokens": 0.1,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
-    "displayName": "IBM: Granite 4.1 8B",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "inclusionai/ling-3.0-flash-fin": {
     "format": "openai",
     "flavor": "chat",
@@ -16146,21 +16133,6 @@
     "reasoning": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 52429,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3.8-max": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.25,
-    "displayName": "Qwen: Qwen3.8 Max",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]

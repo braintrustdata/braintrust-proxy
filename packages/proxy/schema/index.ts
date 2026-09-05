@@ -1409,6 +1409,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-gemini-3-8-flash": ["databricks"],
   "accounts/fireworks/models/deepseek-v4-flash-vision-exp": ["fireworks"],
   "qwen-3.8-27b": ["cerebras"],
+  "claude-mythos-5-1": ["anthropic"],
+  "anthropic.claude-mythos-5-1": ["bedrock"],
+  "global.anthropic.claude-mythos-5-1": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

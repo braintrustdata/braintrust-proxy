@@ -8226,6 +8226,41 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "global.anthropic.claude-mythos-5-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Global Claude Mythos 5.1",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-mythos-5-1",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "anthropic.claude-mythos-5-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Mythos 5.1",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "google.gemma-3-27b-it": {
     "format": "converse",
     "flavor": "chat",
@@ -8336,6 +8371,27 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "claude-mythos-5-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Mythos 5.1",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "anthropic.claude-mythos-5-1",
+      "global.anthropic.claude-mythos-5-1"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
     ]
   },
   "claude-fable-5-1": {

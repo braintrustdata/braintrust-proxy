@@ -152,7 +152,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-5.5": {
@@ -14545,9 +14546,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.1154,
-    "output_cost_per_mil_tokens": 3.3462,
-    "input_cache_read_cost_per_mil_tokens": 0.03718,
+    "input_cost_per_mil_tokens": 1.12068,
+    "output_cost_per_mil_tokens": 3.36204,
+    "input_cache_read_cost_per_mil_tokens": 0.037356,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -14684,9 +14685,9 @@
   "deepseek/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.088606,
-    "output_cost_per_mil_tokens": 0.177212,
-    "input_cache_read_cost_per_mil_tokens": 0.0177212,
+    "input_cost_per_mil_tokens": 0.08526,
+    "output_cost_per_mil_tokens": 0.17052,
+    "input_cache_read_cost_per_mil_tokens": 0.017052,
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14698,9 +14699,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.04226,
-    "output_cost_per_mil_tokens": 2.08452,
-    "input_cache_read_cost_per_mil_tokens": 0.086855,
+    "input_cost_per_mil_tokens": 0.890358,
+    "output_cost_per_mil_tokens": 1.780716,
+    "input_cache_read_cost_per_mil_tokens": 0.0741965,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15469,6 +15470,21 @@
       "openrouter"
     ]
   },
+  "openai/gpt-6-astra-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "displayName": "OpenAI: GPT-6 Astra Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "openai/o3-mini-high": {
     "format": "openai",
     "flavor": "chat",
@@ -16121,6 +16137,22 @@
       "openrouter"
     ]
   },
+  "qwen/qwen3.8-max-0902": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "displayName": "Qwen: Qwen3.8 Max (0902)",
+    "reasoning": true,
+    "parent": "qwen/qwen3.8-max",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "qwen/qwen3.8-flash": {
     "format": "openai",
     "flavor": "chat",
@@ -16283,8 +16315,8 @@
   "qwen/qwen3-235b-a22b-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0875,
-    "output_cost_per_mil_tokens": 0.35,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.55,
     "input_cache_read_cost_per_mil_tokens": 0.0175,
     "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
     "parent": "qwen/qwen3-235b-a22b",
@@ -16630,8 +16662,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.25,
+    "input_cost_per_mil_tokens": 0.08,
+    "output_cost_per_mil_tokens": 0.75,
     "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Qwen: Qwen3.5 35B A3B",
     "reasoning": true,

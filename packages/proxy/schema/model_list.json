@@ -10554,6 +10554,15 @@
       "bedrock"
     ]
   },
+  "north-small-translate-09-2026": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "North Small Translate (09-2026)",
+    "max_input_tokens": 32768,
+    "available_providers": [
+      "cohere"
+    ]
+  },
   "tiny-aya-water": {
     "format": "openai",
     "flavor": "chat",
@@ -13906,6 +13915,20 @@
       "openrouter"
     ]
   },
+  "inception/mercury-2.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.15,
+    "input_cache_read_cost_per_mil_tokens": 0.004,
+    "displayName": "Inception: Mercury 2.5",
+    "reasoning": true,
+    "max_input_tokens": 260000,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "inception/mercury-2.5-preview": {
     "format": "openai",
     "flavor": "chat",
@@ -14942,9 +14965,9 @@
   "ibm-granite/granite-4.2-8b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.15,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.25,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
     "displayName": "IBM: Granite 4.2 8B",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -15065,7 +15088,7 @@
   "minimax/minimax-m1": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.4,
+    "input_cost_per_mil_tokens": 0.55,
     "output_cost_per_mil_tokens": 2.2,
     "displayName": "MiniMax: MiniMax M1",
     "reasoning": true,
@@ -15233,9 +15256,9 @@
   "z-ai/glm-4.6": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.55,
-    "output_cost_per_mil_tokens": 2.2,
-    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cost_per_mil_tokens": 0.43,
+    "output_cost_per_mil_tokens": 1.75,
+    "input_cache_read_cost_per_mil_tokens": 0.08,
     "displayName": "Z.ai: GLM 4.6",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -16408,8 +16431,8 @@
   "qwen/qwen3-235b-a22b-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.55,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.88,
     "input_cache_read_cost_per_mil_tokens": 0.0175,
     "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
     "parent": "qwen/qwen3-235b-a22b",
@@ -16497,7 +16520,7 @@
   "qwen/qwen3-next-80b-a3b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 0.09,
     "output_cost_per_mil_tokens": 1.1,
     "input_cache_read_cost_per_mil_tokens": 0.07,
     "displayName": "Qwen: Qwen3 Next 80B A3B Instruct",

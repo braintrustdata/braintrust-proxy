@@ -229,6 +229,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-4o-transcribe": ["openai", "azure"],
   "gpt-4o-transcribe-diarize": ["openai", "azure"],
   sonar: ["perplexity", "openrouter"],
+  "deepseek-ai/DeepSeek-V4.1-Flash": ["baseten"],
   "deepseek-ai/DeepSeek-V4-Flash-0731": ["baseten", "together"],
   "sonar-pro": ["perplexity", "openrouter"],
   "sonar-reasoning-pro": ["perplexity", "openrouter"],

@@ -29,10 +29,14 @@ jobs:
       # passed as anthropic_api_key below) and calls the provider on our behalf.
       # https://www.braintrust.dev/docs/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the automations-spend-control project.
+      # Attribute gateway spend to the automations-spend-control project, and log
+      # the Claude Code LLM traces to the add-new-model-agent-logs project. The
+      # gateway auto-creates the project on first log and starts an LLM span for
+      # every request that carries x-bt-parent.
       ANTHROPIC_CUSTOM_HEADERS: |-
         x-bt-project-name: automations-spend-control
         x-bt-spend-control-tags: {"job_name":"add-model"}
+        x-bt-parent: project_name:add-new-model-agent-logs
 
     steps:
       - name: Checkout repository

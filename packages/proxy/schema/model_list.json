@@ -1,4 +1,54 @@
 {
+  "gpt-image-2.5-sunburst-2026-09-08": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Sunburst (2026-09-08)",
+    "parent": "gpt-image-2.5-sunburst",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-flare-2026-09-08": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Flare (2026-09-08)",
+    "parent": "gpt-image-2.5-flare",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-sunburst": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Sunburst",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-flare": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Flare",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-daybreak-red-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -12407,6 +12457,40 @@
       "vertex"
     ]
   },
+  "grok-imagine-video": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Video",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-video-1.5-2026-05-30": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Video 1.5 (2026-05-30)",
+    "parent": "grok-imagine-video-1.5",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-video-1.5-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Video 1.5 Preview",
+    "parent": "grok-imagine-video-1.5",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-imagine-video-1.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Imagine Video 1.5",
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "grok-imagine-image-quality": {
     "format": "openai",
     "flavor": "chat",
@@ -14644,6 +14728,21 @@
       "openrouter"
     ]
   },
+  "deepseek/deepseek-v4.1-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.003,
+    "displayName": "DeepSeek: DeepSeek V4.1 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "deepseek/deepseek-v4-flash-vision-exp": {
     "format": "openai",
     "flavor": "chat",
@@ -14692,8 +14791,8 @@
   "deepseek/deepseek-chat": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.32,
-    "output_cost_per_mil_tokens": 0.89,
+    "input_cost_per_mil_tokens": 0.2574,
+    "output_cost_per_mil_tokens": 1.0287,
     "displayName": "DeepSeek: DeepSeek V3",
     "max_input_tokens": 163840,
     "max_output_tokens": 16000,
@@ -15141,9 +15240,9 @@
   "minimax/minimax-m2.5": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.27,
-    "output_cost_per_mil_tokens": 1.08,
-    "input_cache_read_cost_per_mil_tokens": 0.027,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax: MiniMax M2.5",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -15185,9 +15284,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.25,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Z.ai: GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1310720,
@@ -16471,8 +16570,8 @@
   "qwen/qwen3-30b-a3b-instruct-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.04815,
-    "output_cost_per_mil_tokens": 0.19305,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.3,
     "displayName": "Qwen: Qwen3 30B A3B Instruct 2507",
     "max_input_tokens": 262144,
     "max_output_tokens": 32000,
@@ -16750,8 +16849,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.29,
-    "output_cost_per_mil_tokens": 2.4,
+    "input_cost_per_mil_tokens": 0.26,
+    "output_cost_per_mil_tokens": 2.08,
     "displayName": "Qwen: Qwen3.5 122B A10B",
     "reasoning": true,
     "max_input_tokens": 262144,

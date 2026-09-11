@@ -395,6 +395,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mixtral-8x7b": ["lepton"],
   "wizardlm-2-7b": ["lepton"],
   "wizardlm-2-8x22b": ["lepton", "openrouter"],
+  "sakana/fugu-ultra-v2": ["openrouter"],
+  "sakana/fugu-max": ["openrouter"],
   "deepseek/deepseek-v4.1-flash": ["openrouter"],
   "inception/mercury-2.5": ["openrouter"],
   "openai/gpt-6-astra-pro": ["openrouter"],

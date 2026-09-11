@@ -11241,6 +11241,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -14505,9 +14508,9 @@
   "upstage/solar-pro4": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.03,
-    "output_cost_per_mil_tokens": 0.12,
-    "input_cache_read_cost_per_mil_tokens": 0.006,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.36,
+    "input_cache_read_cost_per_mil_tokens": 0.018,
     "displayName": "Upstage: Solar Pro 4",
     "reasoning": true,
     "max_input_tokens": 524288,
@@ -14772,9 +14775,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.0494,
-    "output_cost_per_mil_tokens": 3.1482,
-    "input_cache_read_cost_per_mil_tokens": 0.03498,
+    "input_cost_per_mil_tokens": 0.66,
+    "output_cost_per_mil_tokens": 1.98,
+    "input_cache_read_cost_per_mil_tokens": 0.066,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -14827,8 +14830,8 @@
   "deepseek/deepseek-chat-v3-0324": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.29,
-    "output_cost_per_mil_tokens": 1.14,
+    "input_cost_per_mil_tokens": 0.25,
+    "output_cost_per_mil_tokens": 1,
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "displayName": "DeepSeek: DeepSeek V3 (0324)",
     "parent": "deepseek/deepseek-chat",
@@ -15491,6 +15494,37 @@
       "openrouter"
     ]
   },
+  "sakana/fugu-max": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "displayName": "Sakana: Fugu Max",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "sakana/fugu-ultra-v2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Sakana: Fugu Ultra v2",
+    "reasoning": true,
+    "parent": "sakana/fugu-ultra",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "sakana/sakana-namazu": {
     "format": "openai",
     "flavor": "chat",
@@ -16062,9 +16096,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cost_per_mil_tokens": 2.34,
+    "output_cost_per_mil_tokens": 11.7,
+    "input_cache_read_cost_per_mil_tokens": 0.261,
     "displayName": "MoonshotAI: Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -17123,8 +17157,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.07,
-    "output_cost_per_mil_tokens": 0.34,
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0.22,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Google: Gemma 4 26B A4B IT",
     "reasoning": true,

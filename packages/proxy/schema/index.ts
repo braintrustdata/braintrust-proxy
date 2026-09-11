@@ -229,7 +229,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-4o-transcribe": ["openai", "azure"],
   "gpt-4o-transcribe-diarize": ["openai", "azure"],
   sonar: ["perplexity", "openrouter"],
-  "deepseek-ai/DeepSeek-V4.1-Flash": ["baseten"],
+  "deepseek-ai/DeepSeek-V4.1-Flash": ["baseten", "fireworks"],
   "deepseek-ai/DeepSeek-V4-Flash-0731": ["baseten", "together"],
   "sonar-pro": ["perplexity", "openrouter"],
   "sonar-reasoning-pro": ["perplexity", "openrouter"],
@@ -1430,6 +1430,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "qwen-3.8-27b": ["cerebras"],
   "anthropic.claude-mythos-5-1": ["bedrock"],
   "global.anthropic.claude-mythos-5-1": ["bedrock"],
+  "accounts/fireworks/models/deepseek-v4p1-flash": ["fireworks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

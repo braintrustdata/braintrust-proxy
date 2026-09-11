@@ -2947,6 +2947,20 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/deepseek-v4p1-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.66,
+    "input_cache_read_cost_per_mil_tokens": 0.007,
+    "displayName": "DeepSeek V4.1 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4-flash-vision-exp": {
     "format": "openai",
     "flavor": "chat",
@@ -11248,7 +11262,8 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "available_providers": [
-      "baseten"
+      "baseten",
+      "fireworks"
     ]
   },
   "deepseek-ai/DeepSeek-V4-Flash-0731": {

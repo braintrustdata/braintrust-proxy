@@ -1431,6 +1431,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-mythos-5-1": ["bedrock"],
   "global.anthropic.claude-mythos-5-1": ["bedrock"],
   "accounts/fireworks/models/deepseek-v4p1-flash": ["fireworks"],
+  "openai.gpt-6-astra": ["bedrock"],
+  "nvidia.nemotron-nano-12b-v2": ["bedrock"],
+  "writer.palmyra-vision-7b": ["bedrock"],
+  "mistral.voxtral-mini-3b-2507": ["bedrock"],
+  "mistral.voxtral-small-24b-2507": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

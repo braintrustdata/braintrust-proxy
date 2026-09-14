@@ -10856,9 +10856,9 @@
   "Qwen/Qwen3.7-Max": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Qwen3.7 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -11263,7 +11263,8 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten",
-      "fireworks"
+      "fireworks",
+      "together"
     ]
   },
   "deepseek-ai/DeepSeek-V4-Flash-0731": {

@@ -1436,6 +1436,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "writer.palmyra-vision-7b": ["bedrock"],
   "mistral.voxtral-mini-3b-2507": ["bedrock"],
   "mistral.voxtral-small-24b-2507": ["bedrock"],
+  "global.anthropic.claude-mythos-5": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

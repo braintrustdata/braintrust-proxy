@@ -234,6 +234,9 @@
     "input_cache_write_cost_per_mil_tokens": 12.5,
     "displayName": "GPT-6 Astra",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-6-astra"
+    ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -8326,6 +8329,72 @@
     "format": "js",
     "flavor": "completion",
     "displayName": "Text-block"
+  },
+  "mistral.voxtral-small-24b-2507": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Voxtral Small 24B (2507)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.voxtral-mini-3b-2507": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "displayName": "Voxtral Mini 3B (2507)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-12b-v2": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "NVIDIA Nemotron Nano 12B v2 VL",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "writer.palmyra-vision-7b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Palmyra Vision 7B",
+    "max_input_tokens": 4000,
+    "max_output_tokens": 4000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 11,
+    "output_cost_per_mil_tokens": 55,
+    "input_cache_read_cost_per_mil_tokens": 1.1,
+    "input_cache_write_cost_per_mil_tokens": 13.75,
+    "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
   },
   "global.anthropic.claude-mythos-5-1": {
     "format": "anthropic",

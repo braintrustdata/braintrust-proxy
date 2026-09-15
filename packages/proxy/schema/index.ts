@@ -1431,6 +1431,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-mythos-5-1": ["bedrock"],
   "global.anthropic.claude-mythos-5-1": ["bedrock"],
   "accounts/fireworks/models/deepseek-v4p1-flash": ["fireworks"],
+  "global.anthropic.claude-mythos-5": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

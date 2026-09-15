@@ -8327,6 +8327,24 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "global.anthropic.claude-mythos-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Global Claude Mythos 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-mythos-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "global.anthropic.claude-mythos-5-1": {
     "format": "anthropic",
     "flavor": "chat",

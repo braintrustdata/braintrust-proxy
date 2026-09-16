@@ -3,7 +3,7 @@ import { type IncomingHttpHeaders } from "node:http";
 import { request as httpRequest } from "node:http";
 import { request as httpsRequest } from "node:https";
 import { Readable } from "node:stream";
-import { arrayBufferToBase64 } from "utils";
+import { arrayBufferToBase64 } from "utils/encrypt";
 
 const base64MediaPattern =
   /^data:([a-zA-Z0-9]+\/[a-zA-Z0-9+.-]+);base64,([A-Za-z0-9+/]+={0,2})$/;

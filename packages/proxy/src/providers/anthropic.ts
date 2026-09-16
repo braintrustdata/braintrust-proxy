@@ -28,7 +28,7 @@ import {
   ChatCompletionToolMessageParam,
 } from "openai/resources";
 import { ModelSpec, isImageMediaType, isTextBasedMediaType } from "@schema";
-import { getBudgetMultiplier } from "utils";
+import { getBudgetMultiplier } from "utils/budget";
 import { cleanOpenAIParams } from "utils/openai";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";

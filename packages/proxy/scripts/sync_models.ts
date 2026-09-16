@@ -200,6 +200,11 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   "gpt-realtime-translate",
   "gpt-transcribe",
   "gpt-live-transcribe",
+  // OpenAI models that are not invocable through supported proxy endpoints.
+  "computer-use-preview",
+  "gpt-rosalind-research",
+  "gpt-live-1",
+  "gpt-5.5-cyber",
   // Live model: Gemini Live uses a bidirectional API and is rejected by
   // generateContent ("not supported for generateContent"), so it is not a
   // chat/completions model. Excluded permanently (see PR that trimmed it from

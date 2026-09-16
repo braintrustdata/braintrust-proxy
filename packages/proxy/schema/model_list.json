@@ -234,6 +234,9 @@
     "input_cache_write_cost_per_mil_tokens": 12.5,
     "displayName": "GPT-6 Astra",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-6-astra"
+    ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -1119,7 +1122,7 @@
   "gpt-4o-mini-tts": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS",
     "available_providers": [
@@ -1188,7 +1191,7 @@
   "gpt-4o-mini-tts-2025-12-15": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS (2025-12-15)",
     "parent": "gpt-4o-mini-tts",
@@ -1230,7 +1233,7 @@
   "gpt-4o-mini-tts-2025-03-20": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS (2025-03-20)",
     "deprecation_date": "2026-07-23",
@@ -2440,6 +2443,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "ChatGPT Image",
     "deprecation_date": "2026-12-01",
@@ -2957,6 +2961,7 @@
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 393216,
     "available_providers": [
       "fireworks"
     ]
@@ -3117,9 +3122,9 @@
   "accounts/fireworks/models/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.74,
-    "output_cost_per_mil_tokens": 3.48,
-    "input_cache_read_cost_per_mil_tokens": 0.145,
+    "input_cost_per_mil_tokens": 1.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.6,
     "displayName": "DeepSeek V4 Pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
@@ -3662,6 +3667,8 @@
   "accounts/fireworks/models/qwen3-reranker-8b": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.2,
+    "displayName": "Qwen3 Reranker 8B",
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
     "available_providers": [
@@ -8327,6 +8334,90 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "mistral.voxtral-small-24b-2507": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
+    "displayName": "Voxtral Small 24B (2507)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "mistral.voxtral-mini-3b-2507": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.04,
+    "displayName": "Voxtral Mini 3B (2507)",
+    "max_input_tokens": 32000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "nvidia.nemotron-nano-12b-v2": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "NVIDIA Nemotron Nano 12B v2 VL",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "writer.palmyra-vision-7b": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "displayName": "Palmyra Vision 7B",
+    "max_input_tokens": 4000,
+    "max_output_tokens": 4000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 11,
+    "output_cost_per_mil_tokens": 55,
+    "input_cache_read_cost_per_mil_tokens": 1.1,
+    "input_cache_write_cost_per_mil_tokens": 13.75,
+    "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-mythos-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Global Claude Mythos 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-mythos-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "global.anthropic.claude-mythos-5-1": {
     "format": "anthropic",
     "flavor": "chat",
@@ -10856,9 +10947,9 @@
   "Qwen/Qwen3.7-Max": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.25,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Qwen3.7 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -11263,7 +11354,8 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten",
-      "fireworks"
+      "fireworks",
+      "together"
     ]
   },
   "deepseek-ai/DeepSeek-V4-Flash-0731": {
@@ -12524,6 +12616,7 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Grok Imagine Image Quality",
+    "deprecation_date": "2026-11-02",
     "available_providers": [
       "xAI"
     ]
@@ -14028,6 +14121,32 @@
       "openrouter"
     ]
   },
+  "inference-net/schematron-v2-small": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.23,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Inference.net: Schematron V2 Small",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "inference-net/schematron-v2-turbo": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.15,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "Inference.net: Schematron V2 Turbo",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "inception/mercury-2.5": {
     "format": "openai",
     "flavor": "chat",
@@ -14232,8 +14351,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.696,
+    "input_cost_per_mil_tokens": 0.1875,
+    "output_cost_per_mil_tokens": 0.6525,
     "displayName": "Meta: Llama 4 Maverick",
     "max_input_tokens": 1048576,
     "max_output_tokens": 16384,
@@ -14676,8 +14795,8 @@
   "nvidia/nemotron-3-super-120b-a12b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.085,
-    "output_cost_per_mil_tokens": 0.4,
+    "input_cost_per_mil_tokens": 0.08,
+    "output_cost_per_mil_tokens": 0.45,
     "displayName": "NVIDIA: Nemotron 3 Super 120B A12B",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -14790,9 +14909,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.66,
-    "output_cost_per_mil_tokens": 1.98,
-    "input_cache_read_cost_per_mil_tokens": 0.066,
+    "input_cost_per_mil_tokens": 0.9834,
+    "output_cost_per_mil_tokens": 2.9502,
+    "input_cache_read_cost_per_mil_tokens": 0.03278,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -14805,9 +14924,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.065,
-    "output_cost_per_mil_tokens": 0.18,
-    "input_cache_read_cost_per_mil_tokens": 0.016,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.12,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -14943,9 +15062,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.95526,
-    "output_cost_per_mil_tokens": 1.91052,
-    "input_cache_read_cost_per_mil_tokens": 0.079605,
+    "input_cost_per_mil_tokens": 1.6,
+    "output_cost_per_mil_tokens": 3.2,
+    "input_cache_read_cost_per_mil_tokens": 0.135,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15129,6 +15248,21 @@
       "openrouter"
     ]
   },
+  "inclusionai/ling-3.0-flash-vl": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "displayName": "inclusionAI: Ling 3.0 Flash VL",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "inclusionai/ling-3.0-flash-fin": {
     "format": "openai",
     "flavor": "chat",
@@ -15269,9 +15403,9 @@
   "minimax/minimax-m2.5": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cost_per_mil_tokens": 0.27,
+    "output_cost_per_mil_tokens": 1.08,
+    "input_cache_read_cost_per_mil_tokens": 0.027,
     "displayName": "MiniMax: MiniMax M2.5",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -15498,9 +15632,9 @@
   "z-ai/glm-5.2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.966,
-    "output_cost_per_mil_tokens": 3.036,
-    "input_cache_read_cost_per_mil_tokens": 0.1932,
+    "input_cost_per_mil_tokens": 1.4,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "Z.ai: GLM-5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15986,8 +16120,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.1,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Meta: Muse Glimmer 30B",
     "reasoning": true,
@@ -16111,9 +16245,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2.34,
-    "output_cost_per_mil_tokens": 11.7,
-    "input_cache_read_cost_per_mil_tokens": 0.261,
+    "input_cost_per_mil_tokens": 2.64813806,
+    "output_cost_per_mil_tokens": 13.28272425,
+    "input_cache_read_cost_per_mil_tokens": 0.30264435,
     "displayName": "MoonshotAI: Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -16551,8 +16685,8 @@
   "qwen/qwen3-14b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.2275,
-    "output_cost_per_mil_tokens": 0.91,
+    "input_cost_per_mil_tokens": 0.12,
+    "output_cost_per_mil_tokens": 0.24,
     "displayName": "Qwen: Qwen3 14B",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -16590,8 +16724,8 @@
   "qwen/qwen3-235b-a22b-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 0.88,
+    "input_cost_per_mil_tokens": 0.0875,
+    "output_cost_per_mil_tokens": 0.35,
     "input_cache_read_cost_per_mil_tokens": 0.0175,
     "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
     "parent": "qwen/qwen3-235b-a22b",
@@ -16630,9 +16764,9 @@
   "qwen/qwen3-30b-a3b-instruct-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.3,
-    "displayName": "Qwen: Qwen3 30B A3B Instruct 2507",
+    "input_cost_per_mil_tokens": 0.04815,
+    "output_cost_per_mil_tokens": 0.19305,
+    "displayName": "Qwen: Qwen3 30B A3B Instruct (2507)",
     "max_input_tokens": 262144,
     "max_output_tokens": 32000,
     "available_providers": [
@@ -16937,8 +17071,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3125,
-    "output_cost_per_mil_tokens": 1.25,
+    "input_cost_per_mil_tokens": 0.1625,
+    "output_cost_per_mil_tokens": 1.3,
     "input_cache_read_cost_per_mil_tokens": 0.15625,
     "displayName": "Qwen: Qwen3.5 35B A3B",
     "reasoning": true,
@@ -17172,8 +17306,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.042,
-    "output_cost_per_mil_tokens": 0.22,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Google: Gemma 4 26B A4B IT",
     "reasoning": true,

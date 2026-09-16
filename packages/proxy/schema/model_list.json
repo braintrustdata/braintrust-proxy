@@ -3307,6 +3307,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3318,6 +3319,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3329,6 +3331,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3340,6 +3343,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3351,6 +3355,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3362,6 +3367,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3373,6 +3379,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -3396,6 +3403,7 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 8,
     "displayName": "DeepSeek R1 (Fast)",
+    "reasoning": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 20480,
     "available_providers": [
@@ -3408,6 +3416,7 @@
     "input_cost_per_mil_tokens": 0.55,
     "output_cost_per_mil_tokens": 2.19,
     "displayName": "DeepSeek R1 Basic",
+    "reasoning": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 20480,
     "available_providers": [
@@ -3419,6 +3428,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 8,
+    "reasoning": true,
     "max_input_tokens": 160000,
     "max_output_tokens": 160000,
     "available_providers": [
@@ -3500,6 +3510,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
+    "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
     "available_providers": [
@@ -3523,6 +3534,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
+    "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
     "available_providers": [
@@ -3545,6 +3557,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
+    "reasoning": true,
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -3613,6 +3626,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
     "available_providers": [
@@ -3635,6 +3649,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
+    "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
     "available_providers": [
@@ -4199,6 +4214,7 @@
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Qwen QwQ 32B",
+    "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -8038,7 +8054,11 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
-    "displayName": "DeepSeek R1 Distill Llama 70B"
+    "displayName": "DeepSeek R1 Distill Llama 70B",
+    "reasoning": true,
+    "available_providers": [
+      "together"
+    ]
   },
   "deepseek-ai/DeepSeek-R1-Distill-Llama-70B-Free": {
     "format": "openai",
@@ -8050,14 +8070,22 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.6,
     "output_cost_per_mil_tokens": 1.6,
-    "displayName": "DeepSeek R1 Distill Qwen 14B"
+    "displayName": "DeepSeek R1 Distill Qwen 14B",
+    "reasoning": true,
+    "available_providers": [
+      "together"
+    ]
   },
   "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.18,
-    "displayName": "DeepSeek R1 Distill Qwen 1.5B"
+    "displayName": "DeepSeek R1 Distill Qwen 1.5B",
+    "reasoning": true,
+    "available_providers": [
+      "together"
+    ]
   },
   "Qwen/Qwen2.5-Coder-32B-Instruct": {
     "format": "openai",
@@ -9415,6 +9443,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3,
     "displayName": "Kimi K2.5",
+    "reasoning": true,
     "max_input_tokens": 256000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -10912,6 +10941,7 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 7,
     "displayName": "DeepSeek R1",
+    "reasoning": true,
     "max_input_tokens": 128000,
     "max_output_tokens": 20480,
     "available_providers": [
@@ -11312,6 +11342,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "displayName": "Sonar Reasoning Pro",
+    "reasoning": true,
     "max_input_tokens": 128000,
     "available_providers": [
       "perplexity",
@@ -11324,6 +11355,7 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "displayName": "Sonar Deep Research",
+    "reasoning": true,
     "max_input_tokens": 128000,
     "available_providers": [
       "perplexity",

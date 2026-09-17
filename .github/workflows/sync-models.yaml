@@ -129,7 +129,7 @@ jobs:
             exit 0
           fi
 
-          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-typesafe --write
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-typesafe
 
       - name: Sync OpenRouter alternates from /api/v1/models
         run: |

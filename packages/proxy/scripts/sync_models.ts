@@ -3906,7 +3906,7 @@ async function syncCohereModelsCommand(argv: any) {
   }
 }
 
-async function syncTypesafeModelsCommand(argv: { write: boolean }) {
+async function syncTypesafeModelsCommand() {
   try {
     const remoteModels = await fetchTypesafeModels();
     const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
@@ -3916,10 +3916,10 @@ async function syncTypesafeModelsCommand(argv: { write: boolean }) {
       `Typesafe: ${Object.keys(remoteModels).length} priced models, ${changed.length} changes.`,
     );
     for (const name of changed) {
-      console.log(`${argv.write ? "[WRITE]" : "[DRY RUN]"} ${name}`);
+      console.log(`[UPDATE] ${name}`);
     }
 
-    if (argv.write && changed.length > 0) {
+    if (changed.length > 0) {
       await writeLocalModels(models);
       await syncProviderMappingsForLocalModels(
         models,
@@ -4027,9 +4027,9 @@ async function main() {
     .command(
       "sync-typesafe",
       "Sync Typesafe model IDs and documented pricing. Requires TYPESAFE_API_KEY.",
-      (y) => y.option("write", { type: "boolean", default: false }),
-      async (argv) => {
-        await syncTypesafeModelsCommand(argv);
+      (y) => y,
+      async () => {
+        await syncTypesafeModelsCommand();
       },
     )
     .command(

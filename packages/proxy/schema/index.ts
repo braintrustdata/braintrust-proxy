@@ -152,6 +152,7 @@ export const defaultModelParamSettings: {
     verbosity: undefined,
   },
   js: {},
+  typesafe: {},
   window: {
     temperature: undefined,
     topK: 5,
@@ -171,6 +172,7 @@ export const modelProviderHasTools: {
   anthropic: true,
   google: true,
   js: false,
+  typesafe: false,
   window: false,
   converse: true,
 };
@@ -195,6 +197,7 @@ export const DefaultEndpointTypes: {
   js: ["js"],
   window: ["js"],
   converse: ["bedrock"],
+  typesafe: ["typesafe"],
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
@@ -1527,6 +1530,7 @@ export const EndpointProviderToBaseURL: {
 } = {
   openai: "https://api.openai.com/v1",
   braintrust: null,
+  typesafe: null,
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",

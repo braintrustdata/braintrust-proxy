@@ -14153,6 +14153,38 @@
       "openrouter"
     ]
   },
+  "jev-preview": {
+    "format": "typesafe",
+    "flavor": "evaluation",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "jev-preview",
+    "description": "A preview version of `jev-latest`: should be better in most ways",
+    "available_providers": [
+      "typesafe"
+    ]
+  },
+  "jev-latest": {
+    "format": "typesafe",
+    "flavor": "evaluation",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "jev-latest",
+    "description": "The latest iteration of TypeSafe's System One Model: Jev",
+    "available_providers": [
+      "typesafe"
+    ]
+  },
+  "jev-1.13.0": {
+    "format": "typesafe",
+    "flavor": "evaluation",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Jev 1.13",
+    "available_providers": [
+      "typesafe"
+    ]
+  },
   "inference-net/schematron-v2-small": {
     "format": "openai",
     "flavor": "chat",

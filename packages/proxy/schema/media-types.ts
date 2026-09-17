@@ -126,6 +126,7 @@ export const ModelFormatMediaTypes: {
     ...toMediaTypeSupport(DOCUMENT_MEDIA_TYPES),
   },
   js: {},
+  typesafe: {},
   window: {},
 };
 

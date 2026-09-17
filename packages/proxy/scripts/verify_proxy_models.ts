@@ -24,6 +24,7 @@ type ModelEndpointType =
   | "cerebras"
   | "ollama"
   | "replicate"
+  | "typesafe"
   | "js";
 
 type ModelFormat =
@@ -32,7 +33,8 @@ type ModelFormat =
   | "google"
   | "window"
   | "js"
-  | "converse";
+  | "converse"
+  | "typesafe";
 
 type VerificationModelSpec = {
   available_providers?: ModelEndpointType[];
@@ -116,6 +118,7 @@ const defaultEndpointTypesByFormat: Record<ModelFormat, ModelEndpointType[]> = {
   js: ["js"],
   openai: ["openai", "azure"],
   window: ["js"],
+  typesafe: ["typesafe"],
 };
 
 export function getModelEndpointTypesForVerification(

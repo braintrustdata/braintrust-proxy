@@ -27,6 +27,7 @@ import {
   GOOGLE_VERTEX_LOCATIONS_URL,
   syncVertexSupportedRegions,
 } from "./sync_vertex_regions";
+import { fetchTypesafeModels, mergeTypesafeModels } from "./sync_typesafe";
 
 const execAsync = promisify(exec);
 
@@ -388,6 +389,7 @@ const SYNC_DEFAULT_ENDPOINT_TYPES = {
   js: ["js"],
   window: ["js"],
   converse: ["bedrock"],
+  typesafe: ["typesafe"],
 } satisfies Record<
   ModelSpec["format"],
   NonNullable<ModelSpec["available_providers"]>
@@ -3904,6 +3906,34 @@ async function syncCohereModelsCommand(argv: any) {
   }
 }
 
+async function syncTypesafeModelsCommand(argv: { write: boolean }) {
+  try {
+    const remoteModels = await fetchTypesafeModels();
+    const localModels = await readLocalModels(LOCAL_MODEL_LIST_PATH);
+    const { models, changed } = mergeTypesafeModels(localModels, remoteModels);
+
+    console.log(
+      `Typesafe: ${Object.keys(remoteModels).length} priced models, ${changed.length} changes.`,
+    );
+    for (const name of changed) {
+      console.log(`${argv.write ? "[WRITE]" : "[DRY RUN]"} ${name}`);
+    }
+
+    if (argv.write && changed.length > 0) {
+      await writeLocalModels(models);
+      await syncProviderMappingsForLocalModels(
+        models,
+        Object.keys(remoteModels),
+      );
+    }
+  } catch (error) {
+    console.error(
+      error instanceof Error ? error.message : "Typesafe sync failed.",
+    );
+    process.exitCode = 1;
+  }
+}
+
 // Format schema/index.ts with Prettier so the catalog scripts never emit
 // unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
 // steps, and older writers can all leave entries like ["openai","azure"]
@@ -3994,6 +4024,14 @@ async function normalizeLocalModelsCommand(argv: any) {
 
 async function main() {
   await yargs(hideBin(process.argv))
+    .command(
+      "sync-typesafe",
+      "Sync Typesafe model IDs and documented pricing. Requires TYPESAFE_API_KEY.",
+      (y) => y.option("write", { type: "boolean", default: false }),
+      async (argv) => {
+        await syncTypesafeModelsCommand(argv);
+      },
+    )
     .command(
       "normalize-local-models",
       "Normalize legacy local model ids and canonicalize model_list.json",

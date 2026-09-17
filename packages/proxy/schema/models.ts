@@ -9,6 +9,8 @@ export const ModelFlavors = [
   "completion",
   "embedding",
   "evaluation",
+  "realtime",
+  "live",
 ] as const;
 export type ModelFlavor = (typeof ModelFlavors)[number];
 

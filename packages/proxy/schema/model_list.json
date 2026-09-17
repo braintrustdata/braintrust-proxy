@@ -1777,6 +1777,22 @@
       "azure"
     ]
   },
+  "gpt-realtime-2.1": {
+    "format": "openai",
+    "flavor": "realtime",
+    "displayName": "GPT Realtime 2.1",
+    "available_providers": [
+      "openai"
+    ]
+  },
+  "gpt-live-1": {
+    "format": "openai",
+    "flavor": "live",
+    "displayName": "GPT Live 1",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-audio-2025-08-28": {
     "format": "openai",
     "flavor": "chat",

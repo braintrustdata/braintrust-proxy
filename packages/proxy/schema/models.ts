@@ -123,6 +123,7 @@ export const ModelSchema = z.object({
       "The upstream provider requires requests for this model to be sent with streaming enabled.",
     ),
   available_providers: z.array(z.enum(ModelEndpointType)).nullish(),
+  supported_endpoints: z.array(z.string()).nullish(),
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;

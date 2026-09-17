@@ -201,6 +201,8 @@ export const DefaultEndpointTypes: {
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "gpt-realtime-2.1": ["openai"],
+  "gpt-live-1": ["openai"],
   "gpt-5.6-sol": ["openai", "azure", "openrouter"],
   "gpt-5.6-terra": ["openai", "azure", "openrouter"],
   "gpt-5.6": ["openai", "azure"],

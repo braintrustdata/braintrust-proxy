@@ -1779,22 +1779,16 @@
   },
   "gpt-realtime-2.1": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "realtime",
     "displayName": "GPT Realtime 2.1",
-    "supported_endpoints": [
-      "realtime"
-    ],
     "available_providers": [
       "openai"
     ]
   },
   "gpt-live-1": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "live",
     "displayName": "GPT Live 1",
-    "supported_endpoints": [
-      "live/sessions"
-    ],
     "available_providers": [
       "openai"
     ]

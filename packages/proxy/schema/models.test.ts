@@ -161,13 +161,13 @@ it("Ignores malformed deprecation dates", () => {
   expect(result["testModel"].deprecated).toBe(undefined);
 });
 
-it("resolves voice model providers and preserves endpoint capabilities", () => {
-  for (const [model, endpoint] of [
+it("resolves voice model providers and preserves voice flavors", () => {
+  for (const [model, flavor] of [
     ["gpt-realtime-2.1", "realtime"],
-    ["gpt-live-1", "live/sessions"],
+    ["gpt-live-1", "live"],
   ]) {
     const models = z.record(ModelSchema).parse(raw_models);
-    expect(models[model].supported_endpoints).toEqual([endpoint]);
+    expect(models[model].flavor).toEqual(flavor);
     expect(getModelEndpointTypes(model)).toEqual(["openai"]);
   }
 });

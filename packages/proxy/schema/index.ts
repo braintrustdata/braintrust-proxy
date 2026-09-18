@@ -400,6 +400,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mixtral-8x7b": ["lepton"],
   "wizardlm-2-7b": ["lepton"],
   "wizardlm-2-8x22b": ["lepton", "openrouter"],
+  "unbiased/pareto": ["openrouter"],
   "inference-net/schematron-v2-turbo": ["openrouter"],
   "inference-net/schematron-v2-small": ["openrouter"],
   "inclusionai/ling-3.0-flash-vl": ["openrouter"],

@@ -49,6 +49,42 @@
       "azure"
     ]
   },
+  "gpt-daybreak-red-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "GPT Daybreak Red",
+    "reasoning": true,
+    "parent": "daybreak-red-latest",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-daybreak-blue-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "displayName": "GPT Daybreak Blue",
+    "reasoning": true,
+    "parent": "daybreak-blue-latest",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "daybreak-red-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -8554,6 +8590,28 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "claude-mythos-5-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Mythos 5.1",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2027-09-01",
+    "fallback_models": [
+      "anthropic.claude-mythos-5-1",
+      "global.anthropic.claude-mythos-5-1"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
     ]
   },
   "claude-fable-5-1": {

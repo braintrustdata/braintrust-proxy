@@ -1438,6 +1438,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral.voxtral-mini-3b-2507": ["bedrock"],
   "mistral.voxtral-small-24b-2507": ["bedrock"],
   "global.anthropic.claude-mythos-5": ["bedrock"],
+  "moonshotai.kimi-k3": ["bedrock"],
+  "us.moonshotai.kimi-k3": ["bedrock"],
+  "global.moonshotai.kimi-k3": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

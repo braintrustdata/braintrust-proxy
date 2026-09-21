@@ -1394,6 +1394,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta.llama4-maverick-17b-instruct-v1:0": ["bedrock"],
   "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": ["fireworks"],
   "grok-4.6": ["xAI", "openrouter"],
+  "grok-4.7": ["xAI"],
   "zai-glm-5-2": ["mistral"],
   "gemini-3.7-flash": ["google", "vertex", "openrouter"],
   "publishers/google/models/gemini-3.7-flash": ["vertex"],

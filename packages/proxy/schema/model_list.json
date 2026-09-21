@@ -6399,19 +6399,6 @@
       "openrouter"
     ]
   },
-  "qwen/qwen3.6-27b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 3,
-    "displayName": "Qwen 3.6 27B",
-    "experimental": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "groq/compound": {
     "format": "openai",
     "flavor": "chat",
@@ -13383,6 +13370,40 @@
       "openrouter"
     ]
   },
+  "databricks-deepseek-v4-1-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "DeepSeek V4.1 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-glm-5-3": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GLM 5.3",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-6-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-gemini-3-8-flash": {
     "format": "openai",
     "flavor": "chat",
@@ -14190,6 +14211,19 @@
     "displayName": "Jev 1.13",
     "available_providers": [
       "typesafe"
+    ]
+  },
+  "qwen/qwen3.6-27b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
+    "displayName": "Qwen 3.6 27B",
+    "experimental": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 16384,
+    "available_providers": [
+      "openrouter"
     ]
   },
   "unbiased/pareto": {

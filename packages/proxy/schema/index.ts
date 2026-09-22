@@ -875,6 +875,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "global.anthropic.claude-opus-4-8": ["bedrock"],
   "us.anthropic.claude-opus-4-8": ["bedrock"],
   "claude-opus-4-8": ["anthropic"],
+  "claude-opus-5-5": ["anthropic"],
   "publishers/anthropic/models/claude-opus-5": ["vertex"],
   "anthropic.claude-opus-5": ["bedrock"],
   "global.anthropic.claude-opus-5": ["bedrock"],

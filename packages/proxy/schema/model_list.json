@@ -266,7 +266,8 @@
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-6-sol": {
@@ -282,7 +283,8 @@
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-5.5": {

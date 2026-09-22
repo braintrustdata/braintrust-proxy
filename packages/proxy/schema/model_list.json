@@ -6407,24 +6407,6 @@
       "openrouter"
     ]
   },
-  "groq/compound": {
-    "format": "openai",
-    "flavor": "chat",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "groq"
-    ]
-  },
-  "groq/compound-mini": {
-    "format": "openai",
-    "flavor": "chat",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "groq"
-    ]
-  },
   "publishers/google/models/gemini-3.7-flash": {
     "format": "google",
     "flavor": "chat",
@@ -16960,21 +16942,6 @@
     "reasoning": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "anthropic/claude-opus-4": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 15,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.5,
-    "displayName": "Anthropic: Claude Opus 4",
-    "reasoning": true,
-    "max_input_tokens": 200000,
-    "max_output_tokens": 32000,
     "available_providers": [
       "openrouter"
     ]

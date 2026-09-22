@@ -8357,6 +8357,50 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "global.moonshotai.kimi-k3": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Kimi K3",
+    "parent": "moonshotai.kimi-k3",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.moonshotai.kimi-k3": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Kimi K3",
+    "parent": "moonshotai.kimi-k3",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "moonshotai.kimi-k3": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Kimi K3",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "mistral.voxtral-small-24b-2507": {
     "format": "converse",
     "flavor": "chat",
@@ -12070,6 +12114,34 @@
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
+    ]
+  },
+  "gemini-3.8-live-extended-thinking": {
+    "format": "google",
+    "flavor": "live",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.75,
+    "output_cost_per_mil_tokens": 4.5,
+    "displayName": "Gemini 3.8 Live Extended Thinking",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google"
+    ]
+  },
+  "gemini-3.8-live": {
+    "format": "google",
+    "flavor": "live",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.75,
+    "output_cost_per_mil_tokens": 4.5,
+    "displayName": "Gemini 3.8 Live",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google"
     ]
   },
   "gemini-3.7-flash": {

@@ -1442,6 +1442,11 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-gpt-6-astra": ["databricks"],
   "databricks-glm-5-3": ["databricks"],
   "databricks-deepseek-v4-1-flash": ["databricks"],
+  "moonshotai.kimi-k3": ["bedrock"],
+  "us.moonshotai.kimi-k3": ["bedrock"],
+  "global.moonshotai.kimi-k3": ["bedrock"],
+  "gemini-3.8-live": ["google"],
+  "gemini-3.8-live-extended-thinking": ["google"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

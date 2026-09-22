@@ -11375,7 +11375,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -12604,6 +12604,306 @@
       "vertex"
     ]
   },
+  "grok-voice-transcribe-1.0": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Voice Transcribe 1.0",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-voice-transcribe-2.0": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok Voice Transcribe 2.0",
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-multi-agent-experimental-beta-0304": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Multi-Agent Experimental Beta (0304)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-0304-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta Reasoning (0304)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-0304-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta (Non-Reasoning)",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-0304": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta (0304)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-0309": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta (0309)",
+    "reasoning": true,
+    "parent": "grok-4.20-0309",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-0309": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 (0309)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-multi-agent-experimental-beta-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Multi-Agent Experimental Beta (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-multi-agent-beta-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Multi-Agent Beta (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta Reasoning (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-non-reasoning-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta Non-Reasoning (Latest)",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-experimental-beta-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Experimental Beta (Latest)",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta Reasoning",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta Non-Reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-latest-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta Reasoning",
+    "reasoning": true,
+    "parent": "grok-4.20-beta-reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-latest-non-reasoning": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta Non-Reasoning",
+    "parent": "grok-4.20-beta-non-reasoning",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta",
+    "reasoning": true,
+    "parent": "grok-4.20-beta",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-beta": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Beta",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-reasoning-gv2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Reasoning GV2",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
+  "grok-4.20-non-reasoning-gv2": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 2.5,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Grok 4.20 Non-Reasoning GV2",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 1000000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "grok-imagine-video": {
     "format": "openai",
     "flavor": "chat",
@@ -13310,13 +13610,13 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Grok Build (Latest)",
     "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 256000,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
     "available_providers": [
       "xAI"
     ]
@@ -13382,7 +13682,8 @@
     "max_input_tokens": 500000,
     "max_output_tokens": 500000,
     "available_providers": [
-      "xAI"
+      "xAI",
+      "openrouter"
     ]
   },
   "databricks-deepseek-v4-1-flash": {
@@ -14228,12 +14529,57 @@
       "typesafe"
     ]
   },
+  "nex-agi/nex-n2.5-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.25,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "displayName": "Nex AGI: Nex-N2.5-Pro",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 235929,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "nex-agi/nex-n2.5-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.025,
+    "output_cost_per_mil_tokens": 0.1,
+    "input_cache_read_cost_per_mil_tokens": 0.0025,
+    "displayName": "Nex AGI: Nex-N2.5-Mini",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 235929,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "prism-ml/ternary-bonsai-2-27b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.075,
+    "output_cost_per_mil_tokens": 0.5,
+    "displayName": "PrismML: Ternary Bonsai 2 27B",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "qwen/qwen3.6-27b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 3,
-    "displayName": "Qwen 3.6 27B",
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 2,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "displayName": "Qwen: Qwen3.6 27B",
     "experimental": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
@@ -14875,7 +15221,7 @@
   "nvidia/nemotron-3.5-lightning": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.08,
+    "input_cost_per_mil_tokens": 0.07,
     "output_cost_per_mil_tokens": 0.2,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "NVIDIA: Nemotron 3.5 Lightning",
@@ -14889,8 +15235,8 @@
   "nvidia/nemotron-3-nano-30b-a3b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.24,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "NVIDIA: Nemotron 3 Nano 30B A3B",
     "reasoning": true,
@@ -14955,6 +15301,51 @@
       "openrouter"
     ]
   },
+  "xiaomi/mimo-v2.6-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.435,
+    "output_cost_per_mil_tokens": 0.87,
+    "input_cache_read_cost_per_mil_tokens": 0.0036,
+    "displayName": "Xiaomi: MiMo-V2.6-Pro",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "xiaomi/mimo-v2.6-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.28,
+    "input_cache_read_cost_per_mil_tokens": 0.0028,
+    "displayName": "Xiaomi: MiMo-V2.6-Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "xiaomi/mimo-v2.6-pro-ultraspeed": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4.35,
+    "output_cost_per_mil_tokens": 8.7,
+    "input_cache_read_cost_per_mil_tokens": 0.036,
+    "displayName": "Xiaomi: MiMo-V2.6-Pro-UltraSpeed",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "xiaomi/mimo-v2.5": {
     "format": "openai",
     "flavor": "chat",
@@ -15003,9 +15394,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2156,
-    "output_cost_per_mil_tokens": 0.6468,
-    "input_cache_read_cost_per_mil_tokens": 0.00686,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 0.66,
+    "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek: DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15032,9 +15423,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.12,
-    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "input_cost_per_mil_tokens": 0.04,
+    "output_cost_per_mil_tokens": 0.64,
+    "input_cache_read_cost_per_mil_tokens": 0.016,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -15170,9 +15561,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.6,
-    "output_cost_per_mil_tokens": 3.2,
-    "input_cache_read_cost_per_mil_tokens": 0.135,
+    "input_cost_per_mil_tokens": 0.95526,
+    "output_cost_per_mil_tokens": 1.91052,
+    "input_cache_read_cost_per_mil_tokens": 0.079605,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15538,13 +15929,28 @@
       "openrouter"
     ]
   },
+  "z-ai/glm-5.3-flashx": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.37,
+    "output_cost_per_mil_tokens": 1.25,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "Z.ai: GLM 5.3 FlashX",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "z-ai/glm-5.3-flash": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.018,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Z.ai: GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1310720,
@@ -15556,9 +15962,9 @@
   "z-ai/glm-5.3": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.4,
-    "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.26,
+    "input_cost_per_mil_tokens": 0.84,
+    "output_cost_per_mil_tokens": 2.64,
+    "input_cache_read_cost_per_mil_tokens": 0.156,
     "displayName": "Z.ai: GLM 5.3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15727,9 +16133,9 @@
   "z-ai/glm-5.2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.5625,
-    "output_cost_per_mil_tokens": 1.8,
-    "input_cache_read_cost_per_mil_tokens": 0.105,
+    "input_cost_per_mil_tokens": 0.6496,
+    "output_cost_per_mil_tokens": 2.0416,
+    "input_cache_read_cost_per_mil_tokens": 0.12064,
     "displayName": "Z.ai: GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -16186,7 +16592,7 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Meta: Muse Glimmer 30B",
     "reasoning": true,
@@ -16296,7 +16702,7 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.7062,
-    "output_cost_per_mil_tokens": 3.21,
+    "output_cost_per_mil_tokens": 3.3,
     "input_cache_read_cost_per_mil_tokens": 0.18,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
     "reasoning": true,
@@ -16310,9 +16716,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2.1,
-    "output_cost_per_mil_tokens": 10.95,
-    "input_cache_read_cost_per_mil_tokens": 0.23,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "MoonshotAI: Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -17121,8 +17527,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1625,
-    "output_cost_per_mil_tokens": 1.3,
+    "input_cost_per_mil_tokens": 0.3125,
+    "output_cost_per_mil_tokens": 1.25,
     "input_cache_read_cost_per_mil_tokens": 0.15625,
     "displayName": "Qwen: Qwen3.5 35B A3B",
     "reasoning": true,
@@ -17177,8 +17583,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.1,
-    "output_cost_per_mil_tokens": 0.9,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 1,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Qwen: Qwen3.6 35B A3B",
     "reasoning": true,

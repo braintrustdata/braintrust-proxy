@@ -1489,6 +1489,14 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "global.moonshotai.kimi-k3": ["bedrock"],
   "gemini-3.8-live": ["google"],
   "gemini-3.8-live-extended-thinking": ["google"],
+  "anthropic.claude-opus-5-5": ["bedrock"],
+  "global.anthropic.claude-opus-5-5": ["bedrock"],
+  "us.anthropic.claude-opus-5-5": ["bedrock"],
+  "eu.anthropic.claude-opus-5-5": ["bedrock"],
+  "au.anthropic.claude-opus-5-5": ["bedrock"],
+  "jp.anthropic.claude-opus-5-5": ["bedrock"],
+  "databricks-gpt-6-sol": ["databricks"],
+  "databricks-gpt-6-luna": ["databricks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

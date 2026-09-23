@@ -267,7 +267,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-6-sol": {
@@ -284,7 +285,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-5.5": {
@@ -6403,8 +6405,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 65536,
+    "max_input_tokens": 128072,
+    "max_output_tokens": 128072,
     "available_providers": [
       "groq",
       "together",
@@ -10987,8 +10989,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.132,
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
+    "parent": "deepseek-ai/DeepSeek-V4-Pro",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 384000,
+    "max_output_tokens": 262144,
     "available_providers": [
       "together",
       "baseten"
@@ -11002,7 +11005,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.145,
     "displayName": "DeepSeek V4 Pro",
     "reasoning": true,
-    "max_input_tokens": 512000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "together",
       "baseten"
@@ -11168,7 +11172,8 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
     "displayName": "Kimi K2.7 Code",
-    "max_input_tokens": 262144,
+    "max_input_tokens": 262000,
+    "max_output_tokens": 262000,
     "available_providers": [
       "together",
       "baseten"
@@ -11469,6 +11474,7 @@
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 32768,
     "available_providers": [
       "baseten",
       "fireworks",
@@ -11481,9 +11487,10 @@
     "input_cost_per_mil_tokens": 0.13,
     "output_cost_per_mil_tokens": 0.26,
     "input_cache_read_cost_per_mil_tokens": 0.028,
-    "displayName": "DeepSeek V4 Flash 0731",
+    "displayName": "DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
     "available_providers": [
       "baseten",
       "together"
@@ -11551,8 +11558,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
-    "max_input_tokens": 512000,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten",
       "together"
@@ -11567,7 +11574,8 @@
     "displayName": "GLM 5.2 Fast",
     "reasoning": true,
     "parent": "zai-org/GLM-5.2",
-    "max_input_tokens": 524288,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten"
     ]
@@ -11603,6 +11611,9 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.2,
     "input_cache_read_cost_per_mil_tokens": 0.12,
+    "displayName": "GLM 4.7",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 200000,
     "available_providers": [
       "baseten"
     ]
@@ -11631,6 +11642,7 @@
     "displayName": "Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten",
       "together"
@@ -11643,6 +11655,8 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.6",
+    "max_input_tokens": 262000,
+    "max_output_tokens": 262000,
     "available_providers": [
       "baseten",
       "together"
@@ -11668,6 +11682,7 @@
     "displayName": "NVIDIA Nemotron 3 Ultra 550B",
     "reasoning": true,
     "max_input_tokens": 202800,
+    "max_output_tokens": 202800,
     "available_providers": [
       "baseten"
     ]
@@ -11682,6 +11697,7 @@
     "displayName": "Inkling Small",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 32768,
     "available_providers": [
       "baseten",
       "openrouter",
@@ -11698,6 +11714,7 @@
     "displayName": "Inkling",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 32768,
     "available_providers": [
       "baseten",
       "openrouter",
@@ -14647,6 +14664,289 @@
       "typesafe"
     ]
   },
+  "global.amazon.nova-2-lite-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Nova 2 Lite",
+    "parent": "amazon.nova-2-lite-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-opus-4-5-20251101-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "input_cache_write_cost_per_mil_tokens": 6.25,
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
+    "max_input_tokens": 200000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.anthropic.claude-sonnet-4-20250514-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude Sonnet 4",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-4-20250514-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 1.32,
+    "input_cache_read_cost_per_mil_tokens": 0.022,
+    "input_cache_write_cost_per_mil_tokens": 0.275,
+    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-luna",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4.4,
+    "output_cost_per_mil_tokens": 22,
+    "input_cache_read_cost_per_mil_tokens": 0.44,
+    "input_cache_write_cost_per_mil_tokens": 5.5,
+    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-sol",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-5.6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 13.2,
+    "input_cache_read_cost_per_mil_tokens": 0.22,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-terra",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-6-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 11,
+    "output_cost_per_mil_tokens": 55,
+    "input_cache_read_cost_per_mil_tokens": 1.1,
+    "input_cache_write_cost_per_mil_tokens": 13.75,
+    "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "parent": "openai.gpt-6-astra",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.amazon.nova-2-lite-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Nova 2 Lite",
+    "parent": "amazon.nova-2-lite-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.amazon.nova-premier-v1:0": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Nova Premier",
+    "reasoning": true,
+    "parent": "amazon.nova-premier-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 25000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-3-5-sonnet-20240620-v1:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 6,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "input_cache_write_cost_per_mil_tokens": 3.75,
+    "displayName": "Claude Sonnet 3.5",
+    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 6,
+    "output_cost_per_mil_tokens": 30,
+    "input_cache_read_cost_per_mil_tokens": 0.6,
+    "input_cache_write_cost_per_mil_tokens": 7.5,
+    "displayName": "Claude Sonnet 3.5 v2",
+    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 8192,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-fable-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Fable 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-fable-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.anthropic.claude-fable-5-1": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "displayName": "Claude Fable 5.1",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-fable-5-1",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.deepseek.v3.2": {
+    "format": "converse",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.62,
+    "output_cost_per_mil_tokens": 1.85,
+    "displayName": "DeepSeek V3.2",
+    "parent": "deepseek.v3.2",
+    "max_input_tokens": 164000,
+    "max_output_tokens": 8000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.22,
+    "output_cost_per_mil_tokens": 1.32,
+    "input_cache_read_cost_per_mil_tokens": 0.022,
+    "input_cache_write_cost_per_mil_tokens": 0.275,
+    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-luna",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4.4,
+    "output_cost_per_mil_tokens": 22,
+    "input_cache_read_cost_per_mil_tokens": 0.44,
+    "input_cache_write_cost_per_mil_tokens": 5.5,
+    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-sol",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-5.6-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 13.2,
+    "input_cache_read_cost_per_mil_tokens": 0.22,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
+    "reasoning": true,
+    "parent": "openai.gpt-5.6-terra",
+    "max_input_tokens": 272000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-6-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 11,
+    "output_cost_per_mil_tokens": 55,
+    "input_cache_read_cost_per_mil_tokens": 1.1,
+    "input_cache_write_cost_per_mil_tokens": 13.75,
+    "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "parent": "openai.gpt-6-astra",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "nex-agi/nex-n2.5-pro": {
     "format": "openai",
     "flavor": "chat",
@@ -14691,12 +14991,27 @@
       "openrouter"
     ]
   },
+  "qwen/qwen3.8-omni-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.47,
+    "input_cache_read_cost_per_mil_tokens": 0.016,
+    "displayName": "Qwen: Qwen3.8 Omni Flash",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "qwen/qwen3.6-27b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 2,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cost_per_mil_tokens": 0.32,
+    "output_cost_per_mil_tokens": 2.7,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Qwen: Qwen3.6 27B",
     "experimental": true,
     "max_input_tokens": 131072,
@@ -14839,6 +15154,21 @@
     "displayName": "Microsoft: Phi 4",
     "max_input_tokens": 16384,
     "max_output_tokens": 16384,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "cohere/command-a-plus": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Cohere: Command A+",
+    "reasoning": true,
+    "max_input_tokens": 192000,
+    "max_output_tokens": 64000,
     "available_providers": [
       "openrouter"
     ]
@@ -15211,6 +15541,20 @@
       "openrouter"
     ]
   },
+  "upstage/solar-mini4": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.2,
+    "input_cache_read_cost_per_mil_tokens": 0.005,
+    "displayName": "Upstage: Solar Mini 4",
+    "reasoning": true,
+    "max_input_tokens": 524288,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "upstage/solar-pro4": {
     "format": "openai",
     "flavor": "chat",
@@ -15339,7 +15683,7 @@
   "nvidia/nemotron-3.5-lightning": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.07,
+    "input_cost_per_mil_tokens": 0.08,
     "output_cost_per_mil_tokens": 0.2,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "NVIDIA: Nemotron 3.5 Lightning",
@@ -15526,9 +15870,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.66,
-    "output_cost_per_mil_tokens": 1.98,
-    "input_cache_read_cost_per_mil_tokens": 0.022,
+    "input_cost_per_mil_tokens": 0.498696,
+    "output_cost_per_mil_tokens": 1.496088,
+    "input_cache_read_cost_per_mil_tokens": 0.0166232,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -16468,6 +16812,36 @@
       "openrouter"
     ]
   },
+  "openai/gpt-6-sol-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "OpenAI: GPT-6 Sol Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "openai/gpt-6-luna-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "displayName": "OpenAI: GPT-6 Luna Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "openai/gpt-6-astra-pro": {
     "format": "openai",
     "flavor": "chat",
@@ -16952,6 +17326,21 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "anthropic/claude-opus-5.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Anthropic: Claude Opus 5.5",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -17885,289 +18274,6 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "openrouter"
-    ]
-  },
-  "global.amazon.nova-2-lite-v1:0": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Nova 2 Lite",
-    "parent": "amazon.nova-2-lite-v1:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-opus-4-5-20251101-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "input_cache_write_cost_per_mil_tokens": 6.25,
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-opus-4-5-20251101-v1:0",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.anthropic.claude-sonnet-4-20250514-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "Claude Sonnet 4",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-sonnet-4-20250514-v1:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.openai.gpt-5.6-luna": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 1.32,
-    "input_cache_read_cost_per_mil_tokens": 0.022,
-    "input_cache_write_cost_per_mil_tokens": 0.275,
-    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-luna",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.openai.gpt-5.6-sol": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4.4,
-    "output_cost_per_mil_tokens": 22,
-    "input_cache_read_cost_per_mil_tokens": 0.44,
-    "input_cache_write_cost_per_mil_tokens": 5.5,
-    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-sol",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.openai.gpt-5.6-terra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2.2,
-    "output_cost_per_mil_tokens": 13.2,
-    "input_cache_read_cost_per_mil_tokens": 0.22,
-    "input_cache_write_cost_per_mil_tokens": 2.75,
-    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-terra",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "global.openai.gpt-6-astra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 11,
-    "output_cost_per_mil_tokens": 55,
-    "input_cache_read_cost_per_mil_tokens": 1.1,
-    "input_cache_write_cost_per_mil_tokens": 13.75,
-    "displayName": "GPT-6 Astra",
-    "reasoning": true,
-    "parent": "openai.gpt-6-astra",
-    "max_input_tokens": 1050000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.amazon.nova-2-lite-v1:0": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Nova 2 Lite",
-    "parent": "amazon.nova-2-lite-v1:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.amazon.nova-premier-v1:0": {
-    "format": "converse",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Nova Premier",
-    "reasoning": true,
-    "parent": "amazon.nova-premier-v1:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 25000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.anthropic.claude-3-5-sonnet-20240620-v1:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 6,
-    "output_cost_per_mil_tokens": 30,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "input_cache_write_cost_per_mil_tokens": 3.75,
-    "displayName": "Claude Sonnet 3.5",
-    "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.anthropic.claude-3-5-sonnet-20241022-v2:0": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 6,
-    "output_cost_per_mil_tokens": 30,
-    "input_cache_read_cost_per_mil_tokens": 0.6,
-    "input_cache_write_cost_per_mil_tokens": 7.5,
-    "displayName": "Claude Sonnet 3.5 v2",
-    "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.anthropic.claude-fable-5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Fable 5",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-fable-5",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.anthropic.claude-fable-5-1": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 0.25,
-    "input_cache_write_cost_per_mil_tokens": 12.5,
-    "displayName": "Claude Fable 5.1",
-    "reasoning": true,
-    "reasoning_budget": true,
-    "parent": "anthropic.claude-fable-5-1",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.deepseek.v3.2": {
-    "format": "converse",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.62,
-    "output_cost_per_mil_tokens": 1.85,
-    "displayName": "DeepSeek V3.2",
-    "parent": "deepseek.v3.2",
-    "max_input_tokens": 164000,
-    "max_output_tokens": 8000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.openai.gpt-5.6-luna": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.22,
-    "output_cost_per_mil_tokens": 1.32,
-    "input_cache_read_cost_per_mil_tokens": 0.022,
-    "input_cache_write_cost_per_mil_tokens": 0.275,
-    "displayName": "OpenAI GPT-5.6 Luna (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-luna",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.openai.gpt-5.6-sol": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4.4,
-    "output_cost_per_mil_tokens": 22,
-    "input_cache_read_cost_per_mil_tokens": 0.44,
-    "input_cache_write_cost_per_mil_tokens": 5.5,
-    "displayName": "OpenAI GPT-5.6 Sol (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-sol",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.openai.gpt-5.6-terra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2.2,
-    "output_cost_per_mil_tokens": 13.2,
-    "input_cache_read_cost_per_mil_tokens": 0.22,
-    "input_cache_write_cost_per_mil_tokens": 2.75,
-    "displayName": "OpenAI GPT-5.6 Terra (Bedrock)",
-    "reasoning": true,
-    "parent": "openai.gpt-5.6-terra",
-    "max_input_tokens": 272000,
-    "available_providers": [
-      "bedrock"
-    ]
-  },
-  "us.openai.gpt-6-astra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 11,
-    "output_cost_per_mil_tokens": 55,
-    "input_cache_read_cost_per_mil_tokens": 1.1,
-    "input_cache_write_cost_per_mil_tokens": 13.75,
-    "displayName": "GPT-6 Astra",
-    "reasoning": true,
-    "parent": "openai.gpt-6-astra",
-    "max_input_tokens": 1050000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "bedrock"
     ]
   },
   "wizardlm-2-8x22b": {

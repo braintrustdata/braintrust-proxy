@@ -507,7 +507,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "arcee-ai/trinity-large-thinking": ["openrouter"],
   "google/lyria-3-pro-preview": ["openrouter"],
   "google/lyria-3-clip-preview": ["openrouter"],
-  "kwaipilot/kat-coder-pro-v2": ["openrouter"],
   "rekaai/reka-edge": ["openrouter"],
   "minimax/minimax-m2.7": ["openrouter"],
   "z-ai/glm-5-turbo": ["openrouter"],

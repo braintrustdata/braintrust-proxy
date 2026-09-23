@@ -16633,19 +16633,6 @@
       "openrouter"
     ]
   },
-  "kwaipilot/kat-coder-pro-v2": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.06,
-    "displayName": "Kwaipilot: KAT-Coder-Pro V2",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 80000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "kwaipilot/kat-coder-pro-v2.5": {
     "format": "openai",
     "flavor": "chat",

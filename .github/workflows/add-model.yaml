@@ -231,6 +231,25 @@ jobs:
             4. Add a complete, schema-valid entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
 
+            # Canonical provider verification
+
+            Treat the following pages as authoritative provider sources. For the requested provider, inspect the applicable canonical page directly before concluding that the model or its pricing cannot be verified, even if searches or other official pages return nothing:
+
+            - **OpenAI**: Always inspect `https://developers.openai.com/api/docs/models`, follow the relevant model page or catalog data, and check the official pricing linked from the model documentation.
+            - **Anthropic**: Always inspect `https://platform.claude.com/docs/en/about-claude/pricing` and follow the relevant official model documentation linked from that page.
+            - **Google Gemini**: Always inspect `https://ai.google.dev/gemini-api/docs/pricing`, follow the relevant official model documentation linked from that page, and verify that the pricing applies to the requested Gemini API model and usage tier.
+
+            Search engines are discovery aids only. Do not conclude that a model is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify exact model availability and pricing from the applicable canonical provider page and its linked official documentation. If the exact model, requested provider inference surface, or applicable pricing still cannot be verified after those direct checks, do not guess and leave the catalog unchanged.
+
+            # Final report
+
+            List every official URL checked and, for each requested model, state:
+
+            - whether the exact model slug appeared;
+            - where pricing was found;
+            - whether the pricing matches the requested provider and inference surface; and
+            - if no change was made, the specific requirement that remains unresolved.
+
             Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
 
       - name: Check whether the target changed the catalog

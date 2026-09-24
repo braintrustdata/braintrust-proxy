@@ -11,6 +11,9 @@ on:
         description: "Exact provider model slug"
         required: true
         type: string
+  repository_dispatch:
+    types:
+      - add-model
 
 concurrency:
   group: add-model
@@ -48,8 +51,8 @@ jobs:
         id: target
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          INPUT_PROVIDER: ${{ inputs.provider }}
-          INPUT_MODEL_SLUG: ${{ inputs.model_slug }}
+          INPUT_PROVIDER: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.provider || inputs.provider }}
+          INPUT_MODEL_SLUG: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.model_slug || inputs.model_slug }}
         with:
           script: |
             const providers = new Set([

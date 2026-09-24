@@ -678,7 +678,7 @@
     "reasoning": true,
     "deprecation_date": "2026-07-23",
     "parent": "gpt-5.1",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -693,10 +693,11 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-5.1 Codex Max",
     "reasoning": true,
     "deprecation_date": "2026-07-23",
-    "parent": "gpt-5.1",
-    "max_input_tokens": 272000,
+    "parent": "gpt-5.1-codex",
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -714,8 +715,8 @@
     "displayName": "GPT-5.1 Codex Mini",
     "reasoning": true,
     "deprecation_date": "2026-07-23",
-    "parent": "gpt-5.1",
-    "max_input_tokens": 272000,
+    "parent": "gpt-5.1-codex",
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -2652,6 +2653,8 @@
   "openai/sora-2-pro-high-res": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Sora 2 Pro High Res",
+    "deprecation_date": "2026-09-24",
     "available_providers": [
       "openai",
       "azure"
@@ -2680,6 +2683,8 @@
   "sora-2-pro-high-res": {
     "format": "openai",
     "flavor": "chat",
+    "displayName": "Sora 2 Pro High Res",
+    "deprecation_date": "2026-09-24",
     "available_providers": [
       "openai",
       "azure"
@@ -3018,6 +3023,20 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/ember-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Ember-1",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4p1-flash": {
     "format": "openai",
     "flavor": "chat",
@@ -3042,6 +3061,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
     "available_providers": [
@@ -3124,6 +3144,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Muse Glimmer 30B",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -3138,6 +3159,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.044,
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
@@ -3179,6 +3201,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek V4 Flash (0731)",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-flash",
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
@@ -3195,7 +3218,7 @@
     "displayName": "DeepSeek V4 Pro",
     "deprecation_date": "2026-08-27",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 384000,
+    "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
     ]
@@ -4297,6 +4320,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -4397,6 +4421,7 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
     "displayName": "Kimi K2.7 Code",
+    "deprecation_date": "2026-09-25",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -4411,6 +4436,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.6",
     "reasoning": true,
+    "deprecation_date": "2026-09-25",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -11612,6 +11638,7 @@
     "displayName": "GLM 5.3 Fast",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten"
     ]
@@ -15068,6 +15095,33 @@
       "bedrock"
     ]
   },
+  "stealth/space-bunny-alpha": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Space Bunny Alpha",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 524288,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "fireworks/ember-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Fireworks: Ember-1",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 943718,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "nex-agi/nex-n2.5-pro": {
     "format": "openai",
     "flavor": "chat",
@@ -15108,6 +15162,21 @@
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "qwen/qwen3.8-max-prime": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Qwen: Qwen3.8 Max Prime",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -15962,9 +16031,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.6,
-    "input_cache_read_cost_per_mil_tokens": 0.003,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.42,
+    "input_cache_read_cost_per_mil_tokens": 0.0042,
     "displayName": "DeepSeek: DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -15991,9 +16060,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.498696,
-    "output_cost_per_mil_tokens": 1.496088,
-    "input_cache_read_cost_per_mil_tokens": 0.0166232,
+    "input_cost_per_mil_tokens": 0.462,
+    "output_cost_per_mil_tokens": 1.386,
+    "input_cache_read_cost_per_mil_tokens": 0.0154,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -16006,8 +16075,8 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.04,
-    "output_cost_per_mil_tokens": 0.64,
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0.32,
     "input_cache_read_cost_per_mil_tokens": 0.016,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
@@ -16144,9 +16213,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.95526,
-    "output_cost_per_mil_tokens": 1.91052,
-    "input_cache_read_cost_per_mil_tokens": 0.079605,
+    "input_cost_per_mil_tokens": 0.9396,
+    "output_cost_per_mil_tokens": 1.8792,
+    "input_cache_read_cost_per_mil_tokens": 0.0783,
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -16432,8 +16501,8 @@
   "minimax/minimax-m2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.255,
-    "output_cost_per_mil_tokens": 1.02,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
     "displayName": "MiniMax: MiniMax M2",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -16512,13 +16581,27 @@
       "openrouter"
     ]
   },
+  "z-ai/glm-5.3-prime": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2.8,
+    "output_cost_per_mil_tokens": 8.8,
+    "input_cache_read_cost_per_mil_tokens": 0.56,
+    "displayName": "Z.ai: GLM 5.3 Prime",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "z-ai/glm-5.3-flashx": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.37,
     "output_cost_per_mil_tokens": 1.25,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cache_read_cost_per_mil_tokens": 0.09,
     "displayName": "Z.ai: GLM 5.3 FlashX",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -16875,6 +16958,34 @@
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "aion-labs/aion-3.5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.75,
+    "displayName": "AionLabs: Aion 3.5",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "aion-labs/aion-3.5-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 1.4,
+    "input_cache_read_cost_per_mil_tokens": 0.18,
+    "displayName": "AionLabs: Aion 3.5 Mini",
+    "reasoning": true,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -17301,7 +17412,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.7062,
+    "input_cost_per_mil_tokens": 0.6562,
     "output_cost_per_mil_tokens": 3.3,
     "input_cache_read_cost_per_mil_tokens": 0.18,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
@@ -17820,8 +17931,8 @@
   "qwen/qwen3-30b-a3b-instruct-2507": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.04815,
-    "output_cost_per_mil_tokens": 0.19305,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.3,
     "displayName": "Qwen: Qwen3 30B A3B Instruct (2507)",
     "max_input_tokens": 262144,
     "max_output_tokens": 32000,
@@ -17869,7 +17980,7 @@
   "qwen/qwen3-next-80b-a3b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.09,
+    "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 1.1,
     "input_cache_read_cost_per_mil_tokens": 0.07,
     "displayName": "Qwen: Qwen3 Next 80B A3B Instruct",

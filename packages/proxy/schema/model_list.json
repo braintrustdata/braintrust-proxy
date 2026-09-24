@@ -3018,6 +3018,20 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/ember-1": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
+    "displayName": "Ember-1",
+    "reasoning": true,
+    "max_input_tokens": 1040000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4p1-flash": {
     "format": "openai",
     "flavor": "chat",

@@ -206,6 +206,7 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
+          allowed_bots: braintrust-bot
           display_report: "true"
           claude_args: |
             --model claude-sonnet-5

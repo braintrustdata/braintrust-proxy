@@ -12016,8 +12016,7 @@
     "deprecation_date": "2026-07-31",
     "max_input_tokens": 262144,
     "available_providers": [
-      "mistral",
-      "openrouter"
+      "mistral"
     ]
   },
   "devstral-latest": {
@@ -15066,36 +15065,6 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ]
-  },
-  "nex-agi/nex-n2.5-pro": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.25,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
-    "displayName": "Nex AGI: Nex-N2.5-Pro",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 235929,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "nex-agi/nex-n2.5-mini": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.025,
-    "output_cost_per_mil_tokens": 0.1,
-    "input_cache_read_cost_per_mil_tokens": 0.0025,
-    "displayName": "Nex AGI: Nex-N2.5-Mini",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 235929,
-    "available_providers": [
-      "openrouter"
     ]
   },
   "prism-ml/ternary-bonsai-2-27b": {

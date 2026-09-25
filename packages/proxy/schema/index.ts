@@ -433,8 +433,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "xiaomi/mimo-v2.6-pro": ["openrouter"],
   "prism-ml/ternary-bonsai-2-27b": ["openrouter"],
   "z-ai/glm-5.3-flashx": ["openrouter"],
-  "nex-agi/nex-n2.5-mini": ["openrouter"],
-  "nex-agi/nex-n2.5-pro": ["openrouter"],
   "unbiased/pareto": ["openrouter"],
   "inference-net/schematron-v2-turbo": ["openrouter"],
   "inference-net/schematron-v2-small": ["openrouter"],

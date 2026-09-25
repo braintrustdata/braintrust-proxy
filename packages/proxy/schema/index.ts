@@ -1000,7 +1000,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/minimax-m2p7": ["fireworks"],
   "grok-4.3": ["xAI", "openrouter"],
   "grok-4.3-latest": ["xAI"],
-  "mistral-large-2512": ["mistral"],
+  "mistral-large-2512": ["mistral", "openrouter"],
   "mistral-small-2603": ["mistral", "openrouter"],
   "codestral-2508": ["mistral", "openrouter"],
   "devstral-2512": ["mistral", "openrouter"],

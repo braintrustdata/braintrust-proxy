@@ -657,7 +657,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta-llama/llama-3.1-8b-instruct": ["openrouter"],
   "mistralai/mistral-nemo": ["openrouter"],
   "mistralai/mixtral-8x22b-instruct": ["openrouter"],
-  "anthropic/claude-3-haiku": ["openrouter"],
   "mistralai/mistral-large": ["openrouter"],
   "openrouter/auto": ["openrouter"],
   "undi95/remm-slerp-l2-13b": ["openrouter"],

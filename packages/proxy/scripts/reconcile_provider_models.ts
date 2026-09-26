@@ -60,6 +60,11 @@ export const NEVER_DEPRECATE_MODELS: ReadonlySet<string> = new Set<string>([
   "gpt-5.6-cyber",
   "daybreak-blue-latest",
   "daybreak-red-latest",
+  "gpt-daybreak-blue-latest",
+  "gpt-daybreak-red-latest",
+  // Claude Mythos 5.1 — gated preview whose CI probe 404s despite being live for
+  // entitled accounts. Keep until GA or a confirmed removal.
+  "claude-mythos-5-1",
 ]);
 
 // Models that cannot be validated with a chat/completions probe (image, audio,

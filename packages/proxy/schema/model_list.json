@@ -17550,20 +17550,6 @@
       "openrouter"
     ]
   },
-  "anthropic/claude-3-haiku": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.25,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
-    "displayName": "Anthropic: Claude 3 Haiku",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 4096,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "anthropic/claude-sonnet-4": {
     "format": "openai",
     "flavor": "chat",

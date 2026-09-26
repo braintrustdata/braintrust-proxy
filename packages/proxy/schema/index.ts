@@ -416,6 +416,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mixtral-8x7b": ["lepton"],
   "wizardlm-2-7b": ["lepton"],
   "wizardlm-2-8x22b": ["lepton", "openrouter"],
+  "typesafe/jev-router": ["openrouter"],
+  "perceptron/perceptron-mk1.5": ["openrouter"],
   "fireworks/ember-1": ["openrouter"],
   "z-ai/glm-5.3-prime": ["openrouter"],
   "qwen/qwen3.8-max-prime": ["openrouter"],

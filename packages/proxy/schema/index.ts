@@ -1507,6 +1507,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "jp.anthropic.claude-opus-5-5": ["bedrock"],
   "databricks-gpt-6-sol": ["databricks"],
   "databricks-gpt-6-luna": ["databricks"],
+  "eu.anthropic.claude-sonnet-5": ["bedrock"],
+  "au.anthropic.claude-sonnet-5": ["bedrock"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

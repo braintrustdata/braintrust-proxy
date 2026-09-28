@@ -7324,6 +7324,46 @@
       "vertex"
     ]
   },
+  "publishers/anthropic/models/claude-opus-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "displayName": "Claude Opus 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
+  "publishers/anthropic/models/claude-sonnet-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "displayName": "Claude Sonnet 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/anthropic/models/claude-fable-5-1": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8409,6 +8449,41 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "global.anthropic.claude-sonnet-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "displayName": "Global Claude Sonnet 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "anthropic.claude-sonnet-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "displayName": "Claude Sonnet 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "au.anthropic.claude-sonnet-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8896,6 +8971,7 @@
       "anthropic.claude-opus-5-5",
       "eu.anthropic.claude-opus-5-5",
       "global.anthropic.claude-opus-5-5",
+      "publishers/anthropic/models/claude-opus-5-5",
       "us.anthropic.claude-opus-5-5"
     ],
     "max_input_tokens": 1000000,
@@ -8946,6 +9022,11 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2027-09-28",
+    "fallback_models": [
+      "anthropic.claude-sonnet-5-5",
+      "global.anthropic.claude-sonnet-5-5",
+      "publishers/anthropic/models/claude-sonnet-5-5"
+    ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [

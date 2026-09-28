@@ -3,6 +3,7 @@
   "Qwen3-Coder-480B-A35B-Instruct",
   "ai21/jamba-large-1.7",
   "allenai/olmo-3-32b-think",
+  "anthropic/claude-3-haiku",
   "anthropic/claude-opus-4",
   "anthropic/claude-opus-4.7-fast",
   "anthropic/claude-opus-4.8-fast",

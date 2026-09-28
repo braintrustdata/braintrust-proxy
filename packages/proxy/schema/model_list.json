@@ -11163,8 +11163,7 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 262144,
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "deepseek-ai/DeepSeek-V3": {
@@ -11330,8 +11329,7 @@
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "moonshotai/Kimi-K2-Instruct": {
@@ -11814,7 +11812,6 @@
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
     "available_providers": [
-      "baseten",
       "together"
     ]
   },
@@ -11855,7 +11852,6 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "baseten",
       "openrouter",
       "together"
     ]
@@ -11872,7 +11868,6 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "baseten",
       "openrouter",
       "together"
     ]
@@ -17605,20 +17600,6 @@
     "reasoning": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "anthropic/claude-3-haiku": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.25,
-    "output_cost_per_mil_tokens": 1.25,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
-    "displayName": "Anthropic: Claude 3 Haiku",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 4096,
     "available_providers": [
       "openrouter"
     ]

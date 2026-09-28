@@ -26,10 +26,11 @@ export default [
     dts: true,
   },
   {
-    entry: ["utils/index.ts"],
+    entry: ["utils/*.ts", "!utils/*.test.ts", "!utils/tests.ts"],
     format: ["cjs", "esm"],
     outDir: "utils/dist",
     dts: true,
+    splitting: true,
   },
   {
     entry: ["types/index.ts"],

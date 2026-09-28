@@ -8467,6 +8467,20 @@
       "bedrock"
     ]
   },
+  "us.anthropic.claude-sonnet-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "US Claude Sonnet 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "anthropic.claude-sonnet-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -9025,7 +9039,8 @@
     "fallback_models": [
       "anthropic.claude-sonnet-5-5",
       "global.anthropic.claude-sonnet-5-5",
-      "publishers/anthropic/models/claude-sonnet-5-5"
+      "publishers/anthropic/models/claude-sonnet-5-5",
+      "us.anthropic.claude-sonnet-5-5"
     ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,

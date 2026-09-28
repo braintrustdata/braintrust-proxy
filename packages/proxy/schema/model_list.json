@@ -8409,6 +8409,34 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "au.anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "AU Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "eu.anthropic.claude-sonnet-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "EU Claude Sonnet 5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "parent": "anthropic.claude-sonnet-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "jp.anthropic.claude-opus-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8920,6 +8948,7 @@
     "deprecation_date": "2027-06-30",
     "fallback_models": [
       "anthropic.claude-sonnet-5",
+      "eu.anthropic.claude-sonnet-5",
       "global.anthropic.claude-sonnet-5",
       "publishers/anthropic/models/claude-sonnet-5",
       "us.anthropic.claude-sonnet-5"

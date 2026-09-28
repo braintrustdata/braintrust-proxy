@@ -232,6 +232,7 @@ export const APISecretSchema = z.union([
         "cerebras",
         "xAI",
         "openrouter",
+        "typesafe",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),

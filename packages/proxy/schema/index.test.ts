@@ -319,6 +319,13 @@ describe("getDirectModelEndpointTypes", () => {
 });
 
 describe("APISecretSchema compatibility", () => {
+  it("accepts Typesafe provider secrets", () => {
+    expect(APISecretSchema.parse({ type: "typesafe", secret: null })).toEqual({
+      type: "typesafe",
+      secret: null,
+    });
+  });
+
   it("accepts null secrets from the control plane", () => {
     const parsed = APISecretSchema.parse({
       secret: null,

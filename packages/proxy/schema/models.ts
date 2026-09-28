@@ -4,7 +4,14 @@ import { _urljoin } from "../src/util";
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
 
-export const ModelFlavors = ["chat", "completion", "embedding"] as const;
+export const ModelFlavors = [
+  "chat",
+  "completion",
+  "embedding",
+  "evaluation",
+  "realtime",
+  "live",
+] as const;
 export type ModelFlavor = (typeof ModelFlavors)[number];
 
 export const ModelFormats = [
@@ -14,6 +21,7 @@ export const ModelFormats = [
   "window",
   "js",
   "converse",
+  "typesafe",
 ] as const;
 export type ModelFormat = (typeof ModelFormats)[number];
 
@@ -39,6 +47,7 @@ export const ModelEndpointType = [
   "ollama",
   "replicate",
   "cohere",
+  "typesafe",
   "openrouter",
   "js",
 ] as const;

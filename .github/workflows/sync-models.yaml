@@ -118,6 +118,19 @@ jobs:
 
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-cohere --write
 
+      - name: Sync Typesafe models and documented pricing
+        env:
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${TYPESAFE_API_KEY:-}" ]; then
+            echo "TYPESAFE_API_KEY not set; skipping Typesafe model sync."
+            exit 0
+          fi
+
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-typesafe
+
       - name: Sync OpenRouter alternates from /api/v1/models
         run: |
           set -euo pipefail
@@ -243,7 +256,7 @@ jobs:
 
       - name: Validate model schema
         if: ${{ steps.changes.outputs.changed == 'true' }}
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/sync_typesafe.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
 
       - name: Create PR
         id: pr

@@ -20,6 +20,20 @@ it("parse model list", () => {
   }
 });
 
+it.each(["jev-1.13.0", "jev-latest", "jev-preview"] as const)(
+  "exposes Typesafe evaluation pricing for %s",
+  (model) => {
+    expect(raw_models[model]).toMatchObject({
+      format: "typesafe",
+      flavor: "evaluation",
+      available_providers: ["typesafe"],
+      input_cost_per_mil_tokens: 0.042,
+      output_cost_per_mil_tokens: 0,
+    });
+    expect(getModelEndpointTypes(model)).toEqual(["typesafe"]);
+  },
+);
+
 it("keeps equivalent model references within the catalog", () => {
   const models = z.record(ModelSchema).parse(raw_models);
   for (const [key, value] of Object.entries(models)) {
@@ -145,4 +159,15 @@ it("Ignores malformed deprecation dates", () => {
     },
   });
   expect(result["testModel"].deprecated).toBe(undefined);
+});
+
+it("resolves voice model providers and preserves voice flavors", () => {
+  for (const [model, flavor] of [
+    ["gpt-realtime-2.1", "realtime"],
+    ["gpt-live-1", "live"],
+  ]) {
+    const models = z.record(ModelSchema).parse(raw_models);
+    expect(models[model].flavor).toEqual(flavor);
+    expect(getModelEndpointTypes(model)).toEqual(["openai"]);
+  }
 });

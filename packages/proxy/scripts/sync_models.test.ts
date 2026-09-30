@@ -283,6 +283,17 @@ export const AvailableEndpointTypes = {
     expect(guarded).toEqual(["together"]);
   });
 
+  it.each([
+    "deepseek-ai/DeepSeek-V4-Pro",
+    "moonshotai/Kimi-K2.6",
+    "moonshotai/Kimi-K2.7-Code",
+    "thinkingmachines/inkling",
+    "thinkingmachines/inkling-small",
+  ])("suppresses only Baseten sync for deprecated model %s", (modelName) => {
+    expect(isBasetenDeprecated(modelName)).toBe(true);
+    expect(isModelExcludedFromSync(modelName)).toBe(false);
+  });
+
   describe("providersForExactModelName", () => {
     it("keeps openrouter ordered last behind native providers", () => {
       expect(

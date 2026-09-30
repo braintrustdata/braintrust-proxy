@@ -277,14 +277,20 @@ export function isPerplexityGatewayModel(
   return list.length > 0 && list.every((provider) => provider === "perplexity");
 }
 
-// Models Baseten still lists in /v1/models but has DEPRECATED for invocation
-// (calls return HTTP 410 "the model version ... has been deprecated"). They are
+// Models Baseten has deprecated for invocation but LiteLLM or /v1/models may
+// still list (calls return HTTP 410 "the model version ... has been deprecated").
+// They are
 // NOT excluded from the sync entirely because other providers (e.g. Together)
 // still serve them — we only stop the Baseten sync from re-unioning the dead
 // `baseten` provider back onto them each run.
 const BASETEN_DEPRECATED_MODELS: ReadonlySet<string> = new Set<string>([
   "zai-org/GLM-5",
   "moonshotai/Kimi-K2.5",
+  "deepseek-ai/DeepSeek-V4-Pro",
+  "moonshotai/Kimi-K2.6",
+  "moonshotai/Kimi-K2.7-Code",
+  "thinkingmachines/inkling",
+  "thinkingmachines/inkling-small",
 ]);
 
 // Returns true if Baseten has deprecated `modelName` for invocation (so the

@@ -1520,6 +1520,21 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.anthropic.claude-sonnet-5-5": ["bedrock"],
   "publishers/anthropic/models/claude-sonnet-5-5": ["vertex"],
   "publishers/anthropic/models/claude-opus-5-5": ["vertex"],
+  "openai.gpt-6.1-sol": ["bedrock"],
+  "us.openai.gpt-6.1-sol": ["bedrock"],
+  "xai.grok-4.7": ["bedrock"],
+  "us.xai.grok-4.7": ["bedrock"],
+  "global.xai.grok-4.7": ["bedrock"],
+  "openai.gpt-6-sol": ["bedrock"],
+  "us.openai.gpt-6-sol": ["bedrock"],
+  "global.openai.gpt-6-sol": ["bedrock"],
+  "openai.gpt-6-luna": ["bedrock"],
+  "us.openai.gpt-6-luna": ["bedrock"],
+  "global.openai.gpt-6-luna": ["bedrock"],
+  "databricks-gpt-6-1-sol": ["databricks"],
+  "databricks-grok-4-7": ["databricks"],
+  "databricks-claude-sonnet-5-5": ["databricks"],
+  "databricks-claude-opus-5-5": ["databricks"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -263,6 +263,11 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "displayName": "GPT-6 Luna",
     "reasoning": true,
+    "fallback_models": [
+      "global.openai.gpt-6-luna",
+      "openai.gpt-6-luna",
+      "us.openai.gpt-6-luna"
+    ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -281,6 +286,11 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "displayName": "GPT-6 Sol",
     "reasoning": true,
+    "fallback_models": [
+      "global.openai.gpt-6-sol",
+      "openai.gpt-6-sol",
+      "us.openai.gpt-6-sol"
+    ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -299,6 +309,10 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "displayName": "GPT-6.1 Sol",
     "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-6.1-sol",
+      "us.openai.gpt-6.1-sol"
+    ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -8467,6 +8481,186 @@
     "flavor": "completion",
     "displayName": "Text-block"
   },
+  "us.openai.gpt-6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.11,
+    "output_cost_per_mil_tokens": 0.55,
+    "input_cache_read_cost_per_mil_tokens": 0.011,
+    "input_cache_write_cost_per_mil_tokens": 0.1375,
+    "displayName": "GPT-6 Luna",
+    "reasoning": true,
+    "parent": "openai.gpt-6-luna",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 11,
+    "input_cache_read_cost_per_mil_tokens": 0.22,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "GPT-6 Sol",
+    "reasoning": true,
+    "parent": "openai.gpt-6-sol",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "displayName": "GPT-6 Luna",
+    "reasoning": true,
+    "parent": "openai.gpt-6-luna",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "displayName": "GPT-6 Sol",
+    "reasoning": true,
+    "parent": "openai.gpt-6-sol",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.11,
+    "output_cost_per_mil_tokens": 0.55,
+    "input_cache_read_cost_per_mil_tokens": 0.011,
+    "input_cache_write_cost_per_mil_tokens": 0.1375,
+    "displayName": "GPT-6 Luna",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 11,
+    "input_cache_read_cost_per_mil_tokens": 0.22,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "GPT-6 Sol",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "xai.grok-4.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "Grok 4.7",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.xai.grok-4.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 6.6,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "Grok 4.7",
+    "reasoning": true,
+    "parent": "xai.grok-4.7",
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.xai.grok-4.7": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "Grok 4.7",
+    "reasoning": true,
+    "parent": "xai.grok-4.7",
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-6.1-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 11,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "GPT-6.1 Sol",
+    "reasoning": true,
+    "parent": "openai.gpt-6.1-sol",
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6.1-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2.2,
+    "output_cost_per_mil_tokens": 11,
+    "input_cache_read_cost_per_mil_tokens": 0.11,
+    "input_cache_write_cost_per_mil_tokens": 2.75,
+    "displayName": "GPT-6.1 Sol",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "global.anthropic.claude-sonnet-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -14125,6 +14319,54 @@
     "available_providers": [
       "xAI",
       "openrouter"
+    ]
+  },
+  "databricks-claude-opus-5-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Opus 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-claude-sonnet-5-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Sonnet 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-grok-4-7": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Grok 4.7",
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-6-1-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "GPT-6.1 Sol",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
     ]
   },
   "databricks-gpt-6-luna": {

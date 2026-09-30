@@ -11295,8 +11295,7 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 262144,
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "deepseek-ai/DeepSeek-V3": {
@@ -11462,8 +11461,7 @@
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "moonshotai/Kimi-K2-Instruct": {
@@ -11960,8 +11958,7 @@
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
     "available_providers": [
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "moonshotai/Kimi-K2.5": {
@@ -12002,8 +11999,7 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "openrouter",
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "thinkingmachines/inkling": {
@@ -12019,8 +12015,7 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "openrouter",
-      "together",
-      "baseten"
+      "together"
     ]
   },
   "mistral-large-latest": {

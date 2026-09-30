@@ -302,7 +302,9 @@
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-5.5": {
@@ -11758,9 +11760,10 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "input_cache_read_cost_per_mil_tokens": 0.14,
-    "displayName": "deepseek-ai/DeepSeek-V4.1-Flash-Fast",
+    "displayName": "DeepSeek V4.1 Flash Fast",
     "reasoning": true,
     "max_input_tokens": 1048576,
+    "max_output_tokens": 32768,
     "available_providers": [
       "baseten"
     ]
@@ -16193,9 +16196,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.006,
+    "input_cost_per_mil_tokens": 0.0198,
+    "output_cost_per_mil_tokens": 0.396,
+    "input_cache_read_cost_per_mil_tokens": 0.00291,
     "displayName": "DeepSeek: DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -16223,9 +16226,9 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.48,
-    "output_cost_per_mil_tokens": 4.2,
-    "input_cache_read_cost_per_mil_tokens": 0.384,
+    "input_cost_per_mil_tokens": 0.66,
+    "output_cost_per_mil_tokens": 1.98,
+    "input_cache_read_cost_per_mil_tokens": 0.022,
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
@@ -16238,9 +16241,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.018,
-    "output_cost_per_mil_tokens": 0.32,
-    "input_cache_read_cost_per_mil_tokens": 0.018,
+    "input_cost_per_mil_tokens": 0.01,
+    "output_cost_per_mil_tokens": 1.28,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -16879,7 +16882,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_read_cost_per_mil_tokens": 0.055,
     "displayName": "Z.ai: GLM 4.6V",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -16976,9 +16979,9 @@
   "z-ai/glm-5.2": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.1949,
-    "output_cost_per_mil_tokens": 4.4,
-    "input_cache_read_cost_per_mil_tokens": 0.1559,
+    "input_cost_per_mil_tokens": 0.41,
+    "output_cost_per_mil_tokens": 3.99,
+    "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "Z.ai: GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -17217,6 +17220,21 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "openai/gpt-6.1-sol-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "OpenAI: GPT-6.1 Sol Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -17479,8 +17497,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.2,
+    "input_cost_per_mil_tokens": 0.35,
+    "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Meta: Muse Glimmer 30B",
     "reasoning": true,
@@ -17589,8 +17607,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.6562,
-    "output_cost_per_mil_tokens": 3.3,
+    "input_cost_per_mil_tokens": 0.6712,
+    "output_cost_per_mil_tokens": 3.35,
     "input_cache_read_cost_per_mil_tokens": 0.18,
     "displayName": "MoonshotAI: Kimi K2.7 Code",
     "reasoning": true,
@@ -18056,8 +18074,8 @@
   "qwen/qwen3-30b-a3b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.12,
-    "output_cost_per_mil_tokens": 0.5,
+    "input_cost_per_mil_tokens": 0.13,
+    "output_cost_per_mil_tokens": 0.52,
     "displayName": "Qwen: Qwen3 30B A3B",
     "reasoning": true,
     "max_input_tokens": 131072,

@@ -1,7 +1,7 @@
 import { expect } from "vitest";
 import { it } from "vitest";
 import raw_models from "./model_list.json";
-import { getModelEndpointTypes } from "./index";
+import { getDirectModelEndpointTypes, getModelEndpointTypes } from "./index";
 import {
   markModelsPastDeprecationDate,
   ModelSchema,
@@ -49,6 +49,15 @@ it("keeps equivalent model references within the catalog", () => {
 it("Uses available providers for Fireworks model endpoint types", () => {
   expect(getModelEndpointTypes("accounts/fireworks/models/minimax-m3")).toEqual(
     ["fireworks"],
+  );
+});
+
+it.each([
+  { name: "direct", lookup: getDirectModelEndpointTypes },
+  { name: "fallback-aware", lookup: getModelEndpointTypes },
+])("$name endpoint lookup includes all GPT-6.1 Sol providers", ({ lookup }) => {
+  expect(lookup("gpt-6.1-sol")).toEqual(
+    expect.arrayContaining(raw_models["gpt-6.1-sol"].available_providers),
   );
 });
 

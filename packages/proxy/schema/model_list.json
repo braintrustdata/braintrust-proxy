@@ -11522,8 +11522,8 @@
   "Qwen/Qwen3.8-Flash": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.47,
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.282,
     "displayName": "Qwen3.8 Flash",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -11548,9 +11548,9 @@
   "Qwen/Qwen3.7-Max": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 6,
-    "input_cache_read_cost_per_mil_tokens": 0.25,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 4.5,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Qwen3.7 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,

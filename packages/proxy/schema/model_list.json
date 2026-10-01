@@ -11945,21 +11945,6 @@
       "openrouter"
     ]
   },
-  "deepseek-ai/DeepSeek-V4.1-Flash-Fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.4,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
-    "displayName": "DeepSeek V4.1 Flash Fast",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "deepseek-ai/DeepSeek-V4.1-Flash": {
     "format": "openai",
     "flavor": "chat",

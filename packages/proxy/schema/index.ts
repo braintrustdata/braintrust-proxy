@@ -417,6 +417,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mixtral-8x7b": ["lepton"],
   "wizardlm-2-7b": ["lepton"],
   "wizardlm-2-8x22b": ["lepton", "openrouter"],
+  "unbiased/pareto-26.10-preview": ["openrouter"],
   "openai/gpt-6.1-sol-pro": ["openrouter"],
   "anthropic/claude-sonnet-5.5": ["openrouter"],
   "typesafe/jev-router": ["openrouter"],

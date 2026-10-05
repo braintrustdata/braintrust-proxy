@@ -12087,19 +12087,6 @@
       "together"
     ]
   },
-  "zai-org/GLM-4.7": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.2,
-    "input_cache_read_cost_per_mil_tokens": 0.12,
-    "displayName": "GLM 4.7",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 200000,
-    "available_providers": [
-      "baseten"
-    ]
-  },
   "zai-glm-5-2": {
     "format": "openai",
     "flavor": "chat",

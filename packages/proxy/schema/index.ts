@@ -849,6 +849,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "qwen/qwen3.6-27b": ["openrouter"],
   "gemini-3-pro-image": ["google", "openrouter"],
   "publishers/google/models/gemini-3-pro-image": ["vertex"],
+  "gemini-nano-banana-2.1": ["google"],
   "claude-fable-5-1": ["anthropic"],
   "claude-fable-5": ["anthropic", "openrouter"],
   "openai.gpt-oss-safeguard-120b": ["bedrock"],

@@ -15528,18 +15528,6 @@
       "openrouter"
     ]
   },
-  "stealth/space-bunny-alpha": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "displayName": "Space Bunny Alpha",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 524288,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "fireworks/ember-1": {
     "format": "openai",
     "flavor": "chat",

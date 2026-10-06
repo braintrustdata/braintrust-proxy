@@ -1263,6 +1263,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-3.6-flash": ["google", "vertex", "openrouter"],
   "gemini-3.5-flash-lite": ["google", "vertex", "openrouter"],
   "gemini-3.1-flash-image-preview": ["google", "openrouter"],
+  "gemini-nano-banana-2.1": ["google"],
   "gemini-3.1-flash-lite": ["google", "openrouter"],
   "gemini-3.1-flash-lite-preview": ["google", "openrouter"],
   "gemini-3.1-pro-preview": ["google", "openrouter"],

@@ -12223,6 +12223,19 @@
       "openrouter"
     ]
   },
+  "mistral-large-4-0": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.36,
+    "output_cost_per_mil_tokens": 4.18,
+    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "displayName": "Mistral Large 4",
+    "experimental": true,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "mistral-medium-3.5": {
     "format": "openai",
     "flavor": "chat",

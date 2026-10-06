@@ -1007,6 +1007,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-4.3": ["xAI", "openrouter"],
   "grok-4.3-latest": ["xAI"],
   "mistral-large-2512": ["mistral", "openrouter"],
+  "mistral-large-4-0": ["mistral"],
   "mistral-small-2603": ["mistral", "openrouter"],
   "codestral-2508": ["mistral", "openrouter"],
   "devstral-2512": ["mistral", "openrouter"],

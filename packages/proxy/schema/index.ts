@@ -1507,6 +1507,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "global.moonshotai.kimi-k3": ["bedrock"],
   "gemini-3.8-live": ["google"],
   "gemini-3.8-live-extended-thinking": ["google"],
+  "gemini-nano-banana-2.1": ["google"],
   "anthropic.claude-opus-5-5": ["bedrock"],
   "global.anthropic.claude-opus-5-5": ["bedrock"],
   "us.anthropic.claude-opus-5-5": ["bedrock"],

@@ -427,7 +427,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "fireworks/ember-1": ["openrouter"],
   "z-ai/glm-5.3-prime": ["openrouter"],
   "qwen/qwen3.8-max-prime": ["openrouter"],
-  "stealth/space-bunny-alpha": ["openrouter"],
   "aion-labs/aion-3.5-mini": ["openrouter"],
   "aion-labs/aion-3.5": ["openrouter"],
   "upstage/solar-mini4": ["openrouter"],

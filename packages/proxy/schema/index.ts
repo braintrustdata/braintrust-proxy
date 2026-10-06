@@ -962,6 +962,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/google/models/gemini-2.5-computer-use-preview-10-2025": [
     "vertex",
   ],
+  "gemini-nano-banana-2.1": ["google"],
+  "publishers/google/models/gemini-nano-banana-2.1": ["vertex"],
   "grok-4.20-0309-non-reasoning": ["xAI"],
   "qwen.qwen3-vl-235b-a22b": ["bedrock"],
   "qwen.qwen3-coder-next": ["bedrock"],

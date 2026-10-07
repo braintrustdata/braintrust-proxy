@@ -829,6 +829,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "claude-sonnet-5": ["anthropic", "openrouter"],
   "claude-sonnet-5-5": ["anthropic"],
   "claude-mythos-5-1": ["anthropic"],
+  "gemini-nano-banana-2.1": ["google"],
   "gemini-3.1-flash-image": ["google", "vertex", "openrouter"],
   "publishers/google/models/gemini-3.1-flash-image": ["vertex"],
   "grok-4.20-multi-agent-0309": ["xAI"],

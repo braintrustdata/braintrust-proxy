@@ -13039,6 +13039,19 @@
       "google"
     ]
   },
+  "gemini-nano-banana-2.1": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 30,
+    "displayName": "Gemini Nano Banana 2.1",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "google"
+    ]
+  },
   "gemini-2.5-flash": {
     "format": "google",
     "flavor": "chat",

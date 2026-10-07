@@ -1537,6 +1537,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-grok-4-7": ["databricks"],
   "databricks-claude-sonnet-5-5": ["databricks"],
   "databricks-claude-opus-5-5": ["databricks"],
+  "gemini-nano-banana-2.1": ["google"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

@@ -53,6 +53,25 @@ export const ModelEndpointType = [
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
+export const ServiceTiers = ["flex", "priority", "ultrafast", "batch"] as const;
+export type ServiceTier = (typeof ServiceTiers)[number];
+
+export interface ServiceTierCosts {
+  input_cost_per_mil_tokens?: number | null;
+  output_cost_per_mil_tokens?: number | null;
+  input_cache_read_cost_per_mil_tokens?: number | null;
+  input_cache_write_cost_per_mil_tokens?: number | null;
+}
+
+// Typed via a named interface so declaration emit references it instead of
+// inlining it into every schema that embeds ModelSchema (e.g. APISecretSchema).
+export const ServiceTierCostsSchema: z.ZodType<ServiceTierCosts> = z.object({
+  input_cost_per_mil_tokens: z.number().nullish(),
+  output_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_read_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_cost_per_mil_tokens: z.number().nullish(),
+});
+
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(ModelFlavors),
@@ -65,6 +84,12 @@ export const ModelSchema = z.object({
   input_cache_write_cost_per_mil_tokens: z.number().nullish(),
   input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
   input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
+  service_tier_costs: z
+    .record(ServiceTierCostsSchema)
+    .nullish()
+    .describe(
+      "Per-service-tier token prices keyed by tier (flex, priority, ultrafast, batch). A tier entry fully replaces the base input/output/cache rates for spans served on that tier.",
+    ),
   displayName: z
     .string()
     .nullish()

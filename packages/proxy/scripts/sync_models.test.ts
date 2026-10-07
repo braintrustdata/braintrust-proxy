@@ -19,6 +19,7 @@ import {
   openRouterCanonicalId,
   isOpenRouterSlugExcluded,
   findDuplicateJsonKeys,
+  getLiteLLMServiceTierCosts,
   formatProviderMappingProviders,
   getMissingProviderMappings,
   getUpdatedAvailableProviders,
@@ -1272,5 +1273,101 @@ describe("applyCohereLiteLLMPricing", () => {
     expect(
       applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
     ).toBeNull();
+  });
+});
+
+describe("getLiteLLMServiceTierCosts", () => {
+  const gpt5Mini = {
+    litellm_provider: "openai",
+    mode: "chat",
+    input_cost_per_token: 2.5e-7,
+    output_cost_per_token: 2e-6,
+    cache_read_input_token_cost: 2.5e-8,
+    input_cost_per_token_flex: 1.25e-7,
+    output_cost_per_token_flex: 1e-6,
+    cache_read_input_token_cost_flex: 1.25e-8,
+    input_cost_per_token_priority: 4.5e-7,
+    output_cost_per_token_priority: 3.6e-6,
+    cache_read_input_token_cost_priority: 4.5e-8,
+    input_cost_per_token_batches: 1.25e-7,
+    output_cost_per_token_batches: 1e-6,
+    cache_read_input_token_cost_batches: 1.25e-8,
+  };
+
+  it("maps LiteLLM tier suffixes to per-mil service_tier_costs", () => {
+    expect(getLiteLLMServiceTierCosts(gpt5Mini)).toEqual({
+      flex: {
+        input_cost_per_mil_tokens: 0.125,
+        output_cost_per_mil_tokens: 1,
+        input_cache_read_cost_per_mil_tokens: 0.0125,
+      },
+      priority: {
+        input_cost_per_mil_tokens: 0.45,
+        output_cost_per_mil_tokens: 3.6,
+        input_cache_read_cost_per_mil_tokens: 0.045,
+      },
+      batch: {
+        input_cost_per_mil_tokens: 0.125,
+        output_cost_per_mil_tokens: 1,
+        input_cache_read_cost_per_mil_tokens: 0.0125,
+      },
+    });
+  });
+
+  it("maps ultrafast and cache-write tier prices", () => {
+    expect(
+      getLiteLLMServiceTierCosts({
+        input_cost_per_token_ultrafast: 3e-5,
+        output_cost_per_token_ultrafast: 1.8e-4,
+        cache_read_input_token_cost_ultrafast: 3e-6,
+        cache_creation_input_token_cost_ultrafast: 3.75e-5,
+      }),
+    ).toEqual({
+      ultrafast: {
+        input_cost_per_mil_tokens: 30,
+        output_cost_per_mil_tokens: 180,
+        input_cache_read_cost_per_mil_tokens: 3,
+        input_cache_write_cost_per_mil_tokens: 37.5,
+      },
+    });
+  });
+
+  it("ignores long-context and modality variants, zero prices, and cache-only tiers", () => {
+    expect(
+      getLiteLLMServiceTierCosts({
+        input_cost_per_token: 1e-6,
+        input_cost_per_token_above_272k_tokens_priority: 4e-6,
+        output_cost_per_token_above_200k_tokens_batches: 4e-6,
+        input_cost_per_audio_token_batches: 1e-6,
+        input_cost_per_image_token_batches: 1e-6,
+        ocr_cost_per_page_batches: 1e-3,
+        input_cost_per_token_flex: 0,
+        cache_read_input_token_cost_flex: 1e-8,
+        output_cost_per_token_priority: 2e-6,
+        cache_creation_input_token_cost_priority: 0,
+      }),
+    ).toEqual({
+      priority: { output_cost_per_mil_tokens: 2 },
+    });
+    expect(getLiteLLMServiceTierCosts({ input_cost_per_token: 1e-6 })).toBe(
+      undefined,
+    );
+  });
+
+  it("populates service_tier_costs when converting a new LiteLLM model", () => {
+    const converted = convertRemoteToLocalModel("gpt-5-mini", gpt5Mini);
+    expect(converted.input_cost_per_mil_tokens).toBe(0.25);
+    expect(converted.service_tier_costs?.flex?.input_cost_per_mil_tokens).toBe(
+      0.125,
+    );
+    expect(
+      converted.service_tier_costs?.priority?.output_cost_per_mil_tokens,
+    ).toBe(3.6);
+    expect(
+      converted.service_tier_costs?.batch?.input_cache_read_cost_per_mil_tokens,
+    ).toBe(0.0125);
+    expect(
+      convertRemoteToLocalModel("plain", { input_cost_per_token: 1e-6 }),
+    ).not.toHaveProperty("service_tier_costs");
   });
 });

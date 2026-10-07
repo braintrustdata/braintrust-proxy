@@ -8,7 +8,13 @@ import { hideBin } from "yargs/helpers";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
-import { ModelSchema, ModelSpec } from "../schema/models";
+import {
+  ModelSchema,
+  ModelSpec,
+  ServiceTierCosts,
+  ServiceTiers,
+  type ServiceTier,
+} from "../schema/models";
 import ts from "typescript";
 import {
   canonicalizeLocalModelName,
@@ -331,6 +337,22 @@ const liteLLMModelDetailSchema = z
     output_cost_per_reasoning_token: z.number().optional(),
     cache_creation_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_write
     cache_read_input_token_cost: z.number().optional(), // from LiteLLM, maps to input_cache_read
+    input_cost_per_token_flex: z.number().optional(),
+    output_cost_per_token_flex: z.number().optional(),
+    cache_read_input_token_cost_flex: z.number().optional(),
+    cache_creation_input_token_cost_flex: z.number().optional(),
+    input_cost_per_token_priority: z.number().optional(),
+    output_cost_per_token_priority: z.number().optional(),
+    cache_read_input_token_cost_priority: z.number().optional(),
+    cache_creation_input_token_cost_priority: z.number().optional(),
+    input_cost_per_token_ultrafast: z.number().optional(),
+    output_cost_per_token_ultrafast: z.number().optional(),
+    cache_read_input_token_cost_ultrafast: z.number().optional(),
+    cache_creation_input_token_cost_ultrafast: z.number().optional(),
+    input_cost_per_token_batches: z.number().optional(),
+    output_cost_per_token_batches: z.number().optional(),
+    cache_read_input_token_cost_batches: z.number().optional(),
+    cache_creation_input_token_cost_batches: z.number().optional(),
     litellm_provider: z.string().optional(),
     // Accept the known modes but tolerate any new value LiteLLM
     // introduces (e.g. "guardrail"): one unknown mode must not fail the whole
@@ -1444,6 +1466,86 @@ function getNonZeroNumber(value: number | undefined): number | undefined {
   return value;
 }
 
+const LITELLM_SERVICE_TIER_SUFFIXES = {
+  flex: "flex",
+  priority: "priority",
+  ultrafast: "ultrafast",
+  batch: "batches",
+} as const satisfies Record<ServiceTier, string>;
+
+// Maps LiteLLM's per-token `<field>_<tier>` prices (e.g. input_cost_per_token_flex,
+// cache_read_input_token_cost_batches) to per-mil-token service_tier_costs.
+// Long-context (`_above_*k_tokens_`) and modality-specific variants are ignored.
+// A tier is emitted only when it carries an input or output price.
+export function getLiteLLMServiceTierCosts(
+  remoteModel: LiteLLMModelDetail,
+): ModelSpec["service_tier_costs"] {
+  const roundCost = (costPerToken: number): number =>
+    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const result: NonNullable<ModelSpec["service_tier_costs"]> = {};
+  for (const tier of ServiceTiers) {
+    const suffix = LITELLM_SERVICE_TIER_SUFFIXES[tier];
+    const tierCosts: ServiceTierCosts = {};
+    const apply = (
+      field: keyof ServiceTierCosts,
+      perToken: number | undefined,
+    ): void => {
+      const value = getNonZeroNumber(perToken);
+      if (value !== undefined) {
+        tierCosts[field] = roundCost(value);
+      }
+    };
+    apply(
+      "input_cost_per_mil_tokens",
+      remoteModel[`input_cost_per_token_${suffix}`],
+    );
+    apply(
+      "output_cost_per_mil_tokens",
+      remoteModel[`output_cost_per_token_${suffix}`],
+    );
+    apply(
+      "input_cache_read_cost_per_mil_tokens",
+      remoteModel[`cache_read_input_token_cost_${suffix}`],
+    );
+    apply(
+      "input_cache_write_cost_per_mil_tokens",
+      remoteModel[`cache_creation_input_token_cost_${suffix}`],
+    );
+    if (
+      tierCosts.input_cost_per_mil_tokens !== undefined ||
+      tierCosts.output_cost_per_mil_tokens !== undefined
+    ) {
+      result[tier] = tierCosts;
+    }
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
+}
+
+function serviceTierCostsEqual(
+  a: ModelSpec["service_tier_costs"],
+  b: ModelSpec["service_tier_costs"],
+): boolean {
+  const canonical = (value: ModelSpec["service_tier_costs"]): string =>
+    JSON.stringify(
+      ServiceTiers.flatMap((tier) => {
+        const costs = value?.[tier];
+        if (!costs) {
+          return [];
+        }
+        return [
+          [
+            tier,
+            costs.input_cost_per_mil_tokens ?? null,
+            costs.output_cost_per_mil_tokens ?? null,
+            costs.input_cache_read_cost_per_mil_tokens ?? null,
+            costs.input_cache_write_cost_per_mil_tokens ?? null,
+          ],
+        ];
+      }),
+    );
+  return canonical(a) === canonical(b);
+}
+
 type ProviderMappingEntryRange = {
   start: number;
   end: number;
@@ -1883,6 +1985,10 @@ export function convertRemoteToLocalModel(
     baseModel.input_cache_write_cost_per_mil_tokens = roundCost(
       cacheCreationInputTokenCost,
     );
+  }
+  const serviceTierCosts = getLiteLLMServiceTierCosts(remoteModel);
+  if (serviceTierCosts) {
+    baseModel.service_tier_costs = serviceTierCosts;
   }
   // Note: output_reasoning_cost_per_mil_tokens may not be in ModelSpec yet,
   // so we'll skip this for now to avoid type errors
@@ -2811,6 +2917,46 @@ async function updateModelsCommand(argv: any) {
         remoteCacheWriteCostPerToken,
         "input_cache_write_cost_per_mil_tokens",
       );
+
+      const checkAndUpdateServiceTierCosts = () => {
+        if (isFieldManuallyPreserved(localModelName, "service_tier_costs")) {
+          console.log(
+            `  [PRESERVE] ${localModelName}.service_tier_costs kept at local value; LiteLLM sync skipped`,
+          );
+          return;
+        }
+        const localTierCosts = localModelDetail.service_tier_costs;
+        const remoteTierCosts = getLiteLLMServiceTierCosts(remoteModelDetail);
+        if (!remoteTierCosts) {
+          if (localTierCosts && !argv.write) {
+            reportModelIfNeeded();
+            console.log(
+              `  Service Tier Costs: Local: ${JSON.stringify(localTierCosts)}, Remote: Not available`,
+            );
+          }
+          return;
+        }
+        if (serviceTierCostsEqual(localTierCosts, remoteTierCosts)) {
+          return;
+        }
+        discrepanciesFound++;
+        if (!argv.write) {
+          reportModelIfNeeded();
+          console.log(
+            `  Service Tier Costs Mismatch/Missing: Local: ${
+              localTierCosts ? JSON.stringify(localTierCosts) : "Not available"
+            }, Remote: ${JSON.stringify(remoteTierCosts)}`,
+          );
+          return;
+        }
+        modelInUpdatedList.service_tier_costs = remoteTierCosts;
+        madeChanges = true;
+        reportModelIfNeeded();
+        console.log(
+          `  [WRITE] Updated Service Tier Costs to: ${JSON.stringify(remoteTierCosts)}`,
+        );
+      };
+      checkAndUpdateServiceTierCosts();
 
       // Check and update token limits
       const localMaxInputTokens = localModelDetail.max_input_tokens;

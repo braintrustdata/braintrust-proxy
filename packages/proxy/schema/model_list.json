@@ -31,6 +31,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.625
+      }
+    },
     "displayName": "GPT-Image-2.5 Sunburst",
     "available_providers": [
       "openai",
@@ -43,6 +49,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.625
+      }
+    },
     "displayName": "GPT-Image-2.5 Flare",
     "available_providers": [
       "openai",
@@ -151,6 +163,26 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 10,
+        "input_cache_read_cost_per_mil_tokens": 0.2,
+        "input_cache_write_cost_per_mil_tokens": 2.5
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 8,
+        "output_cost_per_mil_tokens": 40,
+        "input_cache_read_cost_per_mil_tokens": 0.8,
+        "input_cache_write_cost_per_mil_tokens": 10
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 10,
+        "input_cache_read_cost_per_mil_tokens": 0.2,
+        "input_cache_write_cost_per_mil_tokens": 2.5
+      }
+    },
     "displayName": "GPT-5.6",
     "reasoning": true,
     "parent": "gpt-5.6-sol",
@@ -169,6 +201,26 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "input_cache_write_cost_per_mil_tokens": 0.25,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.6,
+        "input_cache_read_cost_per_mil_tokens": 0.01,
+        "input_cache_write_cost_per_mil_tokens": 0.125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.4,
+        "output_cost_per_mil_tokens": 2.4,
+        "input_cache_read_cost_per_mil_tokens": 0.04,
+        "input_cache_write_cost_per_mil_tokens": 0.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.6,
+        "input_cache_read_cost_per_mil_tokens": 0.01,
+        "input_cache_write_cost_per_mil_tokens": 0.125
+      }
+    },
     "displayName": "GPT-5.6 Luna",
     "reasoning": true,
     "fallback_models": [
@@ -192,6 +244,26 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 10,
+        "input_cache_read_cost_per_mil_tokens": 0.2,
+        "input_cache_write_cost_per_mil_tokens": 2.5
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 8,
+        "output_cost_per_mil_tokens": 40,
+        "input_cache_read_cost_per_mil_tokens": 0.8,
+        "input_cache_write_cost_per_mil_tokens": 10
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 10,
+        "input_cache_read_cost_per_mil_tokens": 0.2,
+        "input_cache_write_cost_per_mil_tokens": 2.5
+      }
+    },
     "displayName": "GPT-5.6 Sol",
     "reasoning": true,
     "fallback_models": [
@@ -215,6 +287,26 @@
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 4,
+        "output_cost_per_mil_tokens": 24,
+        "input_cache_read_cost_per_mil_tokens": 0.4,
+        "input_cache_write_cost_per_mil_tokens": 5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      }
+    },
     "displayName": "GPT-5.6 Terra",
     "reasoning": true,
     "fallback_models": [
@@ -238,6 +330,32 @@
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 1,
     "input_cache_write_cost_per_mil_tokens": 12.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 25,
+        "input_cache_read_cost_per_mil_tokens": 0.5,
+        "input_cache_write_cost_per_mil_tokens": 6.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 20,
+        "output_cost_per_mil_tokens": 100,
+        "input_cache_read_cost_per_mil_tokens": 2,
+        "input_cache_write_cost_per_mil_tokens": 25
+      },
+      "ultrafast": {
+        "input_cost_per_mil_tokens": 60,
+        "output_cost_per_mil_tokens": 300,
+        "input_cache_read_cost_per_mil_tokens": 6,
+        "input_cache_write_cost_per_mil_tokens": 75
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 25,
+        "input_cache_read_cost_per_mil_tokens": 0.5,
+        "input_cache_write_cost_per_mil_tokens": 6.25
+      }
+    },
     "displayName": "GPT-6 Astra",
     "reasoning": true,
     "fallback_models": [
@@ -261,6 +379,26 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.01,
     "input_cache_write_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.25,
+        "input_cache_read_cost_per_mil_tokens": 0.005,
+        "input_cache_write_cost_per_mil_tokens": 0.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.02,
+        "input_cache_write_cost_per_mil_tokens": 0.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.25,
+        "input_cache_read_cost_per_mil_tokens": 0.005,
+        "input_cache_write_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "GPT-6 Luna",
     "reasoning": true,
     "fallback_models": [
@@ -284,6 +422,26 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 4,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.4,
+        "input_cache_write_cost_per_mil_tokens": 5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      }
+    },
     "displayName": "GPT-6 Sol",
     "reasoning": true,
     "fallback_models": [
@@ -307,6 +465,26 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.05,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 4,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.2,
+        "input_cache_write_cost_per_mil_tokens": 5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.05,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      }
+    },
     "displayName": "GPT-6.1 Sol",
     "reasoning": true,
     "fallback_models": [
@@ -328,6 +506,23 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 30,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 15,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 12.5,
+        "output_cost_per_mil_tokens": 75,
+        "input_cache_read_cost_per_mil_tokens": 1.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 15,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      }
+    },
     "displayName": "GPT-5.5",
     "reasoning": true,
     "fallback_models": [
@@ -347,6 +542,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      }
+    },
     "displayName": "GPT-5.5 Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,
@@ -364,6 +569,23 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 30,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 15,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 12.5,
+        "output_cost_per_mil_tokens": 75,
+        "input_cache_read_cost_per_mil_tokens": 1.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 15,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      }
+    },
     "displayName": "GPT-5.5 (2026-04-23)",
     "reasoning": true,
     "parent": "gpt-5.5",
@@ -380,6 +602,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      }
+    },
     "displayName": "GPT-5.5 Pro (2026-04-23)",
     "reasoning": true,
     "parent": "gpt-5.5-pro",
@@ -397,6 +629,23 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.25,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.13
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 30,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.13
+      }
+    },
     "displayName": "GPT-5.4",
     "reasoning": true,
     "fallback_models": [
@@ -417,6 +666,23 @@
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 4.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 2.25,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 9,
+        "input_cache_read_cost_per_mil_tokens": 0.15
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 2.25,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "GPT-5.4 mini",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -434,6 +700,18 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.25,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.625,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.625,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      }
+    },
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
     "deprecation_date": "2027-04-01",
@@ -451,6 +729,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      }
+    },
     "displayName": "GPT-5.4 Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,
@@ -468,6 +756,23 @@
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 4.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 2.25,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 9,
+        "input_cache_read_cost_per_mil_tokens": 0.15
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 2.25,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "GPT-5.4 mini (2026-03-17)",
     "reasoning": true,
     "parent": "gpt-5.4-mini",
@@ -485,6 +790,18 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.25,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.625,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.625,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      }
+    },
     "displayName": "GPT-5.4 nano (2026-03-17)",
     "reasoning": true,
     "parent": "gpt-5.4-nano",
@@ -502,6 +819,23 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.25,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.13
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 30,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.13
+      }
+    },
     "displayName": "GPT-5.4 (2026-03-05)",
     "reasoning": true,
     "parent": "gpt-5.4",
@@ -518,6 +852,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 180,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 90
+      }
+    },
     "displayName": "GPT-5.4 Pro (2026-03-05)",
     "reasoning": true,
     "parent": "gpt-5.4-pro",
@@ -552,6 +896,13 @@
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 28,
+        "input_cache_read_cost_per_mil_tokens": 0.35
+      }
+    },
     "displayName": "GPT-5.3 Codex",
     "reasoning": true,
     "deprecation_date": "2027-04-01",
@@ -570,6 +921,23 @@
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.875,
+        "output_cost_per_mil_tokens": 7,
+        "input_cache_read_cost_per_mil_tokens": 0.0875
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 28,
+        "input_cache_read_cost_per_mil_tokens": 0.35
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.875,
+        "output_cost_per_mil_tokens": 7,
+        "input_cache_read_cost_per_mil_tokens": 0.0875
+      }
+    },
     "displayName": "GPT-5.2",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -623,6 +991,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 21,
     "output_cost_per_mil_tokens": 168,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 10.5,
+        "output_cost_per_mil_tokens": 84
+      }
+    },
     "displayName": "GPT-5.2 Pro",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -640,6 +1014,23 @@
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.875,
+        "output_cost_per_mil_tokens": 7,
+        "input_cache_read_cost_per_mil_tokens": 0.0875
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 28,
+        "input_cache_read_cost_per_mil_tokens": 0.35
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.875,
+        "output_cost_per_mil_tokens": 7,
+        "input_cache_read_cost_per_mil_tokens": 0.0875
+      }
+    },
     "displayName": "GPT-5.2 (2025-12-11)",
     "reasoning": true,
     "parent": "gpt-5.2",
@@ -656,6 +1047,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 21,
     "output_cost_per_mil_tokens": 168,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 10.5,
+        "output_cost_per_mil_tokens": 84
+      }
+    },
     "displayName": "GPT-5.2 Pro (2025-12-11)",
     "reasoning": true,
     "parent": "gpt-5.2-pro",
@@ -673,6 +1070,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "GPT-5.1",
     "reasoning": true,
     "deprecation_date": "2027-04-01",
@@ -766,6 +1180,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "GPT-5.1 (2025-11-13)",
     "reasoning": true,
     "parent": "gpt-5.1",
@@ -783,6 +1214,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "GPT-5",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -834,6 +1282,23 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.45,
+        "output_cost_per_mil_tokens": 3.6,
+        "input_cache_read_cost_per_mil_tokens": 0.045
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      }
+    },
     "displayName": "GPT-5 mini",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -851,6 +1316,21 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.005,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.025,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.0025
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.025,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.0025
+      }
+    },
     "displayName": "GPT-5 nano",
     "reasoning": true,
     "max_input_tokens": 272000,
@@ -867,6 +1347,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 120,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 7.5,
+        "output_cost_per_mil_tokens": 60
+      }
+    },
     "displayName": "GPT-5 Pro",
     "reasoning": true,
     "max_input_tokens": 400000,
@@ -914,6 +1400,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 120,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 7.5,
+        "output_cost_per_mil_tokens": 60
+      }
+    },
     "displayName": "GPT-5 Pro (2025-10-06)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -932,6 +1424,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 20,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "GPT-5 (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -950,6 +1459,23 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.45,
+        "output_cost_per_mil_tokens": 3.6,
+        "input_cache_read_cost_per_mil_tokens": 0.045
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      }
+    },
     "displayName": "GPT-5 mini (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -968,6 +1494,21 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.005,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.025,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.0025
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.025,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.0025
+      }
+    },
     "displayName": "GPT-5 nano (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -986,6 +1527,17 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 14,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4
+      }
+    },
     "displayName": "GPT-4.1",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -1002,6 +1554,17 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 1.6,
     "input_cache_read_cost_per_mil_tokens": 0.1,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.7,
+        "output_cost_per_mil_tokens": 2.8,
+        "input_cache_read_cost_per_mil_tokens": 0.175
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 0.8
+      }
+    },
     "displayName": "GPT-4.1 mini",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -1018,6 +1581,17 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 0.8,
+        "input_cache_read_cost_per_mil_tokens": 0.05
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.2
+      }
+    },
     "displayName": "GPT-4.1 nano",
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 1047576,
@@ -1035,6 +1609,17 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 14,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4
+      }
+    },
     "displayName": "GPT-4.1 (2025-04-14)",
     "parent": "gpt-4.1",
     "max_input_tokens": 1047576,
@@ -1051,6 +1636,17 @@
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 1.6,
     "input_cache_read_cost_per_mil_tokens": 0.1,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.7,
+        "output_cost_per_mil_tokens": 2.8,
+        "input_cache_read_cost_per_mil_tokens": 0.175
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 0.8
+      }
+    },
     "displayName": "GPT-4.1 mini (2025-04-14)",
     "parent": "gpt-4.1-mini",
     "max_input_tokens": 1047576,
@@ -1067,6 +1663,17 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 0.8,
+        "input_cache_read_cost_per_mil_tokens": 0.05
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.2
+      }
+    },
     "displayName": "GPT-4.1 nano (2025-04-14)",
     "deprecation_date": "2026-10-23",
     "parent": "gpt-4.1-nano",
@@ -1115,6 +1722,17 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 4.25,
+        "output_cost_per_mil_tokens": 17,
+        "input_cache_read_cost_per_mil_tokens": 2.125
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 5
+      }
+    },
     "displayName": "GPT-4o",
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 128000,
@@ -1146,6 +1764,17 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.125
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.075,
+        "output_cost_per_mil_tokens": 0.3
+      }
+    },
     "displayName": "GPT-4o mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -1176,6 +1805,12 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.075,
+        "output_cost_per_mil_tokens": 0.3
+      }
+    },
     "displayName": "GPT-4o mini Search Preview",
     "experimental": true,
     "max_input_tokens": 128000,
@@ -1217,6 +1852,12 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 5
+      }
+    },
     "displayName": "GPT-4o Search Preview",
     "experimental": true,
     "max_input_tokens": 128000,
@@ -1397,6 +2038,17 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 4.25,
+        "output_cost_per_mil_tokens": 17,
+        "input_cache_read_cost_per_mil_tokens": 2.125
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 5
+      }
+    },
     "displayName": "GPT-4o (2024-11-20)",
     "parent": "gpt-4o",
     "max_input_tokens": 128000,
@@ -1414,6 +2066,17 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 4.25,
+        "output_cost_per_mil_tokens": 17,
+        "input_cache_read_cost_per_mil_tokens": 2.125
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1.25,
+        "output_cost_per_mil_tokens": 5
+      }
+    },
     "displayName": "GPT-4o (2024-08-06)",
     "parent": "gpt-4o",
     "max_input_tokens": 128000,
@@ -1431,6 +2094,17 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.125
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.075,
+        "output_cost_per_mil_tokens": 0.3
+      }
+    },
     "displayName": "GPT-4o mini (2024-07-18)",
     "parent": "gpt-4o-mini",
     "max_input_tokens": 128000,
@@ -1447,6 +2121,16 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 15,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 8.75,
+        "output_cost_per_mil_tokens": 26.25
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 7.5
+      }
+    },
     "displayName": "GPT-4o (2024-05-13)",
     "deprecation_date": "2026-10-23",
     "parent": "gpt-4o",
@@ -1464,6 +2148,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 15
+      }
+    },
     "displayName": "GPT-4 Turbo (2024-04-09)",
     "deprecation_date": "2026-10-23",
     "parent": "gpt-4-turbo",
@@ -1479,6 +2169,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 15,
+        "output_cost_per_mil_tokens": 30
+      }
+    },
     "displayName": "GPT-4 (0613)",
     "deprecation_date": "2026-10-23",
     "parent": "gpt-4",
@@ -1542,6 +2238,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2
+      }
+    },
     "displayName": "GPT 3.5T 1106",
     "deprecated": true,
     "deprecation_date": "2026-09-28",
@@ -1571,6 +2273,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 0.75
+      }
+    },
     "displayName": "GPT 3.5T 0125",
     "deprecated": true,
     "deprecation_date": "2026-10-23",
@@ -1589,6 +2297,22 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2,
+        "input_cache_read_cost_per_mil_tokens": 0.138
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 8,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2
+      }
+    },
     "displayName": "o4-mini",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1640,6 +2364,22 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2,
+        "input_cache_read_cost_per_mil_tokens": 0.138
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 8,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2
+      }
+    },
     "displayName": "o4-mini (2025-04-16)",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1658,6 +2398,22 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 14,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4
+      }
+    },
     "displayName": "o3",
     "reasoning": true,
     "max_input_tokens": 200000,
@@ -1691,6 +2447,12 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2
+      }
+    },
     "displayName": "o3 mini",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1708,6 +2470,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 20,
     "output_cost_per_mil_tokens": 80,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 10,
+        "output_cost_per_mil_tokens": 40
+      }
+    },
     "displayName": "o3 Pro",
     "reasoning": true,
     "max_input_tokens": 200000,
@@ -1741,6 +2509,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 20,
     "output_cost_per_mil_tokens": 80,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 10,
+        "output_cost_per_mil_tokens": 40
+      }
+    },
     "displayName": "o3 Pro (2025-06-10)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -1759,6 +2533,22 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 14,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4
+      }
+    },
     "displayName": "o3 (2025-04-16)",
     "reasoning": true,
     "deprecation_date": "2026-12-11",
@@ -1777,6 +2567,12 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.2
+      }
+    },
     "displayName": "o3 mini (2025-01-31)",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1795,6 +2591,12 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 7.5,
+        "output_cost_per_mil_tokens": 30
+      }
+    },
     "displayName": "o1",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1812,6 +2614,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 75,
+        "output_cost_per_mil_tokens": 300
+      }
+    },
     "displayName": "o1 Pro",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1829,6 +2637,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 75,
+        "output_cost_per_mil_tokens": 300
+      }
+    },
     "displayName": "o1 Pro (2025-03-19)",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1847,6 +2661,12 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 7.5,
+        "output_cost_per_mil_tokens": 30
+      }
+    },
     "displayName": "o1 (2024-12-17)",
     "reasoning": true,
     "deprecation_date": "2026-10-23",
@@ -1975,6 +2795,12 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.625
+      }
+    },
     "displayName": "GPT Image 2",
     "available_providers": [
       "openai",
@@ -2035,6 +2861,13 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.63
+      }
+    },
     "displayName": "GPT Image 1.5",
     "deprecation_date": "2026-12-01",
     "available_providers": [
@@ -2217,6 +3050,13 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.63
+      }
+    },
     "displayName": "GPT Image 1.5 (2025-12-16)",
     "deprecation_date": "2026-12-01",
     "parent": "gpt-image-1.5",
@@ -2374,6 +3214,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.63
+      }
+    },
     "displayName": "GPT Image 1",
     "deprecation_date": "2026-10-23",
     "available_providers": [
@@ -2386,6 +3232,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "input_cache_read_cost_per_mil_tokens": 0.1
+      }
+    },
     "displayName": "GPT Image 1 mini",
     "deprecation_date": "2026-12-01",
     "available_providers": [
@@ -2549,6 +3401,13 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.63
+      }
+    },
     "displayName": "ChatGPT Image",
     "deprecation_date": "2026-12-01",
     "available_providers": [
@@ -2828,6 +3687,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 0.4,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.2,
+        "output_cost_per_mil_tokens": 0.2
+      }
+    },
     "displayName": "Babbage 002",
     "deprecation_date": "2026-09-28",
     "max_input_tokens": 16384,
@@ -2842,6 +3707,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 1
+      }
+    },
     "displayName": "Davinci 002",
     "deprecation_date": "2026-09-28",
     "max_input_tokens": 16384,
@@ -2857,6 +3728,13 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.75,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      }
+    },
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -2870,6 +3748,13 @@
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 3.2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.4,
+        "output_cost_per_mil_tokens": 1.6,
+        "input_cache_read_cost_per_mil_tokens": 0.1
+      }
+    },
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -2883,6 +3768,13 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.8,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.1,
+        "output_cost_per_mil_tokens": 0.4,
+        "input_cache_read_cost_per_mil_tokens": 0.025
+      }
+    },
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -2897,6 +3789,13 @@
     "input_cost_per_mil_tokens": 4,
     "output_cost_per_mil_tokens": 16,
     "input_cache_read_cost_per_mil_tokens": 1,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 8,
+        "input_cache_read_cost_per_mil_tokens": 0.5
+      }
+    },
     "reasoning": true,
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 200000,
@@ -2926,6 +3825,13 @@
     "input_cost_per_mil_tokens": 3.75,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 1.875,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.225,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.9
+      }
+    },
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -2939,6 +3845,13 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.15,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.15,
+        "output_cost_per_mil_tokens": 0.6,
+        "input_cache_read_cost_per_mil_tokens": 0.075
+      }
+    },
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -2964,6 +3877,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 6,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 3
+      }
+    },
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
@@ -3018,6 +3937,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.6,
     "output_cost_per_mil_tokens": 1.6,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.8,
+        "output_cost_per_mil_tokens": 0.9
+      }
+    },
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
@@ -3031,6 +3956,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 12,
     "output_cost_per_mil_tokens": 12,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 6,
+        "output_cost_per_mil_tokens": 6
+      }
+    },
     "deprecation_date": "2026-10-23",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
@@ -3070,6 +4001,13 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3.75,
+        "output_cost_per_mil_tokens": 18.75,
+        "input_cache_read_cost_per_mil_tokens": 0.375
+      }
+    },
     "displayName": "Ember-1",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -3084,6 +4022,13 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.006,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.5,
+        "input_cache_read_cost_per_mil_tokens": 0.0075
+      }
+    },
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -3099,6 +4044,13 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.66,
     "input_cache_read_cost_per_mil_tokens": 0.007,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.275,
+        "output_cost_per_mil_tokens": 0.825,
+        "input_cache_read_cost_per_mil_tokens": 0.00875
+      }
+    },
     "displayName": "DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -3115,6 +4067,13 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.03,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.1875,
+        "output_cost_per_mil_tokens": 0.625,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -3129,6 +4088,13 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.26,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.75,
+        "output_cost_per_mil_tokens": 5.5,
+        "input_cache_read_cost_per_mil_tokens": 0.325
+      }
+    },
     "displayName": "GLM 5.3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -3182,6 +4148,13 @@
     "input_cost_per_mil_tokens": 0.35,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.04,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.525,
+        "output_cost_per_mil_tokens": 2.25,
+        "input_cache_read_cost_per_mil_tokens": 0.06
+      }
+    },
     "displayName": "Muse Glimmer 30B",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -3197,6 +4170,13 @@
     "input_cost_per_mil_tokens": 1.32,
     "output_cost_per_mil_tokens": 3.96,
     "input_cache_read_cost_per_mil_tokens": 0.044,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.65,
+        "output_cost_per_mil_tokens": 4.95,
+        "input_cache_read_cost_per_mil_tokens": 0.055
+      }
+    },
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -3213,6 +4193,13 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.25,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3,
+        "output_cost_per_mil_tokens": 9,
+        "input_cache_read_cost_per_mil_tokens": 0.375
+      }
+    },
     "displayName": "Qwen3.8 Max",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -3239,6 +4226,13 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.66,
     "input_cache_read_cost_per_mil_tokens": 0.007,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.275,
+        "output_cost_per_mil_tokens": 0.825,
+        "input_cache_read_cost_per_mil_tokens": 0.00875
+      }
+    },
     "displayName": "DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -3255,6 +4249,13 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.6,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.2,
+        "output_cost_per_mil_tokens": 1.2,
+        "input_cache_read_cost_per_mil_tokens": 0.6
+      }
+    },
     "displayName": "DeepSeek V4 Pro",
     "deprecation_date": "2026-08-27",
     "max_input_tokens": 1048576,
@@ -4358,6 +5359,13 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.14,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.75,
+        "output_cost_per_mil_tokens": 5.5,
+        "input_cache_read_cost_per_mil_tokens": 0.175
+      }
+    },
     "displayName": "GLM 5.2",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -4460,6 +5468,13 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.425,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.285
+      }
+    },
     "displayName": "Kimi K2.7 Code",
     "deprecation_date": "2026-09-25",
     "max_input_tokens": 262144,
@@ -4474,6 +5489,13 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.16,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.22
+      }
+    },
     "displayName": "Kimi K2.6",
     "reasoning": true,
     "deprecation_date": "2026-09-25",
@@ -4538,6 +5560,13 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.45,
+        "output_cost_per_mil_tokens": 1.8,
+        "input_cache_read_cost_per_mil_tokens": 0.09
+      }
+    },
     "displayName": "MiniMax M3",
     "max_input_tokens": 512000,
     "max_output_tokens": 512000,
@@ -4551,6 +5580,13 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1.2,
+        "output_cost_per_mil_tokens": 1.2,
+        "input_cache_read_cost_per_mil_tokens": 0.6
+      }
+    },
     "displayName": "MiniMax M2.7",
     "deprecation_date": "2026-08-27",
     "max_input_tokens": 196608,
@@ -5688,6 +6724,13 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.015,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.18,
+        "output_cost_per_mil_tokens": 0.72,
+        "input_cache_read_cost_per_mil_tokens": 0.018
+      }
+    },
     "displayName": "GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -5988,6 +7031,13 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
     "input_cache_read_cost_per_mil_tokens": 0.12,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.75,
+        "output_cost_per_mil_tokens": 3,
+        "input_cache_read_cost_per_mil_tokens": 0.15
+      }
+    },
     "displayName": "NVIDIA Nemotron 3 Ultra NVFP4",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -6400,6 +7450,13 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 3.75,
+        "output_cost_per_mil_tokens": 18.75,
+        "input_cache_read_cost_per_mil_tokens": 0.375
+      }
+    },
     "displayName": "Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -6415,6 +7472,13 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 4.05,
     "input_cache_read_cost_per_mil_tokens": 0.17,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 4.05,
+        "input_cache_read_cost_per_mil_tokens": 0.17
+      }
+    },
     "displayName": "Inkling",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -6428,6 +7492,13 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.2,
     "input_cache_read_cost_per_mil_tokens": 0.01,
+    "service_tier_costs": {
+      "priority": {
+        "input_cost_per_mil_tokens": 0.0625,
+        "output_cost_per_mil_tokens": 0.25,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      }
+    },
     "displayName": "NVIDIA Nemotron 3.5 Lightning 30B A3B",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
@@ -8596,6 +9667,18 @@
     "input_cost_per_mil_tokens": 2.2,
     "output_cost_per_mil_tokens": 6.6,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 3,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 10.5,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      }
+    },
     "displayName": "Grok 4.7",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -8611,6 +9694,18 @@
     "input_cost_per_mil_tokens": 2.2,
     "output_cost_per_mil_tokens": 6.6,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.1,
+        "output_cost_per_mil_tokens": 3.3,
+        "input_cache_read_cost_per_mil_tokens": 0.275
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.85,
+        "output_cost_per_mil_tokens": 11.55,
+        "input_cache_read_cost_per_mil_tokens": 0.9625
+      }
+    },
     "displayName": "Grok 4.7",
     "reasoning": true,
     "parent": "xai.grok-4.7",
@@ -8627,6 +9722,18 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 3,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 10.5,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      }
+    },
     "displayName": "Grok 4.7",
     "reasoning": true,
     "parent": "xai.grok-4.7",
@@ -8845,6 +9952,20 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.15,
+        "input_cache_write_cost_per_mil_tokens": 1.875
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 5.25,
+        "output_cost_per_mil_tokens": 26.25,
+        "input_cache_read_cost_per_mil_tokens": 0.525,
+        "input_cache_write_cost_per_mil_tokens": 6.5625
+      }
+    },
     "displayName": "Kimi K3",
     "parent": "moonshotai.kimi-k3",
     "max_input_tokens": 1000000,
@@ -8860,6 +9981,20 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.65,
+        "output_cost_per_mil_tokens": 8.25,
+        "input_cache_read_cost_per_mil_tokens": 0.165,
+        "input_cache_write_cost_per_mil_tokens": 2.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 5.775,
+        "output_cost_per_mil_tokens": 28.875,
+        "input_cache_read_cost_per_mil_tokens": 0.5775,
+        "input_cache_write_cost_per_mil_tokens": 7.21875
+      }
+    },
     "displayName": "Kimi K3",
     "parent": "moonshotai.kimi-k3",
     "max_input_tokens": 1000000,
@@ -8875,6 +10010,20 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.65,
+        "output_cost_per_mil_tokens": 8.25,
+        "input_cache_read_cost_per_mil_tokens": 0.165,
+        "input_cache_write_cost_per_mil_tokens": 2.0625
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 5.775,
+        "output_cost_per_mil_tokens": 28.875,
+        "input_cache_read_cost_per_mil_tokens": 0.5775,
+        "input_cache_write_cost_per_mil_tokens": 7.21875
+      }
+    },
     "displayName": "Kimi K3",
     "max_input_tokens": 1000000,
     "available_providers": [
@@ -9052,6 +10201,18 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 3,
+        "input_cache_read_cost_per_mil_tokens": 0.25
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.5,
+        "output_cost_per_mil_tokens": 10.5,
+        "input_cache_read_cost_per_mil_tokens": 0.875
+      }
+    },
     "displayName": "Grok 4.6",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -9067,6 +10228,18 @@
     "input_cost_per_mil_tokens": 2.2,
     "output_cost_per_mil_tokens": 6.6,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1.1,
+        "output_cost_per_mil_tokens": 3.3,
+        "input_cache_read_cost_per_mil_tokens": 0.275
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.85,
+        "output_cost_per_mil_tokens": 11.55,
+        "input_cache_read_cost_per_mil_tokens": 0.9625
+      }
+    },
     "displayName": "Grok 4.6",
     "reasoning": true,
     "max_input_tokens": 500000,
@@ -9094,6 +10267,12 @@
     "format": "converse",
     "flavor": "chat",
     "multimodal": true,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.085,
+        "output_cost_per_mil_tokens": 0.33
+      }
+    },
     "displayName": "Llama 4 Scout",
     "max_input_tokens": 10000000,
     "max_output_tokens": 8000,
@@ -9105,6 +10284,12 @@
     "format": "converse",
     "flavor": "chat",
     "multimodal": true,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.12,
+        "output_cost_per_mil_tokens": 0.485
+      }
+    },
     "displayName": "Llama 4 Maverick",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000,
@@ -9120,6 +10305,14 @@
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 0.25,
     "input_cache_write_cost_per_mil_tokens": 12.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 25,
+        "input_cache_read_cost_per_mil_tokens": 0.125,
+        "input_cache_write_cost_per_mil_tokens": 6.25
+      }
+    },
     "displayName": "Claude Mythos 5.1",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9144,6 +10337,14 @@
     "input_cache_write_cost_per_mil_tokens": 12.5,
     "input_cache_write_5m_cost_per_mil_tokens": 12.5,
     "input_cache_write_1h_cost_per_mil_tokens": 20,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 25,
+        "input_cache_read_cost_per_mil_tokens": 0.125,
+        "input_cache_write_cost_per_mil_tokens": 6.25
+      }
+    },
     "displayName": "Claude Fable 5.1",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9170,6 +10371,14 @@
     "input_cache_write_cost_per_mil_tokens": 12.5,
     "input_cache_write_5m_cost_per_mil_tokens": 12.5,
     "input_cache_write_1h_cost_per_mil_tokens": 20,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 5,
+        "output_cost_per_mil_tokens": 25,
+        "input_cache_read_cost_per_mil_tokens": 0.5,
+        "input_cache_write_cost_per_mil_tokens": 6.25
+      }
+    },
     "displayName": "Claude Fable 5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9197,6 +10406,14 @@
     "input_cache_write_cost_per_mil_tokens": 5,
     "input_cache_write_5m_cost_per_mil_tokens": 5,
     "input_cache_write_1h_cost_per_mil_tokens": 8,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2,
+        "output_cost_per_mil_tokens": 10,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 2.5
+      }
+    },
     "displayName": "Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9224,6 +10441,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9252,6 +10477,14 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "input_cache_write_5m_cost_per_mil_tokens": 2.5,
     "input_cache_write_1h_cost_per_mil_tokens": 4,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.05,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      }
+    },
     "displayName": "Claude Sonnet 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9278,6 +10511,14 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "input_cache_write_5m_cost_per_mil_tokens": 2.5,
     "input_cache_write_1h_cost_per_mil_tokens": 4,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.1,
+        "input_cache_write_cost_per_mil_tokens": 1.25
+      }
+    },
     "displayName": "Claude Sonnet 5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9306,6 +10547,14 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.25,
+        "input_cache_read_cost_per_mil_tokens": 0.005,
+        "input_cache_write_cost_per_mil_tokens": 0.0625
+      }
+    },
     "displayName": "Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9326,6 +10575,14 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "input_cache_write_5m_cost_per_mil_tokens": 1.25,
     "input_cache_write_1h_cost_per_mil_tokens": 2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.5,
+        "output_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.05,
+        "input_cache_write_cost_per_mil_tokens": 0.625
+      }
+    },
     "displayName": "Claude Haiku 4.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9349,6 +10606,14 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "input_cache_write_5m_cost_per_mil_tokens": 1.25,
     "input_cache_write_1h_cost_per_mil_tokens": 2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.5,
+        "output_cost_per_mil_tokens": 2.5,
+        "input_cache_read_cost_per_mil_tokens": 0.05,
+        "input_cache_write_cost_per_mil_tokens": 0.625
+      }
+    },
     "displayName": "Claude Haiku 4.5 (2025-10-01)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9370,6 +10635,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 4.8",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9396,6 +10669,14 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "input_cache_write_5m_cost_per_mil_tokens": 3.75,
     "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.15,
+        "input_cache_write_cost_per_mil_tokens": 1.875
+      }
+    },
     "displayName": "Claude Sonnet 4.6",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9422,6 +10703,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 4.7",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9448,6 +10737,14 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "input_cache_write_5m_cost_per_mil_tokens": 3.75,
     "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.15,
+        "input_cache_write_cost_per_mil_tokens": 1.875
+      }
+    },
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9471,6 +10768,14 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "input_cache_write_5m_cost_per_mil_tokens": 3.75,
     "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5,
+        "input_cache_read_cost_per_mil_tokens": 0.15,
+        "input_cache_write_cost_per_mil_tokens": 1.875
+      }
+    },
     "displayName": "Claude Sonnet 4.5 (2025-09-29)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9492,6 +10797,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 4.6",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9515,6 +10828,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 4.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9535,6 +10856,14 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 2.5,
+        "output_cost_per_mil_tokens": 12.5,
+        "input_cache_read_cost_per_mil_tokens": 0.25,
+        "input_cache_write_cost_per_mil_tokens": 3.125
+      }
+    },
     "displayName": "Claude Opus 4.5 (2025-11-01)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9723,6 +11052,12 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5
+      }
+    },
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -9757,6 +11092,12 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.5,
+        "output_cost_per_mil_tokens": 2.5
+      }
+    },
     "displayName": "Claude Haiku 4.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10277,6 +11618,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 3,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.5,
+        "output_cost_per_mil_tokens": 1.5
+      }
+    },
     "displayName": "Mistral Small 24.02",
     "max_input_tokens": 32000,
     "max_output_tokens": 8191,
@@ -10432,6 +11779,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.88,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.11,
+        "output_cost_per_mil_tokens": 0.44
+      }
+    },
     "displayName": "Qwen3 235B A22B (2507)",
     "reasoning": true,
     "max_input_tokens": 262144,
@@ -10685,6 +12038,12 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.5,
+        "output_cost_per_mil_tokens": 7.5
+      }
+    },
     "displayName": "Global Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10703,6 +12062,12 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.5,
+        "output_cost_per_mil_tokens": 2.5
+      }
+    },
     "displayName": "Global Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10865,6 +12230,12 @@
     "output_cost_per_mil_tokens": 16.5,
     "input_cache_read_cost_per_mil_tokens": 0.33,
     "input_cache_write_cost_per_mil_tokens": 4.125,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1.65,
+        "output_cost_per_mil_tokens": 8.25
+      }
+    },
     "displayName": "US Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10901,6 +12272,12 @@
     "output_cost_per_mil_tokens": 5.5,
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "input_cache_write_cost_per_mil_tokens": 1.375,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.55,
+        "output_cost_per_mil_tokens": 2.75
+      }
+    },
     "displayName": "US Claude 4.5 Haiku",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10951,6 +12328,12 @@
     "format": "converse",
     "flavor": "chat",
     "multimodal": true,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.12,
+        "output_cost_per_mil_tokens": 0.485
+      }
+    },
     "displayName": "US Llama 4 Maverick",
     "parent": "meta.llama4-maverick-17b-instruct-v1:0",
     "max_input_tokens": 1000000,
@@ -10963,6 +12346,12 @@
     "format": "converse",
     "flavor": "chat",
     "multimodal": true,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.085,
+        "output_cost_per_mil_tokens": 0.33
+      }
+    },
     "displayName": "US Llama 4 Scout",
     "parent": "meta.llama4-scout-17b-instruct-v1:0",
     "max_input_tokens": 10000000,
@@ -12723,6 +14112,23 @@
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 3.75,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 1.35,
+        "output_cost_per_mil_tokens": 6.75,
+        "input_cache_read_cost_per_mil_tokens": 0.135
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "Gemini 3.7 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12744,6 +14150,23 @@
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 3.75,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 1.35,
+        "output_cost_per_mil_tokens": 6.75,
+        "input_cache_read_cost_per_mil_tokens": 0.135
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "Gemini 3.8 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12765,6 +14188,23 @@
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 3.75,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 1.35,
+        "output_cost_per_mil_tokens": 6.75,
+        "input_cache_read_cost_per_mil_tokens": 0.135
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.375,
+        "output_cost_per_mil_tokens": 1.875,
+        "input_cache_read_cost_per_mil_tokens": 0.0375
+      }
+    },
     "displayName": "Gemini 3.6 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12786,6 +14226,23 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 9,
     "input_cache_read_cost_per_mil_tokens": 0.15,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.75,
+        "output_cost_per_mil_tokens": 4.5,
+        "input_cache_read_cost_per_mil_tokens": 0.08
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.7,
+        "output_cost_per_mil_tokens": 16.2,
+        "input_cache_read_cost_per_mil_tokens": 0.27
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.75,
+        "output_cost_per_mil_tokens": 4.5,
+        "input_cache_read_cost_per_mil_tokens": 0.075
+      }
+    },
     "displayName": "Gemini 3.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12807,6 +14264,23 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.03,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.15,
+        "output_cost_per_mil_tokens": 1.25,
+        "input_cache_read_cost_per_mil_tokens": 0.02
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.54,
+        "output_cost_per_mil_tokens": 4.5,
+        "input_cache_read_cost_per_mil_tokens": 0.05
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.15,
+        "output_cost_per_mil_tokens": 1.25,
+        "input_cache_read_cost_per_mil_tokens": 0.02
+      }
+    },
     "displayName": "Gemini 3.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12827,6 +14301,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1.5
+      }
+    },
     "displayName": "Gemini 3.1 Flash Image",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-image"
@@ -12848,6 +14328,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.75,
+        "output_cost_per_mil_tokens": 3.75
+      }
+    },
     "displayName": "Gemini Nano Banana 2.1",
     "supported_regions": [
       "global"
@@ -12864,6 +14350,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1.5
+      }
+    },
     "displayName": "Gemini 3.1 Flash Image Preview",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-image-preview"
@@ -12886,6 +14378,23 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 0.75,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.45,
+        "output_cost_per_mil_tokens": 2.7,
+        "input_cache_read_cost_per_mil_tokens": 0.045
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 0.75,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      }
+    },
     "displayName": "Gemini 3.1 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12909,6 +14418,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.5,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 0.75
+      }
+    },
     "displayName": "Gemini 3.1 Flash-Lite Image",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite-image"
@@ -12931,6 +14446,23 @@
     "input_cost_per_mil_tokens": 0.25,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.025,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 0.75,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.45,
+        "output_cost_per_mil_tokens": 2.7,
+        "input_cache_read_cost_per_mil_tokens": 0.045
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.125,
+        "output_cost_per_mil_tokens": 0.75,
+        "input_cache_read_cost_per_mil_tokens": 0.0125
+      }
+    },
     "displayName": "Gemini 3.1 Flash-Lite (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12956,6 +14488,23 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.2
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.6,
+        "output_cost_per_mil_tokens": 21.6,
+        "input_cache_read_cost_per_mil_tokens": 0.36
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.2
+      }
+    },
     "displayName": "Gemini 3.1 Pro (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -12980,6 +14529,23 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.2
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.6,
+        "output_cost_per_mil_tokens": 21.6,
+        "input_cache_read_cost_per_mil_tokens": 0.36
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6,
+        "input_cache_read_cost_per_mil_tokens": 0.2
+      }
+    },
     "displayName": "Gemini 3.1 Pro Custom Tools (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -13001,6 +14567,23 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1.5,
+        "input_cache_read_cost_per_mil_tokens": 0.05
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.9,
+        "output_cost_per_mil_tokens": 5.4,
+        "input_cache_read_cost_per_mil_tokens": 0.09
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.25,
+        "output_cost_per_mil_tokens": 1.5,
+        "input_cache_read_cost_per_mil_tokens": 0.05
+      }
+    },
     "displayName": "Gemini 3 Flash (Preview)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -13024,6 +14607,20 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.6,
+        "output_cost_per_mil_tokens": 21.6
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6
+      }
+    },
     "displayName": "Gemini 3 Pro Image",
     "fallback_models": [
       "publishers/google/models/gemini-3-pro-image"
@@ -13045,6 +14642,20 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 3.6,
+        "output_cost_per_mil_tokens": 21.6
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 6
+      }
+    },
     "displayName": "Gemini 3 Pro Image Preview",
     "fallback_models": [
       "publishers/google/models/gemini-3-pro-image-preview"
@@ -13083,6 +14694,23 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.03,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.15,
+        "output_cost_per_mil_tokens": 1.25,
+        "input_cache_read_cost_per_mil_tokens": 0.03
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.54,
+        "output_cost_per_mil_tokens": 4.5,
+        "input_cache_read_cost_per_mil_tokens": 0.054
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.15,
+        "output_cost_per_mil_tokens": 1.25,
+        "input_cache_read_cost_per_mil_tokens": 0.03
+      }
+    },
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
@@ -13129,6 +14757,17 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.15
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.54
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.15
+      }
+    },
     "displayName": "Gemini 2.5 Flash Image",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-image"
@@ -13164,6 +14803,23 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.01,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 0.18,
+        "output_cost_per_mil_tokens": 0.72,
+        "input_cache_read_cost_per_mil_tokens": 0.018
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.05,
+        "output_cost_per_mil_tokens": 0.2,
+        "input_cache_read_cost_per_mil_tokens": 0.01
+      }
+    },
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
@@ -13202,6 +14858,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "service_tier_costs": {
+      "flex": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.125
+      },
+      "priority": {
+        "input_cost_per_mil_tokens": 2.25,
+        "output_cost_per_mil_tokens": 18,
+        "input_cache_read_cost_per_mil_tokens": 0.225
+      },
+      "batch": {
+        "input_cost_per_mil_tokens": 0.625,
+        "output_cost_per_mil_tokens": 5,
+        "input_cache_read_cost_per_mil_tokens": 0.125
+      }
+    },
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
@@ -13371,6 +15044,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 (0309)",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13639,6 +15319,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Reasoning",
     "reasoning": true,
     "parent": "grok-4.20-reasoning",
@@ -13655,6 +15342,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Reasoning",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13670,6 +15364,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Non-Reasoning",
     "parent": "grok-4.20-non-reasoning",
     "max_input_tokens": 1000000,
@@ -13685,6 +15386,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Non-Reasoning",
     "max_input_tokens": 1000000,
     "max_output_tokens": 1000000,
@@ -13699,6 +15407,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Multi-Agent",
     "reasoning": true,
     "parent": "grok-4.20-multi-agent",
@@ -13715,6 +15430,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Multi-Agent",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13731,6 +15453,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13747,6 +15476,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Multi-Agent (0309)",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13861,6 +15597,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 (Non-Reasoning)",
     "max_input_tokens": 1000000,
     "max_output_tokens": 1000000,
@@ -13875,6 +15618,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.20 Reasoning (0309)",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -13969,6 +15719,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.3 (Latest)",
     "reasoning": true,
     "parent": "grok-4.3-latest",
@@ -13986,6 +15743,13 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 2.5,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "service_tier_costs": {
+      "batch": {
+        "input_cost_per_mil_tokens": 1,
+        "output_cost_per_mil_tokens": 2,
+        "input_cache_read_cost_per_mil_tokens": 0.16
+      }
+    },
     "displayName": "Grok 4.3",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -15373,6 +17137,14 @@
     "output_cost_per_mil_tokens": 55,
     "input_cache_read_cost_per_mil_tokens": 1.1,
     "input_cache_write_cost_per_mil_tokens": 13.75,
+    "service_tier_costs": {
+      "ultrafast": {
+        "input_cost_per_mil_tokens": 60,
+        "output_cost_per_mil_tokens": 300,
+        "input_cache_read_cost_per_mil_tokens": 6,
+        "input_cache_write_cost_per_mil_tokens": 75
+      }
+    },
     "displayName": "GPT-6 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6-astra",
@@ -15544,6 +17316,14 @@
     "output_cost_per_mil_tokens": 55,
     "input_cache_read_cost_per_mil_tokens": 1.1,
     "input_cache_write_cost_per_mil_tokens": 13.75,
+    "service_tier_costs": {
+      "ultrafast": {
+        "input_cost_per_mil_tokens": 66,
+        "output_cost_per_mil_tokens": 330,
+        "input_cache_read_cost_per_mil_tokens": 6.6,
+        "input_cache_write_cost_per_mil_tokens": 82.5
+      }
+    },
     "displayName": "GPT-6 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6-astra",

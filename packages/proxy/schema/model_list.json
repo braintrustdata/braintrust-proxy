@@ -12842,6 +12842,17 @@
       "openrouter"
     ]
   },
+  "gemini-nano-banana-2.1": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "displayName": "Gemini Nano Banana 2.1",
+    "available_providers": [
+      "google"
+    ]
+  },
   "gemini-3.1-flash-lite": {
     "format": "google",
     "flavor": "chat",

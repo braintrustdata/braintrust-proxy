@@ -1374,6 +1374,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-5-nano": ["openai", "azure", "openrouter"],
   "global.anthropic.claude-opus-4-6-v1": ["bedrock"],
   "gemini-3.1-flash-lite-image": ["google", "vertex", "openrouter"],
+  "gemini-nano-banana-2.1": ["google"],
   "publishers/google/models/gemini-3.1-flash-lite-image": ["vertex"],
   "mistral-medium-2604": ["mistral"],
   "grok-4.5": ["xAI", "openrouter"],

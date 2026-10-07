@@ -9296,6 +9296,26 @@
       "openrouter"
     ]
   },
+  "claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2027-10-07",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "claude-haiku-4-5": {
     "format": "anthropic",
     "flavor": "chat",

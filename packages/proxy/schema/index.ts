@@ -484,7 +484,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "openrouter/auto-beta": ["openrouter"],
   "moonshotai/kimi-k3": ["openrouter"],
   "meta/muse-spark-1.1": ["openrouter"],
-  "kwaipilot/kat-coder-pro-v2.5": ["openrouter"],
   "openai/gpt-5.6-luna-pro": ["openrouter"],
   "openai/gpt-5.6-terra-pro": ["openrouter"],
   "openai/gpt-5.6-sol-pro": ["openrouter"],

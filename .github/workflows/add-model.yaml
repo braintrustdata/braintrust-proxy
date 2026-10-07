@@ -231,9 +231,15 @@ jobs:
 
             1. Read neighboring entries plus `packages/proxy/schema/models.ts` and `packages/proxy/schema/index.ts` to match the catalog schema and provider-mapping conventions.
             2. Verify that this exact model is publicly available through the requested provider's shared inference surface using official provider sources.
-            3. No priced provider model endpoint added this target. Find the provider's official public on-demand pricing for this exact model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
+            3. No priced provider model endpoint added this target. Find the provider's official public on-demand pricing for this exact model. For the base cost fields, do not use third-party pricing sources, free tiers, batch or other service-tier pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
             4. Add a complete, schema-valid entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
-            5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
+            5. Also attempt to fill `service_tier_costs` (see `ServiceTierCostsSchema` in `packages/proxy/schema/models.ts`) from the provider's official per-tier price tables for this exact model. The base `*_cost_per_mil_tokens` fields stay standard on-demand pricing; tier prices go only in `service_tier_costs`.
+               - Keys: `flex`, `priority` (OpenAI's "Fast" tier, formerly "Priority"), `ultrafast`, and `batch`. Add a key only when the provider publishes a per-token price for that tier and model.
+               - Each entry may set `input_cost_per_mil_tokens`, `output_cost_per_mil_tokens`, `input_cache_read_cost_per_mil_tokens`, and `input_cache_write_cost_per_mil_tokens`, in USD per 1M tokens. Use short-context rates; ignore long-context (>200K/272K input) rates. Omit a field the table lists as "-" or does not list; do not derive it from a discount percentage.
+               - For OpenAI, use the Batch, Flex, Fast, and Ultrafast tables on `https://developers.openai.com/api/docs/pricing` (a markdown copy is at `https://developers.openai.com/api/docs/pricing.md`).
+               - Example shape: `"service_tier_costs": { "flex": { "input_cost_per_mil_tokens": 0.125, "output_cost_per_mil_tokens": 1, "input_cache_read_cost_per_mil_tokens": 0.0125 } }`.
+               - If no tier prices can be verified, omit `service_tier_costs`; the daily sync backfills it from LiteLLM when available. Missing tier prices never block adding the model.
+            6. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
 
             # Canonical provider verification
 
@@ -251,7 +257,8 @@ jobs:
 
             - whether the exact model slug appeared;
             - where pricing was found;
-            - whether the pricing matches the requested provider and inference surface; and
+            - whether the pricing matches the requested provider and inference surface;
+            - which `service_tier_costs` tiers were added and the official table each came from, or why none were added; and
             - if no change was made, the specific requirement that remains unresolved.
 
             Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.

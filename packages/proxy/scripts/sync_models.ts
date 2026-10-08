@@ -1118,7 +1118,14 @@ export function getUpdatedAvailableProviders(
   return mergedProviders;
 }
 
-const ANTHROPIC_BEDROCK_SCOPES = new Set(["us", "eu", "apac", "global"]);
+const ANTHROPIC_BEDROCK_SCOPES = new Set([
+  "us",
+  "eu",
+  "apac",
+  "global",
+  "au",
+  "jp",
+]);
 const MISTRAL_VERTEX_EQUIVALENT_MODELS = new Set([
   "codestral-2501",
   "mistral-large-2411",
@@ -1236,7 +1243,15 @@ export function applyEquivalentModels(
   const updatedModels: LocalModelList = {};
   for (const [modelName, model] of Object.entries(localModels)) {
     if (managedNames.has(modelName)) {
-      const { fallback_models: _fallbackModels, ...rest } = model;
+      const { fallback_models: existingFallbacks, ...rest } = model;
+      // Preserve curated companion links whose provider slug cannot be inferred
+      // from the canonical id (for example OpenRouter and Databricks).
+      const validFallbacks = [...new Set(existingFallbacks ?? [])]
+        .filter((name) => name !== modelName && modelNames.has(name))
+        .sort();
+      if (validFallbacks.length > 0) {
+        rest.fallback_models = validFallbacks;
+      }
       const provider = managedProviders.get(modelName);
       if (provider && !rest.available_providers?.length) {
         rest.available_providers = [provider];
@@ -1248,7 +1263,12 @@ export function applyEquivalentModels(
   }
 
   for (const [canonicalName, group] of groups) {
-    const equivalentModels = Array.from(new Set(group))
+    const equivalentModels = Array.from(
+      new Set([
+        ...group,
+        ...(updatedModels[canonicalName]?.fallback_models ?? []),
+      ]),
+    )
       .filter((modelName) => modelName !== canonicalName)
       .sort();
     if (equivalentModels.length === 0) {

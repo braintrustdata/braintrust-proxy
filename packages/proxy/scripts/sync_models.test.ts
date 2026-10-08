@@ -445,6 +445,49 @@ export const AvailableEndpointTypes = {
     ).toEqual(["vertex"]);
   });
 
+  it("preserves explicit cloud companions through catalog canonicalization", () => {
+    const model = {
+      format: "anthropic",
+      flavor: "chat",
+      available_providers: ["anthropic"],
+      fallback_models: [
+        "anthropic/claude-haiku-5.5",
+        "databricks-claude-haiku-5-5",
+        "anthropic/claude-haiku-5.5",
+        "missing-model",
+        "claude-haiku-5-5",
+      ],
+    } satisfies ModelSpec;
+    const { models } = canonicalizeLocalModelsContent(
+      JSON.stringify({
+        "claude-haiku-5-5": model,
+        "anthropic/claude-haiku-5.5": {
+          format: "openai",
+          flavor: "chat",
+          available_providers: ["openrouter"],
+        },
+        "databricks-claude-haiku-5-5": {
+          format: "openai",
+          flavor: "chat",
+          available_providers: ["databricks"],
+        },
+        "anthropic.claude-haiku-5-5": {
+          format: "anthropic",
+          flavor: "chat",
+          available_providers: ["bedrock"],
+        },
+      }),
+    );
+    expect(models["claude-haiku-5-5"].fallback_models).toEqual([
+      "anthropic.claude-haiku-5-5",
+      "anthropic/claude-haiku-5.5",
+      "databricks-claude-haiku-5-5",
+    ]);
+    expect(
+      canonicalizeLocalModelsContent(JSON.stringify(models)).models,
+    ).toEqual(models);
+  });
+
   it("registers Bedrock Mantle openai.gpt-* ids as fallbacks for the canonical gpt model", () => {
     const models = applyEquivalentModels({
       "gpt-5.5": {

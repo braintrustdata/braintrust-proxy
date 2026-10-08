@@ -7384,6 +7384,30 @@
       "vertex"
     ]
   },
+  "publishers/anthropic/models/claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
+    ],
+    "locations": [
+      "global",
+      "us",
+      "eu"
+    ]
+  },
   "publishers/anthropic/models/claude-sonnet-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8669,6 +8693,106 @@
       "bedrock"
     ]
   },
+  "global.anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "Global Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ],
+    "parent": "anthropic.claude-haiku-5-5"
+  },
+  "us.anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "US Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ],
+    "parent": "anthropic.claude-haiku-5-5"
+  },
+  "eu.anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "EU Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ],
+    "parent": "anthropic.claude-haiku-5-5"
+  },
+  "au.anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "AU Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ],
+    "parent": "anthropic.claude-haiku-5-5"
+  },
+  "jp.anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "JP Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ],
+    "parent": "anthropic.claude-haiku-5-5"
+  },
   "global.anthropic.claude-sonnet-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -8695,6 +8819,25 @@
     "reasoning": true,
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-5-5",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "anthropic.claude-haiku-5-5": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "displayName": "Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -9314,6 +9457,16 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
+    ],
+    "fallback_models": [
+      "anthropic.claude-haiku-5-5",
+      "global.anthropic.claude-haiku-5-5",
+      "us.anthropic.claude-haiku-5-5",
+      "eu.anthropic.claude-haiku-5-5",
+      "au.anthropic.claude-haiku-5-5",
+      "jp.anthropic.claude-haiku-5-5",
+      "publishers/anthropic/models/claude-haiku-5-5",
+      "anthropic/claude-haiku-5.5"
     ]
   },
   "claude-haiku-4-5": {
@@ -18047,7 +18200,10 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ]
+    ],
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2
   },
   "anthropic/claude-sonnet-5.5": {
     "format": "openai",

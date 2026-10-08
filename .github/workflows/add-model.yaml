@@ -67,6 +67,7 @@ jobs:
               "groq",
               "mistral",
               "openai",
+              "openrouter",
               "perplexity",
               "together",
               "vertex",
@@ -199,8 +200,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Add from official provider sources with Claude Code
-        if: steps.direct_changes.outputs.changed == 'false'
+      - name: Add target and cloud companion entries with Claude Code
         timeout-minutes: 12
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
@@ -216,24 +216,41 @@ jobs:
           prompt: |
             # Goal
 
-            Add exactly one model to the Braintrust proxy catalog.
+            Add the requested model and all cloud companion entries established by prior models in the same family to the Braintrust proxy catalog.
 
             - Provider: `${{ steps.target.outputs.provider }}`
             - Model slug: `${{ steps.target.outputs.model_slug }}`
+            - A priced endpoint already added or updated the target: `${{ steps.direct_changes.outputs.changed }}`
 
             # Scope
 
-            - Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
-            - Do not add, remove, or update any other model or source file.
-            - If the target slug already exists for another provider, verify that the requested provider serves it, then add only that provider to the existing entry and provider mapping. Preserve every other field and provider.
+            - This task explicitly authorizes catalog and provider-mapping work in this repository. Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
+            - The requested model and its cloud/provider companion entries are the only models in scope. Do not remove models or modify unrelated models or source files.
+            - If a priced endpoint already added or updated the target, preserve its verified metadata and skip target availability/pricing research. Still add its cloud companions.
+            - If the target slug already exists for another provider, verify the requested provider for the target entry, then union it into the existing entry and provider mapping. Preserve other fields and providers, and still add cloud companions.
+            - If the target already exists for the requested provider, still ensure all cloud companions, mappings, and fallback links exist.
 
             # Research and entry requirements
 
             1. Read neighboring entries plus `packages/proxy/schema/models.ts` and `packages/proxy/schema/index.ts` to match the catalog schema and provider-mapping conventions.
-            2. Verify that this exact model is publicly available through the requested provider's shared inference surface using official provider sources.
-            3. No priced provider model endpoint added this target. Find the provider's official public on-demand pricing for this exact model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
-            4. Add a complete, schema-valid entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
+            2. Unless a priced endpoint already added or updated the target, verify that the requested target model is publicly available through the requested provider's shared inference surface using official provider sources. The cloud-companion assumptions below are an explicit exception; do not independently verify companion availability, IDs, or prices.
+            3. Unless a priced endpoint already added or updated the target, find the provider's official public on-demand pricing for this exact target model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
+            4. Add a complete, schema-valid target entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
+
+            # Required cloud companion entries
+
+            After the target entry exists, always add its cloud companions, including when a priced endpoint handled the target or the target was already present. This is part of adding the model, not optional follow-up research.
+
+            - Read prior models in the same family and follow every established cloud/provider surface for that family, including Bedrock, Vertex, OpenRouter, Azure, and Databricks wherever prior entries establish a convention. Do not invent a new provider integration for a family with no prior entries.
+            - Assume the new model is available on those established surfaces. Derive each exact catalog slug by applying the same transformation used for previous models in that family. Do not wait for cloud documentation, an API listing, region access, credentials, or an independent price confirmation. These availability, slug, and price assumptions are explicitly authorized for cloud companions.
+            - For modern Claude models with fixed, undated IDs, follow the current Claude 5.5 conventions: `anthropic.<target-slug>` on Bedrock; `global.`, `us.`, `eu.`, `au.`, and `jp.` Bedrock variants; `publishers/anthropic/models/<target-slug>` on Vertex; and `anthropic/claude-<family>-<major>.<minor>` on OpenRouter. Match modern undated examples rather than introducing legacy date or `-v1:0` suffixes. For other model families or version styles, use their own previous cloud entries rather than the Claude transformation.
+            - Assume prices are identical to the target model on every companion surface. Copy all target pricing fields, including input, output, cache-read, cache-write, 5m cache-write, and 1h cache-write prices when present. Give regional variants the same prices too; do not apply provider or region premiums, omit known prices, or fetch separate cloud pricing.
+            - Pricing must be written explicitly on EVERY entry for this model: the target, provider base entries, global entries, all regional entries, and both new and already-existing companions. `parent` is lifecycle metadata and does not provide pricing inheritance. An existing companion is not complete until it has every pricing field present on the target, with the same values. Before finishing, compare all pricing fields across every companion and fill or correct any missing or differing values. Do not rely on normalization to fill prices.
+            - Copy the target's token limits and capabilities; use each provider's established format, provider metadata, and display-name conventions. Preserve existing companion providers and unrelated metadata. Do not copy the target's provider list, parent, fallback links, or provider-specific lifecycle/region fields blindly.
+            - Add every companion's provider mapping in `packages/proxy/schema/index.ts`. Set regional Bedrock entries' parent to the Bedrock base entry. Union all companion IDs into the target's `fallback_models`, preserving existing links and avoiding duplicates. Never leave a fallback pointing to a missing entry.
+            - If the request itself names a cloud/provider-specific slug, identify the underlying model using prior family entries and complete the same family of companion entries. Do not double-prefix an already qualified slug.
+            - If no target entry can be added because its original availability or pricing remains unresolved, leave the catalog unchanged and explain why. Do not create cloud companions without a target entry.
 
             # Canonical provider verification
 
@@ -243,7 +260,7 @@ jobs:
             - **Anthropic**: Always inspect `https://platform.claude.com/docs/en/about-claude/pricing` and follow the relevant official model documentation linked from that page.
             - **Google Gemini**: Always inspect `https://ai.google.dev/gemini-api/docs/pricing`, follow the relevant official model documentation linked from that page, and verify that the pricing applies to the requested Gemini API model and usage tier.
 
-            Search engines are discovery aids only. Do not conclude that a model is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify exact model availability and pricing from the applicable canonical provider page and its linked official documentation. If the exact model, requested provider inference surface, or applicable pricing still cannot be verified after those direct checks, do not guess and leave the catalog unchanged.
+            The following verification rules apply to the requested target, not to cloud companions generated under the assumptions above. Search engines are discovery aids only. Do not conclude that a model is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify exact model availability and pricing from the applicable canonical provider page and its linked official documentation. If the exact model, requested provider inference surface, or applicable pricing still cannot be verified after those direct checks, do not guess and leave the catalog unchanged.
 
             # Final report
 
@@ -251,8 +268,9 @@ jobs:
 
             - whether the exact model slug appeared;
             - where pricing was found;
-            - whether the pricing matches the requested provider and inference surface; and
-            - if no change was made, the specific requirement that remains unresolved.
+            - whether the pricing matches the requested provider and inference surface;
+            - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and
+            - if no change was made, the specific target requirement that remains unresolved.
 
             Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
 

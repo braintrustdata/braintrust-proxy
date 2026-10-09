@@ -16080,20 +16080,6 @@
       "openrouter"
     ]
   },
-  "baidu/ernie-4.5-vl-424b-a47b": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.42,
-    "output_cost_per_mil_tokens": 1.25,
-    "displayName": "Baidu: ERNIE 4.5 VL 424B A47B ",
-    "reasoning": true,
-    "max_input_tokens": 123000,
-    "max_output_tokens": 16000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "morph/morph-v3-fast": {
     "format": "openai",
     "flavor": "chat",

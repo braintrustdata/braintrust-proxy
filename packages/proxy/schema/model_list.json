@@ -7397,15 +7397,15 @@
     "displayName": "Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "vertex"
-    ],
     "locations": [
       "global",
       "us",
       "eu"
+    ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "vertex"
     ]
   },
   "publishers/anthropic/models/claude-sonnet-5-5": {
@@ -8706,12 +8706,12 @@
     "displayName": "Global Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-5-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ],
-    "parent": "anthropic.claude-haiku-5-5"
+    ]
   },
   "us.anthropic.claude-haiku-5-5": {
     "format": "anthropic",
@@ -8726,12 +8726,12 @@
     "displayName": "US Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-5-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ],
-    "parent": "anthropic.claude-haiku-5-5"
+    ]
   },
   "eu.anthropic.claude-haiku-5-5": {
     "format": "anthropic",
@@ -8746,12 +8746,12 @@
     "displayName": "EU Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-5-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ],
-    "parent": "anthropic.claude-haiku-5-5"
+    ]
   },
   "au.anthropic.claude-haiku-5-5": {
     "format": "anthropic",
@@ -8766,12 +8766,12 @@
     "displayName": "AU Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-5-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ],
-    "parent": "anthropic.claude-haiku-5-5"
+    ]
   },
   "jp.anthropic.claude-haiku-5-5": {
     "format": "anthropic",
@@ -8786,12 +8786,12 @@
     "displayName": "JP Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "parent": "anthropic.claude-haiku-5-5",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
-    ],
-    "parent": "anthropic.claude-haiku-5-5"
+    ]
   },
   "global.anthropic.claude-sonnet-5-5": {
     "format": "anthropic",
@@ -9346,8 +9346,10 @@
     "deprecation_date": "2027-09-22",
     "fallback_models": [
       "anthropic.claude-opus-5-5",
+      "au.anthropic.claude-opus-5-5",
       "eu.anthropic.claude-opus-5-5",
       "global.anthropic.claude-opus-5-5",
+      "jp.anthropic.claude-opus-5-5",
       "publishers/anthropic/models/claude-opus-5-5",
       "us.anthropic.claude-opus-5-5"
     ],
@@ -9373,6 +9375,7 @@
     "deprecation_date": "2027-07-24",
     "fallback_models": [
       "anthropic.claude-opus-5",
+      "au.anthropic.claude-opus-5",
       "eu.anthropic.claude-opus-5",
       "global.anthropic.claude-opus-5",
       "publishers/anthropic/models/claude-opus-5",
@@ -9427,6 +9430,7 @@
     "deprecation_date": "2027-06-30",
     "fallback_models": [
       "anthropic.claude-sonnet-5",
+      "au.anthropic.claude-sonnet-5",
       "eu.anthropic.claude-sonnet-5",
       "global.anthropic.claude-sonnet-5",
       "publishers/anthropic/models/claude-sonnet-5",
@@ -9453,20 +9457,20 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2027-10-07",
+    "fallback_models": [
+      "anthropic.claude-haiku-5-5",
+      "anthropic/claude-haiku-5.5",
+      "au.anthropic.claude-haiku-5-5",
+      "eu.anthropic.claude-haiku-5-5",
+      "global.anthropic.claude-haiku-5-5",
+      "jp.anthropic.claude-haiku-5-5",
+      "publishers/anthropic/models/claude-haiku-5-5",
+      "us.anthropic.claude-haiku-5-5"
+    ],
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "anthropic"
-    ],
-    "fallback_models": [
-      "anthropic.claude-haiku-5-5",
-      "global.anthropic.claude-haiku-5-5",
-      "us.anthropic.claude-haiku-5-5",
-      "eu.anthropic.claude-haiku-5-5",
-      "au.anthropic.claude-haiku-5-5",
-      "jp.anthropic.claude-haiku-5-5",
-      "publishers/anthropic/models/claude-haiku-5-5",
-      "anthropic/claude-haiku-5.5"
     ]
   },
   "claude-haiku-4-5": {
@@ -16076,20 +16080,6 @@
       "openrouter"
     ]
   },
-  "baidu/ernie-4.5-vl-424b-a47b": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.42,
-    "output_cost_per_mil_tokens": 1.25,
-    "displayName": "Baidu: ERNIE 4.5 VL 424B A47B ",
-    "reasoning": true,
-    "max_input_tokens": 123000,
-    "max_output_tokens": 16000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "morph/morph-v3-fast": {
     "format": "openai",
     "flavor": "chat",
@@ -18194,16 +18184,16 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_1h_cost_per_mil_tokens": 0.2,
     "displayName": "Anthropic: Claude Haiku 5.5",
     "reasoning": true,
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
-    ],
-    "input_cache_write_cost_per_mil_tokens": 0.125,
-    "input_cache_write_5m_cost_per_mil_tokens": 0.125,
-    "input_cache_write_1h_cost_per_mil_tokens": 0.2
+    ]
   },
   "anthropic/claude-sonnet-5.5": {
     "format": "openai",

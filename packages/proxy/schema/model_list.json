@@ -18512,38 +18512,12 @@
       "openrouter"
     ]
   },
-  "qwen/qwen3-235b-a22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.455,
-    "output_cost_per_mil_tokens": 1.82,
-    "displayName": "Qwen: Qwen3 235B A22B",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "qwen/qwen3-14b": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.12,
     "output_cost_per_mil_tokens": 0.24,
     "displayName": "Qwen: Qwen3 14B",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3-8b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.117,
-    "output_cost_per_mil_tokens": 0.455,
-    "displayName": "Qwen: Qwen3 8B",
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 8192,
@@ -18628,31 +18602,6 @@
       "openrouter"
     ]
   },
-  "qwen/qwen3-30b-a3b-thinking-2507": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 2.4,
-    "displayName": "Qwen: Qwen3 30B A3B Thinking 2507",
-    "reasoning": true,
-    "max_input_tokens": 81920,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen-plus-2025-07-28": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.26,
-    "output_cost_per_mil_tokens": 0.78,
-    "displayName": "Qwen: Qwen Plus 0728",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "qwen/qwen3-next-80b-a3b-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -18692,32 +18641,6 @@
       "openrouter"
     ]
   },
-  "qwen/qwen3-coder-plus": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.65,
-    "output_cost_per_mil_tokens": 3.25,
-    "input_cache_read_cost_per_mil_tokens": 0.13,
-    "displayName": "Qwen: Qwen3 Coder Plus",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3-max": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.78,
-    "output_cost_per_mil_tokens": 3.9,
-    "input_cache_read_cost_per_mil_tokens": 0.156,
-    "displayName": "Qwen: Qwen3 Max",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "qwen/qwen3-vl-235b-a22b-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -18727,20 +18650,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Qwen: Qwen3 VL 235B A22B Instruct",
     "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3-vl-235b-a22b-thinking": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 4,
-    "displayName": "Qwen: Qwen3 VL 235B A22B Thinking",
-    "reasoning": true,
-    "max_input_tokens": 131072,
     "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
@@ -18786,33 +18695,6 @@
       "openrouter"
     ]
   },
-  "qwen/qwen3-vl-8b-thinking": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.18,
-    "output_cost_per_mil_tokens": 2.1,
-    "displayName": "Qwen: Qwen3 VL 8B Thinking",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3-vl-32b-instruct": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.104,
-    "output_cost_per_mil_tokens": 0.416,
-    "displayName": "Qwen: Qwen3 VL 32B Instruct",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "qwen/qwen3-coder-next": {
     "format": "openai",
     "flavor": "chat",
@@ -18822,19 +18704,6 @@
     "displayName": "Qwen: Qwen3 Coder Next",
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3-max-thinking": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.78,
-    "output_cost_per_mil_tokens": 3.9,
-    "displayName": "Qwen: Qwen3 Max Thinking",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -18948,19 +18817,6 @@
     "displayName": "Qwen: Qwen3.6 Plus",
     "reasoning": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "qwen/qwen3.6-max-preview": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.027,
-    "output_cost_per_mil_tokens": 6.162,
-    "displayName": "Qwen: Qwen3.6 Max Preview",
-    "reasoning": true,
-    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"

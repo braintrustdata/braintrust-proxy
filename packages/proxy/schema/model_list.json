@@ -3092,6 +3092,20 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/deepseek-v4p1-flash-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4-flash-vision-exp": {
     "format": "openai",
     "flavor": "chat",
@@ -12147,6 +12161,20 @@
       "together"
     ]
   },
+  "deepseek-ai/DeepSeek-V4.1-Flash-Fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "deepseek-ai/DeepSeek-V4-Flash-0731": {
     "format": "openai",
     "flavor": "chat",
@@ -14596,6 +14624,20 @@
       "databricks"
     ]
   },
+  "databricks-deepseek-v4-1-flash-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-glm-5-3": {
     "format": "openai",
     "flavor": "chat",
@@ -16638,6 +16680,20 @@
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "deepseek/deepseek-v4.1-flash-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek: DeepSeek V4.1 Flash Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]

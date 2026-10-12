@@ -1420,6 +1420,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-3.5-turbo-instruct": ["openai", "azure", "openrouter"],
   "gpt-daybreak-blue-latest": ["openai", "azure"],
   "gpt-daybreak-red-latest": ["openai", "azure"],
+  "gpt-rosalind-discovery": ["openai", "azure"],
   "gpt-3.5-turbo-16k": ["openai", "azure", "openrouter"],
   "gpt-3.5-turbo": ["openai", "azure", "openrouter"],
   "gpt-4": ["openai", "azure", "openrouter"],

@@ -75,6 +75,10 @@ jobs:
             ]);
             const provider = (process.env.INPUT_PROVIDER || "").trim().toLowerCase();
             const modelSlug = (process.env.INPUT_MODEL_SLUG || "").trim();
+            // Baseten lists this nonexistent model; block API and agent additions.
+            if (modelSlug === "deepseek-ai/DeepSeek-V4.1-Flash-Fast") {
+              throw new Error(`Blocked model slug: ${modelSlug} (not a real model)`);
+            }
             if (!providers.has(provider)) {
               throw new Error(`Unsupported provider: ${provider}`);
             }

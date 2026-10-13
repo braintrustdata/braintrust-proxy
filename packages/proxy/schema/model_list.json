@@ -1,16 +1,4 @@
 {
-  "gpt-rosalind-discovery": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "displayName": "GPT-Rosalind Discovery",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "gpt-image-2.5-sunburst-2026-09-08": {
     "format": "openai",
     "flavor": "chat",

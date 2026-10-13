@@ -6537,6 +6537,25 @@
       "openrouter"
     ]
   },
+  "publishers/google/models/gemini-4-argon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemini 4 Argon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.7-flash": {
     "format": "google",
     "flavor": "chat",
@@ -12901,6 +12920,27 @@
       "google"
     ]
   },
+  "gemini-4-argon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemini 4 Argon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "publishers/google/models/gemini-4-argon"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex",
+      "openrouter"
+    ]
+  },
   "gemini-3.7-flash": {
     "format": "google",
     "flavor": "chat",
@@ -14730,6 +14770,21 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Gemini 3.7 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-4-argon": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemini 4 Argon",
     "reasoning": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,

@@ -14,7 +14,7 @@ import {
   resolveProxyOrgName,
 } from "@braintrust/proxy";
 import { handleRealtimeProxy } from "./realtime";
-import { braintrustAppUrl } from "./env";
+import { braintrustAppUrl, pulseUrl } from "./env";
 import { Span, startSpan } from "braintrust";
 import { BT_PARENT, resolveParentHeader } from "braintrust/util";
 import { cachedLogin, makeProxySpanLogger } from "./tracing";
@@ -71,13 +71,10 @@ export async function handleProxyV1(
 
   if (env.METRICS_LICENSE_KEY) {
     meterProvider = initMetrics(
-      new FlushingHttpMetricExporter(
-        `${env.BRAINTRUST_APP_URL}/api/pulse/otel/v1/metrics`,
-        {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
-        },
-      ),
+      new FlushingHttpMetricExporter(`${pulseUrl(env)}/otel/v1/metrics`, {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${env.METRICS_LICENSE_KEY}`,
+      }),
       {
         service: "cfproxy",
       },

@@ -463,6 +463,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia/nemotron-3.5-content-safety": ["openrouter"],
   "meta/muse-spark-1.3-contributor": ["openrouter"],
   "meta/muse-spark-1.3": ["openrouter"],
+  "meta/muse-spark-open": ["openrouter"],
   "anthropic/claude-fable-5.1": ["openrouter"],
   "ibm-granite/granite-4.2-8b": ["openrouter"],
   "tencent/hy4-preview": ["openrouter"],

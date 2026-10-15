@@ -857,6 +857,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia/nemotron-3-ultra-550b-a55b": ["together", "openrouter"],
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": ["baseten"],
   "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": ["baseten"],
+  "meta-models/muse-spark-open": ["baseten"],
+  "meta/muse-spark-open": ["openrouter"],
   "nvidia/nemotron-3.5-super-vl-120b-a12b": ["together", "openrouter"],
   "moonshot.kimi-k2-thinking": ["bedrock"],
   "xai.grok-4.3": ["bedrock"],

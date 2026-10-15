@@ -1477,6 +1477,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "Qwen/Qwen3.8-2.4T-A95B": ["together"],
   "accounts/fireworks/models/deepseek-v4-pro-0813": ["fireworks"],
   "accounts/fireworks/models/muse-glimmer-30b": ["fireworks"],
+  "accounts/fireworks/models/muse-spark-open": ["fireworks"],
   "databricks-deepseek-v4-flash-0731": ["databricks"],
   "xai.grok-4.6": ["bedrock"],
   "us.xai.grok-4.6": ["bedrock"],

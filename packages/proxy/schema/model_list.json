@@ -3219,6 +3219,24 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/muse-spark-open": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 4.25,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Muse Spark Open",
+    "reasoning": true,
+    "fallback_models": [
+      "meta/muse-spark-open",
+      "meta-models/muse-spark-open"
+    ],
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",

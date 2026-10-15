@@ -12216,6 +12216,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Muse Spark Open",
     "reasoning": true,
+    "fallback_models": [
+      "meta/muse-spark-open"
+    ],
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
@@ -18151,6 +18154,20 @@
     "parent": "meta/muse-spark-1.3",
     "max_input_tokens": 1048576,
     "max_output_tokens": 943718,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "meta/muse-spark-open": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 4.25,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Meta: Muse Spark Open",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]

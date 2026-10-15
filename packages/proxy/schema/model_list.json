@@ -12130,6 +12130,21 @@
       "openrouter"
     ]
   },
+  "nvidia/nemotron-3.5-super-vl-120b-a12b": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "displayName": "Nemotron Super 3.5",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "together",
+      "openrouter"
+    ]
+  },
   "essentialai/rnj-1-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -12386,6 +12401,23 @@
     "displayName": "Kimi K2.5",
     "available_providers": [
       "together"
+    ]
+  },
+  "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "displayName": "Nemotron Super 3.5",
+    "reasoning": true,
+    "fallback_models": [
+      "nvidia/nemotron-3.5-super-vl-120b-a12b"
+    ],
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "baseten"
     ]
   },
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": {

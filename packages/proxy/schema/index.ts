@@ -856,6 +856,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "openai.gpt-5.4": ["bedrock"],
   "nvidia/nemotron-3-ultra-550b-a55b": ["together", "openrouter"],
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": ["baseten"],
+  "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": ["baseten"],
+  "nvidia/nemotron-3.5-super-vl-120b-a12b": ["together", "openrouter"],
   "moonshot.kimi-k2-thinking": ["bedrock"],
   "xai.grok-4.3": ["bedrock"],
   "voxtral-small-2507": ["mistral"],

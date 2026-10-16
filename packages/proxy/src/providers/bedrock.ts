@@ -1,5 +1,6 @@
 import {
   BedrockRuntimeClient,
+  BedrockRuntimeServiceException,
   ConverseCommand,
   ConverseStreamCommand,
   InvokeModelCommand,
@@ -271,6 +272,40 @@ function streamResponse(
       }
     },
   });
+}
+
+function bedrockServiceErrorResponse(e: unknown): ModelResponse | undefined {
+  if (!(e instanceof BedrockRuntimeServiceException)) {
+    return undefined;
+  }
+  const status = e.$metadata.httpStatusCode;
+  if (status === undefined) {
+    return undefined;
+  }
+  return {
+    stream: writeToReadable(JSON.stringify({ message: e.message })),
+    response: new Response(null, {
+      status,
+      headers: {
+        "content-type": "application/json",
+        "x-amzn-errortype": e.name,
+      },
+    }),
+  };
+}
+
+export async function withBedrockServiceErrorResponse(
+  fetchFn: () => Promise<ModelResponse>,
+): Promise<ModelResponse> {
+  try {
+    return await fetchFn();
+  } catch (e) {
+    const errorResponse = bedrockServiceErrorResponse(e);
+    if (errorResponse) {
+      return errorResponse;
+    }
+    throw e;
+  }
 }
 
 export async function fetchBedrockAnthropicMessages({
@@ -955,6 +990,10 @@ export async function fetchConverse({
       httpResponse.headers.set("Content-Type", "application/json");
     }
   } catch (e) {
+    const errorResponse = bedrockServiceErrorResponse(e);
+    if (errorResponse) {
+      return errorResponse;
+    }
     return {
       stream: writeToReadable(`${e}`),
       response: new Response(null, {

@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+import { BedrockRuntimeClient } from "@aws-sdk/client-bedrock-runtime";
 import { proxyV1, CACHE_HEADER, CREDS_CACHE_HEADER } from "./proxy";
 import { type APISecret } from "../schema";
 
@@ -109,14 +110,22 @@ describe("bedrock secret skipped for openai-format models (#18324)", () => {
 
   it("still routes anthropic-format models to a bedrock secret (no over-skipping)", async () => {
     // The bedrock secret must remain eligible for claude (anthropic format),
-    // which Bedrock can serve. With fake creds the AWS SDK call fails, but the
-    // failure must NOT be our "No API keys found" skip path.
-    await expect(
-      runProxy({
-        model: "anthropic.claude-sonnet-4-6",
-        secrets: [bedrockSecret],
-        customFetch: async () => fakeOpenAIResponse(),
-      }),
-    ).rejects.not.toThrow(/No API keys found/);
+    // which Bedrock can serve, so the request must reach the Bedrock client
+    // rather than our "No API keys found" skip path.
+    const send = vi
+      .spyOn(BedrockRuntimeClient.prototype, "send")
+      .mockRejectedValue(new Error("bedrock reached"));
+    try {
+      await expect(
+        runProxy({
+          model: "anthropic.claude-sonnet-4-6",
+          secrets: [bedrockSecret],
+          customFetch: async () => fakeOpenAIResponse(),
+        }),
+      ).rejects.toThrow("bedrock reached");
+      expect(send).toHaveBeenCalledTimes(1);
+    } finally {
+      send.mockRestore();
+    }
   });
 });

@@ -274,38 +274,25 @@ function streamResponse(
   });
 }
 
-function bedrockServiceErrorResponse(e: unknown): ModelResponse | undefined {
-  if (!(e instanceof BedrockRuntimeServiceException)) {
-    return undefined;
-  }
-  const status = e.$metadata.httpStatusCode;
-  if (status === undefined) {
+export function bedrockServiceErrorResponse(
+  e: unknown,
+): ModelResponse | undefined {
+  if (
+    !(e instanceof BedrockRuntimeServiceException) ||
+    e.$metadata.httpStatusCode === undefined
+  ) {
     return undefined;
   }
   return {
     stream: writeToReadable(JSON.stringify({ message: e.message })),
     response: new Response(null, {
-      status,
+      status: e.$metadata.httpStatusCode,
       headers: {
         "content-type": "application/json",
         "x-amzn-errortype": e.name,
       },
     }),
   };
-}
-
-export async function withBedrockServiceErrorResponse(
-  fetchFn: () => Promise<ModelResponse>,
-): Promise<ModelResponse> {
-  try {
-    return await fetchFn();
-  } catch (e) {
-    const errorResponse = bedrockServiceErrorResponse(e);
-    if (errorResponse) {
-      return errorResponse;
-    }
-    throw e;
-  }
 }
 
 export async function fetchBedrockAnthropicMessages({

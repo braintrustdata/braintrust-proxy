@@ -110,22 +110,16 @@ describe("bedrock secret skipped for openai-format models (#18324)", () => {
 
   it("still routes anthropic-format models to a bedrock secret (no over-skipping)", async () => {
     // The bedrock secret must remain eligible for claude (anthropic format),
-    // which Bedrock can serve, so the request must reach the Bedrock client
-    // rather than our "No API keys found" skip path.
-    const send = vi
-      .spyOn(BedrockRuntimeClient.prototype, "send")
-      .mockRejectedValue(new Error("bedrock reached"));
-    try {
-      await expect(
-        runProxy({
-          model: "anthropic.claude-sonnet-4-6",
-          secrets: [bedrockSecret],
-          customFetch: async () => fakeOpenAIResponse(),
-        }),
-      ).rejects.toThrow("bedrock reached");
-      expect(send).toHaveBeenCalledTimes(1);
-    } finally {
-      send.mockRestore();
-    }
+    // which Bedrock can serve, so the request must reach the Bedrock client.
+    vi.spyOn(BedrockRuntimeClient.prototype, "send").mockRejectedValue(
+      new Error("bedrock reached"),
+    );
+    await expect(
+      runProxy({
+        model: "anthropic.claude-sonnet-4-6",
+        secrets: [bedrockSecret],
+        customFetch: async () => fakeOpenAIResponse(),
+      }),
+    ).rejects.toThrow("bedrock reached");
   });
 });

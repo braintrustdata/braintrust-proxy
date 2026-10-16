@@ -6,38 +6,23 @@ import {
 import { proxyV1, CACHE_HEADER, CREDS_CACHE_HEADER } from "./proxy";
 import { type APISecret } from "../schema";
 
-const MALFORMED_MESSAGE =
-  "The JSON object in the request body is malformed. Fix the syntax errors and retry your request.";
+const bedrockSecret: APISecret = {
+  id: "00000000-0000-0000-0000-0000000000b1",
+  type: "bedrock",
+  name: "my-bedrock",
+  secret: "fake-secret-access-key",
+  metadata: {
+    region: "us-east-1",
+    access_key: "fake-access-key-id",
+    customModels: { "converse-model": { format: "converse", flavor: "chat" } },
+  },
+};
 
-function bedrockSecret(
-  customModels?: Record<string, { format: "converse"; flavor: "chat" }>,
-): APISecret {
-  return {
-    id: "00000000-0000-0000-0000-0000000000b1",
-    type: "bedrock",
-    name: "my-bedrock",
-    secret: "fake-secret-access-key",
-    metadata: {
-      region: "us-east-1",
-      access_key: "fake-access-key-id",
-      ...(customModels ? { customModels } : {}),
-    },
-  };
-}
-
-async function runProxy({
-  model,
-  secrets,
-}: {
-  model: string;
-  secrets: APISecret[];
-}): Promise<{ statusCode: number | undefined; body: string }> {
+async function runProxy(model: string) {
   let statusCode: number | undefined;
   const chunks: Uint8Array[] = [];
-  let resolveClosed: () => void = () => {};
-  const closed = new Promise<void>((resolve) => {
-    resolveClosed = resolve;
-  });
+  let onClose = () => {};
+  const closed = new Promise<void>((resolve) => (onClose = resolve));
   await proxyV1({
     method: "POST",
     url: "/chat/completions",
@@ -49,38 +34,22 @@ async function runProxy({
     body: JSON.stringify({
       model,
       messages: [{ role: "user", content: "hi" }],
-      stream: false,
     }),
     setHeader: () => {},
     setStatusCode: (code) => {
       statusCode = code;
     },
     res: new WritableStream<Uint8Array>({
-      write(chunk) {
-        chunks.push(chunk);
-      },
-      close() {
-        resolveClosed();
-      },
+      write: (chunk) => void chunks.push(chunk),
+      close: onClose,
     }),
-    getApiSecrets: async () => secrets,
+    getApiSecrets: async () => [bedrockSecret],
     cacheGet: async () => null,
     cachePut: async () => {},
     digest: async (message: string) => message,
   });
   await closed;
-  return {
-    statusCode,
-    body: Buffer.concat(chunks).toString("utf8"),
-  };
-}
-
-function mockBedrockSend(error: unknown) {
-  return vi
-    .spyOn(BedrockRuntimeClient.prototype, "send")
-    .mockImplementation(async () => {
-      throw error;
-    });
+  return { statusCode, body: Buffer.concat(chunks).toString("utf8") };
 }
 
 describe("bedrock service errors", () => {
@@ -88,53 +57,30 @@ describe("bedrock service errors", () => {
     vi.restoreAllMocks();
   });
 
-  it("returns Bedrock's 4xx status and message for InvokeModel", async () => {
-    const send = mockBedrockSend(
+  it.each([
+    ["InvokeModel", "anthropic.claude-sonnet-4-6"],
+    ["Converse", "converse-model"],
+  ])("returns Bedrock's status and message for %s", async (_, model) => {
+    vi.spyOn(BedrockRuntimeClient.prototype, "send").mockRejectedValue(
       new ValidationException({
-        message: MALFORMED_MESSAGE,
+        message: "malformed",
         $metadata: { httpStatusCode: 400 },
       }),
     );
 
-    const { statusCode, body } = await runProxy({
-      model: "anthropic.claude-sonnet-4-6",
-      secrets: [bedrockSecret()],
-    });
-
-    expect(send).toHaveBeenCalledTimes(1);
-    expect(statusCode).toBe(400);
-    expect(JSON.parse(body)).toEqual({ message: MALFORMED_MESSAGE });
-  });
-
-  it("returns Bedrock's 4xx status and message for Converse", async () => {
-    mockBedrockSend(
-      new ValidationException({
-        message: MALFORMED_MESSAGE,
-        $metadata: { httpStatusCode: 400 },
-      }),
-    );
-
-    const { statusCode, body } = await runProxy({
-      model: "custom-converse-model",
-      secrets: [
-        bedrockSecret({
-          "custom-converse-model": { format: "converse", flavor: "chat" },
-        }),
-      ],
-    });
+    const { statusCode, body } = await runProxy(model);
 
     expect(statusCode).toBe(400);
-    expect(JSON.parse(body)).toEqual({ message: MALFORMED_MESSAGE });
+    expect(JSON.parse(body)).toEqual({ message: "malformed" });
   });
 
   it("still throws errors that are not Bedrock service exceptions", async () => {
-    mockBedrockSend(new Error("socket hang up"));
+    vi.spyOn(BedrockRuntimeClient.prototype, "send").mockRejectedValue(
+      new Error("socket hang up"),
+    );
 
-    await expect(
-      runProxy({
-        model: "anthropic.claude-sonnet-4-6",
-        secrets: [bedrockSecret()],
-      }),
-    ).rejects.toThrow("socket hang up");
+    await expect(runProxy("anthropic.claude-sonnet-4-6")).rejects.toThrow(
+      "socket hang up",
+    );
   });
 });

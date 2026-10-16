@@ -85,6 +85,7 @@ import {
   fetchBedrockAnthropic,
   fetchBedrockAnthropicMessages,
   fetchConverse,
+  bedrockServiceErrorResponse,
 } from "./providers/bedrock";
 import { transformMistralThinkingChunks } from "./providers/mistral";
 import { getDatabricksOAuthAccessToken } from "./providers/databricks";
@@ -2818,7 +2819,7 @@ async function fetchAnthropicMessages({
         secret,
         body,
         signal,
-      });
+      }).catch((e) => bedrockServiceErrorResponse(e) ?? Promise.reject(e));
     case "vertex":
       return fetchVertexAnthropicMessages({
         secret,
@@ -3094,7 +3095,7 @@ async function fetchAnthropicChatCompletions({
       isFunction,
       isStructuredOutput,
       signal,
-    });
+    }).catch((e) => bedrockServiceErrorResponse(e) ?? Promise.reject(e));
   } else if (secret.type === "vertex") {
     const { baseUrl, accessToken } = await vertexEndpointInfo({
       secret,

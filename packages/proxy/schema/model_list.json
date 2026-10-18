@@ -12255,6 +12255,69 @@
       "baseten"
     ]
   },
+  "deepseek-ai/DeepSeek-V4.1-Flash-1017-Fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash 1017 Fast",
+    "reasoning": true,
+    "fallback_models": [
+      "accounts/fireworks/models/deepseek-v4p1-flash-1017-fast",
+      "databricks-deepseek-v4-1-flash-1017-fast",
+      "deepseek/deepseek-v4.1-flash-1017-fast"
+    ],
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "accounts/fireworks/models/deepseek-v4p1-flash-1017-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash 1017 Fast",
+    "reasoning": true,
+    "parent": "accounts/fireworks/models/deepseek-v4p1-flash",
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "databricks-deepseek-v4-1-flash-1017-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek V4.1 Flash 1017 Fast",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "deepseek/deepseek-v4.1-flash-1017-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017 Fast",
+    "reasoning": true,
+    "parent": "deepseek/deepseek-v4.1-flash",
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
     "format": "openai",
     "flavor": "chat",
@@ -12301,21 +12364,6 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "deepseek/deepseek-v4.1-flash-1017": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.007,
-    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017",
-    "reasoning": true,
-    "parent": "deepseek/deepseek-v4.1-flash",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "openrouter"
     ]
   },
   "deepseek-ai/DeepSeek-V4.1-Flash": {
@@ -15951,6 +15999,21 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "deepseek/deepseek-v4.1-flash-1017": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.007,
+    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017",
+    "reasoning": true,
+    "parent": "deepseek/deepseek-v4.1-flash",
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "openrouter"
     ]
   },
   "scaledown/extract": {

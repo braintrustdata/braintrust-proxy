@@ -49,7 +49,7 @@ jobs:
           github_token: ${{ github.token }}
           display_report: "true"
           claude_args: |
-            --model claude-opus-4-6
+            --model claude-sonnet-5-5
             --max-turns 200
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue"
             --disallowedTools "Bash,Edit,MultiEdit,Write,Replace,NotebookEditCell,mcp__github__create_issue_comment,mcp__github__update_issue,mcp__github__create_pr,mcp__github__create_or_update_file,mcp__github__delete_file,mcp__github_file_ops__commit_files,mcp__github_file_ops__delete_files"

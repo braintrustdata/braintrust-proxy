@@ -1038,7 +1038,7 @@ export function applyAvailableEndpointTypeMappings(
 
   for (const name of names) {
     const linePattern = new RegExp(
-      `^\\s*"${escapeForRegex(name)}":[^\\n]*\\n?`,
+      `^[ \t]*"${escapeForRegex(name)}":\\s*\\[[^\\]]*\\],[^\\n]*\\n?`,
       "m",
     );
     const formattedProviders = `[${mappings[name]

@@ -51,7 +51,26 @@ export function parseTypesafePricing(markdown: string): ModelCatalog {
 
   const models: ModelCatalog = {};
   const knownModelIds = new Set<string>();
-  for (const rows of parseMarkdownTables(current)) {
+  // Normalize the column-per-model layout to the original per-model tables.
+  // Keep both layouts so older documentation snapshots remain supported.
+  const tables = parseMarkdownTables(current).flatMap((rows) => {
+    const ids = rows.find(([label]) => label === "Model ID");
+    if (!ids) return [rows];
+    const width = rows[0].length;
+    if (width < 2 || rows.some((row) => row.length !== width)) {
+      throw new Error(
+        "Typesafe documentation: inconsistent model table columns.",
+      );
+    }
+    return rows[0].slice(1).map((name, column) => [
+      [name, ids[column + 1]],
+      ...rows
+        .slice(1)
+        .filter((row) => row !== ids)
+        .map((row) => [row[0], row[column + 1]]),
+    ]);
+  });
+  for (const rows of tables) {
     const modelId = rows[0]?.[1]?.match(/^`([^`]+)`$/)?.[1];
     if (
       !modelId ||

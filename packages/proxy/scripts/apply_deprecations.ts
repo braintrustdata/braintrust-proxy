@@ -16,7 +16,10 @@ const MODEL_LIST_PATH = path.join(SCHEMA_DIR, "model_list.json");
 const INDEX_PATH = path.join(SCHEMA_DIR, "index.ts");
 const DEPRECATED_IDS_PATH = path.join(__dirname, "deprecated_model_ids.json");
 
-type ModelSpec = { available_providers?: string[] } & Record<string, unknown>;
+type ModelSpec = {
+  available_providers?: string[];
+  fallback_models?: string[];
+} & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
 
 function escapeRegex(value: string): string {
@@ -30,7 +33,10 @@ export function rewriteIndexEntry(
   model: string,
   providers: string[],
 ): string {
-  const lineRe = new RegExp(`^  "${escapeRegex(model)}":[^\\n]*\\n`, "m");
+  const lineRe = new RegExp(
+    `^  "${escapeRegex(model)}":\\s*\\[[^\\]]*\\],[^\\n]*\\n?`,
+    "m",
+  );
   if (!lineRe.test(content)) {
     return content;
   }
@@ -111,6 +117,20 @@ export function applyDeprecations(
         );
       }
       narrowedModels.push({ model, dropped, remaining });
+    }
+  }
+
+  // Remove incoming fallback edges only for models deleted by this audit.
+  const removed = new Set(removedModels);
+  for (const spec of Object.values(catalog)) {
+    if (!spec.fallback_models?.some((model) => removed.has(model))) continue;
+    const surviving = spec.fallback_models.filter(
+      (model) => !removed.has(model),
+    );
+    if (surviving.length > 0) {
+      spec.fallback_models = surviving;
+    } else {
+      delete spec.fallback_models;
     }
   }
 

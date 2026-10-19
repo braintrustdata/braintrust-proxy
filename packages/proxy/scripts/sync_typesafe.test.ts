@@ -63,6 +63,34 @@ afterEach(() => {
 });
 
 describe("Typesafe documented pricing", () => {
+  it("prices each column in the current multi-model documentation layout", () => {
+    const source = documentation
+      .replace(
+        /\| Jev 1\.13[^]*?Output tokens are free\./,
+        `| | Jev 1.14 | Jev 1.13 |
+| :- | :- | :- |
+| Model ID | \`jev-1.14.0\` | \`jev-1.13.0\` |
+| Price (per Btok / per Mtok) | $60 / $0.06 | $42 / $0.042 |
+| Input | Text | Text |
+
+Output tokens are free.`,
+      )
+      .replace(
+        "| `jev-preview` | `jev-1.13.0`",
+        "| `jev-preview` | `jev-1.14.0`",
+      );
+    const models = parseTypesafePricing(source);
+    expect(models["jev-1.14.0"].displayName).toBe("Jev 1.14");
+    expect(models["jev-preview"].input_cost_per_mil_tokens).toBe(0.06);
+    expect(models["jev-latest"].input_cost_per_mil_tokens).toBe(0.042);
+    expect(() =>
+      parseTypesafePricing(source.replace("$60 / $0.06", "TBD")),
+    ).toThrow();
+    expect(() =>
+      parseTypesafePricing(source.replace("`jev-1.14.0`", "`jev-1.13.0`")),
+    ).toThrow();
+  });
+
   it("prices exact versioned IDs and both aliases using million-token units", () => {
     const models = parseTypesafePricing(documentation);
     expect(Object.keys(models)).toEqual([

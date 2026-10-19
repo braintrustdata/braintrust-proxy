@@ -147,6 +147,26 @@ describe("applyDeprecations", () => {
     expect(out.deprecatedIds).toContain("model-b");
   });
 
+  it("cleans removed fallback references while retaining surviving targets and order", () => {
+    const catalog = {
+      "model-a": {
+        available_providers: ["together"],
+        fallback_models: ["model-b", "model-c"],
+      },
+      "model-b": { available_providers: ["xAI"] },
+      "model-c": {
+        available_providers: ["openai", "azure"],
+        fallback_models: ["model-b"],
+      },
+    };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "not found" },
+      { model: "model-c", provider: "azure", reason: "not found" },
+    ]);
+    expect(out.catalog["model-a"].fallback_models).toEqual(["model-c"]);
+    expect(out.catalog["model-c"].fallback_models).toBeUndefined();
+  });
+
   it("is a no-op for a provider the model does not have", () => {
     const catalog = { "model-c": { available_providers: ["openai", "azure"] } };
     const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
@@ -214,6 +234,30 @@ describe("rewriteIndexEntry / addToSyncExcluded", () => {
     expect(rewriteIndexEntry(idx, "x", ["a"])).toContain('"x": ["a"],');
     expect(rewriteIndexEntry(idx, "y", [])).not.toContain('"y"');
     expect(rewriteIndexEntry(idx, "y", [])).toContain('"x"');
+  });
+
+  it("rewrites and removes complete multiline index arrays", async () => {
+    const source = `export const AvailableEndpointTypes = {
+  "vertex-model": [
+    "vertex",
+    "openai",
+  ],
+  "neighbor": ["openai"],
+};
+`;
+    const narrowed = rewriteIndexEntry(source, "vertex-model", ["vertex"]);
+    expect(narrowed).toContain('"vertex-model": ["vertex"],');
+    expect(narrowed).not.toContain('    "openai",');
+    const removed = rewriteIndexEntry(source, "vertex-model", []);
+    expect(removed).not.toContain('"vertex"');
+    expect(removed).toContain('"neighbor": ["openai"],');
+    const { format } = await import("prettier");
+    await expect(
+      format(narrowed, { parser: "typescript" }),
+    ).resolves.toBeDefined();
+    await expect(
+      format(removed, { parser: "typescript" }),
+    ).resolves.toBeDefined();
   });
 
   it("adds ids to the deprecated-ids list, sorted and de-duplicated", () => {

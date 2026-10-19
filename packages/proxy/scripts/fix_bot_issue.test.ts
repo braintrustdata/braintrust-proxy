@@ -26,6 +26,28 @@ describe("fix_bot_issue", () => {
   });
 
   describe("applyAvailableEndpointTypeMappings", () => {
+    it("replaces the entire multiline provider array and remains valid TypeScript", async () => {
+      const original = buildEndpointTypesFile([
+        '  "vertex-model": [',
+        '    "vertex",',
+        "  ],",
+        '  "neighbor": ["openai"],',
+      ]);
+      const updated = applyAvailableEndpointTypeMappings(original, {
+        "vertex-model": ["vertex"],
+      });
+      expect(updated).toBe(
+        buildEndpointTypesFile([
+          '  "vertex-model": ["vertex"],',
+          '  "neighbor": ["openai"],',
+        ]),
+      );
+      const { format } = await import("prettier");
+      await expect(
+        format(updated, { parser: "typescript" }),
+      ).resolves.toBeDefined();
+    });
+
     it("replaces a multi-provider array without orphaning the tail of the line", () => {
       const original = buildEndpointTypesFile([
         '  "openai/gpt-oss-120b": ["together", "groq", "baseten"],',

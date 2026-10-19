@@ -56,6 +56,7 @@ export type ModelEndpointType = (typeof ModelEndpointType)[number];
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(ModelFlavors),
+  extra: z.record(z.unknown()).optional(),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),

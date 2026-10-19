@@ -14826,6 +14826,9 @@
   "databricks-gpt-6-1-sol": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-6.1 Sol",
     "reasoning": true,
@@ -14838,6 +14841,9 @@
   "databricks-gpt-6-luna": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-6 Luna",
     "reasoning": true,
@@ -14850,6 +14856,9 @@
   "databricks-gpt-6-sol": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-6 Sol",
     "reasoning": true,
@@ -14884,6 +14893,9 @@
   "databricks-gpt-6-astra": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-6 Astra",
     "reasoning": true,
@@ -15207,6 +15219,9 @@
   "databricks-gpt-5-6-luna": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-5.6 Luna",
     "reasoning": true,
@@ -15219,6 +15234,9 @@
   "databricks-gpt-5-6-sol": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-5.6 Sol",
     "reasoning": true,
@@ -15231,6 +15249,9 @@
   "databricks-gpt-5-6-terra": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-5.6 Terra",
     "reasoning": true,
@@ -15243,6 +15264,9 @@
   "databricks-gpt-5-5": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-5.5",
     "max_input_tokens": 272000,
@@ -15254,6 +15278,9 @@
   "databricks-gpt-5-4": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 2.49998,
     "output_cost_per_mil_tokens": 15.00002,
@@ -15267,6 +15294,9 @@
   "databricks-gpt-5-4-nano": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.19999,
     "output_cost_per_mil_tokens": 1.24999,
@@ -15280,6 +15310,9 @@
   "databricks-gpt-5-2": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
@@ -15293,6 +15326,9 @@
   "databricks-gpt-5-1": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.24999,
     "output_cost_per_mil_tokens": 9.99999,
@@ -15306,6 +15342,9 @@
   "databricks-gpt-5": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.24999,
     "output_cost_per_mil_tokens": 9.99999,
@@ -15319,6 +15358,9 @@
   "databricks-gpt-5-mini": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.24997,
     "output_cost_per_mil_tokens": 1.99997,
@@ -15332,6 +15374,9 @@
   "databricks-gpt-5-nano": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.04998,
     "output_cost_per_mil_tokens": 0.39998,
@@ -15482,6 +15527,9 @@
   "databricks-gpt-5-5-pro": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "displayName": "GPT-5.5 Pro",
     "reasoning": true,
@@ -15506,6 +15554,9 @@
   "databricks-gpt-5-3-codex": {
     "format": "openai",
     "flavor": "chat",
+    "extra": {
+      "supports_responses": true
+    },
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,

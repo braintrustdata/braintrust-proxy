@@ -20,6 +20,18 @@ it("parse model list", () => {
   }
 });
 
+it("preserves native Responses capability without changing chat flavor", () => {
+  expect(ModelSchema.parse(raw_models["databricks-gpt-6-1-sol"])).toMatchObject(
+    {
+      flavor: "chat",
+      extra: { supports_responses: true },
+    },
+  );
+  expect(
+    ModelSchema.parse(raw_models["databricks-gpt-oss-120b"]).extra,
+  ).toBeUndefined();
+});
+
 it.each(["jev-1.13.0", "jev-latest", "jev-preview"] as const)(
   "exposes Typesafe evaluation pricing for %s",
   (model) => {

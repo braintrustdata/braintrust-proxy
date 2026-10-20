@@ -1560,6 +1560,10 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-grok-4-7": ["databricks"],
   "databricks-claude-sonnet-5-5": ["databricks"],
   "databricks-claude-opus-5-5": ["databricks"],
+  "databricks-claude-haiku-5-5": ["databricks"],
+  "meta-models/Muse-Spark-Open-816B-A42B": ["together"],
+  "zai.glm-5.3": ["bedrock"],
+  "reflection/Beam-1.0-501B-A23B": ["together"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

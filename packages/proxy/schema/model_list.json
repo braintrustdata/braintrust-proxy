@@ -8280,6 +8280,33 @@
     "displayName": "Deepseek Coder 33b Instruct",
     "deprecated": true
   },
+  "reflection/Beam-1.0-501B-A23B": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "displayName": "Beam 1.0 501B",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "meta-models/Muse-Spark-Open-816B-A42B": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.25,
+    "output_cost_per_mil_tokens": 4.25,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Muse Spark Open 816B",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "together"
+    ]
+  },
   "deepseek-ai/DeepSeek-R1-Distill-Llama-70B": {
     "format": "openai",
     "flavor": "chat",
@@ -8592,6 +8619,22 @@
     "format": "js",
     "flavor": "completion",
     "displayName": "Text-block"
+  },
+  "zai.glm-5.3": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 1.68,
+    "output_cost_per_mil_tokens": 5.28,
+    "input_cache_read_cost_per_mil_tokens": 0.312,
+    "displayName": "GLM 5.3",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
   },
   "us.openai.gpt-6-luna": {
     "format": "openai",
@@ -12289,6 +12332,19 @@
       "fireworks"
     ]
   },
+  "databricks-claude-haiku-5-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "displayName": "Claude Haiku 5.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-deepseek-v4-1-flash-1017-fast": {
     "format": "openai",
     "flavor": "chat",
@@ -12301,21 +12357,6 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "deepseek/deepseek-v4.1-flash-1017-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.4,
-    "input_cache_read_cost_per_mil_tokens": 0.014,
-    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017 Fast",
-    "reasoning": true,
-    "parent": "deepseek/deepseek-v4.1-flash",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "openrouter"
     ]
   },
   "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
@@ -12785,6 +12826,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
     "max_input_tokens": 256000,
@@ -12812,6 +12854,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Codestral",
     "max_input_tokens": 128000,
     "available_providers": [
@@ -12967,6 +13010,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
     "displayName": "Ministral 14B",
     "max_input_tokens": 256000,
     "available_providers": [
@@ -12992,6 +13036,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
     "displayName": "Ministral 8B",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -13018,6 +13063,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
+    "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "Ministral 3B",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -15999,6 +16045,21 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
+    ]
+  },
+  "deepseek/deepseek-v4.1-flash-1017-fast": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 2.4,
+    "input_cache_read_cost_per_mil_tokens": 0.014,
+    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017 Fast",
+    "reasoning": true,
+    "parent": "deepseek/deepseek-v4.1-flash",
+    "max_input_tokens": 1048576,
+    "available_providers": [
+      "openrouter"
     ]
   },
   "deepseek/deepseek-v4.1-flash-1017": {

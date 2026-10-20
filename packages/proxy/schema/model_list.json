@@ -15,18 +15,6 @@
       "azure"
     ]
   },
-  "gpt-rosalind-discovery": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "displayName": "GPT-Rosalind Discovery",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "gpt-image-2.5-sunburst-2026-09-08": {
     "format": "openai",
     "flavor": "chat",
@@ -12148,21 +12136,6 @@
       "openrouter"
     ]
   },
-  "nvidia/nemotron-3.5-super-vl-120b-a12b": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.04,
-    "displayName": "Nemotron Super 3.5",
-    "reasoning": true,
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "together",
-      "openrouter"
-    ]
-  },
   "essentialai/rnj-1-instruct": {
     "format": "openai",
     "flavor": "chat",
@@ -12266,8 +12239,7 @@
     "reasoning": true,
     "fallback_models": [
       "accounts/fireworks/models/deepseek-v4p1-flash-1017-fast",
-      "databricks-deepseek-v4-1-flash-1017-fast",
-      "deepseek/deepseek-v4.1-flash-1017-fast"
+      "databricks-deepseek-v4-1-flash-1017-fast"
     ],
     "max_input_tokens": 1048576,
     "available_providers": [
@@ -12301,21 +12273,6 @@
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
-    ]
-  },
-  "deepseek/deepseek-v4.1-flash-1017-fast": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 2.4,
-    "input_cache_read_cost_per_mil_tokens": 0.014,
-    "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017 Fast",
-    "reasoning": true,
-    "parent": "deepseek/deepseek-v4.1-flash",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "openrouter"
     ]
   },
   "deepseek-ai/DeepSeek-V4.1-Flash-1017": {
@@ -12571,9 +12528,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Nemotron Super 3.5",
     "reasoning": true,
-    "fallback_models": [
-      "nvidia/nemotron-3.5-super-vl-120b-a12b"
-    ],
     "max_input_tokens": 1048576,
     "available_providers": [
       "baseten"
@@ -16154,35 +16108,6 @@
       "openrouter"
     ]
   },
-  "unbiased/pareto-26.10-preview": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.8,
-    "output_cost_per_mil_tokens": 3.2,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
-    "displayName": "Pareto 26.10 Preview",
-    "parent": "unbiased/pareto",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "unbiased/pareto": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 2.5,
-    "output_cost_per_mil_tokens": 7.5,
-    "input_cache_read_cost_per_mil_tokens": 0.25,
-    "displayName": "Pareto",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "inference-net/schematron-v2-small": {
     "format": "openai",
     "flavor": "chat",
@@ -16277,18 +16202,6 @@
     "input_cost_per_mil_tokens": 0.85,
     "output_cost_per_mil_tokens": 0.85,
     "displayName": "Sao10K: Llama 3.1 Euryale 70B v2.2",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "sao10k/l3.3-euryale-70b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.65,
-    "output_cost_per_mil_tokens": 0.75,
-    "displayName": "Sao10K: Llama 3.3 Euryale 70B",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -17057,19 +16970,6 @@
       "openrouter"
     ]
   },
-  "deepseek/deepseek-r1": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.7,
-    "output_cost_per_mil_tokens": 2.5,
-    "displayName": "DeepSeek: R1",
-    "reasoning": true,
-    "max_input_tokens": 163840,
-    "max_output_tokens": 16000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "deepseek/deepseek-chat-v3-0324": {
     "format": "openai",
     "flavor": "chat",
@@ -17344,20 +17244,6 @@
       "openrouter"
     ]
   },
-  "inclusionai/ling-3.0-flash-sante": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.042,
-    "output_cost_per_mil_tokens": 0.1232,
-    "input_cache_read_cost_per_mil_tokens": 0.0084,
-    "displayName": "inclusionAI: Ling 3.0 Flash Sante",
-    "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "inclusionai/ling-3.1-flash": {
     "format": "openai",
     "flavor": "chat",
@@ -17383,21 +17269,6 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
-  "inclusionai/ling-3.0-flash-fin": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.042,
-    "output_cost_per_mil_tokens": 0.1232,
-    "input_cache_read_cost_per_mil_tokens": 0.0084,
-    "displayName": "inclusionAI: Ling 3.0 Flash Fin",
-    "reasoning": true,
-    "parent": "inclusionai/ling-3.0-flash",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 235929,
     "available_providers": [
       "openrouter"
     ]
@@ -18658,21 +18529,6 @@
       "openrouter"
     ]
   },
-  "anthropic/claude-sonnet-4": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 15,
-    "input_cache_read_cost_per_mil_tokens": 0.3,
-    "displayName": "Anthropic: Claude Sonnet 4",
-    "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "anthropic/claude-opus-4.1": {
     "format": "openai",
     "flavor": "chat",
@@ -19423,8 +19279,6 @@
     "input_cost_per_mil_tokens": 0.62,
     "output_cost_per_mil_tokens": 0.62,
     "displayName": "WizardLM-2 8x22B",
-    "available_providers": [
-      "openrouter"
-    ]
+    "available_providers": []
   }
 }

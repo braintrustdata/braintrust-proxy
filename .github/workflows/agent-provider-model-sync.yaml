@@ -98,6 +98,9 @@ jobs:
             6. Do not report models that are deprecated, retired, or have an official retirement date within 90 days of today.
             7. Do not report embedding models. Embedding models are not supported in the playground and should not be recommended for `packages/proxy/schema/model_list.json`.
             8. Do not report computer-vision-only models. The catalog only tracks text/chat LLMs (including multimodal LLMs that accept images as input alongside text). Skip any model whose sole purpose is computer vision — image generation (e.g. Imagen, DALL·E, Stable Diffusion, Flux), image editing/inpainting, image embeddings/classification, OCR, object detection, segmentation, video generation (e.g. Veo, Sora, Runway), or speech-only models. If unsure whether a model qualifies as a text/chat LLM, skip it rather than filing an issue.
+            9. Do not report decision models: generic decision-model support is not implemented yet. In particular, skip `decision-models/baseten-elephant-9b-latest` and `decision-models/baseten-mammoth-27b-latest` on `baseten`.
+            10. Do not report unsupported video models, including `gemini-omni-1.1-flash` on `google`. Video models are not broadly supported yet; being able to handle text as well does not make these models eligible for automatic catalog additions.
+            11. Read `MANUAL_SYNC_EXCLUDED_MODELS` and the exclusion rules in `packages/proxy/scripts/sync_models.ts` before discovery. Do not file any gap for an excluded model, including missing-model, pricing, token-limit, or provider-mapping gaps.
 
             # Issue priority order
 

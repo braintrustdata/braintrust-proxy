@@ -708,6 +708,17 @@ describe("isModelExcludedFromSync", () => {
     }
   });
 
+  it("excludes unsupported decision and video models from automation", () => {
+    for (const id of [
+      "decision-models/baseten-elephant-9b-latest",
+      "decision-models/baseten-mammoth-27b-latest",
+      "gemini-omni-1.1-flash",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+    expect(isModelExcludedFromSync("gemini-2.5-flash")).toBe(false);
+  });
+
   it("does not exclude real model ids", () => {
     expect(isModelExcludedFromSync("claude-opus-4-7")).toBe(false);
     expect(isModelExcludedFromSync("gpt-5")).toBe(false);

@@ -170,6 +170,11 @@ export function isFieldManuallyPreserved(
 // "model not found" deprecations): a phantom dated snapshot LiteLLM keeps
 // listing, and a non-chat model that cannot be invoked via chat/completions.
 const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
+  // Decision models require generic decision-model support before auto-add.
+  "decision-models/baseten-elephant-9b-latest",
+  "decision-models/baseten-mammoth-27b-latest",
+  // Video models are not broadly supported yet; add deliberately with support.
+  "gemini-omni-1.1-flash",
   // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
   // canonical id `claude-opus-4-7`; the API returns not_found for this dated id,
   // but LiteLLM still lists it, so the sync kept re-adding it.

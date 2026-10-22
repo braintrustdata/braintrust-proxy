@@ -12268,6 +12268,15 @@
       "openrouter"
     ]
   },
+  "decision-models/baseten-mammoth-27b-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "mammoth-1",
+    "max_input_tokens": 16384,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "reflection/Beam-1.0": {
     "format": "openai",
     "flavor": "chat",

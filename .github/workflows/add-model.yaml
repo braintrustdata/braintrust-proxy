@@ -79,6 +79,12 @@ jobs:
             if (modelSlug === "deepseek-ai/DeepSeek-V4.1-Flash-Fast") {
               throw new Error(`Blocked model slug: ${modelSlug} (not a real model)`);
             }
+            if (
+              modelSlug === "decision-models/baseten-elephant-9b-latest" ||
+              modelSlug === "decision-models/baseten-mammoth-27b-latest"
+            ) {
+              throw new Error(`Blocked model slug: ${modelSlug} (decision models are not supported)`);
+            }
             if (!providers.has(provider)) {
               throw new Error(`Unsupported provider: ${provider}`);
             }

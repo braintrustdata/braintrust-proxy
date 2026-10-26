@@ -1568,6 +1568,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "us.openai.gpt-6.1-sol": ["bedrock"],
   "openai.gpt-6.1-terra": ["bedrock"],
   "us.openai.gpt-6.1-terra": ["bedrock"],
+  "global.openai.gpt-6.1-terra": ["bedrock"],
   "xai.grok-4.7": ["bedrock"],
   "us.xai.grok-4.7": ["bedrock"],
   "global.xai.grok-4.7": ["bedrock"],

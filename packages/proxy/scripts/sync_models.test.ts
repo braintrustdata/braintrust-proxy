@@ -691,6 +691,15 @@ describe("isFieldManuallyPreserved", () => {
 });
 
 describe("isModelExcludedFromSync", () => {
+  it("excludes unsupported Baseten decision models", () => {
+    for (const id of [
+      "decision-models/baseten-elephant-9b-latest",
+      "decision-models/baseten-mammoth-27b-latest",
+    ]) {
+      expect(isModelExcludedFromSync(id)).toBe(true);
+    }
+  });
+
   it("excludes the known phantom model id", () => {
     expect(isModelExcludedFromSync("claude-opus-4-7-20260416")).toBe(true);
     expect(SYNC_EXCLUDED_MODELS.has("claude-opus-4-7-20260416")).toBe(true);

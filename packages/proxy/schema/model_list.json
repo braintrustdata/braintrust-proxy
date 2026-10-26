@@ -361,6 +361,29 @@
       "openrouter"
     ]
   },
+  "gpt-6.1-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-6.1 Terra",
+    "reasoning": true,
+    "fallback_models": [
+      "databricks-gpt-6-1-terra",
+      "openai.gpt-6.1-terra",
+      "us.openai.gpt-6.1-terra"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure",
+      "openrouter"
+    ]
+  },
   "gpt-5.5": {
     "format": "openai",
     "flavor": "chat",
@@ -8870,6 +8893,39 @@
       "bedrock"
     ]
   },
+  "us.openai.gpt-6.1-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-6.1 Terra",
+    "reasoning": true,
+    "parent": "openai.gpt-6.1-terra",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6.1-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-6.1 Terra",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "global.anthropic.claude-haiku-5-5": {
     "format": "anthropic",
     "flavor": "chat",
@@ -14983,6 +15039,22 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT-6.1 Sol",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-6-1-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-6.1 Terra",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,

@@ -211,8 +211,9 @@ jobs:
           fi
 
       - name: Add target and cloud companion entries with Claude Code
+        id: research
         timeout-minutes: 12
-        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
+        uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
@@ -283,6 +284,11 @@ jobs:
             - if no change was made, the specific target requirement that remains unresolved.
 
             Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
+
+      - name: Verify research completed without errors
+        env:
+          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+        run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check whether the target changed the catalog
         id: catalog_changes

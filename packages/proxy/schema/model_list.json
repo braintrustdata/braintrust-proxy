@@ -3145,6 +3145,9 @@
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.015,
     "reasoning": true,
+    "fallback_models": [
+      "minimax/minimax-m3.1-flash"
+    ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 1048576,
     "available_providers": [
@@ -17882,7 +17885,7 @@
     "displayName": "MiniMax: MiniMax M3.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 524288,
+    "max_output_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]

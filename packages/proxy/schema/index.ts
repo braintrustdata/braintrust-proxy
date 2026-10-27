@@ -367,6 +367,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/gemma2-9b-it": ["fireworks"],
   "google/gemma-2-9b-it": ["together"],
   "accounts/fireworks/models/gemma-2b-it": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "google/gemma-2b-it": ["together"],
   "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": ["together"],
   "microsoft/WizardLM-2-8x22B": ["together"],

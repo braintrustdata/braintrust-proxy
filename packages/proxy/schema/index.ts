@@ -1076,6 +1076,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/dolphin-2-9-2-qwen2-72b": ["fireworks"],
   "accounts/fireworks/models/dolphin-2p6-mixtral-8x7b": ["fireworks"],
   "accounts/fireworks/models/ember-1": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/ernie-4p5-300b-a47b-pt": ["fireworks"],
   "accounts/fireworks/models/ernie-4p5-21b-a3b-pt": ["fireworks"],
   "accounts/fireworks/models/fare-20b": ["fireworks"],

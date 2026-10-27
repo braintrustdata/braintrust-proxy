@@ -1395,6 +1395,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen3-coder-480b-instruct-bf16": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-instruct-0905": ["fireworks"],
   "accounts/fireworks/models/minimax-m3p1-flash": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/deepseek-v2p5": ["fireworks"],
   "accounts/fireworks/models/deepseek-v2-lite-chat": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-instruct": ["fireworks"],

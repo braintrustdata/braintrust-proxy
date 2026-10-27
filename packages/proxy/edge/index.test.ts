@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { makeFetchApiSecrets, type EdgeContext, type ProxyOpts } from "./index";
+import {
+  digestMessage,
+  encryptedPut,
+  makeFetchApiSecrets,
+  type EdgeContext,
+  type ProxyOpts,
+} from "./index";
+import { CUSTOM_API_KEY_AUTH_CAPABILITY_HEADER } from "@schema";
 
 function createInMemoryCache() {
   const store = new Map<string, unknown>();
@@ -131,28 +138,41 @@ describe("makeFetchApiSecrets", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("parses control-plane secrets and caches successful lookups", async () => {
-    const fetchMock = vi.fn().mockImplementation(async () => {
-      return new Response(
-        JSON.stringify([
-          {
-            secret: "provider-secret",
-            type: "openai",
-            metadata: {
-              api_base: "https://api.openai.com",
-              endpoint_path: "/v1/chat/completions",
+  it("requests custom-auth secrets without reusing legacy cache entries", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(async (_url, init: RequestInit) => {
+        expect(
+          new Headers(init.headers).get(CUSTOM_API_KEY_AUTH_CAPABILITY_HEADER),
+        ).toBe("true");
+        return new Response(
+          JSON.stringify([
+            {
+              secret: "provider-secret",
+              type: "openai",
+              metadata: {
+                api_base: "https://api.openai.com",
+                endpoint_path: "/v1/chat/completions",
+                api_key_header: "apikey",
+              },
             },
+          ]),
+          {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
           },
-        ]),
-        {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
-    });
+        );
+      });
     vi.stubGlobal("fetch", fetchMock);
 
     const { cache, getSetCalls } = createInMemoryCache();
+    const legacyKey = await digestMessage("null/org-token");
+    await encryptedPut(
+      cache,
+      legacyKey,
+      legacyKey,
+      JSON.stringify([{ secret: "old-key", type: "openai" }]),
+    );
     const waitUntilPromises: Promise<unknown>[] = [];
     const ctx: EdgeContext = {
       waitUntil(promise) {
@@ -178,9 +198,11 @@ describe("makeFetchApiSecrets", () => {
       metadata: {
         api_base: "https://api.openai.com",
         endpoint_path: "/v1/chat/completions",
+        api_key_header: "apikey",
       },
     });
-    expect(getSetCalls()).toBe(1);
+    expect(getSetCalls()).toBe(2);
+    expect(await fetchApiSecrets(true, "org-token", null)).toEqual(secrets);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });

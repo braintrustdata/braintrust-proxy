@@ -12,6 +12,7 @@ import * as dereferenceJsonSchema from "dereference-json-schema";
 const deref = dereferenceJsonSchema.dereferenceSync;
 import {
   APISecret,
+  customApiKeyAuthHeader,
   AzureEntraSecretSchema,
   DatabricksOAuthSecretSchema,
   EndpointProviderToBaseURL,
@@ -131,6 +132,7 @@ export type ProviderFetchBody =
   | Uint8Array
   | ReadableStream<Uint8Array>;
 export type ProviderFetchInit = {
+  redirect?: RequestInit["redirect"];
   method?: string;
   headers?: ProviderFetchHeaders;
   body?: ProviderFetchBody;
@@ -2375,7 +2377,25 @@ async function fetchOpenAI(
     secret.metadata.auth_format === "api_key"
       ? "api_key"
       : "bearer";
-  if (bearerToken !== null && bearerToken !== undefined) {
+  const customAuth = customApiKeyAuthHeader(
+    secret.metadata,
+    secret.type,
+    secret.secret,
+  );
+  if (customAuth) {
+    const upstreamFetch = customFetch;
+    customFetch = (input, init) =>
+      upstreamFetch(input, { ...init, redirect: "manual" });
+    for (const name of Object.keys(headers)) {
+      if (
+        name.toLowerCase() === "authorization" ||
+        name.toLowerCase() === customAuth[0]
+      ) {
+        delete headers[name];
+      }
+    }
+    headers[customAuth[0]] = customAuth[1];
+  } else if (bearerToken !== null && bearerToken !== undefined) {
     headers["authorization"] =
       authFormat === "api_key"
         ? `Api-Key ${bearerToken}`

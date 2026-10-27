@@ -4,7 +4,12 @@ import { proxyV1, SpanLogger, LogHistogramFn, BillingEvent } from "@lib/proxy";
 import { isEmpty } from "@lib/util";
 import { MeterProvider } from "@opentelemetry/sdk-metrics";
 
-import { APISecret, APISecretSchema, getModelEndpointTypes } from "@schema";
+import {
+  APISecret,
+  APISecretSchema,
+  CUSTOM_API_KEY_AUTH_CAPABILITY_HEADER,
+  getModelEndpointTypes,
+} from "@schema";
 import { verifyTempCredentials, isTempCredential } from "utils";
 import {
   decryptMessage,
@@ -167,7 +172,7 @@ export function makeFetchApiSecrets({
     }
 
     const cacheKey = await digestMessage(
-      `${model}/${org_name ? org_name + ":" : ""}${authToken}`,
+      `custom-api-key-auth/${model}/${org_name ? org_name + ":" : ""}${authToken}`,
     );
 
     const response =
@@ -194,6 +199,7 @@ export function makeFetchApiSecrets({
           headers: {
             Authorization: `Bearer ${authToken}`,
             "Content-Type": "application/json",
+            [CUSTOM_API_KEY_AUTH_CAPABILITY_HEADER]: "true",
           },
           body: JSON.stringify({
             model,

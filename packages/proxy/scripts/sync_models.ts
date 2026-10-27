@@ -170,8 +170,7 @@ export function isFieldManuallyPreserved(
 // "model not found" deprecations): a phantom dated snapshot LiteLLM keeps
 // listing, and a non-chat model that cannot be invoked via chat/completions.
 const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
-  "decision-models/baseten-elephant-9b-latest",
-  "decision-models/baseten-mammoth-27b-latest",
+  "accounts/fireworks/models/rune",
   // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
   // canonical id `claude-opus-4-7`; the API returns not_found for this dated id,
   // but LiteLLM still lists it, so the sync kept re-adding it.
@@ -257,7 +256,10 @@ export const SYNC_EXCLUDED_MODELS: ReadonlySet<string> = new Set<string>([
 
 // Returns true if `modelName` must not be auto-added by the sync.
 export function isModelExcludedFromSync(modelName: string): boolean {
-  return SYNC_EXCLUDED_MODELS.has(modelName);
+  return (
+    modelName.toLowerCase().startsWith("decision-models/") ||
+    SYNC_EXCLUDED_MODELS.has(modelName)
+  );
 }
 
 // Perplexity Gateway (router) models are third-party ids (e.g.

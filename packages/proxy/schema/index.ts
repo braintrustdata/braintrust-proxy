@@ -1100,6 +1100,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/glm-4p5-air": ["fireworks"],
   "accounts/fireworks/models/glm-4p5v": ["fireworks"],
   "accounts/fireworks/models/glm-5p1": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/hermes-2-pro-mistral-7b": ["fireworks"],
   "accounts/fireworks/models/internvl3-78b": ["fireworks"],
   "accounts/fireworks/models/internvl3-38b": ["fireworks"],

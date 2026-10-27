@@ -250,6 +250,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "sonar-pro": ["perplexity", "openrouter"],
   "sonar-reasoning-pro": ["perplexity", "openrouter"],
   "meta/llama-2-70b-chat": ["replicate"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/mistral-7b-instruct-4k": ["fireworks"],
   "accounts/fireworks/models/mistral-7b-instruct-v3": ["fireworks"],
   "mistralai/Mistral-7B-Instruct-v0.1": ["together"],

@@ -80,8 +80,8 @@ jobs:
               throw new Error(`Blocked model slug: ${modelSlug} (not a real model)`);
             }
             if (
-              modelSlug === "decision-models/baseten-elephant-9b-latest" ||
-              modelSlug === "decision-models/baseten-mammoth-27b-latest"
+              modelSlug.toLowerCase().startsWith("decision-models/") ||
+              modelSlug === "accounts/fireworks/models/rune"
             ) {
               throw new Error(`Blocked model slug: ${modelSlug} (decision models are not supported)`);
             }
@@ -237,6 +237,7 @@ jobs:
 
             - This task explicitly authorizes catalog and provider-mapping work in this repository. Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
             - The requested model and its cloud/provider companion entries are the only models in scope. Do not remove models or modify unrelated models or source files.
+            - Decision models are unsupported. If provider metadata or official documentation identifies the target as a decision model or System One model (typed choices, probabilities, or scores instead of generated text), leave the catalog unchanged and report it as unsupported. Do not add it as a chat model or create companion entries or a PR for it. Serverless availability and zero output-token pricing do not establish chat support.
             - If a priced endpoint already added or updated the target, preserve its verified metadata and skip target availability/pricing research. Still add its cloud companions.
             - If the target slug already exists for another provider, verify the requested provider for the target entry, then union it into the existing entry and provider mapping. Preserve other fields and providers, and still add cloud companions.
             - If the target already exists for the requested provider, still ensure all cloud companions, mappings, and fallback links exist.

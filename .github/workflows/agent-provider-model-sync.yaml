@@ -101,6 +101,8 @@ jobs:
 
             # Issue priority order
 
+            Do not report decision models or System One models that return typed choices, probabilities, or scores instead of generated text. These are unsupported even if the provider lists them as serverless or base models.
+
             When deciding which gaps to file first, use this order:
 
             1. **New models** — models that exist on the provider's public inference surface but are absent from `model_list.json`

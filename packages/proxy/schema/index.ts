@@ -996,6 +996,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/kimi-k2p7-code": ["fireworks"],
   "accounts/fireworks/models/qwen3p7-plus": ["fireworks"],
   "accounts/fireworks/models/minimax-m3": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/glm-5p2": ["fireworks"],
   "accounts/fireworks/models/glm-5": ["fireworks"],
   "accounts/fireworks/models/minimax-m2p5": ["fireworks"],

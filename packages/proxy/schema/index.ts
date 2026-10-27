@@ -244,6 +244,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "deepseek-ai/DeepSeek-V4.1-Flash-1017-Fast": ["baseten"],
   "accounts/fireworks/models/deepseek-v4p1-flash-1017-fast": ["fireworks"],
   "accounts/fireworks/models/deepseek-v4p1-flash-1017-us": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "databricks-deepseek-v4-1-flash-1017-fast": ["databricks"],
   "deepseek/deepseek-v4.1-flash-1017-fast": ["openrouter"],
   "deepseek-ai/DeepSeek-V4-Flash-0731": ["baseten", "together"],

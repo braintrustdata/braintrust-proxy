@@ -740,6 +740,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/qwen3-30b-a3b-thinking-2507": ["fireworks"],
   "accounts/fireworks/models/qwen3-14b": ["fireworks"],
   "accounts/fireworks/models/qwen3-8b": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/qwen3-reranker-8b": ["fireworks"],
   "accounts/fireworks/models/qwen3-vl-8b-instruct": ["fireworks"],
   "accounts/fireworks/models/qwen3-4b": ["fireworks"],

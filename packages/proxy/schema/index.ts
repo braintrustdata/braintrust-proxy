@@ -1390,6 +1390,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/gpt-oss-120b": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-safeguard-120b": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-safeguard-20b": ["fireworks"],
   "gpt-oss-120b": ["cerebras", "openrouter"],
   "accounts/fireworks/models/qwen3-coder-480b-instruct-bf16": ["fireworks"],

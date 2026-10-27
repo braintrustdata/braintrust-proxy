@@ -3137,6 +3137,18 @@
       "azure"
     ]
   },
+  "accounts/fireworks/models/rune": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "input_cache_read_cost_per_mil_tokens": 0.008,
+    "displayName": "Rune",
+    "max_input_tokens": 262144,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/minimax-m3p1-flash": {
     "format": "openai",
     "flavor": "chat",

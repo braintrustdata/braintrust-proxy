@@ -254,6 +254,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/mistral-7b-instruct-v3": ["fireworks"],
   "mistralai/Mistral-7B-Instruct-v0.1": ["together"],
   "accounts/fireworks/models/mistral-7b": ["fireworks"],
+  "accounts/fireworks/models/rune": ["fireworks"],
   "mistralai/Mixtral-8x22B": ["together"],
   "mistralai/Mixtral-8x22B-Instruct-v0.1": ["together"],
   "accounts/fireworks/models/mixtral-8x22b": ["fireworks"],

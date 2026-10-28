@@ -1,5 +1,8 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
+import { customApiKeyAuthFieldsSchema } from "./custom-api-key-auth";
+
+export * from "./custom-api-key-auth";
 
 export const BaseMetadataSchema = z
   .object({
@@ -176,6 +179,7 @@ export const OpenAIMetadataSchema = BaseMetadataSchema.merge(
     endpoint_path: z.string().nullish(),
     // Auth format for the authorization header (default: "bearer")
     auth_format: z.enum(["bearer", "api_key"]).nullish(),
+    ...customApiKeyAuthFieldsSchema.shape,
   }),
 ).passthrough();
 

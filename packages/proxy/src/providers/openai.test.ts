@@ -117,7 +117,7 @@ it("should accept and return reasoning/thinking params and detail streaming", as
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "o3-mini-2025-01-31",
+      model: "gpt-5-mini-2025-08-07",
       reasoning_effort: "medium",
       messages: [
         {
@@ -168,7 +168,7 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "o3-mini-2025-01-31",
+      model: "gpt-5-mini-2025-08-07",
       reasoning_effort: "medium",
       stream: false,
       messages: [
@@ -216,10 +216,10 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: "o3-mini-2025-01-31",
+    model: "gpt-5-mini-2025-08-07",
     object: "chat.completion",
     service_tier: expect.any(String),
-    system_fingerprint: expect.any(String),
+    system_fingerprint: null,
     usage: {
       completion_tokens: expect.any(Number),
       prompt_tokens: expect.any(Number),
@@ -740,7 +740,7 @@ describe("request/response checking", () => {
     server.close();
   });
 
-  it("should fallback to medium if reasoning_effort is missing", async () => {
+  it("should use the provider default if reasoning_effort is missing", async () => {
     const calls: InterceptedCall[] = [];
     server.use(
       http.post(
@@ -782,8 +782,7 @@ describe("request/response checking", () => {
       OpenAIChatCompletionChunk
     >({
       body: {
-        model: "o3-mini-2025-01-31",
-        reasoning_effort: null,
+        model: "gpt-5-mini-2025-08-07",
         stream: false,
         messages: [
           {
@@ -830,10 +829,10 @@ describe("request/response checking", () => {
       ],
       created: expect.any(Number),
       id: expect.any(String),
-      model: "o3-mini-2025-01-31",
+      model: "gpt-5-mini-2025-08-07",
       object: "chat.completion",
       service_tier: expect.any(String),
-      system_fingerprint: expect.any(String),
+      system_fingerprint: null,
       usage: {
         completion_tokens: expect.any(Number),
         prompt_tokens: expect.any(Number),
@@ -855,7 +854,6 @@ describe("request/response checking", () => {
       {
         request: {
           body: {
-            reasoning_effort: null, // let openai decide what is the default
             messages: [
               {
                 content: "How many rs in 'ferrocarril'",
@@ -871,7 +869,7 @@ describe("request/response checking", () => {
                 role: "user",
               },
             ],
-            model: "o3-mini-2025-01-31",
+            model: "gpt-5-mini-2025-08-07",
             stream: false,
           },
           method: "POST",
@@ -893,10 +891,10 @@ describe("request/response checking", () => {
             ],
             created: expect.any(Number),
             id: expect.any(String),
-            model: "o3-mini-2025-01-31",
+            model: "gpt-5-mini-2025-08-07",
             object: "chat.completion",
             service_tier: "default",
-            system_fingerprint: expect.any(String),
+            system_fingerprint: null,
             usage: {
               completion_tokens: expect.any(Number),
               completion_tokens_details: {

@@ -1,10 +1,13 @@
 import { z } from "zod";
-import { ModelSchema } from "./models";
+import { ModelSchema, type ModelSpec } from "./models";
+
+// Avoid expanding ModelSchema's full Zod type in every provider's metadata.
+const CustomModelSchema: z.ZodType<ModelSpec> = ModelSchema;
 
 export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).nullish(),
-    customModels: z.record(ModelSchema).nullish(),
+    customModels: z.record(CustomModelSchema).nullish(),
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),

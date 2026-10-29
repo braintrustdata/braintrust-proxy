@@ -2,7 +2,8 @@ import { MessageCreateParamsBase } from "@anthropic-ai/sdk/resources/messages";
 import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, expectTypeOf, it } from "vitest";
-import { APISecretSchema } from "./secrets";
+import { APISecretSchema, BaseMetadataSchema } from "./secrets";
+import { ModelSchema } from "./models";
 import {
   getModelEndpointTypes,
   getDirectModelEndpointTypes,
@@ -319,6 +320,19 @@ describe("getDirectModelEndpointTypes", () => {
 });
 
 describe("APISecretSchema compatibility", () => {
+  it("preserves the complete custom model schema type and runtime object", () => {
+    const schema = BaseMetadataSchema.shape.customModels
+      .unwrap()
+      .unwrap().valueSchema;
+
+    expectTypeOf(schema).toEqualTypeOf<typeof ModelSchema>();
+    expect(schema).toBe(ModelSchema);
+    expect(schema.shape).toBe(ModelSchema.shape);
+    expect(schema.pick({ format: true }).parse({ format: "openai" })).toEqual({
+      format: "openai",
+    });
+  });
+
   it("accepts Typesafe provider secrets", () => {
     expect(APISecretSchema.parse({ type: "typesafe", secret: null })).toEqual({
       type: "typesafe",

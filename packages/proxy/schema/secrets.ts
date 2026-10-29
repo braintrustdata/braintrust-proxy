@@ -1,8 +1,10 @@
 import { z } from "zod";
-import { ModelSchema, type ModelSpec } from "./models";
+import { ModelSchema } from "./models";
 
-// Avoid expanding ModelSchema's full Zod type in every provider's metadata.
-const CustomModelSchema: z.ZodType<ModelSpec> = ModelSchema;
+type ModelSchemaType = typeof ModelSchema;
+// A named interface limits declaration expansion while retaining the full schema API.
+interface CustomModelSchema extends ModelSchemaType {}
+const CustomModelSchema: CustomModelSchema = ModelSchema;
 
 export const BaseMetadataSchema = z
   .object({

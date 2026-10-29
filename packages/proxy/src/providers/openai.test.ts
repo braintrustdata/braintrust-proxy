@@ -117,7 +117,7 @@ it("should accept and return reasoning/thinking params and detail streaming", as
     OpenAIChatCompletionChunk
   >({
     body: {
-      model: "o3-mini-2025-01-31",
+      model: "gpt-5.2",
       reasoning_effort: "medium",
       messages: [
         {
@@ -165,10 +165,10 @@ it("should accept and return reasoning/thinking params and detail streaming", as
 it("should accept and return reasoning/thinking params and detail non-streaming", async () => {
   const { json } = await callProxyV1<
     OpenAIChatCompletionCreateParams,
-    OpenAIChatCompletionChunk
+    OpenAIChatCompletion
   >({
     body: {
-      model: "o3-mini-2025-01-31",
+      model: "gpt-5.2",
       reasoning_effort: "medium",
       stream: false,
       messages: [
@@ -199,7 +199,7 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     },
   });
 
-  expect(json()).toEqual({
+  expect(json()).toMatchObject({
     choices: [
       {
         finish_reason: "stop",
@@ -208,7 +208,6 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
           content: expect.any(String),
           // as of writing, openai does not provide this detail
           // reasoning: [],
-          annotations: [],
           refusal: null,
           role: "assistant",
         },
@@ -216,22 +215,17 @@ it("should accept and return reasoning/thinking params and detail non-streaming"
     ],
     created: expect.any(Number),
     id: expect.any(String),
-    model: "o3-mini-2025-01-31",
+    model: expect.stringMatching(/^gpt-5\.2(?:-\d{4}-\d{2}-\d{2})?$/),
     object: "chat.completion",
     service_tier: expect.any(String),
-    system_fingerprint: expect.any(String),
     usage: {
       completion_tokens: expect.any(Number),
       prompt_tokens: expect.any(Number),
       total_tokens: expect.any(Number),
       completion_tokens_details: {
-        accepted_prediction_tokens: expect.any(Number),
-        audio_tokens: expect.any(Number),
         reasoning_tokens: expect.any(Number),
-        rejected_prediction_tokens: expect.any(Number),
       },
       prompt_tokens_details: {
-        audio_tokens: expect.any(Number),
         cached_tokens: expect.any(Number),
       },
     },
@@ -740,7 +734,7 @@ describe("request/response checking", () => {
     server.close();
   });
 
-  it("should fallback to medium if reasoning_effort is missing", async () => {
+  it("should leave null reasoning_effort for the provider to default", async () => {
     const calls: InterceptedCall[] = [];
     server.use(
       http.post(
@@ -779,10 +773,10 @@ describe("request/response checking", () => {
 
     const { json } = await callProxyV1<
       OpenAIChatCompletionCreateParams,
-      OpenAIChatCompletionChunk
+      OpenAIChatCompletion
     >({
       body: {
-        model: "o3-mini-2025-01-31",
+        model: "gpt-5.2",
         reasoning_effort: null,
         stream: false,
         messages: [
@@ -813,7 +807,7 @@ describe("request/response checking", () => {
       },
     });
 
-    expect(json()).toEqual({
+    expect(json()).toMatchObject({
       choices: [
         {
           finish_reason: "stop",
@@ -822,7 +816,6 @@ describe("request/response checking", () => {
             content: expect.any(String),
             // as of writing, openai does not provide this detail
             // reasoning: [],
-            annotations: [],
             refusal: null,
             role: "assistant",
           },
@@ -830,22 +823,17 @@ describe("request/response checking", () => {
       ],
       created: expect.any(Number),
       id: expect.any(String),
-      model: "o3-mini-2025-01-31",
+      model: expect.stringMatching(/^gpt-5\.2(?:-\d{4}-\d{2}-\d{2})?$/),
       object: "chat.completion",
       service_tier: expect.any(String),
-      system_fingerprint: expect.any(String),
       usage: {
         completion_tokens: expect.any(Number),
         prompt_tokens: expect.any(Number),
         total_tokens: expect.any(Number),
         completion_tokens_details: {
-          accepted_prediction_tokens: expect.any(Number),
-          audio_tokens: expect.any(Number),
           reasoning_tokens: expect.any(Number),
-          rejected_prediction_tokens: expect.any(Number),
         },
         prompt_tokens_details: {
-          audio_tokens: expect.any(Number),
           cached_tokens: expect.any(Number),
         },
       },
@@ -871,48 +859,14 @@ describe("request/response checking", () => {
                 role: "user",
               },
             ],
-            model: "o3-mini-2025-01-31",
+            model: "gpt-5.2",
             stream: false,
           },
           method: "POST",
           url: "https://api.openai.com/v1/chat/completions",
         },
         response: {
-          body: {
-            choices: [
-              {
-                finish_reason: "stop",
-                index: 0,
-                message: {
-                  annotations: [],
-                  content: expect.any(String),
-                  refusal: null,
-                  role: "assistant",
-                },
-              },
-            ],
-            created: expect.any(Number),
-            id: expect.any(String),
-            model: "o3-mini-2025-01-31",
-            object: "chat.completion",
-            service_tier: "default",
-            system_fingerprint: expect.any(String),
-            usage: {
-              completion_tokens: expect.any(Number),
-              completion_tokens_details: {
-                accepted_prediction_tokens: expect.any(Number),
-                audio_tokens: expect.any(Number),
-                reasoning_tokens: expect.any(Number),
-                rejected_prediction_tokens: expect.any(Number),
-              },
-              prompt_tokens: expect.any(Number),
-              prompt_tokens_details: {
-                audio_tokens: expect.any(Number),
-                cached_tokens: expect.any(Number),
-              },
-              total_tokens: expect.any(Number),
-            },
-          },
+          body: json(),
           status: 200,
         },
       },

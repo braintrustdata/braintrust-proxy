@@ -54,7 +54,7 @@ const legacyFireworksModel = {
 } satisfies ModelSpec;
 
 describe("sync_models", () => {
-  it("preserves flex metadata and standard prices when canonicalizing the catalog", () => {
+  it("preserves provider/tier rates and standard prices when canonicalizing the catalog", () => {
     const model = {
       format: "openai",
       flavor: "chat",
@@ -62,25 +62,30 @@ describe("sync_models", () => {
       output_cost_per_mil_tokens: 10,
       input_cache_read_cost_per_mil_tokens: 0.1,
       input_cache_write_cost_per_mil_tokens: 2.5,
-      flex_pricing: {
-        openai: [
-          {
-            input_cost_per_mil_tokens: 1,
-            output_cost_per_mil_tokens: 5,
-            input_cache_read_cost_per_mil_tokens: 0.05,
-            input_cache_write_cost_per_mil_tokens: 1.25,
-            max_input_tokens: 272000,
-          },
-        ],
-        azure: [
-          {
-            input_cost_per_mil_tokens: 1,
-            output_cost_per_mil_tokens: 5,
-            deployment_type: "GlobalStandard",
-            model_version: "2026-09-29",
-            max_input_tokens: 272000,
-          },
-        ],
+      pricing: {
+        openai: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 1,
+              output_cost_per_mil_tokens: 5,
+              input_cache_read_cost_per_mil_tokens: 0.05,
+              input_cache_write_cost_per_mil_tokens: 1.25,
+              max_input_tokens: 272000,
+            },
+          ],
+          batch: [{ input_cost_per_mil_tokens: 0.8 }],
+        },
+        azure: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 1,
+              output_cost_per_mil_tokens: 5,
+              deployment_type: "GlobalStandard",
+              model_version: "2026-09-29",
+              max_input_tokens: 272000,
+            },
+          ],
+        },
       },
     } satisfies ModelSpec;
     const { canonicalContent } = canonicalizeLocalModelsContent(
@@ -117,6 +122,30 @@ describe("sync_models", () => {
         },
       ]);
     }
+  });
+
+  it("merges provider/tier rates when collapsing two legacy model ids", () => {
+    const flex = [{ input_cost_per_mil_tokens: 0.45 }];
+    const batch = [{ input_cost_per_mil_tokens: 0.3 }];
+    const priority = [{ input_cost_per_mil_tokens: 1 }];
+    const { models } = normalizeLocalModels({
+      "fireworks_ai/accounts/fireworks/models/qwen2-72b-instruct": {
+        ...canonicalFireworksModel,
+        pricing: { fireworks: { flex } },
+      },
+      "fireworks/accounts/fireworks/models/qwen2-72b-instruct": {
+        ...canonicalFireworksModel,
+        pricing: {
+          fireworks: { flex: [{ input_cost_per_mil_tokens: 9 }], batch },
+          openrouter: { priority },
+        },
+      },
+    });
+
+    expect(models["accounts/fireworks/models/qwen2-72b-instruct"]).toEqual({
+      ...canonicalFireworksModel,
+      pricing: { fireworks: { flex, batch }, openrouter: { priority } },
+    });
   });
 
   it("rewrites legacy-only Fireworks ids to canonical local keys", () => {
@@ -1233,22 +1262,25 @@ describe("convertOpenRouterToLocalModel", () => {
 });
 
 describe("applyOpenRouterPricing", () => {
-  it("preserves endpoint-specific flex rates when standard prices change", () => {
+  it("preserves provider/tier rates when standard prices change", () => {
     const model: ModelSpec = {
       format: "openai",
       flavor: "chat",
       input_cost_per_mil_tokens: 1,
       output_cost_per_mil_tokens: 2,
       available_providers: ["openrouter"],
-      flex_pricing: {
-        openrouter: [
-          {
-            input_cost_per_mil_tokens: 0.112,
-            output_cost_per_mil_tokens: 0.336,
-            input_cache_read_cost_per_mil_tokens: 0.00336,
-            endpoints: ["deepinfra/fp8/flex"],
-          },
-        ],
+      pricing: {
+        openrouter: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 0.112,
+              output_cost_per_mil_tokens: 0.336,
+              input_cache_read_cost_per_mil_tokens: 0.00336,
+              endpoints: ["deepinfra/fp8/flex"],
+            },
+          ],
+          priority: [{ input_cost_per_mil_tokens: 2 }],
+        },
       },
     };
     const priced = applyOpenRouterPricing(
@@ -1261,7 +1293,7 @@ describe("applyOpenRouterPricing", () => {
     );
     expect(priced?.input_cost_per_mil_tokens).toBe(0.14);
     expect(priced?.output_cost_per_mil_tokens).toBe(0.42);
-    expect(priced?.flex_pricing).toEqual(model.flex_pricing);
+    expect(priced?.pricing).toEqual(model.pricing);
   });
 
   it("overwrites prices that differ and returns null when unchanged", () => {

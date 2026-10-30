@@ -155,8 +155,20 @@ jobs:
             --output "$RUNNER_TEMP/sync-model-changed.json" \
             --github-output "$GITHUB_OUTPUT"
 
+      - name: Collect models with provider/tier pricing
+        id: pricing_models
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from "node:fs";
+
+          const models = JSON.parse(fs.readFileSync("packages/proxy/schema/model_list.json", "utf8"));
+          const ids = Object.keys(models).filter((id) => models[id].pricing != null);
+          fs.writeFileSync(`${process.env.RUNNER_TEMP}/sync-model-pricing.json`, JSON.stringify(ids, null, 2) + "\n");
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `count=${ids.length}\n`);
+          NODE
+
       - name: Enrich changed model metadata with Claude Code
-        if: ${{ steps.changed_models.outputs.count != '0' }}
+        if: ${{ steps.changed_models.outputs.count != '0' || steps.pricing_models.outputs.count != '0' }}
         timeout-minutes: 15
         uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
         with:
@@ -171,12 +183,14 @@ jobs:
           prompt: |
             # Goal
 
-            After the deterministic `sync_models.ts` update/add passes finish, enrich the model entries changed on this branch by this run with verified `displayName` metadata and, only when appropriate, verified `parent` metadata.
+            After the deterministic `sync_models.ts` update/add passes finish, enrich changed models with verified `displayName` and, when appropriate, `parent` metadata. Add or refresh verified provider/tier pricing for changed models and all models with existing pricing metadata, even when top-level standard prices did not change.
 
             # Inputs
 
             - Changed model id file: `${{ runner.temp }}/sync-model-changed.json`
             - Changed model count: `${{ steps.changed_models.outputs.count }}`
+            - Models with existing provider/tier pricing: `${{ runner.temp }}/sync-model-pricing.json`
+            - Existing priced model count: `${{ steps.pricing_models.outputs.count }}`
 
             # Files to inspect first
 
@@ -184,16 +198,17 @@ jobs:
             - `packages/proxy/schema/models.ts`
             - `packages/proxy/scripts/sync_models.ts`
             - `.github/workflows/sync-models.yaml`
+            - `.github/model-pricing.md`
 
             # What to do
 
-            1. Read the changed model id file and only work on those exact model ids.
+            1. Read both model id files. Only modify `displayName` and `parent` for changed models. Add or refresh `pricing[provider][tier]` for the union of both lists, following `.github/model-pricing.md`. Read the supported tiers from `PricingTiers` in `packages/proxy/schema/models.ts`; check each applicable tier independently and do not skip existing prices merely because the changed model list is empty. Group research by provider and reuse official sources when they explicitly cover multiple models.
             2. For each changed model, read its current entry in `packages/proxy/schema/model_list.json` and note whether `displayName` and `parent` are already set.
             3. For fields that are already set, verify the existing value against official provider sources before deciding whether to keep or correct it. Do not go to the web first — read the local value first, then verify.
             4. Update only `packages/proxy/schema/model_list.json`.
             5. Preserve existing JSON formatting, field order, and neighboring naming conventions.
-            6. Only modify `displayName` and `parent`. Do not change pricing, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
-            6a. When updating `displayName` or `parent`, replace any existing key in place. Never leave duplicate JSON properties in a model entry.
+            6. Only modify `displayName`, `parent`, and `pricing`. Do not change top-level standard prices, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
+            6a. Replace existing keys in place. Never leave duplicate JSON properties in a model entry.
             7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
             8. Set `parent` only when official sources explicitly document a relationship between this model id and a stable base alias, and the parent model id already exists in `model_list.json`. Do not set `parent` based on inference alone.
             9. Consider `parent` for any of these verified relationship patterns — check official docs for each:
@@ -206,7 +221,8 @@ jobs:
                - the model is a base model with no documented parent
                - the relationship cannot be verified from official sources
                - the parent model id does not exist in the local `model_list.json`
-            11. If a field cannot be verified confidently from official sources, leave it unset instead of guessing.
+            11. If a missing field cannot be verified confidently from official sources, leave it unset instead of guessing. Preserve existing provider/tier metadata when a source is unavailable or inconclusive, as required by `.github/model-pricing.md`.
+            12. Report the official sources for each provider/tier pricing change and any checks that could not be completed.
 
             # Display name examples
 
@@ -228,7 +244,7 @@ jobs:
             - Do not invent placeholder values.
 
       - name: Canonicalize model list and equivalent models after metadata enrichment
-        if: ${{ steps.changed_models.outputs.count != '0' }}
+        if: ${{ steps.changed_models.outputs.count != '0' || steps.pricing_models.outputs.count != '0' }}
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check expected files only

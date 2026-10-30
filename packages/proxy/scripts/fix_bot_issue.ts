@@ -15,13 +15,27 @@ import {
   stablyOrderByExisting,
 } from "./sync_models";
 import {
-  type ModelEndpointType,
+  ModelEndpointType,
   type ModelFormat,
   ModelSchema,
   type ModelSpec,
+  PricingRateSchema,
+  PricingTiers,
 } from "../schema/models";
 
-const partialModelSchema = ModelSchema.partial();
+const partialModelSchema = ModelSchema.partial().extend({
+  pricing: z
+    .record(
+      z.enum(ModelEndpointType),
+      z
+        .record(
+          z.enum(PricingTiers),
+          z.array(PricingRateSchema).min(1).nullable(),
+        )
+        .nullable(),
+    )
+    .nullish(),
+});
 export const UPCOMING_DEPRECATION_WINDOW_DAYS = 90;
 const issueMetadataSchema = z.object({
   kind: z.enum(["missing_model", "stale_metadata"]).optional(),
@@ -140,7 +154,7 @@ const SCHEMA_INDEX_PATH = path.resolve(__dirname, "../schema/index.ts");
 const LITELLM_REMOTE_MODEL_URL =
   "https://raw.githubusercontent.com/BerriAI/litellm/refs/heads/main/litellm/model_prices_and_context_window_backup.json";
 const PROVIDER_CAPTURE_GROUP =
-  "(OpenAI|Anthropic|Azure|Google|Vertex|AWS Bedrock|Bedrock|Groq|Mistral|xAI|Together|Fireworks|Databricks|Cerebras|Perplexity)";
+  "(OpenAI|OpenRouter|Anthropic|Azure|Google|Vertex|AWS Bedrock|Bedrock|Groq|Mistral|xAI|Together|Fireworks|Databricks|Cerebras|Perplexity)";
 const BOT_ISSUE_TITLE_PATTERN = new RegExp(
   `^\\[(?:BOT ISSUE|Bot Issue)\\]\\s+Missing\\s+${PROVIDER_CAPTURE_GROUP}\\s+(\\S+)\\s+model$`,
   "i",
@@ -186,6 +200,7 @@ function normalizeProvider(provider?: string): string | null {
       "groq",
       "mistral",
       "openai",
+      "openrouter",
       "perplexity",
       "together",
       "vertex",
@@ -895,6 +910,7 @@ function providersForName(providerName?: string): ModelEndpointType[] {
     fireworks: "fireworks",
     groq: "groq",
     mistral: "mistral",
+    openrouter: "openrouter",
     perplexity: "perplexity",
     together: "together",
   };
@@ -1222,7 +1238,7 @@ function parseIssueTitle(title: string): {
   return { provider: null, models: [] };
 }
 
-function parseIssue(title: string, body: string): ParsedIssue {
+export function parseIssue(title: string, body: string): ParsedIssue {
   const metadata = parseIssueMetadata(body);
   const titleData = parseIssueTitle(title);
   const aliasTargets = parseAliasTargets(body);
@@ -1297,6 +1313,7 @@ function inferFormat(
       "groq",
       "mistral",
       "openai",
+      "openrouter",
       "perplexity",
       "together",
       "xai",
@@ -1341,6 +1358,42 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
   if (patch.input_cache_write_cost_per_mil_tokens !== undefined) {
     model.input_cache_write_cost_per_mil_tokens =
       patch.input_cache_write_cost_per_mil_tokens;
+  }
+  if (patch.pricing === null) {
+    delete model.pricing;
+  } else if (patch.pricing !== undefined) {
+    const pricing = model.pricing ?? {};
+    for (const provider of ModelEndpointType) {
+      const tiers = patch.pricing[provider];
+      if (tiers === undefined) continue;
+      if (tiers === null) {
+        delete pricing[provider];
+        continue;
+      }
+
+      const providerPricing = pricing[provider] ?? {};
+      for (const tier of PricingTiers) {
+        const rates = tiers[tier];
+        if (rates === undefined) continue;
+        if (rates === null) {
+          delete providerPricing[tier];
+        } else {
+          providerPricing[tier] = rates;
+        }
+      }
+
+      if (Object.keys(providerPricing).length > 0) {
+        pricing[provider] = providerPricing;
+      } else {
+        delete pricing[provider];
+      }
+    }
+
+    if (Object.keys(pricing).length > 0) {
+      model.pricing = pricing;
+    } else {
+      delete model.pricing;
+    }
   }
   if (patch.displayName !== undefined) {
     model.displayName = patch.displayName;
@@ -1538,7 +1591,7 @@ export function buildUpdatedLocalModel(
   return updatedModel;
 }
 
-function buildModelsForIssue(
+export function buildModelsForIssue(
   parsedIssue: ParsedIssue,
   targetModel: string,
   localModels: LocalModelList,
@@ -1568,6 +1621,8 @@ function buildModelsForIssue(
   if (aliasSource && localModels[aliasSource]) {
     const model = cloneLocalModel(localModels[aliasSource]);
     const modelSpecPatch = getModelSpecPatch(parsedIssue.metadata, targetModel);
+    // Provider/tier rates require evidence for the new alias itself.
+    delete model.pricing;
     applyModelSpecPatch(model, modelSpecPatch);
     if (!modelSpecPatch?.displayName) {
       delete model.displayName;

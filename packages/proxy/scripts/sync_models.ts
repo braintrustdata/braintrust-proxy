@@ -8,7 +8,7 @@ import { hideBin } from "yargs/helpers";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
-import { ModelSchema, ModelSpec } from "../schema/models";
+import { ModelEndpointType, ModelSchema, ModelSpec } from "../schema/models";
 import ts from "typescript";
 import {
   canonicalizeLocalModelName,
@@ -1098,10 +1098,23 @@ function mergeLocalModelDetails(
   primary: LocalModelDetail,
   secondary: LocalModelDetail,
 ): LocalModelDetail {
-  return {
+  const merged = {
     ...secondary,
     ...primary,
   };
+  if (primary.pricing && secondary.pricing) {
+    const pricing = { ...secondary.pricing };
+    for (const provider of ModelEndpointType) {
+      if (primary.pricing[provider]) {
+        pricing[provider] = {
+          ...secondary.pricing[provider],
+          ...primary.pricing[provider],
+        };
+      }
+    }
+    merged.pricing = pricing;
+  }
+  return merged;
 }
 
 export function getUpdatedAvailableProviders(

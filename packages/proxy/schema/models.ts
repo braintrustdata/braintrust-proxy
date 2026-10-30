@@ -53,66 +53,64 @@ export const ModelEndpointType = [
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
+export const PricingTiers = ["standard", "flex", "batch", "priority"] as const;
+export type PricingTier = (typeof PricingTiers)[number];
+
+const tokenPricingSchema = z.object({
+  input_cost_per_mil_tokens: z.number().nullish(),
+  output_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_read_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_cost_per_mil_tokens: z
+    .number()
+    .nullish()
+    .describe("Total cache-write token price for the default TTL."),
+  input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
+});
+
+export const PricingRateSchema = tokenPricingSchema.extend({
+  endpoints: z
+    .array(z.string())
+    .nullish()
+    .describe(
+      "Provider endpoint hosts, Bedrock endpoint names, or OpenRouter endpoint tags.",
+    ),
+  supported_regions: z.array(z.string()).nullish(),
+  deployment_type: z.string().nullish(),
+  model_id: z
+    .string()
+    .nullish()
+    .describe("Required upstream model or inference profile ID."),
+  model_version: z.string().nullish(),
+  min_input_tokens: z
+    .number()
+    .nullish()
+    .describe("Inclusive lower bound on prompt length for these rates."),
+  max_input_tokens: z
+    .number()
+    .nullish()
+    .describe("Inclusive upper bound on prompt length for these rates."),
+  valid_from: z.string().nullish(),
+  valid_until: z.string().nullish(),
+});
+export type PricingRate = z.infer<typeof PricingRateSchema>;
+
+export const ModelPricingSchema = z.record(
+  z.enum(ModelEndpointType),
+  z.record(z.enum(PricingTiers), z.array(PricingRateSchema).min(1)),
+);
+export type ModelPricing = z.infer<typeof ModelPricingSchema>;
+
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(ModelFlavors),
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),
-  input_cost_per_mil_tokens: z.number().nullish(),
-  output_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_read_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
-  flex_pricing: z
-    .record(
-      z.enum(ModelEndpointType),
-      z
-        .array(
-          z.object({
-            input_cost_per_mil_tokens: z.number().nullish(),
-            output_cost_per_mil_tokens: z.number().nullish(),
-            input_cache_read_cost_per_mil_tokens: z.number().nullish(),
-            input_cache_write_cost_per_mil_tokens: z
-              .number()
-              .nullish()
-              .describe("Total cache-write token price for the default TTL."),
-            endpoints: z
-              .array(z.string())
-              .nullish()
-              .describe(
-                "Provider endpoint hosts, Bedrock endpoint names, or OpenRouter endpoint tags.",
-              ),
-            supported_regions: z.array(z.string()).nullish(),
-            deployment_type: z.string().nullish(),
-            model_id: z
-              .string()
-              .nullish()
-              .describe("Required upstream model or inference profile ID."),
-            model_version: z.string().nullish(),
-            min_input_tokens: z
-              .number()
-              .nullish()
-              .describe(
-                "Inclusive lower bound on prompt length for these rates.",
-              ),
-            max_input_tokens: z
-              .number()
-              .nullish()
-              .describe(
-                "Inclusive upper bound on prompt length for these rates.",
-              ),
-            valid_from: z.string().nullish(),
-            valid_until: z.string().nullish(),
-          }),
-        )
-        .min(1),
-    )
-    .nullish()
-    .describe(
-      "Verified flex support and USD prices per million text tokens, keyed by the resolved provider. Each entry applies only to its endpoint, region, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing providers have no verified flex support.",
-    ),
+  ...tokenPricingSchema.shape,
+  pricing: ModelPricingSchema.nullish().describe(
+    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing tiers have no verified support and do not fall back to standard prices. Top-level pricing fields retain their existing standard-price meaning. Tier names are pricing categories, not provider API parameter values.",
+  ),
   displayName: z
     .string()
     .nullish()

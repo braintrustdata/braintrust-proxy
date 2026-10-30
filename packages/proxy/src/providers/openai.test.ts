@@ -4,7 +4,7 @@ import {
   OpenAIChatCompletionCreateParams,
 } from "@types";
 import { type APISecret } from "@schema";
-import { bypass, http, HttpResponse, JsonBodyType } from "msw";
+import { http, HttpResponse, JsonBodyType } from "msw";
 import { setupServer } from "msw/node";
 import { ChatCompletionContentPart } from "openai/resources";
 import {
@@ -734,8 +734,17 @@ describe("request/response checking", () => {
     server.close();
   });
 
-  it("should leave null reasoning_effort for the provider to default", async () => {
+  test("should forward null reasoning_effort and return the provider validation error", async () => {
     const calls: InterceptedCall[] = [];
+    const providerError = {
+      error: {
+        message:
+          "Unsupported value: 'reasoning_effort' does not support null with this model. Supported values are: 'none', 'low', 'medium', 'high', and 'xhigh'.",
+        type: "invalid_request_error",
+        param: "reasoning_effort",
+        code: "unsupported_value",
+      },
+    };
     server.use(
       http.post(
         "https://api.openai.com/v1/chat/completions",
@@ -746,34 +755,23 @@ describe("request/response checking", () => {
             body: await req.json(),
           };
 
-          const res = await fetch(
-            bypass(
-              new Request(req.url, {
-                method: req.method,
-                body: JSON.stringify(request.body),
-                headers: req.headers,
-              }),
-            ),
-          );
-
           const response: InterceptedResponse = {
-            status: res.status,
-            body: await res.json(),
+            status: 400,
+            body: providerError,
           };
 
           calls.push({ request, response });
 
           return HttpResponse.json(response.body, {
-            status: res.status,
-            headers: res.headers,
+            status: response.status,
           });
         },
       ),
     );
 
-    const { json } = await callProxyV1<
+    const { json, statusCode } = await callProxyV1<
       OpenAIChatCompletionCreateParams,
-      OpenAIChatCompletion
+      typeof providerError
     >({
       body: {
         model: "gpt-5.2",
@@ -805,45 +803,23 @@ describe("request/response checking", () => {
       proxyHeaders: {
         "x-bt-endpoint-name": "openai",
       },
-    });
-
-    expect(json()).toMatchObject({
-      choices: [
+      getApiSecrets: async () => [
         {
-          finish_reason: "stop",
-          index: 0,
-          message: {
-            content: expect.any(String),
-            // as of writing, openai does not provide this detail
-            // reasoning: [],
-            refusal: null,
-            role: "assistant",
-          },
+          type: "openai",
+          secret: "openai-secret",
+          name: "openai",
         },
       ],
-      created: expect.any(Number),
-      id: expect.any(String),
-      model: expect.stringMatching(/^gpt-5\.2(?:-\d{4}-\d{2}-\d{2})?$/),
-      object: "chat.completion",
-      service_tier: expect.any(String),
-      usage: {
-        completion_tokens: expect.any(Number),
-        prompt_tokens: expect.any(Number),
-        total_tokens: expect.any(Number),
-        completion_tokens_details: {
-          reasoning_tokens: expect.any(Number),
-        },
-        prompt_tokens_details: {
-          cached_tokens: expect.any(Number),
-        },
-      },
     });
+
+    expect(statusCode).toBe(400);
+    expect(json()).toEqual(providerError);
 
     expect(calls).toEqual([
       {
         request: {
           body: {
-            reasoning_effort: null, // let openai decide what is the default
+            reasoning_effort: null,
             messages: [
               {
                 content: "How many rs in 'ferrocarril'",
@@ -866,8 +842,8 @@ describe("request/response checking", () => {
           url: "https://api.openai.com/v1/chat/completions",
         },
         response: {
-          body: json(),
-          status: 200,
+          body: providerError,
+          status: 400,
         },
       },
     ]);

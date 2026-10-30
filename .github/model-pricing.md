@@ -4,6 +4,7 @@ Read `packages/proxy/schema/models.ts` and the model's existing prices before re
 Use `PricingTiers` as the shared list of supported tier names; adding a tier must not require a separate schema or workflow.
 These names are catalog pricing categories, not provider API request parameter values.
 For example, batch processing can use a different API surface from synchronous service tiers.
+Check each applicable tier independently, even when top-level standard prices did not change.
 
 - Keep the existing standard price fields at the top level with their current meaning.
   Do not move, remove, or duplicate them under `pricing[provider].standard` as part of this migration.

@@ -202,7 +202,7 @@ jobs:
 
             # What to do
 
-            1. Read both model id files. Only modify `displayName` and `parent` for changed models. Add or refresh `pricing[provider][tier]` for the union of both lists, following `.github/model-pricing.md`. Read the supported tiers from `PricingTiers` in `packages/proxy/schema/models.ts`; check each applicable tier independently and do not skip existing prices merely because the changed model list is empty. Group research by provider and reuse official sources when they explicitly cover multiple models.
+            1. Read both model id files. Only modify `displayName` and `parent` for changed models. Add or refresh `pricing` for the union of both lists, following `.github/model-pricing.md`. Group research by provider and reuse official sources when they explicitly cover multiple models.
             2. For each changed model, read its current entry in `packages/proxy/schema/model_list.json` and note whether `displayName` and `parent` are already set.
             3. For fields that are already set, verify the existing value against official provider sources before deciding whether to keep or correct it. Do not go to the web first — read the local value first, then verify.
             4. Update only `packages/proxy/schema/model_list.json`.
@@ -221,8 +221,7 @@ jobs:
                - the model is a base model with no documented parent
                - the relationship cannot be verified from official sources
                - the parent model id does not exist in the local `model_list.json`
-            11. If a missing field cannot be verified confidently from official sources, leave it unset instead of guessing. Preserve existing provider/tier metadata when a source is unavailable or inconclusive, as required by `.github/model-pricing.md`.
-            12. Report the official sources for each provider/tier pricing change and any checks that could not be completed.
+            11. If a missing field cannot be verified confidently from official sources, leave it unset instead of guessing.
 
             # Display name examples
 

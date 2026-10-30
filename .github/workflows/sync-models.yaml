@@ -26,7 +26,7 @@ jobs:
       # Route Claude Code through the Braintrust gateway. The gateway
       # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
       # passed as anthropic_api_key below) and calls the provider on our behalf.
-      # https://www.braintrust.dev/docs/deploy/gateway
+      # https://docs.braintrust.dev/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
       # Attribute gateway spend to the automations-spend-control project.
       ANTHROPIC_CUSTOM_HEADERS: |-

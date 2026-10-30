@@ -71,7 +71,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "homepage": "https://www.braintrust.dev/docs/guides/proxy",
+  "homepage": "https://docs.braintrust.dev/deploy/ai-proxy",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/braintrustdata/braintrust-proxy.git"

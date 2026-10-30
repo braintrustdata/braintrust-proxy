@@ -8,7 +8,7 @@ models from [OpenAI](https://platform.openai.com/docs/models), [Anthropic](https
 - **Cost Reduction**: The proxy automatically caches results, reusing them when possible.
 - **Enhanced Observability**: Log requests automatically for better tracking and debugging. \[Coming soon\]
 
-See the full list of supported models [here](https://www.braintrust.dev/docs/guides/proxy#supported-models).
+See the full list of supported models [here](https://docs.braintrust.dev/deploy/ai-proxy#supported-models).
 To read more about why we launched the AI proxy, check out our [announcement blog post](https://braintrust.dev/blog/ai-proxy).
 
 This repository contains the code for the proxy — both the underlying implementation and wrappers that allow you to
@@ -85,7 +85,7 @@ time curl -i https://api.braintrust.dev/v1/proxy/chat/completions \
 
 ## Deploying
 
-You can find the full documentation for using the proxy [here](https://www.braintrust.dev/docs/guides/proxy).
+You can find the full documentation for using the proxy [here](https://docs.braintrust.dev/deploy/ai-proxy).
 The proxy is hosted for you, with end-to-end encryption, at `https://api.braintrust.dev/v1/proxy`. However, you
 can also deploy it yourself and customize its behavior.
 

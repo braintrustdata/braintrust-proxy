@@ -3656,6 +3656,19 @@ async function syncOpenRouterModelsCommand(argv: any) {
             staleProviders.length === 1 &&
             staleProviders[0] === "openrouter"
           ) {
+            const openRouterPricing = localModels[slug].pricing?.openrouter;
+            if (openRouterPricing) {
+              const canonicalModel = localModels[target];
+              // Keep verified tiers when moving to the canonical ID, with
+              // existing canonical rates taking precedence for each tier.
+              canonicalModel.pricing = {
+                ...canonicalModel.pricing,
+                openrouter: {
+                  ...openRouterPricing,
+                  ...canonicalModel.pricing?.openrouter,
+                },
+              };
+            }
             delete localModels[slug];
             migratedSlugs.push(slug);
             console.log(

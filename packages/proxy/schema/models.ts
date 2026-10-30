@@ -53,7 +53,7 @@ export const ModelEndpointType = [
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
-export const PricingTiers = ["standard", "flex", "batch", "priority"] as const;
+export const PricingTiers = ["flex", "batch", "priority"] as const;
 export type PricingTier = (typeof PricingTiers)[number];
 
 const tokenPricingSchema = z.object({
@@ -109,7 +109,7 @@ export const ModelSchema = z.object({
   output_cost_per_token: z.number().nullish(),
   ...tokenPricingSchema.shape,
   pricing: ModelPricingSchema.nullish().describe(
-    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing tiers have no verified support and do not fall back to standard prices. Top-level pricing fields retain their existing standard-price meaning. Tier names are pricing categories, not provider API parameter values.",
+    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing tiers have no verified support and do not fall back to standard prices. Top-level price fields hold standard prices. Tier names are pricing categories, not provider API parameter values.",
   ),
   displayName: z
     .string()

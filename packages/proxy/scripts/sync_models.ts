@@ -8,7 +8,7 @@ import { hideBin } from "yargs/helpers";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
-import { ModelEndpointType, ModelSchema, ModelSpec } from "../schema/models";
+import { ModelSchema, ModelSpec } from "../schema/models";
 import ts from "typescript";
 import {
   canonicalizeLocalModelName,
@@ -1098,23 +1098,10 @@ function mergeLocalModelDetails(
   primary: LocalModelDetail,
   secondary: LocalModelDetail,
 ): LocalModelDetail {
-  const merged = {
+  return {
     ...secondary,
     ...primary,
   };
-  if (primary.pricing && secondary.pricing) {
-    const pricing = { ...secondary.pricing };
-    for (const provider of ModelEndpointType) {
-      if (primary.pricing[provider]) {
-        pricing[provider] = {
-          ...secondary.pricing[provider],
-          ...primary.pricing[provider],
-        };
-      }
-    }
-    merged.pricing = pricing;
-  }
-  return merged;
 }
 
 export function getUpdatedAvailableProviders(
@@ -3661,11 +3648,14 @@ async function syncOpenRouterModelsCommand(argv: any) {
               const canonicalModel = localModels[target];
               // Keep verified tiers when moving to the canonical ID, with
               // existing canonical rates taking precedence for each tier.
-              canonicalModel.pricing = {
-                ...canonicalModel.pricing,
-                openrouter: {
-                  ...openRouterPricing,
-                  ...canonicalModel.pricing?.openrouter,
+              localModels[target] = {
+                ...canonicalModel,
+                pricing: {
+                  ...canonicalModel.pricing,
+                  openrouter: {
+                    ...openRouterPricing,
+                    ...canonicalModel.pricing?.openrouter,
+                  },
                 },
               };
             }

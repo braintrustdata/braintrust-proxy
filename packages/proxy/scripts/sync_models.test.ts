@@ -124,30 +124,6 @@ describe("sync_models", () => {
     }
   });
 
-  it("merges provider/tier rates when collapsing two legacy model ids", () => {
-    const flex = [{ input_cost_per_mil_tokens: 0.45 }];
-    const batch = [{ input_cost_per_mil_tokens: 0.3 }];
-    const priority = [{ input_cost_per_mil_tokens: 1 }];
-    const { models } = normalizeLocalModels({
-      "fireworks_ai/accounts/fireworks/models/qwen2-72b-instruct": {
-        ...canonicalFireworksModel,
-        pricing: { fireworks: { flex } },
-      },
-      "fireworks/accounts/fireworks/models/qwen2-72b-instruct": {
-        ...canonicalFireworksModel,
-        pricing: {
-          fireworks: { flex: [{ input_cost_per_mil_tokens: 9 }], batch },
-          openrouter: { priority },
-        },
-      },
-    });
-
-    expect(models["accounts/fireworks/models/qwen2-72b-instruct"]).toEqual({
-      ...canonicalFireworksModel,
-      pricing: { fireworks: { flex, batch }, openrouter: { priority } },
-    });
-  });
-
   it("rewrites legacy-only Fireworks ids to canonical local keys", () => {
     const { models } = normalizeLocalModels({
       "fireworks_ai/accounts/fireworks/models/glm-4p5-air":

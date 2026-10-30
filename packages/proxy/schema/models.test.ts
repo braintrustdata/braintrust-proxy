@@ -70,7 +70,7 @@ it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
   expect(ModelSchema.parse(model)).toEqual(model);
 });
 
-it("does not infer missing tier prices or support from standard or batch rates", () => {
+it("does not infer missing tier prices or support from batch rates", () => {
   const model = ModelSchema.parse({
     format: "openai",
     flavor: "chat",
@@ -81,7 +81,6 @@ it("does not infer missing tier prices or support from standard or batch rates",
   expect(
     model.pricing?.openai?.batch?.[0].input_cost_per_mil_tokens,
   ).toBeUndefined();
-  expect(model.pricing?.openai?.standard).toBeUndefined();
   expect(model.pricing?.openai?.flex).toBeUndefined();
   expect(model.pricing?.vertex).toBeUndefined();
 });
@@ -89,6 +88,7 @@ it("does not infer missing tier prices or support from standard or batch rates",
 it.each([
   { openai: { flex: [] } },
   { openai: { flxe: [{}] } },
+  { openai: { standard: [{}] } },
   { unknown_provider: { flex: [{}] } },
   { openai: { flex: null } },
 ])("rejects invalid provider/tier rates: %j", (pricing) => {

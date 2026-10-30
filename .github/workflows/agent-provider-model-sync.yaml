@@ -93,7 +93,7 @@ jobs:
 
             0. Before any discovery, use `mcp__github__search_issues` to find the 5 most recently opened issues with the `[BOT ISSUE]` title prefix. Record their titles. Do not create an issue whose gap duplicates any of these titles.
             1. Read the local schema and model list to understand current naming, ordering, and provider mapping conventions.
-            2. For each provider, fetch the current official model list and check for: models missing locally, local models that are stale or deprecated, and missing or drifted standard prices, provider/tier `pricing`, or token limits. Follow `.github/model-pricing.md` for tier pricing.
+            2. For each provider, fetch the current official model list and check for: models missing locally, local models that are stale or deprecated, and missing or drifted standard prices, drifted provider/tier `pricing`, or token limits. Follow `.github/model-pricing.md` for tier pricing. Absent tier pricing is unverified, not a gap; report it only when an official source documents tier support for that exact model and provider.
             3. Prefer official provider APIs for discovery. Fall back to official documentation. Never use third-party aggregators.
             4. For pricing: use the model page if pricing is stated there; otherwise use the provider pricing page; otherwise skip pricing for that provider.
             5. Do one bounded search for provider families not already in the current inventory. If inconclusive, do not create an issue.
@@ -108,7 +108,7 @@ jobs:
             When deciding which gaps to file first, use this order:
 
             1. **New models** — models that exist on the provider's public inference surface but are absent from `model_list.json`
-            2. **Model cost updates** — missing, stale, or incorrect standard pricing, provider/tier pricing and conditions, or token limits for models already in the catalog
+            2. **Model cost updates** — missing, stale, or incorrect standard pricing or token limits, stale or incorrect provider/tier pricing and conditions, or officially documented tier support that the catalog lacks for models already in the catalog
             3. **Model deprecations** — local models that have been officially deprecated or retired by the provider
             4. **New model providers** — provider families not yet represented in the catalog at all
 

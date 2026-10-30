@@ -16307,7 +16307,7 @@
               "us-east-2",
               "us-west-2"
             ],
-            "model_id": "amazon.nova-premier-v1:0"
+            "model_id": "us.amazon.nova-premier-v1:0"
           }
         ]
       }

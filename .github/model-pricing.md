@@ -6,9 +6,9 @@ These names are catalog pricing categories, not provider API request parameter v
 For example, batch processing can use a different API surface from synchronous service tiers.
 Check each applicable tier independently, even when top-level standard prices did not change.
 
-- Keep the existing standard price fields at the top level with their current meaning.
-  Do not move, remove, or duplicate them under `pricing[provider].standard` as part of this migration.
-  Store additional verified rates in `pricing[provider][tier]`, with a nonempty array of rate entries for each provider/tier pair.
+- Keep standard prices in the top-level price fields.
+  `pricing` holds only the non-standard tiers in `PricingTiers`.
+  Store verified tier rates in `pricing[provider][tier]`, with a nonempty array of rate entries for each provider/tier pair.
 - Verify support and rates for the exact model, resolved provider, and tier using official provider pricing, tier documentation, or a documented provider API.
   For OpenRouter, verify the specific upstream endpoint and its tier tag through OpenRouter's official model/endpoint data.
   Do not infer tier support or rates from another provider, tier, parent, alias, model family, or a generic discount.

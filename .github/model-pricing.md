@@ -15,6 +15,8 @@ Check each applicable tier independently, even when top-level standard prices di
 - Use USD per million text tokens for `input_cost_per_mil_tokens`, `output_cost_per_mil_tokens`, `input_cache_read_cost_per_mil_tokens`, `input_cache_write_cost_per_mil_tokens`, `input_cache_write_5m_cost_per_mil_tokens`, and `input_cache_write_1h_cost_per_mil_tokens`.
   Cache-write prices are the total token price for the stated TTL, not a surcharge or an hourly storage fee.
   The unsuffixed cache-write field is the total price for the default TTL.
+  For OpenRouter Gemini, the endpoint's `input_cache_write` price is a storage surcharge.
+  Add it to the applicable `prompt` price, including prompt-length overrides, to record the [total cache-write price](https://openrouter.ai/docs/guides/best-practices/prompt-caching#google-gemini).
   Omit unknown prices; zero is a published price, not a placeholder.
   A missing provider/tier pair means support is unverified; it does not fall back to another tier or the top-level standard prices.
 - Record every documented condition using `endpoints`, `supported_regions`, `deployment_type`, `model_id`, `model_version`, `min_input_tokens`, `max_input_tokens`, `valid_from`, and `valid_until` as applicable.

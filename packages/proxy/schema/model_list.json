@@ -19999,7 +19999,7 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
-            "input_cache_write_cost_per_mil_tokens": 0.0208333333333333,
+            "input_cache_write_cost_per_mil_tokens": 0.3958333333333333,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20074,7 +20074,7 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
-            "input_cache_write_cost_per_mil_tokens": 0.0208333333333333,
+            "input_cache_write_cost_per_mil_tokens": 0.3958333333333333,
             "endpoints": [
               "google-ai-studio/flex",
               "google-vertex/global/flex"
@@ -20127,7 +20127,7 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 0.09375,
+            "input_cache_write_cost_per_mil_tokens": 1.09375,
             "endpoints": [
               "google-ai-studio/flex"
             ]
@@ -20201,7 +20201,7 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
-            "input_cache_write_cost_per_mil_tokens": 0.0208333333333333,
+            "input_cache_write_cost_per_mil_tokens": 0.3958333333333333,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20250,7 +20250,7 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.7916666666666667,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20308,7 +20308,7 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.1916666666666667,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20439,7 +20439,7 @@
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.1666666666666667,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20514,7 +20514,7 @@
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.1666666666666667,
             "endpoints": [
               "google-ai-studio/flex"
             ]
@@ -20590,7 +20590,7 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.1,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 1.1875,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20601,7 +20601,7 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
             "input_cache_read_cost_per_mil_tokens": 0.2,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 2.1875,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20683,7 +20683,7 @@
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
             "input_cache_read_cost_per_mil_tokens": 0.025,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.2916666666666667,
             "endpoints": [
               "google-vertex/global/flex",
               "google-ai-studio/flex"
@@ -20765,7 +20765,7 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.1,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 1.1875,
             "endpoints": [
               "google-ai-studio/global/flex"
             ]
@@ -20827,7 +20827,7 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.1916666666666667,
             "endpoints": [
               "google-ai-studio/flex"
             ]
@@ -20941,7 +20941,7 @@
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.2,
             "input_cache_read_cost_per_mil_tokens": 0.005,
-            "input_cache_write_cost_per_mil_tokens": 0.0416666666666667,
+            "input_cache_write_cost_per_mil_tokens": 0.0916666666666667,
             "endpoints": [
               "google-ai-studio/flex"
             ]
@@ -21010,7 +21010,7 @@
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.0625,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 0.8125,
             "endpoints": [
               "google-ai-studio/flex"
             ],
@@ -21020,7 +21020,7 @@
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.125,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 1.4375,
             "endpoints": [
               "google-ai-studio/flex"
             ],
@@ -28076,7 +28076,7 @@
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.0625,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 0.8125,
             "endpoints": [
               "google-ai-studio/flex"
             ],
@@ -28086,7 +28086,7 @@
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.125,
-            "input_cache_write_cost_per_mil_tokens": 0.1875,
+            "input_cache_write_cost_per_mil_tokens": 1.4375,
             "endpoints": [
               "google-ai-studio/flex"
             ],

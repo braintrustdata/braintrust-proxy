@@ -66,6 +66,7 @@ jobs:
             - `packages/proxy/schema/models.ts`
             - `.github/workflows/sync-models.yaml`
             - `.github/workflows/agent-provider-model-sync.yaml`
+            - `.github/model-pricing.md`
 
             # Current provider inventory
 
@@ -82,6 +83,7 @@ jobs:
             - `groq` — models and pricing: `https://console.groq.com/docs/models`
             - `mistral` — models: `https://docs.mistral.ai/getting-started/models`
             - `openai` — models: `https://platform.openai.com/docs/models/compare` ; pricing: `https://platform.openai.com/docs/pricing/`
+            - `openrouter` — models and standard pricing: `https://openrouter.ai/api/v1/models` ; tier pricing: official per-model endpoint data and documentation, including the specific upstream endpoint tags
             - `perplexity` — models and pricing: `https://docs.perplexity.ai/docs/agent-api/models`
             - `together` — models and pricing: `https://docs.together.ai/docs/serverless-models`
             - `vertex` — models: `https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/available-models` ; pricing: `https://cloud.google.com/vertex-ai/generative-ai/pricing`
@@ -91,7 +93,7 @@ jobs:
 
             0. Before any discovery, use `mcp__github__search_issues` to find the 5 most recently opened issues with the `[BOT ISSUE]` title prefix. Record their titles. Do not create an issue whose gap duplicates any of these titles.
             1. Read the local schema and model list to understand current naming, ordering, and provider mapping conventions.
-            2. For each provider, fetch the current official model list and check for: models missing locally, local models that are stale or deprecated, and missing or drifted pricing or token limits.
+            2. For each provider, fetch the current official model list and check for: models missing locally, local models that are stale or deprecated, and missing or drifted standard prices, drifted provider/tier `pricing`, or token limits. Follow `.github/model-pricing.md` for tier pricing. Absent tier pricing is unverified, not a gap; report it only when an official source documents tier support for that exact model and provider.
             3. Prefer official provider APIs for discovery. Fall back to official documentation. Never use third-party aggregators.
             4. For pricing: use the model page if pricing is stated there; otherwise use the provider pricing page; otherwise skip pricing for that provider.
             5. Do one bounded search for provider families not already in the current inventory. If inconclusive, do not create an issue.
@@ -106,7 +108,7 @@ jobs:
             When deciding which gaps to file first, use this order:
 
             1. **New models** — models that exist on the provider's public inference surface but are absent from `model_list.json`
-            2. **Model cost updates** — stale or incorrect pricing or token limits for models already in the catalog
+            2. **Model cost updates** — missing, stale, or incorrect standard pricing or token limits, stale or incorrect provider/tier pricing and conditions, or officially documented tier support that the catalog lacks for models already in the catalog
             3. **Model deprecations** — local models that have been officially deprecated or retired by the provider
             4. **New model providers** — provider families not yet represented in the catalog at all
 
@@ -131,7 +133,7 @@ jobs:
             - `azure`, `bedrock`, and `vertex` can serve models made by other companies. A model appearing there does not mean the local provider mapping is wrong — only report a mapping gap when official docs clearly show the current mapping is incomplete.
             - **Shared model ids span providers — union them.** Some ids are served by more than one provider under the exact same id (e.g. `zai-org/GLM-5.2` and `moonshotai/Kimi-K2.6` are on both `baseten` and `together`). When you find such an id, check EVERY provider in the inventory that serves that exact id and report the FULL set in `available_providers` — never attribute a shared id to only the first provider you happen to find it on. If the id is already in `model_list.json` but a provider that serves it (on that provider's official inference surface) is missing from its `available_providers`, that is itself a fileable gap (a provider-mapping update, priority alongside cost updates): report the id and the complete provider set, and set `kind: "stale_metadata"` in the metadata block (it is an update to an already-present id, not a new model — see the metadata rules below). This gap is distinct from an "add model" issue, so do not suppress it via the duplicate check just because the id already exists or a recent issue added the id for one provider.
             - Report the `model_list.json` `available_providers` set only. Do NOT assume `index.ts` (`AvailableEndpointTypes`) must equal it — index.ts is intentionally narrower for some models (e.g. an id pinned to a single provider for pricing), so a difference there is not necessarily a gap.
-            - For pricing, prefer standard public on-demand pricing. Ignore free tiers, preview promos, enterprise, provisioned throughput, reserved capacity, and batch pricing. If pricing varies by region with no clear default, skip it. If pricing varies by prompt length or modality in a way that doesn't map cleanly to the existing schema, skip it.
+            - For top-level pricing fields, prefer standard public on-demand pricing. Ignore free tiers, preview promos, enterprise, provisioned throughput, reserved capacity, and batch pricing. If standard pricing varies by region with no clear default, skip it. If standard pricing varies by prompt length or modality in a way that doesn't map cleanly to the existing schema, skip it.
 
             # Before filing an issue — verification checklist
 
@@ -188,7 +190,7 @@ jobs:
                 "source_urls": ["https://example.com"]
               }
               ```
-            - Set `kind` correctly — this is required for the fix to apply. Use `"missing_model"` ONLY when the model id is not yet in `model_list.json`. For ANY change to an id that is already present — provider-mapping gaps (adding a provider to `available_providers`), pricing or token-limit corrections, deprecations — set `kind: "stale_metadata"`. The downstream fixer treats absent/`missing_model` issues as additions and CLOSES them without changes when the named models already exist (`fix_bot_issue.ts`), so a provider-mapping or metadata gap filed as `missing_model` is silently dropped. For `stale_metadata`, the `model_specs` you provide must be the full intended entry (e.g. the complete `available_providers` set), since the fixer updates the existing entry from it.
+            - Set `kind` correctly — this is required for the fix to apply. Use `"missing_model"` ONLY when the model id is not yet in `model_list.json`. For ANY change to an id that is already present — provider-mapping gaps (adding a provider to `available_providers`), pricing or token-limit corrections, deprecations — set `kind: "stale_metadata"`. The downstream fixer treats absent/`missing_model` issues as additions and CLOSES them without changes when the named models already exist (`fix_bot_issue.ts`), so a provider-mapping or metadata gap filed as `missing_model` is silently dropped. For `stale_metadata`, provide the fields to change in `model_specs`. Include the complete `available_providers` set when changing that field.
             - For a single-model issue you may use `model_spec` or `model_specs`. For multi-model issues, use `model_specs` with one fully populated spec per model ID.
             - Populate specs with exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location info from official sources. Do not guess.
             - Include `parent` only when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json`. Recognized patterns: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`), `@NNN`/`-vN` versioned snapshots (e.g. Vertex `@001`), location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI). Leave unset for base models or when the parent id is not in the local catalog.

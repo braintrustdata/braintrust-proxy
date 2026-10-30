@@ -54,6 +54,46 @@ const legacyFireworksModel = {
 } satisfies ModelSpec;
 
 describe("sync_models", () => {
+  it("preserves provider/tier rates and standard prices when canonicalizing the catalog", () => {
+    const model = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 2,
+      output_cost_per_mil_tokens: 10,
+      input_cache_read_cost_per_mil_tokens: 0.1,
+      input_cache_write_cost_per_mil_tokens: 2.5,
+      pricing: {
+        openai: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 1,
+              output_cost_per_mil_tokens: 5,
+              input_cache_read_cost_per_mil_tokens: 0.05,
+              input_cache_write_cost_per_mil_tokens: 1.25,
+              max_input_tokens: 272000,
+            },
+          ],
+          batch: [{ input_cost_per_mil_tokens: 0.8 }],
+        },
+        azure: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 1,
+              output_cost_per_mil_tokens: 5,
+              deployment_type: "GlobalStandard",
+              model_version: "2026-09-29",
+              max_input_tokens: 272000,
+            },
+          ],
+        },
+      },
+    } satisfies ModelSpec;
+    const { canonicalContent } = canonicalizeLocalModelsContent(
+      JSON.stringify({ "gpt-6.1-sol": model }),
+    );
+    expect(JSON.parse(canonicalContent)["gpt-6.1-sol"]).toEqual(model);
+  });
+
   it("keeps the canonical Fireworks payload when collapsing legacy aliases", () => {
     const normalizedVariants = [
       normalizeLocalModels({
@@ -1198,6 +1238,40 @@ describe("convertOpenRouterToLocalModel", () => {
 });
 
 describe("applyOpenRouterPricing", () => {
+  it("preserves provider/tier rates when standard prices change", () => {
+    const model: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 1,
+      output_cost_per_mil_tokens: 2,
+      available_providers: ["openrouter"],
+      pricing: {
+        openrouter: {
+          flex: [
+            {
+              input_cost_per_mil_tokens: 0.112,
+              output_cost_per_mil_tokens: 0.336,
+              input_cache_read_cost_per_mil_tokens: 0.00336,
+              endpoints: ["deepinfra/fp8/flex"],
+            },
+          ],
+          priority: [{ input_cost_per_mil_tokens: 2 }],
+        },
+      },
+    };
+    const priced = applyOpenRouterPricing(
+      "deepseek/deepseek-v4.1-flash",
+      model,
+      {
+        id: "deepseek/deepseek-v4.1-flash",
+        pricing: { prompt: "0.00000014", completion: "0.00000042" },
+      },
+    );
+    expect(priced?.input_cost_per_mil_tokens).toBe(0.14);
+    expect(priced?.output_cost_per_mil_tokens).toBe(0.42);
+    expect(priced?.pricing).toEqual(model.pricing);
+  });
+
   it("overwrites prices that differ and returns null when unchanged", () => {
     const model: ModelSpec = {
       format: "openai",

@@ -1,10 +1,15 @@
 import { z } from "zod";
 import { ModelSchema } from "./models";
 
+type ModelSchemaType = typeof ModelSchema;
+// A named interface limits declaration expansion while retaining the full schema API.
+interface CustomModelSchema extends ModelSchemaType {}
+const CustomModelSchema: CustomModelSchema = ModelSchema;
+
 export const BaseMetadataSchema = z
   .object({
     models: z.array(z.string()).nullish(),
-    customModels: z.record(ModelSchema).nullish(),
+    customModels: z.record(CustomModelSchema).nullish(),
     excludeDefaultModels: z.boolean().nullish(),
     additionalHeaders: z.record(z.string(), z.string()).nullish(),
     supportsStreaming: z.boolean().default(true),

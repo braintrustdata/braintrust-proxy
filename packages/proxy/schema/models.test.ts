@@ -3,8 +3,10 @@ import { it } from "vitest";
 import raw_models from "./model_list.json";
 import { getDirectModelEndpointTypes, getModelEndpointTypes } from "./index";
 import {
+  getAvailableModels,
   markModelsPastDeprecationDate,
   ModelSchema,
+  PricingTiers,
   normalizeModelNameForCost,
 } from "./models";
 import { z } from "zod";
@@ -17,6 +19,115 @@ it("parse model list", () => {
       console.log("failed to parse ", key, result.error);
     }
     expect(result.success).toBe(true);
+  }
+});
+
+it("preserves top-level prices when tier pricing is absent or null", () => {
+  const base = {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000002,
+    output_cost_per_token: 0,
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 0,
+    input_cache_read_cost_per_mil_tokens: 0.2,
+    input_cache_write_cost_per_mil_tokens: 2.5,
+    input_cache_write_5m_cost_per_mil_tokens: null,
+    input_cache_write_1h_cost_per_mil_tokens: 4,
+  };
+  expect(ModelSchema.parse(base)).toEqual(base);
+  const model = { ...base, pricing: null };
+  expect(ModelSchema.parse(model)).toEqual(model);
+});
+
+it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
+  const rate = {
+    input_cost_per_mil_tokens: 1,
+    output_cost_per_mil_tokens: 0,
+    input_cache_read_cost_per_mil_tokens: 0.1,
+    input_cache_write_cost_per_mil_tokens: 1.25,
+    input_cache_write_5m_cost_per_mil_tokens: 1.25,
+    input_cache_write_1h_cost_per_mil_tokens: 2,
+    endpoints: ["provider.example"],
+    supported_regions: ["global"],
+    deployment_type: "GlobalStandard",
+    model_id: "upstream-model",
+    model_version: "2026-10-01",
+    min_input_tokens: 1,
+    max_input_tokens: 200000,
+    valid_from: "2026-10-01",
+    valid_until: "2026-12-31",
+  };
+  const model = {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000002,
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    pricing: { openai: { [tier]: [rate] } },
+  };
+
+  expect(ModelSchema.parse(model)).toEqual(model);
+});
+
+it("does not infer missing tier prices or support from batch rates", () => {
+  const model = ModelSchema.parse({
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_mil_tokens: 2,
+    pricing: { openai: { batch: [{ endpoints: ["provider.example"] }] } },
+  });
+
+  expect(
+    model.pricing?.openai?.batch?.[0].input_cost_per_mil_tokens,
+  ).toBeUndefined();
+  expect(model.pricing?.openai?.flex).toBeUndefined();
+  expect(model.pricing?.vertex).toBeUndefined();
+});
+
+it.each([
+  { openai: { flex: [] } },
+  { openai: { flxe: [{}] } },
+  { openai: { standard: [{}] } },
+  { unknown_provider: { flex: [{}] } },
+  { openai: { flex: null } },
+])("rejects invalid provider/tier rates: %j", (pricing) => {
+  expect(
+    ModelSchema.safeParse({ format: "openai", flavor: "chat", pricing })
+      .success,
+  ).toBe(false);
+});
+
+it("preserves provider prices and their conditions throughout the catalog", () => {
+  const models = getAvailableModels();
+  for (const [name, model] of Object.entries(raw_models)) {
+    if (!("pricing" in model)) continue;
+    expect(models[name].pricing, name).toEqual(model.pricing);
+    for (const [provider, tiers] of Object.entries(models[name].pricing!)) {
+      expect(models[name].available_providers, name).toContain(provider);
+      for (const [tier, prices] of Object.entries(tiers)) {
+        expect(prices.length, `${name}.${provider}.${tier}`).toBeGreaterThan(0);
+        for (const price of prices) {
+          for (const [key, value] of Object.entries(price)) {
+            if (key.endsWith("_cost_per_mil_tokens")) {
+              expect(
+                value,
+                `${name}.${provider}.${tier}.${key}`,
+              ).toBeGreaterThanOrEqual(0);
+            }
+          }
+          expect(price.min_input_tokens ?? 0, name).toBeLessThanOrEqual(
+            price.max_input_tokens ?? Infinity,
+          );
+          if (price.supported_regions) {
+            expect(price.supported_regions.length, name).toBeGreaterThan(0);
+          }
+          if (price.endpoints) {
+            expect(price.endpoints.length, name).toBeGreaterThan(0);
+          }
+        }
+      }
+    }
   }
 });
 

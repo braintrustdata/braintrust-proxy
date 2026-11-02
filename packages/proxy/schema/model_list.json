@@ -1,437 +1,19 @@
 {
-  "gpt-5.5-cyber-preview": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 12.5,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "reasoning": true,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "computer-use-preview-2025-03-11": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 3,
-    "output_cost_per_mil_tokens": 12,
-    "displayName": "Computer Use Preview (2025-03-11)",
-    "reasoning": true,
-    "deprecation_date": "2026-07-23",
-    "max_input_tokens": 8192,
-    "max_output_tokens": 1024,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-rosalind-discovery": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 5,
-    "output_cost_per_mil_tokens": 25,
-    "input_cache_read_cost_per_mil_tokens": 0.5,
-    "displayName": "GPT-Rosalind Discovery",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-image-2.5-sunburst-2026-09-08": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "displayName": "GPT-Image-2.5 Sunburst (2026-09-08)",
-    "parent": "gpt-image-2.5-sunburst",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-image-2.5-flare-2026-09-08": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "displayName": "GPT-Image-2.5 Flare (2026-09-08)",
-    "parent": "gpt-image-2.5-flare",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-image-2.5-sunburst": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "displayName": "GPT-Image-2.5 Sunburst",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-image-2.5-flare": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "displayName": "GPT-Image-2.5 Flare",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-daybreak-red-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 12.5,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "input_cache_write_cost_per_mil_tokens": 15.625,
-    "displayName": "GPT Daybreak Red",
-    "reasoning": true,
-    "parent": "daybreak-red-latest",
-    "max_input_tokens": 400000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-daybreak-blue-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 20,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "input_cache_write_cost_per_mil_tokens": 5,
-    "displayName": "Daybreak Blue",
-    "reasoning": true,
-    "parent": "daybreak-blue-latest",
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "daybreak-red-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 12.5,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "input_cache_write_cost_per_mil_tokens": 15.625,
-    "displayName": "Daybreak Red",
-    "reasoning": true,
-    "max_input_tokens": 400000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "daybreak-blue-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 20,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "input_cache_write_cost_per_mil_tokens": 5,
-    "displayName": "Daybreak Blue",
-    "reasoning": true,
-    "parent": "gpt-5.6-sol",
-    "fallback_models": [
-      "openai.gpt-daybreak-blue-5.6-sol"
-    ],
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-5.6-cyber": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 12.5,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.25,
-    "input_cache_write_cost_per_mil_tokens": 15.625,
-    "displayName": "GPT-5.6 Cyber",
-    "reasoning": true,
-    "fallback_models": [
-      "openai.gpt-5.6-cyber"
-    ],
-    "max_input_tokens": 400000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-5.6": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 20,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "input_cache_write_cost_per_mil_tokens": 5,
-    "pricing": {
-      "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 10,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
-            "input_cache_write_cost_per_mil_tokens": 2.5,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 4,
-            "output_cost_per_mil_tokens": 15,
-            "input_cache_read_cost_per_mil_tokens": 0.4,
-            "input_cache_write_cost_per_mil_tokens": 5,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      }
-    },
-    "displayName": "GPT-5.6",
-    "reasoning": true,
-    "parent": "gpt-5.6-sol",
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-5.6-luna": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2,
-    "output_cost_per_mil_tokens": 1.2,
-    "input_cache_read_cost_per_mil_tokens": 0.02,
-    "input_cache_write_cost_per_mil_tokens": 0.25,
-    "pricing": {
-      "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.1,
-            "output_cost_per_mil_tokens": 0.6,
-            "input_cache_read_cost_per_mil_tokens": 0.01,
-            "input_cache_write_cost_per_mil_tokens": 0.125,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 0.2,
-            "output_cost_per_mil_tokens": 0.9,
-            "input_cache_read_cost_per_mil_tokens": 0.02,
-            "input_cache_write_cost_per_mil_tokens": 0.25,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      },
-      "azure": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.1,
-            "output_cost_per_mil_tokens": 0.6,
-            "input_cache_read_cost_per_mil_tokens": 0.01,
-            "input_cache_write_cost_per_mil_tokens": 0.125,
-            "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 0.2,
-            "output_cost_per_mil_tokens": 0.9,
-            "input_cache_read_cost_per_mil_tokens": 0.02,
-            "input_cache_write_cost_per_mil_tokens": 0.25,
-            "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
-            "min_input_tokens": 272001
-          }
-        ]
-      },
-      "openrouter": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.1,
-            "output_cost_per_mil_tokens": 0.6,
-            "input_cache_read_cost_per_mil_tokens": 0.01,
-            "input_cache_write_cost_per_mil_tokens": 0.125,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 0.2,
-            "output_cost_per_mil_tokens": 0.9,
-            "input_cache_read_cost_per_mil_tokens": 0.02,
-            "input_cache_write_cost_per_mil_tokens": 0.25,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      }
-    },
-    "displayName": "GPT-5.6 Luna",
-    "reasoning": true,
-    "fallback_models": [
-      "global.openai.gpt-5.6-luna",
-      "openai.gpt-5.6-luna",
-      "us.openai.gpt-5.6-luna"
-    ],
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure",
-      "openrouter"
-    ]
-  },
-  "gpt-5.6-sol": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 20,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "input_cache_write_cost_per_mil_tokens": 5,
-    "pricing": {
-      "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 10,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
-            "input_cache_write_cost_per_mil_tokens": 2.5,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 4,
-            "output_cost_per_mil_tokens": 15,
-            "input_cache_read_cost_per_mil_tokens": 0.4,
-            "input_cache_write_cost_per_mil_tokens": 5,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      },
-      "azure": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 10,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
-            "input_cache_write_cost_per_mil_tokens": 2.5,
-            "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 4,
-            "output_cost_per_mil_tokens": 15,
-            "input_cache_read_cost_per_mil_tokens": 0.4,
-            "input_cache_write_cost_per_mil_tokens": 5,
-            "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
-            "min_input_tokens": 272001
-          }
-        ]
-      },
-      "openrouter": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 10,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
-            "input_cache_write_cost_per_mil_tokens": 2.5,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 4,
-            "output_cost_per_mil_tokens": 15,
-            "input_cache_read_cost_per_mil_tokens": 0.4,
-            "input_cache_write_cost_per_mil_tokens": 5,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      }
-    },
-    "displayName": "GPT-5.6 Sol",
-    "reasoning": true,
-    "fallback_models": [
-      "global.openai.gpt-5.6-sol",
-      "openai.gpt-5.6-sol",
-      "us.openai.gpt-5.6-sol"
-    ],
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure",
-      "openrouter"
-    ]
-  },
-  "gpt-5.6-terra": {
+  "gpt-6.1-sol": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 12,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openai": {
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 6,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "endpoints": [
               "api.openai.com"
@@ -440,8 +22,8 @@
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 9,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
@@ -454,20 +36,20 @@
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 6,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
+            "model_version": "2026-09-29",
             "max_input_tokens": 272000
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 9,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "deployment_type": "GlobalStandard",
-            "model_version": "2026-07-09",
+            "model_version": "2026-09-29",
             "min_input_tokens": 272001
           }
         ]
@@ -476,8 +58,8 @@
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 6,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "endpoints": [
               "openai/flex"
@@ -486,8 +68,8 @@
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 9,
-            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "openai/flex"
@@ -497,12 +79,85 @@
         ]
       }
     },
-    "displayName": "GPT-5.6 Terra",
+    "displayName": "GPT-6.1 Sol",
     "reasoning": true,
     "fallback_models": [
-      "global.openai.gpt-5.6-terra",
-      "openai.gpt-5.6-terra",
-      "us.openai.gpt-5.6-terra"
+      "openai.gpt-6.1-sol",
+      "us.openai.gpt-6.1-sol"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure",
+      "openrouter"
+    ]
+  },
+  "gpt-6.1-terra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
+    "pricing": {
+      "openai": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-6.1 Terra",
+    "reasoning": true,
+    "fallback_models": [
+      "databricks-gpt-6-1-terra",
+      "global.openai.gpt-6.1-terra",
+      "openai.gpt-6.1-terra",
+      "us.openai.gpt-6.1-terra"
     ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -797,21 +452,275 @@
       "openrouter"
     ]
   },
-  "gpt-6.1-sol": {
+  "gpt-5.6": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "pricing": {
+      "openai": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-5.6",
+    "reasoning": true,
+    "parent": "gpt-5.6-sol",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-5.6-cyber": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "GPT-5.6 Cyber",
+    "reasoning": true,
+    "fallback_models": [
+      "openai.gpt-5.6-cyber"
+    ],
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-5.6-luna": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "input_cache_write_cost_per_mil_tokens": 0.25,
+    "pricing": {
+      "openai": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.9,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "azure": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.9,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.9,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-5.6 Luna",
+    "reasoning": true,
+    "fallback_models": [
+      "global.openai.gpt-5.6-luna",
+      "openai.gpt-5.6-luna",
+      "us.openai.gpt-5.6-luna"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure",
+      "openrouter"
+    ]
+  },
+  "gpt-5.6-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "pricing": {
+      "openai": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "azure": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-5.6 Sol",
+    "reasoning": true,
+    "fallback_models": [
+      "global.openai.gpt-5.6-sol",
+      "openai.gpt-5.6-sol",
+      "us.openai.gpt-5.6-sol"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure",
+      "openrouter"
+    ]
+  },
+  "gpt-5.6-terra": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 12,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openai": {
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 5,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "endpoints": [
               "api.openai.com"
@@ -820,8 +729,8 @@
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 7.5,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
@@ -834,20 +743,20 @@
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 5,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "deployment_type": "GlobalStandard",
-            "model_version": "2026-09-29",
+            "model_version": "2026-07-09",
             "max_input_tokens": 272000
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 7.5,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "deployment_type": "GlobalStandard",
-            "model_version": "2026-09-29",
+            "model_version": "2026-07-09",
             "min_input_tokens": 272001
           }
         ]
@@ -856,8 +765,8 @@
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 5,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 1.25,
             "endpoints": [
               "openai/flex"
@@ -866,8 +775,8 @@
           },
           {
             "input_cost_per_mil_tokens": 2,
-            "output_cost_per_mil_tokens": 7.5,
-            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "openai/flex"
@@ -877,85 +786,12 @@
         ]
       }
     },
-    "displayName": "GPT-6.1 Sol",
+    "displayName": "GPT-5.6 Terra",
     "reasoning": true,
     "fallback_models": [
-      "openai.gpt-6.1-sol",
-      "us.openai.gpt-6.1-sol"
-    ],
-    "max_input_tokens": 922000,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "openai",
-      "azure",
-      "openrouter"
-    ]
-  },
-  "gpt-6.1-terra": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1,
-    "output_cost_per_mil_tokens": 5,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
-    "input_cache_write_cost_per_mil_tokens": 1.25,
-    "pricing": {
-      "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.5,
-            "output_cost_per_mil_tokens": 2.5,
-            "input_cache_read_cost_per_mil_tokens": 0.025,
-            "input_cache_write_cost_per_mil_tokens": 0.625,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 3.75,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 1.25,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      },
-      "openrouter": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.5,
-            "output_cost_per_mil_tokens": 2.5,
-            "input_cache_read_cost_per_mil_tokens": 0.025,
-            "input_cache_write_cost_per_mil_tokens": 0.625,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 3.75,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 1.25,
-            "endpoints": [
-              "openai/flex"
-            ],
-            "min_input_tokens": 272001
-          }
-        ]
-      }
-    },
-    "displayName": "GPT-6.1 Terra",
-    "reasoning": true,
-    "fallback_models": [
-      "databricks-gpt-6-1-terra",
-      "global.openai.gpt-6.1-terra",
-      "openai.gpt-6.1-terra",
-      "us.openai.gpt-6.1-terra"
+      "global.openai.gpt-5.6-terra",
+      "openai.gpt-5.6-terra",
+      "us.openai.gpt-5.6-terra"
     ],
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1029,6 +865,18 @@
       "openai",
       "azure",
       "openrouter"
+    ]
+  },
+  "gpt-5.5-cyber-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "reasoning": true,
+    "available_providers": [
+      "openai",
+      "azure"
     ]
   },
   "gpt-5.5-pro": {
@@ -2751,6 +2599,63 @@
       "azure"
     ]
   },
+  "gpt-live-1": {
+    "format": "openai",
+    "flavor": "live",
+    "displayName": "GPT-Live 1",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-daybreak-blue-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "displayName": "Daybreak Blue",
+    "reasoning": true,
+    "parent": "daybreak-blue-latest",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-daybreak-red-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "GPT Daybreak Red",
+    "reasoning": true,
+    "parent": "daybreak-red-latest",
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-rosalind-discovery": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "GPT-Rosalind Discovery",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "o4-mini": {
     "format": "openai",
     "flavor": "chat",
@@ -3083,29 +2988,6 @@
       "azure"
     ]
   },
-  "gpt-realtime-2.1": {
-    "format": "openai",
-    "flavor": "realtime",
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 24,
-    "input_cache_read_cost_per_mil_tokens": 0.4,
-    "displayName": "GPT-Realtime-2.1",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 32000,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
-  "gpt-live-1": {
-    "format": "openai",
-    "flavor": "live",
-    "displayName": "GPT-Live 1",
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "gpt-audio-2025-08-28": {
     "format": "openai",
     "flavor": "chat",
@@ -3188,6 +3070,70 @@
     "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-realtime-2.1": {
+    "format": "openai",
+    "flavor": "realtime",
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 24,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "displayName": "GPT-Realtime-2.1",
+    "max_input_tokens": 128000,
+    "max_output_tokens": 32000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-flare": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Flare",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-sunburst": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Sunburst",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-flare-2026-09-08": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Flare (2026-09-08)",
+    "parent": "gpt-image-2.5-flare",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-image-2.5-sunburst-2026-09-08": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.5 Sunburst (2026-09-08)",
+    "parent": "gpt-image-2.5-sunburst",
     "available_providers": [
       "openai",
       "azure"
@@ -4285,6 +4231,60 @@
     "output_cost_per_mil_tokens": 30,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "GPT Chat Latest",
+    "reasoning": true,
+    "max_input_tokens": 400000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "computer-use-preview-2025-03-11": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 12,
+    "displayName": "Computer Use Preview (2025-03-11)",
+    "reasoning": true,
+    "deprecation_date": "2026-07-23",
+    "max_input_tokens": 8192,
+    "max_output_tokens": 1024,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "daybreak-blue-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
+    "displayName": "Daybreak Blue",
+    "reasoning": true,
+    "parent": "gpt-5.6-sol",
+    "fallback_models": [
+      "openai.gpt-daybreak-blue-5.6-sol"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "daybreak-red-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "input_cache_write_cost_per_mil_tokens": 15.625,
+    "displayName": "Daybreak Red",
     "reasoning": true,
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
@@ -9478,24 +9478,24 @@
     "displayName": "Text Davinci 003",
     "deprecated": true
   },
-  "text-embedding-3-small": {
-    "format": "openai",
-    "flavor": "embedding",
-    "input_cost_per_mil_tokens": 0.02,
-    "output_cost_per_mil_tokens": 0,
-    "displayName": "Text Embedding 3 Small",
-    "max_input_tokens": 8191,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "text-embedding-3-large": {
     "format": "openai",
     "flavor": "embedding",
     "input_cost_per_mil_tokens": 0.13,
     "output_cost_per_mil_tokens": 0,
     "displayName": "Text Embedding 3 Large",
+    "max_input_tokens": 8191,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "text-embedding-3-small": {
+    "format": "openai",
+    "flavor": "embedding",
+    "input_cost_per_mil_tokens": 0.02,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Text Embedding 3 Small",
     "max_input_tokens": 8191,
     "available_providers": [
       "openai",

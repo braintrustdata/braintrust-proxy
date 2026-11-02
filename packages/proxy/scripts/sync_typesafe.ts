@@ -110,6 +110,7 @@ export function parseTypesafePricing(markdown: string): ModelCatalog {
     models[modelId] = {
       format: "typesafe",
       flavor: "evaluation",
+      supports_decisions: true,
       input_cost_per_mil_tokens: pricePerMillionTokens,
       output_cost_per_mil_tokens: 0,
       displayName: rows[0][0],

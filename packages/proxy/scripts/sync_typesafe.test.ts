@@ -102,6 +102,7 @@ Output tokens are free.`,
       expect(model).toMatchObject({
         format: "typesafe",
         flavor: "evaluation",
+        supports_decisions: true,
         available_providers: ["typesafe"],
         input_cost_per_mil_tokens: 0.042,
         output_cost_per_mil_tokens: 0,

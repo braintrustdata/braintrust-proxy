@@ -1389,10 +1389,9 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
 
 // Preserve the existing on-disk top-level key order so a sync/bot write does not
 // reshuffle the whole file. Existing ids keep their positions (the order stops
-// "flopping"); a genuinely-new id is inserted at the FRONT of its group — before
-// the first existing model that shares its primary provider — so newer models
-// display first within their provider grouping. Falls back to appending if the
-// provider group does not exist yet.
+// "flopping"); a genuinely-new id is inserted among its siblings according to
+// the family/version ordering. Falls back to appending if the provider group
+// does not exist yet.
 export function stablyOrderByExisting(
   localModels: LocalModelList,
 ): LocalModelList {
@@ -1413,7 +1412,8 @@ export function stablyOrderByExisting(
   const orderedNames = existingOrder.filter((name) =>
     Object.prototype.hasOwnProperty.call(localModels, name),
   );
-  // Insert each new model at the front of its group (newest-first). The catalog
+  const modelOrder = orderModelsByProviderAndClass(localModels);
+  // Insert each new model among its siblings (newest-first). The catalog
   // is grouped by primary provider, then by namespace within a provider region,
   // so prefer the same (provider, namespace) sub-group; otherwise fall back to
   // the front of the provider region; otherwise append.
@@ -1423,10 +1423,21 @@ export function stablyOrderByExisting(
     }
     const provider = primaryProvider(name);
     const ns = idNamespace(name);
-    let insertAt = orderedNames.findIndex(
+    const modelsInGroup = modelOrder.filter(
       (existing) =>
-        primaryProvider(existing) === provider && idNamespace(existing) === ns,
+        orderedNames.includes(existing) &&
+        primaryProvider(existing) === provider &&
+        idNamespace(existing) === ns,
     );
+    const modelPosition = modelOrder.indexOf(name);
+    const nextModel = modelsInGroup.find(
+      (existing) => modelOrder.indexOf(existing) > modelPosition,
+    );
+    let insertAt = nextModel ? orderedNames.indexOf(nextModel) : -1;
+    if (insertAt < 0 && modelsInGroup.length > 0) {
+      insertAt =
+        orderedNames.indexOf(modelsInGroup[modelsInGroup.length - 1]) + 1;
+    }
     if (insertAt < 0) {
       insertAt = orderedNames.findIndex(
         (existing) => primaryProvider(existing) === provider,

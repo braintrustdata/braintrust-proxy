@@ -136,7 +136,7 @@ it.each(["jev-1.13.0", "jev-latest", "jev-preview"] as const)(
   (model) => {
     expect(raw_models[model]).toMatchObject({
       format: "typesafe",
-      flavor: "evaluation",
+      flavor: "decisions",
       available_providers: ["typesafe"],
       input_cost_per_mil_tokens: 0.042,
       output_cost_per_mil_tokens: 0,

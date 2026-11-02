@@ -19620,7 +19620,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
-    "max_input_tokens": 256000,
+    "max_input_tokens": 128000,
     "available_providers": [
       "mistral",
       "openrouter"

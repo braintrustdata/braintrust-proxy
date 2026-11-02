@@ -31,6 +31,7 @@ import {
   parseRemoteModelList,
   normalizeProviderMappingContent,
   providersForExactModelName,
+  orderLocalModels,
   SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
@@ -54,6 +55,71 @@ const legacyFireworksModel = {
 } satisfies ModelSpec;
 
 describe("sync_models", () => {
+  it("retains the calculated display order when preparing catalog writes", () => {
+    const model = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai", "azure"],
+    } satisfies ModelSpec;
+    const catalog = {
+      "gpt-6.1-sol": model,
+      "gpt-6-sol": model,
+      "gpt-5.6-sol": model,
+      "gpt-5.5-cyber-preview": model,
+      "gpt-image-2.5-sunburst": model,
+    };
+
+    const expected = [
+      "gpt-6.1-sol",
+      "gpt-6-sol",
+      "gpt-5.6-sol",
+      "gpt-5.5-cyber-preview",
+      "gpt-image-2.5-sunburst",
+    ];
+
+    expect(Object.keys(orderLocalModels(catalog))).toEqual(expected);
+    expect(
+      Object.keys(
+        orderLocalModels(Object.fromEntries(Object.entries(catalog).reverse())),
+      ),
+    ).toEqual(expected);
+  });
+
+  it("sorts new model versions independently of insertion order", () => {
+    const model = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai"],
+    } satisfies ModelSpec;
+
+    expect(
+      Object.keys(orderLocalModels({ "gpt-99": model, "gpt-98": model })),
+    ).toEqual(["gpt-99", "gpt-98"]);
+  });
+
+  it("keeps OpenRouter-only models last without changing model metadata", () => {
+    const catalog = {
+      "openrouter-only": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openrouter"],
+      },
+      "gpt-6.1-sol": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openai", "azure", "openrouter"],
+        input_cost_per_mil_tokens: 2,
+      },
+    } satisfies Record<string, ModelSpec>;
+    const ordered = orderLocalModels(catalog);
+
+    expect(Object.keys(ordered)).toEqual(["gpt-6.1-sol", "openrouter-only"]);
+    expect(ordered).toEqual(catalog);
+    expect(Object.keys(orderLocalModels(ordered))).toEqual(
+      Object.keys(ordered),
+    );
+  });
+
   it("preserves provider/tier rates and standard prices when canonicalizing the catalog", () => {
     const model = {
       format: "openai",

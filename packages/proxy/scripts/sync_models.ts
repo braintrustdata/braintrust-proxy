@@ -1379,7 +1379,7 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
   const orderedModelsToWrite = reorderModelProperties(
-    stablyOrderByExisting(localModels),
+    orderLocalModels(localModels),
   );
   await fs.promises.writeFile(
     LOCAL_MODEL_LIST_PATH,
@@ -1387,56 +1387,8 @@ async function writeLocalModels(localModels: LocalModelList): Promise<void> {
   );
 }
 
-// Preserve the existing on-disk top-level key order so a sync/bot write does not
-// reshuffle the whole file. Existing ids keep their positions (the order stops
-// "flopping"); a genuinely-new id is inserted at the FRONT of its group — before
-// the first existing model that shares its primary provider — so newer models
-// display first within their provider grouping. Falls back to appending if the
-// provider group does not exist yet.
-export function stablyOrderByExisting(
-  localModels: LocalModelList,
-): LocalModelList {
-  let existingOrder: string[] = [];
-  try {
-    existingOrder = Object.keys(
-      JSON.parse(fs.readFileSync(LOCAL_MODEL_LIST_PATH, "utf-8")),
-    );
-  } catch {
-    // No existing catalog on disk (or unreadable) — fall back to insertion order.
-    return localModels;
-  }
-  const primaryProvider = (name: string): string | undefined =>
-    localModels[name]?.available_providers?.[0];
-  const idNamespace = (name: string): string =>
-    name.includes("/") ? name.slice(0, name.lastIndexOf("/")) : "";
-  // Existing models first, in their current on-disk order.
-  const orderedNames = existingOrder.filter((name) =>
-    Object.prototype.hasOwnProperty.call(localModels, name),
-  );
-  // Insert each new model at the front of its group (newest-first). The catalog
-  // is grouped by primary provider, then by namespace within a provider region,
-  // so prefer the same (provider, namespace) sub-group; otherwise fall back to
-  // the front of the provider region; otherwise append.
-  for (const name in localModels) {
-    if (orderedNames.includes(name)) {
-      continue;
-    }
-    const provider = primaryProvider(name);
-    const ns = idNamespace(name);
-    let insertAt = orderedNames.findIndex(
-      (existing) =>
-        primaryProvider(existing) === provider && idNamespace(existing) === ns,
-    );
-    if (insertAt < 0) {
-      insertAt = orderedNames.findIndex(
-        (existing) => primaryProvider(existing) === provider,
-      );
-    }
-    if (insertAt < 0) {
-      insertAt = orderedNames.length;
-    }
-    orderedNames.splice(insertAt, 0, name);
-  }
+export function orderLocalModels(localModels: LocalModelList): LocalModelList {
+  const orderedNames = orderModelsByProviderAndClass(localModels);
   // Display ordering: keep openrouter-only entries (available_providers is
   // exactly ["openrouter"]) below every other model. These are mirrored from
   // OpenRouter for models no first-class provider serves, so they sort last.
@@ -3544,7 +3496,7 @@ async function syncCerebrasModelCommand(argv: any) {
 // Only when no first-class provider serves the model do we add a NEW entry keyed
 // by the full slug (`format:"openai"`, `available_providers:["openrouter"]`,
 // pricing/context from OpenRouter); those openrouter-only entries are sunk to the
-// bottom of the catalog (stablyOrderByExisting) for display ordering. `:free`/
+// bottom of the catalog (orderLocalModels) for display ordering. `:free`/
 // `:nitro`/etc. variant slugs are skipped.
 async function syncOpenRouterModelsCommand(argv: any) {
   try {
@@ -3670,7 +3622,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
       }
 
       // No first-class provider serves this model — add a new openrouter-only
-      // entry keyed by the full slug. stablyOrderByExisting sinks it to the
+      // entry keyed by the full slug. orderLocalModels sinks it to the
       // bottom of the catalog for display ordering.
       modelsToAdd.push({
         name: slug,

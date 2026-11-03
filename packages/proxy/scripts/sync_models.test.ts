@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { type ModelSpec } from "../schema/models";
+import modelList from "../schema/model_list.json";
 import {
   addProviderToProviderMappingContent,
   removeProviderMappingEntriesFromContent,
@@ -31,6 +32,7 @@ import {
   parseRemoteModelList,
   normalizeProviderMappingContent,
   providersForExactModelName,
+  stablyOrderByExisting,
   SYNC_EXCLUDED_MODELS,
   SYNC_PRESERVED_FIELDS,
 } from "./sync_models";
@@ -54,6 +56,43 @@ const legacyFireworksModel = {
 } satisfies ModelSpec;
 
 describe("sync_models", () => {
+  it("preserves existing catalog order even when the input is reordered", () => {
+    const model = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai", "azure"],
+    } satisfies ModelSpec;
+    const names = [
+      "gpt-5.5-cyber-preview",
+      "gpt-image-2.5-sunburst",
+      "gpt-6.1-sol",
+    ];
+    const catalog = Object.fromEntries(names.map((name) => [name, model]));
+
+    expect(Object.keys(stablyOrderByExisting(catalog))).toEqual(
+      Object.keys(modelList).filter((name) => names.includes(name)),
+    );
+  });
+
+  it("inserts new versions beside their siblings without reversing additions", () => {
+    const model = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai", "azure"],
+    } satisfies ModelSpec;
+
+    expect(
+      Object.keys(
+        stablyOrderByExisting({
+          "gpt-4.99": model,
+          "gpt-6.1-sol": model,
+          "gpt-99": model,
+          "gpt-98": model,
+        }),
+      ),
+    ).toEqual(["gpt-99", "gpt-98", "gpt-6.1-sol", "gpt-4.99"]);
+  });
+
   it("preserves provider/tier rates and standard prices when canonicalizing the catalog", () => {
     const model = {
       format: "openai",

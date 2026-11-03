@@ -169,7 +169,7 @@ export const ModelSchema = z.object({
     .boolean()
     .nullish()
     .describe(
-      "The model also answers decision requests in addition to its native request flavor.",
+      "The model answers decision requests (POST /v1/decisions): typed answers to questions about an input.",
     ),
   streaming_only: z
     .boolean()

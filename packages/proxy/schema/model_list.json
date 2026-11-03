@@ -1,4 +1,16 @@
 {
+  "gpt-5.5-cyber-preview": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 12.5,
+    "output_cost_per_mil_tokens": 75,
+    "input_cache_read_cost_per_mil_tokens": 1.25,
+    "reasoning": true,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "computer-use-preview-2025-03-11": {
     "format": "openai",
     "flavor": "chat",
@@ -10,6 +22,18 @@
     "deprecation_date": "2026-07-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 1024,
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
+  "gpt-rosalind-discovery": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "displayName": "GPT-Rosalind Discovery",
     "available_providers": [
       "openai",
       "azure"
@@ -2246,7 +2270,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-4o": {
@@ -2661,7 +2686,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-3.5-turbo-instruct": {
@@ -2676,7 +2702,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "gpt-3.5-turbo-1106": {
@@ -2752,7 +2779,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o4-mini-deep-research": {
@@ -2881,7 +2909,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o3-pro": {
@@ -2998,7 +3027,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o1-pro": {
@@ -3014,7 +3044,8 @@
     "max_output_tokens": 100000,
     "available_providers": [
       "openai",
-      "azure"
+      "azure",
+      "openrouter"
     ]
   },
   "o1-pro-2025-03-19": {
@@ -26471,6 +26502,35 @@
     "reasoning": true,
     "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "openai/o3-mini-high": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.55,
+    "displayName": "OpenAI: o3 Mini High",
+    "reasoning": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 100000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "openai/o4-mini-high": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.1,
+    "output_cost_per_mil_tokens": 4.4,
+    "input_cache_read_cost_per_mil_tokens": 0.275,
+    "displayName": "OpenAI: o4 Mini High",
+    "reasoning": true,
+    "max_input_tokens": 200000,
+    "max_output_tokens": 100000,
     "available_providers": [
       "openrouter"
     ]

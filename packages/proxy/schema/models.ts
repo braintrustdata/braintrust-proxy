@@ -9,6 +9,7 @@ export const ModelFlavors = [
   "completion",
   "embedding",
   "evaluation",
+  "decisions",
   "realtime",
   "live",
 ] as const;
@@ -164,6 +165,12 @@ export const ModelSchema = z.object({
     .boolean()
     .nullish()
     .describe("The model supports native streaming responses."),
+  supports_decisions: z
+    .boolean()
+    .nullish()
+    .describe(
+      "The model answers decision requests (POST /v1/decisions): typed answers to questions about an input.",
+    ),
   streaming_only: z
     .boolean()
     .nullish()

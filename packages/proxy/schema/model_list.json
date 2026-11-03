@@ -265,6 +265,7 @@
   "gpt-6-luna": {
     "format": "openai",
     "flavor": "chat",
+    "supports_decisions": true,
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.5,
@@ -23544,7 +23545,7 @@
   },
   "jev-1.14.0": {
     "format": "typesafe",
-    "flavor": "evaluation",
+    "flavor": "decisions",
     "input_cost_per_mil_tokens": 0.042,
     "output_cost_per_mil_tokens": 0,
     "displayName": "Jev 1.14",
@@ -23554,7 +23555,7 @@
   },
   "jev-preview": {
     "format": "typesafe",
-    "flavor": "evaluation",
+    "flavor": "decisions",
     "input_cost_per_mil_tokens": 0.042,
     "output_cost_per_mil_tokens": 0,
     "displayName": "jev-preview",
@@ -23565,7 +23566,7 @@
   },
   "jev-latest": {
     "format": "typesafe",
-    "flavor": "evaluation",
+    "flavor": "decisions",
     "input_cost_per_mil_tokens": 0.042,
     "output_cost_per_mil_tokens": 0,
     "displayName": "jev-latest",
@@ -23576,7 +23577,7 @@
   },
   "jev-1.13.0": {
     "format": "typesafe",
-    "flavor": "evaluation",
+    "flavor": "decisions",
     "input_cost_per_mil_tokens": 0.042,
     "output_cost_per_mil_tokens": 0,
     "displayName": "Jev 1.13",

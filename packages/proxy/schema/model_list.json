@@ -7763,6 +7763,26 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/kimi-k3p1-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "fallback_models": [
+      "databricks-kimi-k3.1-pro",
+      "global.moonshotai.kimi-k3.1-pro",
+      "moonshotai.kimi-k3.1-pro",
+      "moonshotai/kimi-k3.1-pro",
+      "us.moonshotai.kimi-k3.1-pro"
+    ],
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/inkling": {
     "format": "openai",
     "flavor": "chat",

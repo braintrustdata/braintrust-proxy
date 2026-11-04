@@ -19373,6 +19373,100 @@
       "mistral"
     ]
   },
+  "moonshotai/Kimi-K3.1-Pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "fallback_models": [
+      "accounts/fireworks/models/kimi-k3p1-pro",
+      "databricks-kimi-k3-1-pro",
+      "global.moonshotai.kimi-k3.1-pro",
+      "moonshotai.kimi-k3.1-pro",
+      "moonshotai/kimi-k3.1-pro",
+      "us.moonshotai.kimi-k3.1-pro"
+    ],
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "baseten"
+    ]
+  },
+  "accounts/fireworks/models/kimi-k3p1-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "databricks-kimi-k3-1-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "moonshotai.kimi-k3.1-pro": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.moonshotai.kimi-k3.1-pro": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "parent": "moonshotai.kimi-k3.1-pro",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.moonshotai.kimi-k3.1-pro": {
+    "format": "converse",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "displayName": "Kimi K3.1 Pro",
+    "reasoning": true,
+    "parent": "moonshotai.kimi-k3.1-pro",
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
   "moonshotai/Kimi-K3": {
     "format": "openai",
     "flavor": "chat",
@@ -24218,6 +24312,14 @@
       "bedrock"
     ]
   },
+  "wizardlm-2-8x22b": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.62,
+    "output_cost_per_mil_tokens": 0.62,
+    "displayName": "WizardLM-2 8x22B",
+    "available_providers": []
+  },
   "particle-ai/particle-1": {
     "format": "openai",
     "flavor": "chat",
@@ -28047,13 +28149,5 @@
     "available_providers": [
       "openrouter"
     ]
-  },
-  "wizardlm-2-8x22b": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.62,
-    "output_cost_per_mil_tokens": 0.62,
-    "displayName": "WizardLM-2 8x22B",
-    "available_providers": []
   }
 }

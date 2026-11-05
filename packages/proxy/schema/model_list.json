@@ -7813,6 +7813,16 @@
       "fireworks"
     ]
   },
+  "moonshotai-kimi-k3": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "moonshotai-kimi-k3",
+    "max_input_tokens": 8192,
+    "max_output_tokens": 4096,
+    "available_providers": [
+      "cerebras"
+    ]
+  },
   "qwen-3.8-27b": {
     "format": "openai",
     "flavor": "chat",

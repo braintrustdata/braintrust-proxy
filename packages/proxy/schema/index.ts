@@ -1382,6 +1382,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "accounts/fireworks/models/gpt-oss-20b": ["fireworks"],
   "accounts/fireworks/models/gpt-oss-safeguard-20b": ["fireworks"],
   "gpt-oss-120b": ["cerebras", "openrouter"],
+  "moonshotai-kimi-k3": ["cerebras"],
   "accounts/fireworks/models/qwen3-coder-480b-instruct-bf16": ["fireworks"],
   "accounts/fireworks/models/kimi-k2-instruct-0905": ["fireworks"],
   "accounts/fireworks/models/minimax-m3p1-flash": ["fireworks"],

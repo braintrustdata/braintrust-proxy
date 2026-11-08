@@ -20437,6 +20437,17 @@
       "openrouter"
     ]
   },
+  "gemini-omni-1.2-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "displayName": "Gemini Omni 1.2 Flash",
+    "available_providers": [
+      "google"
+    ]
+  },
   "gemini-3.1-flash-image": {
     "format": "google",
     "flavor": "chat",

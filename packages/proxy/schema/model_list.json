@@ -8201,6 +8201,18 @@
       "vertex"
     ]
   },
+  "publishers/google/models/gemini-omni-1.2-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "displayName": "Gemini Omni 1.2 Flash",
+    "reasoning": true,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.1-flash-lite": {
     "format": "google",
     "flavor": "chat",
@@ -20765,6 +20777,22 @@
       "google",
       "vertex",
       "openrouter"
+    ]
+  },
+  "gemini-omni-1.2-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "displayName": "Gemini Omni 1.2 Flash",
+    "reasoning": true,
+    "fallback_models": [
+      "google/gemini-omni-1.2-flash",
+      "publishers/google/models/gemini-omni-1.2-flash"
+    ],
+    "available_providers": [
+      "google"
     ]
   },
   "gemini-3.1-flash-lite": {

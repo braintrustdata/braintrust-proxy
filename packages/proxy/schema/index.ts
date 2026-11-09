@@ -1316,6 +1316,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-3-flash-preview": ["google", "openrouter"],
   "gemini-2.5-flash-image": ["google", "openrouter"],
   "gemini-nano-banana-2.1": ["google", "openrouter"],
+  "gemini-omni-1.2-flash": ["google", "openrouter"],
   "publishers/google/models/gemini-3.5-flash": ["vertex"],
   "publishers/google/models/gemini-3.6-flash": ["vertex"],
   "publishers/google/models/gemini-3.5-flash-lite": ["vertex"],

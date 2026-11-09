@@ -538,6 +538,7 @@ const mediaResolutionSchema = z.enum([
 const thinkingConfigSchema = z.object({
   includeThoughts: z.boolean().nullish(),
   thinkingBudget: z.number().nullish(),
+  thinkingLevel: z.enum(["MINIMAL", "LOW", "MEDIUM", "HIGH"]).nullish(),
 });
 
 export type ThinkingConfig = z.infer<typeof thinkingConfigSchema>;

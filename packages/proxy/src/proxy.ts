@@ -3505,7 +3505,7 @@ async function fetchGoogleChatCompletions({
     oaiMessages.filter((m: any) => m.role !== "system"),
   );
   const params: Record<string, unknown> = Object.fromEntries(
-    Object.entries(translateParams("google", oaiParams))
+    Object.entries(translateParams("google", { ...oaiParams, model }))
       .map(([key, value]) => {
         const translatedKey = OpenAIParamsToGoogleParams[key];
         if (translatedKey === null) {

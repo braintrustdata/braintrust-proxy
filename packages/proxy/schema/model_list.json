@@ -12286,7 +12286,9 @@
     "deprecation_date": "2027-11-09",
     "fallback_models": [
       "anthropic.claude-fable-5-2",
+      "anthropic/claude-fable-5.2",
       "au.anthropic.claude-fable-5-2",
+      "databricks-claude-fable-5-2",
       "eu.anthropic.claude-fable-5-2",
       "global.anthropic.claude-fable-5-2",
       "jp.anthropic.claude-fable-5-2",

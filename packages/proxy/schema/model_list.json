@@ -8185,6 +8185,19 @@
       "vertex"
     ]
   },
+  "publishers/google/models/gemini-omni-1.2-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "displayName": "Gemini Omni 1.2 Flash",
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.1-flash-image-preview": {
     "format": "google",
     "flavor": "chat",
@@ -20743,6 +20756,25 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "google",
+      "openrouter"
+    ]
+  },
+  "gemini-omni-1.2-flash": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 9,
+    "displayName": "Gemini Omni 1.2 Flash",
+    "fallback_models": [
+      "google/gemini-omni-1.2-flash",
+      "publishers/google/models/gemini-omni-1.2-flash"
+    ],
+    "max_input_tokens": 131072,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex",
       "openrouter"
     ]
   },

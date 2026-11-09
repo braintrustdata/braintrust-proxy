@@ -1394,6 +1394,16 @@ describe("Google parameter translation (captureOnly)", () => {
         { includeThoughts: true, thinkingLevel: "LOW" },
       ],
       [
+        "gemini-3.5-flash",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "MINIMAL" },
+      ],
+      [
+        "publishers/google/models/gemini-3-flash-preview",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "MINIMAL" },
+      ],
+      [
         "gemini-4-argon",
         { reasoning_enabled: true },
         { includeThoughts: true },

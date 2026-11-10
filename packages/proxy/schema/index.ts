@@ -1304,6 +1304,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "grok-imagine-image-quality": ["xAI"],
   "grok-imagine-video": ["xAI"],
   "grok-code-fast-1-0825": ["xAI"],
+  "gemini-omni-1.2-flash": ["google"],
   "gemini-3.5-flash": ["google", "vertex", "openrouter"],
   "gemini-3.6-flash": ["google", "vertex", "openrouter"],
   "gemini-3.5-flash-lite": ["google", "vertex", "openrouter"],

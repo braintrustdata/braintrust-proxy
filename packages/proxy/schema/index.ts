@@ -358,6 +358,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "liquid/lfm-3-1.7b": ["openrouter"],
   "google/gemini-omni-1.2-flash": ["openrouter"],
   "google/gemini-omni-1.1-flash": ["openrouter"],
+  "gemini-omni-1.2-flash": ["google"],
   "ricursiveai/ripple-65b-preview": ["openrouter"],
   "tencent/hy4": ["openrouter"],
   "stealth/crouton-alpha": ["openrouter"],

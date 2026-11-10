@@ -28540,20 +28540,6 @@
       "openrouter"
     ]
   },
-  "google/gemini-omni-1.2-flash": {
-    "format": "openai",
-    "flavor": "chat",
-    "multimodal": true,
-    "input_cost_per_mil_tokens": 1.5,
-    "output_cost_per_mil_tokens": 9,
-    "displayName": "Google: Gemini Omni 1.2 Flash",
-    "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 65536,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "google/gemini-omni-1.1-flash": {
     "format": "openai",
     "flavor": "chat",

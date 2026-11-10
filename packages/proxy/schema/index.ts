@@ -357,6 +357,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "google/gemma-2-27b-it": ["together"],
   "liquid/lfm-3-1.7b": ["openrouter"],
   "google/gemini-omni-1.2-flash": ["openrouter"],
+  "gemini-omni-1.2-flash": ["google"],
+  "publishers/google/models/gemini-omni-1.2-flash": ["vertex"],
   "google/gemini-omni-1.1-flash": ["openrouter"],
   "ricursiveai/ripple-65b-preview": ["openrouter"],
   "tencent/hy4": ["openrouter"],

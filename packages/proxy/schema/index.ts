@@ -1511,6 +1511,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "publishers/google/models/gemini-3.7-flash": ["vertex"],
   "gemini-3.8-flash": ["google", "vertex", "openrouter"],
   "publishers/google/models/gemini-3.8-flash": ["vertex"],
+  "gemini-omni-1.2-flash": ["google"],
   "gemini-4-argon": ["google", "vertex", "openrouter"],
   "publishers/google/models/gemini-4-argon": ["vertex"],
   "databricks-gemini-4-argon": ["databricks"],

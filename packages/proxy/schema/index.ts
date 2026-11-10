@@ -356,6 +356,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "Qwen/Qwen2-72B-Instruct": ["together"],
   "google/gemma-2-27b-it": ["together"],
   "liquid/lfm-3-1.7b": ["openrouter"],
+  "gemini-omni-1.2-flash": ["google", "vertex", "openrouter"],
+  "publishers/google/models/gemini-omni-1.2-flash": ["vertex"],
   "google/gemini-omni-1.2-flash": ["openrouter"],
   "google/gemini-omni-1.1-flash": ["openrouter"],
   "ricursiveai/ripple-65b-preview": ["openrouter"],

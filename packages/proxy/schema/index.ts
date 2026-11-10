@@ -1609,6 +1609,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta-models/Muse-Spark-Open-816B-A42B": ["together"],
   "zai.glm-5.3": ["bedrock"],
   "reflection/Beam-1.0-501B-A23B": ["together"],
+  "claude-mythos-5-2": ["anthropic"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

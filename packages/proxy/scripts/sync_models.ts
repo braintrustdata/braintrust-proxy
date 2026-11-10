@@ -170,6 +170,8 @@ export function isFieldManuallyPreserved(
 // "model not found" deprecations): a phantom dated snapshot LiteLLM keeps
 // listing, and a non-chat model that cannot be invoked via chat/completions.
 const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
+  // Video generation model; exclude across sources even if they omit modality metadata.
+  "gemini-omni-1.2-flash",
   "accounts/fireworks/models/rune",
   // Phantom dated snapshot: Anthropic's Opus 4.7 generation uses the dateless
   // canonical id `claude-opus-4-7`; the API returns not_found for this dated id,
@@ -384,7 +386,12 @@ type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schem
 export function isSupportedRemoteModel(
   remoteModel: LiteLLMModelDetail,
 ): boolean {
-  return remoteModel.mode !== "embedding";
+  return ![
+    "embedding",
+    "image_generation",
+    "image_edit",
+    "video_generation",
+  ].includes(remoteModel.mode ?? "");
 }
 
 const LOCAL_MODEL_LIST_PATH = path.resolve(
@@ -2270,6 +2277,15 @@ export function isOpenRouterSlugExcluded(slug: string): boolean {
   return canonical !== null && isModelExcludedFromSync(canonical);
 }
 
+// Generated media is outside the text/chat catalog, even when the provider
+// also advertises text output (for example Gemini Omni's text+video output).
+// Image/video INPUT remains supported for multimodal chat models.
+export function isSupportedOpenRouterModel(model: OpenRouterModel): boolean {
+  return !model.architecture?.output_modalities?.some(
+    (modality) => modality === "image" || modality === "video",
+  );
+}
+
 export function convertOpenRouterToLocalModel(
   model: OpenRouterModel,
 ): ModelSpec {
@@ -3579,6 +3595,12 @@ async function syncOpenRouterModelsCommand(argv: any) {
 
     for (const openRouterModel of openRouterModels) {
       const slug = openRouterModel.id;
+      if (!isSupportedOpenRouterModel(openRouterModel)) {
+        console.log(
+          `  [UNSUPPORTED] Skipping image/video generation model ${slug}`,
+        );
+        continue;
+      }
       const canonical = openRouterCanonicalId(slug);
       if (canonical === null) {
         // Variant slug (`:free`/`:nitro`/…) or no vendor prefix — skip.

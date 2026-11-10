@@ -19,6 +19,7 @@ import {
   convertOpenRouterToLocalModel,
   openRouterCanonicalId,
   isOpenRouterSlugExcluded,
+  isSupportedOpenRouterModel,
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getMissingProviderMappings,
@@ -437,9 +438,14 @@ export const AvailableEndpointTypes = {
     }
   });
 
-  it("filters embedding models out of the playground catalog sync flow", () => {
+  it("filters embedding and media generation models out of the catalog sync", () => {
     expect(isSupportedRemoteModel({ mode: "embedding" })).toBe(false);
-    expect(isSupportedRemoteModel({ mode: "chat" })).toBe(true);
+    for (const mode of ["image_generation", "image_edit", "video_generation"]) {
+      expect(isSupportedRemoteModel({ mode })).toBe(false);
+    }
+    expect(
+      isSupportedRemoteModel({ mode: "chat", supports_vision: true }),
+    ).toBe(true);
     expect(isSupportedRemoteModel({})).toBe(true);
   });
 
@@ -1220,6 +1226,12 @@ describe("openRouterCanonicalId", () => {
 });
 
 describe("isOpenRouterSlugExcluded", () => {
+  it("excludes Gemini Omni even when source modality metadata is absent", () => {
+    expect(isModelExcludedFromSync("gemini-omni-1.2-flash")).toBe(true);
+    expect(isOpenRouterSlugExcluded("google/gemini-omni-1.2-flash")).toBe(true);
+    expect(modelList).not.toHaveProperty("google/gemini-omni-1.2-flash");
+  });
+
   it("excludes a slug whose stripped canonical id is excluded/deprecated", () => {
     // gpt-realtime-2.1 is in the manual exclusion set; the bare slug
     // openai/gpt-realtime-2.1 is not, but its canonical is — so it must be caught.
@@ -1231,6 +1243,33 @@ describe("isOpenRouterSlugExcluded", () => {
   it("does not exclude a live slug or one that strips to a carried model", () => {
     expect(isOpenRouterSlugExcluded("x-ai/grok-4.5")).toBe(false);
     expect(isOpenRouterSlugExcluded("openai/gpt-5")).toBe(false);
+  });
+});
+
+describe("isSupportedOpenRouterModel", () => {
+  it.each([["image"], ["video"], ["text", "image"], ["text", "video"]])(
+    "excludes generated media outputs %j",
+    (...outputs) => {
+      expect(
+        isSupportedOpenRouterModel({
+          id: "vendor/media-model",
+          architecture: { output_modalities: outputs },
+        }),
+      ).toBe(false);
+    },
+  );
+
+  it("keeps text models that understand images and video", () => {
+    expect(
+      isSupportedOpenRouterModel({
+        id: "vendor/vision-chat",
+        architecture: {
+          input_modalities: ["text", "image", "video"],
+          output_modalities: ["text"],
+        },
+      }),
+    ).toBe(true);
+    expect(isSupportedOpenRouterModel({ id: "vendor/legacy-chat" })).toBe(true);
   });
 });
 

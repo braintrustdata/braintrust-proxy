@@ -8046,6 +8046,25 @@
       "vertex"
     ]
   },
+  "publishers/google/models/gemini-4-carbon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemini 4 Carbon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -20512,6 +20531,74 @@
       "openrouter"
     ]
   },
+  "gemini-4-carbon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "pricing": {
+      "google": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_from": "2026-12-01"
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_from": "2026-12-01"
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 3.6,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.18,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 7.2,
+            "output_cost_per_mil_tokens": 36,
+            "input_cache_read_cost_per_mil_tokens": 0.36,
+            "valid_from": "2026-12-01"
+          }
+        ]
+      }
+    },
+    "displayName": "Gemini 4 Carbon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "databricks-gemini-4-carbon",
+      "publishers/google/models/gemini-4-carbon"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex",
+      "openrouter"
+    ]
+  },
   "gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -22695,6 +22782,22 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Gemini 4 Argon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-4-carbon": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "Gemini 4 Carbon",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,

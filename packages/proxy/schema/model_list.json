@@ -12372,6 +12372,24 @@
       "anthropic"
     ]
   },
+  "claude-mythos-5-2": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "displayName": "Claude Mythos 5.2",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2027-11-09",
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
   "claude-fable-5-1": {
     "format": "anthropic",
     "flavor": "chat",

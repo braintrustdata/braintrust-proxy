@@ -54,7 +54,13 @@ export const ModelEndpointType = [
 ] as const;
 export type ModelEndpointType = (typeof ModelEndpointType)[number];
 
-export const PricingTiers = ["flex", "batch", "priority"] as const;
+export const PricingTiers = [
+  "flex",
+  "batch",
+  "priority",
+  "fast",
+  "ultrafast",
+] as const;
 export type PricingTier = (typeof PricingTiers)[number];
 
 const tokenPricingSchema = z.object({
@@ -66,7 +72,9 @@ const tokenPricingSchema = z.object({
     .nullish()
     .describe("Total cache-write token price for the default TTL."),
   input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_30m_cost_per_mil_tokens: z.number().nullish(),
   input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
+  input_cache_write_12h_cost_per_mil_tokens: z.number().nullish(),
 });
 
 export const PricingRateSchema = tokenPricingSchema.extend({
@@ -77,6 +85,12 @@ export const PricingRateSchema = tokenPricingSchema.extend({
       "Provider endpoint hosts, Bedrock endpoint names, or OpenRouter endpoint tags.",
     ),
   supported_regions: z.array(z.string()).nullish(),
+  inference_geo: z
+    .string()
+    .nullish()
+    .describe(
+      "Required inference geography, such as Anthropic's global or us.",
+    ),
   deployment_type: z.string().nullish(),
   model_id: z
     .string()
@@ -96,9 +110,51 @@ export const PricingRateSchema = tokenPricingSchema.extend({
 });
 export type PricingRate = z.infer<typeof PricingRateSchema>;
 
+export const PricingTierSchema = z.union([
+  z.array(PricingRateSchema).min(1),
+  z.object({ alias: z.enum(PricingTiers) }).strict(),
+]);
+
+const providerPricingSchema = z
+  .record(z.enum(PricingTiers), PricingTierSchema)
+  .superRefine((tiers, ctx) => {
+    for (const tier of PricingTiers) {
+      const entry = tiers[tier];
+      if (
+        entry &&
+        !Array.isArray(entry) &&
+        !Array.isArray(tiers[entry.alias])
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [tier, "alias"],
+          message:
+            "A pricing alias must reference a rate array in the same model and provider; missing targets, chains, and cycles are not allowed.",
+        });
+      }
+    }
+  });
+
+export const StoredModelPricingSchema = z.record(
+  z.enum(ModelEndpointType),
+  providerPricingSchema,
+);
+
 export const ModelPricingSchema = z.record(
   z.enum(ModelEndpointType),
-  z.record(z.enum(PricingTiers), z.array(PricingRateSchema).min(1)),
+  providerPricingSchema.transform((tiers) => {
+    const resolved: Partial<Record<PricingTier, PricingRate[]>> = {};
+    for (const tier of PricingTiers) {
+      const entry = tiers[tier];
+      if (entry !== undefined) {
+        // The refinement above requires every alias to point directly to rates.
+        resolved[tier] = Array.isArray(entry)
+          ? entry
+          : (tiers[entry.alias] as PricingRate[]);
+      }
+    }
+    return resolved;
+  }),
 );
 export type ModelPricing = z.infer<typeof ModelPricingSchema>;
 
@@ -110,7 +166,7 @@ export const ModelSchema = z.object({
   output_cost_per_token: z.number().nullish(),
   ...tokenPricingSchema.shape,
   pricing: ModelPricingSchema.nullish().describe(
-    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing tiers have no verified support and do not fall back to standard prices. Top-level price fields hold standard prices. Tier names are pricing categories, not provider API parameter values.",
+    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing tiers have no verified support and do not fall back to standard prices. Top-level price fields hold standard prices. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
   ),
   displayName: z
     .string()
@@ -181,6 +237,14 @@ export const ModelSchema = z.object({
 });
 
 export type ModelSpec = z.infer<typeof ModelSchema>;
+
+// Catalog editors retain references; ModelSchema resolves them for consumers.
+export const StoredModelSchema = ModelSchema.extend({
+  pricing: StoredModelPricingSchema.nullish().describe(
+    'Provider/tier prices as rate arrays or {"alias": "tier"} references within the same model and provider. Aliases inherit all target rates and conditions. Use ModelSchema to resolve aliases.',
+  ),
+});
+export type StoredModelSpec = z.infer<typeof StoredModelSchema>;
 
 import modelListJson from "./model_list.json";
 const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);
@@ -257,8 +321,13 @@ async function loadModelsFromControlPlane(
       if (!response.ok) {
         throw new Error(`Failed to fetch models: ${response.statusText}`);
       }
-      const data = await response.json();
-      globalThis._proxy_cachedModels = data as { [name: string]: ModelSpec };
+      const data: { [name: string]: ModelSpec } = await response.json();
+      for (const model of Object.values(data)) {
+        if (model.pricing != null) {
+          model.pricing = ModelPricingSchema.parse(model.pricing);
+        }
+      }
+      globalThis._proxy_cachedModels = data;
       globalThis._proxy_cacheTimestamp = Date.now();
     } catch (error) {
       console.warn(

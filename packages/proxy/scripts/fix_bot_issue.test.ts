@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
-  ModelSchema,
-  type ModelSpec,
+  ModelSchema as ResolvedModelSchema,
+  StoredModelSchema as ModelSchema,
+  type StoredModelSpec as ModelSpec,
   type PricingRate,
 } from "../schema/models";
 import {
@@ -132,6 +133,61 @@ describe("fix_bot_issue", () => {
     });
   });
 
+  describe("top-level cache TTL pricing patches", () => {
+    const existingModel: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 2,
+      input_cache_write_cost_per_mil_tokens: 2.5,
+      input_cache_write_5m_cost_per_mil_tokens: 1.25,
+      input_cache_write_30m_cost_per_mil_tokens: 2.5,
+      input_cache_write_1h_cost_per_mil_tokens: 2,
+      input_cache_write_12h_cost_per_mil_tokens: 5,
+      pricing: {
+        openai: {
+          fast: [{ input_cost_per_mil_tokens: 4 }],
+          priority: { alias: "fast" },
+        },
+      },
+    };
+
+    it.each(
+      [
+        "input_cache_write_5m_cost_per_mil_tokens",
+        "input_cache_write_30m_cost_per_mil_tokens",
+        "input_cache_write_1h_cost_per_mil_tokens",
+        "input_cache_write_12h_cost_per_mil_tokens",
+      ].flatMap((field) => [
+        { field, value: 3.5 },
+        { field, value: 0 },
+        { field, value: null },
+      ]),
+    )(
+      "applies $field = $value without changing omitted prices",
+      ({ field, value }) => {
+        const before = structuredClone(existingModel);
+        const parsed = parseIssue(
+          "[BOT ISSUE] Update OpenAI gpt-6.1-sol pricing",
+          "<!-- fix-bot-issue-metadata -->\n```json\n" +
+            JSON.stringify({
+              kind: "stale_metadata",
+              provider: "openai",
+              models: ["gpt-6.1-sol"],
+              model_spec: { [field]: value },
+            }) +
+            "\n```",
+        );
+        expect(parsed.metadata?.model_spec).toEqual({ [field]: value });
+        const [updated] = buildModelsForIssue(parsed, "gpt-6.1-sol", {
+          "gpt-6.1-sol": existingModel,
+        });
+        expect(updated.model).toEqual({ ...before, [field]: value });
+        expect(updated.model).not.toEqual(before);
+        expect(existingModel).toEqual(before);
+      },
+    );
+  });
+
   describe("provider/tier pricing patches", () => {
     const existingModel = {
       format: "openai",
@@ -196,11 +252,48 @@ describe("fix_bot_issue", () => {
         },
       },
       {
+        change: "adds fast and ultrafast with cache TTLs and geography",
+        pricing: {
+          openai: {
+            fast: [{ input_cache_write_30m_cost_per_mil_tokens: 5 }],
+            ultrafast: [{ input_cache_write_12h_cost_per_mil_tokens: 30 }],
+          },
+          anthropic: {
+            fast: [{ input_cost_per_mil_tokens: 8.8, inference_geo: "us" }],
+          },
+        },
+        expectedPricing: {
+          ...existingModel.pricing,
+          openai: {
+            ...existingModel.pricing.openai,
+            fast: [{ input_cache_write_30m_cost_per_mil_tokens: 5 }],
+            ultrafast: [{ input_cache_write_12h_cost_per_mil_tokens: 30 }],
+          },
+          anthropic: {
+            fast: [{ input_cost_per_mil_tokens: 8.8, inference_geo: "us" }],
+          },
+        },
+      },
+      {
         change: "adds a provider",
         pricing: { vertex: { priority: priorityRates } },
         expectedPricing: {
           ...existingModel.pricing,
           vertex: { priority: priorityRates },
+        },
+      },
+      {
+        change: "adds a target and alias in the same patch",
+        pricing: {
+          openai: { priority: { alias: "fast" as const }, fast: priorityRates },
+        },
+        expectedPricing: {
+          ...existingModel.pricing,
+          openai: {
+            ...existingModel.pricing.openai,
+            priority: { alias: "fast" as const },
+            fast: priorityRates,
+          },
         },
       },
       {
@@ -259,6 +352,111 @@ describe("fix_bot_issue", () => {
         expect(existingModel).toEqual(before);
       },
     );
+
+    it("patches an alias to an existing target and follows later target updates", () => {
+      const existing: ModelSpec = {
+        ...existingModel,
+        pricing: { openai: { fast: priorityRates } },
+      };
+      const parsed = parseIssue(
+        "[BOT ISSUE] Update OpenAI model pricing",
+        "<!-- fix-bot-issue-metadata -->\n```json\n" +
+          JSON.stringify({
+            kind: "stale_metadata",
+            provider: "openai",
+            models: ["model"],
+            model_spec: {
+              pricing: { openai: { priority: { alias: "fast" } } },
+            },
+          }) +
+          "\n```",
+      );
+      const [aliased] = buildModelsForIssue(parsed, "model", {
+        model: existing,
+      });
+      expect(aliased.model.pricing?.openai?.priority).toEqual({
+        alias: "fast",
+      });
+
+      const updated = buildUpdatedLocalModel(
+        {
+          ...parsed,
+          metadata: {
+            model_spec: {
+              pricing: { openai: { fast: [{ input_cost_per_mil_tokens: 4 }] } },
+            },
+          },
+        },
+        "model",
+        aliased.model,
+      );
+      expect(updated.pricing?.openai?.priority).toEqual({ alias: "fast" });
+      expect(
+        ResolvedModelSchema.parse(updated).pricing?.openai?.priority,
+      ).toEqual([{ input_cost_per_mil_tokens: 4 }]);
+      expect(aliased.model.pricing?.openai?.fast).toEqual(priorityRates);
+      expect(existing.pricing?.openai?.priority).toBeUndefined();
+    });
+
+    it("rejects removal of an alias target unless its aliases are also removed", () => {
+      const existing: ModelSpec = {
+        ...existingModel,
+        pricing: {
+          openai: { fast: priorityRates, priority: { alias: "fast" } },
+        },
+      };
+      const issue = {
+        provider: "openai",
+        models: ["model"],
+        aliasTargets: {},
+        metadata: { model_spec: { pricing: { openai: { fast: null } } } },
+      };
+      expect(() => buildUpdatedLocalModel(issue, "model", existing)).toThrow(
+        "A pricing alias must reference a rate array",
+      );
+      const updated = buildUpdatedLocalModel(
+        {
+          ...issue,
+          metadata: {
+            model_spec: { pricing: { openai: { fast: null, priority: null } } },
+          },
+        },
+        "model",
+        existing,
+      );
+      expect(updated.pricing).toBeUndefined();
+      expect(existing.pricing?.openai?.fast).toEqual(priorityRates);
+    });
+
+    it("rejects a patch that introduces an alias chain", () => {
+      const existing: ModelSpec = {
+        ...existingModel,
+        pricing: {
+          openai: { fast: priorityRates, priority: { alias: "fast" } },
+        },
+      };
+      expect(() =>
+        buildUpdatedLocalModel(
+          {
+            provider: "openai",
+            models: ["model"],
+            aliasTargets: {},
+            metadata: {
+              model_spec: {
+                pricing: {
+                  openai: {
+                    fast: { alias: "ultrafast" },
+                    ultrafast: priorityRates,
+                  },
+                },
+              },
+            },
+          },
+          "model",
+          existing,
+        ),
+      ).toThrow("A pricing alias must reference a rate array");
+    });
 
     it("removes empty pricing maps after the final rate is removed", () => {
       const updated = buildUpdatedLocalModel(

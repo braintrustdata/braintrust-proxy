@@ -1,5 +1,5 @@
 import https from "https";
-import { ModelSpec } from "../schema/models";
+import { type StoredModelSpec as ModelSpec } from "../schema/models";
 
 export const GOOGLE_VERTEX_LOCATIONS_URL =
   "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/locations";

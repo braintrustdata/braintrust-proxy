@@ -6,6 +6,7 @@ import {
   getAvailableModels,
   markModelsPastDeprecationDate,
   ModelSchema,
+  ModelPricingSchema,
   PricingTiers,
   normalizeModelNameForCost,
 } from "./models";
@@ -33,7 +34,9 @@ it("preserves top-level prices when tier pricing is absent or null", () => {
     input_cache_read_cost_per_mil_tokens: 0.2,
     input_cache_write_cost_per_mil_tokens: 2.5,
     input_cache_write_5m_cost_per_mil_tokens: null,
+    input_cache_write_30m_cost_per_mil_tokens: 2.5,
     input_cache_write_1h_cost_per_mil_tokens: 4,
+    input_cache_write_12h_cost_per_mil_tokens: 5,
   };
   expect(ModelSchema.parse(base)).toEqual(base);
   const model = { ...base, pricing: null };
@@ -47,9 +50,12 @@ it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
     input_cache_read_cost_per_mil_tokens: 0.1,
     input_cache_write_cost_per_mil_tokens: 1.25,
     input_cache_write_5m_cost_per_mil_tokens: 1.25,
+    input_cache_write_30m_cost_per_mil_tokens: 1.25,
     input_cache_write_1h_cost_per_mil_tokens: 2,
+    input_cache_write_12h_cost_per_mil_tokens: 2.5,
     endpoints: ["provider.example"],
     supported_regions: ["global"],
+    inference_geo: "us",
     deployment_type: "GlobalStandard",
     model_id: "upstream-model",
     model_version: "2026-10-01",
@@ -82,7 +88,70 @@ it("does not infer missing tier prices or support from batch rates", () => {
     model.pricing?.openai?.batch?.[0].input_cost_per_mil_tokens,
   ).toBeUndefined();
   expect(model.pricing?.openai?.flex).toBeUndefined();
+  expect(model.pricing?.openai?.fast).toBeUndefined();
+  expect(model.pricing?.openai?.ultrafast).toBeUndefined();
   expect(model.pricing?.vertex).toBeUndefined();
+});
+
+it.each(["openai", "openrouter"] as const)(
+  "keeps the verified fast/priority aliases equal for %s",
+  (provider) => {
+    for (const [name, model] of Object.entries(getAvailableModels())) {
+      const pricing = model.pricing?.[provider];
+      if (pricing?.fast) {
+        expect(pricing.priority, name).toEqual(pricing.fast);
+      }
+    }
+  },
+);
+
+it("keeps Fireworks router prices separate from priority service-tier prices", () => {
+  const models = getAvailableModels();
+  const pricing =
+    models["accounts/fireworks/models/glm-5p3"].pricing!.fireworks!;
+  expect(pricing.fast![0].model_id).toBe(
+    "accounts/fireworks/routers/glm-5p3-fast",
+  );
+  expect(pricing.fast).not.toEqual(pricing.priority);
+  expect(
+    models["accounts/fireworks/models/deepseek-v4p1-flash-1017"].pricing!
+      .fireworks!.ultrafast![0].model_id,
+  ).toBe("accounts/fireworks/routers/deepseek-v4p1-flash-1017-ultrafast");
+});
+
+it("retains provider-specific batch cache prices and context boundaries", () => {
+  const models = getAvailableModels();
+  const google = models["gemini-3.1-pro-preview"].pricing!.google!.batch!;
+  const vertex = models["gemini-3.1-pro-preview"].pricing!.vertex!.batch!;
+  expect(google[0].input_cache_read_cost_per_mil_tokens).toBe(0.2);
+  expect(vertex[0].input_cache_read_cost_per_mil_tokens).toBeUndefined();
+  expect(google[0].max_input_tokens).toBe(200000);
+  expect(google[1].min_input_tokens).toBe(200001);
+  const xai = models["grok-4.7"].pricing!.xAI!.batch!;
+  expect(xai[0].max_input_tokens).toBe(199999);
+  expect(xai[1].min_input_tokens).toBe(200000);
+  const groq = models["openai/gpt-oss-120b"].pricing!.groq!.batch![0];
+  expect(groq.input_cache_read_cost_per_mil_tokens).toBe(
+    groq.input_cost_per_mil_tokens,
+  );
+});
+
+it("uses OpenRouter batch endpoint prices independently of direct providers", () => {
+  const models = getAvailableModels();
+  const pricing = models["gpt-5.4"].pricing!;
+  expect(pricing.openrouter!.batch![0]).toMatchObject({
+    input_cache_read_cost_per_mil_tokens: 0.125,
+    endpoints: ["openai"],
+    max_input_tokens: 272000,
+  });
+  expect(pricing.openai!.batch![0].input_cache_read_cost_per_mil_tokens).toBe(
+    0.13,
+  );
+  const haiku = models["anthropic/claude-haiku-5.5"].pricing!.openrouter!;
+  expect(haiku.batch![1]).toMatchObject({
+    min_input_tokens: 100001,
+    input_cache_write_1h_cost_per_mil_tokens: 0.5,
+  });
 });
 
 it.each([
@@ -102,7 +171,9 @@ it("preserves provider prices and their conditions throughout the catalog", () =
   const models = getAvailableModels();
   for (const [name, model] of Object.entries(raw_models)) {
     if (!("pricing" in model)) continue;
-    expect(models[name].pricing, name).toEqual(model.pricing);
+    expect(models[name].pricing, name).toEqual(
+      ModelPricingSchema.parse(model.pricing),
+    );
     for (const [provider, tiers] of Object.entries(models[name].pricing!)) {
       expect(models[name].available_providers, name).toContain(provider);
       for (const [tier, prices] of Object.entries(tiers)) {

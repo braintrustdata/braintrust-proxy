@@ -8,7 +8,10 @@ import { hideBin } from "yargs/helpers";
 import { exec } from "child_process";
 import { promisify } from "util";
 import { pathToFileURL } from "url";
-import { ModelSchema, ModelSpec } from "../schema/models";
+import {
+  StoredModelSchema as ModelSchema,
+  type StoredModelSpec as ModelSpec,
+} from "../schema/models";
 import ts from "typescript";
 import {
   canonicalizeLocalModelName,
@@ -1385,6 +1388,7 @@ function reorderModelProperties(localModels: LocalModelList): LocalModelList {
 }
 
 async function writeLocalModels(localModels: LocalModelList): Promise<void> {
+  z.record(ModelSchema).parse(localModels);
   const orderedModelsToWrite = reorderModelProperties(
     stablyOrderByExisting(localModels),
   );

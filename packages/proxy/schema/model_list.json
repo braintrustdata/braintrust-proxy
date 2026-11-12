@@ -20614,6 +20614,31 @@
             "valid_from": "2026-12-01"
           }
         ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.09375,
+            "endpoints": [
+              "google-ai-studio/flex"
+            ]
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 3.6,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.18,
+            "input_cache_write_cost_per_mil_tokens": 3.9375,
+            "endpoints": [
+              "google-ai-studio/priority",
+              "google-vertex/global/priority"
+            ]
+          }
+        ]
       }
     },
     "displayName": "Gemini 4 Carbon",

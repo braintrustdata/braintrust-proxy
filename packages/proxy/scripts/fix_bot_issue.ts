@@ -1354,6 +1354,22 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
     model.input_cache_write_cost_per_mil_tokens =
       patch.input_cache_write_cost_per_mil_tokens;
   }
+  if (patch.input_cache_write_5m_cost_per_mil_tokens !== undefined) {
+    model.input_cache_write_5m_cost_per_mil_tokens =
+      patch.input_cache_write_5m_cost_per_mil_tokens;
+  }
+  if (patch.input_cache_write_30m_cost_per_mil_tokens !== undefined) {
+    model.input_cache_write_30m_cost_per_mil_tokens =
+      patch.input_cache_write_30m_cost_per_mil_tokens;
+  }
+  if (patch.input_cache_write_1h_cost_per_mil_tokens !== undefined) {
+    model.input_cache_write_1h_cost_per_mil_tokens =
+      patch.input_cache_write_1h_cost_per_mil_tokens;
+  }
+  if (patch.input_cache_write_12h_cost_per_mil_tokens !== undefined) {
+    model.input_cache_write_12h_cost_per_mil_tokens =
+      patch.input_cache_write_12h_cost_per_mil_tokens;
+  }
   if (patch.pricing === null) {
     delete model.pricing;
   } else if (patch.pricing !== undefined) {

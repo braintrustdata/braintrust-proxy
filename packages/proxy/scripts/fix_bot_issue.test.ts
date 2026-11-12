@@ -133,6 +133,61 @@ describe("fix_bot_issue", () => {
     });
   });
 
+  describe("top-level cache TTL pricing patches", () => {
+    const existingModel: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      input_cost_per_mil_tokens: 2,
+      input_cache_write_cost_per_mil_tokens: 2.5,
+      input_cache_write_5m_cost_per_mil_tokens: 1.25,
+      input_cache_write_30m_cost_per_mil_tokens: 2.5,
+      input_cache_write_1h_cost_per_mil_tokens: 2,
+      input_cache_write_12h_cost_per_mil_tokens: 5,
+      pricing: {
+        openai: {
+          fast: [{ input_cost_per_mil_tokens: 4 }],
+          priority: { alias: "fast" },
+        },
+      },
+    };
+
+    it.each(
+      [
+        "input_cache_write_5m_cost_per_mil_tokens",
+        "input_cache_write_30m_cost_per_mil_tokens",
+        "input_cache_write_1h_cost_per_mil_tokens",
+        "input_cache_write_12h_cost_per_mil_tokens",
+      ].flatMap((field) => [
+        { field, value: 3.5 },
+        { field, value: 0 },
+        { field, value: null },
+      ]),
+    )(
+      "applies $field = $value without changing omitted prices",
+      ({ field, value }) => {
+        const before = structuredClone(existingModel);
+        const parsed = parseIssue(
+          "[BOT ISSUE] Update OpenAI gpt-6.1-sol pricing",
+          "<!-- fix-bot-issue-metadata -->\n```json\n" +
+            JSON.stringify({
+              kind: "stale_metadata",
+              provider: "openai",
+              models: ["gpt-6.1-sol"],
+              model_spec: { [field]: value },
+            }) +
+            "\n```",
+        );
+        expect(parsed.metadata?.model_spec).toEqual({ [field]: value });
+        const [updated] = buildModelsForIssue(parsed, "gpt-6.1-sol", {
+          "gpt-6.1-sol": existingModel,
+        });
+        expect(updated.model).toEqual({ ...before, [field]: value });
+        expect(updated.model).not.toEqual(before);
+        expect(existingModel).toEqual(before);
+      },
+    );
+  });
+
   describe("provider/tier pricing patches", () => {
     const existingModel = {
       format: "openai",

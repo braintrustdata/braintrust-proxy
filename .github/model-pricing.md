@@ -72,7 +72,6 @@ Do not treat model-name suffixes such as `-fast`, `:nitro`, or `-pro` as proof o
 Do not multiply a batch discount by a fast/priority premium unless the provider explicitly supports the combination.
 
 These are starting points; recheck current documentation and exact model support on every run.
-The [research snapshot](model-pricing-research.md) records the initial evidence and unresolved checks, not a replacement for current sources.
 
 For [OpenRouter Batch](https://openrouter.ai/docs/guides/features/batch-api), query `/api/v1/models/{author}/{slug}:batch/endpoints` separately from synchronous endpoints.
 Verify that the returned model and endpoint IDs match the Batch variant; preserve its endpoint tags, cache prices, and prompt-length overrides.

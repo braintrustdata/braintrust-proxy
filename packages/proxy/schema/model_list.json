@@ -22450,6 +22450,17 @@
       "baseten"
     ]
   },
+  "decision-models/baseten-joey-2b-latest": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.01,
+    "displayName": "joey-1",
+    "max_input_tokens": 16384,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "reflection/Beam-1.0": {
     "format": "openai",
     "flavor": "chat",
@@ -23974,37 +23985,26 @@
         ]
       },
       "openrouter": {
-        "priority": {
-          "alias": "fast"
-        },
-        "fast": [
-          {
-            "input_cost_per_mil_tokens": 3.6,
-            "output_cost_per_mil_tokens": 18,
-            "input_cache_read_cost_per_mil_tokens": 0.18,
-            "input_cache_write_cost_per_mil_tokens": 3.9375,
-            "endpoints": [
-              "google-vertex/global/priority"
-            ]
-          },
-          {
-            "input_cost_per_mil_tokens": 3.6,
-            "output_cost_per_mil_tokens": 18,
-            "input_cache_read_cost_per_mil_tokens": 0.18,
-            "input_cache_write_cost_per_mil_tokens": 3.9375,
-            "endpoints": [
-              "google-ai-studio/priority"
-            ]
-          }
-        ],
-        "batch": [
+        "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 1.1875,
+            "input_cache_write_cost_per_mil_tokens": 1.09375,
             "endpoints": [
-              "google-vertex/global"
+              "google-ai-studio/flex"
+            ]
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 3.6,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.18,
+            "input_cache_write_cost_per_mil_tokens": 3.9375,
+            "endpoints": [
+              "google-vertex/global/priority",
+              "google-ai-studio/priority"
             ]
           }
         ]
@@ -24030,31 +24030,6 @@
               "global"
             ],
             "valid_from": "2026-12-01"
-          }
-        ]
-      },
-      "openrouter": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 5,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 1.09375,
-            "endpoints": [
-              "google-ai-studio/flex"
-            ]
-          }
-        ],
-        "priority": [
-          {
-            "input_cost_per_mil_tokens": 3.6,
-            "output_cost_per_mil_tokens": 18,
-            "input_cache_read_cost_per_mil_tokens": 0.18,
-            "input_cache_write_cost_per_mil_tokens": 3.9375,
-            "endpoints": [
-              "google-vertex/global/priority",
-              "google-ai-studio/priority"
-            ]
           }
         ]
       }

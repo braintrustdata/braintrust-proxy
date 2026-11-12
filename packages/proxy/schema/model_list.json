@@ -20317,6 +20317,20 @@
       "mistral"
     ]
   },
+  "gemini-decision-1": {
+    "format": "google",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Gemini Decision 1",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 0,
+    "supports_decisions": true,
+    "available_providers": [
+      "google"
+    ]
+  },
   "gemini-3.8-live-extended-thinking": {
     "format": "google",
     "flavor": "live",

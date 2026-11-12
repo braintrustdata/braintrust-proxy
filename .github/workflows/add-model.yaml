@@ -94,7 +94,8 @@ jobs:
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/^-+|-+$/g, "")
               .slice(0, 80);
-            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}-${context.runId}`);
+            // Reuse the target's branch so repeated runs update its open PR.
+            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}`);
             core.setOutput("provider", provider);
             core.setOutput("model_slug", modelSlug);
 

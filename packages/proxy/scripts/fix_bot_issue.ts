@@ -17,9 +17,9 @@ import {
 import {
   ModelEndpointType,
   type ModelFormat,
-  ModelSchema,
-  type ModelSpec,
-  PricingRateSchema,
+  StoredModelSchema as ModelSchema,
+  type StoredModelSpec as ModelSpec,
+  PricingTierSchema,
   PricingTiers,
 } from "../schema/models";
 
@@ -27,12 +27,7 @@ const partialModelSchema = ModelSchema.partial().extend({
   pricing: z
     .record(
       z.enum(ModelEndpointType),
-      z
-        .record(
-          z.enum(PricingTiers),
-          z.array(PricingRateSchema).min(1).nullable(),
-        )
-        .nullable(),
+      z.record(z.enum(PricingTiers), PricingTierSchema.nullable()).nullable(),
     )
     .nullish(),
 });
@@ -1440,6 +1435,8 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
   if (patch.available_providers !== undefined) {
     model.available_providers = [...patch.available_providers];
   }
+  // A patch can reference an existing tier, so validate after all edits merge.
+  ModelSchema.shape.pricing.parse(model.pricing);
 }
 
 function buildManualModelSpec(

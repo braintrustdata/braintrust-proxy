@@ -4,7 +4,7 @@ import {
   mergeTypesafeModels,
   parseTypesafePricing,
 } from "./sync_typesafe";
-import type { ModelSpec } from "../schema/models";
+import type { StoredModelSpec as ModelSpec } from "../schema/models";
 
 const documentation = `# Models
 

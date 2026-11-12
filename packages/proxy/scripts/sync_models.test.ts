@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { type ModelSpec } from "../schema/models";
+import { type StoredModelSpec as ModelSpec } from "../schema/models";
 import modelList from "../schema/model_list.json";
 import {
   addProviderToProviderMappingContent,
@@ -1333,7 +1333,15 @@ describe("applyOpenRouterPricing", () => {
               endpoints: ["deepinfra/fp8/flex"],
             },
           ],
-          priority: [{ input_cost_per_mil_tokens: 2 }],
+          priority: { alias: "fast" },
+          fast: [{ input_cost_per_mil_tokens: 2 }],
+          ultrafast: [
+            {
+              input_cost_per_mil_tokens: 6,
+              input_cache_write_30m_cost_per_mil_tokens: 7.5,
+              input_cache_write_12h_cost_per_mil_tokens: 15,
+            },
+          ],
         },
       },
     };
@@ -1348,6 +1356,13 @@ describe("applyOpenRouterPricing", () => {
     expect(priced?.input_cost_per_mil_tokens).toBe(0.14);
     expect(priced?.output_cost_per_mil_tokens).toBe(0.42);
     expect(priced?.pricing).toEqual(model.pricing);
+    const rewritten = canonicalizeLocalModelsContent(
+      JSON.stringify({ "deepseek/deepseek-v4.1-flash": priced }),
+    );
+    expect(
+      JSON.parse(rewritten.canonicalContent)["deepseek/deepseek-v4.1-flash"]
+        .pricing,
+    ).toEqual(model.pricing);
   });
 
   it("overwrites prices that differ and returns null when unchanged", () => {

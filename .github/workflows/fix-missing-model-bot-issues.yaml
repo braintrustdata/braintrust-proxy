@@ -311,7 +311,7 @@ jobs:
                - `available_providers` and provider mapping
                - `max_input_tokens`, `max_output_tokens`, and other token/context limits
                - top-level standard pricing fields (input, output, cache — use on-demand public pricing only)
-               - provider/tier `pricing`, following `.github/model-pricing.md`
+               - provider/tier `pricing`, following `.github/model-pricing.md`, including batch, fast, and ultrafast when the issue concerns those tiers. Verify the exact provider API selector, served tier, cache TTLs, geography, context bounds, and date conditions. Replace only the supplied provider/tier arrays or alias objects; preserve unrelated prices. Update alias targets when prices change, and remove or retarget references when deleting a target. Do not turn a tier-only correction into a standard-price change or copy tier prices to cloud companions.
                - `deprecation`/`retirement` status and dates
                - capability flags (`reasoning`, multimodal, etc.) when they map cleanly to the local schema
                - `locations` and supported regions when required

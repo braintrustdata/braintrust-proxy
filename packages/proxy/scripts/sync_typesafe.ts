@@ -1,6 +1,6 @@
 import { isDeepStrictEqual } from "util";
 import { z } from "zod";
-import type { ModelSpec } from "../schema/models";
+import type { StoredModelSpec as ModelSpec } from "../schema/models";
 
 const TYPESAFE_MODELS_URL = "https://api.typesafe.ai/v1/models";
 const TYPESAFE_DOCS_URL = "https://docs.typesafe.ai/models.md";

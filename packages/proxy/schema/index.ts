@@ -1516,6 +1516,9 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gemini-4-carbon": ["google", "vertex", "openrouter"],
   "publishers/google/models/gemini-4-carbon": ["vertex"],
   "databricks-gemini-4-carbon": ["databricks"],
+  "gemini-4-hydrogen": ["google", "vertex", "openrouter"],
+  "publishers/google/models/gemini-4-hydrogen": ["vertex"],
+  "databricks-gemini-4-hydrogen": ["databricks"],
   "accounts/fireworks/models/qwen3p8-max": ["fireworks"],
   "databricks-gemini-3-7-flash": ["databricks"],
   "databricks-gemini-3-1-flash-image": ["databricks"],
@@ -1611,6 +1614,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "meta-models/Muse-Spark-Open-816B-A42B": ["together"],
   "zai.glm-5.3": ["bedrock"],
   "reflection/Beam-1.0-501B-A23B": ["together"],
+  "claude-mythos-5-2": ["anthropic"],
 };
 
 const modelEndpointAvailableModels = getAvailableModels();

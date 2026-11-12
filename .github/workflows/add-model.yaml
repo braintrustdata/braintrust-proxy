@@ -79,12 +79,6 @@ jobs:
             if (modelSlug === "deepseek-ai/DeepSeek-V4.1-Flash-Fast") {
               throw new Error(`Blocked model slug: ${modelSlug} (not a real model)`);
             }
-            if (
-              modelSlug.toLowerCase().startsWith("decision-models/") ||
-              modelSlug === "accounts/fireworks/models/rune"
-            ) {
-              throw new Error(`Blocked model slug: ${modelSlug} (decision models are not supported)`);
-            }
             if (!providers.has(provider)) {
               throw new Error(`Unsupported provider: ${provider}`);
             }
@@ -100,7 +94,8 @@ jobs:
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/^-+|-+$/g, "")
               .slice(0, 80);
-            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}-${context.runId}`);
+            // Reuse the target's branch so repeated runs update its open PR.
+            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}`);
             core.setOutput("provider", provider);
             core.setOutput("model_slug", modelSlug);
 
@@ -237,8 +232,8 @@ jobs:
 
             - This task explicitly authorizes catalog and provider-mapping work in this repository. Edit only `packages/proxy/schema/model_list.json` and `packages/proxy/schema/index.ts`.
             - The requested model and its cloud/provider companion entries are the only models in scope. Do not remove models or modify unrelated models or source files.
-            - Decision models are unsupported. If provider metadata or official documentation identifies the target as a decision model or System One model (typed choices, probabilities, or scores instead of generated text), leave the catalog unchanged and report it as unsupported. Do not add it as a chat model or create companion entries or a PR for it. Serverless availability and zero output-token pricing do not establish chat support.
-            - If a priced endpoint already added or updated the target, preserve its verified metadata and skip target availability/standard-pricing research. Still check provider/tier pricing and add its cloud companions.
+            - Decision models are supported catalog entries. If provider metadata or official documentation identifies the target as a decision model or System One model (typed choices, probabilities, or scores instead of generated text), add it with `flavor: "decisions"` (the exact schema value, not `"decision"` or `"chat"`). This includes `decision-models/*` slugs and `accounts/fireworks/models/rune`. Do not reject a model because it does not generate text. Serverless availability and zero output-token pricing alone do not establish a model's flavor.
+            - If a priced endpoint already added or updated the target, preserve its verified metadata and skip target availability/standard-pricing research. Still verify its flavor, correct a default `"chat"` flavor to `"decisions"` for decision models, check provider/tier pricing, and add its cloud companions.
             - If the target slug already exists for another provider, verify the requested provider for the target entry, then union it into the existing entry and provider mapping. Preserve other fields and providers, and still add cloud companions.
             - If the target already exists for the requested provider, still ensure all cloud companions, mappings, and fallback links exist.
 
@@ -251,6 +246,7 @@ jobs:
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
             6. For the target and every new or existing companion, add or refresh provider/tier `pricing` following `.github/model-pricing.md`, even when a priced endpoint handled the target or the model already exists.
                Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Do not apply the standard-price companion assumptions to tier prices. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
+            7. Verify the target's flavor against official model documentation even if it already exists or a priced endpoint handled it. Decision targets and all their companion entries must have `flavor: "decisions"`. Use each provider's documented format; do not assume every decision model uses the `typesafe` format. Set `supports_decisions` only when official documentation confirms support for the schema's `POST /v1/decisions` capability.
 
             # Required cloud companion entries
 
@@ -261,7 +257,7 @@ jobs:
             - For modern Claude models with fixed, undated IDs, follow the current Claude 5.5 conventions: `anthropic.<target-slug>` on Bedrock; `global.`, `us.`, `eu.`, `au.`, and `jp.` Bedrock variants; `publishers/anthropic/models/<target-slug>` on Vertex; and `anthropic/claude-<family>-<major>.<minor>` on OpenRouter. Match modern undated examples rather than introducing legacy date or `-v1:0` suffixes. For other model families or version styles, use their own previous cloud entries rather than the Claude transformation.
             - Assume standard prices are identical to the target model on every companion surface. Copy all top-level standard pricing fields, including input, output, cache-read, cache-write, 5m, 30m, 1h, and 12h cache-write prices when present. Give regional variants the same standard prices too; do not apply provider or region premiums, omit known standard prices, or fetch separate standard cloud pricing.
             - Standard pricing must be written explicitly on EVERY entry for this model: the target, provider base entries, global entries, all regional entries, and both new and already-existing companions. `parent` is lifecycle metadata and does not provide pricing inheritance. An existing companion is not complete until it has every top-level standard pricing field present on the target, with the same values. Before finishing, compare all standard pricing fields across every companion and fill or correct any missing or differing values. Do not rely on normalization to fill prices.
-            - Copy the target's token limits and capabilities; use each provider's established format, provider metadata, and display-name conventions. Preserve existing companion providers and unrelated metadata. Do not copy the target's provider list, parent, fallback links, or provider-specific lifecycle/region fields blindly.
+            - Copy the target's flavor, token limits and capabilities; use each provider's established format, provider metadata, and display-name conventions. Preserve existing companion providers and unrelated metadata. Do not copy the target's provider list, parent, fallback links, or provider-specific lifecycle/region fields blindly.
             - Add every companion's provider mapping in `packages/proxy/schema/index.ts`. Set regional Bedrock entries' parent to the Bedrock base entry. Union all companion IDs into the target's `fallback_models`, preserving existing links and avoiding duplicates. Never leave a fallback pointing to a missing entry.
             - If the request itself names a cloud/provider-specific slug, identify the underlying model using prior family entries and complete the same family of companion entries. Do not double-prefix an already qualified slug.
             - If no target entry can be added because its original availability or pricing remains unresolved, leave the catalog unchanged and explain why. Do not create cloud companions without a target entry.
@@ -281,6 +277,7 @@ jobs:
             List every official URL checked and, for each requested model, state:
 
             - whether the exact model slug appeared;
+            - which flavor was assigned and the official source supporting that classification;
             - where pricing was found;
             - whether the pricing matches the requested provider and inference surface;
             - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and

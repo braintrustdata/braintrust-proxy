@@ -10222,6 +10222,25 @@
       "vertex"
     ]
   },
+  "publishers/google/models/gemini-4-hydrogen": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "Gemini 4 Hydrogen",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -14854,6 +14873,24 @@
       "publishers/anthropic/models/claude-fable-5-2",
       "us.anthropic.claude-fable-5-2"
     ],
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "anthropic"
+    ]
+  },
+  "claude-mythos-5-2": {
+    "format": "anthropic",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "displayName": "Claude Mythos 5.2",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2027-11-09",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -23345,6 +23382,20 @@
       "mistral"
     ]
   },
+  "gemini-decision-1": {
+    "format": "google",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Gemini Decision 1",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 0,
+    "supports_decisions": true,
+    "available_providers": [
+      "google"
+    ]
+  },
   "gemini-3.8-live-extended-thinking": {
     "format": "google",
     "flavor": "live",
@@ -23976,6 +24027,53 @@
     "fallback_models": [
       "databricks-gemini-4-carbon",
       "publishers/google/models/gemini-4-carbon"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex",
+      "openrouter"
+    ]
+  },
+  "gemini-4-hydrogen": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "pricing": {
+      "google": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 2.7,
+            "output_cost_per_mil_tokens": 13.5,
+            "input_cache_read_cost_per_mil_tokens": 0.135
+          }
+        ]
+      }
+    },
+    "displayName": "Gemini 4 Hydrogen",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "databricks-gemini-4-hydrogen",
+      "publishers/google/models/gemini-4-hydrogen"
     ],
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
@@ -27324,6 +27422,22 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Gemini 4 Carbon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-4-hydrogen": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "displayName": "Gemini 4 Hydrogen",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,

@@ -1423,6 +1423,16 @@ describe("Google parameter translation (captureOnly)", () => {
         { reasoning_enabled: false },
         { thinkingLevel: "LOW" },
       ],
+      [
+        "gemini-3.5-flash-lite",
+        { reasoning_enabled: false },
+        { thinkingLevel: "MINIMAL" },
+      ],
+      [
+        "publishers/google/models/gemini-3.1-flash-lite",
+        { reasoning_budget: 0 },
+        { thinkingLevel: "MINIMAL" },
+      ],
       ["gemini-2.5-flash", { reasoning_enabled: false }, { thinkingBudget: 0 }],
       [
         "gemini-2.5-flash",

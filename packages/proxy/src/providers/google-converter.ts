@@ -421,7 +421,9 @@ const getGeminiThinkingLevelParams = (
 ): ThinkingConfig => {
   // Thinking cannot be turned off on Gemini 3+, so disabled maps to the lowest level.
   if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
-    return { thinkingLevel: "LOW" };
+    return {
+      thinkingLevel: supportsMinimalThinkingLevel(model) ? "MINIMAL" : "LOW",
+    };
   }
   if (openai.reasoning_effort) {
     return {

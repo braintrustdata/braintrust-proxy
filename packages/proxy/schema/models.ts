@@ -50,6 +50,7 @@ export const ModelEndpointType = [
   "replicate",
   "cohere",
   "typesafe",
+  "nace",
   "openrouter",
   "js",
 ] as const;

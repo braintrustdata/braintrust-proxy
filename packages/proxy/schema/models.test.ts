@@ -527,3 +527,27 @@ it("defines GPT-Live 1.1 like GPT-Live 1 without unverified metadata", () => {
     "format",
   ]);
 });
+
+// Nace's /v1/decisions uses the OpenAI wire format, not OpenAI credentials.
+it.each([
+  ["drex-max-v1.1", true, 262144],
+  ["drex-max-finance", true, 262144],
+  ["drex-v2.0", false, 131072],
+] as const)(
+  "routes %s only to Nace with decision capabilities and input-only pricing",
+  (model, multimodal, maxInputTokens) => {
+    expect(ModelSchema.parse(raw_models[model])).toMatchObject({
+      format: "openai",
+      flavor: "decisions",
+      multimodal,
+      max_input_tokens: maxInputTokens,
+      supports_decisions: true,
+      supports_streaming: false,
+      input_cost_per_mil_tokens: 0.03,
+      output_cost_per_mil_tokens: 0,
+      available_providers: ["nace"],
+    });
+    expect(getDirectModelEndpointTypes(model)).toEqual(["nace"]);
+    expect(getModelEndpointTypes(model)).toEqual(["nace"]);
+  },
+);

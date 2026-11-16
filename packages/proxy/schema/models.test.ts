@@ -5,6 +5,7 @@ import { getDirectModelEndpointTypes, getModelEndpointTypes } from "./index";
 import {
   getAvailableModels,
   markModelsPastDeprecationDate,
+  ModelCatalogSchema,
   ModelSchema,
   ModelPricingSchema,
   PricingTiers,
@@ -226,6 +227,79 @@ it("keeps equivalent model references within the catalog", () => {
       ).toBeDefined();
     }
   }
+});
+
+const replacementCatalog = (
+  replacements: Record<string, string | null | undefined>,
+) =>
+  Object.fromEntries(
+    Object.entries(replacements).map(([name, replaced_by]) => [
+      name,
+      { format: "openai", flavor: "chat", replaced_by },
+    ]),
+  );
+
+const replacementIssues = (
+  replacements: Record<string, string | null | undefined>,
+) => {
+  const result = ModelCatalogSchema.safeParse(replacementCatalog(replacements));
+  return result.success
+    ? []
+    : result.error.issues.map(({ path, message }) => ({ path, message }));
+};
+
+it("validates replacement references in the catalog", () => {
+  expect(ModelCatalogSchema.safeParse(raw_models).success).toBe(true);
+  expect(raw_models["claude-sonnet-4-5-20250929"].replaced_by).toBe(
+    "claude-sonnet-5-5",
+  );
+});
+
+it("accepts replacement chains, including deprecated successors", () => {
+  const catalog = {
+    ...replacementCatalog({ a: "b", c: undefined, d: null }),
+    b: { format: "openai", flavor: "chat", deprecated: true, replaced_by: "c" },
+  };
+  expect(ModelCatalogSchema.parse(catalog)).toEqual(catalog);
+});
+
+it("rejects replacements that are not in the catalog", () => {
+  expect(replacementIssues({ a: "missing" })).toEqual([
+    {
+      path: ["a", "replaced_by"],
+      message: "a is replaced by unknown model missing",
+    },
+  ]);
+});
+
+it("rejects models that replace themselves", () => {
+  expect(replacementIssues({ a: "a" })).toEqual([
+    { path: ["a", "replaced_by"], message: "a cannot be replaced by itself" },
+  ]);
+});
+
+it.each([
+  [{ a: "b", b: "a" }, "a -> b -> a"],
+  [{ a: "b", b: "c", c: "a" }, "a -> b -> c -> a"],
+  [{ start: "a", a: "b", b: "c", c: "a" }, "a -> b -> c -> a"],
+])("rejects replacement cycles: %j", (replacements, cycle) => {
+  expect(replacementIssues(replacements)).toEqual([
+    {
+      path: [cycle.split(" -> ")[0], "replaced_by"],
+      message: `replaced_by cycle: ${cycle}`,
+    },
+  ]);
+});
+
+it("does not change parent or fallback_models when replaced_by is set", () => {
+  const model = {
+    format: "anthropic",
+    flavor: "chat",
+    parent: "family",
+    fallback_models: ["companion"],
+    replaced_by: "successor",
+  };
+  expect(ModelSchema.parse(model)).toEqual(model);
 });
 
 it("Uses available providers for Fireworks model endpoint types", () => {

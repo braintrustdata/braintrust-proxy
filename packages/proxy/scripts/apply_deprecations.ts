@@ -19,6 +19,7 @@ const DEPRECATED_IDS_PATH = path.join(__dirname, "deprecated_model_ids.json");
 type ModelSpec = {
   available_providers?: string[];
   fallback_models?: string[];
+  replaced_by?: string | null;
 } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
 
@@ -131,6 +132,11 @@ export function applyDeprecations(
       spec.fallback_models = surviving;
     } else {
       delete spec.fallback_models;
+    }
+  }
+  for (const spec of Object.values(catalog)) {
+    if (spec.replaced_by && removed.has(spec.replaced_by)) {
+      delete spec.replaced_by;
     }
   }
 

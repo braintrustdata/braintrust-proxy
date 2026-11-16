@@ -195,7 +195,7 @@ jobs:
             - For a single-model issue you may use `model_spec` or `model_specs`. For multi-model issues, use `model_specs` with one fully populated spec per model ID.
             - Populate specs with exact token limits, pricing fields, verified `displayName`, provider list, deprecation metadata, and location info from official sources. Do not guess.
             - Include `parent` only when official sources explicitly document a relationship to a stable base alias and that parent model id exists in `model_list.json`. Recognized patterns: dated snapshot → stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`), `@NNN`/`-vN` versioned snapshots (e.g. Vertex `@001`), location-scoped prefixes (`global.`, `us.`, `eu.`, `apac.`), and provider-documented tier variants (e.g. `:free`, `:nitro` on Together AI). Leave unset for base models or when the parent id is not in the local catalog.
-            - Include replacement relationships only when officially published.
+            - Include `replaced_by` only when an official provider deprecation or lifecycle page names the successor for that exact model ID, and the successor's catalog ID exists in `model_list.json`. Cite that page in the issue. Leave it unset when the source gives no specific successor (for example "use the latest model"). Do not infer it from model names, `parent`, `fallback_models`, or release order, and do not copy one surface's recommendation to another surface's entries.
 
             # Output expectations
 

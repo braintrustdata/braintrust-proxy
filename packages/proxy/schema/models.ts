@@ -196,6 +196,12 @@ export const ModelSchema = z.object({
     .nullish()
     .describe("Date after which the model will be treated as deprecated"),
   parent: z.string().nullish().describe("The model was replaced this model."),
+  replaced_by: z
+    .string()
+    .nullish()
+    .describe(
+      "Catalog model id of the successor the provider explicitly recommends. The successor may itself be replaced.",
+    ),
   fallback_models: z
     .array(z.string())
     .nullish()
@@ -246,8 +252,52 @@ export const StoredModelSchema = ModelSchema.extend({
 });
 export type StoredModelSpec = z.infer<typeof StoredModelSchema>;
 
+export const ModelCatalogSchema = z
+  .record(ModelSchema)
+  .superRefine((models, ctx) => {
+    for (const [name, { replaced_by }] of Object.entries(models)) {
+      if (!replaced_by) {
+        continue;
+      }
+      if (replaced_by === name) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [name, "replaced_by"],
+          message: `${name} cannot be replaced by itself`,
+        });
+      } else if (!models[replaced_by]) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [name, "replaced_by"],
+          message: `${name} is replaced by unknown model ${replaced_by}`,
+        });
+      }
+    }
+
+    const visited = new Set<string>();
+    for (const start of Object.keys(models)) {
+      const chain: string[] = [];
+      let current: string | null | undefined = start;
+      while (current && models[current] && !visited.has(current)) {
+        visited.add(current);
+        chain.push(current);
+        current = models[current].replaced_by;
+      }
+      const cycleStart = current ? chain.indexOf(current) : -1;
+      if (cycleStart < 0 || cycleStart === chain.length - 1) {
+        continue;
+      }
+      const cycle = chain.slice(cycleStart);
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [cycle[0], "replaced_by"],
+        message: `replaced_by cycle: ${[...cycle, cycle[0]].join(" -> ")}`,
+      });
+    }
+  });
+
 import modelListJson from "./model_list.json";
-const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);
+const modelListJsonTyped = ModelCatalogSchema.parse(modelListJson);
 
 export type ModelName = keyof typeof modelListJson;
 

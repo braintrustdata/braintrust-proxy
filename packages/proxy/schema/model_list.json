@@ -12127,6 +12127,7 @@
     "output_cost_per_mil_tokens": 0.551,
     "displayName": "Claude Instant 1.2",
     "deprecated": true,
+    "replaced_by": "claude-haiku-4-5-20251001",
     "max_input_tokens": 100000,
     "max_output_tokens": 8191
   },
@@ -12147,6 +12148,7 @@
     "output_cost_per_mil_tokens": 24,
     "displayName": "Claude 2.1",
     "deprecated": true,
+    "replaced_by": "claude-opus-4-8",
     "max_input_tokens": 200000,
     "max_output_tokens": 8191
   },
@@ -12156,7 +12158,8 @@
     "input_cost_per_mil_tokens": 8,
     "output_cost_per_mil_tokens": 24,
     "displayName": "Claude 2.0",
-    "deprecated": true
+    "deprecated": true,
+    "replaced_by": "claude-opus-4-8"
   },
   "claude-2": {
     "format": "anthropic",
@@ -15709,6 +15712,7 @@
     "reasoning_budget": true,
     "deprecation_date": "2026-11-30",
     "parent": "claude-sonnet-4-5",
+    "replaced_by": "claude-sonnet-5-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -27716,7 +27720,8 @@
     "max_output_tokens": 64000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "replaced_by": "databricks-claude-sonnet-4-6"
   },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",

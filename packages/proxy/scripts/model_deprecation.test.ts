@@ -167,6 +167,23 @@ describe("applyDeprecations", () => {
     expect(out.catalog["model-c"].fallback_models).toBeUndefined();
   });
 
+  it("cleans replaced_by references to removed models only", () => {
+    const catalog = {
+      "model-a": { available_providers: ["together"], replaced_by: "model-b" },
+      "model-b": { available_providers: ["xAI"] },
+      "model-c": {
+        available_providers: ["openai", "azure"],
+        replaced_by: "model-a",
+      },
+    };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "not found" },
+      { model: "model-c", provider: "azure", reason: "not found" },
+    ]);
+    expect(out.catalog["model-a"]).not.toHaveProperty("replaced_by");
+    expect(out.catalog["model-c"].replaced_by).toBe("model-a");
+  });
+
   it("is a no-op for a provider the model does not have", () => {
     const catalog = { "model-c": { available_providers: ["openai", "azure"] } };
     const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [

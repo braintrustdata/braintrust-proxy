@@ -188,6 +188,38 @@ describe("fix_bot_issue", () => {
     );
   });
 
+  it.each(["claude-sonnet-5-5", null])(
+    "applies replaced_by = %j from stale metadata issues",
+    (replacedBy) => {
+      const existingModel: ModelSpec = {
+        format: "anthropic",
+        flavor: "chat",
+        parent: "claude-sonnet-4-5",
+        replaced_by: "claude-sonnet-5",
+      };
+      const parsed = parseIssue(
+        "[BOT ISSUE] Update Anthropic claude-sonnet-4-5-20250929 metadata",
+        "<!-- fix-bot-issue-metadata -->\n```json\n" +
+          JSON.stringify({
+            kind: "stale_metadata",
+            provider: "anthropic",
+            models: ["claude-sonnet-4-5-20250929"],
+            model_spec: { replaced_by: replacedBy },
+          }) +
+          "\n```",
+      );
+      const [updated] = buildModelsForIssue(
+        parsed,
+        "claude-sonnet-4-5-20250929",
+        { "claude-sonnet-4-5-20250929": existingModel },
+      );
+      expect(updated.model).toEqual({
+        ...existingModel,
+        replaced_by: replacedBy,
+      });
+    },
+  );
+
   describe("provider/tier pricing patches", () => {
     const existingModel = {
       format: "openai",

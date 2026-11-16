@@ -839,6 +839,7 @@ function buildUnsupportedTicketComment(args: {
     "- `max_output_tokens`",
     "- `available_providers`",
     "- `deprecated` / `deprecation_date`",
+    "- `replaced_by` when an official deprecation page names the successor for that exact model ID",
     "- `locations` when the provider/model requires explicit location metadata",
   );
 
@@ -1429,6 +1430,9 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
   }
   if (patch.parent !== undefined) {
     model.parent = patch.parent;
+  }
+  if (patch.replaced_by !== undefined) {
+    model.replaced_by = patch.replaced_by;
   }
   if (patch.endpoint_types !== undefined) {
     model.endpoint_types = [...patch.endpoint_types];

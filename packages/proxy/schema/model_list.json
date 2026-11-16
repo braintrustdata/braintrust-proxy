@@ -28694,6 +28694,48 @@
       "openrouter"
     ]
   },
+  "drex-max-v1.1": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Nace: Drex Max v1.1",
+    "max_input_tokens": 262144,
+    "supports_streaming": false,
+    "supports_decisions": true,
+    "available_providers": [
+      "nace"
+    ]
+  },
+  "drex-max-finance": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Nace: Drex Max Finance",
+    "max_input_tokens": 262144,
+    "supports_streaming": false,
+    "supports_decisions": true,
+    "available_providers": [
+      "nace"
+    ]
+  },
+  "drex-v2.0": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": false,
+    "input_cost_per_mil_tokens": 0.03,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "Nace: Drex 2.0",
+    "max_input_tokens": 131072,
+    "supports_streaming": false,
+    "supports_decisions": true,
+    "available_providers": [
+      "nace"
+    ]
+  },
   "jev-1.14.0": {
     "format": "typesafe",
     "flavor": "decisions",

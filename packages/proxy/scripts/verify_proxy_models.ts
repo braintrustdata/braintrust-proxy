@@ -25,6 +25,7 @@ type ModelEndpointType =
   | "ollama"
   | "replicate"
   | "typesafe"
+  | "nace"
   | "js";
 
 type ModelFormat =

@@ -401,6 +401,12 @@ function buildVerificationSummary(args: {
       if (model.deprecation_date) {
         details.push(`deprecation_date=${model.deprecation_date}`);
       }
+      if (model.retired !== undefined) {
+        details.push(`retired=${String(model.retired)}`);
+      }
+      if (model.retirement_date) {
+        details.push(`retirement_date=${model.retirement_date}`);
+      }
       lines.push(`- \`${name}\`: ${details.join(", ")}`);
     }
   }
@@ -467,6 +473,12 @@ function buildVerificationRows(
     }
     if (model.deprecation_date) {
       lifecycleParts.push(`date=${model.deprecation_date}`);
+    }
+    if (model.retired !== undefined) {
+      lifecycleParts.push(`retired=${String(model.retired)}`);
+    }
+    if (model.retirement_date) {
+      lifecycleParts.push(`retirement_date=${model.retirement_date}`);
     }
     if (model.multimodal !== undefined) {
       lifecycleParts.push(`multimodal=${String(model.multimodal)}`);
@@ -838,7 +850,8 @@ function buildUnsupportedTicketComment(args: {
     "- `max_input_tokens`",
     "- `max_output_tokens`",
     "- `available_providers`",
-    "- `deprecated` / `deprecation_date`",
+    "- `deprecated` / `deprecation_date` (the provider's deprecation notice date)",
+    "- `retired` / `retirement_date` (the provider's shutdown date, only once every provider in `available_providers` stops serving the model)",
     "- `locations` when the provider/model requires explicit location metadata",
   );
 
@@ -855,6 +868,31 @@ function sortLocations(values: string[]): string[] {
     }
     return left.localeCompare(right);
   });
+}
+
+const LIFECYCLE_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+export function validateLifecycleDates(name: string, model: ModelSpec): void {
+  for (const field of ["deprecation_date", "retirement_date"] as const) {
+    const value = model[field];
+    if (
+      value &&
+      (!LIFECYCLE_DATE_PATTERN.test(value) || Number.isNaN(Date.parse(value)))
+    ) {
+      throw new Error(
+        `Refusing to update ${name} because ${field} "${value}" is not a YYYY-MM-DD date`,
+      );
+    }
+  }
+  if (
+    model.deprecation_date &&
+    model.retirement_date &&
+    model.deprecation_date > model.retirement_date
+  ) {
+    throw new Error(
+      `Refusing to update ${name} because deprecation_date ${model.deprecation_date} is after retirement_date ${model.retirement_date}`,
+    );
+  }
 }
 
 export function isDateWithinDays(
@@ -1427,6 +1465,12 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
   if (patch.deprecation_date !== undefined) {
     model.deprecation_date = patch.deprecation_date;
   }
+  if (patch.retired !== undefined) {
+    model.retired = patch.retired;
+  }
+  if (patch.retirement_date !== undefined) {
+    model.retirement_date = patch.retirement_date;
+  }
   if (patch.parent !== undefined) {
     model.parent = patch.parent;
   }
@@ -1504,7 +1548,16 @@ function shouldCloseAsDeprecated(
     return true;
   }
 
-  if (modelSpecPatch?.deprecated) {
+  if (modelSpecPatch?.deprecated || modelSpecPatch?.retired) {
+    return true;
+  }
+
+  if (
+    isDateWithinDays(
+      modelSpecPatch?.retirement_date,
+      UPCOMING_DEPRECATION_WINDOW_DAYS,
+    )
+  ) {
     return true;
   }
 
@@ -1591,6 +1644,7 @@ export function buildUpdatedLocalModel(
 
   const updatedModel = cloneLocalModel(existingModel);
   applyModelSpecPatch(updatedModel, modelSpecPatch);
+  validateLifecycleDates(targetModel, updatedModel);
   // Only enforce the explicit-locations requirement when the existing entry
   // already declared locations; don't demand it on entries that intentionally
   // omit it (e.g. Anthropic on Vertex, so the customer's region is used).

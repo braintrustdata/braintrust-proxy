@@ -10093,7 +10093,6 @@
     "displayName": "Gemini 3.7 Flash",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2027-01-28",
     "retirement_date": "2027-01-28",
     "locations": [
       "global"
@@ -10370,7 +10369,6 @@
     "displayName": "Gemini 3.6 Flash",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-11-19",
     "retirement_date": "2026-11-19",
     "locations": [
       "global"
@@ -11178,7 +11176,7 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-10-20",
+    "deprecation_date": "2026-04-02",
     "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
@@ -11201,7 +11199,6 @@
     "available_providers": [
       "vertex"
     ],
-    "deprecation_date": "2027-03-15",
     "retirement_date": "2027-03-15"
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
@@ -11237,7 +11234,7 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-10-20",
+    "deprecation_date": "2026-04-02",
     "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
@@ -11297,7 +11294,7 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-10-20",
+    "deprecation_date": "2026-04-02",
     "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
@@ -11329,7 +11326,7 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24",
     "parent": "gemini-1.5-flash",
     "fallback_models": [
@@ -11347,7 +11344,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24",
     "parent": "gemini-1.5-pro",
     "fallback_models": [
@@ -11363,7 +11360,7 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24",
     "parent": "publishers/google/models/gemini-1.5-flash",
     "available_providers": [
@@ -11374,7 +11371,7 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24",
     "parent": "publishers/google/models/gemini-1.5-pro",
     "available_providers": [
@@ -11389,7 +11386,7 @@
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
-    "deprecation_date": "2025-05-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-05-24",
     "parent": "gemini-1.5-flash",
     "fallback_models": [
@@ -11407,7 +11404,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
-    "deprecation_date": "2025-05-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-05-24",
     "parent": "gemini-1.5-pro",
     "fallback_models": [
@@ -11423,7 +11420,7 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "deprecation_date": "2025-05-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-05-24",
     "parent": "publishers/google/models/gemini-1.5-flash",
     "available_providers": [
@@ -11434,7 +11431,7 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "deprecation_date": "2025-05-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-05-24",
     "parent": "publishers/google/models/gemini-1.5-pro",
     "available_providers": [
@@ -11466,7 +11463,7 @@
     "available_providers": [
       "vertex"
     ],
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24"
   },
   "publishers/google/models/gemini-1.5-pro": {
@@ -11477,20 +11474,20 @@
     "available_providers": [
       "vertex"
     ],
-    "deprecation_date": "2025-09-24",
+    "deprecation_date": "2025-04-29",
     "retirement_date": "2025-09-24"
   },
   "publishers/google/models/gemini-1.0-pro-002": {
     "format": "google",
     "flavor": "chat",
-    "deprecation_date": "2025-04-21",
+    "deprecation_date": "2024-11-05",
     "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro"
   },
   "publishers/google/models/gemini-1.0-pro-001": {
     "format": "google",
     "flavor": "chat",
-    "deprecation_date": "2025-04-21",
+    "deprecation_date": "2024-11-05",
     "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro"
   },
@@ -11498,7 +11495,7 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "deprecation_date": "2025-04-21",
+    "deprecation_date": "2024-11-05",
     "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro-vision"
   },
@@ -11941,7 +11938,7 @@
     "available_providers": [
       "vertex"
     ],
-    "deprecation_date": "2026-01-23",
+    "deprecation_date": "2026-01-22",
     "retirement_date": "2026-01-23"
   },
   "publishers/mistralai/models/codestral-2501": {
@@ -11953,7 +11950,7 @@
     "available_providers": [
       "vertex"
     ],
-    "deprecation_date": "2026-01-23",
+    "deprecation_date": "2026-01-22",
     "retirement_date": "2026-01-23"
   },
   "publishers/google/models/gemini-embedding-2": {

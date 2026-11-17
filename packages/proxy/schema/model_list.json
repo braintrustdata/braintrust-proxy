@@ -30315,7 +30315,6 @@
     "available_providers": [
       "openrouter"
     ],
-    "deprecation_date": "2026-11-20",
     "retirement_date": "2026-11-20"
   },
   "meta-llama/llama-3.2-1b-instruct": {
@@ -30329,7 +30328,6 @@
     "available_providers": [
       "openrouter"
     ],
-    "deprecation_date": "2026-11-20",
     "retirement_date": "2026-11-20"
   },
   "meta-llama/llama-3.3-70b-instruct": {
@@ -31907,7 +31905,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "displayName": "Z.ai: GLM 4.5",
     "reasoning": true,
-    "deprecation_date": "2026-12-31",
     "retirement_date": "2026-12-31",
     "max_input_tokens": 131072,
     "max_output_tokens": 98304,
@@ -31924,7 +31921,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.11,
     "displayName": "Z.ai: GLM 4.5V",
     "reasoning": true,
-    "deprecation_date": "2026-12-31",
     "retirement_date": "2026-12-31",
     "max_input_tokens": 65536,
     "max_output_tokens": 16384,
@@ -32085,7 +32081,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "Z.ai: GLM 5.1",
     "reasoning": true,
-    "deprecation_date": "2026-11-20",
     "retirement_date": "2026-11-20",
     "max_input_tokens": 204800,
     "max_output_tokens": 128000,
@@ -32836,7 +32831,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.55,
     "displayName": "OpenAI: o3 Mini High",
     "reasoning": true,
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
     "retirement_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -32853,7 +32848,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.275,
     "displayName": "OpenAI: o4 Mini High",
     "reasoning": true,
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
     "retirement_date": "2026-10-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -32870,7 +32865,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "OpenAI: GPT-5 Image",
     "reasoning": true,
-    "deprecation_date": "2026-12-11",
+    "deprecation_date": "2026-06-11",
     "retirement_date": "2026-12-11",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
@@ -32887,7 +32882,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "OpenAI: GPT-5 Image Mini",
     "reasoning": true,
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
     "retirement_date": "2026-12-01",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,

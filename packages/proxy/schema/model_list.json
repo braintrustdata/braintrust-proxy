@@ -12127,6 +12127,8 @@
     "output_cost_per_mil_tokens": 0.551,
     "displayName": "Claude Instant 1.2",
     "deprecated": true,
+    "deprecation_date": "2024-09-04",
+    "retirement_date": "2024-11-06",
     "max_input_tokens": 100000,
     "max_output_tokens": 8191
   },
@@ -12147,6 +12149,8 @@
     "output_cost_per_mil_tokens": 24,
     "displayName": "Claude 2.1",
     "deprecated": true,
+    "deprecation_date": "2025-01-21",
+    "retirement_date": "2025-07-21",
     "max_input_tokens": 200000,
     "max_output_tokens": 8191
   },
@@ -12156,7 +12160,9 @@
     "input_cost_per_mil_tokens": 8,
     "output_cost_per_mil_tokens": 24,
     "displayName": "Claude 2.0",
-    "deprecated": true
+    "deprecated": true,
+    "deprecation_date": "2025-01-21",
+    "retirement_date": "2025-07-21"
   },
   "claude-2": {
     "format": "anthropic",
@@ -15684,7 +15690,8 @@
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-11-30",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2026-11-30",
     "fallback_models": [
       "publishers/anthropic/models/claude-sonnet-4-5"
     ],
@@ -15707,7 +15714,8 @@
     "displayName": "Claude Sonnet 4.5 (2025-09-29)",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-11-30",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2026-11-30",
     "parent": "claude-sonnet-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,

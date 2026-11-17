@@ -125,6 +125,7 @@
     "displayName": "GPT-6.2 Astra",
     "reasoning": true,
     "fallback_models": [
+      "databricks-gpt-6-2-astra",
       "global.openai.gpt-6.2-astra",
       "openai.gpt-6.2-astra",
       "us.openai.gpt-6.2-astra"
@@ -27806,6 +27807,24 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT-6 Astra",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gpt-6-2-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "input_cache_write_30m_cost_per_mil_tokens": 10,
+    "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "displayName": "GPT-6.2 Astra",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,

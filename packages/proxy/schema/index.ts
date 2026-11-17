@@ -1565,6 +1565,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "mistral.voxtral-small-24b-2507": ["bedrock"],
   "global.anthropic.claude-mythos-5": ["bedrock"],
   "databricks-gpt-6-astra": ["databricks"],
+  "databricks-gpt-6-2-astra": ["databricks"],
   "databricks-glm-5-3": ["databricks"],
   "databricks-deepseek-v4-1-flash": ["databricks"],
   "databricks-deepseek-v4-1-flash-1017": ["databricks"],

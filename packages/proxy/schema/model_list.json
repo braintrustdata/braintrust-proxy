@@ -12784,7 +12784,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.0375,
     "output_cost_per_mil_tokens": 0.15,
-    "deprecation_date": "2025-09-29",
+    "deprecation_date": "2025-08-01",
     "retirement_date": "2025-09-29",
     "parent": "gemini-1.5-flash-8b"
   },
@@ -12794,7 +12794,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.0375,
     "output_cost_per_mil_tokens": 0.15,
-    "deprecation_date": "2025-09-29",
+    "deprecation_date": "2025-08-01",
     "retirement_date": "2025-09-29",
     "parent": "gemini-1.5-flash-8b"
   },
@@ -25711,7 +25711,6 @@
     "available_providers": [
       "google"
     ],
-    "deprecation_date": "2026-07-28",
     "retirement_date": "2026-07-28"
   },
   "gemini-2.5-flash": {

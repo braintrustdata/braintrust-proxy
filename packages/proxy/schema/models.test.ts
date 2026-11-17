@@ -285,6 +285,56 @@ it("Does not deprecate models if deprecation date has not yet passed", () => {
   expect(result["testModel"].deprecated).toBe(undefined);
 });
 
+it("Marks models as retired once retirement date has been reached", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      retirement_date: "2026-01-10",
+    },
+  });
+  expect(result["testModel"].retired).toBe(true);
+  expect(result["testModel"].deprecated).toBe(true);
+});
+
+it("Marks retired models as deprecated", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      retired: true,
+    },
+  });
+  expect(result["testModel"].deprecated).toBe(true);
+});
+
+it("Does not retire models if retirement date has not yet passed", () => {
+  const now = new Date();
+  const oneYearFromNow = new Date(
+    now.setFullYear(now.getFullYear() + 1),
+  ).toDateString();
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      retirement_date: oneYearFromNow,
+    },
+  });
+  expect(result["testModel"].retired).toBe(undefined);
+  expect(result["testModel"].deprecated).toBe(undefined);
+});
+
+it("Ignores malformed retirement dates", () => {
+  const result = markModelsPastDeprecationDate({
+    testModel: {
+      format: "anthropic",
+      flavor: "chat",
+      retirement_date: "not a date",
+    },
+  });
+  expect(result["testModel"].retired).toBe(undefined);
+});
+
 it("normalizes Cursor CLI reasoning-effort slugs to the base model for cost", () => {
   const known = new Set(["claude-opus-4-8", "gpt-5.3-codex", "gemini-2.5-pro"]);
   const isKnown = (name: string) => known.has(name);

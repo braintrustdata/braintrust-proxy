@@ -290,8 +290,10 @@
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "fallback_models": [
+      "databricks-gpt-6-2-sol",
       "global.openai.gpt-6.2-sol",
       "openai.gpt-6.2-sol",
+      "openai/gpt-6.2-sol-pro",
       "us.openai.gpt-6.2-sol"
     ],
     "max_input_tokens": 922000,
@@ -27727,6 +27729,24 @@
       "databricks"
     ]
   },
+  "databricks-gpt-6-2-sol": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 5,
+    "displayName": "GPT-6.2 Sol",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "databricks-gpt-6-1-sol": {
     "format": "openai",
     "flavor": "chat",
@@ -32460,6 +32480,24 @@
     "reasoning": true,
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "openai/gpt-6.2-sol-pro": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 5,
+    "displayName": "OpenAI: GPT-6.2 Sol Pro",
+    "reasoning": true,
+    "max_input_tokens": 1050000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]

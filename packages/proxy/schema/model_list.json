@@ -12331,7 +12331,7 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "displayName": "Llama 3.2 90B Vision Instruct Turbo",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-07-15",
     "retirement_date": "2025-08-28"
   },
   "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo": {
@@ -12341,7 +12341,7 @@
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.18,
     "displayName": "Llama 3.2 11B Vision Instruct Turbo",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-07-15",
     "retirement_date": "2025-08-28"
   },
   "meta-llama/Llama-Vision-Free": {
@@ -12349,7 +12349,7 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Llama Vision Free",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-08-27",
     "retirement_date": "2025-08-28"
   },
   "meta-llama/Llama-3-70b-chat-hf": {
@@ -12365,7 +12365,6 @@
     "input_cost_per_mil_tokens": 0.88,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Llama 3 70B Instruct Turbo",
-    "deprecation_date": "2025-12-23",
     "retirement_date": "2025-12-23"
   },
   "meta-llama/Meta-Llama-3-70B-Instruct-Lite": {
@@ -12374,7 +12373,6 @@
     "input_cost_per_mil_tokens": 0.54,
     "output_cost_per_mil_tokens": 0.54,
     "displayName": "Llama 3 70B Instruct Lite",
-    "deprecation_date": "2025-03-11",
     "retirement_date": "2025-03-11"
   },
   "meta-llama/Llama-3-8b-chat-hf": {
@@ -12383,7 +12381,7 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
     "displayName": "Llama 3 8B Instruct Reference",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-07-15",
     "retirement_date": "2025-08-28"
   },
   "meta-llama/Meta-Llama-3-8B-Instruct-Lite": {
@@ -12392,7 +12390,7 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Llama 3 8B Instruct Lite",
-    "deprecation_date": "2026-07-10",
+    "deprecation_date": "2026-06-26",
     "retirement_date": "2026-07-10"
   },
   "google/gemma-2-9b-it": {
@@ -12424,7 +12422,6 @@
     "output_cost_per_mil_tokens": 1.08,
     "displayName": "Mixtral 8x22B",
     "deprecated": true,
-    "deprecation_date": "2024-08-22",
     "retirement_date": "2024-08-22"
   },
   "mixtral-8x7b": {
@@ -12448,7 +12445,6 @@
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Deepseek Coder 33b Instruct",
     "deprecated": true,
-    "deprecation_date": "2024-08-22",
     "retirement_date": "2024-08-22"
   },
   "reflection/Beam-1.0-501B-A23B": {
@@ -12485,7 +12481,6 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "DeepSeek R1 Distill Llama 70B",
     "reasoning": true,
-    "deprecation_date": "2025-12-23",
     "retirement_date": "2025-12-23",
     "available_providers": [
       "together"
@@ -12495,7 +12490,6 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DeepSeek R1 Distill Llama 70B Free",
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13"
   },
   "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B": {
@@ -12505,7 +12499,6 @@
     "output_cost_per_mil_tokens": 1.6,
     "displayName": "DeepSeek R1 Distill Qwen 14B",
     "reasoning": true,
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13",
     "available_providers": [
       "together"
@@ -12518,7 +12511,7 @@
     "output_cost_per_mil_tokens": 0.18,
     "displayName": "DeepSeek R1 Distill Qwen 1.5B",
     "reasoning": true,
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-07-15",
     "retirement_date": "2025-08-28",
     "available_providers": [
       "together"
@@ -12530,7 +12523,6 @@
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Qwen 2.5 Coder 32B Instruct",
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13"
   },
   "Qwen/Qwen2-72B-Instruct": {
@@ -12539,7 +12531,7 @@
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Qwen 2 Instruct (72B)",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-08-27",
     "retirement_date": "2025-08-28"
   },
   "Qwen/Qwen2-VL-72B-Instruct": {
@@ -12548,7 +12540,7 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "displayName": "Qwen-2VL (72B) Instruct",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-08-27",
     "retirement_date": "2025-08-28"
   },
   "Qwen/QwQ-32B": {
@@ -12557,7 +12549,6 @@
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Qwen QwQ 32B",
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13"
   },
   "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF": {
@@ -12566,7 +12557,7 @@
     "input_cost_per_mil_tokens": 0.88,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Llama 3.1 Nemotron 70B Instruct HF",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-08-27",
     "retirement_date": "2025-08-28"
   },
   "microsoft/WizardLM-2-8x22B": {
@@ -12583,7 +12574,6 @@
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Nous Hermes 2 Yi 34B",
     "deprecated": true,
-    "deprecation_date": "2024-10-07",
     "retirement_date": "2024-10-07"
   },
   "nous-hermes-llama2-13b": {
@@ -12599,7 +12589,7 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Nous Hermes 2 - Mixtral 8x7B-DPO",
-    "deprecation_date": "2025-08-28",
+    "deprecation_date": "2025-07-15",
     "retirement_date": "2025-08-28"
   },
   "Gryphe/MythoMax-L2-13b": {
@@ -12623,7 +12613,6 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Llama 3 70b",
     "deprecated": true,
-    "deprecation_date": "2024-08-22",
     "retirement_date": "2024-08-22"
   },
   "meta-llama/Llama-3-8b-hf": {
@@ -12633,7 +12622,6 @@
     "output_cost_per_mil_tokens": 0.2,
     "displayName": "Llama 3 8b HF",
     "deprecated": true,
-    "deprecation_date": "2024-08-22",
     "retirement_date": "2024-08-22"
   },
   "meta-llama/Llama-2-70b-chat-hf": {
@@ -12643,7 +12631,6 @@
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Llama 2 70b Chat HF",
     "deprecated": true,
-    "deprecation_date": "2024-08-22",
     "retirement_date": "2024-08-22"
   },
   "Qwen/QwQ-32B-Preview": {
@@ -12653,7 +12640,6 @@
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Qwen QwQ 32B Preview",
     "deprecated": true,
-    "deprecation_date": "2025-03-25",
     "retirement_date": "2025-03-25"
   },
   "mistral-small-2501": {
@@ -22223,7 +22209,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.145,
     "displayName": "DeepSeek V4 Pro",
     "reasoning": true,
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27",
     "max_input_tokens": 1048576,
     "max_output_tokens": 262144,
@@ -22250,7 +22235,6 @@
     "output_cost_per_mil_tokens": 7,
     "displayName": "DeepSeek R1",
     "reasoning": true,
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14",
     "max_input_tokens": 128000,
     "max_output_tokens": 20480,
@@ -22278,7 +22262,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "Qwen3.8 2.4T A95B",
     "reasoning": true,
-    "deprecation_date": "2026-11-04",
     "retirement_date": "2026-11-04",
     "max_input_tokens": 262144,
     "max_output_tokens": 131072,
@@ -22358,7 +22341,7 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-07-10",
+    "deprecation_date": "2026-06-26",
     "retirement_date": "2026-07-10"
   },
   "Qwen/Qwen3-Coder-Next-FP8": {
@@ -22371,7 +22354,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14"
   },
   "Qwen/Qwen2.5-72B-Instruct-Turbo": {
@@ -22383,7 +22365,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-02-06",
     "retirement_date": "2026-02-06"
   },
   "Qwen/Qwen2.5-7B-Instruct-Turbo": {
@@ -22403,7 +22384,6 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
     "displayName": "Kimi K2.7 Code",
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27",
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
@@ -22431,7 +22411,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-03-31",
     "retirement_date": "2026-03-31"
   },
   "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
@@ -22443,7 +22422,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-02-06",
     "retirement_date": "2026-02-06"
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
@@ -22455,7 +22433,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-10-22",
     "retirement_date": "2026-10-22"
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free": {
@@ -22465,7 +22442,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13"
   },
   "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
@@ -22477,7 +22453,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-03-06",
     "retirement_date": "2026-03-06"
   },
   "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
@@ -22489,7 +22464,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-02-06",
     "retirement_date": "2026-02-06"
   },
   "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
@@ -22501,7 +22475,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-02-25",
     "retirement_date": "2026-02-25"
   },
   "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
@@ -22513,7 +22486,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-03-06",
     "retirement_date": "2026-03-06"
   },
   "MiniMaxAI/MiniMax-M3": {
@@ -22527,7 +22499,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-11-06",
     "retirement_date": "2026-11-06"
   },
   "MiniMaxAI/MiniMax-M2.7": {
@@ -22541,7 +22512,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-07-28",
     "retirement_date": "2026-07-28"
   },
   "mistralai/Mistral-7B-Instruct-v0.1": {
@@ -22553,7 +22523,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2025-11-13",
     "retirement_date": "2025-11-13"
   },
   "google/gemma-4-31B-it": {
@@ -22579,7 +22548,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27"
   },
   "google/gemma-3n-E4B-it": {
@@ -22592,7 +22560,7 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-08-25",
+    "deprecation_date": "2026-06-26",
     "retirement_date": "2026-08-25"
   },
   "LiquidAI/LFM2-24B-A2B": {
@@ -22605,7 +22573,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-07-09",
     "retirement_date": "2026-07-09"
   },
   "deepcogito/cogito-v2-1-671b": {
@@ -22618,7 +22585,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-08-21",
     "retirement_date": "2026-08-21"
   },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
@@ -22630,7 +22596,6 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-04-02",
     "retirement_date": "2026-04-02"
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1": {
@@ -22642,7 +22607,7 @@
     "available_providers": [
       "together"
     ],
-    "deprecation_date": "2026-04-16",
+    "deprecation_date": "2026-04-14",
     "retirement_date": "2026-04-16"
   },
   "nvidia/nemotron-3-ultra-550b-a55b": {
@@ -23098,7 +23063,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "displayName": "GLM 5.1",
     "reasoning": true,
-    "deprecation_date": "2026-07-10",
+    "deprecation_date": "2026-06-26",
     "retirement_date": "2026-07-10",
     "max_input_tokens": 202752,
     "max_output_tokens": 128000,
@@ -23113,7 +23078,6 @@
     "output_cost_per_mil_tokens": 3.15,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GLM 5",
-    "deprecation_date": "2026-06-22",
     "retirement_date": "2026-06-22",
     "available_providers": [
       "together"
@@ -23180,7 +23144,6 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.6",
-    "deprecation_date": "2026-08-19",
     "retirement_date": "2026-08-19",
     "max_input_tokens": 262000,
     "max_output_tokens": 262000,
@@ -23195,7 +23158,6 @@
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.12,
     "displayName": "Kimi K2.5",
-    "deprecation_date": "2026-05-21",
     "retirement_date": "2026-05-21",
     "available_providers": [
       "together"

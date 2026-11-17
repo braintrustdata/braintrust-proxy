@@ -27493,6 +27493,8 @@
     "multimodal": true,
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
+    "deprecation_date": "2026-11-19",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
@@ -27609,6 +27611,8 @@
     "flavor": "chat",
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
+    "deprecation_date": "2026-10-30",
+    "retirement_date": "2026-10-30",
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
     "available_providers": [
@@ -27620,6 +27624,8 @@
     "flavor": "chat",
     "displayName": "DeepSeek V4 Flash 0731",
     "reasoning": true,
+    "deprecation_date": "2026-11-05",
+    "retirement_date": "2026-11-05",
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
@@ -27835,6 +27841,8 @@
     "displayName": "Claude Sonnet 4",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-09",
+    "retirement_date": "2026-10-09",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -27850,7 +27858,8 @@
     "displayName": "Claude Sonnet 3.7",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-02-19",
+    "deprecation_date": "2026-04-12",
+    "retirement_date": "2026-04-12",
     "max_input_tokens": 200000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -28071,7 +28080,9 @@
     "max_output_tokens": 65535,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "deprecation_date": "2026-10-02",
+    "retirement_date": "2026-10-02"
   },
   "databricks-gemini-2-5-pro": {
     "format": "openai",
@@ -28084,7 +28095,9 @@
     "max_output_tokens": 65536,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "deprecation_date": "2026-10-02",
+    "retirement_date": "2026-10-02"
   },
   "databricks-meta-llama-3-3-70b-instruct": {
     "format": "openai",
@@ -28108,7 +28121,9 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ]
+    ],
+    "deprecation_date": "2026-02-15",
+    "retirement_date": "2026-02-15"
   },
   "databricks-meta-llama-3-1-8b-instruct": {
     "format": "openai",
@@ -28726,6 +28741,8 @@
     "flavor": "chat",
     "displayName": "GLM 5.2",
     "reasoning": true,
+    "deprecation_date": "2027-02-04",
+    "retirement_date": "2027-02-04",
     "max_input_tokens": 1048576,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -28738,6 +28755,8 @@
     "multimodal": true,
     "displayName": "Inkling",
     "reasoning": true,
+    "deprecation_date": "2026-10-30",
+    "retirement_date": "2026-10-30",
     "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"

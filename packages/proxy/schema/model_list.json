@@ -1912,6 +1912,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "reasoning": true,
     "deprecation_date": "2026-11-05",
+    "retirement_date": "2027-02-01",
     "available_providers": [
       "openai",
       "azure"
@@ -2354,6 +2355,7 @@
     "displayName": "GPT-5.4 nano",
     "reasoning": true,
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-09-21",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2511,6 +2513,7 @@
     "displayName": "GPT-5.4 nano (2026-03-17)",
     "reasoning": true,
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-09-21",
     "parent": "gpt-5.4-nano",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -2608,6 +2611,7 @@
     "displayName": "GPT-5.3 chat",
     "reasoning": true,
     "deprecation_date": "2026-05-08",
+    "retirement_date": "2026-08-10",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -2657,6 +2661,7 @@
     "displayName": "GPT-5.3 Codex",
     "reasoning": true,
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-08-24",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2764,6 +2769,7 @@
     "displayName": "GPT-5.2 chat",
     "reasoning": true,
     "deprecation_date": "2026-05-08",
+    "retirement_date": "2026-08-10",
     "parent": "gpt-5.2",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -2782,6 +2788,7 @@
     "displayName": "GPT-5.2 Codex",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-07-13",
     "parent": "gpt-5.2",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -2960,6 +2967,7 @@
     "displayName": "GPT-5.1",
     "reasoning": true,
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-07-13",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2978,6 +2986,7 @@
     "displayName": "GPT-5.1 chat",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "parent": "gpt-5.1",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -2996,6 +3005,7 @@
     "displayName": "GPT-5.1 Codex",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-05-15",
     "parent": "gpt-5.1",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
@@ -3015,6 +3025,7 @@
     "displayName": "GPT-5.1 Codex Max",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-05-18",
     "parent": "gpt-5.1-codex",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
@@ -3034,6 +3045,7 @@
     "displayName": "GPT-5.1 Codex Mini",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-05-15",
     "parent": "gpt-5.1-codex",
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
@@ -3067,6 +3079,7 @@
     "displayName": "GPT-5.1 (2025-11-13)",
     "reasoning": true,
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-07-13",
     "parent": "gpt-5.1",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -3134,6 +3147,7 @@
     "displayName": "GPT-5",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-02-09",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -3152,6 +3166,7 @@
     "displayName": "GPT-5 chat",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -3169,6 +3184,7 @@
     "displayName": "GPT-5 Codex",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-03-17",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -3245,6 +3261,7 @@
     "displayName": "GPT-5 mini",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-07-13",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -3309,6 +3326,7 @@
     "displayName": "GPT-5 nano",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-02-09",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -3350,6 +3368,7 @@
     "displayName": "GPT-5 Pro",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-04-07",
     "max_input_tokens": 400000,
     "max_output_tokens": 272000,
     "available_providers": [
@@ -3398,6 +3417,7 @@
     "displayName": "GPT-5 Pro (2025-10-06)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-04-07",
     "parent": "gpt-5-pro",
     "max_input_tokens": 400000,
     "max_output_tokens": 272000,
@@ -3430,6 +3450,7 @@
     "displayName": "GPT-5 (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-02-09",
     "parent": "gpt-5",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -3462,6 +3483,7 @@
     "displayName": "GPT-5 mini (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-07-13",
     "parent": "gpt-5-mini",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -3494,6 +3516,7 @@
     "displayName": "GPT-5 nano (2025-08-07)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2027-02-09",
     "parent": "gpt-5-nano",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
@@ -3635,6 +3658,7 @@
     },
     "displayName": "GPT-4.1 nano",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-04-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -3652,6 +3676,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "GPT-4.1 (2025-04-14)",
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4.1",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -3669,6 +3694,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "GPT-4.1 mini (2025-04-14)",
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4.1-mini",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -3686,6 +3712,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-4.1 nano (2025-04-14)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4.1-nano",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
@@ -3701,6 +3728,7 @@
     "output_cost_per_mil_tokens": 60,
     "displayName": "GPT-4",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -3730,6 +3758,7 @@
     },
     "displayName": "GPT-4 Turbo",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -3800,6 +3829,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o Audio Preview",
     "deprecation_date": "2025-09-15",
+    "retirement_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -3869,6 +3899,7 @@
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "GPT-4o mini Audio Preview",
     "deprecation_date": "2025-09-15",
+    "retirement_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -3899,6 +3930,7 @@
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe",
     "deprecation_date": "2026-08-26",
+    "retirement_date": "2027-06-15",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -3913,6 +3945,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS",
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-06-15",
     "available_providers": [
       "openai",
       "azure"
@@ -3941,6 +3974,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o Transcribe",
     "deprecation_date": "2026-08-26",
+    "retirement_date": "2027-02-26",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -3955,6 +3989,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o Transcribe Diarize",
     "deprecation_date": "2026-08-26",
+    "retirement_date": "2027-04-15",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
     "available_providers": [
@@ -3969,6 +4004,7 @@
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe (2025-12-15)",
     "deprecation_date": "2026-08-26",
+    "retirement_date": "2027-06-15",
     "parent": "gpt-4o-mini-transcribe",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
@@ -3984,6 +4020,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS (2025-12-15)",
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-06-15",
     "parent": "gpt-4o-mini-tts",
     "available_providers": [
       "openai",
@@ -4012,6 +4049,7 @@
     "output_cost_per_mil_tokens": 5,
     "displayName": "GPT-4o mini Transcribe (2025-03-20)",
     "deprecation_date": "2026-07-20",
+    "retirement_date": "2027-01-20",
     "parent": "gpt-4o-mini-transcribe",
     "max_input_tokens": 16000,
     "max_output_tokens": 2000,
@@ -4027,6 +4065,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS (2025-03-20)",
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-01-06",
     "parent": "gpt-4o-mini-tts",
     "available_providers": [
       "openai",
@@ -4043,6 +4082,7 @@
     "displayName": "GPT-4o mini Search Preview (2025-03-11)",
     "experimental": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "parent": "gpt-4o-mini-search-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4061,6 +4101,7 @@
     "displayName": "GPT-4o Search Preview (2025-03-11)",
     "experimental": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "parent": "gpt-4o-search-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4108,6 +4149,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-4o (2024-11-20)",
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4o",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4126,6 +4168,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-4o (2024-08-06)",
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4o",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4144,6 +4187,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-4o mini (2024-07-18)",
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4o-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4161,6 +4205,7 @@
     "output_cost_per_mil_tokens": 15,
     "displayName": "GPT-4o (2024-05-13)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-01-14",
     "parent": "gpt-4o",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -4178,6 +4223,7 @@
     "output_cost_per_mil_tokens": 30,
     "displayName": "GPT-4 Turbo (2024-04-09)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "parent": "gpt-4-turbo",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -4193,6 +4239,7 @@
     "output_cost_per_mil_tokens": 60,
     "displayName": "GPT-4 (0613)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "parent": "gpt-4",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
@@ -4225,6 +4272,7 @@
     "displayName": "GPT 3.5T",
     "deprecated": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -4241,6 +4289,7 @@
     "displayName": "GPT 3.5T Instruct",
     "deprecated": true,
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -4257,6 +4306,7 @@
     "displayName": "GPT 3.5T 1106",
     "deprecated": true,
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -4286,6 +4336,7 @@
     "displayName": "GPT 3.5T 0125",
     "deprecated": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "parent": "gpt-3.5-turbo",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
@@ -4387,6 +4438,7 @@
     "displayName": "o4-mini",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4404,6 +4456,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "o4-mini Deep Research",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4420,6 +4473,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "o4-mini Deep Research (2025-06-26)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "parent": "o4-mini-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4452,6 +4506,7 @@
     "displayName": "o4-mini (2025-04-16)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "parent": "o4-mini",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4518,6 +4573,7 @@
     "displayName": "o3",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2026-12-11",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4535,6 +4591,7 @@
     "input_cache_read_cost_per_mil_tokens": 2.5,
     "displayName": "o3 Deep Research",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4566,6 +4623,7 @@
     "displayName": "o3 mini",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4596,6 +4654,7 @@
     "displayName": "o3 Pro",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2026-12-11",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4613,6 +4672,7 @@
     "input_cache_read_cost_per_mil_tokens": 2.5,
     "displayName": "o3 Deep Research (2025-06-26)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "parent": "o3-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4630,6 +4690,7 @@
     "displayName": "o3 Pro (2025-06-10)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2026-12-11",
     "parent": "o3-pro",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4662,6 +4723,7 @@
     "displayName": "o3 (2025-04-16)",
     "reasoning": true,
     "deprecation_date": "2026-06-11",
+    "retirement_date": "2026-12-11",
     "parent": "o3",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4680,6 +4742,7 @@
     "displayName": "o3 mini (2025-01-31)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "parent": "o3-mini",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4698,6 +4761,7 @@
     "displayName": "o1",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4715,6 +4779,7 @@
     "displayName": "o1 Pro",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -4732,6 +4797,7 @@
     "displayName": "o1 Pro (2025-03-19)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "parent": "o1-pro",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4750,6 +4816,7 @@
     "displayName": "o1 (2024-12-17)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-11-19",
     "parent": "o1",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
@@ -4765,6 +4832,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT Audio (2025-08-28)",
     "deprecation_date": "2026-07-20",
+    "retirement_date": "2027-03-02",
     "parent": "gpt-audio",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4792,6 +4860,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT Audio",
     "deprecation_date": "2026-07-20",
+    "retirement_date": "2027-03-02",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -4807,6 +4876,7 @@
     "output_cost_per_mil_tokens": 2.4,
     "displayName": "GPT Audio mini",
     "deprecation_date": "2026-07-20",
+    "retirement_date": "2027-06-15",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -4822,6 +4892,7 @@
     "output_cost_per_mil_tokens": 2.4,
     "displayName": "GPT Audio mini (2025-12-15)",
     "deprecation_date": "2026-07-20",
+    "retirement_date": "2027-06-15",
     "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4837,6 +4908,7 @@
     "output_cost_per_mil_tokens": 2.4,
     "displayName": "GPT Audio mini (2025-10-06)",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-04-06",
     "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4943,7 +5015,8 @@
       "openai",
       "azure"
     ],
-    "deprecation_date": "2026-11-10"
+    "deprecation_date": "2026-11-10",
+    "retirement_date": "2027-10-21"
   },
   "gpt-image-2-2026-04-21": {
     "format": "openai",
@@ -4954,6 +5027,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 2 (2026-04-21)",
     "deprecation_date": "2026-11-10",
+    "retirement_date": "2027-10-21",
     "parent": "gpt-image-2",
     "available_providers": [
       "openai",
@@ -5002,6 +5076,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1.5",
     "deprecation_date": "2026-06-02",
+    "retirement_date": "2026-12-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5184,6 +5259,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1.5 (2025-12-16)",
     "deprecation_date": "2026-06-02",
+    "retirement_date": "2026-12-16",
     "parent": "gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5341,6 +5417,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1",
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "available_providers": [
       "openai",
       "azure"
@@ -5353,6 +5430,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GPT Image 1 mini",
     "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -5516,6 +5594,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "ChatGPT Image",
     "deprecation_date": "2026-06-02",
+    "retirement_date": "2026-12-01",
     "available_providers": [
       "openai",
       "azure"
@@ -5526,6 +5605,7 @@
     "flavor": "chat",
     "displayName": "DALL-E 3",
     "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -5626,6 +5706,7 @@
     "flavor": "chat",
     "displayName": "DALL-E 2",
     "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -5666,6 +5747,7 @@
     "flavor": "chat",
     "displayName": "Sora 2",
     "deprecation_date": "2026-03-24",
+    "retirement_date": "2026-10-15",
     "available_providers": [
       "openai",
       "azure"
@@ -5676,6 +5758,7 @@
     "flavor": "chat",
     "displayName": "Sora 2 Pro",
     "deprecation_date": "2026-03-24",
+    "retirement_date": "2026-09-24",
     "available_providers": [
       "openai",
       "azure"
@@ -5696,6 +5779,7 @@
     "flavor": "chat",
     "displayName": "TTS-1",
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-01-06",
     "available_providers": [
       "openai",
       "azure"
@@ -5706,6 +5790,7 @@
     "flavor": "chat",
     "displayName": "TTS-1 HD",
     "deprecation_date": "2026-10-01",
+    "retirement_date": "2027-01-06",
     "available_providers": [
       "openai",
       "azure"
@@ -5732,6 +5817,7 @@
     "flavor": "chat",
     "displayName": "Whisper 1",
     "deprecation_date": "2026-08-26",
+    "retirement_date": "2027-02-26",
     "available_providers": [
       "openai",
       "azure"
@@ -5760,6 +5846,7 @@
     "flavor": "chat",
     "displayName": "Text Moderation 007",
     "deprecation_date": "2025-04-28",
+    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -5771,6 +5858,7 @@
     "flavor": "chat",
     "displayName": "Text Moderation",
     "deprecation_date": "2025-04-28",
+    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -5782,6 +5870,7 @@
     "flavor": "chat",
     "displayName": "Text Moderation Stable",
     "deprecation_date": "2025-04-28",
+    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
       "openai",
@@ -5795,6 +5884,7 @@
     "output_cost_per_mil_tokens": 0.4,
     "displayName": "Babbage 002",
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5809,6 +5899,7 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "Davinci 002",
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5823,6 +5914,7 @@
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.75,
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-10-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -5837,6 +5929,7 @@
     "output_cost_per_mil_tokens": 3.2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-10-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -5851,6 +5944,7 @@
     "output_cost_per_mil_tokens": 0.8,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-10-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -5866,6 +5960,7 @@
     "input_cache_read_cost_per_mil_tokens": 1,
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2027-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
@@ -5880,6 +5975,7 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_write_cost_per_mil_tokens": 1.875,
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-01-14",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -5895,6 +5991,7 @@
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 1.875,
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-10-01",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -5909,6 +6006,7 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-10-01",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -5922,6 +6020,7 @@
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5935,6 +6034,7 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 6,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5949,6 +6049,7 @@
     "output_cost_per_mil_tokens": 6,
     "displayName": "GPT-3.5 Turbo 1106 (Fine-tune)",
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5976,6 +6077,7 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 6,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-23",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -5989,6 +6091,7 @@
     "input_cost_per_mil_tokens": 1.6,
     "output_cost_per_mil_tokens": 1.6,
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -6002,6 +6105,7 @@
     "input_cost_per_mil_tokens": 12,
     "output_cost_per_mil_tokens": 12,
     "deprecation_date": "2025-09-26",
+    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -6042,6 +6146,7 @@
     "displayName": "Computer Use Preview (2025-03-11)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-07-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 1024,
     "available_providers": [

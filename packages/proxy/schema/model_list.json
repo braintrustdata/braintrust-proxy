@@ -12668,6 +12668,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.0375,
     "output_cost_per_mil_tokens": 0.15,
+    "deprecation_date": "2025-09-29",
+    "retirement_date": "2025-09-29",
     "parent": "gemini-1.5-flash-8b"
   },
   "gemini-1.5-flash-8b-001": {
@@ -12676,6 +12678,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.0375,
     "output_cost_per_mil_tokens": 0.15,
+    "deprecation_date": "2025-09-29",
+    "retirement_date": "2025-09-29",
     "parent": "gemini-1.5-flash-8b"
   },
   "grok-4-fast-non-reasoning-latest": {
@@ -23742,6 +23746,7 @@
     "displayName": "Gemini 3.7 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-08",
     "fallback_models": [
       "publishers/google/models/gemini-3.7-flash"
     ],
@@ -24548,6 +24553,7 @@
     "displayName": "Gemini 3.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-08",
     "fallback_models": [
       "publishers/google/models/gemini-3.5-flash"
     ],
@@ -24723,7 +24729,8 @@
       "google",
       "vertex",
       "openrouter"
-    ]
+    ],
+    "deprecation_date": "2026-10-06"
   },
   "gemini-nano-banana-2.1": {
     "format": "google",
@@ -24774,7 +24781,8 @@
       "google",
       "vertex",
       "openrouter"
-    ]
+    ],
+    "deprecation_date": "2026-05-28"
   },
   "gemini-3.1-flash-lite": {
     "format": "google",
@@ -24982,6 +24990,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
+    "deprecation_date": "2026-05-07",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-lite-preview"
     ],
@@ -25498,7 +25507,8 @@
       "google",
       "vertex",
       "openrouter"
-    ]
+    ],
+    "deprecation_date": "2026-05-28"
   },
   "gemini-2.5-computer-use-preview-10-2025": {
     "format": "google",
@@ -25514,7 +25524,9 @@
     "max_output_tokens": 64000,
     "available_providers": [
       "google"
-    ]
+    ],
+    "deprecation_date": "2026-07-28",
+    "retirement_date": "2026-07-28"
   },
   "gemini-2.5-flash": {
     "format": "google",
@@ -25605,6 +25617,7 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-11-02",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-flash"
     ],
@@ -25683,7 +25696,8 @@
       "google",
       "vertex",
       "openrouter"
-    ]
+    ],
+    "deprecation_date": "2027-03-15"
   },
   "gemini-2.5-flash-lite": {
     "format": "google",
@@ -25959,6 +25973,7 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-11-02",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-pro"
     ],

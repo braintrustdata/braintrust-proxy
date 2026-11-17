@@ -63,11 +63,7 @@ describe("sync_models", () => {
       flavor: "chat",
       available_providers: ["openai", "azure"],
     } satisfies ModelSpec;
-    const names = [
-      "gpt-5.5-cyber-preview",
-      "gpt-image-2.5-sunburst",
-      "gpt-6.1-sol",
-    ];
+    const names = Object.keys(modelList).slice(0, 3).reverse();
     const catalog = Object.fromEntries(names.map((name) => [name, model]));
 
     expect(Object.keys(stablyOrderByExisting(catalog))).toEqual(

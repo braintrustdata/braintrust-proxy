@@ -10102,6 +10102,8 @@
     "displayName": "Gemini 3.7 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2027-01-28",
+    "retirement_date": "2027-01-28",
     "locations": [
       "global"
     ],
@@ -10377,6 +10379,8 @@
     "displayName": "Gemini 3.6 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-11-19",
+    "retirement_date": "2026-11-19",
     "locations": [
       "global"
     ],
@@ -10968,6 +10972,8 @@
     "reasoning_budget": true,
     "experimental": false,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "gemini-2.5-pro",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
@@ -11004,6 +11010,8 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "publishers/google/models/gemini-2.5-flash",
     "available_providers": [
       "vertex"
@@ -11036,6 +11044,8 @@
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "publishers/google/models/gemini-2.5-pro",
     "available_providers": [
       "vertex"
@@ -11052,6 +11062,8 @@
     "reasoning_budget": true,
     "experimental": false,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "gemini-2.5-flash",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-preview-04-17"
@@ -11071,6 +11083,8 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "publishers/google/models/gemini-2.5-flash",
     "available_providers": [
       "vertex"
@@ -11133,6 +11147,8 @@
     "flavor": "chat",
     "multimodal": true,
     "deprecated": true,
+    "deprecation_date": "2025-06-17",
+    "retirement_date": "2025-07-15",
     "parent": "publishers/google/models/gemini-2.5-pro",
     "available_providers": [
       "vertex"
@@ -11171,6 +11187,8 @@
     "displayName": "Gemini 2.5 Flash",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-20",
+    "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -11191,7 +11209,9 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "deprecation_date": "2027-03-15",
+    "retirement_date": "2027-03-15"
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -11226,6 +11246,8 @@
     "displayName": "Gemini 2.5 Flash-Lite",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-20",
+    "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -11284,6 +11306,8 @@
     "displayName": "Gemini 2.5 Pro",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-20",
+    "retirement_date": "2026-10-20",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
@@ -11315,6 +11339,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
     "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24",
     "parent": "gemini-1.5-flash",
     "fallback_models": [
       "publishers/google/models/gemini-1.5-flash-002"
@@ -11332,6 +11357,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24",
     "parent": "gemini-1.5-pro",
     "fallback_models": [
       "publishers/google/models/gemini-1.5-pro-002"
@@ -11346,6 +11372,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24",
     "parent": "publishers/google/models/gemini-1.5-flash",
     "available_providers": [
       "vertex"
@@ -11355,6 +11383,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24",
     "parent": "publishers/google/models/gemini-1.5-pro",
     "available_providers": [
       "vertex"
@@ -11369,6 +11399,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.01875,
     "input_cache_write_cost_per_mil_tokens": 1,
     "deprecation_date": "2025-05-24",
+    "retirement_date": "2025-05-24",
     "parent": "gemini-1.5-flash",
     "fallback_models": [
       "publishers/google/models/gemini-1.5-flash-001"
@@ -11386,6 +11417,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "deprecation_date": "2025-05-24",
+    "retirement_date": "2025-05-24",
     "parent": "gemini-1.5-pro",
     "fallback_models": [
       "publishers/google/models/gemini-1.5-pro-001"
@@ -11400,6 +11432,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "deprecation_date": "2025-05-24",
+    "retirement_date": "2025-05-24",
     "parent": "publishers/google/models/gemini-1.5-flash",
     "available_providers": [
       "vertex"
@@ -11409,6 +11443,8 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "deprecation_date": "2025-05-24",
+    "retirement_date": "2025-05-24",
     "parent": "publishers/google/models/gemini-1.5-pro",
     "available_providers": [
       "vertex"
@@ -11438,7 +11474,9 @@
     "displayName": "Gemini 1.5 Flash",
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24"
   },
   "publishers/google/models/gemini-1.5-pro": {
     "format": "google",
@@ -11447,22 +11485,30 @@
     "displayName": "Gemini 1.5 Pro",
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "deprecation_date": "2025-09-24",
+    "retirement_date": "2025-09-24"
   },
   "publishers/google/models/gemini-1.0-pro-002": {
     "format": "google",
     "flavor": "chat",
+    "deprecation_date": "2025-04-21",
+    "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro"
   },
   "publishers/google/models/gemini-1.0-pro-001": {
     "format": "google",
     "flavor": "chat",
+    "deprecation_date": "2025-04-21",
+    "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro"
   },
   "publishers/google/models/gemini-1.0-pro-vision-001": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
+    "deprecation_date": "2025-04-21",
+    "retirement_date": "2025-04-21",
     "parent": "publishers/google/models/gemini-1.0-pro-vision"
   },
   "gemini-1.0-pro": {
@@ -11808,6 +11854,8 @@
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-09-29",
+    "retirement_date": "2026-11-30",
     "available_providers": [
       "vertex"
     ]
@@ -11825,6 +11873,8 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
+    "deprecation_date": "2026-09-29",
+    "retirement_date": "2026-11-30",
     "parent": "publishers/anthropic/models/claude-sonnet-4-5"
   },
   "publishers/anthropic/models/claude-sonnet-4": {
@@ -11899,7 +11949,9 @@
     "displayName": "Mistral Large (24.11)",
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "deprecation_date": "2026-01-23",
+    "retirement_date": "2026-01-23"
   },
   "publishers/mistralai/models/codestral-2501": {
     "format": "openai",
@@ -11909,7 +11961,9 @@
     "displayName": "Codestral (25.01)",
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "deprecation_date": "2026-01-23",
+    "retirement_date": "2026-01-23"
   },
   "publishers/google/models/gemini-embedding-2": {
     "format": "google",
@@ -11945,7 +11999,8 @@
     "displayName": "Claude Sonnet 3.7",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-02-19"
+    "deprecation_date": "2025-11-11",
+    "retirement_date": "2026-05-11"
   },
   "publishers/anthropic/models/claude-3-7-sonnet@20250219": {
     "format": "anthropic",
@@ -11960,7 +12015,8 @@
     "reasoning": true,
     "reasoning_budget": true,
     "experimental": true,
-    "deprecation_date": "2026-02-19",
+    "deprecation_date": "2025-11-11",
+    "retirement_date": "2026-05-11",
     "parent": "publishers/anthropic/models/claude-3-7-sonnet"
   },
   "publishers/anthropic/models/claude-3-5-sonnet-v2": {
@@ -11969,7 +12025,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
-    "displayName": "Claude Sonnet 3.5 v2"
+    "displayName": "Claude Sonnet 3.5 v2",
+    "deprecation_date": "2025-08-20",
+    "retirement_date": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-5-sonnet-v2@20241022": {
     "format": "anthropic",
@@ -11977,6 +12035,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "deprecation_date": "2025-08-20",
+    "retirement_date": "2026-02-19",
     "parent": "publishers/anthropic/models/claude-3-5-sonnet-v2"
   },
   "publishers/anthropic/models/claude-3-5-haiku": {
@@ -11990,7 +12050,8 @@
     "input_cache_write_5m_cost_per_mil_tokens": 1,
     "input_cache_write_1h_cost_per_mil_tokens": 1.6,
     "displayName": "Claude Haiku 3.5",
-    "deprecation_date": "2026-02-19",
+    "deprecation_date": "2026-01-05",
+    "retirement_date": "2026-07-05",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
   },
@@ -12000,7 +12061,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
-    "displayName": "Claude Sonnet 3.5"
+    "displayName": "Claude Sonnet 3.5",
+    "deprecation_date": "2025-08-20",
+    "retirement_date": "2026-02-19"
   },
   "publishers/anthropic/models/claude-3-5-haiku@20241022": {
     "format": "anthropic",
@@ -12012,7 +12075,8 @@
     "input_cache_write_cost_per_mil_tokens": 1,
     "input_cache_write_5m_cost_per_mil_tokens": 1,
     "input_cache_write_1h_cost_per_mil_tokens": 1.6,
-    "deprecation_date": "2026-02-19",
+    "deprecation_date": "2026-01-05",
+    "retirement_date": "2026-07-05",
     "parent": "publishers/anthropic/models/claude-3-5-haiku",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192
@@ -12023,6 +12087,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
+    "deprecation_date": "2025-08-20",
+    "retirement_date": "2026-02-19",
     "parent": "publishers/anthropic/models/claude-3-5-sonnet"
   },
   "publishers/anthropic/models/claude-3-haiku": {
@@ -12035,7 +12101,9 @@
     "input_cache_write_cost_per_mil_tokens": 0.3,
     "input_cache_write_5m_cost_per_mil_tokens": 0.3,
     "input_cache_write_1h_cost_per_mil_tokens": 0.5,
-    "displayName": "Claude Haiku 3"
+    "displayName": "Claude Haiku 3",
+    "deprecation_date": "2026-02-23",
+    "retirement_date": "2026-08-23"
   },
   "publishers/anthropic/models/claude-3-opus": {
     "format": "anthropic",
@@ -12047,7 +12115,9 @@
     "input_cache_write_cost_per_mil_tokens": 18.75,
     "input_cache_write_5m_cost_per_mil_tokens": 18.75,
     "input_cache_write_1h_cost_per_mil_tokens": 30,
-    "displayName": "Claude Opus 3"
+    "displayName": "Claude Opus 3",
+    "deprecation_date": "2025-06-30",
+    "retirement_date": "2025-08-01"
   },
   "publishers/anthropic/models/claude-3-haiku@20240307": {
     "format": "anthropic",
@@ -12059,6 +12129,8 @@
     "input_cache_write_cost_per_mil_tokens": 0.3,
     "input_cache_write_5m_cost_per_mil_tokens": 0.3,
     "input_cache_write_1h_cost_per_mil_tokens": 0.5,
+    "deprecation_date": "2026-02-23",
+    "retirement_date": "2026-08-23",
     "parent": "publishers/anthropic/models/claude-3-haiku"
   },
   "publishers/anthropic/models/claude-3-opus@20240229": {
@@ -12071,6 +12143,8 @@
     "input_cache_write_cost_per_mil_tokens": 18.75,
     "input_cache_write_5m_cost_per_mil_tokens": 18.75,
     "input_cache_write_1h_cost_per_mil_tokens": 30,
+    "deprecation_date": "2025-06-30",
+    "retirement_date": "2025-08-01",
     "parent": "publishers/anthropic/models/claude-3-opus"
   },
   "publishers/meta/models/llama-3.3-70b-instruct-maas": {

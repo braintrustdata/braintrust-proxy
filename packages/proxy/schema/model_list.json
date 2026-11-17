@@ -5011,12 +5011,12 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 2",
+    "deprecation_date": "2026-11-10",
+    "retirement_date": "2027-10-21",
     "available_providers": [
       "openai",
       "azure"
-    ],
-    "deprecation_date": "2026-11-10",
-    "retirement_date": "2027-10-21"
+    ]
   },
   "gpt-image-2-2026-04-21": {
     "format": "openai",
@@ -6607,12 +6607,12 @@
     "input_cost_per_mil_tokens": 0.56,
     "output_cost_per_mil_tokens": 1.68,
     "displayName": "DeepSeek V3 P2",
+    "retirement_date": "2026-05-14",
     "max_input_tokens": 163840,
     "max_output_tokens": 163840,
     "available_providers": [
       "fireworks"
-    ],
-    "retirement_date": "2026-05-14"
+    ]
   },
   "accounts/fireworks/models/deepseek-v3p1": {
     "format": "openai",
@@ -6927,10 +6927,10 @@
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Qwen3.6 Plus",
+    "deprecation_date": "2026-06-26",
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-26"
+    ]
   },
   "accounts/fireworks/models/qwen3-coder-480b-a35b-instruct": {
     "format": "openai",
@@ -7089,12 +7089,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "retirement_date": "2026-05-14",
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
     "available_providers": [
       "fireworks"
-    ],
-    "retirement_date": "2026-05-14"
+    ]
   },
   "accounts/fireworks/models/qwen3-vl-30b-a3b-thinking": {
     "format": "openai",
@@ -7736,11 +7736,11 @@
     "output_cost_per_mil_tokens": 3.2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "displayName": "GLM 5",
+    "retirement_date": "2026-05-14",
     "max_input_tokens": 202752,
     "available_providers": [
       "fireworks"
-    ],
-    "retirement_date": "2026-05-14"
+    ]
   },
   "accounts/fireworks/models/glm-4p7": {
     "format": "openai",
@@ -7938,11 +7938,11 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax M2.5",
+    "deprecation_date": "2026-06-17",
     "max_input_tokens": 196608,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-17"
+    ]
   },
   "accounts/fireworks/models/minimax-m2p1": {
     "format": "openai",
@@ -8030,12 +8030,12 @@
     "input_cost_per_mil_tokens": 0.9,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Llama 3.3 70B Instruct",
+    "retirement_date": "2026-05-14",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
       "fireworks"
-    ],
-    "retirement_date": "2026-05-14"
+    ]
   },
   "accounts/fireworks/models/llama-v3p2-90b-vision-instruct": {
     "format": "openai",
@@ -8969,106 +8969,106 @@
   "accounts/fireworks/models/fireworks-asr-v2": {
     "format": "openai",
     "flavor": "chat",
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/fireworks-asr-large": {
     "format": "openai",
     "flavor": "chat",
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-1-dev-fp8": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.0005,
     "output_cost_per_mil_tokens": 0.0005,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-1-schnell-fp8": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00035,
     "output_cost_per_mil_tokens": 0.00035,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-1-dev": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-1-dev-controlnet-union": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.001,
     "output_cost_per_mil_tokens": 0.001,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-1-schnell": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-kontext-max": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.08,
     "output_cost_per_mil_tokens": 0.08,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/flux-kontext-pro": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.04,
     "output_cost_per_mil_tokens": 0.04,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/gpt-oss-120b": {
     "format": "openai",
@@ -9205,12 +9205,12 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00013,
     "output_cost_per_mil_tokens": 0.00013,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/kat-coder": {
     "format": "openai",
@@ -9622,24 +9622,24 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00013,
     "output_cost_per_mil_tokens": 0.00013,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/playground-v2-1024px-aesthetic": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00013,
     "output_cost_per_mil_tokens": 0.00013,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/pythia-12b": {
     "format": "openai",
@@ -9679,24 +9679,24 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00013,
     "output_cost_per_mil_tokens": 0.00013,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/stable-diffusion-xl-1024-v1-0": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.00013,
     "output_cost_per_mil_tokens": 0.00013,
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/stablecode-3b": {
     "format": "openai",
@@ -9815,22 +9815,22 @@
   "accounts/fireworks/models/whisper-v3": {
     "format": "openai",
     "flavor": "chat",
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/whisper-v3-turbo": {
     "format": "openai",
     "flavor": "chat",
+    "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
     "available_providers": [
       "fireworks"
-    ],
-    "deprecation_date": "2026-06-10"
+    ]
   },
   "accounts/fireworks/models/yi-large": {
     "format": "openai",
@@ -11296,6 +11296,7 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
     "displayName": "Gemini 2.5 Flash Image",
+    "retirement_date": "2027-03-15",
     "locations": [
       "global"
     ],
@@ -11303,8 +11304,7 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "vertex"
-    ],
-    "retirement_date": "2027-03-15"
+    ]
   },
   "publishers/google/models/gemini-2.5-flash-lite": {
     "format": "google",
@@ -11565,22 +11565,22 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Gemini 1.5 Flash",
+    "deprecation_date": "2025-04-29",
+    "retirement_date": "2025-09-24",
     "available_providers": [
       "vertex"
-    ],
-    "deprecation_date": "2025-04-29",
-    "retirement_date": "2025-09-24"
+    ]
   },
   "publishers/google/models/gemini-1.5-pro": {
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Gemini 1.5 Pro",
+    "deprecation_date": "2025-04-29",
+    "retirement_date": "2025-09-24",
     "available_providers": [
       "vertex"
-    ],
-    "deprecation_date": "2025-04-29",
-    "retirement_date": "2025-09-24"
+    ]
   },
   "publishers/google/models/gemini-1.0-pro-002": {
     "format": "google",
@@ -12040,11 +12040,11 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "displayName": "Mistral Large (24.11)",
+    "deprecation_date": "2026-01-22",
+    "retirement_date": "2026-01-23",
     "available_providers": [
       "vertex"
-    ],
-    "deprecation_date": "2026-01-22",
-    "retirement_date": "2026-01-23"
+    ]
   },
   "publishers/mistralai/models/codestral-2501": {
     "format": "openai",
@@ -12052,11 +12052,11 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
     "displayName": "Codestral (25.01)",
+    "deprecation_date": "2026-01-22",
+    "retirement_date": "2026-01-23",
     "available_providers": [
       "vertex"
-    ],
-    "deprecation_date": "2026-01-22",
-    "retirement_date": "2026-01-23"
+    ]
   },
   "publishers/google/models/gemini-embedding-2": {
     "format": "google",
@@ -14061,12 +14061,12 @@
       }
     },
     "displayName": "Voxtral Small 24B (2507)",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "mistral.voxtral-mini-3b-2507": {
     "format": "converse",
@@ -14189,12 +14189,12 @@
       }
     },
     "displayName": "Voxtral Mini 3B (2507)",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "nvidia.nemotron-nano-12b-v2": {
     "format": "converse",
@@ -14349,13 +14349,13 @@
       }
     },
     "displayName": "NVIDIA Nemotron Nano 12B v2 VL",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "writer.palmyra-vision-7b": {
     "format": "converse",
@@ -14734,13 +14734,13 @@
       }
     },
     "displayName": "Gemma 3 27B IT",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "openai.gpt-daybreak-blue-5.6-sol": {
     "format": "openai",
@@ -15012,26 +15012,26 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Llama 4 Scout",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 10000000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "meta.llama4-maverick-17b-instruct-v1:0": {
     "format": "converse",
     "flavor": "chat",
     "multimodal": true,
     "displayName": "Llama 4 Maverick",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "claude-mythos-5-1": {
     "format": "anthropic",
@@ -16461,13 +16461,13 @@
     "input_cache_read_cost_per_mil_tokens": 0.6,
     "input_cache_write_cost_per_mil_tokens": 7.5,
     "displayName": "Claude Sonnet 3.5 v2",
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2025-08-25",
-    "retirement_date": "2026-03-01"
+    ]
   },
   "anthropic.claude-3-5-sonnet-20240620-v1:0": {
     "format": "anthropic",
@@ -16478,13 +16478,13 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude Sonnet 3.5",
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01",
     "max_input_tokens": 1000000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2025-08-25",
-    "retirement_date": "2026-03-01"
+    ]
   },
   "anthropic.claude-3-haiku-20240307-v1:0": {
     "format": "anthropic",
@@ -16527,13 +16527,13 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Command R+",
+    "deprecation_date": "2026-02-19",
+    "retirement_date": "2026-08-19",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-02-19",
-    "retirement_date": "2026-08-19"
+    ]
   },
   "cohere.command-r-v1:0": {
     "format": "converse",
@@ -16541,13 +16541,13 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Command R",
+    "deprecation_date": "2026-02-19",
+    "retirement_date": "2026-08-19",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-02-19",
-    "retirement_date": "2026-08-19"
+    ]
   },
   "mistral.devstral-2-123b": {
     "format": "converse",
@@ -16689,13 +16689,13 @@
       }
     },
     "displayName": "Devstral 2 123B",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 256000,
     "max_output_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "google.gemma-4-31b": {
     "format": "openai",
@@ -17105,13 +17105,13 @@
       }
     },
     "displayName": "GLM 4.7",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 203000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "zai.glm-4.7-flash": {
     "format": "converse",
@@ -17254,13 +17254,13 @@
       }
     },
     "displayName": "GLM 4.7 Flash",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 203000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "openai.gpt-5.5": {
     "format": "openai",
@@ -18092,13 +18092,13 @@
     "input_cost_per_mil_tokens": 2.65,
     "output_cost_per_mil_tokens": 3.5,
     "displayName": "Llama 3 70B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 8192,
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "meta.llama3-8b-instruct-v1:0": {
     "format": "converse",
@@ -18106,13 +18106,13 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Llama 3 8B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 8192,
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "meta.llama3-3-70b-instruct-v1:0": {
     "format": "converse",
@@ -18120,13 +18120,13 @@
     "input_cost_per_mil_tokens": 0.72,
     "output_cost_per_mil_tokens": 0.72,
     "displayName": "Llama 3.3 70B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "meta.llama3-2-90b-instruct-v1:0": {
     "format": "converse",
@@ -18135,13 +18135,13 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Llama 3.2 90B Vision Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-01-07",
-    "retirement_date": "2026-07-07"
+    ]
   },
   "meta.llama3-2-11b-instruct-v1:0": {
     "format": "converse",
@@ -18150,13 +18150,13 @@
     "input_cost_per_mil_tokens": 0.35,
     "output_cost_per_mil_tokens": 0.35,
     "displayName": "Llama 3.2 11B Vision Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-01-07",
-    "retirement_date": "2026-07-07"
+    ]
   },
   "meta.llama3-2-3b-instruct-v1:0": {
     "format": "converse",
@@ -18164,13 +18164,13 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "displayName": "Llama 3.2 3B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-01-07",
-    "retirement_date": "2026-07-07"
+    ]
   },
   "meta.llama3-2-1b-instruct-v1:0": {
     "format": "converse",
@@ -18178,13 +18178,13 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "Llama 3.2 1B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-01-07",
-    "retirement_date": "2026-07-07"
+    ]
   },
   "meta.llama3-1-70b-instruct-v1:0": {
     "format": "converse",
@@ -18192,13 +18192,13 @@
     "input_cost_per_mil_tokens": 0.99,
     "output_cost_per_mil_tokens": 0.99,
     "displayName": "Llama 3.1 70B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 2048,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "meta.llama3-1-8b-instruct-v1:0": {
     "format": "converse",
@@ -18206,13 +18206,13 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.22,
     "displayName": "Llama 3.1 8B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 2048,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "mistral.magistral-small-2509": {
     "format": "converse",
@@ -18969,13 +18969,13 @@
       }
     },
     "displayName": "Mistral 7B",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 32000,
     "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "mistral.mistral-large-3-675b-instruct": {
     "format": "converse",
@@ -19219,13 +19219,13 @@
       }
     },
     "displayName": "Mixtral 8x7B",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 32000,
     "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "nvidia.nemotron-nano-3-30b": {
     "format": "converse",
@@ -20307,13 +20307,13 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 6,
     "displayName": "Palmyra X5",
+    "deprecation_date": "2026-09-21",
+    "retirement_date": "2027-03-21",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-21",
-    "retirement_date": "2027-03-21"
+    ]
   },
   "writer.palmyra-x4-v1:0": {
     "format": "converse",
@@ -20321,13 +20321,13 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "displayName": "Palmyra X4",
+    "deprecation_date": "2026-09-09",
+    "retirement_date": "2027-03-09",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-09",
-    "retirement_date": "2027-03-09"
+    ]
   },
   "mistral.pixtral-large-2502-v1:0": {
     "format": "converse",
@@ -20445,13 +20445,13 @@
       }
     },
     "displayName": "Qwen3 Coder 480B A35B",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "qwen.qwen3-235b-a22b-2507-v1:0": {
     "format": "converse",
@@ -20913,13 +20913,13 @@
       }
     },
     "displayName": "Qwen3 Coder 30B A3B",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 262144,
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "qwen.qwen3-coder-next": {
     "format": "converse",
@@ -21211,13 +21211,13 @@
       }
     },
     "displayName": "DeepSeek V3.1",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "global.anthropic.claude-fable-5-1": {
     "format": "anthropic",
@@ -22418,12 +22418,12 @@
     "output_cost_per_mil_tokens": 3.6,
     "input_cache_read_cost_per_mil_tokens": 0.35,
     "displayName": "Qwen3.5 397B A17B",
+    "deprecation_date": "2026-06-15",
+    "retirement_date": "2026-06-29",
     "max_input_tokens": 262144,
     "available_providers": [
       "together"
-    ],
-    "deprecation_date": "2026-06-15",
-    "retirement_date": "2026-06-29"
+    ]
   },
   "Qwen/Qwen3.5-9B": {
     "format": "openai",
@@ -22442,12 +22442,12 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Qwen3 235B A22B Instruct 2507 (Throughput)",
+    "deprecation_date": "2026-06-26",
+    "retirement_date": "2026-07-10",
     "max_input_tokens": 262144,
     "available_providers": [
       "together"
-    ],
-    "deprecation_date": "2026-06-26",
-    "retirement_date": "2026-07-10"
+    ]
   },
   "Qwen/Qwen3-Coder-Next-FP8": {
     "format": "openai",
@@ -22455,11 +22455,11 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.2,
     "displayName": "Qwen3 Coder Next FP8",
+    "retirement_date": "2026-05-14",
     "max_input_tokens": 262144,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-05-14"
+    ]
   },
   "Qwen/Qwen2.5-72B-Instruct-Turbo": {
     "format": "openai",
@@ -22467,10 +22467,10 @@
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
     "displayName": "Qwen 2.5 72B Instruct Turbo",
+    "retirement_date": "2026-02-06",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-02-06"
+    ]
   },
   "Qwen/Qwen2.5-7B-Instruct-Turbo": {
     "format": "openai",
@@ -22513,10 +22513,10 @@
     "input_cost_per_mil_tokens": 0.27,
     "output_cost_per_mil_tokens": 0.85,
     "displayName": "Llama 4 Maverick Instruct (17Bx128E)",
+    "retirement_date": "2026-03-31",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-03-31"
+    ]
   },
   "meta-llama/Llama-4-Scout-17B-16E-Instruct": {
     "format": "openai",
@@ -22524,10 +22524,10 @@
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.59,
     "displayName": "Llama 4 Scout Instruct (17Bx16E)",
+    "retirement_date": "2026-02-06",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-02-06"
+    ]
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
     "format": "openai",
@@ -22535,19 +22535,19 @@
     "input_cost_per_mil_tokens": 1.04,
     "output_cost_per_mil_tokens": 1.04,
     "displayName": "Llama 3.3 70B Instruct Turbo",
+    "retirement_date": "2026-10-22",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-10-22"
+    ]
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free": {
     "format": "openai",
     "flavor": "chat",
     "displayName": "Llama 3.3 70B Instruct Turbo Free",
+    "retirement_date": "2025-11-13",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2025-11-13"
+    ]
   },
   "meta-llama/Llama-3.2-3B-Instruct-Turbo": {
     "format": "openai",
@@ -22555,10 +22555,10 @@
     "input_cost_per_mil_tokens": 0.06,
     "output_cost_per_mil_tokens": 0.06,
     "displayName": "Llama 3.2 3B Instruct Turbo",
+    "retirement_date": "2026-03-06",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-03-06"
+    ]
   },
   "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo": {
     "format": "openai",
@@ -22566,10 +22566,10 @@
     "input_cost_per_mil_tokens": 3.5,
     "output_cost_per_mil_tokens": 3.5,
     "displayName": "Llama 3.1 405B Instruct Turbo",
+    "retirement_date": "2026-02-06",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-02-06"
+    ]
   },
   "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo": {
     "format": "openai",
@@ -22577,10 +22577,10 @@
     "input_cost_per_mil_tokens": 0.88,
     "output_cost_per_mil_tokens": 0.88,
     "displayName": "Llama 3.1 70B Instruct Turbo",
+    "retirement_date": "2026-02-25",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-02-25"
+    ]
   },
   "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
     "format": "openai",
@@ -22588,10 +22588,10 @@
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.18,
     "displayName": "Llama 3.1 8B Instruct Turbo",
+    "retirement_date": "2026-03-06",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-03-06"
+    ]
   },
   "MiniMaxAI/MiniMax-M3": {
     "format": "openai",
@@ -22600,11 +22600,11 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax M3",
+    "retirement_date": "2026-11-06",
     "max_input_tokens": 524288,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-11-06"
+    ]
   },
   "MiniMaxAI/MiniMax-M2.7": {
     "format": "openai",
@@ -22613,11 +22613,11 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax M2.7",
+    "retirement_date": "2026-07-28",
     "max_input_tokens": 202752,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-07-28"
+    ]
   },
   "mistralai/Mistral-7B-Instruct-v0.1": {
     "format": "openai",
@@ -22625,10 +22625,10 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
     "displayName": "Mistral (7B) Instruct",
+    "retirement_date": "2025-11-13",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2025-11-13"
+    ]
   },
   "google/gemma-4-31B-it": {
     "format": "openai",
@@ -22636,12 +22636,12 @@
     "input_cost_per_mil_tokens": 0.39,
     "output_cost_per_mil_tokens": 0.97,
     "displayName": "Gemma 4 31B IT",
+    "deprecation_date": "2026-09-01",
+    "retirement_date": "2026-09-15",
     "max_input_tokens": 262144,
     "available_providers": [
       "together"
-    ],
-    "deprecation_date": "2026-09-01",
-    "retirement_date": "2026-09-15"
+    ]
   },
   "pearl-ai/gemma-4-31b-it": {
     "format": "openai",
@@ -22649,11 +22649,11 @@
     "input_cost_per_mil_tokens": 0.28,
     "output_cost_per_mil_tokens": 0.86,
     "displayName": "Gemma 4 31B IT (Pearl)",
+    "retirement_date": "2026-08-27",
     "max_input_tokens": 32000,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-08-27"
+    ]
   },
   "google/gemma-3n-E4B-it": {
     "format": "openai",
@@ -22661,12 +22661,12 @@
     "input_cost_per_mil_tokens": 0.06,
     "output_cost_per_mil_tokens": 0.12,
     "displayName": "Gemma 3n E4B IT",
+    "deprecation_date": "2026-06-26",
+    "retirement_date": "2026-08-25",
     "max_input_tokens": 32768,
     "available_providers": [
       "together"
-    ],
-    "deprecation_date": "2026-06-26",
-    "retirement_date": "2026-08-25"
+    ]
   },
   "LiquidAI/LFM2-24B-A2B": {
     "format": "openai",
@@ -22674,11 +22674,11 @@
     "input_cost_per_mil_tokens": 0.03,
     "output_cost_per_mil_tokens": 0.12,
     "displayName": "LFM2 24B A2B",
+    "retirement_date": "2026-07-09",
     "max_input_tokens": 32768,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-07-09"
+    ]
   },
   "deepcogito/cogito-v2-1-671b": {
     "format": "openai",
@@ -22686,11 +22686,11 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 1.25,
     "displayName": "Cogito v2.1 671B",
+    "retirement_date": "2026-08-21",
     "max_input_tokens": 163840,
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-08-21"
+    ]
   },
   "mistralai/Mistral-Small-24B-Instruct-2501": {
     "format": "openai",
@@ -22698,10 +22698,10 @@
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 0.8,
     "displayName": "Mistral Small (24B) Instruct 25.01",
+    "retirement_date": "2026-04-02",
     "available_providers": [
       "together"
-    ],
-    "retirement_date": "2026-04-02"
+    ]
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1": {
     "format": "openai",
@@ -22709,11 +22709,11 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Mixtral 8x7B Instruct v0.1",
+    "deprecation_date": "2026-04-14",
+    "retirement_date": "2026-04-16",
     "available_providers": [
       "together"
-    ],
-    "deprecation_date": "2026-04-14",
-    "retirement_date": "2026-04-16"
+    ]
   },
   "nvidia/nemotron-3-ultra-550b-a55b": {
     "format": "openai",
@@ -23828,12 +23828,12 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Leanstral 1.5",
+    "deprecation_date": "2026-09-29",
+    "retirement_date": "2026-09-30",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
-    ],
-    "deprecation_date": "2026-09-29",
-    "retirement_date": "2026-09-30"
+    ]
   },
   "gemini-decision-1": {
     "format": "google",
@@ -24970,6 +24970,7 @@
       }
     },
     "displayName": "Gemini 3.1 Flash Image",
+    "deprecation_date": "2026-10-06",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-image"
     ],
@@ -24982,8 +24983,7 @@
       "google",
       "vertex",
       "openrouter"
-    ],
-    "deprecation_date": "2026-10-06"
+    ]
   },
   "gemini-nano-banana-2.1": {
     "format": "google",
@@ -25022,6 +25022,7 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "displayName": "Gemini 3.1 Flash Image Preview",
+    "deprecation_date": "2026-05-28",
     "fallback_models": [
       "publishers/google/models/gemini-3.1-flash-image-preview"
     ],
@@ -25034,8 +25035,7 @@
       "google",
       "vertex",
       "openrouter"
-    ],
-    "deprecation_date": "2026-05-28"
+    ]
   },
   "gemini-3.1-flash-lite": {
     "format": "google",
@@ -25748,6 +25748,7 @@
       }
     },
     "displayName": "Gemini 3 Pro Image Preview",
+    "deprecation_date": "2026-05-28",
     "fallback_models": [
       "publishers/google/models/gemini-3-pro-image-preview"
     ],
@@ -25760,8 +25761,7 @@
       "google",
       "vertex",
       "openrouter"
-    ],
-    "deprecation_date": "2026-05-28"
+    ]
   },
   "gemini-2.5-computer-use-preview-10-2025": {
     "format": "google",
@@ -25770,6 +25770,7 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
+    "retirement_date": "2026-07-28",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-computer-use-preview-10-2025"
     ],
@@ -25777,8 +25778,7 @@
     "max_output_tokens": 64000,
     "available_providers": [
       "google"
-    ],
-    "retirement_date": "2026-07-28"
+    ]
   },
   "gemini-2.5-flash": {
     "format": "google",
@@ -25923,6 +25923,7 @@
       }
     },
     "displayName": "Gemini 2.5 Flash Image",
+    "deprecation_date": "2027-03-15",
     "fallback_models": [
       "publishers/google/models/gemini-2.5-flash-image"
     ],
@@ -25948,8 +25949,7 @@
       "google",
       "vertex",
       "openrouter"
-    ],
-    "deprecation_date": "2027-03-15"
+    ]
   },
   "gemini-2.5-flash-lite": {
     "format": "google",
@@ -28399,13 +28399,13 @@
     "input_cost_per_mil_tokens": 0.30002,
     "output_cost_per_mil_tokens": 2.49998,
     "displayName": "Gemini 2.5 Flash",
+    "deprecation_date": "2026-07-08",
+    "retirement_date": "2026-10-02",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65535,
     "available_providers": [
       "databricks"
-    ],
-    "deprecation_date": "2026-07-08",
-    "retirement_date": "2026-10-02"
+    ]
   },
   "databricks-gemini-2-5-pro": {
     "format": "openai",
@@ -28414,13 +28414,13 @@
     "input_cost_per_mil_tokens": 1.24999,
     "output_cost_per_mil_tokens": 9.99999,
     "displayName": "Gemini 2.5 Pro",
+    "deprecation_date": "2026-07-08",
+    "retirement_date": "2026-10-02",
     "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
       "databricks"
-    ],
-    "deprecation_date": "2026-07-08",
-    "retirement_date": "2026-10-02"
+    ]
   },
   "databricks-meta-llama-3-3-70b-instruct": {
     "format": "openai",
@@ -28440,12 +28440,12 @@
     "input_cost_per_mil_tokens": 5.00003,
     "output_cost_per_mil_tokens": 15.00002,
     "displayName": "Llama 3.1 405B Instruct",
+    "retirement_date": "2026-02-15",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
-    ],
-    "retirement_date": "2026-02-15"
+    ]
   },
   "databricks-meta-llama-3-1-8b-instruct": {
     "format": "openai",
@@ -28686,13 +28686,13 @@
       }
     },
     "displayName": "Gemma 3 12B IT",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "google.gemma-3-4b-it": {
     "format": "converse",
@@ -28835,13 +28835,13 @@
       }
     },
     "displayName": "Gemma 3 4B IT",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "openai.gpt-5.6-sol": {
     "format": "openai",
@@ -29050,13 +29050,13 @@
       }
     },
     "displayName": "NVIDIA Nemotron Nano 9B v2",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ],
-    "deprecation_date": "2026-09-30",
-    "retirement_date": "2027-03-30"
+    ]
   },
   "databricks-glm-5-2": {
     "format": "openai",
@@ -30415,12 +30415,12 @@
     "input_cost_per_mil_tokens": 0.05,
     "output_cost_per_mil_tokens": 0.33,
     "displayName": "Meta: Llama 3.2 3B Instruct",
+    "retirement_date": "2026-11-20",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
-    ],
-    "retirement_date": "2026-11-20"
+    ]
   },
   "meta-llama/llama-3.2-1b-instruct": {
     "format": "openai",
@@ -30428,12 +30428,12 @@
     "input_cost_per_mil_tokens": 0.027,
     "output_cost_per_mil_tokens": 0.201,
     "displayName": "Meta: Llama 3.2 1B Instruct",
+    "retirement_date": "2026-11-20",
     "max_input_tokens": 60000,
     "max_output_tokens": 60000,
     "available_providers": [
       "openrouter"
-    ],
-    "retirement_date": "2026-11-20"
+    ]
   },
   "meta-llama/llama-3.3-70b-instruct": {
     "format": "openai",

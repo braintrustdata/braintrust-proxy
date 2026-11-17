@@ -4942,7 +4942,8 @@
     "available_providers": [
       "openai",
       "azure"
-    ]
+    ],
+    "deprecation_date": "2026-11-10"
   },
   "gpt-image-2-2026-04-21": {
     "format": "openai",
@@ -4952,6 +4953,7 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 2 (2026-04-21)",
+    "deprecation_date": "2026-11-10",
     "parent": "gpt-image-2",
     "available_providers": [
       "openai",
@@ -12205,7 +12207,9 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
     "displayName": "Text Davinci 003",
-    "deprecated": true
+    "deprecated": true,
+    "deprecation_date": "2023-07-06",
+    "retirement_date": "2024-01-04"
   },
   "text-embedding-3-large": {
     "format": "openai",

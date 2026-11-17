@@ -3,7 +3,12 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { pathToFileURL } from "url";
-import type { AuditReport, Deprecation } from "./reconcile_provider_models";
+import type {
+  AuditReport,
+  Deprecation,
+  RetirementUpdate,
+  ReviewNote,
+} from "./reconcile_provider_models";
 import { parseIndexEndpointTypes } from "./reconcile_provider_models";
 
 // Apply confirmed deprecations from the audit report to the catalog:
@@ -19,6 +24,7 @@ const DEPRECATED_IDS_PATH = path.join(__dirname, "deprecated_model_ids.json");
 type ModelSpec = {
   available_providers?: string[];
   fallback_models?: string[];
+  retirement_date?: string | null;
 } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
 
@@ -55,6 +61,96 @@ export function addToDeprecatedIds(
   models: string[],
 ): string[] {
   return Array.from(new Set([...current, ...models])).sort();
+}
+
+// Set retirement_date from provider-published dates. The canonicalizer puts the
+// key in its standard position afterwards.
+export function applyRetirements(
+  catalog: Catalog,
+  retirements: RetirementUpdate[],
+): string[] {
+  const applied: string[] = [];
+  for (const r of retirements) {
+    const spec = catalog[r.model];
+    if (!spec || spec.retirement_date === r.retirement_date) continue;
+    spec.retirement_date = r.retirement_date;
+    applied.push(r.model);
+  }
+  return applied;
+}
+
+// Models the audit is about to remove whose catalog lifecycle data did not see
+// it coming: no retirement_date at all, or one still in the future.
+export function removalReviewNotes(
+  catalog: Catalog,
+  removedModels: string[],
+  now: Date,
+): ReviewNote[] {
+  const today = now.toISOString().slice(0, 10);
+  const notes: ReviewNote[] = [];
+  for (const model of removedModels) {
+    const spec = catalog[model];
+    if (!spec) continue;
+    const provider = (spec.available_providers ?? []).join(", ");
+    if (!spec.retirement_date) {
+      notes.push({
+        model,
+        provider,
+        note: "removed with no retirement_date on record; check the provider's notice",
+      });
+    } else if (spec.retirement_date > today) {
+      notes.push({
+        model,
+        provider,
+        note: `removed before its retirement_date ${spec.retirement_date}`,
+      });
+    }
+  }
+  return notes;
+}
+
+export function buildSummaryMarkdown(args: {
+  retirements: RetirementUpdate[];
+  reviewNotes: ReviewNote[];
+}): string {
+  const lines: string[] = [];
+  if (args.retirements.length > 0) {
+    lines.push(
+      "### Retirement dates",
+      "",
+      "| Model | Provider | retirement_date | Previous | Source |",
+      "|---|---|---|---|---|",
+      ...args.retirements.map(
+        (r) =>
+          `| \`${r.model}\` | ${r.provider} | ${r.retirement_date} | ${r.previous_retirement_date ?? "unset"} | ${r.source} |`,
+      ),
+      "",
+    );
+  }
+  if (args.reviewNotes.length > 0) {
+    lines.push(
+      "### Needs review",
+      "",
+      "The catalog's lifecycle dates disagree with what the provider is doing. Check the provider's deprecation notice before merging.",
+      "",
+      ...args.reviewNotes.map(
+        (n) => `- \`${n.model}\` (${n.provider}): ${n.note}`,
+      ),
+      "",
+    );
+  }
+  return lines.join("\n");
+}
+
+// Models applyDeprecations would delete outright, computed without mutating.
+export function planRemovals(
+  catalog: Catalog,
+  indexContent: string,
+  deprecations: Deprecation[],
+): string[] {
+  const copy: Catalog = JSON.parse(JSON.stringify(catalog));
+  return applyDeprecations(copy, indexContent, [], deprecations).result
+    .removedModels;
 }
 
 export type ApplyResult = {
@@ -150,6 +246,10 @@ async function main(): Promise<void> {
       describe: "Path to the audit report JSON produced by reconcile",
       type: "string",
     })
+    .option("summary-output", {
+      describe: "Path to write a markdown summary for the PR body",
+      type: "string",
+    })
     .option("write", {
       default: false,
       describe: "Write changes to disk",
@@ -166,12 +266,32 @@ async function main(): Promise<void> {
     fs.readFileSync(DEPRECATED_IDS_PATH, "utf8"),
   );
 
+  const removalNotes = removalReviewNotes(
+    catalog,
+    planRemovals(catalog, indexContent, report.deprecations),
+    new Date(),
+  );
+  const retired = applyRetirements(catalog, report.retirements ?? []);
   const out = applyDeprecations(
     catalog,
     indexContent,
     deprecatedIds,
     report.deprecations,
   );
+  const reviewNotes = [...(report.reviewNotes ?? []), ...removalNotes];
+  console.log(`Set retirement_date on ${retired.length} model(s).`);
+  for (const n of reviewNotes) {
+    console.log(`  REVIEW ${n.model}: ${n.note}`);
+  }
+  if (argv["summary-output"]) {
+    await fs.promises.writeFile(
+      argv["summary-output"],
+      buildSummaryMarkdown({
+        retirements: report.retirements ?? [],
+        reviewNotes,
+      }),
+    );
+  }
 
   console.log(
     `Removed ${out.result.removedModels.length} model(s); narrowed providers on ${out.result.narrowedModels.length} model(s).`,

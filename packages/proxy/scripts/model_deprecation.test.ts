@@ -3,6 +3,7 @@ import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   classifyProbe,
+  parseOpenRouterRetirementDates,
   PROVIDER_APIS,
   REPORT_ONLY_PROVIDERS,
 } from "./model_probe";
@@ -10,10 +11,15 @@ import {
   effectiveProviders,
   NEVER_DEPRECATE_MODELS,
   parseIndexEndpointTypes,
+  retirementUpdatesFromDates,
+  stillServedAfterRetirement,
 } from "./reconcile_provider_models";
 import {
   addToDeprecatedIds,
   applyDeprecations,
+  applyRetirements,
+  buildSummaryMarkdown,
+  removalReviewNotes,
   rewriteIndexEntry,
 } from "./apply_deprecations";
 
@@ -294,5 +300,104 @@ describe("NEVER_DEPRECATE_MODELS (don't-deprecate list)", () => {
     for (const id of NEVER_DEPRECATE_MODELS) {
       expect(catalog[id]).toBeDefined();
     }
+  });
+});
+
+describe("lifecycle dates from the audit", () => {
+  it("reads OpenRouter expiration_date keyed by slug", () => {
+    const dates = parseOpenRouterRetirementDates({
+      data: [
+        { id: "z-ai/glm-4.5", expiration_date: "2026-12-31" },
+        { id: "openai/gpt-5", expiration_date: null },
+        { id: "vendor/bad-date", expiration_date: "soon" },
+        { id: "vendor/no-date" },
+      ],
+    });
+    expect([...dates]).toEqual([["z-ai/glm-4.5", "2026-12-31"]]);
+  });
+
+  it("only proposes retirement for models the provider alone serves", () => {
+    const catalog = {
+      "z-ai/glm-4.5": { available_providers: ["openrouter"] },
+      "shared/model": { available_providers: ["openrouter", "together"] },
+      "already/dated": {
+        available_providers: ["openrouter"],
+        retirement_date: "2026-11-20",
+      },
+      "index/only": {},
+    };
+    const updates = retirementUpdatesFromDates({
+      provider: "openrouter",
+      models: Object.keys(catalog),
+      catalog,
+      indexMap: new Map([["index/only", ["openrouter", "baseten"]]]),
+      dates: new Map([
+        ["z-ai/glm-4.5", "2026-12-31"],
+        ["shared/model", "2026-12-31"],
+        ["already/dated", "2026-11-20"],
+        ["index/only", "2026-12-31"],
+      ]),
+    });
+    expect(updates.map((u) => [u.model, u.retirement_date])).toEqual([
+      ["z-ai/glm-4.5", "2026-12-31"],
+    ]);
+    expect(updates[0].previous_retirement_date).toBeNull();
+  });
+
+  it("flags models still listed after their retirement_date", () => {
+    const notes = stillServedAfterRetirement({
+      provider: "together",
+      models: ["live/past", "live/future", "gone/past"],
+      catalog: {
+        "live/past": { retirement_date: "2026-10-16" },
+        "live/future": { retirement_date: "2027-01-01" },
+        "gone/past": { retirement_date: "2026-10-16" },
+      },
+      liveList: new Set(["live/past", "live/future"]),
+      now: new Date("2026-11-17T00:00:00Z"),
+    });
+    expect(notes.map((n) => n.model)).toEqual(["live/past"]);
+  });
+
+  it("sets retirement_date and flags surprising removals", () => {
+    const catalog: Record<string, Record<string, unknown>> = {
+      "z-ai/glm-4.5": { available_providers: ["openrouter"] },
+      "early/removal": {
+        available_providers: ["openai"],
+        retirement_date: "2027-02-01",
+      },
+      "undated/removal": { available_providers: ["openai"] },
+      "expected/removal": {
+        available_providers: ["openai"],
+        retirement_date: "2026-10-23",
+      },
+    };
+    const applied = applyRetirements(catalog, [
+      {
+        model: "z-ai/glm-4.5",
+        provider: "openrouter",
+        retirement_date: "2026-12-31",
+        previous_retirement_date: null,
+        source: "openrouter",
+      },
+    ]);
+    expect(applied).toEqual(["z-ai/glm-4.5"]);
+    expect(catalog["z-ai/glm-4.5"].retirement_date).toBe("2026-12-31");
+
+    const notes = removalReviewNotes(
+      catalog,
+      ["early/removal", "undated/removal", "expected/removal"],
+      new Date("2026-11-17T00:00:00Z"),
+    );
+    expect(notes.map((n) => [n.model, n.note])).toEqual([
+      ["early/removal", "removed before its retirement_date 2027-02-01"],
+      [
+        "undated/removal",
+        "removed with no retirement_date on record; check the provider's notice",
+      ],
+    ]);
+    expect(
+      buildSummaryMarkdown({ retirements: [], reviewNotes: notes }),
+    ).toContain("### Needs review");
   });
 });

@@ -97,6 +97,45 @@ const listSchema = z
   })
   .passthrough();
 
+async function fetchOpenRouterModels(): Promise<z.infer<typeof listSchema>> {
+  const { status, body } = await request(
+    "GET",
+    "https://openrouter.ai/api/v1/models",
+    {},
+  );
+  if (status >= 400) {
+    throw new Error(
+      `list openrouter /api/v1/models -> HTTP ${status}: ${body.slice(0, 160)}`,
+    );
+  }
+  return listSchema.parse(JSON.parse(body));
+}
+
+const openRouterExpirationSchema = z.object({
+  id: z.string(),
+  expiration_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullish(),
+});
+
+// OpenRouter's /api/v1/models sets expiration_date (YYYY-MM-DD) on models it
+// has scheduled for removal. Keyed by the raw `<vendor>/<model>` slug only:
+// canonical ids carry other providers, so their retirement is not OpenRouter's
+// to decide.
+export function parseOpenRouterRetirementDates(
+  parsed: z.infer<typeof listSchema>,
+): Map<string, string> {
+  const dates = new Map<string, string>();
+  for (const model of parsed.data ?? []) {
+    const result = openRouterExpirationSchema.safeParse(model);
+    if (result.success && result.data.expiration_date) {
+      dates.set(result.data.id, result.data.expiration_date);
+    }
+  }
+  return dates;
+}
+
 // Cohere's /v1/models is paginated: { models: [{ name }], next_page_token }.
 const cohereListSchema = z
   .object({
@@ -145,6 +184,11 @@ export type ProviderApi = {
   // has no secret configured for the provider. Only valid together with
   // probeModel: null (a public list cannot fall back to an authenticated probe).
   listRequiresSecret?: boolean;
+  // Retirement dates the provider publishes for models it still lists, keyed by
+  // the provider's model id (e.g. OpenRouter's expiration_date).
+  listRetirementDates?: (
+    secret: ProviderSecret,
+  ) => Promise<Map<string, string>>;
 };
 
 // OpenAI-compatible providers: GET /models to list, POST /chat/completions to
@@ -362,17 +406,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
     listRequiresSecret: false,
     probeModel: null,
     listModels: async (_secret) => {
-      const { status, body } = await request(
-        "GET",
-        "https://openrouter.ai/api/v1/models",
-        {},
-      );
-      if (status >= 400) {
-        throw new Error(
-          `list openrouter /api/v1/models -> HTTP ${status}: ${body.slice(0, 160)}`,
-        );
-      }
-      const parsed = listSchema.parse(JSON.parse(body));
+      const parsed = await fetchOpenRouterModels();
       const ids = new Set<string>();
       for (const model of parsed.data ?? []) {
         ids.add(model.id);
@@ -383,6 +417,8 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
       }
       return ids;
     },
+    listRetirementDates: async (_secret) =>
+      parseOpenRouterRetirementDates(await fetchOpenRouterModels()),
   },
 };
 

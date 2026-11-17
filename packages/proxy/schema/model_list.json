@@ -13804,7 +13804,9 @@
     "max_input_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "mistral.voxtral-mini-3b-2507": {
     "format": "converse",
@@ -13930,7 +13932,9 @@
     "max_input_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "nvidia.nemotron-nano-12b-v2": {
     "format": "converse",
@@ -14089,7 +14093,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "writer.palmyra-vision-7b": {
     "format": "converse",
@@ -14472,7 +14478,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "openai.gpt-daybreak-blue-5.6-sol": {
     "format": "openai",
@@ -14748,7 +14756,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "meta.llama4-maverick-17b-instruct-v1:0": {
     "format": "converse",
@@ -14759,7 +14769,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "claude-mythos-5-1": {
     "format": "anthropic",
@@ -16083,6 +16095,8 @@
     "displayName": "Claude Opus 4.1",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-07-08",
+    "retirement_date": "2027-01-08",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
     "available_providers": [
@@ -16134,6 +16148,8 @@
     "displayName": "Claude Sonnet 4.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-08",
+    "retirement_date": "2027-04-08",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -16151,6 +16167,8 @@
     "displayName": "Claude Sonnet 4",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-04-14",
+    "retirement_date": "2026-10-14",
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
@@ -16187,7 +16205,9 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01"
   },
   "anthropic.claude-3-5-sonnet-20240620-v1:0": {
     "format": "anthropic",
@@ -16202,7 +16222,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01"
   },
   "anthropic.claude-3-haiku-20240307-v1:0": {
     "format": "anthropic",
@@ -16214,7 +16236,8 @@
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "Claude Haiku 3",
     "deprecated": true,
-    "deprecation_date": "2026-04-20",
+    "deprecation_date": "2026-03-10",
+    "retirement_date": "2026-09-10",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
     "available_providers": [
@@ -16248,7 +16271,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-02-19",
+    "retirement_date": "2026-08-19"
   },
   "cohere.command-r-v1:0": {
     "format": "converse",
@@ -16260,7 +16285,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-02-19",
+    "retirement_date": "2026-08-19"
   },
   "mistral.devstral-2-123b": {
     "format": "converse",
@@ -16406,7 +16433,9 @@
     "max_output_tokens": 32000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "google.gemma-4-31b": {
     "format": "openai",
@@ -16820,7 +16849,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "zai.glm-4.7-flash": {
     "format": "converse",
@@ -16967,7 +16998,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "openai.gpt-5.5": {
     "format": "openai",
@@ -17785,6 +17818,8 @@
     },
     "displayName": "Kimi K2 Thinking",
     "reasoning": true,
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 256000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -17801,7 +17836,9 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "meta.llama3-8b-instruct-v1:0": {
     "format": "converse",
@@ -17813,7 +17850,9 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "meta.llama3-3-70b-instruct-v1:0": {
     "format": "converse",
@@ -17825,7 +17864,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "meta.llama3-2-90b-instruct-v1:0": {
     "format": "converse",
@@ -17838,7 +17879,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07"
   },
   "meta.llama3-2-11b-instruct-v1:0": {
     "format": "converse",
@@ -17851,7 +17894,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07"
   },
   "meta.llama3-2-3b-instruct-v1:0": {
     "format": "converse",
@@ -17863,7 +17908,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07"
   },
   "meta.llama3-2-1b-instruct-v1:0": {
     "format": "converse",
@@ -17875,7 +17922,9 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07"
   },
   "meta.llama3-1-70b-instruct-v1:0": {
     "format": "converse",
@@ -17887,7 +17936,9 @@
     "max_output_tokens": 2048,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "meta.llama3-1-8b-instruct-v1:0": {
     "format": "converse",
@@ -17899,7 +17950,9 @@
     "max_output_tokens": 2048,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "mistral.magistral-small-2509": {
     "format": "converse",
@@ -18660,7 +18713,9 @@
     "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "mistral.mistral-large-3-675b-instruct": {
     "format": "converse",
@@ -18908,7 +18963,9 @@
     "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "nvidia.nemotron-nano-3-30b": {
     "format": "converse",
@@ -19715,6 +19772,8 @@
     },
     "displayName": "Nova Premier",
     "reasoning": true,
+    "deprecation_date": "2026-03-13",
+    "retirement_date": "2026-09-14",
     "max_input_tokens": 1000000,
     "max_output_tokens": 25000,
     "available_providers": [
@@ -19992,7 +20051,9 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-21",
+    "retirement_date": "2027-03-21"
   },
   "writer.palmyra-x4-v1:0": {
     "format": "converse",
@@ -20004,7 +20065,9 @@
     "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-09",
+    "retirement_date": "2027-03-09"
   },
   "mistral.pixtral-large-2502-v1:0": {
     "format": "converse",
@@ -20126,7 +20189,9 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "qwen.qwen3-235b-a22b-2507-v1:0": {
     "format": "converse",
@@ -20592,7 +20657,9 @@
     "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "qwen.qwen3-coder-next": {
     "format": "converse",
@@ -20713,6 +20780,8 @@
     "flavor": "chat",
     "displayName": "DeepSeek R1",
     "reasoning": true,
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
     "available_providers": [
@@ -20886,7 +20955,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "global.anthropic.claude-fable-5-1": {
     "format": "anthropic",
@@ -21043,6 +21114,8 @@
     "displayName": "Global Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-08",
+    "retirement_date": "2027-04-08",
     "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
@@ -21169,6 +21242,8 @@
     "displayName": "US Claude 4.1 Opus",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-07-08",
+    "retirement_date": "2027-01-08",
     "parent": "anthropic.claude-opus-4-1-20250805-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 32000,
@@ -21223,6 +21298,8 @@
     "displayName": "US Claude 4.5 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-08",
+    "retirement_date": "2027-04-08",
     "parent": "anthropic.claude-sonnet-4-5-20250929-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,
@@ -21241,6 +21318,8 @@
     "displayName": "US Claude 4 Sonnet",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-04-14",
+    "retirement_date": "2026-10-14",
     "parent": "anthropic.claude-sonnet-4-20250514-v1:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
@@ -21276,7 +21355,8 @@
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "US Claude 3 Haiku",
     "deprecated": true,
-    "deprecation_date": "2026-04-20",
+    "deprecation_date": "2026-03-10",
+    "retirement_date": "2026-09-10",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -21307,6 +21387,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "US Llama 4 Maverick",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "meta.llama4-maverick-17b-instruct-v1:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8000,
@@ -21319,6 +21401,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "US Llama 4 Scout",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "meta.llama4-scout-17b-instruct-v1:0",
     "max_input_tokens": 10000000,
     "max_output_tokens": 8000,
@@ -21332,6 +21416,8 @@
     "input_cost_per_mil_tokens": 0.72,
     "output_cost_per_mil_tokens": 0.72,
     "displayName": "US Llama 3.3 70B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "meta.llama3-3-70b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21346,6 +21432,8 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
     "displayName": "US Llama 3.2 90B Vision Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-90b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21360,6 +21448,8 @@
     "input_cost_per_mil_tokens": 0.35,
     "output_cost_per_mil_tokens": 0.35,
     "displayName": "US Llama 3.2 11B Vision Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-11b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21373,6 +21463,8 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.15,
     "displayName": "US Llama 3.2 3B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-3b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21386,6 +21478,8 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.1,
     "displayName": "US Llama 3.2 1B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-1b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21399,6 +21493,8 @@
     "input_cost_per_mil_tokens": 0.99,
     "output_cost_per_mil_tokens": 0.99,
     "displayName": "US Llama 3.1 70B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "meta.llama3-1-70b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 2048,
@@ -21412,6 +21508,8 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.22,
     "displayName": "US Llama 3.1 8B Instruct",
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "meta.llama3-1-8b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 2048,
@@ -21500,6 +21598,8 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 6,
     "displayName": "US Palmyra X5",
+    "deprecation_date": "2026-09-21",
+    "retirement_date": "2027-03-21",
     "parent": "writer.palmyra-x5-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
@@ -21513,6 +21613,8 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "displayName": "US Palmyra X4",
+    "deprecation_date": "2026-09-09",
+    "retirement_date": "2027-03-09",
     "parent": "writer.palmyra-x4-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
@@ -21554,6 +21656,8 @@
     "flavor": "chat",
     "displayName": "US DeepSeek R1",
     "reasoning": true,
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30",
     "parent": "deepseek.r1-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 8000,
@@ -21589,7 +21693,8 @@
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "EU Claude 3 Haiku",
     "deprecated": true,
-    "deprecation_date": "2026-04-20",
+    "deprecation_date": "2026-03-10",
+    "retirement_date": "2026-09-10",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -21621,6 +21726,8 @@
     "input_cost_per_mil_tokens": 0.19,
     "output_cost_per_mil_tokens": 0.19,
     "displayName": "EU Llama 3.2 3B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-3b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21634,6 +21741,8 @@
     "input_cost_per_mil_tokens": 0.13,
     "output_cost_per_mil_tokens": 0.13,
     "displayName": "EU Llama 3.2 1B Instruct",
+    "deprecation_date": "2026-01-07",
+    "retirement_date": "2026-07-07",
     "parent": "meta.llama3-2-1b-instruct-v1:0",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
@@ -21698,6 +21807,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3.5 Sonnet v2",
+    "deprecation_date": "2026-01-30",
+    "retirement_date": "2026-11-13",
     "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 8192,
@@ -21714,6 +21825,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "APAC Claude 3.5 Sonnet",
+    "deprecation_date": "2026-01-30",
+    "retirement_date": "2026-11-13",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -21731,7 +21844,8 @@
     "input_cache_write_cost_per_mil_tokens": 0.3125,
     "displayName": "APAC Claude 3 Haiku",
     "deprecated": true,
-    "deprecation_date": "2026-04-20",
+    "deprecation_date": "2026-03-10",
+    "retirement_date": "2026-11-13",
     "parent": "anthropic.claude-3-haiku-20240307-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -21750,6 +21864,7 @@
     "displayName": "APAC Claude 3 Sonnet",
     "deprecated": true,
     "deprecation_date": "2025-07-21",
+    "retirement_date": "2026-11-13",
     "parent": "anthropic.claude-3-sonnet-20240229-v1:0",
     "max_input_tokens": 200000,
     "max_output_tokens": 4096,
@@ -28238,7 +28353,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "google.gemma-3-4b-it": {
     "format": "converse",
@@ -28385,7 +28502,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "openai.gpt-5.6-sol": {
     "format": "openai",
@@ -28598,7 +28717,9 @@
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
-    ]
+    ],
+    "deprecation_date": "2026-09-30",
+    "retirement_date": "2027-03-30"
   },
   "databricks-glm-5-2": {
     "format": "openai",
@@ -29054,6 +29175,8 @@
     "displayName": "Claude Sonnet 4",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-04-14",
+    "retirement_date": "2026-10-14",
     "parent": "anthropic.claude-sonnet-4-20250514-v1:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
@@ -29225,6 +29348,8 @@
     },
     "displayName": "Nova Premier",
     "reasoning": true,
+    "deprecation_date": "2026-03-13",
+    "retirement_date": "2026-09-14",
     "parent": "amazon.nova-premier-v1:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 25000,
@@ -29241,6 +29366,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "displayName": "Claude Sonnet 3.5",
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01",
     "parent": "anthropic.claude-3-5-sonnet-20240620-v1:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 4096,
@@ -29257,6 +29384,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.6,
     "input_cache_write_cost_per_mil_tokens": 7.5,
     "displayName": "Claude Sonnet 3.5 v2",
+    "deprecation_date": "2025-08-25",
+    "retirement_date": "2026-03-01",
     "parent": "anthropic.claude-3-5-sonnet-20241022-v2:0",
     "max_input_tokens": 1000000,
     "max_output_tokens": 8192,

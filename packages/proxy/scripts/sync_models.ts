@@ -12,6 +12,7 @@ import {
   StoredModelSchema as ModelSchema,
   type StoredModelSpec as ModelSpec,
 } from "../schema/models";
+import { cacheWriteRateKeys } from "../schema/cache-metrics.generated";
 import ts from "typescript";
 import {
   canonicalizeLocalModelName,
@@ -2689,7 +2690,7 @@ async function updateModelsCommand(argv: any) {
         localCost: number | undefined | null,
         remoteCostPerToken: number | undefined,
         localFieldName: keyof ModelSpec,
-      ) => {
+      ): boolean => {
         if (isFieldManuallyPreserved(localModelName, localFieldName)) {
           console.log(
             `  [PRESERVE] ${localModelName}.${String(
@@ -2698,7 +2699,7 @@ async function updateModelsCommand(argv: any) {
               localCost ?? "unset"
             }); LiteLLM sync skipped`,
           );
-          return;
+          return false;
         }
         const normalizedRemoteCostPerToken =
           getNonZeroNumber(remoteCostPerToken);
@@ -2734,6 +2735,7 @@ async function updateModelsCommand(argv: any) {
                 `  [WRITE] Updated ${costType} Cost to: ${roundedRemoteCostPerMil}`,
               );
             }
+            return true;
           }
         } else if (typeof localCost === "number") {
           if (!argv.write) {
@@ -2743,6 +2745,7 @@ async function updateModelsCommand(argv: any) {
             );
           }
         }
+        return false;
       };
 
       const checkAndUpdateTokenLimit = (
@@ -2860,12 +2863,24 @@ async function updateModelsCommand(argv: any) {
         remoteCacheReadCostPerToken,
         "input_cache_read_cost_per_mil_tokens",
       );
-      checkAndUpdateCost(
-        "Cache Write",
-        localCacheWriteCost,
-        remoteCacheWriteCostPerToken,
-        "input_cache_write_cost_per_mil_tokens",
-      );
+      if (
+        checkAndUpdateCost(
+          "Cache Write",
+          localCacheWriteCost,
+          remoteCacheWriteCostPerToken,
+          "input_cache_write_cost_per_mil_tokens",
+        )
+      ) {
+        for (const key of cacheWriteRateKeys) {
+          const ttlCost = localModelDetail[key];
+          if (typeof ttlCost !== "number") continue;
+          reportModelIfNeeded();
+          console.log(
+            `  [REVIEW] ${key} (${ttlCost}) may be stale after the cache write cost change; LiteLLM has no TTL-specific rate, so update it manually`,
+          );
+          discrepanciesFound++;
+        }
+      }
 
       // Check and update token limits
       const localMaxInputTokens = localModelDetail.max_input_tokens;

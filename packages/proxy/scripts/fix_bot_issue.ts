@@ -22,6 +22,7 @@ import {
   PricingTierSchema,
   PricingTiers,
 } from "../schema/models";
+import { cacheWriteRateKeys } from "../schema/cache-metrics.generated";
 
 const partialModelSchema = ModelSchema.partial().extend({
   pricing: z
@@ -1354,21 +1355,11 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
     model.input_cache_write_cost_per_mil_tokens =
       patch.input_cache_write_cost_per_mil_tokens;
   }
-  if (patch.input_cache_write_5m_cost_per_mil_tokens !== undefined) {
-    model.input_cache_write_5m_cost_per_mil_tokens =
-      patch.input_cache_write_5m_cost_per_mil_tokens;
-  }
-  if (patch.input_cache_write_30m_cost_per_mil_tokens !== undefined) {
-    model.input_cache_write_30m_cost_per_mil_tokens =
-      patch.input_cache_write_30m_cost_per_mil_tokens;
-  }
-  if (patch.input_cache_write_1h_cost_per_mil_tokens !== undefined) {
-    model.input_cache_write_1h_cost_per_mil_tokens =
-      patch.input_cache_write_1h_cost_per_mil_tokens;
-  }
-  if (patch.input_cache_write_12h_cost_per_mil_tokens !== undefined) {
-    model.input_cache_write_12h_cost_per_mil_tokens =
-      patch.input_cache_write_12h_cost_per_mil_tokens;
+  for (const key of cacheWriteRateKeys) {
+    const rate = patch[key];
+    if (rate !== undefined) {
+      model[key] = rate;
+    }
   }
   if (patch.pricing === null) {
     delete model.pricing;

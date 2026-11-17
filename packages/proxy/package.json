@@ -10,6 +10,7 @@
     "watch": "tsup --watch",
     "clean": "rm -r dist/*",
     "test": "vitest run",
+    "generate:cache-metrics": "node scripts/cache_metrics.mjs",
     "test:cloudflare-worker": "tsx scripts/cloudflare_worker_media_test.ts"
   },
   "exports": {

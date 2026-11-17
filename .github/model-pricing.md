@@ -18,9 +18,10 @@ Batch API support and synchronous service-tier support are separate checks.
 - Verify support and rates for the exact model, resolved provider, and tier using official provider pricing, tier documentation, or a documented provider API.
   For OpenRouter, verify the specific upstream endpoint and its tier tag through OpenRouter's official model/endpoint data.
   Do not infer tier support or rates from another provider, tier, parent, alias, model family, or a generic discount.
-- Use USD per million text tokens for `input_cost_per_mil_tokens`, `output_cost_per_mil_tokens`, `input_cache_read_cost_per_mil_tokens`, `input_cache_write_cost_per_mil_tokens`, and the `input_cache_write_{5m,30m,1h,12h}_cost_per_mil_tokens` fields.
+- Use USD per million text tokens for `input_cost_per_mil_tokens`, `output_cost_per_mil_tokens`, `input_cache_read_cost_per_mil_tokens`, `input_cache_write_cost_per_mil_tokens`, and the TTL-specific cache-write fields in `packages/proxy/schema/cache-metrics.json` (currently `input_cache_write_5m_cost_per_mil_tokens` and `input_cache_write_1h_cost_per_mil_tokens` for Anthropic, and `input_cache_write_30m_cost_per_mil_tokens` and `input_cache_write_12h_cost_per_mil_tokens` for OpenAI).
   Cache-write prices are the total token price for the stated TTL, not a surcharge or an hourly storage fee.
   The unsuffixed cache-write field is the total price for the default TTL.
+  Set every TTL-specific cache-write price the provider publishes for the model and tier, and update them whenever the default cache-write price changes.
   For OpenRouter Gemini, the endpoint's `input_cache_write` price is a storage surcharge.
   Add it to the applicable `prompt` price, including prompt-length overrides, to record the [total cache-write price](https://openrouter.ai/docs/guides/best-practices/prompt-caching#google-gemini).
   Omit unknown prices; zero is a published price, not a placeholder.

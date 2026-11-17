@@ -36,7 +36,7 @@ it("preserves top-level prices when tier pricing is absent or null", () => {
     input_cache_write_5m_cost_per_mil_tokens: null,
     input_cache_write_30m_cost_per_mil_tokens: 2.5,
     input_cache_write_1h_cost_per_mil_tokens: 4,
-    input_cache_write_12h_cost_per_mil_tokens: 5,
+    input_cache_write_12h_cost_per_mil_tokens: null,
   };
   expect(ModelSchema.parse(base)).toEqual(base);
   const model = { ...base, pricing: null };
@@ -50,7 +50,7 @@ it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
     input_cache_read_cost_per_mil_tokens: 0.1,
     input_cache_write_cost_per_mil_tokens: 1.25,
     input_cache_write_5m_cost_per_mil_tokens: 1.25,
-    input_cache_write_30m_cost_per_mil_tokens: 1.25,
+    input_cache_write_30m_cost_per_mil_tokens: null,
     input_cache_write_1h_cost_per_mil_tokens: 2,
     input_cache_write_12h_cost_per_mil_tokens: 2.5,
     endpoints: ["provider.example"],
@@ -198,6 +198,81 @@ it("preserves provider prices and their conditions throughout the catalog", () =
           }
         }
       }
+    }
+  }
+});
+
+it("preserves OpenAI cache-write TTL prices without changing legacy prices", () => {
+  const models = getAvailableModels();
+  const sol = models["gpt-6.1-sol"];
+  expect(sol).toMatchObject({
+    input_cost_per_mil_tokens: 2,
+    output_cost_per_mil_tokens: 10,
+    input_cache_read_cost_per_mil_tokens: 0.1,
+    input_cache_write_cost_per_mil_tokens: 2.5,
+    input_cache_write_30m_cost_per_mil_tokens: 2.5,
+    input_cache_write_12h_cost_per_mil_tokens: 5,
+  });
+  expect(sol.pricing?.openai?.flex).toEqual([
+    expect.objectContaining({
+      input_cache_write_cost_per_mil_tokens: 1.25,
+      input_cache_write_30m_cost_per_mil_tokens: 1.25,
+      input_cache_write_12h_cost_per_mil_tokens: 2.5,
+      max_input_tokens: 272000,
+    }),
+    expect.objectContaining({
+      input_cache_write_cost_per_mil_tokens: 2.5,
+      input_cache_write_30m_cost_per_mil_tokens: 2.5,
+      input_cache_write_12h_cost_per_mil_tokens: 5,
+      min_input_tokens: 272001,
+    }),
+  ]);
+  expect(models["gpt-5.5"]).toMatchObject({
+    input_cost_per_mil_tokens: 5,
+    output_cost_per_mil_tokens: 30,
+    input_cache_read_cost_per_mil_tokens: 0.5,
+  });
+  for (const name of ["gpt-5.5", "gpt-5.5-pro", "gpt-5.4"]) {
+    const model = models[name];
+    expect(model.input_cache_write_cost_per_mil_tokens).toBeUndefined();
+    expect(model.input_cache_write_30m_cost_per_mil_tokens).toBeUndefined();
+    expect(model.input_cache_write_12h_cost_per_mil_tokens).toBeUndefined();
+    for (const rate of model.pricing?.openai?.flex ?? []) {
+      expect(rate.input_cache_write_30m_cost_per_mil_tokens).toBeUndefined();
+      expect(rate.input_cache_write_12h_cost_per_mil_tokens).toBeUndefined();
+    }
+  }
+});
+
+it.each(["gpt-5.6", "daybreak-blue-latest", "gpt-daybreak-blue-latest"])(
+  "preserves GPT-5.6 Sol cache-write prices for alias %s",
+  (name) => {
+    expect(getAvailableModels()[name]).toMatchObject({
+      input_cache_write_cost_per_mil_tokens: 5,
+      input_cache_write_30m_cost_per_mil_tokens: 5,
+      input_cache_write_12h_cost_per_mil_tokens: 10,
+    });
+  },
+);
+
+it("does not infer OpenAI TTL prices for unverified provider variants", () => {
+  const models = getAvailableModels();
+  for (const model of [
+    models["openai.gpt-6.1-sol"],
+    models["databricks-gpt-6-1-terra"],
+    models["openai/gpt-6.1-sol-pro"],
+    models["gpt-6-astra-law"],
+  ]) {
+    expect(model.input_cache_write_30m_cost_per_mil_tokens).toBeUndefined();
+    expect(model.input_cache_write_12h_cost_per_mil_tokens).toBeUndefined();
+  }
+  const sol = models["gpt-6.1-sol"];
+  for (const provider of ["azure", "openrouter"] as const) {
+    const rates = sol.pricing?.[provider]?.flex;
+    expect(rates).toBeDefined();
+    for (const rate of rates ?? []) {
+      expect(rate.input_cache_write_30m_cost_per_mil_tokens).toBeUndefined();
+      expect(rate.input_cache_write_12h_cost_per_mil_tokens).toBeUndefined();
     }
   }
 });

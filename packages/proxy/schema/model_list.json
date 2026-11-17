@@ -1,4 +1,142 @@
 {
+  "gpt-6.2-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "input_cache_write_30m_cost_per_mil_tokens": 10,
+    "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "pricing": {
+      "openai": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 80,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 32,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.6,
+            "input_cache_write_cost_per_mil_tokens": 40,
+            "input_cache_write_30m_cost_per_mil_tokens": 40,
+            "input_cache_write_12h_cost_per_mil_tokens": 80,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 24,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.2,
+            "input_cache_write_cost_per_mil_tokens": 30,
+            "input_cache_write_30m_cost_per_mil_tokens": 30,
+            "input_cache_write_12h_cost_per_mil_tokens": 60,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000,
+            "valid_until": "2027-02-28"
+          },
+          {
+            "input_cost_per_mil_tokens": 48,
+            "output_cost_per_mil_tokens": 180,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 60,
+            "input_cache_write_30m_cost_per_mil_tokens": 60,
+            "input_cache_write_12h_cost_per_mil_tokens": 120,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001,
+            "valid_until": "2027-02-28"
+          },
+          {
+            "input_cost_per_mil_tokens": 48,
+            "output_cost_per_mil_tokens": 240,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 60,
+            "input_cache_write_30m_cost_per_mil_tokens": 60,
+            "input_cache_write_12h_cost_per_mil_tokens": 120,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000,
+            "valid_from": "2027-03-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 96,
+            "output_cost_per_mil_tokens": 360,
+            "input_cache_read_cost_per_mil_tokens": 4.8,
+            "input_cache_write_cost_per_mil_tokens": 120,
+            "input_cache_write_30m_cost_per_mil_tokens": 120,
+            "input_cache_write_12h_cost_per_mil_tokens": 240,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001,
+            "valid_from": "2027-03-01"
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-6.2 Astra",
+    "reasoning": true,
+    "fallback_models": [
+      "global.openai.gpt-6.2-astra",
+      "openai.gpt-6.2-astra",
+      "us.openai.gpt-6.2-astra"
+    ],
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "openai",
+      "azure",
+      "openrouter"
+    ]
+  },
   "gpt-6.2-sol": {
     "format": "openai",
     "flavor": "chat",
@@ -13191,6 +13329,62 @@
     "parent": "xai.grok-4.7",
     "max_input_tokens": 500000,
     "max_output_tokens": 500000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "openai.gpt-6.2-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "input_cache_write_30m_cost_per_mil_tokens": 10,
+    "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "displayName": "GPT-6.2 Astra",
+    "reasoning": true,
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "us.openai.gpt-6.2-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "input_cache_write_30m_cost_per_mil_tokens": 10,
+    "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "displayName": "GPT-6.2 Astra",
+    "reasoning": true,
+    "parent": "openai.gpt-6.2-astra",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "bedrock"
+    ]
+  },
+  "global.openai.gpt-6.2-astra": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "input_cache_write_30m_cost_per_mil_tokens": 10,
+    "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "displayName": "GPT-6.2 Astra",
+    "reasoning": true,
+    "parent": "openai.gpt-6.2-astra",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]

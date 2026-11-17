@@ -195,6 +195,14 @@ export const ModelSchema = z.object({
     .string()
     .nullish()
     .describe("Date after which the model will be treated as deprecated"),
+  retired: z
+    .boolean()
+    .nullish()
+    .describe("Model is no longer served by the provider"),
+  retirement_date: z
+    .string()
+    .nullish()
+    .describe("Date after which the model will be treated as retired"),
   parent: z.string().nullish().describe("The model was replaced this model."),
   fallback_models: z
     .array(z.string())
@@ -385,12 +393,22 @@ export function markModelsPastDeprecationDate(models: {
   [name: string]: ModelSpec;
 }): { [name: string]: ModelSpec } {
   for (let modelName of Object.keys(models)) {
-    const { deprecation_date } = models[modelName];
+    const { deprecation_date, retirement_date } = models[modelName];
     if (
       deprecation_date &&
       Date.parse(deprecation_date) &&
       new Date() > new Date(deprecation_date)
     ) {
+      models[modelName].deprecated = true;
+    }
+    if (
+      retirement_date &&
+      Date.parse(retirement_date) &&
+      new Date() > new Date(retirement_date)
+    ) {
+      models[modelName].retired = true;
+    }
+    if (models[modelName].retired) {
       models[modelName].deprecated = true;
     }
   }

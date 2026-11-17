@@ -13,8 +13,10 @@ import { parseIndexEndpointTypes } from "./reconcile_provider_models";
 
 // Apply confirmed deprecations from the audit report to the catalog:
 //   - drop the dead provider from a model's available_providers (+ index.ts)
-//   - when a model loses ALL providers, remove the entry entirely and add it to
-//     SYNC_EXCLUDED_MODELS so the LiteLLM sync does not re-add it.
+//   - when a model loses ALL providers, keep the entry as retired (retired: true
+//     plus a retirement_date), keep its provider mappings as a record of where
+//     it was served, and add it to SYNC_EXCLUDED_MODELS so the LiteLLM sync
+//     leaves it alone. Index-only routes with no catalog entry are removed.
 
 const SCHEMA_DIR = path.resolve(__dirname, "../schema");
 const MODEL_LIST_PATH = path.join(SCHEMA_DIR, "model_list.json");
@@ -24,6 +26,8 @@ const DEPRECATED_IDS_PATH = path.join(__dirname, "deprecated_model_ids.json");
 type ModelSpec = {
   available_providers?: string[];
   fallback_models?: string[];
+  deprecation_date?: string | null;
+  retired?: boolean | null;
   retirement_date?: string | null;
 } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
@@ -79,16 +83,16 @@ export function applyRetirements(
   return applied;
 }
 
-// Models the audit is about to remove whose catalog lifecycle data did not see
+// Models the audit is about to retire whose catalog lifecycle data did not see
 // it coming: no retirement_date at all, or one still in the future.
-export function removalReviewNotes(
+export function retirementReviewNotes(
   catalog: Catalog,
-  removedModels: string[],
+  retiredModels: string[],
   now: Date,
 ): ReviewNote[] {
   const today = now.toISOString().slice(0, 10);
   const notes: ReviewNote[] = [];
-  for (const model of removedModels) {
+  for (const model of retiredModels) {
     const spec = catalog[model];
     if (!spec) continue;
     const provider = (spec.available_providers ?? []).join(", ");
@@ -96,13 +100,13 @@ export function removalReviewNotes(
       notes.push({
         model,
         provider,
-        note: "removed with no retirement_date on record; check the provider's notice",
+        note: `retired by the audit on ${today} with no retirement_date on record; check the provider's notice`,
       });
     } else if (spec.retirement_date > today) {
       notes.push({
         model,
         provider,
-        note: `removed before its retirement_date ${spec.retirement_date}`,
+        note: `retired by the audit on ${today}, before its retirement_date ${spec.retirement_date}`,
       });
     }
   }
@@ -142,19 +146,34 @@ export function buildSummaryMarkdown(args: {
   return lines.join("\n");
 }
 
-// Models applyDeprecations would delete outright, computed without mutating.
-export function planRemovals(
+// Models applyDeprecations would retire, computed without mutating.
+export function planRetirements(
   catalog: Catalog,
   indexContent: string,
   deprecations: Deprecation[],
 ): string[] {
   const copy: Catalog = JSON.parse(JSON.stringify(catalog));
   return applyDeprecations(copy, indexContent, [], deprecations).result
-    .removedModels;
+    .retiredModels;
+}
+
+// Mark a model no provider serves any more as retired. Keeps a past
+// retirement_date, otherwise records today as the date the audit saw it go.
+// Drops a deprecation_date that would land after the retirement.
+export function markRetired(spec: ModelSpec, now: Date): void {
+  const today = now.toISOString().slice(0, 10);
+  spec.retired = true;
+  if (!spec.retirement_date || spec.retirement_date > today) {
+    spec.retirement_date = today;
+  }
+  if (spec.deprecation_date && spec.deprecation_date > spec.retirement_date) {
+    delete spec.deprecation_date;
+  }
 }
 
 export type ApplyResult = {
-  removedModels: string[];
+  retiredModels: string[];
+  removedRoutes: string[];
   narrowedModels: { model: string; dropped: string[]; remaining: string[] }[];
 };
 
@@ -163,6 +182,7 @@ export function applyDeprecations(
   indexContent: string,
   deprecatedIds: string[],
   deprecations: Deprecation[],
+  now = new Date(),
 ): {
   catalog: Catalog;
   indexContent: string;
@@ -176,7 +196,8 @@ export function applyDeprecations(
     deadByModel.set(d.model, set);
   }
 
-  const removedModels: string[] = [];
+  const retiredModels: string[] = [];
+  const removedRoutes: string[] = [];
   const narrowedModels: ApplyResult["narrowedModels"] = [];
   let nextIndex = indexContent;
   const indexMap = parseIndexEndpointTypes(indexContent);
@@ -197,10 +218,12 @@ export function applyDeprecations(
 
     if (remaining.length === 0) {
       if (spec) {
-        delete catalog[model];
+        markRetired(spec, now);
+        retiredModels.push(model);
+      } else {
+        nextIndex = rewriteIndexEntry(nextIndex, model, []);
+        removedRoutes.push(model);
       }
-      nextIndex = rewriteIndexEntry(nextIndex, model, []);
-      removedModels.push(model);
     } else {
       if (spec && avail.some((p) => dead.has(p))) {
         spec.available_providers = avail.filter((p) => !dead.has(p));
@@ -216,8 +239,8 @@ export function applyDeprecations(
     }
   }
 
-  // Remove incoming fallback edges only for models deleted by this audit.
-  const removed = new Set(removedModels);
+  // Remove incoming fallback edges to models this audit retired or unrouted.
+  const removed = new Set([...retiredModels, ...removedRoutes]);
   for (const spec of Object.values(catalog)) {
     if (!spec.fallback_models?.some((model) => removed.has(model))) continue;
     const surviving = spec.fallback_models.filter(
@@ -230,12 +253,15 @@ export function applyDeprecations(
     }
   }
 
-  const updatedDeprecatedIds = addToDeprecatedIds(deprecatedIds, removedModels);
+  const updatedDeprecatedIds = addToDeprecatedIds(deprecatedIds, [
+    ...retiredModels,
+    ...removedRoutes,
+  ]);
   return {
     catalog,
     indexContent: nextIndex,
     deprecatedIds: updatedDeprecatedIds,
-    result: { removedModels, narrowedModels },
+    result: { retiredModels, removedRoutes, narrowedModels },
   };
 }
 
@@ -266,10 +292,11 @@ async function main(): Promise<void> {
     fs.readFileSync(DEPRECATED_IDS_PATH, "utf8"),
   );
 
-  const removalNotes = removalReviewNotes(
+  const now = new Date();
+  const retirementNotes = retirementReviewNotes(
     catalog,
-    planRemovals(catalog, indexContent, report.deprecations),
-    new Date(),
+    planRetirements(catalog, indexContent, report.deprecations),
+    now,
   );
   const retired = applyRetirements(catalog, report.retirements ?? []);
   const out = applyDeprecations(
@@ -277,8 +304,9 @@ async function main(): Promise<void> {
     indexContent,
     deprecatedIds,
     report.deprecations,
+    now,
   );
-  const reviewNotes = [...(report.reviewNotes ?? []), ...removalNotes];
+  const reviewNotes = [...(report.reviewNotes ?? []), ...retirementNotes];
   console.log(`Set retirement_date on ${retired.length} model(s).`);
   for (const n of reviewNotes) {
     console.log(`  REVIEW ${n.model}: ${n.note}`);
@@ -294,10 +322,13 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `Removed ${out.result.removedModels.length} model(s); narrowed providers on ${out.result.narrowedModels.length} model(s).`,
+    `Retired ${out.result.retiredModels.length} model(s); removed ${out.result.removedRoutes.length} index-only route(s); narrowed providers on ${out.result.narrowedModels.length} model(s).`,
   );
-  for (const m of out.result.removedModels) {
-    console.log(`  REMOVE ${m}`);
+  for (const m of out.result.retiredModels) {
+    console.log(`  RETIRE ${m}`);
+  }
+  for (const m of out.result.removedRoutes) {
+    console.log(`  REMOVE ROUTE ${m}`);
   }
   for (const n of out.result.narrowedModels) {
     console.log(

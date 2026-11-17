@@ -27,6 +27,7 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
 
 type ModelSpec = {
   available_providers?: string[];
+  retired?: boolean | null;
   retirement_date?: string | null;
 };
 type Catalog = Record<string, ModelSpec>;
@@ -185,6 +186,16 @@ async function mapWithConcurrency<T, R>(
 const RETIREMENT_SOURCES: Record<string, string> = {
   openrouter: "https://openrouter.ai/api/v1/models (expiration_date)",
 };
+
+// A model already retired in the catalog (by hand or by a past
+// retirement_date). The audit keeps these entries, so it must not re-report
+// them as new deprecations every day.
+export function isRetired(spec: ModelSpec | undefined, now: Date): boolean {
+  if (!spec) return false;
+  if (spec.retired) return true;
+  const today = now.toISOString().slice(0, 10);
+  return !!spec.retirement_date && spec.retirement_date <= today;
+}
 
 // Proposes retirement_date updates from a provider's published dates, only for
 // models that provider alone serves: a model is not retired while another
@@ -463,6 +474,9 @@ export async function runAudit(args: {
     );
     report.reviewNotes.push(...reviewNotes);
     for (const deprecation of deprecations) {
+      if (isRetired(args.catalog[deprecation.model], new Date())) {
+        continue;
+      }
       if (NEVER_DEPRECATE_MODELS.has(deprecation.model)) {
         console.log(
           `  [PRESERVED] ${deprecation.provider}/${deprecation.model} is in NEVER_DEPRECATE_MODELS — not deprecating`,

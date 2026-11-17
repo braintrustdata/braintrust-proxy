@@ -6209,7 +6209,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "max_input_tokens": 1048576,
     "max_output_tokens": 1048576,
@@ -6365,7 +6365,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "Muse Glimmer 30B",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
@@ -6414,7 +6414,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.044,
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-pro",
     "max_input_tokens": 1048576,
@@ -6473,7 +6473,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.007,
     "displayName": "DeepSeek V4 Flash (0731)",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-flash",
     "max_input_tokens": 1048576,
@@ -6489,7 +6489,6 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.6,
     "displayName": "DeepSeek V4 Pro",
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27",
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
@@ -6508,7 +6507,6 @@
     "available_providers": [
       "fireworks"
     ],
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14"
   },
   "accounts/fireworks/models/deepseek-v3p1": {
@@ -6517,7 +6515,6 @@
     "input_cost_per_mil_tokens": 0.56,
     "output_cost_per_mil_tokens": 1.68,
     "reasoning": true,
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
@@ -6992,7 +6989,6 @@
     "available_providers": [
       "fireworks"
     ],
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14"
   },
   "accounts/fireworks/models/qwen3-vl-30b-a3b-thinking": {
@@ -7001,7 +6997,6 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "reasoning": true,
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14",
     "max_input_tokens": 262144,
     "max_output_tokens": 262144,
@@ -7049,7 +7044,6 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.2,
     "reasoning": true,
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14",
     "max_input_tokens": 40960,
     "max_output_tokens": 40960,
@@ -7608,7 +7602,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.14,
     "displayName": "GLM 5.2",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
@@ -7641,7 +7635,6 @@
     "available_providers": [
       "fireworks"
     ],
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14"
   },
   "accounts/fireworks/models/glm-4p7": {
@@ -7652,7 +7645,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "GLM 4.7",
     "reasoning": true,
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14",
     "max_input_tokens": 202752,
     "max_output_tokens": 202800,
@@ -7718,7 +7710,7 @@
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
     "displayName": "Kimi K2.7 Code",
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
@@ -7734,7 +7726,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.16,
     "displayName": "Kimi K2.6",
     "reasoning": true,
-    "deprecation_date": "2026-09-25",
+    "deprecation_date": "2026-09-12",
     "retirement_date": "2026-09-25",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
@@ -7827,7 +7819,6 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax M2.7",
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27",
     "max_input_tokens": 196608,
     "max_output_tokens": 196608,
@@ -7939,7 +7930,6 @@
     "available_providers": [
       "fireworks"
     ],
-    "deprecation_date": "2026-05-14",
     "retirement_date": "2026-05-14"
   },
   "accounts/fireworks/models/llama-v3p2-90b-vision-instruct": {
@@ -8998,7 +8988,7 @@
     },
     "displayName": "GPT-OSS (120B)",
     "reasoning": true,
-    "deprecation_date": "2026-11-07",
+    "deprecation_date": "2026-10-19",
     "retirement_date": "2026-11-07",
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
@@ -9025,7 +9015,6 @@
     "input_cache_read_cost_per_mil_tokens": 0.035,
     "displayName": "GPT-OSS (20B)",
     "reasoning": true,
-    "deprecation_date": "2026-08-27",
     "retirement_date": "2026-08-27",
     "max_input_tokens": 131072,
     "max_output_tokens": 32768,
@@ -9318,7 +9307,7 @@
     },
     "displayName": "NVIDIA Nemotron 3 Ultra NVFP4",
     "reasoning": true,
-    "deprecation_date": "2026-11-07",
+    "deprecation_date": "2026-10-19",
     "retirement_date": "2026-11-07",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
@@ -9855,7 +9844,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.17,
     "displayName": "Inkling",
     "reasoning": true,
-    "deprecation_date": "2026-11-07",
+    "deprecation_date": "2026-10-19",
     "retirement_date": "2026-11-07",
     "max_input_tokens": 1048576,
     "max_output_tokens": 1048576,

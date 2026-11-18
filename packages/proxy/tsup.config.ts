@@ -14,7 +14,10 @@ export default [
     dts: true,
   },
   {
-    entry: ["schema/index.ts"],
+    entry: {
+      index: "schema/index.ts",
+      "cache-metrics": "schema/cache-metric-definitions.generated.ts",
+    },
     format: ["cjs", "esm"],
     outDir: "schema/dist",
     dts: true,

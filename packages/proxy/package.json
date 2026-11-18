@@ -21,6 +21,12 @@
       "module": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
+    "./cache-metrics": {
+      "types": "./schema/dist/cache-metrics.d.ts",
+      "import": "./schema/dist/cache-metrics.mjs",
+      "module": "./schema/dist/cache-metrics.mjs",
+      "require": "./schema/dist/cache-metrics.js"
+    },
     "./edge": {
       "types": "./edge/dist/index.d.ts",
       "import": "./edge/dist/index.mjs",
@@ -56,6 +62,13 @@
       "import": "./providers/dist/index.mjs",
       "module": "./providers/dist/index.mjs",
       "require": "./providers/dist/index.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "cache-metrics": [
+        "./schema/dist/cache-metrics.d.ts"
+      ]
     }
   },
   "files": [

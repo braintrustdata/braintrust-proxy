@@ -10771,6 +10771,25 @@
       "vertex"
     ]
   },
+  "publishers/google/models/gemini-4-neon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 4 Neon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "locations": [
+      "global"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "vertex"
+    ]
+  },
   "publishers/google/models/gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -25009,6 +25028,53 @@
       "openrouter"
     ]
   },
+  "gemini-4-neon": {
+    "format": "google",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "pricing": {
+      "google": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 5.4,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.27
+          }
+        ]
+      }
+    },
+    "displayName": "Gemini 4 Neon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "fallback_models": [
+      "databricks-gemini-4-neon",
+      "publishers/google/models/gemini-4-neon"
+    ],
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "google",
+      "vertex",
+      "openrouter"
+    ]
+  },
   "gemini-3.6-flash": {
     "format": "google",
     "flavor": "chat",
@@ -28367,6 +28433,22 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "displayName": "Gemini 4 Carbon",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 65536,
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-gemini-4-neon": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 3,
+    "output_cost_per_mil_tokens": 15,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Gemini 4 Neon",
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1048576,

@@ -526,6 +526,58 @@ export const AvailableEndpointTypes = {
     ).toEqual(["vertex"]);
   });
 
+  it.each([
+    "claude-sonnet-4-6",
+    "anthropic.claude-sonnet-4-6",
+    "anthropic/claude-sonnet-4.6",
+  ])("excludes retired %s from normalized fallback links", (retiredName) => {
+    const catalog: Record<string, ModelSpec> = {
+      "claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+        available_providers: ["anthropic"],
+        fallback_models: [
+          "anthropic.claude-sonnet-4-6",
+          "anthropic/claude-sonnet-4.6",
+        ],
+      },
+      "anthropic.claude-sonnet-4-6": {
+        format: "anthropic",
+        flavor: "chat",
+        available_providers: ["bedrock"],
+        fallback_models: ["claude-sonnet-4-6"],
+      },
+      "anthropic/claude-sonnet-4.6": {
+        format: "openai",
+        flavor: "chat",
+        available_providers: ["openrouter"],
+        fallback_models: ["claude-sonnet-4-6"],
+      },
+    };
+    catalog[retiredName].retired = true;
+    catalog[retiredName].retirement_date = "2026-01-01";
+
+    const { models } = normalizeLocalModels(catalog);
+
+    expect(models[retiredName]).toMatchObject({
+      retired: true,
+      retirement_date: "2026-01-01",
+      available_providers: catalog[retiredName].available_providers,
+    });
+    expect(models[retiredName].fallback_models).toBeUndefined();
+    for (const model of Object.values(models)) {
+      expect(model.fallback_models ?? []).not.toContain(retiredName);
+    }
+    if (retiredName !== "claude-sonnet-4-6") {
+      expect(models["claude-sonnet-4-6"].fallback_models).toEqual(
+        ["anthropic.claude-sonnet-4-6", "anthropic/claude-sonnet-4.6"].filter(
+          (name) => name !== retiredName,
+        ),
+      );
+    }
+    expect(normalizeLocalModels(models).models).toEqual(models);
+  });
+
   it("preserves explicit cloud companions through catalog canonicalization", () => {
     const model = {
       format: "anthropic",

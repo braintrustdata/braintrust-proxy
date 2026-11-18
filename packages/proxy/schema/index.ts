@@ -1632,7 +1632,12 @@ const fallbackModelsByName: Record<string, Set<string>> = {};
 const modelEndpointTypesByName: Record<string, ModelEndpointType[]> = {};
 
 for (const [modelName, spec] of Object.entries(modelEndpointAvailableModels)) {
-  const fallbackModels = spec.fallback_models ?? [];
+  if (spec.retired) {
+    continue;
+  }
+  const fallbackModels = (spec.fallback_models ?? []).filter(
+    (name) => !modelEndpointAvailableModels[name]?.retired,
+  );
   if (fallbackModels.length === 0) {
     continue;
   }

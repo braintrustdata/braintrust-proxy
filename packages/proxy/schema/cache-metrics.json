@@ -1,0 +1,32 @@
+[
+  {
+    "id": "anthropic",
+    "metrics": [
+      {
+        "ttl": "5m",
+        "metric": "prompt_cache_creation_5m_tokens",
+        "rate_key": "input_cache_write_5m_cost_per_mil_tokens"
+      },
+      {
+        "ttl": "1h",
+        "metric": "prompt_cache_creation_1h_tokens",
+        "rate_key": "input_cache_write_1h_cost_per_mil_tokens"
+      }
+    ]
+  },
+  {
+    "id": "openai",
+    "metrics": [
+      {
+        "ttl": "30m",
+        "metric": "prompt_cache_creation_30m_tokens",
+        "rate_key": "input_cache_write_30m_cost_per_mil_tokens"
+      },
+      {
+        "ttl": "12h",
+        "metric": "prompt_cache_creation_12h_tokens",
+        "rate_key": "input_cache_write_12h_cost_per_mil_tokens"
+      }
+    ]
+  }
+]

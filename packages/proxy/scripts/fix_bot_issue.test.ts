@@ -490,6 +490,27 @@ describe("fix_bot_issue", () => {
       });
     });
 
+    it("applies top-level TTL-specific cache-write prices", () => {
+      const modelSpec = {
+        input_cache_write_cost_per_mil_tokens: 3.75,
+        input_cache_write_5m_cost_per_mil_tokens: 3.75,
+        input_cache_write_1h_cost_per_mil_tokens: 6,
+        input_cache_write_30m_cost_per_mil_tokens: 3.75,
+        input_cache_write_12h_cost_per_mil_tokens: 7.5,
+      };
+      const updated = buildUpdatedLocalModel(
+        {
+          provider: "openai",
+          models: ["gpt-5.4"],
+          metadata: { model_spec: modelSpec },
+          aliasTargets: {},
+        },
+        "gpt-5.4",
+        existingModel,
+      );
+      expect(updated).toEqual({ ...existingModel, ...modelSpec });
+    });
+
     it("resolves OpenRouter tier-pricing updates from model_specs", () => {
       const parsed = parseIssue(
         "[BOT ISSUE] Refresh OpenRouter gpt-5.4 pricing",

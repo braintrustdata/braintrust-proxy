@@ -310,6 +310,8 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 5,
     "pricing": {
       "openai": {
         "flex": [
@@ -318,6 +320,8 @@
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
             "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -328,6 +332,8 @@
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -554,6 +560,8 @@
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "input_cache_write_cost_per_mil_tokens": 1.25,
+    "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+    "input_cache_write_12h_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openai": {
         "flex": [
@@ -562,6 +570,8 @@
             "output_cost_per_mil_tokens": 2.5,
             "input_cache_read_cost_per_mil_tokens": 0.025,
             "input_cache_write_cost_per_mil_tokens": 0.625,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.625,
+            "input_cache_write_12h_cost_per_mil_tokens": 1.25,
             "endpoints": [
               "api.openai.com"
             ],
@@ -572,6 +582,8 @@
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.05,
             "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -730,6 +742,8 @@
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 1,
     "input_cache_write_cost_per_mil_tokens": 12.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 12.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 25,
     "pricing": {
       "openai": {
         "flex": [
@@ -738,6 +752,8 @@
             "output_cost_per_mil_tokens": 25,
             "input_cache_read_cost_per_mil_tokens": 0.5,
             "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 6.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 12.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -748,6 +764,8 @@
             "output_cost_per_mil_tokens": 37.5,
             "input_cache_read_cost_per_mil_tokens": 1,
             "input_cache_write_cost_per_mil_tokens": 12.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 12.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 25,
             "endpoints": [
               "api.openai.com"
             ],
@@ -990,6 +1008,8 @@
     "output_cost_per_mil_tokens": 100,
     "input_cache_read_cost_per_mil_tokens": 2,
     "input_cache_write_cost_per_mil_tokens": 25,
+    "input_cache_write_30m_cost_per_mil_tokens": 25,
+    "input_cache_write_12h_cost_per_mil_tokens": 50,
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1006,6 +1026,8 @@
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.01,
     "input_cache_write_cost_per_mil_tokens": 0.125,
+    "input_cache_write_30m_cost_per_mil_tokens": 0.125,
+    "input_cache_write_12h_cost_per_mil_tokens": 0.25,
     "pricing": {
       "openai": {
         "flex": [
@@ -1014,6 +1036,8 @@
             "output_cost_per_mil_tokens": 0.25,
             "input_cache_read_cost_per_mil_tokens": 0.005,
             "input_cache_write_cost_per_mil_tokens": 0.0625,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.0625,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.125,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1024,6 +1048,8 @@
             "output_cost_per_mil_tokens": 0.375,
             "input_cache_read_cost_per_mil_tokens": 0.01,
             "input_cache_write_cost_per_mil_tokens": 0.125,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.125,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.25,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1200,10 +1226,12 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 15,
-    "output_cost_per_mil_tokens": 75,
-    "input_cache_read_cost_per_mil_tokens": 1.5,
-    "input_cache_write_cost_per_mil_tokens": 18.75,
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 12.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 25,
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1220,6 +1248,8 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 5,
     "pricing": {
       "openai": {
         "flex": [
@@ -1228,6 +1258,8 @@
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1238,6 +1270,8 @@
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1417,6 +1451,8 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "input_cache_write_30m_cost_per_mil_tokens": 5,
+    "input_cache_write_12h_cost_per_mil_tokens": 10,
     "pricing": {
       "openai": {
         "flex": [
@@ -1425,6 +1461,8 @@
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1435,6 +1473,8 @@
             "output_cost_per_mil_tokens": 15,
             "input_cache_read_cost_per_mil_tokens": 0.4,
             "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1461,6 +1501,8 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "input_cache_write_cost_per_mil_tokens": 15.625,
+    "input_cache_write_30m_cost_per_mil_tokens": 15.625,
+    "input_cache_write_12h_cost_per_mil_tokens": 31.25,
     "displayName": "GPT-5.6 Cyber",
     "reasoning": true,
     "fallback_models": [
@@ -1481,6 +1523,8 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.02,
     "input_cache_write_cost_per_mil_tokens": 0.25,
+    "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+    "input_cache_write_12h_cost_per_mil_tokens": 0.5,
     "pricing": {
       "openai": {
         "flex": [
@@ -1489,6 +1533,8 @@
             "output_cost_per_mil_tokens": 0.6,
             "input_cache_read_cost_per_mil_tokens": 0.01,
             "input_cache_write_cost_per_mil_tokens": 0.125,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.125,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.25,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1499,6 +1545,8 @@
             "output_cost_per_mil_tokens": 0.9,
             "input_cache_read_cost_per_mil_tokens": 0.02,
             "input_cache_write_cost_per_mil_tokens": 0.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1676,6 +1724,8 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "input_cache_write_30m_cost_per_mil_tokens": 5,
+    "input_cache_write_12h_cost_per_mil_tokens": 10,
     "pricing": {
       "openai": {
         "flex": [
@@ -1684,6 +1734,8 @@
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1694,6 +1746,8 @@
             "output_cost_per_mil_tokens": 15,
             "input_cache_read_cost_per_mil_tokens": 0.4,
             "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1877,6 +1931,8 @@
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+    "input_cache_write_12h_cost_per_mil_tokens": 5,
     "pricing": {
       "openai": {
         "flex": [
@@ -1885,6 +1941,8 @@
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -1895,6 +1953,8 @@
             "output_cost_per_mil_tokens": 9,
             "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
             "endpoints": [
               "api.openai.com"
             ],
@@ -4665,6 +4725,8 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "input_cache_write_30m_cost_per_mil_tokens": 5,
+    "input_cache_write_12h_cost_per_mil_tokens": 10,
     "displayName": "Daybreak Blue",
     "reasoning": true,
     "parent": "daybreak-blue-latest",
@@ -4683,6 +4745,8 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "input_cache_write_cost_per_mil_tokens": 15.625,
+    "input_cache_write_30m_cost_per_mil_tokens": 15.625,
+    "input_cache_write_12h_cost_per_mil_tokens": 31.25,
     "displayName": "GPT Daybreak Red",
     "reasoning": true,
     "parent": "daybreak-red-latest",
@@ -6465,6 +6529,8 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "input_cache_write_30m_cost_per_mil_tokens": 5,
+    "input_cache_write_12h_cost_per_mil_tokens": 10,
     "displayName": "Daybreak Blue",
     "reasoning": true,
     "parent": "gpt-5.6-sol",
@@ -6486,6 +6552,8 @@
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "input_cache_write_cost_per_mil_tokens": 15.625,
+    "input_cache_write_30m_cost_per_mil_tokens": 15.625,
+    "input_cache_write_12h_cost_per_mil_tokens": 31.25,
     "displayName": "Daybreak Red",
     "reasoning": true,
     "max_input_tokens": 272000,

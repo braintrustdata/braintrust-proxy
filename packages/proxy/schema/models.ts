@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { _urljoin } from "../src/util";
+import { cacheWritePricingShape } from "./cache-metrics.generated";
 
 export const PromptInputs = ["chat", "completion"] as const;
 export type PromptInputType = (typeof PromptInputs)[number];
@@ -71,10 +72,7 @@ const tokenPricingSchema = z.object({
     .number()
     .nullish()
     .describe("Total cache-write token price for the default TTL."),
-  input_cache_write_5m_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_30m_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_1h_cost_per_mil_tokens: z.number().nullish(),
-  input_cache_write_12h_cost_per_mil_tokens: z.number().nullish(),
+  ...cacheWritePricingShape,
 });
 
 export const PricingRateSchema = tokenPricingSchema.extend({

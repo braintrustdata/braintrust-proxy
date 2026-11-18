@@ -12,6 +12,32 @@ import {
 } from "./models";
 import { z } from "zod";
 
+it("model list lifecycle dates are valid and ordered", () => {
+  const models = z.record(ModelSchema).parse(raw_models);
+  const problems: string[] = [];
+  for (const [name, model] of Object.entries(models)) {
+    for (const field of ["deprecation_date", "retirement_date"] as const) {
+      const value = model[field];
+      if (
+        value &&
+        (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(value)))
+      ) {
+        problems.push(`${name}: ${field} "${value}" is not YYYY-MM-DD`);
+      }
+    }
+    if (
+      model.deprecation_date &&
+      model.retirement_date &&
+      model.deprecation_date > model.retirement_date
+    ) {
+      problems.push(
+        `${name}: deprecation_date ${model.deprecation_date} is after retirement_date ${model.retirement_date}`,
+      );
+    }
+  }
+  expect(problems).toEqual([]);
+});
+
 it("parse model list", () => {
   const models = z.record(z.unknown()).parse(raw_models);
   for (const [key, value] of Object.entries(models)) {

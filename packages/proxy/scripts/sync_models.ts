@@ -1244,9 +1244,14 @@ export function applyEquivalentModels(
       continue;
     }
 
-    const group = groups.get(candidate.canonicalName) ?? [];
-    group.push(modelName);
-    groups.set(candidate.canonicalName, group);
+    if (
+      !localModels[modelName].retired &&
+      !localModels[candidate.canonicalName].retired
+    ) {
+      const group = groups.get(candidate.canonicalName) ?? [];
+      group.push(modelName);
+      groups.set(candidate.canonicalName, group);
+    }
     managedNames.add(modelName);
     managedNames.add(candidate.canonicalName);
     if (candidate.provider) {
@@ -1256,12 +1261,22 @@ export function applyEquivalentModels(
 
   const updatedModels: LocalModelList = {};
   for (const [modelName, model] of Object.entries(localModels)) {
-    if (managedNames.has(modelName)) {
+    if (
+      managedNames.has(modelName) ||
+      model.retired ||
+      model.fallback_models?.some((name) => localModels[name]?.retired)
+    ) {
       const { fallback_models: existingFallbacks, ...rest } = model;
       // Preserve curated companion links whose provider slug cannot be inferred
       // from the canonical id (for example OpenRouter and Databricks).
       const validFallbacks = [...new Set(existingFallbacks ?? [])]
-        .filter((name) => name !== modelName && modelNames.has(name))
+        .filter(
+          (name) =>
+            !model.retired &&
+            name !== modelName &&
+            modelNames.has(name) &&
+            !localModels[name].retired,
+        )
         .sort();
       if (validFallbacks.length > 0) {
         rest.fallback_models = validFallbacks;

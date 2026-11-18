@@ -48,42 +48,46 @@ jobs:
             --github-output "$GITHUB_OUTPUT"
 
       - name: Apply deprecations to the catalog
-        if: steps.reconcile.outputs.deprecation_count != '0'
+        if: steps.reconcile.outputs.change_count != '0'
         run: |
           set -euo pipefail
           pnpm exec tsx packages/proxy/scripts/apply_deprecations.ts \
-            --report "$RUNNER_TEMP/deprecations.json" --write
+            --report "$RUNNER_TEMP/deprecations.json" \
+            --summary-output "$RUNNER_TEMP/lifecycle-summary.md" --write
 
       # Canonicalize so index.ts is re-formatted (Prettier) and consistent.
       - name: Canonicalize model list
-        if: steps.reconcile.outputs.deprecation_count != '0'
+        if: steps.reconcile.outputs.change_count != '0'
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Validate model schema
-        if: steps.reconcile.outputs.deprecation_count != '0'
+        if: steps.reconcile.outputs.change_count != '0'
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/model_deprecation.test.ts
 
       - name: Build deprecation summary
-        if: steps.reconcile.outputs.deprecation_count != '0'
+        if: steps.reconcile.outputs.change_count != '0'
         run: |
           set -euo pipefail
           {
             echo "## Model deprecation audit"
             echo
-            echo "Each model below returned a definitive not-found / deprecated response from its provider (a single 404 / not-found is treated as authoritative). Account/region-scoped providers (bedrock, vertex, databricks) are surfaced for manual review, not auto-removed."
+            echo "Each model below returned a definitive not-found / deprecated response from its provider (a single 404 / not-found is treated as authoritative). A model that loses some providers has them dropped; a model that loses all of them is kept as retired (retired: true and a retirement_date). Account/region-scoped providers (bedrock, vertex, databricks) are surfaced for manual review, not auto-retired."
+            echo
+            cat "$RUNNER_TEMP/lifecycle-summary.md"
             echo
             echo '```json'
             cat "$RUNNER_TEMP/deprecations.json"
             echo '```'
           } > "$RUNNER_TEMP/pr-body.md"
+          cat "$RUNNER_TEMP/lifecycle-summary.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Create PR
-        if: steps.reconcile.outputs.deprecation_count != '0'
+        if: steps.reconcile.outputs.change_count != '0'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           branch: chore/model-deprecation-audit
-          commit-message: "chore: remove models no longer served by their providers"
-          title: "chore: remove deprecated models from the catalog"
+          commit-message: "chore: sync model lifecycle with providers"
+          title: "chore: sync model lifecycle with providers"
           body-path: ${{ runner.temp }}/pr-body.md
           add-paths: |
             packages/proxy/schema/model_list.json

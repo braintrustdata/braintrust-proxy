@@ -3,6 +3,7 @@ import path from "path";
 import { describe, expect, it } from "vitest";
 import {
   classifyProbe,
+  parseOpenRouterRetirementDates,
   PROVIDER_APIS,
   REPORT_ONLY_PROVIDERS,
 } from "./model_probe";
@@ -10,10 +11,17 @@ import {
   effectiveProviders,
   NEVER_DEPRECATE_MODELS,
   parseIndexEndpointTypes,
+  isRetired,
+  retirementUpdatesFromDates,
+  stillServedAfterRetirement,
 } from "./reconcile_provider_models";
 import {
   addToDeprecatedIds,
   applyDeprecations,
+  applyRetirements,
+  buildSummaryMarkdown,
+  markRetired,
+  retirementReviewNotes,
   rewriteIndexEntry,
 } from "./apply_deprecations";
 
@@ -127,7 +135,7 @@ describe("applyDeprecations", () => {
     ]);
     expect(out.catalog["model-a"].available_providers).toEqual(["together"]);
     expect(out.indexContent).toContain('"model-a": ["together"],');
-    expect(out.result.removedModels).toEqual([]);
+    expect(out.result.retiredModels).toEqual([]);
     expect(out.result.narrowedModels[0]).toMatchObject({
       model: "model-a",
       dropped: ["baseten"],
@@ -135,16 +143,51 @@ describe("applyDeprecations", () => {
     });
   });
 
-  it("removes a model and excludes it when it loses all providers", () => {
-    const catalog = { "model-b": { available_providers: ["xAI"] } };
-    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
-      { model: "model-b", provider: "xAI", reason: "probe not-found" },
-    ]);
-    expect(out.catalog["model-b"]).toBeUndefined();
-    expect(out.indexContent).not.toContain('"model-b"');
-    expect(out.indexContent).toContain('"model-a"'); // others intact
-    expect(out.result.removedModels).toEqual(["model-b"]);
+  it("keeps a model as retired and excludes it when it loses all providers", () => {
+    const catalog: Record<string, Record<string, unknown>> = {
+      "model-b": { available_providers: ["xAI"] },
+    };
+    const out = applyDeprecations(
+      catalog,
+      baseIndex,
+      baseDeprecatedIds,
+      [{ model: "model-b", provider: "xAI", reason: "probe not-found" }],
+      new Date("2026-11-17T12:00:00Z"),
+    );
+    expect(out.catalog["model-b"]).toEqual({
+      available_providers: ["xAI"],
+      retired: true,
+      retirement_date: "2026-11-17",
+    });
+    expect(out.indexContent).toContain('"model-b": ["xAI"],');
+    expect(out.result.retiredModels).toEqual(["model-b"]);
+    expect(out.result.removedRoutes).toEqual([]);
     expect(out.deprecatedIds).toContain("model-b");
+  });
+
+  it("keeps a past retirement_date and drops a later deprecation_date", () => {
+    const now = new Date("2026-11-17T12:00:00Z");
+    const past: Record<string, unknown> = {
+      available_providers: ["xAI"],
+      retirement_date: "2026-10-01",
+    };
+    markRetired(past, now);
+    expect(past).toMatchObject({
+      retired: true,
+      retirement_date: "2026-10-01",
+    });
+
+    const early: Record<string, unknown> = {
+      available_providers: ["xAI"],
+      deprecation_date: "2026-12-01",
+      retirement_date: "2027-03-01",
+    };
+    markRetired(early, now);
+    expect(early).toEqual({
+      available_providers: ["xAI"],
+      retired: true,
+      retirement_date: "2026-11-17",
+    });
   });
 
   it("cleans removed fallback references while retaining surviving targets and order", () => {
@@ -176,20 +219,30 @@ describe("applyDeprecations", () => {
       "openai",
       "azure",
     ]);
-    expect(out.result.removedModels).toEqual([]);
+    expect(out.result.retiredModels).toEqual([]);
     expect(out.result.narrowedModels).toEqual([]);
   });
 
-  it("removes an index-only model (no available_providers) routed via index.ts", () => {
+  it("retires an index-only model (no available_providers) routed via index.ts", () => {
     // model-b is mapped only in index.ts (["xAI"]) with no available_providers.
     const catalog = { "model-b": { format: "openai" } };
     const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-b", provider: "xAI", reason: "probe not-found" },
     ]);
-    expect(out.catalog["model-b"]).toBeUndefined();
-    expect(out.indexContent).not.toContain('"model-b"');
-    expect(out.result.removedModels).toEqual(["model-b"]);
+    expect(out.catalog["model-b"]).toMatchObject({ retired: true });
+    expect(out.indexContent).toContain('"model-b": ["xAI"],');
+    expect(out.result.retiredModels).toEqual(["model-b"]);
     expect(out.deprecatedIds).toContain("model-b");
+  });
+
+  it("removes an index.ts route that has no catalog entry", () => {
+    const out = applyDeprecations({}, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "probe not-found" },
+    ]);
+    expect(out.indexContent).not.toContain('"model-b"');
+    expect(out.indexContent).toContain('"model-a"');
+    expect(out.result.removedRoutes).toEqual(["model-b"]);
+    expect(out.result.retiredModels).toEqual([]);
   });
 });
 
@@ -294,5 +347,118 @@ describe("NEVER_DEPRECATE_MODELS (don't-deprecate list)", () => {
     for (const id of NEVER_DEPRECATE_MODELS) {
       expect(catalog[id]).toBeDefined();
     }
+  });
+});
+
+describe("lifecycle dates from the audit", () => {
+  it("reads OpenRouter expiration_date keyed by slug", () => {
+    const dates = parseOpenRouterRetirementDates({
+      data: [
+        { id: "z-ai/glm-4.5", expiration_date: "2026-12-31" },
+        { id: "openai/gpt-5", expiration_date: null },
+        { id: "vendor/bad-date", expiration_date: "soon" },
+        { id: "vendor/no-date" },
+      ],
+    });
+    expect([...dates]).toEqual([["z-ai/glm-4.5", "2026-12-31"]]);
+  });
+
+  it("only proposes retirement for models the provider alone serves", () => {
+    const catalog = {
+      "z-ai/glm-4.5": { available_providers: ["openrouter"] },
+      "shared/model": { available_providers: ["openrouter", "together"] },
+      "already/dated": {
+        available_providers: ["openrouter"],
+        retirement_date: "2026-11-20",
+      },
+      "index/only": {},
+    };
+    const updates = retirementUpdatesFromDates({
+      provider: "openrouter",
+      models: Object.keys(catalog),
+      catalog,
+      indexMap: new Map([["index/only", ["openrouter", "baseten"]]]),
+      dates: new Map([
+        ["z-ai/glm-4.5", "2026-12-31"],
+        ["shared/model", "2026-12-31"],
+        ["already/dated", "2026-11-20"],
+        ["index/only", "2026-12-31"],
+      ]),
+    });
+    expect(updates.map((u) => [u.model, u.retirement_date])).toEqual([
+      ["z-ai/glm-4.5", "2026-12-31"],
+    ]);
+    expect(updates[0].previous_retirement_date).toBeNull();
+  });
+
+  it("flags models still listed after their retirement_date", () => {
+    const notes = stillServedAfterRetirement({
+      provider: "together",
+      models: ["live/past", "live/future", "gone/past"],
+      catalog: {
+        "live/past": { retirement_date: "2026-10-16" },
+        "live/future": { retirement_date: "2027-01-01" },
+        "gone/past": { retirement_date: "2026-10-16" },
+      },
+      liveList: new Set(["live/past", "live/future"]),
+      now: new Date("2026-11-17T00:00:00Z"),
+    });
+    expect(notes.map((n) => n.model)).toEqual(["live/past"]);
+  });
+
+  it("sets retirement_date and flags surprising removals", () => {
+    const catalog: Record<string, Record<string, unknown>> = {
+      "z-ai/glm-4.5": { available_providers: ["openrouter"] },
+      "early/removal": {
+        available_providers: ["openai"],
+        retirement_date: "2027-02-01",
+      },
+      "undated/removal": { available_providers: ["openai"] },
+      "expected/removal": {
+        available_providers: ["openai"],
+        retirement_date: "2026-10-23",
+      },
+    };
+    const applied = applyRetirements(catalog, [
+      {
+        model: "z-ai/glm-4.5",
+        provider: "openrouter",
+        retirement_date: "2026-12-31",
+        previous_retirement_date: null,
+        source: "openrouter",
+      },
+    ]);
+    expect(applied).toEqual(["z-ai/glm-4.5"]);
+    expect(catalog["z-ai/glm-4.5"].retirement_date).toBe("2026-12-31");
+
+    const notes = retirementReviewNotes(
+      catalog,
+      ["early/removal", "undated/removal", "expected/removal"],
+      new Date("2026-11-17T00:00:00Z"),
+    );
+    expect(notes.map((n) => [n.model, n.note])).toEqual([
+      [
+        "early/removal",
+        "retired by the audit on 2026-11-17, before its retirement_date 2027-02-01",
+      ],
+      [
+        "undated/removal",
+        "retired by the audit on 2026-11-17 with no retirement_date on record; check the provider's notice",
+      ],
+    ]);
+    expect(
+      buildSummaryMarkdown({ retirements: [], reviewNotes: notes }),
+    ).toContain("### Needs review");
+  });
+});
+
+describe("isRetired", () => {
+  const now = new Date("2026-11-17T12:00:00Z");
+  it("is true for retired: true or a retirement_date on or before today", () => {
+    expect(isRetired({ retired: true }, now)).toBe(true);
+    expect(isRetired({ retirement_date: "2026-11-17" }, now)).toBe(true);
+    expect(isRetired({ retirement_date: "2026-11-18" }, now)).toBe(false);
+    expect(isRetired({}, now)).toBe(false);
+    expect(isRetired(undefined, now)).toBe(false);
   });
 });

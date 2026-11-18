@@ -25,7 +25,11 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
   "../schema/model_list.json",
 );
 
-type ModelSpec = { available_providers?: string[] };
+type ModelSpec = {
+  available_providers?: string[];
+  retired?: boolean | null;
+  retirement_date?: string | null;
+};
 type Catalog = Record<string, ModelSpec>;
 
 export type Deprecation = {
@@ -36,8 +40,27 @@ export type Deprecation = {
   detail?: string;
 };
 
+// A provider-published retirement date for a model only that provider serves.
+export type RetirementUpdate = {
+  model: string;
+  provider: string;
+  retirement_date: string;
+  previous_retirement_date: string | null;
+  source: string;
+};
+
+// Something a human should look at before merging the audit PR: the catalog's
+// retirement_date disagrees with what the provider is doing.
+export type ReviewNote = {
+  model: string;
+  provider: string;
+  note: string;
+};
+
 export type AuditReport = {
   deprecations: Deprecation[];
+  retirements: RetirementUpdate[];
+  reviewNotes: ReviewNote[];
   reportOnly: { provider: string; modelCount: number }[];
   skipped: { provider: string; reason: string }[];
 };
@@ -160,20 +183,94 @@ async function mapWithConcurrency<T, R>(
   return results;
 }
 
+const RETIREMENT_SOURCES: Record<string, string> = {
+  openrouter: "https://openrouter.ai/api/v1/models (expiration_date)",
+};
+
+// A model already retired in the catalog (by hand or by a past
+// retirement_date). The audit keeps these entries, so it must not re-report
+// them as new deprecations every day.
+export function isRetired(spec: ModelSpec | undefined, now: Date): boolean {
+  if (!spec) return false;
+  if (spec.retired) return true;
+  const today = now.toISOString().slice(0, 10);
+  return !!spec.retirement_date && spec.retirement_date <= today;
+}
+
+// Proposes retirement_date updates from a provider's published dates, only for
+// models that provider alone serves: a model is not retired while another
+// provider still serves it.
+export function retirementUpdatesFromDates(args: {
+  provider: string;
+  models: string[];
+  catalog: Catalog;
+  indexMap: Map<string, string[]>;
+  dates: Map<string, string>;
+}): RetirementUpdate[] {
+  const updates: RetirementUpdate[] = [];
+  for (const model of args.models) {
+    const date = args.dates.get(model);
+    if (!date) continue;
+    const spec = args.catalog[model];
+    const providers = effectiveProviders(model, spec, args.indexMap);
+    if (providers.length !== 1 || providers[0] !== args.provider) continue;
+    if (spec?.retirement_date === date) continue;
+    updates.push({
+      model,
+      provider: args.provider,
+      retirement_date: date,
+      previous_retirement_date: spec?.retirement_date ?? null,
+      source: RETIREMENT_SOURCES[args.provider] ?? args.provider,
+    });
+  }
+  return updates;
+}
+
+// Flags models a provider still lists even though the catalog says it retired
+// them, so a wrong retirement_date does not silently hide a live model.
+export function stillServedAfterRetirement(args: {
+  provider: string;
+  models: string[];
+  catalog: Catalog;
+  liveList: Set<string>;
+  now: Date;
+}): ReviewNote[] {
+  const today = args.now.toISOString().slice(0, 10);
+  return args.models
+    .filter((model) => {
+      const date = args.catalog[model]?.retirement_date;
+      return !!date && date < today && args.liveList.has(model);
+    })
+    .map((model) => ({
+      model,
+      provider: args.provider,
+      note: `still listed by ${args.provider} after retirement_date ${args.catalog[model]?.retirement_date}`,
+    }));
+}
+
 async function auditProvider(
   provider: string,
   models: string[],
   secrets: Map<string, ProviderSecret>,
   concurrency: number,
+  catalog: Catalog,
+  indexMap: Map<string, string[]>,
 ): Promise<{
   deprecations: Deprecation[];
+  retirements: RetirementUpdate[];
+  reviewNotes: ReviewNote[];
   skipped?: { provider: string; reason: string };
 }> {
+  const empty = { retirements: [], reviewNotes: [] };
   const adapterKey = PROVIDER_AUDIT_ALIAS[provider] ?? provider;
   const api = PROVIDER_APIS[adapterKey];
   const secret = secrets.get(adapterKey);
   if (!api) {
-    return { deprecations: [], skipped: { provider, reason: "no adapter" } };
+    return {
+      deprecations: [],
+      ...empty,
+      skipped: { provider, reason: "no adapter" },
+    };
   }
   // A provider whose list endpoint is public (listRequiresSecret === false, e.g.
   // OpenRouter) can be audited even when the Braintrust org has no secret for it;
@@ -181,6 +278,7 @@ async function auditProvider(
   if (!secret && api.listRequiresSecret !== false) {
     return {
       deprecations: [],
+      ...empty,
       skipped: { provider, reason: "no secret in Braintrust org" },
     };
   }
@@ -212,6 +310,7 @@ async function auditProvider(
       ) {
         return {
           deprecations: [],
+          ...empty,
           skipped: {
             provider,
             reason: `cannot audit — ${provider} secret rejected (${message.slice(0, 80)})`,
@@ -224,10 +323,42 @@ async function auditProvider(
     }
   }
 
+  const lifecycle: {
+    retirements: RetirementUpdate[];
+    reviewNotes: ReviewNote[];
+  } = {
+    retirements: [],
+    reviewNotes: [],
+  };
+  if (liveList !== null) {
+    lifecycle.reviewNotes = stillServedAfterRetirement({
+      provider,
+      models,
+      catalog,
+      liveList,
+      now: new Date(),
+    });
+  }
+  if (api.listRetirementDates) {
+    try {
+      lifecycle.retirements = retirementUpdatesFromDates({
+        provider,
+        models,
+        catalog,
+        indexMap,
+        dates: await api.listRetirementDates(effectiveSecret),
+      });
+    } catch (error) {
+      console.warn(
+        `  ${provider}: retirement dates unavailable (${(error as Error).message.slice(0, 100)})`,
+      );
+    }
+  }
+
   const suspects =
     liveList !== null ? models.filter((m) => !liveList!.has(m)) : models;
   if (suspects.length === 0) {
-    return { deprecations: [] };
+    return { deprecations: [], ...lifecycle };
   }
 
   // Step 2a: authoritative list (e.g. Databricks) — absence == deprecated.
@@ -238,6 +369,7 @@ async function auditProvider(
         provider,
         reason: "absent from provider model list",
       })),
+      ...lifecycle,
     };
   }
 
@@ -245,6 +377,7 @@ async function auditProvider(
   if (!api.probeModel) {
     return {
       deprecations: [],
+      ...lifecycle,
       skipped: {
         provider,
         reason: `${suspects.length} suspects but no probe available`,
@@ -287,7 +420,7 @@ async function auditProvider(
       });
     }
   }
-  return { deprecations };
+  return { deprecations, ...lifecycle };
 }
 
 export async function runAudit(args: {
@@ -305,6 +438,8 @@ export async function runAudit(args: {
 
   const report: AuditReport = {
     deprecations: [],
+    retirements: [],
+    reviewNotes: [],
     reportOnly: [],
     skipped: [],
   };
@@ -325,13 +460,23 @@ export async function runAudit(args: {
     const secrets = await fetchProviderSecrets(args.braintrustApiKey, [
       adapterKey,
     ]);
-    const { deprecations, skipped } = await auditProvider(
-      provider,
-      models,
-      secrets,
-      args.concurrency,
+    const { deprecations, retirements, reviewNotes, skipped } =
+      await auditProvider(
+        provider,
+        models,
+        secrets,
+        args.concurrency,
+        args.catalog,
+        indexMap,
+      );
+    report.retirements.push(
+      ...retirements.filter((r) => !NEVER_DEPRECATE_MODELS.has(r.model)),
     );
+    report.reviewNotes.push(...reviewNotes);
     for (const deprecation of deprecations) {
+      if (isRetired(args.catalog[deprecation.model], new Date())) {
+        continue;
+      }
       if (NEVER_DEPRECATE_MODELS.has(deprecation.model)) {
         console.log(
           `  [PRESERVED] ${deprecation.provider}/${deprecation.model} is in NEVER_DEPRECATE_MODELS — not deprecating`,
@@ -414,6 +559,14 @@ async function main(): Promise<void> {
       `  DEPRECATE ${d.model} @ ${d.provider} (${d.reason}${d.status ? `, HTTP ${d.status}` : ""})`,
     );
   }
+  for (const r of report.retirements) {
+    console.log(
+      `  RETIRE ${r.model} @ ${r.provider} on ${r.retirement_date} (was ${r.previous_retirement_date ?? "unset"})`,
+    );
+  }
+  for (const n of report.reviewNotes) {
+    console.log(`  REVIEW ${n.model} @ ${n.provider}: ${n.note}`);
+  }
   if (report.skipped.length > 0) {
     console.log("\nSkipped providers:");
     for (const s of report.skipped) {
@@ -430,7 +583,10 @@ async function main(): Promise<void> {
   if (argv["github-output"]) {
     await fs.promises.appendFile(
       argv["github-output"],
-      `deprecation_count=${report.deprecations.length}\n`,
+      `deprecation_count=${report.deprecations.length}\n` +
+        `retirement_count=${report.retirements.length}\n` +
+        `review_count=${report.reviewNotes.length}\n` +
+        `change_count=${report.deprecations.length + report.retirements.length + report.reviewNotes.length}\n`,
     );
   }
 }

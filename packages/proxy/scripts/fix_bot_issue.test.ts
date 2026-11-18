@@ -591,4 +591,53 @@ describe("fix_bot_issue", () => {
       },
     );
   });
+
+  describe("lifecycle updates", () => {
+    const existing: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai"],
+      deprecation_date: "2026-06-11",
+    };
+    const issue = (modelSpec: Partial<ModelSpec>) => ({
+      provider: "openai",
+      models: ["model"],
+      aliasTargets: {},
+      metadata: { kind: "stale_metadata" as const, model_spec: modelSpec },
+    });
+
+    it("applies retired and retirement_date from a stale_metadata issue", () => {
+      const updated = buildUpdatedLocalModel(
+        issue({ retired: true, retirement_date: "2026-12-11" }),
+        "model",
+        existing,
+      );
+      expect(updated.retired).toBe(true);
+      expect(updated.retirement_date).toBe("2026-12-11");
+      expect(updated.deprecation_date).toBe("2026-06-11");
+      expect(existing.retirement_date).toBeUndefined();
+    });
+
+    it("rejects a deprecation_date after the retirement_date", () => {
+      expect(() =>
+        buildUpdatedLocalModel(
+          issue({ retirement_date: "2026-01-01" }),
+          "model",
+          existing,
+        ),
+      ).toThrow(
+        "deprecation_date 2026-06-11 is after retirement_date 2026-01-01",
+      );
+    });
+
+    it("rejects lifecycle dates that are not YYYY-MM-DD", () => {
+      expect(() =>
+        buildUpdatedLocalModel(
+          issue({ retirement_date: "Dec 11, 2026" }),
+          "model",
+          existing,
+        ),
+      ).toThrow('retirement_date "Dec 11, 2026" is not a YYYY-MM-DD date');
+    });
+  });
 });

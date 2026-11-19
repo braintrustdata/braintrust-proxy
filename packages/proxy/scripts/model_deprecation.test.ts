@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import * as braintrustSecrets from "./braintrust_secrets";
 import {
   classifyProbe,
   parseOpenRouterRetirementDates,
@@ -13,6 +14,7 @@ import {
   parseIndexEndpointTypes,
   isRetired,
   retirementUpdatesFromDates,
+  runAudit,
   stillServedAfterRetirement,
 } from "./reconcile_provider_models";
 import {
@@ -24,6 +26,30 @@ import {
   retirementReviewNotes,
   rewriteIndexEntry,
 } from "./apply_deprecations";
+
+it("reports Azure for manual review without looking up OpenAI credentials", async () => {
+  const fetchSecrets = vi
+    .spyOn(braintrustSecrets, "fetchProviderSecrets")
+    .mockResolvedValue(new Map());
+
+  try {
+    const report = await runAudit({
+      braintrustApiKey: "",
+      catalog: { "gpt-4.1-nano": { available_providers: ["openai", "azure"] } },
+      indexContent: "",
+      concurrency: 1,
+      providerFilter: ["azure"],
+    });
+
+    expect(report.reportOnly).toEqual([{ provider: "azure", modelCount: 1 }]);
+    expect(report.deprecations).toEqual([]);
+    expect(report.retirements).toEqual([]);
+    expect(report.skipped).toEqual([]);
+    expect(fetchSecrets).not.toHaveBeenCalled();
+  } finally {
+    fetchSecrets.mockRestore();
+  }
+});
 
 describe("openrouter deprecation adapter", () => {
   it("is registered as an authoritative, list-only, non-report-only provider", () => {
@@ -93,6 +119,21 @@ describe("classifyProbe", () => {
       classifyProbe(400, '{"error":"max_tokens must be at least 16"}'),
     ).toBe("unknown");
     expect(classifyProbe(401, '{"error":"invalid x-api-key"}')).toBe("unknown");
+  });
+
+  it("treats a probe that cannot distinguish missing models from missing access as inconclusive", () => {
+    expect(
+      classifyProbe(
+        404,
+        "The model does not exist or you do not have access to it.",
+      ),
+    ).toBe("unknown");
+    expect(
+      classifyProbe(
+        404,
+        "The model does not exist or your team does not have access to it.",
+      ),
+    ).toBe("unknown");
   });
 
   it("does not deprecate existing non-chat models (wrong endpoint / modality)", () => {

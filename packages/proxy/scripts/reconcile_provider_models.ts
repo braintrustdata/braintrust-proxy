@@ -65,10 +65,6 @@ export type AuditReport = {
   skipped: { provider: string; reason: string }[];
 };
 
-// Azure OpenAI mirrors the OpenAI model ids, so audit azure models with the
-// OpenAI list + probe (using the OpenAI secret) rather than a separate source.
-const PROVIDER_AUDIT_ALIAS: Record<string, string> = { azure: "openai" };
-
 // "Don't deprecate" list: model ids the audit must never flag for removal, even
 // when a provider returns not-found/absent for them. Use this for early-access /
 // preview models that are gated per-account, where the audit's CI credentials
@@ -262,9 +258,8 @@ async function auditProvider(
   skipped?: { provider: string; reason: string };
 }> {
   const empty = { retirements: [], reviewNotes: [] };
-  const adapterKey = PROVIDER_AUDIT_ALIAS[provider] ?? provider;
-  const api = PROVIDER_APIS[adapterKey];
-  const secret = secrets.get(adapterKey);
+  const api = PROVIDER_APIS[provider];
+  const secret = secrets.get(provider);
   if (!api) {
     return {
       deprecations: [],
@@ -285,7 +280,7 @@ async function auditProvider(
   // listModels/probeModel take a ProviderSecret; for a public list with no
   // configured secret, pass a placeholder the adapter ignores.
   const effectiveSecret: ProviderSecret = secret ?? {
-    type: adapterKey,
+    type: provider,
     secret: "",
     metadata: {},
   };
@@ -456,9 +451,8 @@ export async function runAudit(args: {
     // Fetch the secret fresh right before auditing this provider: some provider
     // secrets are short-lived OAuth tokens (e.g. anthropic/openai workload
     // identity, ~5 min) that would expire if all were fetched up front.
-    const adapterKey = PROVIDER_AUDIT_ALIAS[provider] ?? provider;
     const secrets = await fetchProviderSecrets(args.braintrustApiKey, [
-      adapterKey,
+      provider,
     ]);
     const { deprecations, retirements, reviewNotes, skipped } =
       await auditProvider(

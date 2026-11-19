@@ -71,7 +71,7 @@ jobs:
           {
             echo "## Model deprecation audit"
             echo
-            echo "Each model below returned a definitive not-found / deprecated response from its provider (a single 404 / not-found is treated as authoritative). A model that loses some providers has them dropped; a model that loses all of them is kept as retired (retired: true and a retirement_date). Account/region-scoped providers (bedrock, vertex, databricks) are surfaced for manual review, not auto-retired."
+            echo "The audit proposes provider removals based on authoritative model lists or provider probes. Responses that indicate a possible access restriction are inconclusive. Models that lose all providers are marked retired. Azure follows its own retirement schedule and is report-only, alongside Bedrock, Databricks, Fireworks, and Vertex."
             echo
             cat "$RUNNER_TEMP/lifecycle-summary.md"
             echo

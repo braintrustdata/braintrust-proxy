@@ -120,6 +120,89 @@
             "valid_from": "2027-03-01"
           }
         ]
+      },
+      "openrouter": {
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 80,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 32,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.6,
+            "input_cache_write_cost_per_mil_tokens": 40,
+            "input_cache_write_30m_cost_per_mil_tokens": 40,
+            "input_cache_write_12h_cost_per_mil_tokens": 80,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 24,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.2,
+            "input_cache_write_cost_per_mil_tokens": 30,
+            "input_cache_write_30m_cost_per_mil_tokens": 30,
+            "input_cache_write_12h_cost_per_mil_tokens": 60,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 48,
+            "output_cost_per_mil_tokens": 180,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 60,
+            "input_cache_write_30m_cost_per_mil_tokens": 60,
+            "input_cache_write_12h_cost_per_mil_tokens": 120,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
       }
     },
     "displayName": "GPT-6.2 Astra",
@@ -266,6 +349,8 @@
             "output_cost_per_mil_tokens": 20,
             "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
             "endpoints": [
               "openai/fast"
             ],
@@ -276,6 +361,8 @@
             "output_cost_per_mil_tokens": 30,
             "input_cache_read_cost_per_mil_tokens": 0.4,
             "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
             "endpoints": [
               "openai/fast"
             ],
@@ -284,7 +371,59 @@
         ],
         "priority": {
           "alias": "fast"
-        }
+        },
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 6,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "input_cache_write_cost_per_mil_tokens": 7.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 7.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 15,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 12,
+            "output_cost_per_mil_tokens": 45,
+            "input_cache_read_cost_per_mil_tokens": 0.6,
+            "input_cache_write_cost_per_mil_tokens": 15,
+            "input_cache_write_30m_cost_per_mil_tokens": 15,
+            "input_cache_write_12h_cost_per_mil_tokens": 30,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
       }
     },
     "displayName": "GPT-6.2 Sol",
@@ -10756,6 +10895,48 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
+    "pricing": {
+      "vertex": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 2.7,
+            "output_cost_per_mil_tokens": 13.5,
+            "input_cache_read_cost_per_mil_tokens": 0.135,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.97,
+            "output_cost_per_mil_tokens": 14.85,
+            "input_cache_read_cost_per_mil_tokens": 0.1485,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.825,
+            "output_cost_per_mil_tokens": 4.125,
+            "input_cache_read_cost_per_mil_tokens": 0.04125,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Gemini 4 Hydrogen",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10775,6 +10956,48 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.15,
+    "pricing": {
+      "vertex": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 5.4,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.27,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.94,
+            "output_cost_per_mil_tokens": 29.7,
+            "input_cache_read_cost_per_mil_tokens": 0.297,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Gemini 4 Neon",
     "reasoning": true,
     "reasoning_budget": true,
@@ -10994,6 +11217,44 @@
               "global"
             ]
           }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.9,
+            "output_cost_per_mil_tokens": 5.4,
+            "input_cache_read_cost_per_mil_tokens": 0.09,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.99,
+            "output_cost_per_mil_tokens": 5.94,
+            "input_cache_read_cost_per_mil_tokens": 0.099,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.25,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.275,
+            "output_cost_per_mil_tokens": 1.65,
+            "input_cache_read_cost_per_mil_tokens": 0.0275,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
         ]
       }
     },
@@ -11085,6 +11346,26 @@
     "pricing": {
       "vertex": {
         "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.125,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.45,
+            "output_cost_per_mil_tokens": 2.7,
+            "input_cache_read_cost_per_mil_tokens": 0.045,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "batch": [
           {
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
@@ -11283,6 +11564,26 @@
     "pricing": {
       "vertex": {
         "flex": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 3.6,
+            "output_cost_per_mil_tokens": 21.6,
+            "input_cache_read_cost_per_mil_tokens": 0.36,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "batch": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
@@ -11682,6 +11983,20 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 2.5,
+    "pricing": {
+      "vertex": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 1.25,
+            "supported_regions": [
+              "global"
+            ],
+            "max_input_tokens": 200000
+          }
+        ]
+      }
+    },
     "displayName": "Gemini 2.5 Flash Image",
     "retirement_date": "2027-03-15",
     "locations": [
@@ -12451,6 +12766,20 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "vertex": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global",
+              "us",
+              "eu"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Gemini embedding 2",
     "available_providers": [
       "vertex"
@@ -15949,6 +16278,37 @@
             "inference_geo": "us"
           }
         ]
+      },
+      "openrouter": {
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "input_cache_write_cost_per_mil_tokens": 12.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 12.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "anthropic/fast"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 2.5,
+            "output_cost_per_mil_tokens": 12.5,
+            "input_cache_read_cost_per_mil_tokens": 0.25,
+            "input_cache_write_cost_per_mil_tokens": 3.125,
+            "input_cache_write_5m_cost_per_mil_tokens": 3.125,
+            "input_cache_write_1h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "anthropic"
+            ]
+          }
+        ]
       }
     },
     "displayName": "Claude Opus 5",
@@ -17816,8 +18176,18 @@
             "supported_regions": [
               "ap-northeast-2",
               "ap-southeast-1",
-              "ap-southeast-2",
               "ap-southeast-4"
+            ],
+            "model_id": "openai.gpt-oss-120b-1:0"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.0773,
+            "output_cost_per_mil_tokens": 0.309,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-120b-1:0"
           },
@@ -17899,6 +18269,32 @@
             ],
             "supported_regions": [
               "us-gov-west-1"
+            ],
+            "model_id": "openai.gpt-oss-120b-1:0"
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.2704,
+            "output_cost_per_mil_tokens": 1.0815,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
+            ],
+            "model_id": "openai.gpt-oss-120b-1:0"
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.0773,
+            "output_cost_per_mil_tokens": 0.309,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-120b-1:0"
           }
@@ -18093,8 +18489,18 @@
             "supported_regions": [
               "ap-northeast-2",
               "ap-southeast-1",
-              "ap-southeast-2",
               "ap-southeast-4"
+            ],
+            "model_id": "openai.gpt-oss-20b-1:0"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.0361,
+            "output_cost_per_mil_tokens": 0.1545,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-20b-1:0"
           },
@@ -18166,6 +18572,32 @@
             ],
             "supported_regions": [
               "us-gov-west-1"
+            ],
+            "model_id": "openai.gpt-oss-20b-1:0"
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.1262,
+            "output_cost_per_mil_tokens": 0.5408,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
+            ],
+            "model_id": "openai.gpt-oss-20b-1:0"
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.0361,
+            "output_cost_per_mil_tokens": 0.1545,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-20b-1:0"
           }
@@ -23507,6 +23939,17 @@
     "input_cache_read_cost_per_mil_tokens": 0.006,
     "pricing": {
       "fireworks": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.003,
+            "endpoints": [
+              "api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/deepseek-v4p1-flash-1017-flex"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.375,
@@ -23529,9 +23972,9 @@
         ],
         "ultrafast": [
           {
-            "input_cost_per_mil_tokens": 2.4,
-            "output_cost_per_mil_tokens": 9.6,
-            "input_cache_read_cost_per_mil_tokens": 0.048,
+            "input_cost_per_mil_tokens": 1.2,
+            "output_cost_per_mil_tokens": 4.8,
+            "input_cache_read_cost_per_mil_tokens": 0.024,
             "endpoints": [
               "api.fireworks.ai"
             ],
@@ -24937,7 +25380,10 @@
             ]
           }
         ],
-        "priority": [
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
           {
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 18,
@@ -24946,6 +25392,17 @@
             "endpoints": [
               "google-vertex/global/priority",
               "google-ai-studio/priority"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.1875,
+            "endpoints": [
+              "google-vertex/global"
             ]
           }
         ]
@@ -25020,6 +25477,85 @@
             "input_cache_read_cost_per_mil_tokens": 0.135
           }
         ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_cache_write_cost_per_mil_tokens": 0.7916666666666667,
+            "endpoints": [
+              "google-ai-studio/flex"
+            ]
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 2.7,
+            "output_cost_per_mil_tokens": 13.5,
+            "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_cache_write_cost_per_mil_tokens": 2.85,
+            "endpoints": [
+              "google-vertex/global/priority",
+              "google-ai-studio/priority"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_cache_write_cost_per_mil_tokens": 0.8333333333333333,
+            "endpoints": [
+              "google-vertex/global"
+            ]
+          }
+        ]
+      },
+      "vertex": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 2.7,
+            "output_cost_per_mil_tokens": 13.5,
+            "input_cache_read_cost_per_mil_tokens": 0.135,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.97,
+            "output_cost_per_mil_tokens": 14.85,
+            "input_cache_read_cost_per_mil_tokens": 0.1485,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.825,
+            "output_cost_per_mil_tokens": 4.125,
+            "input_cache_read_cost_per_mil_tokens": 0.04125,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ]
       }
     },
     "displayName": "Gemini 4 Hydrogen",
@@ -25065,6 +25601,85 @@
             "input_cost_per_mil_tokens": 5.4,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.27
+          }
+        ]
+      },
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 1.5416666666666667,
+            "endpoints": [
+              "google-ai-studio/flex"
+            ]
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 5.4,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_cache_write_cost_per_mil_tokens": 5.55,
+            "endpoints": [
+              "google-vertex/global/priority",
+              "google-ai-studio/priority"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 1.5833333333333333,
+            "endpoints": [
+              "google-vertex/global"
+            ]
+          }
+        ]
+      },
+      "vertex": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 5.4,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.27,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.94,
+            "output_cost_per_mil_tokens": 29.7,
+            "input_cache_read_cost_per_mil_tokens": 0.297,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
           }
         ]
       }
@@ -25524,6 +26139,44 @@
               "global"
             ]
           }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.9,
+            "output_cost_per_mil_tokens": 5.4,
+            "input_cache_read_cost_per_mil_tokens": 0.09,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.99,
+            "output_cost_per_mil_tokens": 5.94,
+            "input_cache_read_cost_per_mil_tokens": 0.099,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.25,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.275,
+            "output_cost_per_mil_tokens": 1.65,
+            "input_cache_read_cost_per_mil_tokens": 0.0275,
+            "supported_regions": [
+              "us",
+              "eu"
+            ]
+          }
         ]
       }
     },
@@ -25738,6 +26391,26 @@
     "pricing": {
       "vertex": {
         "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.125,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.45,
+            "output_cost_per_mil_tokens": 2.7,
+            "input_cache_read_cost_per_mil_tokens": 0.045,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "batch": [
           {
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
@@ -26266,6 +26939,26 @@
               "global"
             ]
           }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 3.6,
+            "output_cost_per_mil_tokens": 21.6,
+            "input_cache_read_cost_per_mil_tokens": 0.36,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ]
+          }
         ]
       }
     },
@@ -26476,6 +27169,28 @@
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15
+          }
+        ],
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.15
+          }
+        ],
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.54
+          }
+        ]
+      },
+      "vertex": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 1.25,
+            "supported_regions": [
+              "global"
+            ],
+            "max_input_tokens": 200000
           }
         ]
       }
@@ -26820,6 +27535,27 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "google": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.1
+          }
+        ]
+      },
+      "vertex": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global",
+              "us",
+              "eu"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Gemini embedding 2",
     "fallback_models": [
       "publishers/google/models/gemini-embedding-2"
@@ -26834,6 +27570,15 @@
     "flavor": "embedding",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "google": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.075
+          }
+        ]
+      }
+    },
     "displayName": "Gemini embedding 001",
     "fallback_models": [
       "publishers/google/models/gemini-embedding-001"
@@ -30546,6 +31291,14 @@
             "endpoints": [
               "deepinfra/fp8/flex"
             ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.03,
+            "output_cost_per_mil_tokens": 0.25,
+            "input_cache_read_cost_per_mil_tokens": 0.003,
+            "endpoints": [
+              "particle-ai/us/flex"
+            ]
           }
         ],
         "priority": {
@@ -30565,25 +31318,34 @@
             "output_cost_per_mil_tokens": 2.4,
             "input_cache_read_cost_per_mil_tokens": 0.014,
             "endpoints": [
-              "baseten/fast"
+              "baseten/fast",
+              "morph/fast"
             ]
           }
         ],
         "batch": [
-          {
-            "input_cost_per_mil_tokens": 0.011,
-            "output_cost_per_mil_tokens": 0.2,
-            "input_cache_read_cost_per_mil_tokens": 0.002,
-            "endpoints": [
-              "morph/fp8"
-            ]
-          },
           {
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.15,
             "input_cache_read_cost_per_mil_tokens": 0.004,
             "endpoints": [
               "sail-research/fp4"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.036,
+            "output_cost_per_mil_tokens": 0.15,
+            "input_cache_read_cost_per_mil_tokens": 0.003,
+            "endpoints": [
+              "morph/fp8"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.003,
+            "endpoints": [
+              "together"
             ]
           }
         ]
@@ -31741,6 +32503,24 @@
             "input_cache_read_cost_per_mil_tokens": 0.00336,
             "endpoints": [
               "deepinfra/fp8"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.003,
+            "endpoints": [
+              "together"
+            ]
+          }
+        ],
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.06,
+            "endpoints": [
+              "venice/ultrafast"
             ]
           }
         ]

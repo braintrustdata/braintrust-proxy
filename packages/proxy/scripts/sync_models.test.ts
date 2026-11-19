@@ -25,6 +25,7 @@ import {
   getMissingProviderMappings,
   getUpdatedAvailableProviders,
   isBasetenDeprecated,
+  isDeprecationDateAfterRetirement,
   isFieldManuallyPreserved,
   isModelExcludedFromSync,
   isPerplexityGatewayModel,
@@ -1541,5 +1542,26 @@ describe("applyCohereLiteLLMPricing", () => {
     expect(
       applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
     ).toBeNull();
+  });
+});
+
+describe("isDeprecationDateAfterRetirement", () => {
+  it("flags deprecation dates later than the retirement date", () => {
+    expect(isDeprecationDateAfterRetirement("2026-10-16", "2026-08-27")).toBe(
+      true,
+    );
+  });
+
+  it("allows deprecation on or before retirement, or with no retirement date", () => {
+    expect(isDeprecationDateAfterRetirement("2026-08-27", "2026-08-27")).toBe(
+      false,
+    );
+    expect(isDeprecationDateAfterRetirement("2026-09-29", "2026-10-31")).toBe(
+      false,
+    );
+    expect(isDeprecationDateAfterRetirement("2026-10-16", undefined)).toBe(
+      false,
+    );
+    expect(isDeprecationDateAfterRetirement("2026-10-16", null)).toBe(false);
   });
 });

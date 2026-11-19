@@ -1,24 +1,8 @@
 # Model validation prompt
 
 Write a starter prompt that a separate agent will run to validate the models from this run end to end against Braintrust.
-The workflow appends the file you write to the pull request description.
-
-Write only Markdown, in this shape:
-
-````md
-## Model validation prompt
-
-Paste this prompt into an agent that has a Braintrust API key to validate these models end to end.
-
-<details>
-<summary>Prompt</summary>
-
-```md
-<prompt>
-```
-
-</details>
-````
+The workflow appends the file you write to the pull request description inside a collapsed `<details>` block and a four-backtick Markdown code fence.
+Write only the prompt text: no heading, `<details>` wrapper, or four-backtick fences.
 
 The prompt must be self-contained, because the agent running it will not see this workflow or its inputs.
 Address it to that agent and include:

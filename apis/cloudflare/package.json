@@ -23,7 +23,7 @@
     "@opentelemetry/exporter-metrics-otlp-http": "^0.204.0",
     "@opentelemetry/resources": "^2.0.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
-    "braintrust": "^3.10.0",
+    "braintrust": "^3.44.0",
     "dotenv": "^16.3.1",
     "openai": "^6.3.0",
     "zod": "3.25.34"

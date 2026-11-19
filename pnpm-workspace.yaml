@@ -3,6 +3,7 @@ packages:
   - packages/*
 
 ignoredBuiltDependencies:
+  - braintrust
   - "@parcel/watcher"
   - bufferutil
   - es5-ext

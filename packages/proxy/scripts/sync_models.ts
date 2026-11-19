@@ -309,6 +309,15 @@ export function isBasetenDeprecated(modelName: string): boolean {
   return BASETEN_DEPRECATED_MODELS.has(modelName);
 }
 
+// A model can't be deprecated after it is retired, so ignore remote
+// deprecation dates that would break that ordering.
+export function isDeprecationDateAfterRetirement(
+  deprecationDate: string,
+  retirementDate: string | null | undefined,
+): boolean {
+  return typeof retirementDate === "string" && deprecationDate > retirementDate;
+}
+
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
   .object({
@@ -2823,6 +2832,21 @@ async function updateModelsCommand(argv: any) {
         remoteDeprecationDate: string | undefined,
       ) => {
         if (typeof remoteDeprecationDate === "string") {
+          const localRetirementDate = localModelDetail.retirement_date;
+          if (
+            isDeprecationDateAfterRetirement(
+              remoteDeprecationDate,
+              localRetirementDate,
+            )
+          ) {
+            reportModelIfNeeded();
+            console.log(
+              `  [SKIP] Remote deprecation date ${remoteDeprecationDate} is after local retirement date ${localRetirementDate}; keeping ${
+                localDeprecationDate ?? "unset"
+              }`,
+            );
+            return;
+          }
           if (
             localDeprecationDate === null ||
             typeof localDeprecationDate !== "string" ||

@@ -33,14 +33,10 @@ jobs:
       # passed as anthropic_api_key below) and calls the provider on our behalf.
       # https://docs.braintrust.dev/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the automations-spend-control project, and log
-      # the Claude Code LLM traces to the fix-missing-model-bot-issues project. The
-      # gateway auto-creates the project on first log and starts an LLM span for
-      # every request that carries x-bt-parent.
+      # Attribute gateway spend to the automations-spend-control project.
       ANTHROPIC_CUSTOM_HEADERS: |-
         x-bt-project-name: automations-spend-control
         x-bt-spend-control-tags: {"job_name":"fix-missing-model-bot-issues"}
-        x-bt-parent: project_name:fix-missing-model-bot-issues
       BLOCKED_LABEL: autofix-blocked
       BATCH_DIR: fix-missing-model-bot-issues
 
@@ -263,16 +259,28 @@ jobs:
           unsupported_count=$(wc -l < "$BATCH_DIR/unsupported.txt" | tr -d ' ')
           echo "unsupported_count=$unsupported_count" >> "$GITHUB_OUTPUT"
 
+      - name: Set up Braintrust Claude Code tracing
+        id: claude_trace
+        if: steps.fix_initial.outputs.unsupported_count != '' && steps.fix_initial.outputs.unsupported_count != '0'
+        continue-on-error: true
+        env:
+          BT_TRACE_PROJECT: fix-missing-model-bot-issues
+        run: python3 -B .github/scripts/claude_trace/setup_claude_trace.py
+
       - name: Verify proposed changes and document sync_models deviations
-        if: steps.fix_initial.outputs.unsupported_count != '0'
+        if: steps.claude_trace.outcome != 'skipped'
         timeout-minutes: 30
-        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
+          BT_TRACE_ROOT_NAME: Fix missing model issues · run ${{ github.run_number }}
+        uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
 
           display_report: "true"
           claude_args: |
+            ${{ steps.claude_trace.outcome == 'success' && format('--plugin-dir "{0}"', steps.claude_trace.outputs.plugin_dir) || '' }}
             --model claude-sonnet-5-5
             --max-turns 80
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
@@ -367,6 +375,10 @@ jobs:
             - Do not create or update GitHub issues, comments, or pull requests.
             - Do not use third-party aggregators as the source of truth.
             - Do not invent values.
+
+      - name: Flush Braintrust trace
+        if: always() && steps.claude_trace.outcome == 'success'
+        run: bash .github/scripts/claude_trace/flush.sh
 
       - name: Re-apply enriched fixes
         if: steps.fix_initial.outputs.unsupported_count != '0'

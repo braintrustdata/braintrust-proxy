@@ -22,14 +22,10 @@ jobs:
       # passed as anthropic_api_key below) and calls the provider on our behalf.
       # https://docs.braintrust.dev/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the automations-spend-control project, and log
-      # the Claude Code LLM traces to the agent-provider-model-sync project. The
-      # gateway auto-creates the project on first log and starts an LLM span for
-      # every request that carries x-bt-parent.
+      # Attribute gateway spend to the automations-spend-control project.
       ANTHROPIC_CUSTOM_HEADERS: |-
         x-bt-project-name: automations-spend-control
         x-bt-spend-control-tags: {"job_name":"agent-provider-model-sync"}
-        x-bt-parent: project_name:agent-provider-model-sync
 
     steps:
       - name: Checkout repository
@@ -37,18 +33,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Braintrust Claude Code tracing
+        id: claude_trace
+        continue-on-error: true
+        env:
+          BT_TRACE_PROJECT: agent-provider-model-sync
+        run: python3 -B .github/scripts/claude_trace/setup_claude_trace.py
+
       - name: Attempt provider-direct sync with Claude Code
         # The audit covers ~15 providers (model list + pricing per provider) with
         # --max-turns 200. At the other Claude steps' rate (~80 turns / 15 min)
         # that needs ~35-40 min, so a 25-min cap killed the step mid-audit on
         # essentially every run. Give the turn budget room to finish.
         timeout-minutes: 45
-        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
+          BT_TRACE_ROOT_NAME: Provider model gap audit · run ${{ github.run_number }}
+        uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
           display_report: "true"
           claude_args: |
+            ${{ steps.claude_trace.outcome == 'success' && format('--plugin-dir "{0}"', steps.claude_trace.outputs.plugin_dir) || '' }}
             --model claude-sonnet-5-5
             --max-turns 200
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,mcp__github__get_issue,mcp__github__get_issue_comments,mcp__github__search_issues,mcp__github__list_issues,mcp__github__create_issue"
@@ -217,3 +224,7 @@ jobs:
 
             - Do not edit files, create commits, or open pull requests.
             - If there are no high-confidence non-duplicate gaps, do nothing.
+
+      - name: Flush Braintrust trace
+        if: always() && steps.claude_trace.outcome == 'success'
+        run: bash .github/scripts/claude_trace/flush.sh

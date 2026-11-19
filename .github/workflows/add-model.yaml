@@ -32,14 +32,10 @@ jobs:
       # passed as anthropic_api_key below) and calls the provider on our behalf.
       # https://docs.braintrust.dev/deploy/gateway
       ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the automations-spend-control project, and log
-      # the Claude Code LLM traces to the add-new-model-agent-logs project. The
-      # gateway auto-creates the project on first log and starts an LLM span for
-      # every request that carries x-bt-parent.
+      # Attribute gateway spend to the automations-spend-control project.
       ANTHROPIC_CUSTOM_HEADERS: |-
         x-bt-project-name: automations-spend-control
         x-bt-spend-control-tags: {"job_name":"add-model"}
-        x-bt-parent: project_name:add-new-model-agent-logs
 
     steps:
       - name: Checkout repository
@@ -205,9 +201,19 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Set up Braintrust Claude Code tracing
+        id: claude_trace
+        continue-on-error: true
+        env:
+          BT_TRACE_PROJECT: add-new-model-agent-logs
+        run: python3 -B .github/scripts/claude_trace/setup_claude_trace.py
+
       - name: Add target and cloud companion entries with Claude Code
         id: research
         timeout-minutes: 12
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
+          BT_TRACE_ROOT_NAME: ${{ steps.target.outputs.provider }}/${{ steps.target.outputs.model_slug }} · run ${{ github.run_number }}
         uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
@@ -215,6 +221,7 @@ jobs:
           allowed_bots: braintrust-bot
           display_report: "true"
           claude_args: |
+            ${{ steps.claude_trace.outcome == 'success' && format('--plugin-dir "{0}"', steps.claude_trace.outputs.plugin_dir) || '' }}
             --model claude-sonnet-5-5
             --max-turns 40
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
@@ -284,6 +291,10 @@ jobs:
             - if no change was made, the specific target requirement that remains unresolved.
 
             Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
+
+      - name: Flush Braintrust trace
+        if: always() && steps.claude_trace.outcome == 'success'
+        run: bash .github/scripts/claude_trace/flush.sh
 
       - name: Verify research completed without errors
         env:

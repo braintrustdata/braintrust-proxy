@@ -155,15 +155,27 @@ jobs:
             --output "$RUNNER_TEMP/sync-model-changed.json" \
             --github-output "$GITHUB_OUTPUT"
 
+      - name: Set up Braintrust Claude Code tracing
+        id: claude_trace
+        if: steps.changed_models.outputs.count != '0'
+        continue-on-error: true
+        env:
+          BT_TRACE_PROJECT: sync-models
+        run: python3 -B .github/scripts/claude_trace/setup_claude_trace.py
+
       - name: Enrich changed model metadata with Claude Code
-        if: ${{ steps.changed_models.outputs.count != '0' }}
+        if: steps.claude_trace.outcome != 'skipped'
         timeout-minutes: 15
-        uses: anthropics/claude-code-action@fbda2eb1bdc90d319b8d853f5deb53bca199a7c1 # v1.0.140
+        env:
+          BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
+          BT_TRACE_ROOT_NAME: Enrich changed models · run ${{ github.run_number }}
+        uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
           github_token: ${{ github.token }}
           display_report: "true"
           claude_args: |
+            ${{ steps.claude_trace.outcome == 'success' && format('--plugin-dir "{0}"', steps.claude_trace.outputs.plugin_dir) || '' }}
             --model claude-sonnet-5-5
             --max-turns 80
             --allowedTools "Read,Glob,Grep,LS,WebSearch,WebFetch,Edit,Write"
@@ -228,6 +240,10 @@ jobs:
             - Do not edit any file other than `packages/proxy/schema/model_list.json`.
             - Use official provider sources only for metadata decisions.
             - Do not invent placeholder values.
+
+      - name: Flush Braintrust trace
+        if: always() && steps.claude_trace.outcome == 'success'
+        run: bash .github/scripts/claude_trace/flush.sh
 
       - name: Canonicalize model list and equivalent models after metadata enrichment
         if: ${{ steps.changed_models.outputs.count != '0' }}

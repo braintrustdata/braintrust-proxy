@@ -49,6 +49,35 @@ it("parse model list", () => {
   }
 });
 
+it.each([
+  ["typesafe-ai/jev", 0.042, 0],
+  ["~typesafe/jev-latest", 0.042, 0],
+  ["claude-opus-5.5", 4, 20],
+])("prices %s without exposing inference routes", (name, input, output) => {
+  expect(getAvailableModels()[name]).toMatchObject({
+    input_cost_per_mil_tokens: input,
+    output_cost_per_mil_tokens: output,
+    available_providers: [],
+  });
+  expect(getModelEndpointTypes(name)).toEqual([]);
+});
+
+it("keeps Bedrock GPT-OSS 120B on-demand and flex prices separate", () => {
+  const model = getAvailableModels()["openai.gpt-oss-120b-1:0"];
+  expect(model).toMatchObject({
+    input_cost_per_mil_tokens: 0.15,
+    output_cost_per_mil_tokens: 0.6,
+  });
+  expect(
+    model.pricing?.bedrock?.flex?.find((rate) =>
+      rate.supported_regions?.includes("us-east-1"),
+    ),
+  ).toMatchObject({
+    input_cost_per_mil_tokens: 0.075,
+    output_cost_per_mil_tokens: 0.3,
+  });
+});
+
 it("preserves top-level prices when tier pricing is absent or null", () => {
   const base = {
     format: "openai",

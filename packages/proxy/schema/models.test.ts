@@ -507,9 +507,23 @@ it("resolves voice model providers and preserves voice flavors", () => {
   for (const [model, flavor] of [
     ["gpt-realtime-2.1", "realtime"],
     ["gpt-live-1", "live"],
+    ["gpt-live-1.1", "live"],
   ]) {
     const models = z.record(ModelSchema).parse(raw_models);
     expect(models[model].flavor).toEqual(flavor);
     expect(getModelEndpointTypes(model)).toEqual(["openai"]);
   }
+});
+
+it("defines GPT-Live 1.1 like GPT-Live 1 without unverified metadata", () => {
+  expect(raw_models["gpt-live-1.1"]).toEqual({
+    ...raw_models["gpt-live-1"],
+    displayName: "GPT-Live 1.1",
+  });
+  expect(Object.keys(raw_models["gpt-live-1.1"]).sort()).toEqual([
+    "available_providers",
+    "displayName",
+    "flavor",
+    "format",
+  ]);
 });

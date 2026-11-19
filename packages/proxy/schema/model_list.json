@@ -4696,6 +4696,15 @@
       "azure"
     ]
   },
+  "gpt-live-1.1": {
+    "format": "openai",
+    "flavor": "live",
+    "displayName": "GPT-Live 1.1",
+    "available_providers": [
+      "openai",
+      "azure"
+    ]
+  },
   "gpt-live-1": {
     "format": "openai",
     "flavor": "live",

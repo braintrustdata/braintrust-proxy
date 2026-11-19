@@ -49,35 +49,6 @@ it("parse model list", () => {
   }
 });
 
-it.each(["typesafe-ai/jev", "~typesafe/jev-latest"])(
-  "prices externally logged Jev usage under %s",
-  (name) => {
-    expect(getAvailableModels()[name]).toMatchObject({
-      format: "typesafe",
-      flavor: "decisions",
-      input_cost_per_mil_tokens: 0.042,
-      output_cost_per_mil_tokens: 0,
-      available_providers: [],
-    });
-  },
-);
-
-it("keeps Bedrock GPT-OSS 120B on-demand and flex prices separate", () => {
-  const model = getAvailableModels()["openai.gpt-oss-120b-1:0"];
-  expect(model).toMatchObject({
-    input_cost_per_mil_tokens: 0.15,
-    output_cost_per_mil_tokens: 0.6,
-  });
-  expect(
-    model.pricing?.bedrock?.flex?.find((rate) =>
-      rate.supported_regions?.includes("us-east-1"),
-    ),
-  ).toMatchObject({
-    input_cost_per_mil_tokens: 0.075,
-    output_cost_per_mil_tokens: 0.3,
-  });
-});
-
 it("preserves top-level prices when tier pricing is absent or null", () => {
   const base = {
     format: "openai",

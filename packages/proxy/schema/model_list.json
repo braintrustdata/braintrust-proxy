@@ -30422,22 +30422,6 @@
       "bedrock"
     ]
   },
-  "typesafe-ai/jev": {
-    "format": "typesafe",
-    "flavor": "decisions",
-    "input_cost_per_mil_tokens": 0.042,
-    "output_cost_per_mil_tokens": 0,
-    "displayName": "Jev (Vercel AI Gateway)",
-    "available_providers": []
-  },
-  "~typesafe/jev-latest": {
-    "format": "typesafe",
-    "flavor": "decisions",
-    "input_cost_per_mil_tokens": 0.042,
-    "output_cost_per_mil_tokens": 0,
-    "displayName": "Jev Latest (OpenRouter)",
-    "available_providers": []
-  },
   "wizardlm-2-8x22b": {
     "format": "openai",
     "flavor": "chat",

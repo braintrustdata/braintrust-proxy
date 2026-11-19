@@ -29765,7 +29765,8 @@
     "displayName": "jev-latest",
     "description": "The latest iteration of TypeSafe's System One Model: Jev",
     "available_providers": [
-      "typesafe"
+      "typesafe",
+      "openrouter"
     ]
   },
   "jev-1.13.0": {
@@ -30671,6 +30672,26 @@
     "output_cost_per_mil_tokens": -1000000,
     "displayName": "TypeSafe: Jev Router",
     "max_input_tokens": 1000000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "typesafe/jev-1.14": {
+    "format": "typesafe",
+    "flavor": "decisions",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "TypeSafe: Jev 1.14",
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "typesafe/jev-1.13": {
+    "format": "typesafe",
+    "flavor": "decisions",
+    "input_cost_per_mil_tokens": 0.042,
+    "output_cost_per_mil_tokens": 0,
+    "displayName": "TypeSafe: Jev 1.13",
     "available_providers": [
       "openrouter"
     ]

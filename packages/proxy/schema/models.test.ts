@@ -309,11 +309,21 @@ it.each(["jev-1.13.0", "jev-latest", "jev-preview"] as const)(
     expect(raw_models[model]).toMatchObject({
       format: "typesafe",
       flavor: "decisions",
-      available_providers: ["typesafe"],
       input_cost_per_mil_tokens: 0.042,
       output_cost_per_mil_tokens: 0,
     });
-    expect(getModelEndpointTypes(model)).toEqual(["typesafe"]);
+    expect(getModelEndpointTypes(model)).toContain("typesafe");
+  },
+);
+
+it.each(["jev-latest", "typesafe/jev-1.14", "typesafe/jev-1.13"] as const)(
+  "serves %s through OpenRouter System One",
+  (model) => {
+    expect(raw_models[model]).toMatchObject({
+      format: "typesafe",
+      flavor: "decisions",
+    });
+    expect(getModelEndpointTypes(model)).toContain("openrouter");
   },
 );
 

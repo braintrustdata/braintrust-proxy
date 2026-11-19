@@ -18176,18 +18176,8 @@
             "supported_regions": [
               "ap-northeast-2",
               "ap-southeast-1",
+              "ap-southeast-2",
               "ap-southeast-4"
-            ],
-            "model_id": "openai.gpt-oss-120b-1:0"
-          },
-          {
-            "input_cost_per_mil_tokens": 0.0773,
-            "output_cost_per_mil_tokens": 0.309,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-120b-1:0"
           },
@@ -18269,32 +18259,6 @@
             ],
             "supported_regions": [
               "us-gov-west-1"
-            ],
-            "model_id": "openai.gpt-oss-120b-1:0"
-          }
-        ],
-        "priority": [
-          {
-            "input_cost_per_mil_tokens": 0.2704,
-            "output_cost_per_mil_tokens": 1.0815,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
-            ],
-            "model_id": "openai.gpt-oss-120b-1:0"
-          }
-        ],
-        "batch": [
-          {
-            "input_cost_per_mil_tokens": 0.0773,
-            "output_cost_per_mil_tokens": 0.309,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-120b-1:0"
           }
@@ -18489,18 +18453,8 @@
             "supported_regions": [
               "ap-northeast-2",
               "ap-southeast-1",
+              "ap-southeast-2",
               "ap-southeast-4"
-            ],
-            "model_id": "openai.gpt-oss-20b-1:0"
-          },
-          {
-            "input_cost_per_mil_tokens": 0.0361,
-            "output_cost_per_mil_tokens": 0.1545,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-20b-1:0"
           },
@@ -18572,32 +18526,6 @@
             ],
             "supported_regions": [
               "us-gov-west-1"
-            ],
-            "model_id": "openai.gpt-oss-20b-1:0"
-          }
-        ],
-        "priority": [
-          {
-            "input_cost_per_mil_tokens": 0.1262,
-            "output_cost_per_mil_tokens": 0.5408,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
-            ],
-            "model_id": "openai.gpt-oss-20b-1:0"
-          }
-        ],
-        "batch": [
-          {
-            "input_cost_per_mil_tokens": 0.0361,
-            "output_cost_per_mil_tokens": 0.1545,
-            "endpoints": [
-              "bedrock-runtime"
-            ],
-            "supported_regions": [
-              "ap-southeast-2"
             ],
             "model_id": "openai.gpt-oss-20b-1:0"
           }

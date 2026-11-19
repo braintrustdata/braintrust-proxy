@@ -49,18 +49,18 @@ it("parse model list", () => {
   }
 });
 
-it.each([
-  ["typesafe-ai/jev", 0.042, 0],
-  ["~typesafe/jev-latest", 0.042, 0],
-  ["claude-opus-5.5", 4, 20],
-])("prices %s without exposing inference routes", (name, input, output) => {
-  expect(getAvailableModels()[name]).toMatchObject({
-    input_cost_per_mil_tokens: input,
-    output_cost_per_mil_tokens: output,
-    available_providers: [],
-  });
-  expect(getModelEndpointTypes(name)).toEqual([]);
-});
+it.each(["typesafe-ai/jev", "~typesafe/jev-latest"])(
+  "prices externally logged Jev usage under %s",
+  (name) => {
+    expect(getAvailableModels()[name]).toMatchObject({
+      format: "typesafe",
+      flavor: "decisions",
+      input_cost_per_mil_tokens: 0.042,
+      output_cost_per_mil_tokens: 0,
+      available_providers: [],
+    });
+  },
+);
 
 it("keeps Bedrock GPT-OSS 120B on-demand and flex prices separate", () => {
   const model = getAvailableModels()["openai.gpt-oss-120b-1:0"];

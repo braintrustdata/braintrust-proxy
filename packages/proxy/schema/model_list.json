@@ -30438,18 +30438,6 @@
     "displayName": "Jev Latest (OpenRouter)",
     "available_providers": []
   },
-  "claude-opus-5.5": {
-    "format": "anthropic",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 4,
-    "output_cost_per_mil_tokens": 20,
-    "input_cache_read_cost_per_mil_tokens": 0.2,
-    "input_cache_write_cost_per_mil_tokens": 5,
-    "input_cache_write_5m_cost_per_mil_tokens": 5,
-    "input_cache_write_1h_cost_per_mil_tokens": 8,
-    "displayName": "Claude Opus 5.5",
-    "available_providers": []
-  },
   "wizardlm-2-8x22b": {
     "format": "openai",
     "flavor": "chat",

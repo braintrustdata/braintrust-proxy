@@ -17792,6 +17792,8 @@
   "openai.gpt-oss-120b-1:0": {
     "format": "converse",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
     "pricing": {
       "bedrock": {
         "flex": [

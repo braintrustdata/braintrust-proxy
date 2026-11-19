@@ -235,9 +235,13 @@ jobs:
             - `"mistral-small-2603"` → `"Mistral Small (March 2026)"` ❌ — never expand a YYMM code into prose month/year; keep the original numeric form in parentheses
             - `"claude-3-5-sonnet-20241022"` → `"Claude 3.5 Sonnet October 2024"` ❌ — date must be in parentheses, not free prose
 
+            # Model validation prompt
+
+            Write a model validation prompt for the changed model ids to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
+
             # Constraints
 
-            - Do not edit any file other than `packages/proxy/schema/model_list.json`.
+            - Do not edit any file other than `packages/proxy/schema/model_list.json` and the model validation prompt file.
             - Use official provider sources only for metadata decisions.
             - Do not invent placeholder values.
 
@@ -282,11 +286,10 @@ jobs:
           set -euo pipefail
 
           printf '%s\n' "$PR_BODY" > "$RUNNER_TEMP/pr-body.md"
-          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
-            --before "$RUNNER_TEMP/model_list.head.json" \
-            --after packages/proxy/schema/model_list.json \
-            --output "$RUNNER_TEMP/pr-body.md" \
-            --branch "$BRANCH_NAME"
+          if [ -s "$RUNNER_TEMP/model-validation-prompt.md" ]; then
+            printf '\n' >> "$RUNNER_TEMP/pr-body.md"
+            cat "$RUNNER_TEMP/model-validation-prompt.md" >> "$RUNNER_TEMP/pr-body.md"
+          fi
 
       - name: Create PR
         id: pr

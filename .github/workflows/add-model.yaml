@@ -281,6 +281,10 @@ jobs:
 
             These availability and standard-pricing verification rules apply to the requested target, not to cloud companions generated under the assumptions above. Search engines are discovery aids only. Do not conclude that a model is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify exact model availability and standard pricing from the applicable canonical provider page and its linked official documentation. If the exact model, requested provider inference surface, or standard pricing still cannot be verified after those direct checks, do not guess and leave the catalog unchanged.
 
+            # Model validation prompt
+
+            If you added or changed any catalog entries, write a model validation prompt for the target and its cloud companions to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
+
             # Final report
 
             List every official URL checked and, for each requested model, state:
@@ -292,7 +296,7 @@ jobs:
             - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and
             - if no change was made, the specific target requirement that remains unresolved.
 
-            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files.
+            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files and the model validation prompt file.
 
       - name: Flush Braintrust trace
         if: always() && steps.claude_trace.outcome == 'success'
@@ -350,18 +354,14 @@ jobs:
       - name: Build PR body with model validation prompt
         if: steps.changes.outputs.changed == 'true'
         shell: bash
-        env:
-          BRANCH_NAME: ${{ steps.target.outputs.branch }}
         run: |
           set -euo pipefail
 
-          git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
           echo "Automated targeted model-catalog addition from the model-drop workflow." > "$RUNNER_TEMP/pr-body.md"
-          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
-            --before "$RUNNER_TEMP/model_list.head.json" \
-            --after packages/proxy/schema/model_list.json \
-            --output "$RUNNER_TEMP/pr-body.md" \
-            --branch "$BRANCH_NAME"
+          if [ -s "$RUNNER_TEMP/model-validation-prompt.md" ]; then
+            printf '\n' >> "$RUNNER_TEMP/pr-body.md"
+            cat "$RUNNER_TEMP/model-validation-prompt.md" >> "$RUNNER_TEMP/pr-body.md"
+          fi
 
       - name: Create PR
         if: steps.changes.outputs.changed == 'true'

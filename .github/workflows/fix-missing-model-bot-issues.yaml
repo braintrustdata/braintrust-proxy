@@ -356,6 +356,10 @@ jobs:
 
             The output file must contain the full issue body text, not just the JSON block.
 
+            # Model validation prompt
+
+            Write a model validation prompt for the models named in every issue in the batch manifest to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
+
             # Display name examples
 
             **Good** (model id → `displayName`):
@@ -616,16 +620,13 @@ jobs:
         if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
         env:
           BATCH_DIR: ${{ runner.temp }}/${{ env.BATCH_DIR }}
-          BRANCH_NAME: ${{ steps.issues.outputs.branch }}
         run: |
           set -euo pipefail
 
-          git show HEAD:packages/proxy/schema/model_list.json > "$BATCH_DIR/model_list.head.json"
-          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
-            --before "$BATCH_DIR/model_list.head.json" \
-            --after packages/proxy/schema/model_list.json \
-            --output "$BATCH_DIR/pull-request-body.md" \
-            --branch "$BRANCH_NAME"
+          if [ -s "$RUNNER_TEMP/model-validation-prompt.md" ]; then
+            printf '\n' >> "$BATCH_DIR/pull-request-body.md"
+            cat "$RUNNER_TEMP/model-validation-prompt.md" >> "$BATCH_DIR/pull-request-body.md"
+          fi
 
       - name: Create PR
         id: pr

@@ -52,6 +52,7 @@ const WRONG_ENDPOINT_TEXT =
 // it must NOT be treated as a deprecation.
 const PARAM_ERROR_TEXT =
   /unsupported parameter|unknown parameter|unsupported value|max_completion_tokens/i;
+const ACCESS_ERROR_TEXT = /\b(?:do|does) not have access\b/i;
 
 // Classify a direct-provider probe. A single definitive not-found / deprecated
 // response marks the model deprecated; rate-limit / overload / network noise is
@@ -72,11 +73,9 @@ export function classifyProbe(status: number, body: string): ProbeOutcome {
   // want `max_completion_tokens`, not `max_tokens`). A param error is not a
   // deprecation — check before the not-found rules, whose "is not supported"
   // marker would otherwise match "'max_tokens' is not supported".
-  if (PARAM_ERROR_TEXT.test(body)) {
+  if (PARAM_ERROR_TEXT.test(body) || ACCESS_ERROR_TEXT.test(body)) {
     return "unknown";
   }
-  // 404 is always a missing model. 400/403/410 only when the body says so, to
-  // avoid mistaking an unrelated bad-request for a deprecation.
   if (status === 404 || status === 410) {
     return "deprecated";
   }
@@ -431,6 +430,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
 //     provisioned on this account, which is not a deprecation
 // These are surfaced for manual review rather than auto-deprecated.
 export const REPORT_ONLY_PROVIDERS = new Set([
+  "azure",
   "bedrock",
   "vertex",
   "databricks",

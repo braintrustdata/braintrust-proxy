@@ -246,6 +246,8 @@ jobs:
 
             # Research and entry requirements
 
+            Exception to all pricing requirements and leave-unchanged rules below: voice, speech, realtime, and live models with officially verified non-token pricing (for example, per-minute pricing) may be added without pricing fields, following existing unpriced entries such as `gpt-live-1`. Apply this exception to their companions too. Still verify model availability and flavor; never guess prices or convert non-token rates to token prices. All other pricing rules remain unchanged.
+
             1. Read neighboring entries plus `packages/proxy/schema/models.ts`, `packages/proxy/schema/index.ts`, and `.github/model-pricing.md` to match the catalog schema and provider-mapping conventions.
             2. Unless a priced endpoint already added or updated the target, verify that the requested target model is publicly available through the requested provider's shared inference surface using official provider sources. The cloud-companion assumptions below are an explicit exception for availability, IDs, and standard prices.
             3. Unless a priced endpoint already added or updated the target, find the provider's official public on-demand pricing for this exact target model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.

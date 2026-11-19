@@ -849,7 +849,7 @@ describe("request/response checking", () => {
     ]);
   });
 
-  it("should convert minimal to low reasoning_effort for gpt-5.x-codex models", async () => {
+  it("should convert minimal to low reasoning_effort for gpt-5.1-codex", async () => {
     const calls: InterceptedCall[] = [];
     server.use(
       http.post(
@@ -918,6 +918,13 @@ describe("request/response checking", () => {
       proxyHeaders: {
         "x-bt-endpoint-name": "openai",
       },
+      getApiSecrets: async () => [
+        {
+          type: "openai",
+          secret: "openai-secret",
+          name: "openai",
+        },
+      ],
     });
 
     expect(calls.length).toBe(1);

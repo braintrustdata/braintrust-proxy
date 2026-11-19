@@ -3156,7 +3156,6 @@
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -3373,7 +3372,6 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -3393,7 +3391,6 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -3413,7 +3410,6 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -3551,7 +3547,6 @@
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4025,7 +4020,6 @@
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -4080,7 +4074,6 @@
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4282,7 +4275,6 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4326,7 +4318,6 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4573,7 +4564,6 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -4622,7 +4612,6 @@
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -4687,7 +4676,6 @@
     "max_input_tokens": 8192,
     "max_output_tokens": 4097,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -23311,6 +23299,8 @@
   "baseten/deepseek-flash-latest": {
     "format": "openai",
     "flavor": "chat",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "available_providers": [
       "baseten"
     ]
@@ -23318,6 +23308,8 @@
   "baseten/deepseek-pro-latest": {
     "format": "openai",
     "flavor": "chat",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "available_providers": [
       "baseten"
     ]
@@ -23325,6 +23317,8 @@
   "baseten/glm-flash-latest": {
     "format": "openai",
     "flavor": "chat",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "available_providers": [
       "baseten"
     ]
@@ -23332,6 +23326,8 @@
   "baseten/glm-latest": {
     "format": "openai",
     "flavor": "chat",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "available_providers": [
       "baseten"
     ]
@@ -23339,6 +23335,8 @@
   "baseten/kimi-latest": {
     "format": "openai",
     "flavor": "chat",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "available_providers": [
       "baseten"
     ]
@@ -30427,6 +30425,8 @@
     "multimodal": true,
     "displayName": "Crouton Alpha",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 1048576,
     "max_output_tokens": 943718,
     "available_providers": [
@@ -30618,6 +30618,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "LiquidAI: LFM2.5-2.6B",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 128000,
     "max_output_tokens": 8192,
     "available_providers": [
@@ -30815,6 +30817,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.01,
     "displayName": "Inception: Mercury 3",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 1000000,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -30829,6 +30833,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.004,
     "displayName": "Inception: Mercury 2.5",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 260000,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -31186,6 +31192,8 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 1,
     "displayName": "Nous: Hermes 3 405B Instruct",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -31198,6 +31206,8 @@
     "input_cost_per_mil_tokens": 0.7,
     "output_cost_per_mil_tokens": 0.7,
     "displayName": "Nous: Hermes 3 70B Instruct",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -31407,6 +31417,8 @@
     "output_cost_per_mil_tokens": 3,
     "displayName": "ByteDance Seed: Seed-2.0-Code",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -31435,6 +31447,8 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "ByteDance Seed: Seed 1.6",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -31449,6 +31463,8 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "ByteDance Seed: Seed 1.6 Flash",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -32085,6 +32101,7 @@
     },
     "displayName": "Mistral: Mistral Medium 3.5",
     "reasoning": true,
+    "retirement_date": "2027-01-31",
     "max_input_tokens": 262144,
     "available_providers": [
       "openrouter"
@@ -32211,6 +32228,8 @@
     "output_cost_per_mil_tokens": 0.3,
     "displayName": "StepFun: Step 3.5 Flash",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
@@ -32254,6 +32273,8 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.1,
     "displayName": "MiniMax: MiniMax-01",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 1000192,
     "max_output_tokens": 1000192,
     "available_providers": [
@@ -32267,6 +32288,8 @@
     "output_cost_per_mil_tokens": 2.2,
     "displayName": "MiniMax: MiniMax M1",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 1000000,
     "max_output_tokens": 40000,
     "available_providers": [
@@ -32280,6 +32303,8 @@
     "output_cost_per_mil_tokens": 1.02,
     "displayName": "MiniMax: MiniMax M2",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 204800,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -32294,6 +32319,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax: MiniMax M2.1",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 204800,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -32307,6 +32334,8 @@
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "MiniMax: MiniMax M2-her",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 65536,
     "max_output_tokens": 2048,
     "available_providers": [
@@ -32966,6 +32995,8 @@
     "output_cost_per_mil_tokens": 0.57,
     "displayName": "Tencent: Hunyuan A13B Instruct",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 131072,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -34946,6 +34977,8 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.2,
     "displayName": "Qwen: Qwen2.5 7B Instruct",
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 32768,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -35168,6 +35201,8 @@
     "output_cost_per_mil_tokens": 1,
     "displayName": "Qwen: Qwen3 VL 30B A3B Thinking",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [

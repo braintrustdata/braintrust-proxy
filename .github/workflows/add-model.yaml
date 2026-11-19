@@ -347,6 +347,22 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
 
+      - name: Build PR body with model validation prompt
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        env:
+          BRANCH_NAME: ${{ steps.target.outputs.branch }}
+        run: |
+          set -euo pipefail
+
+          git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
+          echo "Automated targeted model-catalog addition from the model-drop workflow." > "$RUNNER_TEMP/pr-body.md"
+          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after packages/proxy/schema/model_list.json \
+            --output "$RUNNER_TEMP/pr-body.md" \
+            --branch "$BRANCH_NAME"
+
       - name: Create PR
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
@@ -356,6 +372,6 @@ jobs:
           branch: ${{ steps.target.outputs.branch }}
           commit-message: "chore: add model to catalog"
           title: "chore: add model to catalog"
-          body: "Automated targeted model-catalog addition from the model-drop workflow."
+          body-path: ${{ runner.temp }}/pr-body.md
           labels: auto-sync
           signoff: false

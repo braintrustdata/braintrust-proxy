@@ -612,6 +612,21 @@ jobs:
         if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/fix_bot_issue.test.ts packages/proxy/scripts/sync_models.test.ts
 
+      - name: Append model validation prompt to PR body
+        if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'
+        env:
+          BATCH_DIR: ${{ runner.temp }}/${{ env.BATCH_DIR }}
+          BRANCH_NAME: ${{ steps.issues.outputs.branch }}
+        run: |
+          set -euo pipefail
+
+          git show HEAD:packages/proxy/schema/model_list.json > "$BATCH_DIR/model_list.head.json"
+          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
+            --before "$BATCH_DIR/model_list.head.json" \
+            --after packages/proxy/schema/model_list.json \
+            --output "$BATCH_DIR/pull-request-body.md" \
+            --branch "$BRANCH_NAME"
+
       - name: Create PR
         id: pr
         if: steps.result.outputs.action == 'changed' && steps.changes.outputs.changed == 'true'

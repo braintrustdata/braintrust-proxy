@@ -276,6 +276,18 @@ jobs:
         if: ${{ steps.changes.outputs.changed == 'true' }}
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/sync_typesafe.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
 
+      - name: Build PR body with model validation prompt
+        if: ${{ steps.changes.outputs.changed == 'true' }}
+        run: |
+          set -euo pipefail
+
+          printf '%s\n' "$PR_BODY" > "$RUNNER_TEMP/pr-body.md"
+          pnpm exec tsx packages/proxy/scripts/model_test_prompt.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after packages/proxy/schema/model_list.json \
+            --output "$RUNNER_TEMP/pr-body.md" \
+            --branch "$BRANCH_NAME"
+
       - name: Create PR
         id: pr
         if: ${{ steps.changes.outputs.changed == 'true' }}
@@ -286,6 +298,6 @@ jobs:
           branch: ${{ env.BRANCH_NAME }}
           commit-message: ${{ env.COMMIT_MESSAGE }}
           title: ${{ env.PR_TITLE }}
-          body: ${{ env.PR_BODY }}
+          body-path: ${{ runner.temp }}/pr-body.md
           labels: auto-sync
           signoff: false

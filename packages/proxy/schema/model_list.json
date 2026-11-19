@@ -993,8 +993,6 @@
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 1,
     "reasoning": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -1013,8 +1011,6 @@
     "input_cache_write_30m_cost_per_mil_tokens": 25,
     "input_cache_write_12h_cost_per_mil_tokens": 50,
     "reasoning": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -1237,8 +1233,6 @@
     "input_cache_write_30m_cost_per_mil_tokens": 12.5,
     "input_cache_write_12h_cost_per_mil_tokens": 25,
     "reasoning": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -2281,8 +2275,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "reasoning": true,
     "deprecation_date": "2026-11-05",
-    "retired": true,
-    "retirement_date": "2026-11-19",
+    "retirement_date": "2027-02-01",
     "available_providers": [
       "openai",
       "azure"
@@ -3163,6 +3156,7 @@
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -3378,6 +3372,7 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -3396,6 +3391,7 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -3414,6 +3410,7 @@
     "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -3546,12 +3543,10 @@
     "displayName": "GPT-5 Codex",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retired": true,
-    "retirement_date": "2026-11-19",
+    "retirement_date": "2027-03-17",
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4025,6 +4020,7 @@
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -4073,13 +4069,11 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "GPT-4.1 nano (2025-04-14)",
     "deprecation_date": "2026-04-22",
-    "retired": true,
-    "retirement_date": "2026-11-19",
+    "retirement_date": "2027-04-14",
     "parent": "gpt-4.1-nano",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4278,12 +4272,9 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "displayName": "GPT-4o mini Search Preview",
     "experimental": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4324,12 +4315,9 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT-4o Search Preview",
     "experimental": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4576,6 +4564,7 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -4623,6 +4612,7 @@
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
+      "azure",
       "openrouter"
     ]
   },
@@ -4683,12 +4673,9 @@
     "output_cost_per_mil_tokens": 2,
     "displayName": "GPT 3.5T Instruct 0914",
     "deprecated": true,
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 8192,
     "max_output_tokens": 4097,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4765,8 +4752,6 @@
     "output_cost_per_mil_tokens": 25,
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "GPT-Rosalind Discovery",
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "available_providers": [
       "openai",
       "azure"
@@ -26851,8 +26836,6 @@
   "xai/grok-latest": {
     "format": "openai",
     "flavor": "chat",
-    "retired": true,
-    "retirement_date": "2026-11-19",
     "available_providers": [
       "xAI"
     ]

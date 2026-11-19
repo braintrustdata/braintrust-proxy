@@ -13,10 +13,10 @@
     "@braintrust/proxy": "workspace:*",
     "@vercel/examples-ui": "^2.0.4",
     "@vercel/kv": "^0.2.2",
-    "next": "^16.2.6",
+    "next": "^16.4.5",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "undici": "^6.0.0"
+    "undici": "^6.29.1"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -1,5 +1,12 @@
 import fs from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import {
+  cacheWriteMetricGroups,
+  mapCacheWriteMetrics,
+  mapCacheWriteUsage,
+  type CacheWriteMetricName,
+  type CacheWriteUsageName,
+} from "../schema/cache-metric-definitions.generated";
 import {
   loadCacheMetrics,
   parseCacheMetricGroups,
@@ -84,5 +91,67 @@ describe("cache metric registry", () => {
     ],
   ])("rejects invalid registries", (groups, message) => {
     expect(() => parseCacheMetricGroups(groups)).toThrow(message);
+  });
+});
+
+describe("cache write descriptors", () => {
+  const tokens = {
+    prompt_cache_creation_5m_tokens: 0,
+    prompt_cache_creation_1h_tokens: 100,
+    prompt_cache_creation_30m_tokens: undefined,
+    prompt_cache_creation_12h_tokens: 200,
+  };
+
+  it("keeps provider-specific cache write groups separate", () => {
+    expect(
+      cacheWriteMetricGroups.map(({ id, metrics }) => ({
+        id,
+        metrics: metrics.map(({ metric }) => metric),
+      })),
+    ).toEqual([
+      {
+        id: "anthropic",
+        metrics: [
+          "prompt_cache_creation_5m_tokens",
+          "prompt_cache_creation_1h_tokens",
+        ],
+      },
+      {
+        id: "openai",
+        metrics: [
+          "prompt_cache_creation_30m_tokens",
+          "prompt_cache_creation_12h_tokens",
+        ],
+      },
+    ]);
+  });
+
+  it("transforms every metric while preserving zero and missing values", () => {
+    const result = mapCacheWriteMetrics((metric) => {
+      const value = tokens[metric];
+      return value === undefined ? undefined : value / 100;
+    });
+    expect(result).toEqual({
+      prompt_cache_creation_5m_tokens: 0,
+      prompt_cache_creation_1h_tokens: 1,
+      prompt_cache_creation_30m_tokens: undefined,
+      prompt_cache_creation_12h_tokens: 2,
+    });
+    expectTypeOf(result).toEqualTypeOf<
+      Record<CacheWriteMetricName, number | undefined>
+    >();
+  });
+
+  it("maps metric values to usage keys without mixing TTLs", () => {
+    const result = mapCacheWriteUsage((metric) => tokens[metric]);
+    expect(result).toEqual({
+      promptCacheCreation5mTokens: 0,
+      promptCacheCreation1hTokens: 100,
+      promptCacheCreation30mTokens: undefined,
+      promptCacheCreation12hTokens: 200,
+    });
+    expectTypeOf(result).toEqualTypeOf<
+      Record<CacheWriteUsageName, number | undefined>
+    >();
   });
 });

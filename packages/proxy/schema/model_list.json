@@ -27101,12 +27101,14 @@
         ],
         "batch": [
           {
-            "input_cost_per_mil_tokens": 0.15
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 1.25
           }
         ],
         "priority": [
           {
-            "input_cost_per_mil_tokens": 0.54
+            "input_cost_per_mil_tokens": 0.54,
+            "output_cost_per_mil_tokens": 4.5
           }
         ]
       },

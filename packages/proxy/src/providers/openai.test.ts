@@ -1459,3 +1459,50 @@ describe("normalizeOpenAIContent", () => {
     });
   });
 });
+
+for (const [authPrefix, expected] of [
+  [null, "Bearer custom-key"],
+  ["", "custom-key"],
+  ["Token", "Token custom-key"],
+]) {
+  it(`sends the key in a configured auth header with prefix ${JSON.stringify(authPrefix)}`, async () => {
+    const calls: Array<{
+      headers: HeadersInit | undefined;
+      redirect?: string;
+    }> = [];
+    const customFetch: FetchFn = async (_input, init) => {
+      calls.push({ headers: init?.headers, redirect: init?.redirect });
+      return new Response(JSON.stringify({ choices: [] }), {
+        headers: { "content-type": "application/json" },
+      });
+    };
+    await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
+      body: {
+        model: "gpt-5-mini",
+        messages: [{ role: "user", content: "hello" }],
+      },
+      customFetch,
+      ...{
+        getApiSecrets: async (): Promise<APISecret[]> => [
+          {
+            type: "openai",
+            name: "custom",
+            secret: "custom-key",
+            metadata: {
+              api_base: "https://gateway.example/v1",
+              auth_type: "api_key",
+              supportsStreaming: true,
+              auth_header: "ApiKey",
+              auth_prefix: authPrefix,
+            },
+          },
+        ],
+      },
+    });
+
+    expect(calls).toHaveLength(1);
+    expect(fetchHeaderValue(calls[0].headers, "apikey")).toBe(expected);
+    expect(fetchHeaderValue(calls[0].headers, "authorization")).toBeNull();
+    expect(calls[0].redirect).toBe("manual");
+  });
+}

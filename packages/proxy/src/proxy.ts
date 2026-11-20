@@ -131,6 +131,7 @@ export type ProviderFetchBody =
   | Uint8Array
   | ReadableStream<Uint8Array>;
 export type ProviderFetchInit = {
+  redirect?: RequestRedirect;
   method?: string;
   headers?: ProviderFetchHeaders;
   body?: ProviderFetchBody;
@@ -2375,7 +2376,22 @@ async function fetchOpenAI(
     secret.metadata.auth_format === "api_key"
       ? "api_key"
       : "bearer";
-  if (bearerToken !== null && bearerToken !== undefined) {
+  const metadata: Record<string, unknown> = secret.metadata ?? {};
+  const authHeader =
+    typeof metadata.auth_header === "string" ? metadata.auth_header : "";
+  if (authHeader && bearerToken !== null && bearerToken !== undefined) {
+    const authPrefix =
+      typeof metadata.auth_prefix === "string"
+        ? metadata.auth_prefix
+        : "Bearer";
+    delete headers["authorization"];
+    headers[authHeader.toLowerCase()] = authPrefix
+      ? `${authPrefix} ${bearerToken}`
+      : bearerToken;
+    const upstreamFetch = customFetch;
+    customFetch = (input, init) =>
+      upstreamFetch(input, { ...init, redirect: "manual" });
+  } else if (bearerToken !== null && bearerToken !== undefined) {
     headers["authorization"] =
       authFormat === "api_key"
         ? `Api-Key ${bearerToken}`

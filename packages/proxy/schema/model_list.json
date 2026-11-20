@@ -15680,7 +15680,8 @@
     "displayName": "Claude Mythos 5.2",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2027-11-09",
+    "retired": true,
+    "retirement_date": "2026-11-20",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -28109,8 +28110,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI",
-      "openrouter"
+      "xAI"
     ]
   },
   "grok-build-latest": {

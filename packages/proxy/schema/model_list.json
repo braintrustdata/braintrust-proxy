@@ -23767,6 +23767,16 @@
       "baseten"
     ]
   },
+  "decision-models/baseten-bison-latest": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "displayName": "bison-1",
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "reflection/Beam-1.0": {
     "format": "openai",
     "flavor": "chat",

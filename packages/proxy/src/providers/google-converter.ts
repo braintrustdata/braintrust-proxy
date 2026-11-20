@@ -307,6 +307,7 @@ export const OpenAIParamsToGoogleParams: {
   top_logprobs: null,
   n: "candidateCount",
   user: null,
+  model: null,
 };
 
 // because GenAI sdk doesn't provide a convenient API equivalent type
@@ -346,20 +347,112 @@ export const openaiParamsToGeminiMessageParams = (
     openai.reasoning_budget !== undefined ||
     openai.reasoning_enabled !== undefined
   ) {
-    gemini.thinkingConfig = getGeminiThinkingParams({
-      ...openai,
-      max_completion_tokens: maxTokens,
-    });
+    gemini.thinkingConfig = getGeminiThinkingParams(
+      {
+        ...openai,
+        max_completion_tokens: maxTokens,
+      },
+      openai.model,
+    );
   }
 
   return gemini;
+};
+
+// Gemini 3+ takes a thinkingLevel. Gemini 4 rejects thinkingBudget on Vertex
+// and buckets it on the Gemini API (<= 1024 means no thinking).
+const normalizeGeminiModel = (model: string | undefined): string =>
+  (model ?? "")
+    .replace(/^(publishers\/google\/models\/|models\/)/, "")
+    .toLowerCase();
+
+const usesGeminiThinkingLevel = (model: string | undefined): boolean => {
+  const match = normalizeGeminiModel(model).match(/^gemini-(\d+)/);
+  return match ? Number(match[1]) >= 3 : false;
+};
+
+// Gemini 3.1 Pro, 3.7 Flash, 3.8 Flash and Gemini 4 reject MINIMAL.
+const MINIMAL_THINKING_LEVEL_PREFIXES = [
+  "gemini-3-flash",
+  "gemini-3.1-flash-lite",
+  "gemini-3.5-flash",
+  "gemini-3.6-flash",
+];
+
+const supportsMinimalThinkingLevel = (model: string | undefined): boolean => {
+  const normalized = normalizeGeminiModel(model);
+  return MINIMAL_THINKING_LEVEL_PREFIXES.some((prefix) =>
+    normalized.startsWith(prefix),
+  );
+};
+
+type GeminiThinkingLevel = NonNullable<ThinkingConfig["thinkingLevel"]>;
+
+const effortToGeminiThinkingLevel = (
+  effort: string,
+  model: string | undefined,
+): GeminiThinkingLevel => {
+  switch (effort) {
+    case "minimal":
+      return supportsMinimalThinkingLevel(model) ? "MINIMAL" : "LOW";
+    case "none":
+    case "low":
+      return "LOW";
+    case "medium":
+      return "MEDIUM";
+    default:
+      return "HIGH";
+  }
+};
+
+const budgetToGeminiThinkingLevel = (budget: number): GeminiThinkingLevel => {
+  if (budget < 4096) {
+    return "LOW";
+  }
+  if (budget < 16384) {
+    return "MEDIUM";
+  }
+  return "HIGH";
+};
+
+const getGeminiThinkingLevelParams = (
+  openai: OpenAIChatCompletionCreateParams,
+  model: string | undefined,
+): ThinkingConfig => {
+  // Thinking cannot be turned off on Gemini 3+, so disabled maps to the lowest level.
+  if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
+    return {
+      thinkingLevel: supportsMinimalThinkingLevel(model) ? "MINIMAL" : "LOW",
+    };
+  }
+  if (openai.reasoning_effort) {
+    return {
+      includeThoughts: true,
+      thinkingLevel: effortToGeminiThinkingLevel(
+        openai.reasoning_effort,
+        model,
+      ),
+    };
+  }
+  if (openai.reasoning_budget !== undefined) {
+    return {
+      includeThoughts: true,
+      thinkingLevel: budgetToGeminiThinkingLevel(openai.reasoning_budget),
+    };
+  }
+  return { includeThoughts: true };
 };
 
 const getGeminiThinkingParams = (
   openai: OpenAIChatCompletionCreateParams & {
     max_completion_tokens?: Required<number>;
   },
+  model: string | undefined,
 ): ThinkingConfig => {
+  if (usesGeminiThinkingLevel(model)) {
+    return getGeminiThinkingLevelParams(openai, model);
+  }
+
   if (openai.reasoning_enabled === false || openai.reasoning_budget === 0) {
     return {
       thinkingBudget: 0,

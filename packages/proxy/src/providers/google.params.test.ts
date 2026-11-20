@@ -1373,6 +1373,103 @@ describe("Google parameter translation (captureOnly)", () => {
       expect(typeof thinkingConfig.thinkingBudget).toBe("number");
     });
 
+    const thinkingConfigCases: [
+      string,
+      Record<string, unknown>,
+      Record<string, unknown>,
+    ][] = [
+      [
+        "gemini-4-argon",
+        { reasoning_effort: "high" },
+        { includeThoughts: true, thinkingLevel: "HIGH" },
+      ],
+      [
+        "gemini-4-argon",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "LOW" },
+      ],
+      [
+        "publishers/google/models/gemini-3.1-pro-preview",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "LOW" },
+      ],
+      [
+        "gemini-3.5-flash",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "MINIMAL" },
+      ],
+      [
+        "publishers/google/models/gemini-3-flash-preview",
+        { reasoning_effort: "minimal" },
+        { includeThoughts: true, thinkingLevel: "MINIMAL" },
+      ],
+      [
+        "gemini-4-argon",
+        { reasoning_enabled: true },
+        { includeThoughts: true },
+      ],
+      [
+        "gemini-4-argon",
+        { reasoning_enabled: true, reasoning_budget: 1024 },
+        { includeThoughts: true, thinkingLevel: "LOW" },
+      ],
+      [
+        "publishers/google/models/gemini-4-argon",
+        { reasoning_enabled: true, reasoning_budget: 24576 },
+        { includeThoughts: true, thinkingLevel: "HIGH" },
+      ],
+      [
+        "gemini-4-argon",
+        { reasoning_enabled: false },
+        { thinkingLevel: "LOW" },
+      ],
+      [
+        "gemini-3.5-flash-lite",
+        { reasoning_enabled: false },
+        { thinkingLevel: "MINIMAL" },
+      ],
+      [
+        "publishers/google/models/gemini-3.1-flash-lite",
+        { reasoning_budget: 0 },
+        { thinkingLevel: "MINIMAL" },
+      ],
+      ["gemini-2.5-flash", { reasoning_enabled: false }, { thinkingBudget: 0 }],
+      [
+        "gemini-2.5-flash",
+        { reasoning_effort: "high", max_tokens: 1000 },
+        { includeThoughts: true, thinkingBudget: 800 },
+      ],
+    ];
+    for (const [
+      model,
+      reasoningParams,
+      expectedThinkingConfig,
+    ] of thinkingConfigCases) {
+      it(`should map ${model} ${JSON.stringify(reasoningParams)} to thinkingConfig`, async () => {
+        const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+        await callProxyV1<Record<string, unknown>, OpenAIChatCompletionChunk>({
+          body: {
+            model,
+            messages: [{ role: "user", content: "Solve this math problem" }],
+            stream: false,
+            ...reasoningParams,
+          },
+          fetch,
+        });
+
+        expect(requests).toHaveLength(1);
+        const body = requests[0].body as Record<string, unknown>;
+        expect(body.model).toBeUndefined();
+        const generationConfig = body.generationConfig as Record<
+          string,
+          unknown
+        >;
+        expect(generationConfig.model).toBeUndefined();
+        expect(generationConfig.thinkingConfig).toEqual(expectedThinkingConfig);
+      });
+    }
+
     it("should translate reasoning_budget to thinkingConfig", async () => {
       const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 

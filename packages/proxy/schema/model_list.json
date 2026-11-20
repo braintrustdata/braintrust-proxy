@@ -23734,6 +23734,17 @@
       "baseten"
     ]
   },
+  "decision-models/baseten-bison-latest": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.1,
+    "displayName": "bison-1",
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "decision-models/baseten-joey-2b-latest": {
     "format": "openai",
     "flavor": "decisions",

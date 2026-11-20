@@ -887,6 +887,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": ["baseten"],
   "decision-models/baseten-elephant-9b-latest": ["baseten"],
   "decision-models/baseten-mammoth-27b-latest": ["baseten"],
+  "decision-models/baseten-bison-latest": ["baseten"],
   "decision-models/baseten-joey-2b-latest": ["baseten"],
   "reflection/Beam-1.0": ["baseten"],
   "meta-models/muse-spark-open": ["baseten"],

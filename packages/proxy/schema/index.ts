@@ -885,6 +885,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "nvidia/nemotron-3-ultra-550b-a55b": ["together", "openrouter"],
   "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B": ["baseten"],
   "nvidia/NVIDIA-Nemotron-3.5-Super-VL-120B-A12B": ["baseten"],
+  "decision-models/baseten-groundhog-latest": ["baseten"],
   "decision-models/baseten-elephant-9b-latest": ["baseten"],
   "decision-models/baseten-mammoth-27b-latest": ["baseten"],
   "decision-models/baseten-joey-2b-latest": ["baseten"],

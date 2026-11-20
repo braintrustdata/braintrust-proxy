@@ -23712,6 +23712,17 @@
       "baseten"
     ]
   },
+  "decision-models/baseten-groundhog-latest": {
+    "format": "openai",
+    "flavor": "decisions",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.035,
+    "displayName": "groundhog-1",
+    "max_input_tokens": 131072,
+    "available_providers": [
+      "baseten"
+    ]
+  },
   "decision-models/baseten-mammoth-27b-latest": {
     "format": "openai",
     "flavor": "chat",

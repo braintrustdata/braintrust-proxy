@@ -16009,7 +16009,8 @@
     "displayName": "Claude Mythos 5.2",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2027-11-09",
+    "retired": true,
+    "retirement_date": "2026-11-21",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -28806,8 +28807,7 @@
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
-      "xAI",
-      "openrouter"
+      "xAI"
     ]
   },
   "grok-build-latest": {
@@ -33754,6 +33754,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "Tencent: Hy3 Preview",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-21",
     "parent": "tencent/hy3",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -35160,6 +35162,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.006,
     "displayName": "Meituan: LongCat 2.0",
     "reasoning": true,
+    "retired": true,
+    "retirement_date": "2026-11-21",
     "max_input_tokens": 1048756,
     "max_output_tokens": 262144,
     "available_providers": [

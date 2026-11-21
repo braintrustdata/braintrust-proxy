@@ -23355,6 +23355,7 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "mammoth-1",
     "max_input_tokens": 16384,
     "available_providers": [
@@ -23366,6 +23367,7 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.035,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "elephant-1",
     "max_input_tokens": 16384,
     "available_providers": [
@@ -23377,6 +23379,7 @@
     "flavor": "decisions",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.01,
+    "output_cost_per_mil_tokens": 0,
     "displayName": "joey-1",
     "max_input_tokens": 16384,
     "available_providers": [

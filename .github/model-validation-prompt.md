@@ -40,7 +40,8 @@ Address it to that agent and include:
      Send one basic request to each companion.
 5. **Product pass**: check that each model appears in the playground model picker with the expected display name, and that its logged LLM spans in the `model-validation` project show token usage and an estimated cost consistent with the catalog prices.
 6. **Report**: return a pass/fail/blocked/skip table per model and check.
-   Report `no provider registered` or `Configured providers` errors as blocked by credentials or provider configuration, not as model failures.
+   Report `no provider registered` or `Configured providers` errors as blocked only if the preflight showed the intended endpoint was unavailable or misconfigured for the credential.
+   If the preflight confirmed access and a pinned request still returns either error, report it as a failure and investigate the catalog or Gateway routing.
    For each failure, include the request, the error or unexpected output, and whether the likely fix is in the catalog (`braintrustdata/braintrust-proxy`), the Gateway or Lingua translation layer (`gateway/` or `lingua/` in `braintrustdata/braintrust`), or the provider.
    Do not edit code.
 

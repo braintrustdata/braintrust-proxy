@@ -28836,6 +28836,7 @@
     },
     "displayName": "Grok Build 0.1",
     "reasoning": true,
+    "retirement_date": "2026-11-19",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [

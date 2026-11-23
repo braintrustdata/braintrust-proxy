@@ -228,6 +228,7 @@
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 0.4,
     "input_cache_write_cost_per_mil_tokens": 10,
+    "displayName": "GPT-6.2 Astra for Law",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1173,6 +1174,7 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 1,
+    "displayName": "GPT-6 Astra for Law",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1191,6 +1193,7 @@
     "input_cache_write_cost_per_mil_tokens": 25,
     "input_cache_write_30m_cost_per_mil_tokens": 25,
     "input_cache_write_12h_cost_per_mil_tokens": 50,
+    "displayName": "GPT-6 Cyber",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -1413,6 +1416,7 @@
     "input_cache_write_cost_per_mil_tokens": 12.5,
     "input_cache_write_30m_cost_per_mil_tokens": 12.5,
     "input_cache_write_12h_cost_per_mil_tokens": 25,
+    "displayName": "GPT-6 Rosalind",
     "reasoning": true,
     "max_input_tokens": 922000,
     "max_output_tokens": 128000,
@@ -2454,6 +2458,7 @@
     "input_cost_per_mil_tokens": 12.5,
     "output_cost_per_mil_tokens": 75,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-5.5 Cyber Preview",
     "reasoning": true,
     "deprecation_date": "2026-11-05",
     "retirement_date": "2027-02-01",
@@ -5403,6 +5408,7 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "displayName": "GPT Audio 1.5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -5494,6 +5500,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.6 Flare",
     "available_providers": [
       "openai",
       "azure"
@@ -5505,6 +5512,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "displayName": "GPT-Image-2.6 Sunburst",
     "available_providers": [
       "openai",
       "azure"

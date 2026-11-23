@@ -4115,7 +4115,8 @@
       }
     },
     "displayName": "GPT-4.1",
-    "deprecation_date": "2027-01-14",
+    "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -4170,7 +4171,8 @@
       }
     },
     "displayName": "GPT-4.1 mini",
-    "deprecation_date": "2027-01-14",
+    "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
@@ -4357,7 +4359,8 @@
       }
     },
     "displayName": "GPT-4o",
-    "deprecation_date": "2027-01-14",
+    "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -4427,7 +4430,8 @@
       }
     },
     "displayName": "GPT-4o mini",
-    "deprecation_date": "2027-01-14",
+    "deprecation_date": "2026-10-14",
+    "retirement_date": "2027-04-14",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
@@ -4577,7 +4581,8 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o Audio Preview (2025-06-03)",
-    "deprecation_date": "2027-01-20",
+    "deprecation_date": "2025-09-15",
+    "retirement_date": "2026-05-07",
     "parent": "gpt-4o-audio-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -4609,7 +4614,7 @@
     "output_cost_per_mil_tokens": 10,
     "displayName": "GPT-4o mini TTS (2025-03-20)",
     "deprecation_date": "2026-10-01",
-    "retirement_date": "2027-01-06",
+    "retirement_date": "2027-01-20",
     "parent": "gpt-4o-mini-tts",
     "available_providers": [
       "openai",
@@ -4675,7 +4680,8 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "GPT-4o mini Audio Preview (2024-12-17)",
-    "deprecation_date": "2027-01-20",
+    "deprecation_date": "2025-09-15",
+    "retirement_date": "2026-05-07",
     "parent": "gpt-4o-mini-audio-preview",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -5596,7 +5602,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5607,7 +5614,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5618,7 +5626,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5633,7 +5642,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1.5",
     "deprecation_date": "2026-06-02",
-    "retirement_date": "2026-12-16",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5644,7 +5653,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5655,7 +5665,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5666,7 +5677,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5677,7 +5689,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5688,7 +5701,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5699,7 +5713,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5710,7 +5725,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5721,7 +5737,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5732,7 +5749,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5743,7 +5761,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5754,7 +5773,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5765,7 +5785,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "available_providers": [
       "openai",
       "azure"
@@ -5776,7 +5797,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Square (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5788,7 +5810,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Portrait (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5800,7 +5823,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Landscape (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5816,7 +5840,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1.5 (2025-12-16)",
     "deprecation_date": "2026-06-02",
-    "retirement_date": "2026-12-16",
+    "retirement_date": "2027-06-16",
     "parent": "gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5828,7 +5852,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Square (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "high/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5840,7 +5865,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Portrait (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "high/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5852,7 +5878,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 High Landscape (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "high/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5864,7 +5891,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Square (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "low/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5876,7 +5904,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Portrait (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "low/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5888,7 +5917,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Low Landscape (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "low/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5900,7 +5930,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Square (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "medium/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5912,7 +5943,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Portrait (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "medium/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5924,7 +5956,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Medium Landscape (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "medium/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5936,7 +5969,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Square (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "standard/1024-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5948,7 +5982,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Portrait (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "standard/1024-x-1536/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5960,7 +5995,8 @@
     "flavor": "chat",
     "multimodal": true,
     "displayName": "GPT Image 1.5 Standard Landscape (2025-12-16)",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-06-16",
     "parent": "standard/1536-x-1024/gpt-image-1.5",
     "available_providers": [
       "openai",
@@ -5974,7 +6010,7 @@
     "input_cache_read_cost_per_mil_tokens": 1.25,
     "displayName": "GPT Image 1",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -5997,7 +6033,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 High Square",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6007,7 +6044,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 High Portrait",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6017,7 +6055,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 High Landscape",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6027,7 +6066,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Low Square",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6037,7 +6077,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Low Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6047,7 +6088,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Low Portrait",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6057,7 +6099,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Low Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6067,7 +6110,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Low Landscape",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6077,7 +6121,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Low Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6087,7 +6132,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Medium Square",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6097,7 +6143,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Medium Square",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6107,7 +6154,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Medium Portrait",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6117,7 +6165,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Medium Portrait",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6127,7 +6176,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 Medium Landscape",
-    "deprecation_date": "2026-10-23",
+    "deprecation_date": "2026-04-22",
+    "retirement_date": "2026-10-28",
     "available_providers": [
       "openai",
       "azure"
@@ -6137,7 +6187,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "GPT Image 1 mini Medium Landscape",
-    "deprecation_date": "2026-12-01",
+    "deprecation_date": "2026-06-02",
+    "retirement_date": "2027-04-07",
     "available_providers": [
       "openai",
       "azure"
@@ -6172,7 +6223,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 HD Square",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6182,7 +6234,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 HD Portrait",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6192,7 +6245,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 HD Landscape",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6202,7 +6256,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 Standard Square",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6212,7 +6267,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 Standard Portrait",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6222,7 +6278,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 3 Standard Landscape",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6232,7 +6289,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 2 1024x1024",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6242,7 +6300,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 2 256x256",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6252,7 +6311,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "DALL-E 2 512x512",
-    "deprecation_date": "2026-05-12",
+    "deprecation_date": "2025-11-14",
+    "retirement_date": "2026-05-12",
     "available_providers": [
       "openai",
       "azure"
@@ -6273,7 +6333,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Sora 2",
-    "deprecation_date": "2026-09-24",
+    "deprecation_date": "2026-03-24",
+    "retirement_date": "2026-11-02",
     "available_providers": [
       "openai",
       "azure"
@@ -6283,7 +6344,8 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Sora 2 Pro",
-    "deprecation_date": "2026-09-24",
+    "deprecation_date": "2026-03-24",
+    "retirement_date": "2026-09-24",
     "available_providers": [
       "openai",
       "azure"
@@ -6304,7 +6366,7 @@
     "flavor": "chat",
     "displayName": "Sora 2",
     "deprecation_date": "2026-03-24",
-    "retirement_date": "2026-10-15",
+    "retirement_date": "2026-11-02",
     "available_providers": [
       "openai",
       "azure"
@@ -6501,7 +6563,7 @@
     "output_cost_per_mil_tokens": 0.8,
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2027-10-14",
+    "retirement_date": "2028-04-13",
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [

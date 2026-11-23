@@ -8,8 +8,9 @@ Check each applicable tier independently, even when top-level standard prices di
 This includes `batch`, `fast`, and `ultrafast`, as well as `flex` and `priority`.
 Batch API support and synchronous service-tier support are separate checks.
 
-- Keep standard prices in the top-level price fields.
-  `pricing` holds only the non-standard tiers in `PricingTiers`.
+- Keep default standard prices in the top-level price fields.
+  Record conditional standard rates, including prompt-length overrides, in `pricing[provider].standard`.
+  `PricingTiers` includes this standard category and the non-standard tiers.
   Store verified tier rates in `pricing[provider][tier]`, with a nonempty array of rate entries or an explicit alias for each provider/tier pair.
   When a provider documents two names for the same tier, store the rates once and use `{"alias": "fast"}` for the other name.
   An alias points directly to a nonempty rate array in the same model and provider and inherits every rate and condition.
@@ -68,7 +69,7 @@ Keep direct Fireworks and Anthropic tiers separate unless their own documentatio
 
 Use the provider's actual billing signal when interpreting these prices.
 A requested tier can fall back, and an omitted or `auto` tier can use an account default.
-Do not add `auto`, `default`, or `standard` as non-standard pricing keys.
+Do not add `auto` or `default` as pricing keys; use `standard` for conditional standard prices.
 Do not treat model-name suffixes such as `-fast`, `:nitro`, or `-pro` as proof of a pricing tier.
 Do not multiply a batch discount by a fast/priority premium unless the provider explicitly supports the combination.
 

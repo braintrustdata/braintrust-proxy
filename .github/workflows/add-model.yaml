@@ -257,6 +257,7 @@ jobs:
             6. For the target and every new or existing companion, add or refresh provider/tier `pricing` following `.github/model-pricing.md`, even when a priced endpoint handled the target or the model already exists.
                Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Do not apply the standard-price companion assumptions to tier prices. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
             7. Verify the target's flavor against official model documentation even if it already exists or a priced endpoint handled it. Decision targets and all their companion entries must have `flavor: "decisions"`. Use each provider's documented format; do not assume every decision model uses the `typesafe` format. Set `supports_decisions` only when official documentation confirms support for the schema's `POST /v1/decisions` capability.
+            8. Include a verified, human-friendly `displayName` for new entries other than `ft:` pricing templates. Check official pricing, deprecation, and changelog pages as well as model cards; a missing model card does not mean the exact ID or name is undocumented. Leave the name unset if it cannot be verified rather than guessing.
 
             # Required cloud companion entries
 
@@ -352,6 +353,18 @@ jobs:
         if: steps.changes.outputs.changed == 'true'
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
 
+      - name: Check model display names
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
+          pnpm exec tsx packages/proxy/scripts/check_model_display_names.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after packages/proxy/schema/model_list.json \
+            --output "$RUNNER_TEMP/model-display-name-report.md"
+
       - name: Build PR body with model validation prompt
         if: steps.changes.outputs.changed == 'true'
         shell: bash
@@ -359,6 +372,12 @@ jobs:
           set -euo pipefail
 
           echo "Automated targeted model-catalog addition from the model-drop workflow." > "$RUNNER_TEMP/pr-body.md"
+          if [ -s "$RUNNER_TEMP/model-display-name-report.md" ]; then
+            printf '\n' >> "$RUNNER_TEMP/pr-body.md"
+            cat "$RUNNER_TEMP/model-display-name-report.md" >> "$RUNNER_TEMP/pr-body.md"
+          else
+            printf '\n**Action required:** the model display name check did not produce a report. See the workflow logs.\n' >> "$RUNNER_TEMP/pr-body.md"
+          fi
           if [ -s "$RUNNER_TEMP/model-validation-prompt.md" ]; then
             {
               printf '\n## Model validation prompt\n\n'

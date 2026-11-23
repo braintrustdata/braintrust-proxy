@@ -309,15 +309,6 @@ export function isBasetenDeprecated(modelName: string): boolean {
   return BASETEN_DEPRECATED_MODELS.has(modelName);
 }
 
-// A model can't be deprecated after it is retired, so ignore remote
-// deprecation dates that would break that ordering.
-export function isDeprecationDateAfterRetirement(
-  deprecationDate: string,
-  retirementDate: string | null | undefined,
-): boolean {
-  return typeof retirementDate === "string" && deprecationDate > retirementDate;
-}
-
 // Zod schema for individual model details
 const searchContextCostPerQuerySchema = z
   .object({
@@ -1700,6 +1691,59 @@ export function getMissingProviderMappings(
   return missingProviderMappings;
 }
 
+// Providers a sync run newly added to available_providers that the model's
+// existing AvailableEndpointTypes entry lacks. index.ts takes precedence over
+// available_providers when routing, so an unwidened entry hides the provider.
+// Only newly added providers count: some entries are deliberately narrower
+// than available_providers.
+export function getProviderMappingWidenings(
+  schemaContent: string,
+  addedProviders: ProviderMappingUpdate[],
+): ProviderMappingUpdate[] {
+  const lines = normalizeProviderMappingContent(schemaContent).split("\n");
+  const widenings: ProviderMappingUpdate[] = [];
+
+  for (const { name, providers } of addedProviders) {
+    const range = findProviderMappingEntryRange(lines, name);
+    if (!range) {
+      continue;
+    }
+    const entryText = lines.slice(range.start, range.end + 1).join("\n");
+    const mapped = new Set(
+      Array.from(
+        (entryText.match(/\[([^\]]*)\]/)?.[1] ?? "").matchAll(/"([^"]+)"/g),
+      ).map((m) => m[1]),
+    );
+    const missing = providers.filter(
+      (provider) =>
+        !mapped.has(provider) &&
+        (provider !== "vertex" || isVertexModelName(name)),
+    );
+    if (missing.length > 0) {
+      widenings.push({ name, providers: missing });
+    }
+  }
+
+  return widenings;
+}
+
+async function widenProviderMappings(
+  addedProviders: ProviderMappingUpdate[],
+): Promise<void> {
+  const widenings = getProviderMappingWidenings(
+    await fs.promises.readFile(SCHEMA_INDEX_PATH, "utf-8"),
+    addedProviders,
+  );
+  for (const { name, providers } of widenings) {
+    for (const provider of providers) {
+      await addProviderToExistingMappings([name], provider);
+    }
+    console.log(
+      `  [WRITE] Added ${providers.join(", ")} to the ${name} provider mapping`,
+    );
+  }
+}
+
 // Delete the AvailableEndpointTypes entries for the given model ids from
 // schema/index.ts (used when a model_list.json key is removed, so its mapping
 // does not dangle). No-op for ids that have no entry.
@@ -1969,9 +2013,6 @@ export function convertRemoteToLocalModel(
   const maxOutputTokens = getNonZeroNumber(remoteModel.max_output_tokens);
   if (maxOutputTokens !== undefined) {
     baseModel.max_output_tokens = maxOutputTokens;
-  }
-  if (remoteModel.deprecation_date) {
-    baseModel.deprecation_date = remoteModel.deprecation_date;
   }
 
   const providers = getProviderMappingForModel(remoteModelName, remoteModel);
@@ -2624,6 +2665,7 @@ async function updateModelsCommand(argv: any) {
       JSON.stringify(localModels),
     ) as LocalModelList;
     let madeChanges = false;
+    const addedProviderMappings: ProviderMappingUpdate[] = [];
 
     console.log("\n--- Model Update Report ---");
     if (argv.provider) {
@@ -2827,63 +2869,6 @@ async function updateModelsCommand(argv: any) {
         }
       };
 
-      const checkAndUpdateDeprecationDate = (
-        localDeprecationDate: string | undefined | null,
-        remoteDeprecationDate: string | undefined,
-      ) => {
-        if (typeof remoteDeprecationDate === "string") {
-          const localRetirementDate = localModelDetail.retirement_date;
-          if (
-            isDeprecationDateAfterRetirement(
-              remoteDeprecationDate,
-              localRetirementDate,
-            )
-          ) {
-            reportModelIfNeeded();
-            console.log(
-              `  [SKIP] Remote deprecation date ${remoteDeprecationDate} is after local retirement date ${localRetirementDate}; keeping ${
-                localDeprecationDate ?? "unset"
-              }`,
-            );
-            return;
-          }
-          if (
-            localDeprecationDate === null ||
-            typeof localDeprecationDate !== "string" ||
-            localDeprecationDate !== remoteDeprecationDate
-          ) {
-            if (!argv.write) {
-              reportModelIfNeeded();
-              console.log(
-                `  Deprecation Date Mismatch/Missing: Local: ${
-                  localDeprecationDate ?? "Not available"
-                }, Remote: ${remoteDeprecationDate}`,
-              );
-            }
-            discrepanciesFound++;
-            if (argv.write) {
-              Reflect.set(
-                modelInUpdatedList,
-                "deprecation_date",
-                remoteDeprecationDate,
-              );
-              madeChanges = true;
-              reportModelIfNeeded();
-              console.log(
-                `  [WRITE] Updated Deprecation Date to: ${remoteDeprecationDate}`,
-              );
-            }
-          }
-        } else if (typeof localDeprecationDate === "string") {
-          if (!argv.write) {
-            reportModelIfNeeded();
-            console.log(
-              `  Deprecation Date: Local: ${localDeprecationDate}, Remote: Not available`,
-            );
-          }
-        }
-      };
-
       checkAndUpdateCost(
         "Input",
         localInputCost,
@@ -2927,10 +2912,6 @@ async function updateModelsCommand(argv: any) {
       const remoteMaxInputTokens = remoteModelDetail.max_input_tokens;
       const remoteMaxOutputTokens = remoteModelDetail.max_output_tokens;
 
-      // Check and update deprecation date
-      const localDeprecationDate = localModelDetail.deprecation_date;
-      const remoteDeprecationDate = remoteModelDetail.deprecation_date;
-
       checkAndUpdateTokenLimit(
         "Max Input",
         localMaxInputTokens,
@@ -2944,11 +2925,21 @@ async function updateModelsCommand(argv: any) {
         "max_output_tokens",
       );
 
-      // Check and update deprecation date
-      checkAndUpdateDeprecationDate(
-        localDeprecationDate,
-        remoteDeprecationDate,
-      );
+      // LiteLLM's deprecation_date is the provider's shutdown date, not the
+      // notice date we store. Lifecycle dates come from the provider-direct
+      // audit, so only report a disagreement.
+      const remoteShutdownDate = remoteModelDetail.deprecation_date;
+      if (
+        remoteShutdownDate &&
+        remoteShutdownDate !== localModelDetail.retirement_date
+      ) {
+        reportModelIfNeeded();
+        console.log(
+          `  [REVIEW] LiteLLM shutdown date ${remoteShutdownDate} differs from retirement_date ${
+            localModelDetail.retirement_date ?? "unset"
+          }; not applied`,
+        );
+      }
 
       // Set available_providers from remote (using merged providers across all colliding remote entries)
       let remoteProviders = getUpdatedAvailableProviders(
@@ -2977,6 +2968,14 @@ async function updateModelsCommand(argv: any) {
             (p: string, i: number) => p === remoteProviders[i],
           );
         if (!same) {
+          addedProviderMappings.push({
+            name: localModelName,
+            providers: remoteProviders.filter(
+              (provider) =>
+                !Array.isArray(currentProviders) ||
+                !currentProviders.includes(provider),
+            ),
+          });
           (modelInUpdatedList as any).available_providers = remoteProviders;
           discrepanciesFound++;
           madeChanges = true;
@@ -3041,6 +3040,7 @@ async function updateModelsCommand(argv: any) {
         updatedLocalModels,
         modelsInScope,
       );
+      await widenProviderMappings(addedProviderMappings);
     } else {
       if (discrepanciesFound === 0) {
         console.log(

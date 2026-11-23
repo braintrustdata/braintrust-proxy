@@ -253,6 +253,147 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 9.6,
+            "output_cost_per_mil_tokens": 48,
+            "input_cache_read_cost_per_mil_tokens": 0.48,
+            "input_cache_write_cost_per_mil_tokens": 12,
+            "input_cache_write_30m_cost_per_mil_tokens": 12,
+            "input_cache_write_12h_cost_per_mil_tokens": 24,
+            "supported_regions": [
+              "australiaeast",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "norwayeast",
+              "polandcentral",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 44,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "input_cache_write_12h_cost_per_mil_tokens": 22,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadacentral",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "switzerlandwest",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 19.2,
+            "output_cost_per_mil_tokens": 72,
+            "input_cache_read_cost_per_mil_tokens": 0.96,
+            "input_cache_write_cost_per_mil_tokens": 24,
+            "input_cache_write_30m_cost_per_mil_tokens": 24,
+            "input_cache_write_12h_cost_per_mil_tokens": 48,
+            "supported_regions": [
+              "australiaeast",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "norwayeast",
+              "polandcentral",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 17.6,
+            "output_cost_per_mil_tokens": 66,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 22,
+            "input_cache_write_30m_cost_per_mil_tokens": 22,
+            "input_cache_write_12h_cost_per_mil_tokens": 44,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          }
+        ]
       }
     },
     "displayName": "GPT-6.2 Astra",
@@ -583,6 +724,147 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "input_cache_write_30m_cost_per_mil_tokens": 3,
+            "input_cache_write_12h_cost_per_mil_tokens": 6,
+            "supported_regions": [
+              "australiaeast",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "norwayeast",
+              "polandcentral",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 5.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadacentral",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "switzerlandwest",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "input_cache_write_30m_cost_per_mil_tokens": 6,
+            "input_cache_write_12h_cost_per_mil_tokens": 12,
+            "supported_regions": [
+              "australiaeast",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "japaneast",
+              "koreacentral",
+              "norwayeast",
+              "polandcentral",
+              "southeastasia",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-11-17",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-17"
+          }
+        ]
       }
     },
     "displayName": "GPT-6.2 Sol",
@@ -721,6 +1003,128 @@
         ]
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 5.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-29",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "input_cache_write_30m_cost_per_mil_tokens": 3,
+            "input_cache_write_12h_cost_per_mil_tokens": 6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-29",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-09-29",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-29",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "input_cache_write_30m_cost_per_mil_tokens": 6,
+            "input_cache_write_12h_cost_per_mil_tokens": 12,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-29",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -1118,6 +1522,127 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.1,
+            "output_cost_per_mil_tokens": 5.5,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 1.375,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.375,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.75,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-10-26",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.2,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.06,
+            "input_cache_write_cost_per_mil_tokens": 1.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 3,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-10-26",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-10-26",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 5.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-10-26",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "input_cache_write_30m_cost_per_mil_tokens": 3,
+            "input_cache_write_12h_cost_per_mil_tokens": 6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-10-26",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ]
       }
     },
     "displayName": "GPT-6.1 Terra",
@@ -1257,6 +1782,176 @@
         ]
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 11,
+            "output_cost_per_mil_tokens": 55,
+            "input_cache_read_cost_per_mil_tokens": 1.1,
+            "input_cache_write_cost_per_mil_tokens": 13.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 13.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 27.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 12,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 1.2,
+            "input_cache_write_cost_per_mil_tokens": 15,
+            "input_cache_write_30m_cost_per_mil_tokens": 15,
+            "input_cache_write_12h_cost_per_mil_tokens": 30,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 12,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 1.2,
+            "input_cache_write_cost_per_mil_tokens": 15,
+            "input_cache_write_30m_cost_per_mil_tokens": 15,
+            "supported_regions": [
+              "italynorth",
+              "norwayeast",
+              "switzerlandnorth"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 75,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "input_cache_write_cost_per_mil_tokens": 25,
+            "input_cache_write_30m_cost_per_mil_tokens": 25,
+            "input_cache_write_12h_cost_per_mil_tokens": 50,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-09-03",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 75,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "input_cache_write_cost_per_mil_tokens": 25,
+            "input_cache_write_30m_cost_per_mil_tokens": 25,
+            "supported_regions": [
+              "canadacentral",
+              "italynorth",
+              "switzerlandwest"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-09-03",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 22,
+            "output_cost_per_mil_tokens": 82.5,
+            "input_cache_read_cost_per_mil_tokens": 2.2,
+            "input_cache_write_cost_per_mil_tokens": 27.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 27.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 24,
+            "output_cost_per_mil_tokens": 90,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 30,
+            "input_cache_write_30m_cost_per_mil_tokens": 30,
+            "input_cache_write_12h_cost_per_mil_tokens": 60,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 24,
+            "output_cost_per_mil_tokens": 90,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 30,
+            "input_cache_write_30m_cost_per_mil_tokens": 30,
+            "supported_regions": [
+              "italynorth",
+              "norwayeast",
+              "switzerlandnorth"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-03",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 5,
@@ -1573,6 +2268,128 @@
         }
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.275,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.12,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.012,
+            "input_cache_write_cost_per_mil_tokens": 0.15,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.15,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.3,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.5,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 0.825,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "input_cache_write_cost_per_mil_tokens": 0.275,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.275,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.24,
+            "output_cost_per_mil_tokens": 0.9,
+            "input_cache_read_cost_per_mil_tokens": 0.024,
+            "input_cache_write_cost_per_mil_tokens": 0.3,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.3,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.05,
@@ -1844,6 +2661,128 @@
         }
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 5.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "input_cache_write_30m_cost_per_mil_tokens": 3,
+            "input_cache_write_12h_cost_per_mil_tokens": 6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.48,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "input_cache_write_30m_cost_per_mil_tokens": 6,
+            "input_cache_write_12h_cost_per_mil_tokens": 12,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-09-22",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -2167,6 +3106,128 @@
         }
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 1.32,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "input_cache_write_cost_per_mil_tokens": 0.275,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.275,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 1.32,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "input_cache_write_cost_per_mil_tokens": 0.275,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.275,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.4,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.04,
+            "input_cache_write_cost_per_mil_tokens": 0.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 1,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.44,
+            "output_cost_per_mil_tokens": 1.98,
+            "input_cache_read_cost_per_mil_tokens": 0.044,
+            "input_cache_write_cost_per_mil_tokens": 0.55,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.55,
+            "input_cache_write_12h_cost_per_mil_tokens": 1.1,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.44,
+            "output_cost_per_mil_tokens": 1.98,
+            "input_cache_read_cost_per_mil_tokens": 0.044,
+            "input_cache_write_cost_per_mil_tokens": 0.55,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.55,
+            "input_cache_write_12h_cost_per_mil_tokens": 1.2,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.1,
@@ -2420,6 +3481,142 @@
         }
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 12,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 25,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 6.25,
+            "supported_regions": [
+              "australiaeast"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "input_cache_write_12h_cost_per_mil_tokens": 22,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "input_cache_write_12h_cost_per_mil_tokens": 24,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 2,
@@ -2671,6 +3868,128 @@
         }
       },
       "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 13.2,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 5.5,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 13.2,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_12h_cost_per_mil_tokens": 6,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "max_input_tokens": 272000,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 19.8,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 19.8,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 12,
+            "supported_regions": [
+              "francecentral",
+              "germanywestcentral",
+              "polandcentral",
+              "spaincentral",
+              "swedencentral",
+              "westeurope"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-09",
+            "min_input_tokens": 272001,
+            "valid_from": "2026-11-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -2962,6 +4281,93 @@
             "endpoints": [
               "openai"
             ],
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-04-24",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 45,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-04-24",
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 11,
+            "output_cost_per_mil_tokens": 49.5,
+            "input_cache_read_cost_per_mil_tokens": 1.1,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-04-24",
             "min_input_tokens": 272001
           }
         ]
@@ -3298,6 +4704,123 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.275,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 22.5,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 6,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.6,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 24.75,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          }
+        ]
       }
     },
     "displayName": "GPT-5.4",
@@ -3390,6 +4913,46 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.9,
+            "output_cost_per_mil_tokens": 5.4,
+            "input_cache_read_cost_per_mil_tokens": 0.09,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.825,
+            "output_cost_per_mil_tokens": 4.95,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
+          }
+        ]
       }
     },
     "displayName": "GPT-5.4 mini",
@@ -3451,6 +5014,27 @@
             "endpoints": [
               "openai"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 1.375,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "northeurope",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
           }
         ]
       }
@@ -3561,6 +5145,44 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 60,
+            "output_cost_per_mil_tokens": 270,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          }
+        ]
       }
     },
     "displayName": "GPT-5.4 Pro",
@@ -3592,6 +5214,46 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.9,
+            "output_cost_per_mil_tokens": 5.4,
+            "input_cache_read_cost_per_mil_tokens": 0.09,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.825,
+            "output_cost_per_mil_tokens": 4.95,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
+          }
+        ]
       }
     },
     "displayName": "GPT-5.4 mini (2026-03-17)",
@@ -3621,6 +5283,27 @@
             "endpoints": [
               "api.openai.com"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 1.375,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "northeurope",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-17"
           }
         ]
       }
@@ -3666,6 +5349,123 @@
             "min_input_tokens": 272001
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.275,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 22.5,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 6,
+            "output_cost_per_mil_tokens": 27,
+            "input_cache_read_cost_per_mil_tokens": 0.6,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 24.75,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-03-05",
+            "min_input_tokens": 272001
+          }
+        ]
       }
     },
     "displayName": "GPT-5.4 (2026-03-05)",
@@ -3701,6 +5501,44 @@
             "endpoints": [
               "api.openai.com"
             ],
+            "min_input_tokens": 272001
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 60,
+            "output_cost_per_mil_tokens": 270,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-03-05",
             "min_input_tokens": 272001
           }
         ]
@@ -3769,6 +5607,40 @@
             "endpoints": [
               "openai/fast"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.1,
+            "output_cost_per_mil_tokens": 16.8,
+            "input_cache_read_cost_per_mil_tokens": 0.21,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-02-24"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.925,
+            "output_cost_per_mil_tokens": 15.4,
+            "input_cache_read_cost_per_mil_tokens": 0.1925,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-02-24"
           }
         ]
       }
@@ -3860,6 +5732,40 @@
             "endpoints": [
               "openai"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.1,
+            "output_cost_per_mil_tokens": 16.8,
+            "input_cache_read_cost_per_mil_tokens": 0.21,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-11"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.925,
+            "output_cost_per_mil_tokens": 15.4,
+            "input_cache_read_cost_per_mil_tokens": 0.1925,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-11"
           }
         ]
       }
@@ -3971,6 +5877,40 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.1,
+            "output_cost_per_mil_tokens": 16.8,
+            "input_cache_read_cost_per_mil_tokens": 0.21,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-11"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.925,
+            "output_cost_per_mil_tokens": 15.4,
+            "input_cache_read_cost_per_mil_tokens": 0.1925,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-11"
+          }
+        ]
       }
     },
     "displayName": "GPT-5.2 (2025-12-11)",
@@ -4074,6 +6014,28 @@
             "endpoints": [
               "openai"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.375,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.1375,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "northcentralus",
+              "southcentralus",
+              "swedencentral",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-11-13"
           }
         ]
       }
@@ -4185,6 +6147,28 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.375,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.1375,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "northcentralus",
+              "southcentralus",
+              "swedencentral",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-11-13"
+          }
+        ]
       }
     },
     "displayName": "GPT-5.1 (2025-11-13)",
@@ -4251,6 +6235,31 @@
             "endpoints": [
               "openai"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.375,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.1375,
+            "supported_regions": [
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
           }
         ]
       }
@@ -4366,6 +6375,33 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.275,
+            "output_cost_per_mil_tokens": 2.2,
+            "input_cache_read_cost_per_mil_tokens": 0.0275,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
+          }
+        ]
       }
     },
     "displayName": "GPT-5 mini",
@@ -4429,6 +6465,33 @@
             "endpoints": [
               "openai"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.055,
+            "output_cost_per_mil_tokens": 0.44,
+            "input_cache_read_cost_per_mil_tokens": 0.0055,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
           }
         ]
       }
@@ -4555,6 +6618,31 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.375,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.1375,
+            "supported_regions": [
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
+          }
+        ]
       }
     },
     "displayName": "GPT-5 (2025-08-07)",
@@ -4588,6 +6676,33 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.275,
+            "output_cost_per_mil_tokens": 2.2,
+            "input_cache_read_cost_per_mil_tokens": 0.0275,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
+          }
+        ]
       }
     },
     "displayName": "GPT-5 mini (2025-08-07)",
@@ -4619,6 +6734,33 @@
             "endpoints": [
               "api.openai.com"
             ]
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.055,
+            "output_cost_per_mil_tokens": 0.44,
+            "input_cache_read_cost_per_mil_tokens": 0.0055,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-08-07"
           }
         ]
       }
@@ -4920,6 +7062,70 @@
             ]
           }
         ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "australiaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "southindia",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 3.025,
+            "output_cost_per_mil_tokens": 12.1,
+            "input_cache_read_cost_per_mil_tokens": 1.513,
+            "supported_regions": [
+              "canadaeast",
+              "francecentral",
+              "japaneast",
+              "norwayeast",
+              "swedencentral",
+              "switzerlandnorth",
+              "uksouth"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          }
+        ]
       }
     },
     "displayName": "GPT-4o",
@@ -5153,6 +7359,21 @@
         "standard": [
           {
             "input_audio_cost_per_mil_tokens": 2.5
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "supported_regions": [
+              "eastus2",
+              "francecentral",
+              "swedencentral"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-03-20"
           }
         ]
       }
@@ -5437,6 +7658,72 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "italynorth",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "australiaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "southindia",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 3.025,
+            "output_cost_per_mil_tokens": 12.1,
+            "input_cache_read_cost_per_mil_tokens": 1.513,
+            "supported_regions": [
+              "canadaeast",
+              "francecentral",
+              "japaneast",
+              "norwayeast",
+              "swedencentral",
+              "switzerlandnorth",
+              "uksouth"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-11-20",
+            "valid_until": "2027-04-13"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o (2024-11-20)",
     "deprecation_date": "2026-10-14",
     "retirement_date": "2027-04-14",
@@ -6332,6 +8619,19 @@
             "input_audio_cache_read_cost_per_mil_tokens": 0.4,
             "deployment_type": "GlobalStandard",
             "model_version": "2026-07-07"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 26.4,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "supported_regions": [
+              "centralus",
+              "eastus2",
+              "francecentral",
+              "swedencentral"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2026-07-07"
           }
         ]
       }
@@ -6492,6 +8792,25 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "eastus2",
+              "polandcentral",
+              "swedencentral",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-16"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Image 1.5",
     "deprecation_date": "2026-06-02",
     "retirement_date": "2027-06-16",
@@ -6690,6 +9009,25 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "eastus2",
+              "polandcentral",
+              "swedencentral",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-12-16"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Image 1.5 (2025-12-16)",
     "deprecation_date": "2026-06-02",
     "retirement_date": "2027-06-16",
@@ -7384,6 +9722,93 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.75,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 8,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 8.8,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 8.8,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "northcentralus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.42,
+            "output_cost_per_mil_tokens": 9.68,
+            "input_cache_read_cost_per_mil_tokens": 0.605,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          }
+        ]
+      }
+    },
     "deprecation_date": "2026-10-14",
     "retirement_date": "2027-10-14",
     "max_input_tokens": 1047576,
@@ -7399,6 +9824,93 @@
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 3.2,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.4,
+            "output_cost_per_mil_tokens": 1.6,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.44,
+            "output_cost_per_mil_tokens": 1.76,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.44,
+            "output_cost_per_mil_tokens": 1.76,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "supported_regions": [
+              "northcentralus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.484,
+            "output_cost_per_mil_tokens": 1.936,
+            "input_cache_read_cost_per_mil_tokens": 0.121,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2027-10-13"
+          }
+        ]
+      }
+    },
     "deprecation_date": "2026-10-14",
     "retirement_date": "2027-10-14",
     "max_input_tokens": 1047576,
@@ -7414,6 +9926,93 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.8,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.4,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "northeurope",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2028-04-12"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.44,
+            "input_cache_read_cost_per_mil_tokens": 0.028,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-04-14",
+            "valid_until": "2028-04-12"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.44,
+            "input_cache_read_cost_per_mil_tokens": 0.028,
+            "supported_regions": [
+              "northcentralus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2028-04-12"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.121,
+            "output_cost_per_mil_tokens": 0.484,
+            "input_cache_read_cost_per_mil_tokens": 0.031,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-14",
+            "valid_until": "2028-04-12"
+          }
+        ]
+      }
+    },
     "deprecation_date": "2026-04-22",
     "retirement_date": "2028-04-13",
     "max_input_tokens": 1047576,
@@ -7429,6 +10028,90 @@
     "input_cost_per_mil_tokens": 4,
     "output_cost_per_mil_tokens": 16,
     "input_cache_read_cost_per_mil_tokens": 1,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.1,
+            "output_cost_per_mil_tokens": 4.4,
+            "input_cache_read_cost_per_mil_tokens": 0.275,
+            "supported_regions": [
+              "australiaeast",
+              "brazilsouth",
+              "canadaeast",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "japaneast",
+              "koreacentral",
+              "northcentralus",
+              "norwayeast",
+              "polandcentral",
+              "southafricanorth",
+              "southcentralus",
+              "southindia",
+              "spaincentral",
+              "swedencentral",
+              "switzerlandnorth",
+              "uaenorth",
+              "uksouth",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-04-16",
+            "valid_until": "2027-11-18"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.21,
+            "output_cost_per_mil_tokens": 4.84,
+            "input_cache_read_cost_per_mil_tokens": 0.303,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2025-04-16",
+            "valid_until": "2027-11-18"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.21,
+            "output_cost_per_mil_tokens": 4.84,
+            "input_cache_read_cost_per_mil_tokens": 0.303,
+            "supported_regions": [
+              "eastus2"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-16",
+            "valid_until": "2027-11-18"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.331,
+            "output_cost_per_mil_tokens": 5.324,
+            "input_cache_read_cost_per_mil_tokens": 0.333,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2025-04-16",
+            "valid_until": "2027-11-18"
+          }
+        ]
+      }
+    },
     "reasoning": true,
     "deprecation_date": "2026-04-22",
     "retirement_date": "2027-11-19",
@@ -7461,6 +10144,73 @@
     "input_cost_per_mil_tokens": 3.75,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 1.875,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.5,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 1.25,
+            "supported_regions": [
+              "eastus2",
+              "northcentralus",
+              "northeurope",
+              "southeastasia",
+              "swedencentral"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-08-06",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2024-08-06",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.375,
+            "supported_regions": [
+              "eastus2"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-08-06",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 2.75,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 1.513,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-08-06",
+            "valid_until": "2027-09-30"
+          }
+        ]
+      }
+    },
     "deprecation_date": "2026-10-14",
     "retirement_date": "2027-10-01",
     "max_input_tokens": 128000,
@@ -7476,6 +10226,72 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.15,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "northcentralus",
+              "northeurope",
+              "southeastasia",
+              "swedencentral"
+            ],
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-07-18",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.165,
+            "output_cost_per_mil_tokens": 0.66,
+            "input_cache_read_cost_per_mil_tokens": 0.083,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "northeurope",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2024-07-18",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.165,
+            "output_cost_per_mil_tokens": 0.66,
+            "input_cache_read_cost_per_mil_tokens": 0.083,
+            "supported_regions": [
+              "northcentralus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-07-18",
+            "valid_until": "2027-09-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.165,
+            "output_cost_per_mil_tokens": 0.66,
+            "input_cache_read_cost_per_mil_tokens": 0.091,
+            "supported_regions": [
+              "swedencentral"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2024-07-18",
+            "valid_until": "2027-09-30"
+          }
+        ]
+      }
+    },
     "deprecation_date": "2026-10-14",
     "retirement_date": "2027-10-01",
     "max_input_tokens": 128000,
@@ -7599,6 +10415,30 @@
     "input_cost_per_mil_tokens": 5,
     "output_cost_per_mil_tokens": 30,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_id": "gpt-chat-latest",
+            "model_version": "2026-10-07",
+            "valid_until": "2027-02-01"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Chat Latest",
     "reasoning": true,
     "max_input_tokens": 400000,
@@ -14586,6 +17426,76 @@
     "flavor": "embedding",
     "input_cost_per_mil_tokens": 0.13,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.156,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.143,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.143,
+            "supported_regions": [
+              "australiaeast",
+              "eastus",
+              "eastus2"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.158,
+            "supported_regions": [
+              "canadaeast",
+              "francecentral",
+              "japaneast",
+              "norwayeast",
+              "swedencentral",
+              "switzerlandnorth",
+              "uksouth"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.172,
+            "supported_regions": [
+              "southeastasia"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          }
+        ]
+      }
+    },
     "displayName": "Text Embedding 3 Large",
     "max_input_tokens": 8191,
     "available_providers": [
@@ -14598,6 +17508,65 @@
     "flavor": "embedding",
     "input_cost_per_mil_tokens": 0.02,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.024,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.022,
+            "supported_regions": [
+              "centralus",
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.022,
+            "supported_regions": [
+              "australiaeast",
+              "eastus",
+              "eastus2",
+              "westus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.025,
+            "supported_regions": [
+              "canadaeast",
+              "japaneast",
+              "switzerlandnorth"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          }
+        ]
+      }
+    },
     "displayName": "Text Embedding 3 Small",
     "max_input_tokens": 8191,
     "available_providers": [
@@ -14610,6 +17579,86 @@
     "flavor": "embedding",
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0,
+    "pricing": {
+      "azure": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "supported_regions": [
+              "eastus",
+              "southcentralus"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "1"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.12,
+            "supported_regions": [
+              "australiaeast",
+              "japaneast",
+              "koreacentral",
+              "southeastasia",
+              "southindia"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "supported_regions": [
+              "eastus",
+              "eastus2",
+              "francecentral",
+              "germanywestcentral",
+              "northcentralus",
+              "polandcentral",
+              "southcentralus",
+              "spaincentral",
+              "swedencentral",
+              "westeurope",
+              "westus",
+              "westus3"
+            ],
+            "deployment_type": "DataZoneStandard",
+            "model_version": "2"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "supported_regions": [
+              "australiaeast",
+              "eastus",
+              "eastus2",
+              "northcentralus",
+              "southcentralus",
+              "southindia"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.121,
+            "supported_regions": [
+              "canadaeast",
+              "francecentral",
+              "japaneast",
+              "swedencentral",
+              "switzerlandnorth",
+              "uksouth"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.132,
+            "supported_regions": [
+              "westeurope"
+            ],
+            "deployment_type": "Standard",
+            "model_version": "2"
+          }
+        ]
+      }
+    },
     "displayName": "Text Embedding Ada 002",
     "max_input_tokens": 8191,
     "available_providers": [

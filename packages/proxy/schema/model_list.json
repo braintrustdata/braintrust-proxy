@@ -7750,6 +7750,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.006,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.3,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.006,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.45,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.009,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/deepseek-v4p1-flash-us"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.375,
@@ -7806,6 +7825,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.03,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.225,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.045,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/glm-5p3-flash-us"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.1875,
@@ -7857,6 +7895,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.4,
+            "output_cost_per_mil_tokens": 4.4,
+            "input_cache_read_cost_per_mil_tokens": 0.26,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.1,
+            "output_cost_per_mil_tokens": 6.6,
+            "input_cache_read_cost_per_mil_tokens": 0.39,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/glm-5p3-us"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 1.75,
@@ -11368,6 +11425,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 4.5,
+            "output_cost_per_mil_tokens": 22.5,
+            "input_cache_read_cost_per_mil_tokens": 0.45,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/kimi-k3-us"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 3.75,
@@ -11418,6 +11494,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.5,
+            "output_cost_per_mil_tokens": 12.5,
+            "input_cache_read_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/kimi-k3p1-pro-us"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 3,
@@ -11713,6 +11808,23 @@
     "output_cost_per_mil_tokens": 0.6,
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
+      "baseten": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1
+          }
+        ]
+      },
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6
+          }
+        ]
+      },
       "groq": {
         "batch": [
           {
@@ -11872,6 +11984,15 @@
             "endpoints": [
               "groq"
             ]
+          }
+        ]
+      },
+      "groq": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.075,
+            "output_cost_per_mil_tokens": 0.3,
+            "input_cache_read_cost_per_mil_tokens": 0.0375
           }
         ]
       }
@@ -24717,6 +24838,29 @@
     "input_cost_per_mil_tokens": 1.32,
     "output_cost_per_mil_tokens": 3.96,
     "input_cache_read_cost_per_mil_tokens": 0.132,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.32,
+            "output_cost_per_mil_tokens": 3.96,
+            "input_cache_read_cost_per_mil_tokens": 0.13,
+            "endpoints": [
+              "api.together.ai",
+              "api.together.xyz"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 4.95,
+            "input_cache_read_cost_per_mil_tokens": 0.1625,
+            "endpoints": [
+              "us-api.together.ai"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek-ai/DeepSeek-V4-Pro",
@@ -24773,6 +24917,16 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.09,
     "output_cost_per_mil_tokens": 0.282,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.47
+          }
+        ]
+      }
+    },
     "displayName": "Qwen3.8 Flash",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -24801,6 +24955,17 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 4.5,
     "input_cache_read_cost_per_mil_tokens": 0.3,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.5
+          }
+        ]
+      }
+    },
     "displayName": "Qwen3.7 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
@@ -25467,6 +25632,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.006,
     "pricing": {
       "fireworks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.3,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.006,
+            "endpoints": [
+              "api.fireworks.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.45,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.009,
+            "endpoints": [
+              "us.api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/routers/deepseek-v4p1-flash-1017-us"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15,
@@ -25541,6 +25725,29 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.007,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.3,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.006,
+            "endpoints": [
+              "api.together.ai",
+              "api.together.xyz"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.375,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.0075,
+            "endpoints": [
+              "us-api.together.ai"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -25587,6 +25794,29 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.14,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.4,
+            "output_cost_per_mil_tokens": 4.4,
+            "input_cache_read_cost_per_mil_tokens": 0.26,
+            "endpoints": [
+              "api.together.ai",
+              "api.together.xyz"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.75,
+            "output_cost_per_mil_tokens": 5.5,
+            "input_cache_read_cost_per_mil_tokens": 0.325,
+            "endpoints": [
+              "us-api.together.ai"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "GLM 5.3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -25603,6 +25833,29 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.03,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.03,
+            "endpoints": [
+              "api.together.ai",
+              "api.together.xyz"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.1875,
+            "output_cost_per_mil_tokens": 0.625,
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "endpoints": [
+              "us-api.together.ai"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -25618,6 +25871,17 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.14,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.4,
+            "output_cost_per_mil_tokens": 4.4,
+            "input_cache_read_cost_per_mil_tokens": 0.26
+          }
+        ]
+      }
+    },
     "displayName": "GLM 5.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -25715,6 +25979,29 @@
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "input_cache_read_cost_per_mil_tokens": 0.3,
+    "pricing": {
+      "together": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "endpoints": [
+              "api.together.ai",
+              "api.together.xyz"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 3.75,
+            "output_cost_per_mil_tokens": 18.75,
+            "input_cache_read_cost_per_mil_tokens": 0.375,
+            "endpoints": [
+              "us-api.together.ai"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Kimi K3",
     "reasoning": true,
     "max_input_tokens": 1048576,

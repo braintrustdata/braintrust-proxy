@@ -28,6 +28,9 @@ Batch API support and synchronous service-tier support are separate checks.
   Omit unknown prices; zero is a published price, not a placeholder.
   A missing provider/tier pair means support is unverified; it does not fall back to another tier or the top-level standard prices.
 - Record every documented condition using `endpoints`, `supported_regions`, `inference_geo`, `deployment_type`, `model_id`, `model_version`, `min_input_tokens`, `max_input_tokens`, `valid_from`, and `valid_until` as applicable.
+  Omit `endpoints` only after verifying that the rates apply across every eligible endpoint for the exact model, provider, and tier.
+  Equal prices among a subset of listed endpoints do not establish coverage of other routes.
+  Preserve endpoint restrictions whenever prices differ or route coverage is unverified.
   Prompt-length limits and UTC date bounds are inclusive.
   Use separate entries when prices or conditions differ; do not flatten regional, endpoint, model-version, or long-context rates into one default.
   Array order does not select the applicable price; the documented conditions determine applicability.

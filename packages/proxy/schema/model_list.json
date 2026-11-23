@@ -10759,9 +10759,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
         "flex": [
@@ -10843,9 +10843,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
         "flex": [
@@ -10926,9 +10926,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "vertex": {
         "priority": [
@@ -10971,9 +10971,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "vertex": {
         "priority": [
@@ -11138,9 +11138,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
         "flex": [
@@ -24914,9 +24914,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
         "flex": [
@@ -25048,9 +25048,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "google": {
         "flex": [
@@ -25237,9 +25237,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "google": {
         "flex": [
@@ -25387,9 +25387,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 4,
+    "output_cost_per_mil_tokens": 20,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "google": {
         "flex": [
@@ -25782,9 +25782,9 @@
     "format": "google",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.75,
-    "output_cost_per_mil_tokens": 3.75,
-    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "google": {
         "flex": [
@@ -25948,6 +25948,26 @@
             "input_cache_write_cost_per_mil_tokens": 0.416666666667,
             "endpoints": [
               "google-vertex/global"
+            ]
+          }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 0.7916666666666667,
+            "endpoints": [
+              "openrouter.ai"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.825,
+            "output_cost_per_mil_tokens": 4.125,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "input_cache_write_cost_per_mil_tokens": 0.8666666666666667,
+            "endpoints": [
+              "us.openrouter.ai"
             ]
           }
         ]
@@ -29249,9 +29269,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Gemini 4 Argon",
     "reasoning": true,
     "reasoning_budget": true,
@@ -29265,9 +29285,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 2,
-    "output_cost_per_mil_tokens": 10,
-    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cost_per_mil_tokens": 5,
+    "output_cost_per_mil_tokens": 25,
+    "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Gemini 4 Carbon",
     "reasoning": true,
     "reasoning_budget": true,

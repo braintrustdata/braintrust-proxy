@@ -13928,7 +13928,56 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "max_input_tokens": 199999
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com"
+            ],
+            "max_input_tokens": 199999
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "max_input_tokens": 199999
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "min_input_tokens": 200001
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-haiku-5-5": {
     "format": "anthropic",
@@ -13952,7 +14001,63 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "max_input_tokens": 99999
+          },
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.625,
+            "input_cache_write_1h_cost_per_mil_tokens": 1,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "min_input_tokens": 100001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "max_input_tokens": 99999
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.1,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-sonnet-5-5": {
     "format": "anthropic",
@@ -13972,7 +14077,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 4,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 4.4,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-fable-5-2": {
     "format": "anthropic",
@@ -13991,7 +14125,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 40,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_5m_cost_per_mil_tokens": 10,
+            "input_cache_write_1h_cost_per_mil_tokens": 16,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 44,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_5m_cost_per_mil_tokens": 11,
+            "input_cache_write_1h_cost_per_mil_tokens": 17.6,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-fable-5-1": {
     "format": "anthropic",
@@ -14008,7 +14171,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 0.25,
+            "input_cache_write_cost_per_mil_tokens": 12.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 12.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 11,
+            "output_cost_per_mil_tokens": 55,
+            "input_cache_read_cost_per_mil_tokens": 0.275,
+            "input_cache_write_cost_per_mil_tokens": 13.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 13.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-fable-5": {
     "format": "anthropic",
@@ -14025,7 +14217,35 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "input_cache_write_cost_per_mil_tokens": 12.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 12.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 11,
+            "output_cost_per_mil_tokens": 55,
+            "input_cache_read_cost_per_mil_tokens": 1.1,
+            "input_cache_write_cost_per_mil_tokens": 13.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 13.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-opus-5": {
     "format": "anthropic",
@@ -14042,7 +14262,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 25,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+            "input_cache_write_1h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 27.5,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "input_cache_write_cost_per_mil_tokens": 6.875,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.875,
+            "input_cache_write_1h_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-opus-4-8": {
     "format": "anthropic",
@@ -14059,7 +14308,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 25,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+            "input_cache_write_1h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 27.5,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "input_cache_write_cost_per_mil_tokens": 6.875,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.875,
+            "input_cache_write_1h_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-opus-4-7": {
     "format": "anthropic",
@@ -14078,7 +14356,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 25,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+            "input_cache_write_1h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 27.5,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "input_cache_write_cost_per_mil_tokens": 6.875,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.875,
+            "input_cache_write_1h_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-opus-4-6": {
     "format": "anthropic",
@@ -14097,7 +14404,37 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 5,
+            "output_cost_per_mil_tokens": 25,
+            "input_cache_read_cost_per_mil_tokens": 0.5,
+            "input_cache_write_cost_per_mil_tokens": 6.25,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.25,
+            "input_cache_write_1h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 5.5,
+            "output_cost_per_mil_tokens": 27.5,
+            "input_cache_read_cost_per_mil_tokens": 0.55,
+            "input_cache_write_cost_per_mil_tokens": 6.875,
+            "input_cache_write_5m_cost_per_mil_tokens": 6.875,
+            "input_cache_write_1h_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "us-east5-aiplatform.googleapis.com",
+              "europe-west1-aiplatform.googleapis.com",
+              "asia-southeast1-aiplatform.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-opus-4-5@20251101": {
     "format": "anthropic",
@@ -14176,7 +14513,36 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 4,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 4.4,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-sonnet-4-6": {
     "format": "anthropic",
@@ -14195,7 +14561,68 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "input_cache_write_cost_per_mil_tokens": 3.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 3.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 6,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.33,
+            "input_cache_write_cost_per_mil_tokens": 4.13,
+            "input_cache_write_5m_cost_per_mil_tokens": 4.13,
+            "input_cache_write_1h_cost_per_mil_tokens": 6.6,
+            "endpoints": [
+              "us-east5-aiplatform.googleapis.com"
+            ],
+            "min_input_tokens": 200001
+          },
+          {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.33,
+            "input_cache_write_1h_cost_per_mil_tokens": 6.6,
+            "endpoints": [
+              "europe-west1-aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.33,
+            "input_cache_write_cost_per_mil_tokens": 4.13,
+            "input_cache_write_5m_cost_per_mil_tokens": 4.13,
+            "input_cache_write_1h_cost_per_mil_tokens": 6.6,
+            "endpoints": [
+              "asia-southeast1-aiplatform.googleapis.com"
+            ],
+            "max_input_tokens": 199999
+          },
+          {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_write_cost_per_mil_tokens": 4.13,
+            "input_cache_write_5m_cost_per_mil_tokens": 4.13,
+            "input_cache_write_1h_cost_per_mil_tokens": 6.6,
+            "endpoints": [
+              "asia-southeast1-aiplatform.googleapis.com"
+            ],
+            "min_input_tokens": 200001
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-sonnet-4-5": {
     "format": "anthropic",
@@ -14279,7 +14706,36 @@
     "max_output_tokens": 64000,
     "available_providers": [
       "vertex"
-    ]
+    ],
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_5m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_1h_cost_per_mil_tokens": 2,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.1,
+            "output_cost_per_mil_tokens": 5.5,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 1.375,
+            "input_cache_write_5m_cost_per_mil_tokens": 1.375,
+            "input_cache_write_1h_cost_per_mil_tokens": 2.2,
+            "endpoints": [
+              "us-east5-aiplatform.googleapis.com",
+              "europe-west1-aiplatform.googleapis.com"
+            ]
+          }
+        ]
+      }
+    }
   },
   "publishers/anthropic/models/claude-haiku-4-5@20251001": {
     "format": "anthropic",
@@ -26500,20 +26956,38 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
             "input_audio_cost_per_mil_tokens": 0.75,
             "input_audio_cache_read_cost_per_mil_tokens": 0.075,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ],
             "valid_until": "2026-12-31"
           },
           {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
             "input_audio_cost_per_mil_tokens": 1.5,
             "input_audio_cache_read_cost_per_mil_tokens": 0.15,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ],
-            "valid_from": "2027-01-01"
+            "valid_from": "2027-01-01",
+            "valid_until": "2027-01-27"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.165,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2027-01-01",
+            "valid_until": "2027-01-27"
           }
         ],
         "flex": [
@@ -26744,18 +27218,34 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 0.75,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
             "input_audio_cost_per_mil_tokens": 0.75,
             "input_audio_cache_read_cost_per_mil_tokens": 0.075,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ],
             "valid_until": "2026-12-31"
           },
           {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
             "input_audio_cost_per_mil_tokens": 1.5,
             "input_audio_cache_read_cost_per_mil_tokens": 0.15,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_from": "2027-01-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.165,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
             ],
             "valid_from": "2027-01-01"
           }
@@ -27050,18 +27540,34 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_audio_cost_per_mil_tokens": 2,
             "input_audio_cache_read_cost_per_mil_tokens": 0.1,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ],
             "valid_until": "2026-11-30"
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_from": "2026-12-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
             ],
             "valid_from": "2026-12-01"
           }
@@ -27246,18 +27752,34 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
             "input_audio_cost_per_mil_tokens": 2,
             "input_audio_cache_read_cost_per_mil_tokens": 0.1,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ],
             "valid_until": "2026-11-30"
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_from": "2026-12-01"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
             ],
             "valid_from": "2026-12-01"
           }
@@ -27398,19 +27920,52 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
             "input_audio_cost_per_mil_tokens": 1.5,
             "input_audio_cache_read_cost_per_mil_tokens": 0.075,
-            "supported_regions": [
-              "global"
-            ]
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_until": "2027-01-11"
           },
           {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
             "input_audio_cost_per_mil_tokens": 1.65,
             "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
-            "supported_regions": [
-              "eu",
-              "us"
-            ]
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_until": "2027-01-11"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 1.875,
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_from": "2027-01-12"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "input_cache_write_cost_per_mil_tokens": 2.0625,
+            "input_audio_cost_per_mil_tokens": 1.65,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2027-01-12"
           }
         ],
         "priority": [
@@ -27569,19 +28124,52 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
             "input_audio_cost_per_mil_tokens": 3,
             "input_audio_cache_read_cost_per_mil_tokens": 0.15,
-            "supported_regions": [
-              "global"
-            ]
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_until": "2027-01-11"
           },
           {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.165,
             "input_audio_cost_per_mil_tokens": 3.3,
             "input_audio_cache_read_cost_per_mil_tokens": 0.165,
-            "supported_regions": [
-              "eu",
-              "us"
-            ]
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_until": "2027-01-11"
+          },
+          {
+            "input_cost_per_mil_tokens": 3,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
+            "input_cache_write_cost_per_mil_tokens": 3.75,
+            "input_audio_cost_per_mil_tokens": 3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ],
+            "valid_from": "2027-01-12"
+          },
+          {
+            "input_cost_per_mil_tokens": 3.3,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.165,
+            "input_cache_write_cost_per_mil_tokens": 4.125,
+            "input_audio_cost_per_mil_tokens": 3.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.165,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2027-01-12"
           }
         ],
         "priority": [
@@ -27909,11 +28497,34 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
             "input_audio_cost_per_mil_tokens": 1.5,
             "input_audio_cache_read_cost_per_mil_tokens": 0.15,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_until": "2026-06-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 1.65,
+            "output_cost_per_mil_tokens": 9.9,
+            "input_cache_read_cost_per_mil_tokens": 0.165,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2026-07-01"
           }
         ],
         "flex": [
@@ -28068,10 +28679,22 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 0.3,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.03,
             "input_audio_cost_per_mil_tokens": 0.3,
             "input_audio_cache_read_cost_per_mil_tokens": 0.03,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.33,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.033,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
             ]
           }
         ],
@@ -28237,6 +28860,26 @@
               "eu"
             ]
           }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 3,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "endpoints": [
+              "aiplatform.googleapis.com"
+            ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 3.3,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2026-08-31"
+          }
         ]
       }
     },
@@ -28360,11 +29003,34 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 0.25,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
             "input_audio_cost_per_mil_tokens": 0.5,
             "input_audio_cache_read_cost_per_mil_tokens": 0.05,
-            "supported_regions": [
-              "global"
+            "endpoints": [
+              "aiplatform.googleapis.com"
             ]
+          },
+          {
+            "input_cost_per_mil_tokens": 0.25,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_until": "2026-06-30"
+          },
+          {
+            "input_cost_per_mil_tokens": 0.275,
+            "output_cost_per_mil_tokens": 1.65,
+            "input_cache_read_cost_per_mil_tokens": 0.0275,
+            "endpoints": [
+              "aiplatform.us.rep.googleapis.com",
+              "aiplatform.eu.rep.googleapis.com"
+            ],
+            "valid_from": "2026-07-01"
           }
         ],
         "flex": [
@@ -28513,6 +29179,13 @@
             "supported_regions": [
               "global"
             ]
+          }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.25,
+            "output_cost_per_mil_tokens": 1.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025
           }
         ]
       },
@@ -28675,11 +29348,17 @@
       "vertex": {
         "standard": [
           {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 2,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "max_input_tokens": 200000
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.4,
             "min_input_tokens": 200001
@@ -28960,6 +29639,22 @@
             "min_input_tokens": 200001
           }
         ]
+      },
+      "vertex": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "min_input_tokens": 200001
+          }
+        ]
       }
     },
     "displayName": "Gemini 3.1 Pro Custom Tools (Preview)",
@@ -29191,6 +29886,13 @@
             "supported_regions": [
               "global"
             ]
+          }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.2
           }
         ]
       }

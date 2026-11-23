@@ -131,6 +131,40 @@ it.each(["openai", "openrouter"] as const)(
   },
 );
 
+// Regional Fast prices retain the residency premium and context limits through alias resolution.
+it.each<"fast" | "priority">(["fast", "priority"])(
+  "exposes GPT-6.2 Sol regional %s prices",
+  (tier) => {
+    const rates = getAvailableModels()["gpt-6.2-sol"].pricing?.openai?.[tier];
+    for (const endpoint of ["us.api.openai.com", "eu.api.openai.com"]) {
+      expect(
+        rates?.filter((rate) => rate.endpoints?.includes(endpoint)),
+      ).toEqual([
+        {
+          input_cost_per_mil_tokens: 4.4,
+          output_cost_per_mil_tokens: 22,
+          input_cache_read_cost_per_mil_tokens: 0.22,
+          input_cache_write_cost_per_mil_tokens: 5.5,
+          input_cache_write_30m_cost_per_mil_tokens: 5.5,
+          input_cache_write_12h_cost_per_mil_tokens: 11,
+          endpoints: ["us.api.openai.com", "eu.api.openai.com"],
+          max_input_tokens: 272000,
+        },
+        {
+          input_cost_per_mil_tokens: 8.8,
+          output_cost_per_mil_tokens: 33,
+          input_cache_read_cost_per_mil_tokens: 0.44,
+          input_cache_write_cost_per_mil_tokens: 11,
+          input_cache_write_30m_cost_per_mil_tokens: 11,
+          input_cache_write_12h_cost_per_mil_tokens: 22,
+          endpoints: ["us.api.openai.com", "eu.api.openai.com"],
+          min_input_tokens: 272001,
+        },
+      ]);
+    }
+  },
+);
+
 it("keeps Fireworks router prices separate from priority service-tier prices", () => {
   const models = getAvailableModels();
   const pricing =

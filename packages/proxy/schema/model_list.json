@@ -282,6 +282,32 @@
               "api.openai.com"
             ],
             "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "us.api.openai.com",
+              "eu.api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "input_cache_write_12h_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "us.api.openai.com",
+              "eu.api.openai.com"
+            ],
+            "min_input_tokens": 272001
           }
         ],
         "priority": {

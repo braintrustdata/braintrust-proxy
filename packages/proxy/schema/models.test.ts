@@ -81,7 +81,6 @@ it("preserves OpenRouter Luna's conditional standard rates", () => {
       input_cache_write_cost_per_mil_tokens: 0.25,
       input_cache_write_30m_cost_per_mil_tokens: 0.25,
       input_cache_write_12h_cost_per_mil_tokens: 0.5,
-      endpoints: ["amazon-bedrock/global", "azure", "openai"],
       max_input_tokens: 272000,
     },
     {
@@ -89,8 +88,30 @@ it("preserves OpenRouter Luna's conditional standard rates", () => {
       output_cost_per_mil_tokens: 1.8,
       input_cache_read_cost_per_mil_tokens: 0.04,
       input_cache_write_cost_per_mil_tokens: 0.5,
-      endpoints: ["amazon-bedrock/global", "azure", "openai"],
       min_input_tokens: 272001,
+    },
+  ]);
+  for (const tier of PricingTiers) {
+    for (const rate of model.pricing?.openrouter?.[tier] ?? []) {
+      expect(rate.endpoints).toBeUndefined();
+    }
+  }
+});
+
+it("keeps distinct OpenRouter DeepSeek priority endpoint prices", () => {
+  const pricing = getAvailableModels()["deepseek/deepseek-v4-pro-0813"].pricing;
+  expect(pricing?.openrouter?.priority).toEqual([
+    {
+      input_cost_per_mil_tokens: 1.98,
+      output_cost_per_mil_tokens: 5.94,
+      input_cache_read_cost_per_mil_tokens: 0.066,
+      endpoints: ["parasail/fast"],
+    },
+    {
+      input_cost_per_mil_tokens: 1.95,
+      output_cost_per_mil_tokens: 3.9,
+      input_cache_read_cost_per_mil_tokens: 0.15,
+      endpoints: ["deepinfra/fp8/priority"],
     },
   ]);
 });

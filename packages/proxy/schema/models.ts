@@ -81,7 +81,7 @@ export const PricingRateSchema = tokenPricingSchema.extend({
     .array(z.string())
     .nullish()
     .describe(
-      "Provider endpoint hosts, Bedrock endpoint names, or OpenRouter endpoint tags.",
+      "Required provider endpoint hosts, Bedrock endpoint names, or OpenRouter endpoint tags. Omit only for prices verified across all eligible endpoints for this model, provider, and tier.",
     ),
   supported_regions: z.array(z.string()).nullish(),
   inference_geo: z

@@ -32684,6 +32684,14 @@
             "endpoints": [
               "parasail/fast"
             ]
+          },
+          {
+            "input_cost_per_mil_tokens": 1.95,
+            "output_cost_per_mil_tokens": 3.9,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "deepinfra/fp8/priority"
+            ]
           }
         ]
       }
@@ -34767,9 +34775,6 @@
             "output_cost_per_mil_tokens": 0.6,
             "input_cache_read_cost_per_mil_tokens": 0.01,
             "input_cache_write_cost_per_mil_tokens": 0.125,
-            "endpoints": [
-              "openai/flex"
-            ],
             "max_input_tokens": 272000
           },
           {
@@ -34777,9 +34782,6 @@
             "output_cost_per_mil_tokens": 0.9,
             "input_cache_read_cost_per_mil_tokens": 0.02,
             "input_cache_write_cost_per_mil_tokens": 0.25,
-            "endpoints": [
-              "openai/flex"
-            ],
             "min_input_tokens": 272001
           }
         ],
@@ -34792,9 +34794,6 @@
             "output_cost_per_mil_tokens": 2.4,
             "input_cache_read_cost_per_mil_tokens": 0.04,
             "input_cache_write_cost_per_mil_tokens": 0.5,
-            "endpoints": [
-              "openai/fast"
-            ],
             "max_input_tokens": 272000
           },
           {
@@ -34802,9 +34801,6 @@
             "output_cost_per_mil_tokens": 3.6,
             "input_cache_read_cost_per_mil_tokens": 0.08,
             "input_cache_write_cost_per_mil_tokens": 1,
-            "endpoints": [
-              "openai/fast"
-            ],
             "min_input_tokens": 272001
           }
         ],
@@ -34813,18 +34809,12 @@
             "input_cost_per_mil_tokens": 0.1,
             "output_cost_per_mil_tokens": 0.6,
             "input_cache_read_cost_per_mil_tokens": 0.01,
-            "endpoints": [
-              "openai"
-            ],
             "max_input_tokens": 272000
           },
           {
             "input_cost_per_mil_tokens": 0.2,
             "output_cost_per_mil_tokens": 0.9,
             "input_cache_read_cost_per_mil_tokens": 0.02,
-            "endpoints": [
-              "openai"
-            ],
             "min_input_tokens": 272001
           }
         ],
@@ -34836,11 +34826,6 @@
             "input_cache_write_cost_per_mil_tokens": 0.25,
             "input_cache_write_30m_cost_per_mil_tokens": 0.25,
             "input_cache_write_12h_cost_per_mil_tokens": 0.5,
-            "endpoints": [
-              "amazon-bedrock/global",
-              "azure",
-              "openai"
-            ],
             "max_input_tokens": 272000
           },
           {
@@ -34848,11 +34833,6 @@
             "output_cost_per_mil_tokens": 1.8,
             "input_cache_read_cost_per_mil_tokens": 0.04,
             "input_cache_write_cost_per_mil_tokens": 0.5,
-            "endpoints": [
-              "amazon-bedrock/global",
-              "azure",
-              "openai"
-            ],
             "min_input_tokens": 272001
           }
         ]

@@ -1288,7 +1288,6 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "tts-1-1106": ["openai", "azure"],
   "tts-1-hd-1106": ["openai", "azure"],
   "whisper-1": ["openai", "azure"],
-  "omni-moderation-csam-latest": ["openai", "azure"],
   "babbage-002": ["openai", "azure"],
   "davinci-002": ["openai", "azure"],
   "fireworks_ai/WhereIsAI/UAE-Large-V1": ["fireworks"],

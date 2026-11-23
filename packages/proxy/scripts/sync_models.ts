@@ -213,6 +213,9 @@ const MANUAL_SYNC_EXCLUDED_MODELS: ReadonlyArray<string> = [
   "gpt-rosalind-research",
   "gpt-live-1",
   "gpt-5.5-cyber",
+  // Restricted image-only CSAM classifier on /v1/moderations, available only to
+  // approved organizations.
+  "omni-moderation-csam-latest",
   // Live model: Gemini Live uses a bidirectional API and is rejected by
   // generateContent ("not supported for generateContent"), so it is not a
   // chat/completions model. Excluded permanently (see PR that trimmed it from

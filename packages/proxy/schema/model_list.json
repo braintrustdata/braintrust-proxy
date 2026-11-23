@@ -6354,15 +6354,6 @@
       "azure"
     ]
   },
-  "omni-moderation-csam-latest": {
-    "format": "openai",
-    "flavor": "chat",
-    "max_input_tokens": 32768,
-    "available_providers": [
-      "openai",
-      "azure"
-    ]
-  },
   "omni-moderation-latest": {
     "format": "openai",
     "flavor": "chat",

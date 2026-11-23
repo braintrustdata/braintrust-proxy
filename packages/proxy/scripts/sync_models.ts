@@ -3719,22 +3719,21 @@ async function syncOpenRouterModelsCommand(argv: any) {
           }
         }
 
-        // Invariant: the full slug entry exists ONLY while no first-class
-        // provider serves the model. When we attach to the canonical key, a
-        // stale openrouter-only `vendor/model` entry for the same model (added
-        // before the canonical existed) is now a duplicate — remove it (its
-        // openrouter coverage is preserved on the canonical via the union above).
+        // Preserve explicit provider IDs linked to their canonical model.
+        // Older OpenRouter-only entries without that link can be merged.
         if (
           target === canonical &&
           slug !== canonical &&
           Object.prototype.hasOwnProperty.call(localModels, slug)
         ) {
-          const staleProviders = localModels[slug].available_providers ?? [];
+          const slugModel = localModels[slug];
+          const staleProviders = slugModel.available_providers ?? [];
           if (
+            slugModel.parent !== canonical &&
             staleProviders.length === 1 &&
             staleProviders[0] === "openrouter"
           ) {
-            const openRouterPricing = localModels[slug].pricing?.openrouter;
+            const openRouterPricing = slugModel.pricing?.openrouter;
             if (openRouterPricing) {
               const canonicalModel = localModels[target];
               // Keep verified tiers when moving to the canonical ID, with

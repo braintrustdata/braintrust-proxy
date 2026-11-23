@@ -208,7 +208,7 @@ jobs:
             5. Preserve existing JSON formatting, field order, and neighboring naming conventions.
             6. Only modify `displayName`, `parent`, and `pricing`. Do not change top-level standard prices, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
             6a. Replace existing keys in place. Never leave duplicate JSON properties in a model entry.
-            7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming.
+            7. Add a human-friendly `displayName` when it is missing, or correct it if the existing value is clearly inconsistent with official provider naming. Check official pricing, deprecation, and changelog pages as well as model cards; a missing model card does not mean the exact ID or name is undocumented. Skip `ft:` pricing templates.
             8. Set `parent` only when official sources explicitly document a relationship between this model id and a stable base alias, and the parent model id already exists in `model_list.json`. Do not set `parent` based on inference alone.
             9. Consider `parent` for any of these verified relationship patterns — check official docs for each:
                - **Dated snapshot → stable alias**: model id ends with a date or version suffix and official docs name a stable alias (e.g. `claude-3-5-sonnet-20241022` → `claude-3-5-sonnet-latest`, `gpt-4o-2024-11-20` → `gpt-4o`, `gemini-2.0-flash-001` → `gemini-2.0-flash`)
@@ -280,12 +280,30 @@ jobs:
         if: ${{ steps.changes.outputs.changed == 'true' }}
         run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/sync_typesafe.test.ts packages/proxy/scripts/collect_changed_model_ids.test.ts
 
+      - name: Check model display names
+        if: steps.changes.outputs.changed == 'true'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
+          pnpm exec tsx packages/proxy/scripts/check_model_display_names.ts \
+            --before "$RUNNER_TEMP/model_list.head.json" \
+            --after packages/proxy/schema/model_list.json \
+            --output "$RUNNER_TEMP/model-display-name-report.md"
+
       - name: Build PR body with model validation prompt
         if: ${{ steps.changes.outputs.changed == 'true' }}
         run: |
           set -euo pipefail
 
           printf '%s\n' "$PR_BODY" > "$RUNNER_TEMP/pr-body.md"
+          if [ -s "$RUNNER_TEMP/model-display-name-report.md" ]; then
+            printf '\n' >> "$RUNNER_TEMP/pr-body.md"
+            cat "$RUNNER_TEMP/model-display-name-report.md" >> "$RUNNER_TEMP/pr-body.md"
+          else
+            printf '\n**Action required:** the model display name check did not produce a report. See the workflow logs.\n' >> "$RUNNER_TEMP/pr-body.md"
+          fi
           if [ -s "$RUNNER_TEMP/model-validation-prompt.md" ]; then
             {
               printf '\n## Model validation prompt\n\n'

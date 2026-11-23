@@ -393,9 +393,9 @@ const effortToGeminiThinkingLevel = (
   model: string | undefined,
 ): GeminiThinkingLevel => {
   switch (effort) {
+    case "none":
     case "minimal":
       return supportsMinimalThinkingLevel(model) ? "MINIMAL" : "LOW";
-    case "none":
     case "low":
       return "LOW";
     case "medium":

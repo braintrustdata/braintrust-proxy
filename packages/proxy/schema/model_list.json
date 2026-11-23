@@ -34147,8 +34147,95 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -34257,8 +34344,95 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.48,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -34345,8 +34519,95 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.5,
     "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_write_cost_per_mil_tokens": 0.125,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.125,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.5,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.75,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 0.825,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "input_cache_write_cost_per_mil_tokens": 0.275,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.12,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.012,
+            "input_cache_write_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.24,
+            "output_cost_per_mil_tokens": 0.9,
+            "input_cache_read_cost_per_mil_tokens": 0.024,
+            "input_cache_write_cost_per_mil_tokens": 0.3,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.05,
@@ -34433,8 +34694,75 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 50,
     "input_cache_read_cost_per_mil_tokens": 1,
+    "input_cache_write_cost_per_mil_tokens": 12.5,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "input_cache_write_cost_per_mil_tokens": 12.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 12.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 25,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 75,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "input_cache_write_cost_per_mil_tokens": 25,
+            "input_cache_write_30m_cost_per_mil_tokens": 25,
+            "input_cache_write_12h_cost_per_mil_tokens": 50,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "input_cache_write_cost_per_mil_tokens": 12.5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 75,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "input_cache_write_cost_per_mil_tokens": 25,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 11,
+            "output_cost_per_mil_tokens": 55,
+            "input_cache_read_cost_per_mil_tokens": 1.1,
+            "input_cache_write_cost_per_mil_tokens": 13.75,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 22,
+            "output_cost_per_mil_tokens": 82.5,
+            "input_cache_read_cost_per_mil_tokens": 2.2,
+            "input_cache_write_cost_per_mil_tokens": 27.5,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 5,
@@ -34653,8 +34981,75 @@
     "input_cost_per_mil_tokens": 4,
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 5,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 33,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 2,
@@ -34742,8 +35137,75 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 12,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 13.2,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 19.8,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
@@ -34919,8 +35381,75 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "input_cache_write_cost_per_mil_tokens": 0.25,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.4,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.04,
+            "input_cache_write_cost_per_mil_tokens": 0.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 1,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.4,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.04,
+            "input_cache_write_cost_per_mil_tokens": 0.5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 0.22,
+            "output_cost_per_mil_tokens": 1.32,
+            "input_cache_read_cost_per_mil_tokens": 0.022,
+            "input_cache_write_cost_per_mil_tokens": 0.275,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.44,
+            "output_cost_per_mil_tokens": 1.98,
+            "input_cache_read_cost_per_mil_tokens": 0.044,
+            "input_cache_write_cost_per_mil_tokens": 0.55,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.1,
@@ -35006,8 +35535,95 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_write_cost_per_mil_tokens": 1.25,
     "pricing": {
       "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 1.1,
+            "output_cost_per_mil_tokens": 5.5,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 1.375,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 8.25,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 1.2,
+            "output_cost_per_mil_tokens": 6,
+            "input_cache_read_cost_per_mil_tokens": 0.06,
+            "input_cache_write_cost_per_mil_tokens": 1.5,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 9,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
         "priority": {
           "alias": "fast"
         },
@@ -35054,6 +35670,32 @@
             ],
             "min_input_tokens": 272001
           }
+        ],
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.625,
+            "input_cache_write_12h_cost_per_mil_tokens": 1.25,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 1,
+            "output_cost_per_mil_tokens": 3.75,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 1.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 1.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "openai/flex"
+            ],
+            "min_input_tokens": 272001
+          }
         ]
       }
     },
@@ -35072,6 +35714,152 @@
     "input_cost_per_mil_tokens": 8,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 40,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 40,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 44,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 17.6,
+            "output_cost_per_mil_tokens": 66,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 9.6,
+            "output_cost_per_mil_tokens": 48,
+            "input_cache_read_cost_per_mil_tokens": 0.48,
+            "input_cache_write_cost_per_mil_tokens": 12,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 19.2,
+            "output_cost_per_mil_tokens": 72,
+            "input_cache_read_cost_per_mil_tokens": 0.96,
+            "input_cache_write_cost_per_mil_tokens": 24,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 80,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 32,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.6,
+            "input_cache_write_cost_per_mil_tokens": 40,
+            "input_cache_write_30m_cost_per_mil_tokens": 40,
+            "input_cache_write_12h_cost_per_mil_tokens": 80,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 24,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.2,
+            "input_cache_write_cost_per_mil_tokens": 30,
+            "input_cache_write_30m_cost_per_mil_tokens": 30,
+            "input_cache_write_12h_cost_per_mil_tokens": 60,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 48,
+            "output_cost_per_mil_tokens": 180,
+            "input_cache_read_cost_per_mil_tokens": 2.4,
+            "input_cache_write_cost_per_mil_tokens": 60,
+            "input_cache_write_30m_cost_per_mil_tokens": 60,
+            "input_cache_write_12h_cost_per_mil_tokens": 120,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "OpenAI: GPT-6.2 Astra Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,
@@ -35087,6 +35875,152 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "pricing": {
+      "openrouter": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "azure"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "azure"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "azure/us"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "azure/us"
+            ],
+            "min_input_tokens": 272001
+          },
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 18,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "endpoints": [
+              "azure/eu"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "openai/fast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "ultrafast": [
+          {
+            "input_cost_per_mil_tokens": 6,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.3,
+            "input_cache_write_cost_per_mil_tokens": 7.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 7.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 15,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 12,
+            "output_cost_per_mil_tokens": 45,
+            "input_cache_read_cost_per_mil_tokens": 0.6,
+            "input_cache_write_cost_per_mil_tokens": 15,
+            "input_cache_write_30m_cost_per_mil_tokens": 15,
+            "input_cache_write_12h_cost_per_mil_tokens": 30,
+            "endpoints": [
+              "openai/ultrafast"
+            ],
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "OpenAI: GPT-6.2 Sol Pro",
     "reasoning": true,
     "max_input_tokens": 1050000,

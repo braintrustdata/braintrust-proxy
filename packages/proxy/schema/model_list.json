@@ -11783,9 +11783,9 @@
             ]
           },
           {
-            "input_cost_per_mil_tokens": 0.186,
-            "output_cost_per_mil_tokens": 0.278,
-            "input_cache_read_cost_per_mil_tokens": 0.167,
+            "input_cost_per_mil_tokens": 0.197,
+            "output_cost_per_mil_tokens": 0.295,
+            "input_cache_read_cost_per_mil_tokens": 0.177,
             "endpoints": [
               "primeintellect/fp4"
             ]
@@ -33062,14 +33062,6 @@
             ]
           },
           {
-            "input_cost_per_mil_tokens": 0.43,
-            "output_cost_per_mil_tokens": 3.059,
-            "input_cache_read_cost_per_mil_tokens": 0.048,
-            "endpoints": [
-              "primeintellect/fp8"
-            ]
-          },
-          {
             "input_cost_per_mil_tokens": 0.45,
             "output_cost_per_mil_tokens": 3,
             "input_cache_read_cost_per_mil_tokens": 0.1,
@@ -33083,6 +33075,7 @@
             "input_cache_read_cost_per_mil_tokens": 0.05,
             "endpoints": [
               "cloudflare",
+              "primeintellect/fp8",
               "reka/fp8"
             ]
           },

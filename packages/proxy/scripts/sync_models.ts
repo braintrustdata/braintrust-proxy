@@ -151,6 +151,9 @@ export const SYNC_PRESERVED_FIELDS: Record<
   // Together/Fireworks; LiteLLM carries a stale $0.16 and the sync keeps
   // reverting the correction (the #1127 -> #1130 re-regression). Pin the field.
   "moonshotai/Kimi-K2.7-Code": CACHE_READ_FIELD,
+  // OpenRouter's headline price for Kimi K3.1 Pro tracks a single degraded
+  // endpoint ($0.24/$8.40). Moonshot and most providers charge $2/$10.
+  "moonshotai/kimi-k3.1-pro": INPUT_OUTPUT_COST_FIELDS,
 };
 
 // Returns true if `field` of `modelName` is hand-maintained and must not be

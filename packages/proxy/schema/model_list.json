@@ -35050,8 +35050,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2403,
-    "output_cost_per_mil_tokens": 8.4023,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "openrouter": {

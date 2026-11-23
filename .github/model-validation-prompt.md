@@ -19,6 +19,8 @@ Address it to that agent and include:
    - Send every request with the `x-bt-project-name: model-validation` header.
 3. **Documentation pass**: read the provider's official model page, migration or upgrade guide, and pricing page for each primary model.
    Compare them with the catalog entry and report mismatches.
+   Check maximum input, maximum output, and the total context window as separate values for the exact model ID or documented snapshot.
+   Include any token-limit mismatches or source conflicts already found by the workflow, with the catalog values, provider values, and source URLs.
    List every change from the `parent` or previous model in the family that affects API callers, such as new, removed, or renamed parameters, tools, content types, limits, and pricing.
    Each change becomes a test case in the Gateway pass.
    Use official provider sources only.

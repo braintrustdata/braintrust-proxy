@@ -200,6 +200,8 @@ jobs:
 
             # What to do
 
+            Before enrichment, check the token limits on changed OpenAI entries against official model documentation for the exact ID or its documented snapshot. Compare the published maximum input, maximum output, and total context separately. Treat an input limit above the total context as a source conflict and check the other documented provider surfaces on the entry. Record each mismatch and any unresolved source conflict in the model validation prompt, with the model ID, catalog value, provider values, and source URLs.
+
             1. Read the changed model id file and only work on those exact model ids. Add or refresh their `pricing` following `.github/model-pricing.md`, even when top-level standard prices did not change.
                Check batch API prices and each synchronous service tier independently, including fast and ultrafast. Inspect separate pricing tabs, exact endpoint/router IDs, cache TTLs, prompt-length boundaries, and dated rates. Report verified, unsupported, and unresolved tier checks; do not infer rates from standard prices or copy them across providers. Preserve verified tier aliases and update only their target arrays.
             2. For each changed model, read its current entry in `packages/proxy/schema/model_list.json` and note whether `displayName` and `parent` are already set.

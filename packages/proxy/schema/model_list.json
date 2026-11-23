@@ -15502,6 +15502,21 @@
             ],
             "model_id": "us.xai.grok-4.7"
           }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.64,
+            "output_cost_per_mil_tokens": 7.92,
+            "input_cache_read_cost_per_mil_tokens": 0.66,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "us-gov-east-1",
+              "us-gov-west-1"
+            ],
+            "model_id": "us.xai.grok-4.7"
+          }
         ]
       }
     },
@@ -15585,6 +15600,42 @@
     "input_cache_write_cost_per_mil_tokens": 10,
     "input_cache_write_30m_cost_per_mil_tokens": 10,
     "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 44,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-east-1"
+            ],
+            "model_id": "openai.gpt-6.2-astra",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 17.6,
+            "output_cost_per_mil_tokens": 66,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 22,
+            "input_cache_write_30m_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-east-1"
+            ],
+            "model_id": "openai.gpt-6.2-astra",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Astra",
     "reasoning": true,
     "max_input_tokens": 922000,
@@ -15603,6 +15654,52 @@
     "input_cache_write_cost_per_mil_tokens": 10,
     "input_cache_write_30m_cost_per_mil_tokens": 10,
     "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8.8,
+            "output_cost_per_mil_tokens": 44,
+            "input_cache_read_cost_per_mil_tokens": 0.44,
+            "input_cache_write_cost_per_mil_tokens": 11,
+            "input_cache_write_30m_cost_per_mil_tokens": 11,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.openai.gpt-6.2-astra",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 17.6,
+            "output_cost_per_mil_tokens": 66,
+            "input_cache_read_cost_per_mil_tokens": 0.88,
+            "input_cache_write_cost_per_mil_tokens": 22,
+            "input_cache_write_30m_cost_per_mil_tokens": 22,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.openai.gpt-6.2-astra",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6.2-astra",
@@ -15622,6 +15719,102 @@
     "input_cache_write_cost_per_mil_tokens": 10,
     "input_cache_write_30m_cost_per_mil_tokens": 10,
     "input_cache_write_12h_cost_per_mil_tokens": 20,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 40,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.openai.gpt-6.2-astra",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.openai.gpt-6.2-astra",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6.2-astra",
@@ -15641,6 +15834,42 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "input_cache_write_30m_cost_per_mil_tokens": 2.5,
     "input_cache_write_12h_cost_per_mil_tokens": 5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-east-1"
+            ],
+            "model_id": "openai.gpt-6.2-sol",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-east-1"
+            ],
+            "model_id": "openai.gpt-6.2-sol",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "max_input_tokens": 922000,
@@ -15659,6 +15888,52 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "input_cache_write_30m_cost_per_mil_tokens": 2.5,
     "input_cache_write_12h_cost_per_mil_tokens": 5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.75,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.openai.gpt-6.2-sol",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 16.5,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5.5,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.openai.gpt-6.2-sol",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6.2-sol",
@@ -15678,6 +15953,102 @@
     "input_cache_write_cost_per_mil_tokens": 2.5,
     "input_cache_write_30m_cost_per_mil_tokens": 2.5,
     "input_cache_write_12h_cost_per_mil_tokens": 5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.openai.gpt-6.2-sol",
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.openai.gpt-6.2-sol",
+            "min_input_tokens": 272001
+          }
+        ]
+      }
+    },
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6.2-sol",
@@ -15780,6 +16151,108 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.1,
+            "output_cost_per_mil_tokens": 0.5,
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_cache_write_cost_per_mil_tokens": 0.125,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.125,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "me-central-1",
+              "me-south-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.625,
+            "input_cache_write_1h_cost_per_mil_tokens": 1,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "me-central-1",
+              "me-south-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "Global Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15800,6 +16273,54 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.1,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "US Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15820,6 +16341,58 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3"
+            ],
+            "model_id": "eu.anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.1,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3"
+            ],
+            "model_id": "eu.anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "EU Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15840,6 +16413,46 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2",
+              "ap-southeast-4"
+            ],
+            "model_id": "au.anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.1,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2",
+              "ap-southeast-4"
+            ],
+            "model_id": "au.anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "AU Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15860,6 +16473,46 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.11,
+            "output_cost_per_mil_tokens": 0.55,
+            "input_cache_read_cost_per_mil_tokens": 0.011,
+            "input_cache_write_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.1375,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.22,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-northeast-1",
+              "ap-northeast-3"
+            ],
+            "model_id": "jp.anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.55,
+            "output_cost_per_mil_tokens": 2.75,
+            "input_cache_read_cost_per_mil_tokens": 0.055,
+            "input_cache_write_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.6875,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.1,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-northeast-1",
+              "ap-northeast-3"
+            ],
+            "model_id": "jp.anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "JP Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15878,6 +16531,58 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 4,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-2",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "me-central-1",
+              "me-south-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.anthropic.claude-sonnet-5-5",
+            "valid_from": "2026-10-07"
+          }
+        ]
+      }
+    },
     "displayName": "Global Claude Sonnet 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15892,6 +16597,33 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.2,
+            "output_cost_per_mil_tokens": 11,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 2.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 2.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 4.4,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.anthropic.claude-sonnet-5-5",
+            "valid_from": "2026-10-07"
+          }
+        ]
+      }
+    },
     "displayName": "US Claude Sonnet 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15912,6 +16644,44 @@
     "input_cache_write_cost_per_mil_tokens": 0.125,
     "input_cache_write_5m_cost_per_mil_tokens": 0.125,
     "input_cache_write_1h_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.12,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.012,
+            "input_cache_write_cost_per_mil_tokens": 0.15,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.15,
+            "input_cache_write_1h_cost_per_mil_tokens": 0.24,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-gov-west-1"
+            ],
+            "model_id": "anthropic.claude-haiku-5-5",
+            "max_input_tokens": 100000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.6,
+            "output_cost_per_mil_tokens": 3,
+            "input_cache_read_cost_per_mil_tokens": 0.06,
+            "input_cache_write_cost_per_mil_tokens": 0.75,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.75,
+            "input_cache_write_1h_cost_per_mil_tokens": 1.2,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-gov-west-1"
+            ],
+            "model_id": "anthropic.claude-haiku-5-5",
+            "min_input_tokens": 100001
+          }
+        ]
+      }
+    },
     "displayName": "Claude Haiku 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15929,6 +16699,28 @@
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "input_cache_write_cost_per_mil_tokens": 2.5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2.4,
+            "output_cost_per_mil_tokens": 12,
+            "input_cache_read_cost_per_mil_tokens": 0.12,
+            "input_cache_write_cost_per_mil_tokens": 3,
+            "input_cache_write_5m_cost_per_mil_tokens": 3,
+            "input_cache_write_1h_cost_per_mil_tokens": 4.8,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-gov-west-1"
+            ],
+            "model_id": "anthropic.claude-sonnet-5-5",
+            "valid_from": "2026-10-07"
+          }
+        ]
+      }
+    },
     "displayName": "Claude Sonnet 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15970,6 +16762,28 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-northeast-1",
+              "ap-northeast-3"
+            ],
+            "model_id": "jp.anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "JP Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15984,6 +16798,28 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ap-southeast-2",
+              "ap-southeast-4"
+            ],
+            "model_id": "au.anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "AU Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -15998,6 +16834,34 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3"
+            ],
+            "model_id": "eu.anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "EU Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -16012,6 +16876,32 @@
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "ca-central-1",
+              "ca-west-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "us.anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "US Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -16030,6 +16920,59 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "af-south-1",
+              "ap-east-2",
+              "ap-northeast-1",
+              "ap-northeast-2",
+              "ap-northeast-3",
+              "ap-south-1",
+              "ap-south-2",
+              "ap-southeast-1",
+              "ap-southeast-2",
+              "ap-southeast-3",
+              "ap-southeast-4",
+              "ap-southeast-5",
+              "ap-southeast-6",
+              "ap-southeast-7",
+              "ca-central-1",
+              "ca-west-1",
+              "eu-central-1",
+              "eu-central-2",
+              "eu-north-1",
+              "eu-south-1",
+              "eu-south-2",
+              "eu-west-1",
+              "eu-west-2",
+              "eu-west-3",
+              "il-central-1",
+              "me-central-1",
+              "me-south-1",
+              "mx-central-1",
+              "sa-east-1",
+              "us-east-1",
+              "us-east-2",
+              "us-west-1",
+              "us-west-2"
+            ],
+            "model_id": "global.anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "Global Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -16048,6 +16991,58 @@
     "output_cost_per_mil_tokens": 20,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 5,
+    "pricing": {
+      "bedrock": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "ap-southeast-4",
+              "us-east-1"
+            ],
+            "model_id": "anthropic.claude-opus-5-5"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.8,
+            "output_cost_per_mil_tokens": 24,
+            "input_cache_read_cost_per_mil_tokens": 0.24,
+            "input_cache_write_cost_per_mil_tokens": 6,
+            "input_cache_write_5m_cost_per_mil_tokens": 6,
+            "input_cache_write_1h_cost_per_mil_tokens": 9.6,
+            "endpoints": [
+              "bedrock-mantle"
+            ],
+            "supported_regions": [
+              "us-gov-west-1"
+            ],
+            "model_id": "anthropic.claude-opus-5-5"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.22,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "bedrock-runtime"
+            ],
+            "supported_regions": [
+              "eu-west-2"
+            ],
+            "model_id": "anthropic.claude-opus-5-5"
+          }
+        ]
+      }
+    },
     "displayName": "Claude Opus 5.5",
     "reasoning": true,
     "reasoning_budget": true,
@@ -31642,6 +32637,20 @@
   "databricks-glm-5-3": {
     "format": "openai",
     "flavor": "chat",
+    "pricing": {
+      "databricks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 1.4,
+            "output_cost_per_mil_tokens": 4.39999,
+            "input_cache_read_cost_per_mil_tokens": 0.25998,
+            "supported_regions": [
+              "us-east-1"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "GLM 5.3",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -31743,6 +32752,20 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "pricing": {
+      "databricks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15001,
+            "output_cost_per_mil_tokens": 0.50001,
+            "input_cache_read_cost_per_mil_tokens": 0.03003,
+            "supported_regions": [
+              "us-east-1"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "GLM 5.3 Flash",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -32306,6 +33329,19 @@
   "databricks-qwen35-122b-a10b": {
     "format": "openai",
     "flavor": "chat",
+    "pricing": {
+      "databricks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.22001,
+            "output_cost_per_mil_tokens": 2.20003,
+            "supported_regions": [
+              "us-east-1"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Qwen 3.5 122B-A10B",
     "reasoning": true,
     "experimental": true,
@@ -32318,6 +33354,19 @@
   "databricks-qwen3-next-80b-a3b-instruct": {
     "format": "openai",
     "flavor": "chat",
+    "pricing": {
+      "databricks": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.15001,
+            "output_cost_per_mil_tokens": 1.20001,
+            "supported_regions": [
+              "us-east-1"
+            ]
+          }
+        ]
+      }
+    },
     "displayName": "Qwen 3-Next 80B-A3B Instruct",
     "experimental": true,
     "max_input_tokens": 262144,

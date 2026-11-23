@@ -23,9 +23,9 @@ import {
   findDuplicateJsonKeys,
   formatProviderMappingProviders,
   getMissingProviderMappings,
+  getProviderMappingWidenings,
   getUpdatedAvailableProviders,
   isBasetenDeprecated,
-  isDeprecationDateAfterRetirement,
   isFieldManuallyPreserved,
   isModelExcludedFromSync,
   isPerplexityGatewayModel,
@@ -721,6 +721,44 @@ export const AvailableEndpointTypes = {
   });
 });
 
+describe("convertRemoteToLocalModel lifecycle dates", () => {
+  it("ignores LiteLLM's deprecation_date, which is a shutdown date", () => {
+    const convertedModel = convertRemoteToLocalModel("test-model", {
+      max_input_tokens: 32768,
+      deprecation_date: "2026-12-11",
+    });
+
+    expect(convertedModel.deprecation_date).toBeUndefined();
+    expect(convertedModel.retirement_date).toBeUndefined();
+  });
+});
+
+describe("getProviderMappingWidenings", () => {
+  const schemaContent = `const AvailableEndpointTypes = {
+  "gpt-5.1-codex": ["azure", "openrouter"],
+  "gpt-live-1": ["openai"],
+  "gemini-2.5-flash": ["google"],
+};
+`;
+
+  it("widens existing entries with newly added providers", () => {
+    expect(
+      getProviderMappingWidenings(schemaContent, [
+        { name: "gpt-5.1-codex", providers: ["openai"] },
+        { name: "brand-new", providers: ["openai"] },
+      ]),
+    ).toEqual([{ name: "gpt-5.1-codex", providers: ["openai"] }]);
+  });
+
+  it("leaves deliberately narrow entries alone", () => {
+    expect(
+      getProviderMappingWidenings(schemaContent, [
+        { name: "gpt-5.1-codex", providers: ["azure"] },
+        { name: "gemini-2.5-flash", providers: ["vertex"] },
+      ]),
+    ).toEqual([]);
+  });
+});
 describe("isFieldManuallyPreserved", () => {
   it("preserves the documented cost/limit overrides against LiteLLM sync", () => {
     expect(
@@ -1542,26 +1580,5 @@ describe("applyCohereLiteLLMPricing", () => {
     expect(
       applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
     ).toBeNull();
-  });
-});
-
-describe("isDeprecationDateAfterRetirement", () => {
-  it("flags deprecation dates later than the retirement date", () => {
-    expect(isDeprecationDateAfterRetirement("2026-10-16", "2026-08-27")).toBe(
-      true,
-    );
-  });
-
-  it("allows deprecation on or before retirement, or with no retirement date", () => {
-    expect(isDeprecationDateAfterRetirement("2026-08-27", "2026-08-27")).toBe(
-      false,
-    );
-    expect(isDeprecationDateAfterRetirement("2026-09-29", "2026-10-31")).toBe(
-      false,
-    );
-    expect(isDeprecationDateAfterRetirement("2026-10-16", undefined)).toBe(
-      false,
-    );
-    expect(isDeprecationDateAfterRetirement("2026-10-16", null)).toBe(false);
   });
 });

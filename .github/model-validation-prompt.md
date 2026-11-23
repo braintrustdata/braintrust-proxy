@@ -19,6 +19,11 @@ Address it to that agent and include:
    - Send every request with the `x-bt-project-name: model-validation` header.
 3. **Documentation pass**: read the provider's official model page, migration or upgrade guide, and pricing page for each primary model.
    Compare them with the catalog entry and report mismatches.
+   When lifecycle dates change, run this part of the documentation pass before merging; it does not require the hosted Gateway to load the change.
+   Check the official deprecation and retirement notices for the exact model IDs, including dated snapshots, aliases, and provider companions.
+   For OpenAI, compare `deprecation_date` with the [notice date](https://developers.openai.com/api/docs/deprecations), not the shutdown date.
+   Compare `retirement_date` with the last verified shutdown across the listed providers, including both the [Azure retirement schedule](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/model-retirement-schedule) and [retired model list](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/retired-models) when applicable.
+   Report unsupported or missing dates separately, with the source URL and the exact model ID or version it covers. Do not infer a date from an API error or a similarly named model.
    List every change from the `parent` or previous model in the family that affects API callers, such as new, removed, or renamed parameters, tools, content types, limits, and pricing.
    Each change becomes a test case in the Gateway pass.
    Use official provider sources only.

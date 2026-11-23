@@ -23,28 +23,10 @@ export default [
     dts: true,
   },
   {
-    entry: ["schema/translate.ts"],
-    format: ["cjs", "esm"],
-    outDir: "schema/translate/dist",
-    dts: true,
-  },
-  {
     entry: ["utils/*.ts", "!utils/*.test.ts", "!utils/tests.ts"],
     format: ["cjs", "esm"],
     outDir: "utils/dist",
     dts: true,
     splitting: true,
-  },
-  {
-    entry: ["types/index.ts"],
-    format: ["cjs", "esm"],
-    outDir: "types/dist",
-    dts: true,
-  },
-  {
-    entry: ["providers/index.ts"],
-    format: ["cjs", "esm"],
-    outDir: "providers/dist",
-    dts: true,
   },
 ] satisfies Options[];

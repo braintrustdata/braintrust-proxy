@@ -39,29 +39,11 @@
       "module": "./schema/dist/index.mjs",
       "require": "./schema/dist/index.js"
     },
-    "./schema/translate": {
-      "types": "./schema/translate/dist/translate.d.ts",
-      "import": "./schema/translate/dist/translate.mjs",
-      "module": "./schema/translate/dist/translate.mjs",
-      "require": "./schema/translate/dist/translate.js"
-    },
     "./utils": {
       "types": "./utils/dist/index.d.ts",
       "import": "./utils/dist/index.mjs",
       "module": "./utils/dist/index.mjs",
       "require": "./utils/dist/index.js"
-    },
-    "./types": {
-      "types": "./types/dist/index.d.ts",
-      "import": "./types/dist/index.mjs",
-      "module": "./types/dist/index.mjs",
-      "require": "./types/dist/index.js"
-    },
-    "./providers": {
-      "types": "./providers/dist/index.d.ts",
-      "import": "./providers/dist/index.mjs",
-      "module": "./providers/dist/index.mjs",
-      "require": "./providers/dist/index.js"
     }
   },
   "typesVersions": {
@@ -75,9 +57,6 @@
     "dist/**/*",
     "edge/dist/**/*",
     "schema/dist/**/*",
-    "schema/translate/dist/**/*",
-    "types/dist/**/*",
-    "providers/dist/**/*",
     "utils/dist/**/*",
     "utils/package.json"
   ],

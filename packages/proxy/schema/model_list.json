@@ -34667,6 +34667,34 @@
             ],
             "min_input_tokens": 272001
           }
+        ],
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 1.2,
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_cache_write_cost_per_mil_tokens": 0.25,
+            "input_cache_write_30m_cost_per_mil_tokens": 0.25,
+            "input_cache_write_12h_cost_per_mil_tokens": 0.5,
+            "endpoints": [
+              "amazon-bedrock/global",
+              "azure",
+              "openai"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 0.4,
+            "output_cost_per_mil_tokens": 1.8,
+            "input_cache_read_cost_per_mil_tokens": 0.04,
+            "input_cache_write_cost_per_mil_tokens": 0.5,
+            "endpoints": [
+              "amazon-bedrock/global",
+              "azure",
+              "openai"
+            ],
+            "min_input_tokens": 272001
+          }
         ]
       }
     },

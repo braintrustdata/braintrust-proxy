@@ -69,6 +69,32 @@ it("preserves top-level prices when tier pricing is absent or null", () => {
   expect(ModelSchema.parse(model)).toEqual(model);
 });
 
+// Long-context standard prices must survive catalog loading alongside the flat default prices.
+it("preserves OpenRouter Luna's conditional standard rates", () => {
+  const model = getAvailableModels()["openai/gpt-5.6-luna"];
+  expect(model.input_cost_per_mil_tokens).toBe(0.2);
+  expect(model.pricing?.openrouter?.standard).toEqual([
+    {
+      input_cost_per_mil_tokens: 0.2,
+      output_cost_per_mil_tokens: 1.2,
+      input_cache_read_cost_per_mil_tokens: 0.02,
+      input_cache_write_cost_per_mil_tokens: 0.25,
+      input_cache_write_30m_cost_per_mil_tokens: 0.25,
+      input_cache_write_12h_cost_per_mil_tokens: 0.5,
+      endpoints: ["amazon-bedrock/global", "azure", "openai"],
+      max_input_tokens: 272000,
+    },
+    {
+      input_cost_per_mil_tokens: 0.4,
+      output_cost_per_mil_tokens: 1.8,
+      input_cache_read_cost_per_mil_tokens: 0.04,
+      input_cache_write_cost_per_mil_tokens: 0.5,
+      endpoints: ["amazon-bedrock/global", "azure", "openai"],
+      min_input_tokens: 272001,
+    },
+  ]);
+});
+
 it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
   const rate = {
     input_cost_per_mil_tokens: 1,
@@ -217,7 +243,7 @@ it("uses OpenRouter batch endpoint prices independently of direct providers", ()
 it.each([
   { openai: { flex: [] } },
   { openai: { flxe: [{}] } },
-  { openai: { standard: [{}] } },
+  { openai: { auto: [{}] } },
   { unknown_provider: { flex: [{}] } },
   { openai: { flex: null } },
 ])("rejects invalid provider/tier rates: %j", (pricing) => {

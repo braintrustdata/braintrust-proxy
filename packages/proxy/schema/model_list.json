@@ -1183,6 +1183,14 @@
       "azure"
     ]
   },
+  "gpt-6-astra-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6 Astra Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6-cyber": {
     "format": "openai",
     "flavor": "chat",

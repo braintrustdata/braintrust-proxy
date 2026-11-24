@@ -213,6 +213,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-5.6-luna": ["openai", "azure", "openrouter"],
   "gpt-6-astra": ["openai", "azure", "openrouter"],
   "gpt-6-astra-law": ["openai", "azure"],
+  "gpt-6-astra-healthcare": ["openai"],
   "gpt-6-cyber": ["openai", "azure"],
   "gpt-6-luna": ["openai", "azure", "openrouter"],
   "gpt-6-rosalind": ["openai", "azure"],

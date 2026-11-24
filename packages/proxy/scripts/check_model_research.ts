@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
+import { ModelSchema } from "../schema/models";
 import {
   effectiveProviders,
   parseIndexEndpointTypes,
@@ -34,6 +35,102 @@ type Catalog = Record<
     available_providers?: string[] | null;
   }
 >;
+type ProviderMappings = { before: string; after: string };
+
+const priceKeys = Object.keys(ModelSchema.shape).filter((key) =>
+  /_cost_per_(?:mil_)?tokens?$/.test(key),
+);
+const priceEvidenceSchema = z.array(
+  z.object({
+    model: z.string().min(1),
+    provider: z.string().min(1),
+    surface: z.string().trim().min(1),
+    field: z.string(),
+    value: z.number().nonnegative(),
+    source: z.string().url().startsWith("https://"),
+    quote: z.string().trim().min(1),
+  }),
+);
+const pricingSourceDomains = new Map<string, string[]>([
+  ["anthropic", ["anthropic.com", "claude.com"]],
+  ["azure", ["azure.com", "microsoft.com"]],
+  ["baseten", ["baseten.co"]],
+  ["bedrock", ["aws.amazon.com"]],
+  ["cerebras", ["cerebras.ai"]],
+  ["databricks", ["databricks.com"]],
+  ["fireworks", ["fireworks.ai"]],
+  ["google", ["ai.google.dev", "ai.google"]],
+  ["groq", ["groq.com"]],
+  ["mistral", ["mistral.ai"]],
+  ["openai", ["openai.com"]],
+  ["openrouter", ["openrouter.ai"]],
+  ["perplexity", ["perplexity.ai"]],
+  ["together", ["together.ai", "together.xyz"]],
+  ["vertex", ["cloud.google.com"]],
+  ["xAI", ["x.ai"]],
+]);
+
+type PricingCatalog = Record<
+  string,
+  Record<string, unknown> & { available_providers?: string[] | null }
+>;
+
+export function checkModelPrices(
+  before: PricingCatalog,
+  after: PricingCatalog,
+  rawEvidence: unknown,
+  providerMappings: ProviderMappings,
+): void {
+  const evidence = priceEvidenceSchema.parse(rawEvidence);
+  const beforeIndex = parseIndexEndpointTypes(providerMappings.before);
+  const afterIndex = parseIndexEndpointTypes(providerMappings.after);
+  for (const [model, entry] of Object.entries(after)) {
+    const previous = before[model];
+    const previousProviders = effectiveProviders(
+      model,
+      { available_providers: previous?.available_providers ?? undefined },
+      beforeIndex,
+    );
+    const providers = effectiveProviders(
+      model,
+      { available_providers: entry.available_providers ?? undefined },
+      afterIndex,
+    );
+    for (const field of priceKeys) {
+      const value = entry[field];
+      if (value == null) continue;
+      const unchanged = value === previous?.[field];
+      if (
+        providers.length === 0 &&
+        (!unchanged || previousProviders.length > 0)
+      ) {
+        throw new Error(`${model}: no provider to verify ${field} against`);
+      }
+      for (const provider of providers) {
+        if (unchanged && previousProviders.includes(provider)) continue;
+        const verified = evidence.some((claim) => {
+          if (
+            claim.model !== model ||
+            claim.provider !== provider ||
+            claim.field !== field ||
+            claim.value !== value
+          ) {
+            return false;
+          }
+          const host = new URL(claim.source).hostname;
+          return pricingSourceDomains
+            .get(provider)
+            ?.some((domain) => host === domain || host.endsWith(`.${domain}`));
+        });
+        if (!verified) {
+          throw new Error(
+            `${model} @ ${provider}: missing exact-provider pricing evidence for ${field}; omit the unverified price`,
+          );
+        }
+      }
+    }
+  }
+}
 
 export async function checkModelCapabilities(
   before: Catalog,
@@ -44,7 +141,7 @@ export async function checkModelCapabilities(
     provider: string,
     capability: Capability,
   ) => Promise<boolean | undefined>,
-  providerMappings: { before: string; after: string } = {
+  providerMappings: ProviderMappings = {
     before: "",
     after: "",
   },
@@ -190,10 +287,26 @@ async function main(): Promise<void> {
     );
   }
   checkModelResearch(JSON.parse(readFileSync(executionFile, "utf8")));
+  const catalog = "packages/proxy/schema/model_list.json";
+  const index = "packages/proxy/schema/index.ts";
+  const priceEvidenceFile = process.env.PRICE_EVIDENCE_FILE;
+  if (priceEvidenceFile) {
+    const baselineDir = process.env.PRE_RESEARCH_CATALOG_DIR;
+    if (!baselineDir) {
+      throw new Error("Missing pre-research catalog snapshots.");
+    }
+    checkModelPrices(
+      JSON.parse(readFileSync(`${baselineDir}/model_list.json`, "utf8")),
+      JSON.parse(readFileSync(catalog, "utf8")),
+      JSON.parse(readFileSync(priceEvidenceFile, "utf8")),
+      {
+        before: readFileSync(`${baselineDir}/index.ts`, "utf8"),
+        after: readFileSync(index, "utf8"),
+      },
+    );
+  }
   const evidenceFile = process.env.CAPABILITY_EVIDENCE_FILE;
   if (evidenceFile) {
-    const catalog = "packages/proxy/schema/model_list.json";
-    const index = "packages/proxy/schema/index.ts";
     const readHead = (path: string) =>
       execFileSync("git", ["show", `HEAD:${path}`], {
         encoding: "utf8",

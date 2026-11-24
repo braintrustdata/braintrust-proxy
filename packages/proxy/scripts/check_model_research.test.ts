@@ -1,10 +1,71 @@
 import { describe, expect, it } from "vitest";
 import {
   checkModelCapabilities,
+  checkModelPrices,
   checkModelResearch,
 } from "./check_model_research";
 
 const success = { type: "result", subtype: "success", is_error: false };
+
+describe("checkModelPrices", () => {
+  const model = "databricks-inkling-2-small";
+  const field = "input_cost_per_mil_tokens";
+  const after = { [model]: { [field]: 0.3 } };
+  const mappings = {
+    before: "",
+    after: `export const AvailableEndpointTypes = {
+      "${model}": ["databricks"],
+};`,
+  };
+  const evidence = {
+    model,
+    provider: "databricks",
+    surface: "Mosaic AI Model Serving",
+    field,
+    value: 0.3,
+    source: "https://docs.databricks.com/pricing-example",
+    quote: "Example rate: $0.30 per million input tokens",
+  };
+
+  it("rejects copied Fireworks pricing even if its source is labeled Databricks", () => {
+    const source = "https://fireworks.ai/models/fireworks/inkling-2-small";
+    expect(() =>
+      checkModelPrices(
+        {},
+        after,
+        [
+          {
+            ...evidence,
+            model: "accounts/fireworks/models/inkling-2-small",
+            provider: "fireworks",
+            source,
+          },
+          { ...evidence, source },
+          { ...evidence, value: 0.29 },
+        ],
+        mappings,
+      ),
+    ).toThrow("missing exact-provider pricing evidence");
+  });
+
+  it("accepts an exact source or omission, but does not inherit prices onto new routes", () => {
+    expect(() =>
+      checkModelPrices({}, after, [evidence], mappings),
+    ).not.toThrow();
+    expect(() =>
+      checkModelPrices({}, { [model]: {} }, [], mappings),
+    ).not.toThrow();
+    expect(() =>
+      checkModelPrices(after, after, [], {
+        before: mappings.after,
+        after: mappings.after,
+      }),
+    ).not.toThrow();
+    expect(() => checkModelPrices(after, after, [], mappings)).toThrow(
+      "missing exact-provider pricing evidence",
+    );
+  });
+});
 
 describe("checkModelCapabilities", () => {
   const model = "accounts/fireworks/models/inkling-2-small";

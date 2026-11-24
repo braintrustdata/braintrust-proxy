@@ -36,8 +36,7 @@ Batch API support and synchronous service-tier support are separate checks.
   Array order does not select the applicable price; the documented conditions determine applicability.
   `inference_geo` is a request's inference geography (for example, Anthropic `global` or `us`), not the region where the API connection terminates.
   Do not substitute a regional price for an unverified global price, or the reverse.
-- Verify every provider/tier pair for companion entries independently.
-  An assumption that top-level standard prices match across cloud companions does not apply to provider/tier support, rates, or conditions.
+- Verify top-level standard prices and every provider/tier pair for companion entries independently. Omit unverified top-level prices.
   Do not copy the target's `pricing` map to a companion or rename its provider or tier keys without explicit provider evidence.
 - Refresh existing rates and conditions when official sources document a change.
   Remove obsolete rates only when official sources confirm that their support or applicability ended.

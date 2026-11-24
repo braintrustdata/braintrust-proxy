@@ -432,6 +432,20 @@ jobs:
             } >> "$RUNNER_TEMP/pr-body.md"
           fi
 
+      - name: Verify main still matches the built commit
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git fetch --no-tags origin refs/heads/main
+          built_commit=$(git rev-parse HEAD)
+          current_main=$(git rev-parse FETCH_HEAD)
+          if [ "$built_commit" != "$current_main" ]; then
+            echo "::error::Built commit $built_commit no longer matches main ($current_main). Rerun add-model from current main."
+            exit 1
+          fi
+
       - name: Create PR
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11

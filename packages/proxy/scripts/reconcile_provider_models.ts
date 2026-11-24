@@ -17,8 +17,8 @@ import {
 
 // Deprecation audit: for each provider, reconcile our catalog against the
 // provider's live model list and/or a direct probe, and report which
-// (model, provider) pairs are no longer served. A single definitive
-// not-found / deprecated provider response is treated as authoritative.
+// (model, provider) pairs are no longer served. Account-scoped 404s
+// require corroboration from a public lifecycle source.
 
 const LOCAL_MODEL_LIST_PATH = path.resolve(
   __dirname,
@@ -81,10 +81,35 @@ export const NEVER_DEPRECATE_MODELS: ReadonlySet<string> = new Set<string>([
   "daybreak-red-latest",
   "gpt-daybreak-blue-latest",
   "gpt-daybreak-red-latest",
-  // Claude Mythos 5.1 — gated preview whose CI probe 404s despite being live for
+  // Claude Mythos 5.1 and 5.2 — gated previews whose CI probes 404 despite being live for
   // entitled accounts. Keep until GA or a confirmed removal.
   "claude-mythos-5-1",
+  "claude-mythos-5-2",
 ]);
+
+const ANTHROPIC_LIFECYCLE_URL =
+  "https://docs.claude.com/en/docs/about-claude/model-deprecations.md";
+
+async function publicRetiredModels(provider: string): Promise<Set<string>> {
+  if (provider !== "anthropic") return new Set();
+  try {
+    const response = await fetch(ANTHROPIC_LIFECYCLE_URL, {
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const retired = new Set<string>();
+    for (const line of (await response.text()).split("\n")) {
+      const row = /^\|\s*`?([\w.-]+)`?\s*\|\s*Retired\s*\|/.exec(line);
+      if (row) retired.add(row[1]);
+    }
+    return retired;
+  } catch (error) {
+    console.warn(
+      `  ${provider}: public lifecycle evidence unavailable: ${error}`,
+    );
+    return new Set();
+  }
+}
 
 // Models that cannot be validated with a chat/completions probe (image, audio,
 // realtime, embedding, moderation), plus fine-tune placeholders (ft:* are id
@@ -401,15 +426,30 @@ async function auditProvider(
   );
 
   const deprecations: Deprecation[] = [];
+  const publicRetired = outcomes.some(
+    (o) => o.outcome === "deprecated" && o.status === 404,
+  )
+    ? await publicRetiredModels(provider)
+    : new Set<string>();
   for (const o of outcomes) {
     if (o.outcome === "deprecated") {
+      if (o.status === 404 && !publicRetired.has(o.model)) {
+        lifecycle.reviewNotes.push({
+          model: o.model,
+          provider,
+          note: "account-scoped probe returned HTTP 404; no public retirement confirmation",
+        });
+        continue;
+      }
       deprecations.push({
         model: o.model,
         provider,
         reason:
-          liveList !== null
-            ? "absent from list + probe not-found"
-            : "probe not-found",
+          o.status === 404
+            ? `probe not-found + public retirement confirmation (${ANTHROPIC_LIFECYCLE_URL})`
+            : liveList !== null
+              ? "absent from list + probe not-found"
+              : "probe not-found",
         status: o.status,
         detail: o.detail,
       });

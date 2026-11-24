@@ -10584,6 +10584,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Inkling 2 Small",
     "fallback_models": [
+      "databricks-inkling-2-small",
       "thinkingmachines/inkling-2-small"
     ],
     "available_providers": [
@@ -31356,6 +31357,14 @@
     "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
+    ]
+  },
+  "databricks-inkling-2-small": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Inkling 2 Small",
+    "available_providers": [
+      "databricks"
     ]
   },
   "stealth/crouton-alpha": {

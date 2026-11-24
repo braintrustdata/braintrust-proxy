@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
-import { ModelSchema } from "../schema/models";
+import { ModelEndpointType, ModelSchema } from "../schema/models";
 import {
   effectiveProviders,
   parseIndexEndpointTypes,
@@ -43,7 +43,7 @@ const priceKeys = Object.keys(ModelSchema.shape).filter((key) =>
 const priceEvidenceSchema = z.array(
   z.object({
     model: z.string().min(1),
-    provider: z.string().min(1),
+    provider: z.enum(ModelEndpointType),
     surface: z.string().trim().min(1),
     field: z.string(),
     value: z.number().nonnegative(),
@@ -51,24 +51,50 @@ const priceEvidenceSchema = z.array(
     quote: z.string().trim().min(1),
   }),
 );
-const pricingSourceDomains = new Map<string, string[]>([
-  ["anthropic", ["anthropic.com", "claude.com"]],
-  ["azure", ["azure.com", "microsoft.com"]],
-  ["baseten", ["baseten.co"]],
-  ["bedrock", ["aws.amazon.com"]],
-  ["cerebras", ["cerebras.ai"]],
-  ["databricks", ["databricks.com"]],
-  ["fireworks", ["fireworks.ai"]],
-  ["google", ["ai.google.dev", "ai.google"]],
-  ["groq", ["groq.com"]],
-  ["mistral", ["mistral.ai"]],
-  ["openai", ["openai.com"]],
-  ["openrouter", ["openrouter.ai"]],
-  ["perplexity", ["perplexity.ai"]],
-  ["together", ["together.ai", "together.xyz"]],
-  ["vertex", ["cloud.google.com"]],
-  ["xAI", ["x.ai"]],
-]);
+const pricingRoutes: Record<
+  ModelEndpointType,
+  { domains: string[]; surfaces: string[] } | null
+> = {
+  anthropic: {
+    domains: ["anthropic.com", "claude.com"],
+    surfaces: ["Claude API"],
+  },
+  azure: {
+    domains: ["azure.com", "microsoft.com"],
+    surfaces: ["Global Standard", "Data Zone Standard"],
+  },
+  azure_ai_gateway: null,
+  baseten: { domains: ["baseten.co"], surfaces: ["Model APIs"] },
+  bedrock: { domains: ["aws.amazon.com"], surfaces: ["On-Demand"] },
+  braintrust: null,
+  cerebras: { domains: ["cerebras.ai"], surfaces: ["Cerebras Inference"] },
+  cohere: null,
+  databricks: {
+    domains: ["databricks.com"],
+    surfaces: ["Mosaic AI Model Serving"],
+  },
+  fireworks: { domains: ["fireworks.ai"], surfaces: ["Serverless"] },
+  google: {
+    domains: ["ai.google.dev", "ai.google"],
+    surfaces: ["Gemini API", "Gemini Developer API"],
+  },
+  groq: { domains: ["groq.com"], surfaces: ["GroqCloud"] },
+  js: null,
+  lepton: null,
+  mistral: { domains: ["mistral.ai"], surfaces: ["La Plateforme"] },
+  ollama: null,
+  openai: { domains: ["openai.com"], surfaces: ["OpenAI API"] },
+  openrouter: { domains: ["openrouter.ai"], surfaces: ["OpenRouter"] },
+  perplexity: { domains: ["perplexity.ai"], surfaces: ["Sonar API"] },
+  replicate: null,
+  together: {
+    domains: ["together.ai", "together.xyz"],
+    surfaces: ["Serverless"],
+  },
+  typesafe: null,
+  vertex: { domains: ["cloud.google.com"], surfaces: ["Vertex AI"] },
+  xAI: { domains: ["x.ai"], surfaces: ["xAI API"] },
+};
 
 type PricingCatalog = Record<
   string,
@@ -92,13 +118,89 @@ function quoteNames(quote: string, name: string): boolean {
   );
 }
 
-function quoteHasPrice(quote: string, value: number): boolean {
-  const amounts = quote.matchAll(
-    /(?:\$|\bUSD)\s*(\d+(?:,\d{3})*(?:\.\d+)?)(?!\d|[.,]\d)/gi,
+const priceLabels = new Map(
+  Object.entries({
+    input: "input",
+    output: "output",
+    "cached input": "input_cache_read",
+    "cache read": "input_cache_read",
+    "input cache read": "input_cache_read",
+    "cache write": "input_cache_write",
+    "input cache write": "input_cache_write",
+    "audio input": "input_audio",
+    "input audio": "input_audio",
+    "audio output": "output_audio",
+    "output audio": "output_audio",
+    "cached audio input": "input_audio_cache_read",
+    "audio cache read": "input_audio_cache_read",
+    "input audio cache read": "input_audio_cache_read",
+  }),
+);
+
+function priceFieldLabel(text: string): string | undefined {
+  const label = text
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, " ")
+    .replace(/ tokens?$/, "")
+    .replace(/(read|write)s$/, "$1");
+  const ttl = /^(\d+[mh]) cache write$|^(?:input )?cache write (\d+[mh])$/.exec(
+    label,
   );
-  return Array.from(amounts).some(
-    ([, amount]) => Number(amount.replace(/,/g, "")) === value,
-  );
+  return ttl ? `input_cache_write_${ttl[1] ?? ttl[2]}` : priceLabels.get(label);
+}
+
+const tokenUnitPowers = new Map([
+  ["", 0],
+  ["1", 0],
+  ["k", 3],
+  ["1k", 3],
+  ["1000", 3],
+  ["thousand", 3],
+  ["m", 6],
+  ["1m", 6],
+  ["1000000", 6],
+  ["million", 6],
+]);
+
+function quoteHasPrice(quote: string, field: string, value: number): boolean {
+  const fieldParts = /^(.*)_cost_per_(mil_)?tokens?$/.exec(field);
+  if (!fieldParts) return false;
+  const [, expectedLabel, perMillion] = fieldParts;
+  const catalogPower = perMillion ? 6 : 0;
+  return quote.split(/[|;\n]|,(?!\d{3}\b)/).some((clause) => {
+    const rate =
+      /(?:\$|\bUSD\s+)\s*(\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s*(?:per\s+|\/\s*)(?:(\d[\d,]*[mk]?|million|thousand|[mk])\s+)?(.*?)\btokens?\b[.)]?\s*$/i.exec(
+        clause,
+      );
+    if (!rate) return false;
+    const [, amount, unit = "", suffix] = rate;
+    const prefix =
+      clause
+        .slice(0, rate.index)
+        .trim()
+        .replace(/[:=]$/, "")
+        .split(":")
+        .pop() ?? "";
+    const before = priceFieldLabel(prefix);
+    const after = priceFieldLabel(suffix);
+    if (
+      (suffix.trim() && !after) ||
+      (before && after && before !== after) ||
+      (after ?? before) !== expectedLabel
+    ) {
+      return false;
+    }
+
+    const quotePower = tokenUnitPowers.get(
+      unit.toLowerCase().replace(/,/g, ""),
+    );
+    return (
+      quotePower !== undefined &&
+      Number(`${amount.replace(/,/g, "")}e${catalogPower - quotePower}`) ===
+        value
+    );
+  });
 }
 
 export function checkModelPrices(
@@ -144,20 +246,25 @@ export function checkModelPrices(
             return false;
           }
           const host = new URL(claim.source).hostname;
-          const official = pricingSourceDomains
-            .get(provider)
-            ?.some((domain) => host === domain || host.endsWith(`.${domain}`));
-          if (!official) return false;
+          const route = pricingRoutes[claim.provider];
+          const surface = claim.surface.replace(/\s+/g, " ").toLowerCase();
+          if (
+            !route?.surfaces.some(
+              (candidate) => candidate.toLowerCase() === surface,
+            ) ||
+            !route.domains.some(
+              (domain) => host === domain || host.endsWith(`.${domain}`),
+            )
+          )
+            return false;
 
           const quote = claim.quote.replace(/\s+/g, " ");
           return (
-            (provider !== "fireworks" ||
-              claim.surface.toLowerCase() === "serverless") &&
             (quoteNames(quote, model) ||
               (entry.displayName != null &&
                 quoteNames(quote, entry.displayName))) &&
             quoteNames(quote, claim.surface) &&
-            quoteHasPrice(quote, claim.value)
+            quoteHasPrice(claim.quote, field, claim.value)
           );
         });
         if (!verified) {

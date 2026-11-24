@@ -100,6 +100,72 @@ describe("checkModelPrices", () => {
     ).toThrow("missing exact-provider pricing evidence");
   });
 
+  it("rejects a quoted surface that does not serve the catalog route", () => {
+    const surface = "Provisioned Throughput";
+    const quote = evidence.quote.replace(evidence.surface, surface);
+    expect(() =>
+      checkModelPrices({}, after, [{ ...evidence, surface, quote }], mappings),
+    ).toThrow("missing exact-provider pricing evidence");
+  });
+
+  it.each([
+    {
+      field: "output_cost_per_mil_tokens",
+      rates: "input $0.30 per 1M tokens, output $0.60 per 1M tokens",
+      correct: 0.6,
+      wrong: 0.3,
+    },
+    {
+      field: "input_cost_per_mil_tokens",
+      rates: "input $0.0003 per 1K tokens",
+      correct: 0.3,
+      wrong: 0.0003,
+    },
+    {
+      field: "input_cost_per_token",
+      rates: "input $0.0003 per 1,000 tokens",
+      correct: 0.0000003,
+      wrong: 0.0003,
+    },
+    {
+      field: "input_audio_cost_per_mil_tokens",
+      rates:
+        "$0.30 per million input tokens; $0.60 per million audio input tokens",
+      correct: 0.6,
+      wrong: 0.3,
+    },
+    {
+      field: "input_cache_read_cost_per_mil_tokens",
+      rates:
+        "cache write $0.30 per 1M tokens | cached input $0.60 per 1M tokens",
+      correct: 0.6,
+      wrong: 0.3,
+    },
+    {
+      field: "input_cache_write_1h_cost_per_mil_tokens",
+      rates:
+        "5m Cache Writes: $0.30 / 1M tokens\n1h Cache Writes: $0.60 / 1M tokens",
+      correct: 0.6,
+      wrong: 0.3,
+    },
+  ])(
+    "checks the labeled rate and token unit for $field",
+    ({ field, rates, correct, wrong }) => {
+      const quote = `${evidence.surface}: ${model}\n${rates}`;
+      const check = (value: number) =>
+        checkModelPrices(
+          {},
+          { [model]: { [field]: value } },
+          [{ ...evidence, field, value, quote }],
+          mappings,
+        );
+      expect(() => check(correct)).not.toThrow();
+      expect(() => check(wrong)).toThrow(
+        "missing exact-provider pricing evidence",
+      );
+    },
+  );
+
   it("requires evidence when direct sync adds a route but leaves its price unchanged", () => {
     const cwd = mkdtempSync(join(tmpdir(), "model-price-evidence-"));
     const write = (path: string, content: string) =>

@@ -1,11 +1,17 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   checkModelCapabilities,
   checkModelPrices,
   checkModelResearch,
+  providerCapabilityLookup,
 } from "./check_model_research";
 
 const success = { type: "result", subtype: "success", is_error: false };
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.unstubAllGlobals();
+});
 
 describe("checkModelPrices", () => {
   const model = "databricks-inkling-2-small";
@@ -79,7 +85,7 @@ describe("checkModelCapabilities", () => {
     capability: "multimodal",
     supported: true,
     source: "https://fireworks.ai/models/fireworks/inkling-2-small",
-    quote: "Image input supported",
+    quote: `${model} supports image input on Fireworks Serverless.`,
   };
 
   it("rejects image support from a different provider or model", async () => {
@@ -100,13 +106,15 @@ describe("checkModelCapabilities", () => {
   it.each([true, false])(
     "lets a provider negative win over a positive (structured: %s)",
     async (structuredNegative) => {
+      const negativeQuote = `${model} does not support image input on Fireworks Serverless.`;
+      vi.stubGlobal("fetch", async () => new Response(negativeQuote));
       await expect(
         checkModelCapabilities(
           {},
           after,
           structuredNegative
             ? [claim]
-            : [claim, { ...claim, supported: false }],
+            : [claim, { ...claim, supported: false, quote: negativeQuote }],
           async () => (structuredNegative ? false : true),
         ),
       ).rejects.toThrow("multimodal is unsupported");
@@ -114,6 +122,13 @@ describe("checkModelCapabilities", () => {
   );
 
   it("accepts exact-provider evidence, structured metadata, or unchanged claims", async () => {
+    vi.stubGlobal(
+      "fetch",
+      async () =>
+        new Response(
+          `<p><code>${model}</code>\n supports image input on Fireworks Serverless.</p>`,
+        ),
+    );
     await expect(
       checkModelCapabilities({}, after, [claim], async () => undefined),
     ).resolves.toBeUndefined();
@@ -122,6 +137,69 @@ describe("checkModelCapabilities", () => {
     ).resolves.toBeUndefined();
     await expect(
       checkModelCapabilities(after, after, [], async () => false),
+    ).resolves.toBeUndefined();
+  });
+
+  it.each([
+    { source: "https://openrouter.ai/models/inkling-2-small" },
+    { body: "This source does not mention the quoted claim." },
+    {
+      body: `accounts/fireworks/models/inkling-2-small-fast supports image input on Fireworks Serverless.`,
+    },
+    {
+      body: `${model} supports image input on Fireworks Serverless only on dedicated deployments.`,
+    },
+    { quote: `${model} supports reasoning on Fireworks Serverless.` },
+    { quote: `${model} does not support image input on Fireworks Serverless.` },
+    { quote: `${model} supports image input on Fireworks Dedicated.` },
+  ])(
+    "rejects relabeled, fabricated, or unrelated source evidence: %j",
+    async ({ source, body, quote }) => {
+      vi.stubGlobal(
+        "fetch",
+        async () => new Response(body ?? quote ?? claim.quote),
+      );
+      await expect(
+        checkModelCapabilities(
+          {},
+          after,
+          [
+            {
+              ...claim,
+              source: source ?? claim.source,
+              quote: quote ?? claim.quote,
+            },
+          ],
+          async () => undefined,
+        ),
+      ).rejects.toThrow("missing exact-provider evidence for multimodal");
+    },
+  );
+
+  it("does not follow redirects outside the claimed provider's domains", async () => {
+    const fetch = vi.fn(async () => Response.redirect("https://example.com/"));
+    vi.stubGlobal("fetch", fetch);
+    await expect(
+      checkModelCapabilities({}, after, [claim], async () => undefined),
+    ).rejects.toThrow("missing exact-provider evidence for multimodal");
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not let an unverified negative override structured support", async () => {
+    vi.stubGlobal("fetch", async () => new Response(claim.quote));
+    await expect(
+      checkModelCapabilities(
+        {},
+        after,
+        [
+          {
+            ...claim,
+            supported: false,
+            quote: `${model} does not support image input on Fireworks Serverless.`,
+          },
+        ],
+        async () => true,
+      ),
     ).resolves.toBeUndefined();
   });
 
@@ -136,8 +214,9 @@ describe("checkModelCapabilities", () => {
       capability: "reasoning",
       source:
         "https://cloud.google.com/vertex-ai/generative-ai/docs/partner-models/claude",
-      quote: "Supports extended thinking",
+      quote: `${companion} supports extended thinking.`,
     };
+    vi.stubGlobal("fetch", async () => new Response(vertexClaim.quote));
     const index = `export const AvailableEndpointTypes = {
       "${companion}": ["vertex"],
 };`;
@@ -163,6 +242,95 @@ describe("checkModelCapabilities", () => {
       checkModelCapabilities({}, catalog, [vertexClaim], async () => undefined),
     ).rejects.toThrow("no provider to verify reasoning against");
   });
+});
+
+describe("providerCapabilityLookup", () => {
+  it.each([
+    [
+      "openrouter",
+      "https://openrouter.ai/api/v1/models",
+      undefined,
+      {
+        data: [
+          {
+            id: "test/model",
+            architecture: { input_modalities: ["text"] },
+            supported_parameters: ["reasoning_effort"],
+          },
+        ],
+      },
+    ],
+    [
+      "cerebras",
+      "https://api.cerebras.ai/public/v1/models",
+      undefined,
+      {
+        data: [
+          {
+            id: "test/model",
+            capabilities: { vision: false, reasoning: true },
+          },
+        ],
+      },
+    ],
+    [
+      "groq",
+      "https://api.groq.com/openai/v1/models",
+      "GROQ_API_KEY",
+      {
+        data: [
+          {
+            id: "test/model",
+            input_modalities: ["text"],
+            supported_features: ["reasoning"],
+          },
+        ],
+      },
+    ],
+    [
+      "baseten",
+      "https://inference.baseten.co/v1/models",
+      "BASETEN_API_KEY",
+      {
+        data: [
+          {
+            id: "test/model",
+            input_modalities: ["text"],
+            supported_features: ["reasoning"],
+          },
+        ],
+      },
+    ],
+    [
+      "xAI",
+      "https://api.x.ai/v1/language-models",
+      "XAI_API_KEY",
+      { models: [{ id: "test/model", input_modalities: ["text"] }] },
+    ],
+  ] as const)(
+    "checks exact %s model metadata once per validation",
+    async (provider, url, key, body) => {
+      const fetch = vi.fn(async () => Response.json(body));
+      vi.stubGlobal("fetch", fetch);
+      if (key) vi.stubEnv(key, "test-key");
+      const lookup = providerCapabilityLookup();
+      await expect(lookup("test/model", provider, "multimodal")).resolves.toBe(
+        false,
+      );
+      await expect(lookup("test/model", provider, "reasoning")).resolves.toBe(
+        provider === "xAI" ? undefined : true,
+      );
+      await expect(
+        lookup("test/model-fast", provider, "multimodal"),
+      ).resolves.toBeUndefined();
+      expect(fetch).toHaveBeenCalledExactlyOnceWith(
+        url,
+        expect.objectContaining({
+          headers: key ? { Authorization: "Bearer test-key" } : {},
+        }),
+      );
+    },
+  );
 });
 
 describe("checkModelResearch", () => {

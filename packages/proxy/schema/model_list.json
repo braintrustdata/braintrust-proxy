@@ -11622,7 +11622,7 @@
           {
             "input_cost_per_mil_tokens": 0.313,
             "output_cost_per_mil_tokens": 0.671,
-            "input_cache_read_cost_per_mil_tokens": 0.282,
+            "input_cache_read_cost_per_mil_tokens": 0.315,
             "endpoints": [
               "primeintellect/fp4"
             ]
@@ -11785,7 +11785,7 @@
           {
             "input_cost_per_mil_tokens": 0.197,
             "output_cost_per_mil_tokens": 0.295,
-            "input_cache_read_cost_per_mil_tokens": 0.177,
+            "input_cache_read_cost_per_mil_tokens": 0.169,
             "endpoints": [
               "primeintellect/fp4"
             ]

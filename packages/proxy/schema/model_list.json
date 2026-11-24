@@ -242,8 +242,7 @@
     "flavor": "chat",
     "displayName": "GPT-6.2 Astra Healthcare",
     "available_providers": [
-      "openai",
-      "azure"
+      "openai"
     ]
   },
   "gpt-6.2-sol": {

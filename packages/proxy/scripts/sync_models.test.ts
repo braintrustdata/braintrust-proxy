@@ -16,6 +16,8 @@ import {
   convertRemoteToLocalModel,
   applyBasetenPricing,
   applyOpenRouterPricing,
+  assertUnchangedTopLevelPrices,
+  openRouterPriceAuditEntry,
   convertOpenRouterToLocalModel,
   openRouterCanonicalId,
   isOpenRouterSlugExcluded,
@@ -1412,6 +1414,30 @@ describe("convertOpenRouterToLocalModel", () => {
 });
 
 describe("applyOpenRouterPricing", () => {
+  it("records the original directory values alongside old and new default prices", () => {
+    const slug = "deepseek/deepseek-v4-flash-0731";
+    const old = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openrouter"],
+      input_cost_per_mil_tokens: 0.047,
+    } satisfies ModelSpec;
+    const directory = {
+      id: slug,
+      pricing: { prompt: "0.0000000456", request: "0" },
+      top_provider: { context_length: 1048576 },
+    };
+    const updated = applyOpenRouterPricing(slug, old, directory);
+    expect(updated).not.toBeNull();
+    expect(openRouterPriceAuditEntry(slug, old, updated!, directory)).toEqual({
+      model: slug,
+      provider: "openrouter",
+      oldPrices: { input_cost_per_mil_tokens: 0.047 },
+      newPrices: { input_cost_per_mil_tokens: 0.0456 },
+      directory,
+    });
+  });
+
   it("preserves provider/tier rates when standard prices change", () => {
     const model: ModelSpec = {
       format: "openai",
@@ -1497,6 +1523,39 @@ describe("applyOpenRouterPricing", () => {
     };
     expect(applyOpenRouterPricing("x-ai/grok-4.5", model, orModel)).toBeNull();
   });
+});
+
+describe("assertUnchangedTopLevelPrices", () => {
+  const model = {
+    format: "openai",
+    flavor: "chat",
+    input_cost_per_token: 0.000001,
+    output_cost_per_mil_tokens: 2,
+    input_cache_write_30m_cost_per_mil_tokens: 3,
+  } satisfies ModelSpec;
+
+  it("allows metadata and tier prices to change", () => {
+    expect(() =>
+      assertUnchangedTopLevelPrices(
+        { model },
+        { model: { ...model, displayName: "Model", pricing: {} } },
+      ),
+    ).not.toThrow();
+  });
+
+  it.each([
+    { ...model, input_cost_per_token: null },
+    { ...model, output_cost_per_mil_tokens: undefined },
+    { ...model, input_cache_write_30m_cost_per_mil_tokens: 4 },
+    { ...model, input_cache_read_cost_per_mil_tokens: 0.1 },
+  ])(
+    "blocks additions, changes, and removals of top-level prices ($#)",
+    (entry) => {
+      expect(() =>
+        assertUnchangedTopLevelPrices({ model }, { model: entry }),
+      ).toThrow("Enrichment changed top-level prices");
+    },
+  );
 });
 
 describe("convertCohereToLocalModel", () => {

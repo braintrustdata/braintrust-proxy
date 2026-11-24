@@ -141,7 +141,15 @@ jobs:
           # slug) and adds any model no first-class provider serves as a new
           # full-slug entry sunk to the bottom of the catalog. :variant slugs are
           # skipped. The endpoint is public, so no API key is required.
-          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write \
+            --price-audit "$RUNNER_TEMP/openrouter-price-audit.json"
+
+      - name: Upload OpenRouter pricing evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: openrouter-price-audit
+          path: ${{ runner.temp }}/openrouter-price-audit.json
+          if-no-files-found: error
 
       - name: Collect changed model ids
         id: changed_models
@@ -149,6 +157,7 @@ jobs:
           set -euo pipefail
 
           git show HEAD:packages/proxy/schema/model_list.json > "$RUNNER_TEMP/model_list.head.json"
+          cp packages/proxy/schema/model_list.json "$RUNNER_TEMP/model_list.pre-enrichment.json"
           pnpm exec tsx packages/proxy/scripts/collect_changed_model_ids.ts \
             --before "$RUNNER_TEMP/model_list.head.json" \
             --after "packages/proxy/schema/model_list.json" \
@@ -250,6 +259,12 @@ jobs:
       - name: Flush Braintrust trace
         if: always() && steps.claude_trace.outcome == 'success'
         run: bash .github/scripts/claude_trace/flush.sh
+
+      - name: Verify enrichment preserved top-level prices
+        if: ${{ steps.changed_models.outputs.count != '0' }}
+        run: |
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts check-enrichment-prices \
+            --before "$RUNNER_TEMP/model_list.pre-enrichment.json"
 
       - name: Canonicalize model list and equivalent models after metadata enrichment
         if: ${{ steps.changed_models.outputs.count != '0' }}

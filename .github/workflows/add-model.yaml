@@ -11,12 +11,16 @@ on:
         description: "Exact provider model slug"
         required: true
         type: string
+      refresh:
+        description: "Regenerate the existing open add-model PR"
+        type: boolean
+        default: false
   repository_dispatch:
     types:
       - add-model
 
 concurrency:
-  group: add-model
+  group: add-model-${{ github.event_name == 'repository_dispatch' && github.event.client_payload.provider || inputs.provider }}/${{ github.event_name == 'repository_dispatch' && github.event.client_payload.model_slug || inputs.model_slug }}
   cancel-in-progress: false
 
 permissions:
@@ -24,31 +28,23 @@ permissions:
   pull-requests: write
 
 jobs:
-  add:
+  target:
     runs-on: ubuntu-latest
-    env:
-      # Route Claude Code through the Braintrust gateway. The gateway
-      # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
-      # passed as anthropic_api_key below) and calls the provider on our behalf.
-      # https://docs.braintrust.dev/deploy/gateway
-      ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
-      # Attribute gateway spend to the automations-spend-control project.
-      ANTHROPIC_CUSTOM_HEADERS: |-
-        x-bt-project-name: automations-spend-control
-        x-bt-spend-control-tags: {"job_name":"add-model"}
-
+    permissions:
+      pull-requests: read
+    outputs:
+      branch: ${{ steps.target.outputs.branch }}
+      provider: ${{ steps.target.outputs.provider }}
+      model_slug: ${{ steps.target.outputs.model_slug }}
+      proceed: ${{ steps.target.outputs.proceed }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 0
-
-      - name: Validate target model
+      - name: Validate target model and check for an open generated PR
         id: target
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           INPUT_PROVIDER: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.provider || inputs.provider }}
           INPUT_MODEL_SLUG: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.model_slug || inputs.model_slug }}
+          MANUAL_REFRESH: ${{ github.event_name == 'workflow_dispatch' && inputs.refresh }}
         with:
           script: |
             const providers = new Set([
@@ -69,8 +65,8 @@ jobs:
               "vertex",
               "xai",
             ]);
-            const provider = (process.env.INPUT_PROVIDER || "").trim().toLowerCase();
-            const modelSlug = (process.env.INPUT_MODEL_SLUG || "").trim();
+            const provider = (process.env.INPUT_PROVIDER || "").toLowerCase();
+            const modelSlug = process.env.INPUT_MODEL_SLUG || "";
             // Baseten lists this nonexistent model; block API and agent additions.
             if (modelSlug === "deepseek-ai/DeepSeek-V4.1-Flash-Fast") {
               throw new Error(`Blocked model slug: ${modelSlug} (not a real model)`);
@@ -90,10 +86,48 @@ jobs:
               .replace(/[^a-z0-9]+/g, "-")
               .replace(/^-+|-+$/g, "")
               .slice(0, 80);
-            // Reuse the target's branch so repeated runs update its open PR.
-            core.setOutput("branch", `chore/add-model-${provider}-${branchSlug}`);
+            const branch = `chore/add-model-${provider}-${branchSlug}`;
+            core.setOutput("branch", branch);
             core.setOutput("provider", provider);
             core.setOutput("model_slug", modelSlug);
+            if (process.env.MANUAL_REFRESH !== "true") {
+              const { owner, repo } = context.repo;
+              const { data: pulls } = await github.rest.pulls.list({
+                owner,
+                repo,
+                state: "open",
+                base: "main",
+                head: `${owner}:${branch}`,
+                per_page: 1,
+              });
+              if (pulls.length > 0) {
+                core.notice(`Skipping ${provider}/${modelSlug}: generated PR #${pulls[0].number} is open.`);
+                core.setOutput("proceed", "false");
+                return;
+              }
+            }
+            core.setOutput("proceed", "true");
+
+  add:
+    needs: target
+    if: needs.target.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    env:
+      # Route Claude Code through the Braintrust gateway. The gateway
+      # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
+      # passed as anthropic_api_key below) and calls the provider on our behalf.
+      # https://docs.braintrust.dev/deploy/gateway
+      ANTHROPIC_BASE_URL: https://gateway.braintrust.dev
+      # Attribute gateway spend to the automations-spend-control project.
+      ANTHROPIC_CUSTOM_HEADERS: |-
+        x-bt-project-name: automations-spend-control
+        x-bt-spend-control-tags: {"job_name":"add-model"}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -124,7 +158,7 @@ jobs:
         id: priced_endpoint
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
-          PROVIDER: ${{ steps.target.outputs.provider }}
+          PROVIDER: ${{ needs.target.outputs.provider }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
@@ -139,10 +173,10 @@ jobs:
             core.setOutput("available", String(endpointAvailable));
 
       - name: Add from Groq's priced model endpoint
-        if: steps.target.outputs.provider == 'groq' && steps.priced_endpoint.outputs.available == 'true'
+        if: needs.target.outputs.provider == 'groq' && steps.priced_endpoint.outputs.available == 'true'
         shell: bash
         env:
-          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          INPUT_MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           set -euo pipefail
@@ -152,10 +186,10 @@ jobs:
             --write
 
       - name: Add from Baseten's priced model endpoint
-        if: steps.target.outputs.provider == 'baseten' && steps.priced_endpoint.outputs.available == 'true'
+        if: needs.target.outputs.provider == 'baseten' && steps.priced_endpoint.outputs.available == 'true'
         shell: bash
         env:
-          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          INPUT_MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
           BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
         run: |
           set -euo pipefail
@@ -165,10 +199,10 @@ jobs:
             --write
 
       - name: Add from xAI's priced model endpoint
-        if: steps.target.outputs.provider == 'xai' && steps.priced_endpoint.outputs.available == 'true'
+        if: needs.target.outputs.provider == 'xai' && steps.priced_endpoint.outputs.available == 'true'
         shell: bash
         env:
-          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          INPUT_MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: |
           set -euo pipefail
@@ -178,10 +212,10 @@ jobs:
             --write
 
       - name: Add from Cerebras's priced model endpoint
-        if: steps.target.outputs.provider == 'cerebras' && steps.priced_endpoint.outputs.available == 'true'
+        if: needs.target.outputs.provider == 'cerebras' && steps.priced_endpoint.outputs.available == 'true'
         shell: bash
         env:
-          INPUT_MODEL_SLUG: ${{ steps.target.outputs.model_slug }}
+          INPUT_MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
         run: |
           set -euo pipefail
 
@@ -213,7 +247,7 @@ jobs:
         timeout-minutes: 12
         env:
           BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
-          BT_TRACE_ROOT_NAME: ${{ steps.target.outputs.provider }}/${{ steps.target.outputs.model_slug }} · run ${{ github.run_number }}
+          BT_TRACE_ROOT_NAME: ${{ needs.target.outputs.provider }}/${{ needs.target.outputs.model_slug }} · run ${{ github.run_number }}
         uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
           anthropic_api_key: ${{ secrets.BRAINTRUST_AGENT_SPEND_API_KEY }}
@@ -231,8 +265,8 @@ jobs:
 
             Add the requested model and all cloud companion entries established by prior models in the same family to the Braintrust proxy catalog.
 
-            - Provider: `${{ steps.target.outputs.provider }}`
-            - Model slug: `${{ steps.target.outputs.model_slug }}`
+            - Provider: `${{ needs.target.outputs.provider }}`
+            - Model slug: `${{ needs.target.outputs.model_slug }}`
             - A priced endpoint already added or updated the target: `${{ steps.direct_changes.outputs.changed }}`
 
             # Scope
@@ -253,6 +287,7 @@ jobs:
             3. Unless a priced endpoint already added or updated the target, find the provider's official public on-demand pricing for this exact target model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
             4. Add a complete, schema-valid target entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
                Verify token limits already populated by a provider script as well. Use the exact model or documented snapshot's explicit input and output caps, and check them against the total context window. If the sources conflict, report the conflict and cite the sources in the model validation prompt.
+               For capability flags, use only official evidence for the exact model ID on the specific provider and inference surface (e.g. Fireworks Serverless, not a dedicated deployment). Do not inherit capabilities from the base model or a companion. Explicit provider negatives win over positives; omit unsupported or uncertain flags, including flags from earlier sync steps.
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
             6. For the target and every new or existing companion, add or refresh provider/tier `pricing` following `.github/model-pricing.md`, even when a priced endpoint handled the target or the model already exists.
                Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Do not apply the standard-price companion assumptions to tier prices. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
@@ -287,6 +322,8 @@ jobs:
 
             If you added or changed any catalog entries, write a model validation prompt for the target and its cloud companions to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
 
+            Write a JSON array to `${{ runner.temp }}/model-capability-evidence.json` (empty if there are no claims). For each new true `multimodal`, `o1_like`, `reasoning`, `reasoning_budget`, `supports_streaming`, `supports_decisions`, or `streaming_only` flag, and each such flag on a newly added provider, include one record per official source checked: `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"exact documented inference surface","capability":"catalog field","supported":true,"source":"https://...","quote":"verbatim evidence"}`. For Fireworks, use `"surface":"serverless"`. Include any conflicting negative as `"supported":false`. A model-family description or a different provider/surface is not evidence.
+
             # Final report
 
             List every official URL checked and, for each requested model, state:
@@ -298,7 +335,7 @@ jobs:
             - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and
             - if no change was made, the specific target requirement that remains unresolved.
 
-            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files and the model validation prompt file.
+            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files, model validation prompt, and capability evidence file.
 
       - name: Flush Braintrust trace
         if: always() && steps.claude_trace.outcome == 'success'
@@ -307,6 +344,8 @@ jobs:
       - name: Verify research completed without errors
         env:
           EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+          CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
         run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check whether the target changed the catalog
@@ -351,7 +390,7 @@ jobs:
 
       - name: Validate model schema
         if: steps.changes.outputs.changed == 'true'
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/check_model_research.test.ts
 
       - name: Check model display names
         if: steps.changes.outputs.changed == 'true'
@@ -394,7 +433,7 @@ jobs:
         with:
           token: ${{ github.token }}
           base: main
-          branch: ${{ steps.target.outputs.branch }}
+          branch: ${{ needs.target.outputs.branch }}
           commit-message: "chore: add model to catalog"
           title: "chore: add model to catalog"
           body-path: ${{ runner.temp }}/pr-body.md

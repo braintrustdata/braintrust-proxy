@@ -373,8 +373,28 @@ jobs:
           FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
         run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
+      - name: Check expected files only
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -z "$(git status --short)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected files modified:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
       - name: Report blocked model
-        if: success() && steps.research.outcome == 'success' && steps.catalog_changes.outputs.changed != 'true'
+        if: success() && steps.research.outcome == 'success' && steps.changes.outputs.changed == 'false'
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
           PROVIDER: ${{ needs.target.outputs.provider }}
@@ -440,26 +460,6 @@ jobs:
               ].join("\n"),
               labels: ["autofix-blocked"],
             });
-
-      - name: Check expected files only
-        id: changes
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [ -z "$(git status --short)" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          unexpected=$(git status --porcelain | awk '{print $2}' | grep -vE '^(packages/proxy/schema/model_list\.json|packages/proxy/schema/index\.ts)$' || true)
-          if [ -n "$unexpected" ]; then
-            echo "Unexpected files modified:"
-            echo "$unexpected"
-            exit 1
-          fi
-
-          echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Build proxy package
         if: steps.changes.outputs.changed == 'true'

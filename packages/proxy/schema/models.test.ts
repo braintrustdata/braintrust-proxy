@@ -416,6 +416,18 @@ it("keeps equivalent model references within the catalog", () => {
   }
 });
 
+// Preserve base pricing through the parsed catalog that serves the model list API.
+it.each([
+  ["gpt-6.1-sol", "openai", "api.openai.com"],
+  ["gpt-6.2-sol", "openai", "api.openai.com"],
+  ["claude-opus-5-5", "anthropic", "api.anthropic.com"],
+])("keeps the base pricing endpoint for %s", (model, provider, api_host) => {
+  expect(getAvailableModels()[model].base_pricing).toEqual({
+    provider,
+    api_host,
+  });
+});
+
 it("Uses available providers for Fireworks model endpoint types", () => {
   expect(getModelEndpointTypes("accounts/fireworks/models/minimax-m3")).toEqual(
     ["fireworks"],

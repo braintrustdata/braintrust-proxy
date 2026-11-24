@@ -16687,7 +16687,6 @@
     "displayName": "Claude Haiku 4.5",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-10-15",
     "fallback_models": [
       "publishers/anthropic/models/claude-haiku-4-5"
     ],
@@ -16710,7 +16709,6 @@
     "displayName": "Claude Haiku 4.5 (2025-10-01)",
     "reasoning": true,
     "reasoning_budget": true,
-    "deprecation_date": "2026-10-15",
     "parent": "claude-haiku-4-5",
     "max_input_tokens": 200000,
     "max_output_tokens": 64000,

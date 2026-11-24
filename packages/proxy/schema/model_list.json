@@ -31375,9 +31375,6 @@
   "databricks-inkling-2-small": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.3,
-    "output_cost_per_mil_tokens": 1,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Inkling 2 Small",
     "available_providers": [
       "databricks"

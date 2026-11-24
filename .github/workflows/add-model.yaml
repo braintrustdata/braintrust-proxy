@@ -389,7 +389,7 @@ jobs:
             const modelSlug = process.env.MODEL_SLUG;
             const runUrl = process.env.RUN_URL;
             const executionFile = process.env.EXECUTION_FILE;
-            const title = `add-model could not add ${provider}/${modelSlug}`;
+            const title = `add-model could not add ${modelSlug} (${provider})`;
             let report = "No final report was available.";
 
             if (executionFile && fs.existsSync(executionFile)) {
@@ -409,6 +409,7 @@ jobs:
               owner,
               repo,
               state: "open",
+              labels: "autofix-blocked",
               per_page: 100,
             });
             const existingIssue = issues.find(

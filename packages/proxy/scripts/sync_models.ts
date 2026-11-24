@@ -2480,6 +2480,51 @@ export function applyOpenRouterPricing(
   return changed ? updated : null;
 }
 
+const topLevelPriceKeys = Object.keys(ModelSchema.shape).filter((key) =>
+  /_cost_per_(?:mil_)?tokens?$/.test(key),
+) as (keyof ModelSpec)[];
+
+function topLevelPrices(model: ModelSpec | undefined) {
+  return Object.fromEntries(
+    topLevelPriceKeys
+      .filter((key) => model?.[key] !== undefined)
+      .map((key) => [key, model?.[key]]),
+  );
+}
+
+export function openRouterPriceAuditEntry(
+  model: string,
+  before: ModelSpec | undefined,
+  after: ModelSpec,
+  directory: OpenRouterModel,
+) {
+  return {
+    model,
+    provider: "openrouter",
+    oldPrices: before ? topLevelPrices(before) : null,
+    newPrices: topLevelPrices(after),
+    directory,
+  };
+}
+
+export function assertUnchangedTopLevelPrices(
+  before: LocalModelList,
+  after: LocalModelList,
+): void {
+  const changed = [];
+  for (const name of new Set([...Object.keys(before), ...Object.keys(after)])) {
+    for (const key of topLevelPriceKeys) {
+      if (before[name]?.[key] !== after[name]?.[key])
+        changed.push(`${name}.${key}`);
+    }
+  }
+  if (changed.length) {
+    throw new Error(
+      `Enrichment changed top-level prices:\n${changed.join("\n")}`,
+    );
+  }
+}
+
 async function findMissingCommand(argv: any) {
   try {
     console.log("Fetching remote models from:", REMOTE_MODEL_URL);
@@ -3651,6 +3696,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
   try {
     console.log("Fetching OpenRouter models from:", OPENROUTER_MODEL_URL);
     const openRouterModels = await fetchOpenRouterModels();
+    const fetchedAt = new Date().toISOString();
     console.log(`Fetched ${openRouterModels.length} OpenRouter models.`);
 
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -3662,6 +3708,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
     const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
     const providerUnions: string[] = [];
     const pricingUpdates: string[] = [];
+    const priceAudit: ReturnType<typeof openRouterPriceAuditEntry>[] = [];
     // Full-slug openrouter-only entries removed because a canonical key (served
     // by a first-class provider) now exists for the same model.
     const migratedSlugs: string[] = [];
@@ -3731,6 +3778,14 @@ async function syncOpenRouterModelsCommand(argv: any) {
           if (priced) {
             localModels[target] = priced;
             pricingUpdates.push(target);
+            priceAudit.push(
+              openRouterPriceAuditEntry(
+                target,
+                existing,
+                priced,
+                openRouterModel,
+              ),
+            );
             console.log(`  [PRICING] refresh OpenRouter pricing on ${target}`);
           }
         }
@@ -3778,14 +3833,25 @@ async function syncOpenRouterModelsCommand(argv: any) {
       // No first-class provider serves this model — add a new openrouter-only
       // entry keyed by the full slug. stablyOrderByExisting sinks it to the
       // bottom of the catalog for display ordering.
-      modelsToAdd.push({
-        name: slug,
-        model: convertOpenRouterToLocalModel(openRouterModel),
-      });
+      const model = convertOpenRouterToLocalModel(openRouterModel);
+      modelsToAdd.push({ name: slug, model });
+      priceAudit.push(
+        openRouterPriceAuditEntry(slug, undefined, model, openRouterModel),
+      );
       console.log(`  [NEW] ${slug} (openrouter-only)`);
     }
 
     console.log(`\nSkipped ${variantSkipped} variant slug(s).`);
+    if (argv["price-audit"]) {
+      await fs.promises.writeFile(
+        argv["price-audit"],
+        JSON.stringify(
+          { source: OPENROUTER_MODEL_URL, fetchedAt, entries: priceAudit },
+          null,
+          2,
+        ) + "\n",
+      );
+    }
 
     if (
       modelsToAdd.length === 0 &&
@@ -4353,15 +4419,32 @@ async function main() {
       "sync-openrouter",
       "Sync the catalog against OpenRouter's /api/v1/models. Unions the openrouter provider into models we already carry (matched by stripped canonical id or full slug); models no first-class provider serves are added as new full-slug entries sunk to the bottom of the catalog. Skips :variant slugs. The endpoint is public; no API key required.",
       (y) => {
-        return y.option("write", {
-          type: "boolean",
-          description:
-            "Write the new models and provider mappings to model_list.json / index.ts",
-          default: false,
-        });
+        return y
+          .option("price-audit", {
+            type: "string",
+            description:
+              "Write directory evidence for top-level price changes to this JSON file",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write the new models and provider mappings to model_list.json / index.ts",
+            default: false,
+          });
       },
       async (argv) => {
         await syncOpenRouterModelsCommand(argv);
+      },
+    )
+    .command(
+      "check-enrichment-prices",
+      "Fail if metadata enrichment changed any top-level catalog price",
+      (y) => y.option("before", { type: "string", demandOption: true }),
+      async (argv) => {
+        assertUnchangedTopLevelPrices(
+          JSON.parse(await fs.promises.readFile(argv.before, "utf8")),
+          JSON.parse(await fs.promises.readFile(LOCAL_MODEL_LIST_PATH, "utf8")),
+        );
       },
     )
     .command(

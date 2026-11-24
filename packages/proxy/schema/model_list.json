@@ -237,6 +237,14 @@
       "azure"
     ]
   },
+  "gpt-6.2-astra-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6.2 Astra Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6.2-sol-healthcare": {
     "format": "openai",
     "flavor": "chat",
@@ -742,6 +750,14 @@
       "openrouter"
     ]
   },
+  "gpt-6.1-sol-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6.1 Sol Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6.1-terra": {
     "format": "openai",
     "flavor": "chat",
@@ -1189,6 +1205,14 @@
     "available_providers": [
       "openai",
       "azure"
+    ]
+  },
+  "gpt-6-astra-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6 Astra Healthcare",
+    "available_providers": [
+      "openai"
     ]
   },
   "gpt-6-cyber": {

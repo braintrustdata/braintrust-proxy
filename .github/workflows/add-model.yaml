@@ -235,6 +235,9 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
+          mkdir -p "$RUNNER_TEMP/pre-research-catalog"
+          cp packages/proxy/schema/{model_list.json,index.ts} "$RUNNER_TEMP/pre-research-catalog/"
+
       - name: Set up Braintrust Claude Code tracing
         id: claude_trace
         continue-on-error: true
@@ -280,17 +283,17 @@ jobs:
 
             # Research and entry requirements
 
-            Exception to all pricing requirements and leave-unchanged rules below: voice, speech, realtime, and live models with officially verified non-token pricing (for example, per-minute pricing) may be added without pricing fields, following existing unpriced entries such as `gpt-live-1`. Apply this exception to their companions too. Still verify model availability and flavor; never guess prices or convert non-token rates to token prices. All other pricing rules remain unchanged.
+            Voice, speech, realtime, and live models with officially verified non-token pricing (for example, per-minute pricing) may be added without token prices. Never convert non-token rates to token prices.
 
             1. Read neighboring entries plus `packages/proxy/schema/models.ts`, `packages/proxy/schema/index.ts`, and `.github/model-pricing.md` to match the catalog schema and provider-mapping conventions.
-            2. Unless a priced endpoint already added or updated the target, verify that the requested target model is publicly available through the requested provider's shared inference surface using official provider sources. The cloud-companion assumptions below are an explicit exception for availability, IDs, and standard prices.
-            3. Unless a priced endpoint already added or updated the target, find the provider's official public on-demand pricing for this exact target model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
+            2. Unless a priced endpoint already added or updated the target, verify that the requested target model is publicly available through the requested provider's shared inference surface using official provider sources. The cloud-companion assumptions below are an explicit exception for availability and IDs only.
+            3. Unless a priced endpoint already added or updated the target, look up official public on-demand pricing for the exact model, provider, and inference surface. Apply the same rule independently to each companion, including regional variants. Add only top-level prices verified by an official source for that provider and omit unverified fields. Never copy prices from another provider, surface, or model, or use third-party sources, free tiers, batch pricing, promotional pricing, or reserved capacity. Preserve existing prices on unchanged routes. If adding a route to a priced entry, verify existing default prices for the new route too; omit any prices that do not apply across the entry's routes.
             4. Add a complete, schema-valid target entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
                Verify token limits already populated by a provider script as well. Use the exact model or documented snapshot's explicit input and output caps, and check them against the total context window. If the sources conflict, report the conflict and cite the sources in the model validation prompt.
                For capability flags, use only official evidence for the exact model ID on the specific provider and inference surface (e.g. Fireworks Serverless, not a dedicated deployment). Do not inherit capabilities from the base model or a companion. Explicit provider negatives win over positives; omit unsupported or uncertain flags, including flags from earlier sync steps.
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
             6. For the target and every new or existing companion, add or refresh provider/tier `pricing` following `.github/model-pricing.md`, even when a priced endpoint handled the target or the model already exists.
-               Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Do not apply the standard-price companion assumptions to tier prices. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
+               Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
             7. Verify the target's flavor against official model documentation even if it already exists or a priced endpoint handled it. Decision targets and all their companion entries must have `flavor: "decisions"`. Use each provider's documented format; do not assume every decision model uses the `typesafe` format. Set `supports_decisions` only when official documentation confirms support for the schema's `POST /v1/decisions` capability.
             8. Include a verified, human-friendly `displayName` for new entries other than `ft:` pricing templates. Check official pricing, deprecation, and changelog pages as well as model cards; a missing model card does not mean the exact ID or name is undocumented. Leave the name unset if it cannot be verified rather than guessing.
 
@@ -299,14 +302,12 @@ jobs:
             After the target entry exists, always add its cloud companions, including when a priced endpoint handled the target or the target was already present. This is part of adding the model, not optional follow-up research.
 
             - Read prior models in the same family and follow every established cloud/provider surface for that family, including Bedrock, Vertex, OpenRouter, Azure, and Databricks wherever prior entries establish a convention. Do not invent a new provider integration for a family with no prior entries.
-            - Assume the new model is available on those established surfaces. Derive each exact catalog slug by applying the same transformation used for previous models in that family. Do not wait for cloud documentation, an API listing, region access, credentials, or an independent standard-price confirmation. These availability, slug, and standard-price assumptions are explicitly authorized for cloud companions.
+            - Assume the new model is available on those established surfaces. Derive each exact catalog slug by applying the same transformation used for previous models in that family. Do not wait for cloud documentation, an API listing, region access, or credentials to establish availability. These availability and slug assumptions are explicitly authorized for cloud companions.
             - For modern Claude models with fixed, undated IDs, follow the current Claude 5.5 conventions: `anthropic.<target-slug>` on Bedrock; `global.`, `us.`, `eu.`, `au.`, and `jp.` Bedrock variants; `publishers/anthropic/models/<target-slug>` on Vertex; and `anthropic/claude-<family>-<major>.<minor>` on OpenRouter. Match modern undated examples rather than introducing legacy date or `-v1:0` suffixes. For other model families or version styles, use their own previous cloud entries rather than the Claude transformation.
-            - Assume standard prices are identical to the target model on every companion surface. Copy all top-level standard pricing fields, including input, output, cache-read, cache-write, 5m, 30m, 1h, and 12h cache-write prices when present. Give regional variants the same standard prices too; do not apply provider or region premiums, omit known standard prices, or fetch separate standard cloud pricing.
-            - Standard pricing must be written explicitly on EVERY entry for this model: the target, provider base entries, global entries, all regional entries, and both new and already-existing companions. `parent` is lifecycle metadata and does not provide pricing inheritance. An existing companion is not complete until it has every top-level standard pricing field present on the target, with the same values. Before finishing, compare all standard pricing fields across every companion and fill or correct any missing or differing values. Do not rely on normalization to fill prices.
             - Copy the target's flavor, token limits and capabilities; use each provider's established format, provider metadata, and display-name conventions. Preserve existing companion providers and unrelated metadata. Do not copy the target's provider list, parent, fallback links, or provider-specific lifecycle/region fields blindly.
             - Add every companion's provider mapping in `packages/proxy/schema/index.ts`. Set regional Bedrock entries' parent to the Bedrock base entry. Union all companion IDs into the target's `fallback_models`, preserving existing links and avoiding duplicates. Never leave a fallback pointing to a missing entry.
             - If the request itself names a cloud/provider-specific slug, identify the underlying model using prior family entries and complete the same family of companion entries. Do not double-prefix an already qualified slug.
-            - If no target entry can be added because its original availability or pricing remains unresolved, leave the catalog unchanged and explain why. Do not create cloud companions without a target entry.
+            - If no target entry can be added because its original availability remains unresolved, leave the catalog unchanged and explain why. Do not create cloud companions without a target entry.
 
             # Canonical provider verification
 
@@ -316,13 +317,15 @@ jobs:
             - **Anthropic**: Always inspect `https://platform.claude.com/docs/en/about-claude/pricing` and follow the relevant official model documentation linked from that page.
             - **Google Gemini**: Always inspect `https://ai.google.dev/gemini-api/docs/pricing`, follow the relevant official model documentation linked from that page, and verify that the pricing applies to the requested Gemini API model and usage tier.
 
-            These availability and standard-pricing verification rules apply to the requested target, not to cloud companions generated under the assumptions above. Search engines are discovery aids only. Do not conclude that a model is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify exact model availability and standard pricing from the applicable canonical provider page and its linked official documentation. If the exact model, requested provider inference surface, or standard pricing still cannot be verified after those direct checks, do not guess and leave the catalog unchanged.
+            Search engines are discovery aids only. Do not conclude that the target is unavailable merely because a general search returned no results, a site-restricted search did not find it, another marketing or pricing page omitted it, or a newly published page may not yet be indexed. Verify the exact target model and requested inference surface from the canonical provider page and its linked official documentation. Omit any standard price without an exact-provider source.
 
             # Model validation prompt
 
             If you added or changed any catalog entries, write a model validation prompt for the target and its cloud companions to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
 
             Write a JSON array to `${{ runner.temp }}/model-capability-evidence.json` (empty if there are no claims). For each new true `multimodal`, `o1_like`, `reasoning`, `reasoning_budget`, `supports_streaming`, `supports_decisions`, or `streaming_only` flag, and each such flag on a newly added provider, include one record per official source checked: `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"exact documented inference surface","capability":"catalog field","supported":true,"source":"https://...","quote":"verbatim evidence"}`. For Fireworks, use `"surface":"serverless"`. Include any conflicting negative as `"supported":false`. A model-family description or a different provider/surface is not evidence.
+
+            Write a JSON array to `${{ runner.temp }}/model-price-evidence.json` (empty if there are no claims). For each new or changed top-level price, include one record per provider route: `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"exact documented inference surface","field":"input_cost_per_mil_tokens","value":0.30,"source":"https://official-provider-page","quote":"verbatim evidence"}`. Use the numeric value in catalog units. When adding a provider route to an entry with an existing top-level price, include a record for the new route too. No records are needed for unchanged prices on unchanged routes, including prices populated by a priced endpoint before research.
 
             # Final report
 
@@ -332,21 +335,14 @@ jobs:
             - which flavor was assigned and the official source supporting that classification;
             - where pricing was found;
             - whether the pricing matches the requested provider and inference surface;
-            - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and
+            - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions; and
             - if no change was made, the specific target requirement that remains unresolved.
 
-            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files, model validation prompt, and capability evidence file.
+            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files, model validation prompt, and evidence files.
 
       - name: Flush Braintrust trace
         if: always() && steps.claude_trace.outcome == 'success'
         run: bash .github/scripts/claude_trace/flush.sh
-
-      - name: Verify research completed without errors
-        env:
-          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
-          CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
-          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
-        run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check whether the target changed the catalog
         id: catalog_changes
@@ -363,6 +359,15 @@ jobs:
       - name: Canonicalize model list and provider index
         if: steps.catalog_changes.outputs.changed == 'true'
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+
+      - name: Verify research and evidence
+        env:
+          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+          CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
+          PRICE_EVIDENCE_FILE: ${{ runner.temp }}/model-price-evidence.json
+          PRE_RESEARCH_CATALOG_DIR: ${{ runner.temp }}/pre-research-catalog
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+        run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check expected files only
         id: changes

@@ -734,6 +734,17 @@
       "openrouter"
     ]
   },
+  "gpt-6.1-sol-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "displayName": "GPT-6.1 Sol Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6.1-terra": {
     "format": "openai",
     "flavor": "chat",

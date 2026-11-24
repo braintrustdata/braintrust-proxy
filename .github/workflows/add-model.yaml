@@ -112,6 +112,10 @@ jobs:
     needs: target
     if: needs.target.outputs.proceed == 'true'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     env:
       # Route Claude Code through the Braintrust gateway. The gateway
       # authenticates with a Braintrust API key (BRAINTRUST_AGENT_SPEND_API_KEY,
@@ -389,6 +393,74 @@ jobs:
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
+      - name: Report blocked model
+        if: success() && steps.research.outcome == 'success' && steps.changes.outputs.changed == 'false'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PROVIDER: ${{ needs.target.outputs.provider }}
+          MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+        with:
+          script: |
+            const fs = require("fs");
+            const { owner, repo } = context.repo;
+            const provider = process.env.PROVIDER;
+            const modelSlug = process.env.MODEL_SLUG;
+            const runUrl = process.env.RUN_URL;
+            const executionFile = process.env.EXECUTION_FILE;
+            const title = `add-model could not add ${modelSlug} (${provider})`;
+            let report = "No final report was available.";
+
+            if (executionFile && fs.existsSync(executionFile)) {
+              const execution = JSON.parse(fs.readFileSync(executionFile, "utf8"));
+              const result = Array.isArray(execution)
+                ? execution.filter((entry) => entry?.type === "result").at(-1)?.result
+                : undefined;
+              if (typeof result === "string") {
+                report =
+                  result.length > 20_000
+                    ? `${result.slice(0, 20_000)}\n\n[Report truncated at 20,000 characters.]`
+                    : result;
+              }
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner,
+              repo,
+              state: "open",
+              labels: "autofix-blocked",
+              per_page: 100,
+            });
+            const existingIssue = issues.find(
+              (issue) => !issue.pull_request && issue.title === title,
+            );
+
+            if (existingIssue) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: existingIssue.number,
+                body: `Another add-model attempt ran: ${runUrl}`,
+              });
+              return;
+            }
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body: [
+                `Workflow run: ${runUrl}`,
+                "",
+                "Agent final report:",
+                report,
+                "",
+                "Close this issue to let the model-drop watcher retry.",
+              ].join("\n"),
+              labels: ["autofix-blocked"],
+            });
+
       - name: Build proxy package
         if: steps.changes.outputs.changed == 'true'
         run: pnpm --filter @braintrust/proxy run build
@@ -453,8 +525,8 @@ jobs:
           token: ${{ github.token }}
           base: main
           branch: ${{ needs.target.outputs.branch }}
-          commit-message: "chore: add model to catalog"
-          title: "chore: add model to catalog"
+          commit-message: "chore(catalog): add ${{ needs.target.outputs.provider }}/${{ needs.target.outputs.model_slug }}"
+          title: "chore(catalog): add ${{ needs.target.outputs.provider }}/${{ needs.target.outputs.model_slug }}"
           body-path: ${{ runner.temp }}/pr-body.md
           labels: auto-sync
           signoff: false

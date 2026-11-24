@@ -9,6 +9,7 @@ import {
   checkModelPrices,
   checkModelResearch,
   providerCapabilityLookup,
+  readEvidenceFile,
 } from "./check_model_research";
 
 const success = { type: "result", subtype: "success", is_error: false };

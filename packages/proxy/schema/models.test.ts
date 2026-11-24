@@ -63,6 +63,9 @@ it("preserves top-level prices when tier pricing is absent or null", () => {
     input_cache_write_30m_cost_per_mil_tokens: 2.5,
     input_cache_write_1h_cost_per_mil_tokens: 4,
     input_cache_write_12h_cost_per_mil_tokens: null,
+    input_audio_cost_per_mil_tokens: 4,
+    output_audio_cost_per_mil_tokens: 8,
+    input_audio_cache_read_cost_per_mil_tokens: 1,
   };
   expect(ModelSchema.parse(base)).toEqual(base);
   const model = { ...base, pricing: null };
@@ -126,6 +129,9 @@ it.each(PricingTiers)("preserves %s rates and all cache TTL prices", (tier) => {
     input_cache_write_30m_cost_per_mil_tokens: null,
     input_cache_write_1h_cost_per_mil_tokens: 2,
     input_cache_write_12h_cost_per_mil_tokens: 2.5,
+    input_audio_cost_per_mil_tokens: 2,
+    output_audio_cost_per_mil_tokens: 5,
+    input_audio_cache_read_cost_per_mil_tokens: 0.5,
     endpoints: ["provider.example"],
     supported_regions: ["global"],
     inference_geo: "us",

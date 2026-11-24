@@ -74,6 +74,9 @@ const tokenPricingSchema = z.object({
     .nullish()
     .describe("Total cache-write token price for the default TTL."),
   ...cacheWritePricingShape,
+  input_audio_cost_per_mil_tokens: z.number().nullish(),
+  output_audio_cost_per_mil_tokens: z.number().nullish(),
+  input_audio_cache_read_cost_per_mil_tokens: z.number().nullish(),
 });
 
 export const PricingRateSchema = tokenPricingSchema.extend({
@@ -165,7 +168,7 @@ export const ModelSchema = z.object({
   output_cost_per_token: z.number().nullish(),
   ...tokenPricingSchema.shape,
   pricing: ModelPricingSchema.nullish().describe(
-    "Verified USD prices per million text tokens, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
+    "Verified USD prices per million tokens of the field's modality, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
   ),
   displayName: z
     .string()

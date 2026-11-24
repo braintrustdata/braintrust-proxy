@@ -25,6 +25,7 @@ Batch API support and synchronous service-tier support are separate checks.
   Set every TTL-specific cache-write price the provider publishes for the model and tier, and update them whenever the default cache-write price changes.
   For OpenRouter Gemini, the endpoint's `input_cache_write` price is a storage surcharge.
   Add it to the applicable `prompt` price, including prompt-length overrides, to record the [total cache-write price](https://openrouter.ai/docs/guides/best-practices/prompt-caching#google-gemini).
+  Use USD per million audio tokens for `input_audio_cost_per_mil_tokens`, `output_audio_cost_per_mil_tokens`, and `input_audio_cache_read_cost_per_mil_tokens`.
   Omit unknown prices; zero is a published price, not a placeholder.
   A missing provider/tier pair means support is unverified; it does not fall back to another tier or the top-level standard prices.
 - Record every documented condition using `endpoints`, `supported_regions`, `inference_geo`, `deployment_type`, `model_id`, `model_version`, `min_input_tokens`, `max_input_tokens`, `valid_from`, and `valid_until` as applicable.

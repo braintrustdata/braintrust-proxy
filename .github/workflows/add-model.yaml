@@ -325,6 +325,7 @@ jobs:
             If you added or changed any catalog entries, write a model validation prompt for the target and its cloud companions to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
 
             Write a JSON array to `${{ runner.temp }}/model-capability-evidence.json` (empty if there are no claims). For each new true `multimodal`, `o1_like`, `reasoning`, `reasoning_budget`, `supports_streaming`, `supports_decisions`, or `streaming_only` flag, and each such flag on a newly added provider, include one record per official source checked: `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"exact documented inference surface","capability":"catalog field","supported":true,"source":"https://...","quote":"verbatim evidence"}`. For Fireworks, use `"surface":"serverless"`. Include any conflicting negative as `"supported":false`. A model-family description or a different provider/surface is not evidence.
+            Quote a complete, verbatim provider statement that names the exact model ID and directly states whether it supports the feature (or requires streaming for `streaming_only`). For Fireworks, the statement itself must identify Serverless. Do not paraphrase or combine separate statements into a quote. Where available, the verifier also checks the provider's model metadata directly.
 
             Write a JSON array to `${{ runner.temp }}/model-price-evidence.json` (empty if there are no claims). Relative to the checked-out base commit, include one record per provider route for each new or changed top-level price, and one per existing top-level price for each new provider route. This includes prices and routes added by direct sync. Use `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"allowed route surface","field":"input_cost_per_mil_tokens","value":0.30,"source":"https://official-provider-page","quote":"verbatim evidence"}`. Read `pricingRoutes` in `packages/proxy/scripts/check_model_research.ts` for the surface names accepted for each catalog provider. The quote must identify the exact catalog model ID or its documented displayName, name the allowed surface, and put the price field label, USD amount, and token unit in the same clause (e.g. `$0.30 per million input tokens` or `Input: $0.0003 per 1K tokens`). Keep separate rates in separate clauses or lines and use the converted price in catalog units for `value`. Include only the relevant pricing row and its surface/header context from the same source. Omit any price without matching evidence. No records are needed for unchanged prices on unchanged routes.
 
@@ -367,6 +368,9 @@ jobs:
           CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
           PRICE_EVIDENCE_FILE: ${{ runner.temp }}/model-price-evidence.json
           FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
         run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check expected files only

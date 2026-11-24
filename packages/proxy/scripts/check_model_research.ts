@@ -8,6 +8,7 @@ import {
   parseIndexEndpointTypes,
 } from "./reconcile_provider_models";
 
+const providerType = z.enum(ModelEndpointType);
 const capability = z.enum([
   "multimodal",
   "o1_like",
@@ -43,7 +44,7 @@ const priceKeys = Object.keys(ModelSchema.shape).filter((key) =>
 const priceEvidenceSchema = z.array(
   z.object({
     model: z.string().min(1),
-    provider: z.enum(ModelEndpointType),
+    provider: providerType,
     surface: z.string().trim().min(1),
     field: z.string(),
     value: z.number().nonnegative(),
@@ -95,6 +96,12 @@ const pricingRoutes: Record<
   vertex: { domains: ["cloud.google.com"], surfaces: ["Vertex AI"] },
   xAI: { domains: ["x.ai"], surfaces: ["xAI API"] },
 };
+
+function isProviderHost(host: string, domains: string[]): boolean {
+  return domains.some(
+    (domain) => host === domain || host.endsWith(`.${domain}`),
+  );
+}
 
 type PricingCatalog = Record<
   string,
@@ -252,9 +259,7 @@ export function checkModelPrices(
             !route?.surfaces.some(
               (candidate) => candidate.toLowerCase() === surface,
             ) ||
-            !route.domains.some(
-              (domain) => host === domain || host.endsWith(`.${domain}`),
-            )
+            !isProviderHost(host, route.domains)
           )
             return false;
 
@@ -277,6 +282,101 @@ export function checkModelPrices(
   }
 }
 
+type CapabilityClaim = z.infer<typeof evidenceSchema>[number];
+
+const capabilityPhrase: Record<Capability, string> = {
+  multimodal: "(?:images? as (?:an? )?inputs?|(?:text and )?image inputs?)",
+  o1_like: "(?:(?:extended )?thinking|reasoning)(?: tokens)?",
+  reasoning: "(?:(?:extended )?thinking|reasoning)(?: tokens)?",
+  reasoning_budget:
+    "(?:(?:reasoning|thinking)(?: token)? budgets?|budget_tokens|thinking_budget)",
+  supports_streaming: "(?:native )?streaming(?: responses?)?",
+  supports_decisions: "(?:the )?(?:POST )?/v1/decisions(?: endpoint)?",
+  streaming_only: "streaming(?: to be enabled)?",
+};
+
+function normalizeQuote(text: string): string {
+  return text
+    .replace(/&(?:nbsp|#160|#xA0);/gi, " ")
+    .replace(/&(?:quot|#34);/gi, '"')
+    .replace(/&(?:apos|#39|#x27);/gi, "'")
+    .replace(/&amp;/gi, "&")
+    .replace(/[`"“”]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[.!?]$/, "");
+}
+
+function quoteSupportsClaim(claim: CapabilityClaim, quote: string): boolean {
+  if (!quote.startsWith(`${claim.model} `)) return false;
+  const assertion = quote.slice(claim.model.length + 1);
+  const verb = claim.capability === "streaming_only" ? "require" : "support";
+  const verbPhrase = claim.supported
+    ? claim.capability === "multimodal"
+      ? "(?:supports|accepts)"
+      : `${verb}s`
+    : `(?:does not|doesn't|doesn’t) ${verb}`;
+  const surface =
+    claim.provider === "fireworks" ? " on (?:Fireworks )?Serverless" : "";
+  return new RegExp(
+    `^${verbPhrase} ${capabilityPhrase[claim.capability]}${surface}$`,
+    "i",
+  ).test(assertion);
+}
+
+function sourceStatements(body: string): string[] {
+  return body
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<(script|style|head)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, "")
+    .replace(/<\/?(?:p|div|li|section|tr|br|h[1-6])\b[^>]*>/gi, "\n\n")
+    .replace(/<[^>]*>/g, "")
+    .split(/\r?\n\s*\r?\n|(?<=[.!?])\s+/)
+    .map(normalizeQuote);
+}
+
+function capabilitySourceLoader(): (
+  source: string,
+  provider: string,
+) => Promise<Set<string> | undefined> {
+  const cache = new Map<string, Promise<Set<string> | undefined>>();
+  async function load(source: string, provider: string) {
+    const parsed = providerType.safeParse(provider);
+    if (!parsed.success) return undefined;
+    const domains = pricingRoutes[parsed.data]?.domains;
+    if (!domains) return undefined;
+    let url = new URL(source);
+    const signal = AbortSignal.timeout(15_000);
+    for (let redirects = 0; redirects <= 3; redirects++) {
+      if (
+        url.protocol !== "https:" ||
+        url.port ||
+        url.username ||
+        url.password ||
+        !isProviderHost(url.hostname, domains)
+      ) {
+        return undefined;
+      }
+      const response = await fetch(url, { redirect: "manual", signal });
+      if (response.ok) return new Set(sourceStatements(await response.text()));
+      const location = response.headers.get("location");
+      if (response.status < 300 || response.status >= 400 || !location) {
+        return undefined;
+      }
+      url = new URL(location, url);
+    }
+    return undefined;
+  }
+  return (source, provider) => {
+    const key = `${provider} ${source}`;
+    let result = cache.get(key);
+    if (!result) {
+      result = load(source, provider).catch(() => undefined);
+      cache.set(key, result);
+    }
+    return result;
+  };
+}
+
 export async function checkModelCapabilities(
   before: Catalog,
   after: Catalog,
@@ -292,6 +392,18 @@ export async function checkModelCapabilities(
   },
 ): Promise<void> {
   const evidence = evidenceSchema.parse(rawEvidence);
+  const loadSource = capabilitySourceLoader();
+  async function hasEvidence(claims: CapabilityClaim[], supported: boolean) {
+    for (const claim of claims) {
+      if (claim.supported !== supported) continue;
+      const quote = normalizeQuote(claim.quote);
+      if (!quoteSupportsClaim(claim, quote)) continue;
+      if ((await loadSource(claim.source, claim.provider))?.has(quote)) {
+        return true;
+      }
+    }
+    return false;
+  }
   const beforeIndex = parseIndexEndpointTypes(providerMappings.before);
   const afterIndex = parseIndexEndpointTypes(providerMappings.after);
   for (const [model, entry] of Object.entries(after)) {
@@ -321,10 +433,10 @@ export async function checkModelCapabilities(
               claim.surface.toLowerCase() === "serverless"),
         );
         const structured = await structuredSupport(model, provider, flag);
-        if (structured === false || claims.some((claim) => !claim.supported)) {
+        if (structured === false || (await hasEvidence(claims, false))) {
           throw new Error(`${model} @ ${provider}: ${flag} is unsupported`);
         }
-        if (structured !== true && !claims.some((claim) => claim.supported)) {
+        if (structured !== true && !(await hasEvidence(claims, true))) {
           throw new Error(
             `${model} @ ${provider}: missing exact-provider evidence for ${flag}`,
           );
@@ -340,18 +452,10 @@ export async function checkModelCapabilities(
   }
 }
 
-async function providerCapability(
+async function fireworksCapability(
   model: string,
-  provider: string,
-  flag: Capability,
 ): Promise<boolean | undefined> {
-  if (
-    provider !== "fireworks" ||
-    flag !== "multimodal" ||
-    !/^accounts\/[^/]+\/models\/[^/]+$/.test(model)
-  ) {
-    return undefined;
-  }
+  if (!/^accounts\/[^/]+\/models\/[^/]+$/.test(model)) return undefined;
   const path = model.split("/").map(encodeURIComponent).join("/");
   const key = process.env.FIREWORKS_API_KEY;
   if (key) {
@@ -380,6 +484,100 @@ async function providerCapability(
       html,
     );
   return imageInput ? imageInput[1] === "Supported" : undefined;
+}
+
+const modelMetadata = z.object({
+  id: z.string(),
+  input_modalities: z.array(z.string()).optional(),
+  supported_features: z.array(z.string()).optional(),
+  supported_parameters: z.array(z.string()).optional(),
+  architecture: z
+    .object({ input_modalities: z.array(z.string()).optional() })
+    .optional(),
+  capabilities: z
+    .object({
+      vision: z.boolean().optional(),
+      reasoning: z.boolean().optional(),
+    })
+    .optional(),
+});
+
+const capabilityModelLists = new Map([
+  [
+    "baseten",
+    { url: "https://inference.baseten.co/v1/models", key: "BASETEN_API_KEY" },
+  ],
+  [
+    "groq",
+    { url: "https://api.groq.com/openai/v1/models", key: "GROQ_API_KEY" },
+  ],
+  [
+    "xAI",
+    {
+      url: "https://api.x.ai/v1/language-models",
+      key: "XAI_API_KEY",
+      list: "models",
+    },
+  ],
+  ["cerebras", { url: "https://api.cerebras.ai/public/v1/models" }],
+  ["openrouter", { url: "https://openrouter.ai/api/v1/models" }],
+]);
+
+export function providerCapabilityLookup() {
+  type Metadata = z.infer<typeof modelMetadata>;
+  const cache = new Map<string, Promise<Map<string, Metadata> | undefined>>();
+  async function load(provider: string) {
+    const endpoint = capabilityModelLists.get(provider);
+    if (!endpoint) return undefined;
+    const key = endpoint.key ? process.env[endpoint.key] : undefined;
+    if (endpoint.key && !key) return undefined;
+    const response = await fetch(endpoint.url, {
+      headers: key ? { Authorization: `Bearer ${key}` } : {},
+      redirect: "error",
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!response.ok) return undefined;
+    const list = (await response.json())[endpoint.list ?? "data"];
+    if (!Array.isArray(list)) return undefined;
+    const models = new Map<string, Metadata>();
+    for (const item of list) {
+      const model = modelMetadata.safeParse(item);
+      if (model.success) models.set(model.data.id, model.data);
+    }
+    return models;
+  }
+  return async (model: string, provider: string, flag: Capability) => {
+    if (provider === "fireworks" && flag === "multimodal") {
+      return fireworksCapability(model);
+    }
+    if (flag !== "multimodal" && flag !== "reasoning" && flag !== "o1_like") {
+      return undefined;
+    }
+    if (provider === "xAI" && flag !== "multimodal") return undefined;
+    let result = cache.get(provider);
+    if (!result) {
+      result = load(provider).catch(() => undefined);
+      cache.set(provider, result);
+    }
+    const metadata = (await result)?.get(model);
+    if (!metadata) return undefined;
+    if (provider === "cerebras") {
+      return flag === "multimodal"
+        ? metadata.capabilities?.vision
+        : metadata.capabilities?.reasoning;
+    }
+    if (provider === "openrouter") {
+      return flag === "multimodal"
+        ? metadata.architecture?.input_modalities?.includes("image")
+        : metadata.supported_parameters?.some(
+            (parameter) =>
+              parameter === "reasoning" || parameter === "reasoning_effort",
+          );
+    }
+    return flag === "multimodal"
+      ? metadata.input_modalities?.includes("image")
+      : metadata.supported_features?.includes("reasoning");
+  };
 }
 
 const executionSchema = z.array(
@@ -454,7 +652,7 @@ async function main(): Promise<void> {
       JSON.parse(readHead(catalog)),
       JSON.parse(readFileSync(catalog, "utf8")),
       readEvidenceFile(evidenceFile),
-      providerCapability,
+      providerCapabilityLookup(),
       { before: readHead(index), after: readFileSync(index, "utf8") },
     );
   }

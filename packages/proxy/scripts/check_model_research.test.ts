@@ -63,6 +63,45 @@ describe("checkModelCapabilities", () => {
       checkModelCapabilities(after, after, [], async () => false),
     ).resolves.toBeUndefined();
   });
+
+  it("resolves index-only companions and still rejects claims with no route", async () => {
+    const companion = "publishers/anthropic/models/claude-opus-5-5";
+    const catalog = { [companion]: { reasoning: true } };
+    const vertexClaim = {
+      ...claim,
+      model: companion,
+      provider: "vertex",
+      surface: "Vertex AI Model Garden",
+      capability: "reasoning",
+      source:
+        "https://cloud.google.com/vertex-ai/generative-ai/docs/partner-models/claude",
+      quote: "Supports extended thinking",
+    };
+    const index = `export const AvailableEndpointTypes = {
+      "${companion}": ["vertex"],
+};`;
+    await expect(
+      checkModelCapabilities(
+        {},
+        catalog,
+        [vertexClaim],
+        async () => undefined,
+        {
+          before: "",
+          after: index,
+        },
+      ),
+    ).resolves.toBeUndefined();
+    await expect(
+      checkModelCapabilities(catalog, catalog, [], async () => undefined, {
+        before: index,
+        after: index,
+      }),
+    ).resolves.toBeUndefined();
+    await expect(
+      checkModelCapabilities({}, catalog, [vertexClaim], async () => undefined),
+    ).rejects.toThrow("no provider to verify reasoning against");
+  });
 });
 
 describe("checkModelResearch", () => {

@@ -2,6 +2,10 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
+import {
+  effectiveProviders,
+  parseIndexEndpointTypes,
+} from "./reconcile_provider_models";
 
 const capability = z.enum([
   "multimodal",
@@ -40,18 +44,30 @@ export async function checkModelCapabilities(
     provider: string,
     capability: Capability,
   ) => Promise<boolean | undefined>,
+  providerMappings: { before: string; after: string } = {
+    before: "",
+    after: "",
+  },
 ): Promise<void> {
   const evidence = evidenceSchema.parse(rawEvidence);
+  const beforeIndex = parseIndexEndpointTypes(providerMappings.before);
+  const afterIndex = parseIndexEndpointTypes(providerMappings.after);
   for (const [model, entry] of Object.entries(after)) {
     const previous = before[model];
+    const previousProviders = effectiveProviders(
+      model,
+      { available_providers: previous?.available_providers ?? undefined },
+      beforeIndex,
+    );
+    const providers = effectiveProviders(
+      model,
+      { available_providers: entry.available_providers ?? undefined },
+      afterIndex,
+    );
     for (const flag of capability.options) {
       if (entry[flag] !== true) continue;
-      const providers = entry.available_providers ?? [];
       for (const provider of providers) {
-        if (
-          previous?.[flag] === true &&
-          previous.available_providers?.includes(provider)
-        ) {
+        if (previous?.[flag] === true && previousProviders.includes(provider)) {
           continue;
         }
         const claims = evidence.filter(
@@ -72,7 +88,10 @@ export async function checkModelCapabilities(
           );
         }
       }
-      if (providers.length === 0 && previous?.[flag] !== true) {
+      if (
+        providers.length === 0 &&
+        (previous?.[flag] !== true || previousProviders.length > 0)
+      ) {
         throw new Error(`${model}: no provider to verify ${flag} against`);
       }
     }
@@ -174,15 +193,18 @@ async function main(): Promise<void> {
   const evidenceFile = process.env.CAPABILITY_EVIDENCE_FILE;
   if (evidenceFile) {
     const catalog = "packages/proxy/schema/model_list.json";
-    const before = execFileSync("git", ["show", `HEAD:${catalog}`], {
-      encoding: "utf8",
-      maxBuffer: 32 * 1024 * 1024,
-    });
+    const index = "packages/proxy/schema/index.ts";
+    const readHead = (path: string) =>
+      execFileSync("git", ["show", `HEAD:${path}`], {
+        encoding: "utf8",
+        maxBuffer: 32 * 1024 * 1024,
+      });
     await checkModelCapabilities(
-      JSON.parse(before),
+      JSON.parse(readHead(catalog)),
       JSON.parse(readFileSync(catalog, "utf8")),
       JSON.parse(readFileSync(evidenceFile, "utf8")),
       providerCapability,
+      { before: readHead(index), after: readFileSync(index, "utf8") },
     );
   }
 }

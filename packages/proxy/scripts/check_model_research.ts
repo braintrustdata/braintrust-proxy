@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import { ModelSchema } from "../schema/models";
@@ -74,6 +74,11 @@ type PricingCatalog = Record<
   string,
   Record<string, unknown> & { available_providers?: string[] | null }
 >;
+
+export function readEvidenceFile(filePath: string | undefined): unknown {
+  if (!filePath || !existsSync(filePath)) return [];
+  return JSON.parse(readFileSync(filePath, "utf8"));
+}
 
 export function checkModelPrices(
   before: PricingCatalog,
@@ -298,7 +303,7 @@ async function main(): Promise<void> {
     checkModelPrices(
       JSON.parse(readFileSync(`${baselineDir}/model_list.json`, "utf8")),
       JSON.parse(readFileSync(catalog, "utf8")),
-      JSON.parse(readFileSync(priceEvidenceFile, "utf8")),
+      readEvidenceFile(priceEvidenceFile),
       {
         before: readFileSync(`${baselineDir}/index.ts`, "utf8"),
         after: readFileSync(index, "utf8"),
@@ -315,7 +320,7 @@ async function main(): Promise<void> {
     await checkModelCapabilities(
       JSON.parse(readHead(catalog)),
       JSON.parse(readFileSync(catalog, "utf8")),
-      JSON.parse(readFileSync(evidenceFile, "utf8")),
+      readEvidenceFile(evidenceFile),
       providerCapability,
       { before: readHead(index), after: readFileSync(index, "utf8") },
     );

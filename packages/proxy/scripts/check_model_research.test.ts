@@ -1,8 +1,12 @@
+import { mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   checkModelCapabilities,
   checkModelPrices,
   checkModelResearch,
+  readEvidenceFile,
 } from "./check_model_research";
 
 const success = { type: "result", subtype: "success", is_error: false };
@@ -64,6 +68,22 @@ describe("checkModelPrices", () => {
     expect(() => checkModelPrices(after, after, [], mappings)).toThrow(
       "missing exact-provider pricing evidence",
     );
+  });
+
+  it("treats missing price evidence as empty and rejects changed baseline pricing", () => {
+    const directory = mkdtempSync(join(tmpdir(), "check-model-research-"));
+    try {
+      const evidence = readEvidenceFile(join(directory, "price-evidence.json"));
+      expect(evidence).toEqual([]);
+      expect(() =>
+        checkModelPrices({ [model]: { [field]: 0.25 } }, after, evidence, {
+          before: mappings.after,
+          after: mappings.after,
+        }),
+      ).toThrow("missing exact-provider pricing evidence");
+    } finally {
+      rmSync(directory, { recursive: true, force: true });
+    }
   });
 });
 

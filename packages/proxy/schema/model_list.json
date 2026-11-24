@@ -4536,6 +4536,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 12,
     "pricing": {
       "openai": {
         "standard": [
@@ -4653,6 +4654,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 12,
     "pricing": {
       "openai": {
         "standard": [
@@ -4734,6 +4736,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 12,
     "pricing": {
       "openai": {
         "standard": [

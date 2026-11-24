@@ -1,6 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { execFileSync, spawnSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import {
   checkModelCapabilities,
@@ -14,7 +16,7 @@ const success = { type: "result", subtype: "success", is_error: false };
 describe("checkModelPrices", () => {
   const model = "databricks-inkling-2-small";
   const field = "input_cost_per_mil_tokens";
-  const after = { [model]: { [field]: 0.3 } };
+  const after = { [model]: { [field]: 0.3, displayName: "Inkling 2 Small" } };
   const mappings = {
     before: "",
     after: `export const AvailableEndpointTypes = {
@@ -28,7 +30,8 @@ describe("checkModelPrices", () => {
     field,
     value: 0.3,
     source: "https://docs.databricks.com/pricing-example",
-    quote: "Example rate: $0.30 per million input tokens",
+    quote:
+      "Mosaic AI Model Serving: Inkling 2 Small, $0.30 per million input tokens",
   };
 
   it("rejects copied Fireworks pricing even if its source is labeled Databricks", () => {
@@ -70,19 +73,97 @@ describe("checkModelPrices", () => {
     );
   });
 
-  it("treats missing price evidence as empty and rejects changed baseline pricing", () => {
-    const directory = mkdtempSync(join(tmpdir(), "check-model-research-"));
+  it.each([
+    [
+      "another model",
+      "Mosaic AI Model Serving: Llama 3, $0.30 per million input tokens",
+    ],
+    [
+      "a longer model ID",
+      "Mosaic AI Model Serving: databricks-inkling-2-small-preview, $0.30 per million input tokens",
+    ],
+    [
+      "another surface",
+      "Provisioned Throughput: Inkling 2 Small, $0.30 per million input tokens",
+    ],
+    [
+      "another rate",
+      "Mosaic AI Model Serving: Inkling 2 Small, $10.30 per million input tokens",
+    ],
+    [
+      "a rate with extra digits",
+      "Mosaic AI Model Serving: Inkling 2 Small, $0.301 per million input tokens",
+    ],
+  ])("rejects a same-provider excerpt for %s", (_reason, quote) => {
+    expect(() =>
+      checkModelPrices({}, after, [{ ...evidence, quote }], mappings),
+    ).toThrow("missing exact-provider pricing evidence");
+  });
+
+  it("requires evidence when direct sync adds a route but leaves its price unchanged", () => {
+    const cwd = mkdtempSync(join(tmpdir(), "model-price-evidence-"));
+    const write = (path: string, content: string) =>
+      writeFileSync(join(cwd, path), content);
+    const git = (...args: string[]) => execFileSync("git", args, { cwd });
     try {
-      const evidence = readEvidenceFile(join(directory, "price-evidence.json"));
-      expect(evidence).toEqual([]);
-      expect(() =>
-        checkModelPrices({ [model]: { [field]: 0.25 } }, after, evidence, {
-          before: mappings.after,
-          after: mappings.after,
+      const schema = "packages/proxy/schema";
+      const catalog = `${schema}/model_list.json`;
+      const index = `${schema}/index.ts`;
+      mkdirSync(join(cwd, schema), { recursive: true });
+      git("init", "--quiet");
+      const entry = { [field]: 0.3, available_providers: ["together"] };
+      write(catalog, JSON.stringify({ "shared-model": entry }));
+      write(index, "");
+      git("add", catalog, index);
+      git(
+        "-c",
+        "user.name=Pricing Test",
+        "-c",
+        "user.email=pricing-test@example.com",
+        "-c",
+        "commit.gpgsign=false",
+        "commit",
+        "--quiet",
+        "-m",
+        "Base catalog",
+      );
+
+      write(
+        catalog,
+        JSON.stringify({
+          "shared-model": {
+            ...entry,
+            available_providers: ["together", "groq"],
+          },
         }),
-      ).toThrow("missing exact-provider pricing evidence");
+      );
+      write("execution.json", JSON.stringify([success]));
+      write("price-evidence.json", "[]");
+
+      const result = spawnSync(
+        process.execPath,
+        [
+          "--import",
+          import.meta.resolve("tsx"),
+          fileURLToPath(new URL("./check_model_research.ts", import.meta.url)),
+        ],
+        {
+          cwd,
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            EXECUTION_FILE: "execution.json",
+            PRICE_EVIDENCE_FILE: "price-evidence.json",
+            CAPABILITY_EVIDENCE_FILE: "",
+          },
+        },
+      );
+      expect(result.stderr).toContain(
+        `shared-model @ groq: missing exact-provider pricing evidence for ${field}`,
+      );
+      expect(result.status).toBe(1);
     } finally {
-      rmSync(directory, { recursive: true, force: true });
+      rmSync(cwd, { recursive: true, force: true });
     }
   });
 });

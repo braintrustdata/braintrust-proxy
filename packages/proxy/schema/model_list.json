@@ -4372,6 +4372,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 40,
+            "output_audio_cost_per_mil_tokens": 80
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 40,
+            "output_audio_cost_per_mil_tokens": 80,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-12-17"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o Audio Preview",
     "deprecation_date": "2025-09-15",
     "retirement_date": "2026-05-07",
@@ -4443,6 +4463,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-12-17"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini Audio Preview",
     "deprecation_date": "2025-09-15",
     "retirement_date": "2026-05-07",
@@ -4473,6 +4513,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini Transcribe",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-06-15",
@@ -4487,7 +4536,24 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 12,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "output_audio_cost_per_mil_tokens": 12
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "output_audio_cost_per_mil_tokens": 12,
+            "model_version": "2025-12-15"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini TTS",
     "deprecation_date": "2026-10-01",
     "retirement_date": "2027-06-15",
@@ -4516,6 +4582,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2.5
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o Transcribe",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-02-26",
@@ -4531,6 +4606,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2.5
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o Transcribe Diarize",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-04-15",
@@ -4546,6 +4630,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini Transcribe (2025-12-15)",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-06-15",
@@ -4561,7 +4654,24 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 12,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "output_audio_cost_per_mil_tokens": 12
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "output_audio_cost_per_mil_tokens": 12,
+            "model_version": "2025-12-15"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini TTS (2025-12-15)",
     "deprecation_date": "2026-10-01",
     "retirement_date": "2027-06-15",
@@ -4576,6 +4686,16 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 40,
+            "output_audio_cost_per_mil_tokens": 80
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o Audio Preview (2025-06-03)",
     "deprecation_date": "2025-09-15",
     "retirement_date": "2026-05-07",
@@ -4592,6 +4712,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini Transcribe (2025-03-20)",
     "deprecation_date": "2026-07-20",
     "retirement_date": "2027-01-20",
@@ -4607,7 +4736,16 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 12,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "output_audio_cost_per_mil_tokens": 12
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini TTS (2025-03-20)",
     "deprecation_date": "2026-10-01",
     "retirement_date": "2027-01-20",
@@ -4660,6 +4798,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 40,
+            "output_audio_cost_per_mil_tokens": 80
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 40,
+            "output_audio_cost_per_mil_tokens": 80,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-12-17"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o Audio Preview (2024-12-17)",
     "deprecation_date": "2027-01-20",
     "parent": "gpt-4o-audio-preview",
@@ -4675,6 +4833,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2024-12-17"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-4o mini Audio Preview (2024-12-17)",
     "deprecation_date": "2025-09-15",
     "retirement_date": "2026-05-07",
@@ -5386,6 +5564,16 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio (2025-08-28)",
     "deprecation_date": "2026-07-20",
     "retirement_date": "2027-03-02",
@@ -5402,6 +5590,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-02-23"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio 1.5",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
@@ -5415,6 +5623,16 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio",
     "deprecation_date": "2026-07-20",
     "retirement_date": "2027-03-02",
@@ -5431,6 +5649,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-12-15"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio mini",
     "deprecation_date": "2026-07-20",
     "retirement_date": "2027-06-15",
@@ -5447,6 +5685,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2025-12-15"
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio mini (2025-12-15)",
     "deprecation_date": "2026-07-20",
     "retirement_date": "2027-06-15",
@@ -5463,6 +5721,16 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 10,
+            "output_audio_cost_per_mil_tokens": 20
+          }
+        ]
+      }
+    },
     "displayName": "GPT Audio mini (2025-10-06)",
     "deprecation_date": "2026-04-22",
     "retirement_date": "2027-04-06",
@@ -5480,6 +5748,28 @@
     "input_cost_per_mil_tokens": 4,
     "output_cost_per_mil_tokens": 24,
     "input_cache_read_cost_per_mil_tokens": 0.4,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4
+          }
+        ]
+      },
+      "azure": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 32,
+            "output_audio_cost_per_mil_tokens": 64,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
+            "deployment_type": "GlobalStandard",
+            "model_version": "2026-07-07"
+          }
+        ]
+      }
+    },
     "displayName": "GPT-Realtime-2.1",
     "max_input_tokens": 128000,
     "max_output_tokens": 32000,
@@ -10767,11 +11057,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -10781,6 +11091,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -10792,6 +11104,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -10801,6 +11115,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -10812,6 +11128,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -10821,6 +11139,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -10851,11 +11171,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -10865,6 +11205,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -10876,6 +11218,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -10885,6 +11229,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -10896,6 +11242,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -10905,6 +11253,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -10934,11 +11284,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2026-12-01"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -10950,6 +11320,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "supported_regions": [
               "global"
             ],
@@ -10979,11 +11351,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2026-12-01"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -10995,6 +11387,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "supported_regions": [
               "global"
             ],
@@ -11024,11 +11418,30 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.65,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "eu",
+              "us"
+            ]
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ]
@@ -11037,6 +11450,8 @@
             "input_cost_per_mil_tokens": 2.97,
             "output_cost_per_mil_tokens": 14.85,
             "input_cache_read_cost_per_mil_tokens": 0.1485,
+            "input_audio_cost_per_mil_tokens": 2.97,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1485,
             "supported_regions": [
               "us",
               "eu"
@@ -11048,6 +11463,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ]
@@ -11056,6 +11473,8 @@
             "input_cost_per_mil_tokens": 0.825,
             "output_cost_per_mil_tokens": 4.125,
             "input_cache_read_cost_per_mil_tokens": 0.04125,
+            "input_audio_cost_per_mil_tokens": 0.825,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.04125,
             "supported_regions": [
               "us",
               "eu"
@@ -11085,11 +11504,30 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 3.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.165,
+            "supported_regions": [
+              "eu",
+              "us"
+            ]
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 5.4,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 5.4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ]
@@ -11098,6 +11536,8 @@
             "input_cost_per_mil_tokens": 5.94,
             "output_cost_per_mil_tokens": 29.7,
             "input_cache_read_cost_per_mil_tokens": 0.297,
+            "input_audio_cost_per_mil_tokens": 5.94,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.297,
             "supported_regions": [
               "us",
               "eu"
@@ -11109,6 +11549,8 @@
             "input_cost_per_mil_tokens": 1.5,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -11117,6 +11559,8 @@
             "input_cost_per_mil_tokens": 1.65,
             "output_cost_per_mil_tokens": 8.25,
             "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "input_audio_cost_per_mil_tokens": 1.65,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
             "supported_regions": [
               "us",
               "eu"
@@ -11146,11 +11590,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -11160,6 +11624,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -11171,6 +11637,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -11180,6 +11648,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -11191,6 +11661,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -11200,6 +11672,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -11230,11 +11704,22 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -11245,6 +11730,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 16.2,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ]
@@ -11255,6 +11742,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -11283,11 +11772,22 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.015,
             "supported_regions": [
               "global"
             ]
@@ -11298,6 +11798,8 @@
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.054,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.054,
             "supported_regions": [
               "global"
             ]
@@ -11308,6 +11810,8 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.015,
             "supported_regions": [
               "global"
             ]
@@ -11420,11 +11924,22 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025,
             "supported_regions": [
               "global"
             ]
@@ -11435,6 +11950,8 @@
             "input_cost_per_mil_tokens": 0.45,
             "output_cost_per_mil_tokens": 2.7,
             "input_cache_read_cost_per_mil_tokens": 0.045,
+            "input_audio_cost_per_mil_tokens": 0.9,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.09,
             "supported_regions": [
               "global"
             ]
@@ -11445,6 +11962,8 @@
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025,
             "supported_regions": [
               "global"
             ]
@@ -11542,10 +12061,23 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
+            "min_input_tokens": 200001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
+            "input_audio_cost_per_mil_tokens": 1,
             "supported_regions": [
               "global"
             ],
@@ -11554,6 +12086,7 @@
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
+            "input_audio_cost_per_mil_tokens": 2,
             "supported_regions": [
               "global"
             ],
@@ -11565,6 +12098,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 21.6,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -11574,6 +12109,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 32.4,
             "input_cache_read_cost_per_mil_tokens": 0.72,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.72,
             "supported_regions": [
               "global"
             ],
@@ -11584,6 +12121,7 @@
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
+            "input_audio_cost_per_mil_tokens": 1,
             "supported_regions": [
               "global"
             ],
@@ -11592,6 +12130,7 @@
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
+            "input_audio_cost_per_mil_tokens": 2,
             "supported_regions": [
               "global"
             ],
@@ -11638,12 +12177,15 @@
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_audio_cost_per_mil_tokens": 1,
+    "input_audio_cache_read_cost_per_mil_tokens": 0.1,
     "pricing": {
       "vertex": {
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -11654,6 +12196,8 @@
             "input_cost_per_mil_tokens": 0.9,
             "output_cost_per_mil_tokens": 5.4,
             "input_cache_read_cost_per_mil_tokens": 0.09,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "supported_regions": [
               "global"
             ]
@@ -11663,6 +12207,7 @@
           {
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -11751,6 +12296,20 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
+    "pricing": {
+      "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 2.5,
+            "min_input_tokens": 200001
+          }
+        ]
+      }
+    },
     "displayName": "Gemini 2.5 Computer Use Preview (10-2025)",
     "max_input_tokens": 128000,
     "max_output_tokens": 64000,
@@ -12072,11 +12631,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "min_input_tokens": 200001
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.054,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "supported_regions": [
               "global"
             ]
@@ -12086,6 +12659,7 @@
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -12142,6 +12716,8 @@
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
     "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_audio_cost_per_mil_tokens": 0.3,
+    "input_audio_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "vertex": {
         "priority": [
@@ -12149,6 +12725,8 @@
             "input_cost_per_mil_tokens": 0.18,
             "output_cost_per_mil_tokens": 0.72,
             "input_cache_read_cost_per_mil_tokens": 0.018,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.054,
             "supported_regions": [
               "global"
             ]
@@ -12158,6 +12736,7 @@
           {
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.2,
+            "input_audio_cost_per_mil_tokens": 0.05,
             "supported_regions": [
               "global"
             ]
@@ -12185,11 +12764,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.13,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.125,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 2.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.25,
+            "min_input_tokens": 200001
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 2.25,
             "output_cost_per_mil_tokens": 18,
             "input_cache_read_cost_per_mil_tokens": 0.225,
+            "input_audio_cost_per_mil_tokens": 2.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.225,
             "supported_regions": [
               "global"
             ],
@@ -12199,6 +12792,8 @@
             "input_cost_per_mil_tokens": 4.5,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.45,
+            "input_audio_cost_per_mil_tokens": 4.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.45,
             "supported_regions": [
               "global"
             ],
@@ -12209,6 +12804,7 @@
           {
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
+            "input_audio_cost_per_mil_tokens": 0.625,
             "supported_regions": [
               "global"
             ],
@@ -12217,6 +12813,7 @@
           {
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
+            "input_audio_cost_per_mil_tokens": 1.25,
             "supported_regions": [
               "global"
             ],
@@ -12893,11 +13490,13 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0,
+    "input_audio_cost_per_mil_tokens": 6.5,
     "pricing": {
       "vertex": {
         "batch": [
           {
             "input_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 3.25,
             "supported_regions": [
               "global",
               "us",
@@ -24874,6 +25473,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0,
+    "input_audio_cost_per_mil_tokens": 0.1,
     "displayName": "Gemini Decision 1",
     "max_input_tokens": 262144,
     "max_output_tokens": 0,
@@ -24888,6 +25488,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 4.5,
+    "input_audio_cost_per_mil_tokens": 3,
+    "output_audio_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3.8 Live Extended Thinking",
     "reasoning": true,
     "reasoning_budget": true,
@@ -24903,6 +25505,8 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.75,
     "output_cost_per_mil_tokens": 4.5,
+    "input_audio_cost_per_mil_tokens": 3,
+    "output_audio_cost_per_mil_tokens": 12,
     "displayName": "Gemini 3.8 Live",
     "max_input_tokens": 131072,
     "max_output_tokens": 65536,
@@ -24919,11 +25523,31 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -24933,6 +25557,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -24944,6 +25570,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -24953,6 +25581,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -24964,6 +25594,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -24973,6 +25605,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -25053,17 +25687,33 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "valid_until": "2026-12-31"
           },
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "valid_from": "2027-01-01"
           }
         ],
@@ -25072,6 +25722,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25081,6 +25733,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25092,6 +25746,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25101,6 +25757,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25109,11 +25767,31 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -25123,6 +25801,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -25134,6 +25814,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -25143,6 +25825,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -25154,6 +25838,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -25163,6 +25849,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -25242,17 +25930,33 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "valid_from": "2026-12-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
             "valid_until": "2026-11-30"
           },
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "valid_from": "2026-12-01"
           }
         ],
@@ -25261,6 +25965,8 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25270,6 +25976,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25281,6 +25989,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 18,
             "input_cache_read_cost_per_mil_tokens": 0.18,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25290,6 +26000,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25345,11 +26057,31 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2026-12-01"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -25361,6 +26093,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "supported_regions": [
               "global"
             ],
@@ -25392,17 +26126,33 @@
     "input_cache_read_cost_per_mil_tokens": 0.1,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "valid_from": "2026-12-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
             "valid_until": "2026-11-30"
           },
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "valid_from": "2026-12-01"
           }
         ],
@@ -25411,6 +26161,8 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25420,6 +26172,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25431,6 +26185,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 18,
             "input_cache_read_cost_per_mil_tokens": 0.18,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25440,6 +26196,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25487,11 +26245,31 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2026-12-01"
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 36,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -25503,6 +26281,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "supported_regions": [
               "global"
             ],
@@ -25535,25 +26315,37 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
-            "input_cache_read_cost_per_mil_tokens": 0.0375
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375
           }
         ],
         "batch": [
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
-            "input_cache_read_cost_per_mil_tokens": 0.0375
+            "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375
           }
         ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
-            "input_cache_read_cost_per_mil_tokens": 0.135
+            "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135
           }
         ]
       },
@@ -25597,11 +26389,30 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.65,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
+            "supported_regions": [
+              "eu",
+              "us"
+            ]
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ]
@@ -25610,6 +26421,8 @@
             "input_cost_per_mil_tokens": 2.97,
             "output_cost_per_mil_tokens": 14.85,
             "input_cache_read_cost_per_mil_tokens": 0.1485,
+            "input_audio_cost_per_mil_tokens": 2.97,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1485,
             "supported_regions": [
               "us",
               "eu"
@@ -25621,6 +26434,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ]
@@ -25629,6 +26444,8 @@
             "input_cost_per_mil_tokens": 0.825,
             "output_cost_per_mil_tokens": 4.125,
             "input_cache_read_cost_per_mil_tokens": 0.04125,
+            "input_audio_cost_per_mil_tokens": 0.825,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.04125,
             "supported_regions": [
               "us",
               "eu"
@@ -25661,25 +26478,37 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1.5,
             "output_cost_per_mil_tokens": 7.5,
-            "input_cache_read_cost_per_mil_tokens": 0.075
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075
           }
         ],
         "batch": [
           {
             "input_cost_per_mil_tokens": 1.5,
             "output_cost_per_mil_tokens": 7.5,
-            "input_cache_read_cost_per_mil_tokens": 0.075
+            "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075
           }
         ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 5.4,
             "output_cost_per_mil_tokens": 27,
-            "input_cache_read_cost_per_mil_tokens": 0.27
+            "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 5.4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27
           }
         ]
       },
@@ -25723,11 +26552,30 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ]
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 3.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.165,
+            "supported_regions": [
+              "eu",
+              "us"
+            ]
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 5.4,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 5.4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ]
@@ -25736,6 +26584,8 @@
             "input_cost_per_mil_tokens": 5.94,
             "output_cost_per_mil_tokens": 29.7,
             "input_cache_read_cost_per_mil_tokens": 0.297,
+            "input_audio_cost_per_mil_tokens": 5.94,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.297,
             "supported_regions": [
               "us",
               "eu"
@@ -25747,6 +26597,8 @@
             "input_cost_per_mil_tokens": 1.5,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -25755,6 +26607,8 @@
             "input_cost_per_mil_tokens": 1.65,
             "output_cost_per_mil_tokens": 8.25,
             "input_cache_read_cost_per_mil_tokens": 0.0825,
+            "input_audio_cost_per_mil_tokens": 1.65,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0825,
             "supported_regions": [
               "us",
               "eu"
@@ -25787,17 +26641,33 @@
     "input_cache_read_cost_per_mil_tokens": 0.075,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "valid_until": "2026-12-31"
           },
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "valid_from": "2027-01-01"
           }
         ],
@@ -25806,6 +26676,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25815,6 +26687,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25826,6 +26700,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25835,6 +26711,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -25843,11 +26721,31 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ],
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -25857,6 +26755,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -25868,6 +26768,8 @@
             "input_cost_per_mil_tokens": 1.35,
             "output_cost_per_mil_tokens": 6.75,
             "input_cache_read_cost_per_mil_tokens": 0.135,
+            "input_audio_cost_per_mil_tokens": 1.35,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.135,
             "supported_regions": [
               "global"
             ],
@@ -25877,6 +26779,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 13.5,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ],
@@ -25888,6 +26792,8 @@
             "input_cost_per_mil_tokens": 0.375,
             "output_cost_per_mil_tokens": 1.875,
             "input_cache_read_cost_per_mil_tokens": 0.0375,
+            "input_audio_cost_per_mil_tokens": 0.375,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.0375,
             "supported_regions": [
               "global"
             ],
@@ -25897,6 +26803,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ],
@@ -25976,11 +26884,22 @@
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "pricing": {
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -25991,6 +26910,8 @@
             "input_cost_per_mil_tokens": 2.7,
             "output_cost_per_mil_tokens": 16.2,
             "input_cache_read_cost_per_mil_tokens": 0.27,
+            "input_audio_cost_per_mil_tokens": 2.7,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.27,
             "supported_regions": [
               "global"
             ]
@@ -26001,6 +26922,8 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "supported_regions": [
               "global"
             ]
@@ -26079,11 +27002,19 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
-            "input_cache_read_cost_per_mil_tokens": 0.02
+            "input_cache_read_cost_per_mil_tokens": 0.02,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.02
           }
         ],
         "batch": [
@@ -26091,6 +27022,8 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.015,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26101,6 +27034,8 @@
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26108,11 +27043,22 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.015,
             "supported_regions": [
               "global"
             ]
@@ -26123,6 +27069,8 @@
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.054,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.054,
             "supported_regions": [
               "global"
             ]
@@ -26133,6 +27081,8 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.015,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.015,
             "supported_regions": [
               "global"
             ]
@@ -26336,11 +27286,19 @@
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
-            "input_cache_read_cost_per_mil_tokens": 0.0125
+            "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025
           }
         ],
         "batch": [
@@ -26348,6 +27306,8 @@
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26358,6 +27318,8 @@
             "input_cost_per_mil_tokens": 0.45,
             "output_cost_per_mil_tokens": 2.7,
             "input_cache_read_cost_per_mil_tokens": 0.045,
+            "input_audio_cost_per_mil_tokens": 0.9,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.09,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26365,11 +27327,22 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.05,
+            "supported_regions": [
+              "global"
+            ]
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025,
             "supported_regions": [
               "global"
             ]
@@ -26380,6 +27353,8 @@
             "input_cost_per_mil_tokens": 0.45,
             "output_cost_per_mil_tokens": 2.7,
             "input_cache_read_cost_per_mil_tokens": 0.045,
+            "input_audio_cost_per_mil_tokens": 0.9,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.09,
             "supported_regions": [
               "global"
             ]
@@ -26390,6 +27365,8 @@
             "input_cost_per_mil_tokens": 0.125,
             "output_cost_per_mil_tokens": 0.75,
             "input_cache_read_cost_per_mil_tokens": 0.0125,
+            "input_audio_cost_per_mil_tokens": 0.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.025,
             "supported_regions": [
               "global"
             ]
@@ -26577,17 +27554,33 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
+            "min_input_tokens": 200001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "max_input_tokens": 200000
           },
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
             "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
             "min_input_tokens": 200001
           }
         ],
@@ -26596,6 +27589,8 @@
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26605,6 +27600,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
             "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26616,6 +27613,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 21.6,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26625,6 +27624,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 32.4,
             "input_cache_read_cost_per_mil_tokens": 0.72,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.72,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26633,10 +27634,23 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
+            "min_input_tokens": 200001
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
+            "input_audio_cost_per_mil_tokens": 1,
             "supported_regions": [
               "global"
             ],
@@ -26645,6 +27659,7 @@
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
+            "input_audio_cost_per_mil_tokens": 2,
             "supported_regions": [
               "global"
             ],
@@ -26656,6 +27671,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 21.6,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "supported_regions": [
               "global"
             ],
@@ -26665,6 +27682,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 32.4,
             "input_cache_read_cost_per_mil_tokens": 0.72,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.72,
             "supported_regions": [
               "global"
             ],
@@ -26675,6 +27694,7 @@
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
+            "input_audio_cost_per_mil_tokens": 1,
             "supported_regions": [
               "global"
             ],
@@ -26683,6 +27703,7 @@
           {
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
+            "input_audio_cost_per_mil_tokens": 2,
             "supported_regions": [
               "global"
             ],
@@ -26806,11 +27827,25 @@
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 4,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
+            "min_input_tokens": 200001
+          }
+        ],
         "batch": [
           {
             "input_cost_per_mil_tokens": 1,
             "output_cost_per_mil_tokens": 6,
             "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26820,6 +27855,8 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 9,
             "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_audio_cost_per_mil_tokens": 2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.4,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26831,6 +27868,8 @@
             "input_cost_per_mil_tokens": 3.6,
             "output_cost_per_mil_tokens": 21.6,
             "input_cache_read_cost_per_mil_tokens": 0.36,
+            "input_audio_cost_per_mil_tokens": 3.6,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.36,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26840,6 +27879,8 @@
             "input_cost_per_mil_tokens": 7.2,
             "output_cost_per_mil_tokens": 32.4,
             "input_cache_read_cost_per_mil_tokens": 0.72,
+            "input_audio_cost_per_mil_tokens": 7.2,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.72,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
@@ -26871,11 +27912,19 @@
     "input_cache_read_cost_per_mil_tokens": 0.05,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
-            "input_cache_read_cost_per_mil_tokens": 0.05
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1
           }
         ],
         "batch": [
@@ -26883,6 +27932,8 @@
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
             "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26893,6 +27944,8 @@
             "input_cost_per_mil_tokens": 0.9,
             "output_cost_per_mil_tokens": 5.4,
             "input_cache_read_cost_per_mil_tokens": 0.09,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -26900,10 +27953,17 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -26914,6 +27974,8 @@
             "input_cost_per_mil_tokens": 0.9,
             "output_cost_per_mil_tokens": 5.4,
             "input_cache_read_cost_per_mil_tokens": 0.09,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "supported_regions": [
               "global"
             ]
@@ -26923,6 +27985,7 @@
           {
             "input_cost_per_mil_tokens": 0.25,
             "output_cost_per_mil_tokens": 1.5,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -27119,11 +28182,26 @@
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03,
+            "valid_from": "2026-12-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
-            "input_cache_read_cost_per_mil_tokens": 0.03
+            "input_cache_read_cost_per_mil_tokens": 0.03,
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "valid_until": "2026-11-30"
           }
         ],
         "batch": [
@@ -27131,9 +28209,12 @@
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
             "input_cache_read_cost_per_mil_tokens": 0.03,
+            "input_audio_cost_per_mil_tokens": 0.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [
               "generativelanguage.googleapis.com"
-            ]
+            ],
+            "valid_until": "2026-11-30"
           }
         ],
         "priority": [
@@ -27141,9 +28222,12 @@
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.054,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "endpoints": [
               "generativelanguage.googleapis.com"
-            ]
+            ],
+            "valid_until": "2026-11-30"
           }
         ]
       },
@@ -27175,11 +28259,25 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.1,
+            "min_input_tokens": 200001
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.54,
             "output_cost_per_mil_tokens": 4.5,
             "input_cache_read_cost_per_mil_tokens": 0.054,
+            "input_audio_cost_per_mil_tokens": 1.8,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.18,
             "supported_regions": [
               "global"
             ]
@@ -27189,6 +28287,7 @@
           {
             "input_cost_per_mil_tokens": 0.15,
             "output_cost_per_mil_tokens": 1.25,
+            "input_audio_cost_per_mil_tokens": 0.5,
             "supported_regions": [
               "global"
             ]
@@ -27314,11 +28413,19 @@
     "input_cache_read_cost_per_mil_tokens": 0.01,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.2,
-            "input_cache_read_cost_per_mil_tokens": 0.01
+            "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03
           }
         ],
         "batch": [
@@ -27326,6 +28433,8 @@
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.2,
             "input_cache_read_cost_per_mil_tokens": 0.01,
+            "input_audio_cost_per_mil_tokens": 0.15,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -27336,6 +28445,8 @@
             "input_cost_per_mil_tokens": 0.18,
             "output_cost_per_mil_tokens": 0.72,
             "input_cache_read_cost_per_mil_tokens": 0.018,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.054,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ]
@@ -27370,11 +28481,19 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 0.3,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.03
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 0.18,
             "output_cost_per_mil_tokens": 0.72,
             "input_cache_read_cost_per_mil_tokens": 0.018,
+            "input_audio_cost_per_mil_tokens": 0.54,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.054,
             "supported_regions": [
               "global"
             ]
@@ -27384,6 +28503,7 @@
           {
             "input_cost_per_mil_tokens": 0.05,
             "output_cost_per_mil_tokens": 0.2,
+            "input_audio_cost_per_mil_tokens": 0.05,
             "supported_regions": [
               "global"
             ]
@@ -27431,18 +28551,49 @@
     "input_cache_read_cost_per_mil_tokens": 0.125,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.125,
+            "max_input_tokens": 200000,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 2.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.25,
+            "min_input_tokens": 200001,
+            "valid_until": "2026-11-30"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 0.75,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.075,
+            "valid_from": "2026-12-01",
+            "valid_until": "2026-12-31"
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 1.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.15,
+            "valid_from": "2027-01-01"
+          }
+        ],
         "flex": [
           {
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.125,
-            "max_input_tokens": 200000
+            "input_audio_cost_per_mil_tokens": 0.625,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.125,
+            "max_input_tokens": 200000,
+            "valid_until": "2026-11-30"
           },
           {
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.25,
-            "min_input_tokens": 200001
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.25,
+            "min_input_tokens": 200001,
+            "valid_until": "2026-11-30"
           }
         ],
         "batch": [
@@ -27450,19 +28601,25 @@
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
             "input_cache_read_cost_per_mil_tokens": 0.125,
+            "input_audio_cost_per_mil_tokens": 0.625,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.125,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
-            "max_input_tokens": 200000
+            "max_input_tokens": 200000,
+            "valid_until": "2026-11-30"
           },
           {
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
             "input_cache_read_cost_per_mil_tokens": 0.25,
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.25,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
-            "min_input_tokens": 200001
+            "min_input_tokens": 200001,
+            "valid_until": "2026-11-30"
           }
         ],
         "priority": [
@@ -27470,19 +28627,25 @@
             "input_cost_per_mil_tokens": 2.25,
             "output_cost_per_mil_tokens": 18,
             "input_cache_read_cost_per_mil_tokens": 0.225,
+            "input_audio_cost_per_mil_tokens": 2.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.225,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
-            "max_input_tokens": 200000
+            "max_input_tokens": 200000,
+            "valid_until": "2026-11-30"
           },
           {
             "input_cost_per_mil_tokens": 4.5,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.45,
+            "input_audio_cost_per_mil_tokens": 4.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.45,
             "endpoints": [
               "generativelanguage.googleapis.com"
             ],
-            "min_input_tokens": 200001
+            "min_input_tokens": 200001,
+            "valid_until": "2026-11-30"
           }
         ]
       },
@@ -27536,11 +28699,25 @@
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 1.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.125,
+            "max_input_tokens": 200000
+          },
+          {
+            "input_audio_cost_per_mil_tokens": 2.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.25,
+            "min_input_tokens": 200001
+          }
+        ],
         "priority": [
           {
             "input_cost_per_mil_tokens": 2.25,
             "output_cost_per_mil_tokens": 18,
             "input_cache_read_cost_per_mil_tokens": 0.225,
+            "input_audio_cost_per_mil_tokens": 2.25,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.225,
             "supported_regions": [
               "global"
             ],
@@ -27550,6 +28727,8 @@
             "input_cost_per_mil_tokens": 4.5,
             "output_cost_per_mil_tokens": 27,
             "input_cache_read_cost_per_mil_tokens": 0.45,
+            "input_audio_cost_per_mil_tokens": 4.5,
+            "input_audio_cache_read_cost_per_mil_tokens": 0.45,
             "supported_regions": [
               "global"
             ],
@@ -27560,6 +28739,7 @@
           {
             "input_cost_per_mil_tokens": 0.625,
             "output_cost_per_mil_tokens": 5,
+            "input_audio_cost_per_mil_tokens": 0.625,
             "supported_regions": [
               "global"
             ],
@@ -27568,6 +28748,7 @@
           {
             "input_cost_per_mil_tokens": 1.25,
             "output_cost_per_mil_tokens": 7.5,
+            "input_audio_cost_per_mil_tokens": 1.25,
             "supported_regions": [
               "global"
             ],
@@ -27618,16 +28799,28 @@
     "output_cost_per_mil_tokens": 0,
     "pricing": {
       "google": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 6.5
+          }
+        ],
         "batch": [
           {
-            "input_cost_per_mil_tokens": 0.1
+            "input_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 3.25
           }
         ]
       },
       "vertex": {
+        "standard": [
+          {
+            "input_audio_cost_per_mil_tokens": 6.5
+          }
+        ],
         "batch": [
           {
             "input_cost_per_mil_tokens": 0.1,
+            "input_audio_cost_per_mil_tokens": 3.25,
             "supported_regions": [
               "global",
               "us",

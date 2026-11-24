@@ -1186,36 +1186,6 @@
   "gpt-6-astra-healthcare": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 10,
-    "output_cost_per_mil_tokens": 50,
-    "input_cache_read_cost_per_mil_tokens": 1,
-    "pricing": {
-      "openai": {
-        "fast": [
-          {
-            "input_cost_per_mil_tokens": 20,
-            "output_cost_per_mil_tokens": 100,
-            "input_cache_read_cost_per_mil_tokens": 2,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "max_input_tokens": 272000
-          },
-          {
-            "input_cost_per_mil_tokens": 40,
-            "output_cost_per_mil_tokens": 150,
-            "input_cache_read_cost_per_mil_tokens": 4,
-            "endpoints": [
-              "api.openai.com"
-            ],
-            "min_input_tokens": 272001
-          }
-        ],
-        "priority": {
-          "alias": "fast"
-        }
-      }
-    },
     "displayName": "GPT-6 Astra Healthcare",
     "available_providers": [
       "openai"

@@ -26955,6 +26955,7 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 0.75,
             "input_audio_cost_per_mil_tokens": 0.75,
             "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "endpoints": [
@@ -27219,6 +27220,7 @@
             "input_cost_per_mil_tokens": 0.75,
             "output_cost_per_mil_tokens": 3.75,
             "input_cache_read_cost_per_mil_tokens": 0.075,
+            "input_cache_write_cost_per_mil_tokens": 0.75,
             "input_audio_cost_per_mil_tokens": 0.75,
             "input_audio_cache_read_cost_per_mil_tokens": 0.075,
             "endpoints": [
@@ -27543,6 +27545,7 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2,
             "input_audio_cost_per_mil_tokens": 2,
             "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [
@@ -27757,6 +27760,7 @@
             "input_cost_per_mil_tokens": 2,
             "output_cost_per_mil_tokens": 10,
             "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2,
             "input_audio_cost_per_mil_tokens": 2,
             "input_audio_cache_read_cost_per_mil_tokens": 0.1,
             "endpoints": [

@@ -742,6 +742,14 @@
       "openrouter"
     ]
   },
+  "gpt-6.1-sol-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6.1 Sol Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6.1-terra": {
     "format": "openai",
     "flavor": "chat",

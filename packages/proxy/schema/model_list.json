@@ -7489,6 +7489,35 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/qwen4-max": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 4.5,
+    "input_cache_read_cost_per_mil_tokens": 0.075,
+    "pricing": {
+      "fireworks": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 1.875,
+            "output_cost_per_mil_tokens": 5.625,
+            "input_cache_read_cost_per_mil_tokens": 0.09375,
+            "endpoints": [
+              "api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/models/qwen4-max"
+          }
+        ]
+      }
+    },
+    "displayName": "Qwen4 Max",
+    "fallback_models": [
+      "qwen/qwen4-max"
+    ],
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/deepseek-v4-flash": {
     "format": "openai",
     "flavor": "chat",

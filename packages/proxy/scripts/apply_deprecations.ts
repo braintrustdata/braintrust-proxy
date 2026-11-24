@@ -157,16 +157,14 @@ export function planRetirements(
     .retiredModels;
 }
 
-// Mark a model no provider serves any more as retired. Keeps a past
-// retirement_date, otherwise records today as the date the audit saw it go.
-// Drops a deprecation_date that would land after the retirement.
-export function markRetired(spec: ModelSpec, now: Date): void {
-  const today = now.toISOString().slice(0, 10);
+// Mark verified removal without turning the audit observation into a date.
+export function markRetired(spec: ModelSpec): void {
   spec.retired = true;
-  if (!spec.retirement_date || spec.retirement_date > today) {
-    spec.retirement_date = today;
-  }
-  if (spec.deprecation_date && spec.deprecation_date > spec.retirement_date) {
+  if (
+    spec.retirement_date &&
+    spec.deprecation_date &&
+    spec.deprecation_date > spec.retirement_date
+  ) {
     delete spec.deprecation_date;
   }
 }
@@ -182,7 +180,6 @@ export function applyDeprecations(
   indexContent: string,
   deprecatedIds: string[],
   deprecations: Deprecation[],
-  now = new Date(),
 ): {
   catalog: Catalog;
   indexContent: string;
@@ -218,7 +215,7 @@ export function applyDeprecations(
 
     if (remaining.length === 0) {
       if (spec) {
-        markRetired(spec, now);
+        markRetired(spec);
         retiredModels.push(model);
       } else {
         nextIndex = rewriteIndexEntry(nextIndex, model, []);
@@ -304,7 +301,6 @@ async function main(): Promise<void> {
     indexContent,
     deprecatedIds,
     report.deprecations,
-    now,
   );
   const reviewNotes = [...(report.reviewNotes ?? []), ...retirementNotes];
   console.log(`Set retirement_date on ${retired.length} model(s).`);

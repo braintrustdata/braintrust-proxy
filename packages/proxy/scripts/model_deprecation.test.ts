@@ -70,6 +70,52 @@ describe("openrouter deprecation adapter", () => {
   });
 });
 
+it("keeps account-scoped 404s in review unless public lifecycle confirms removal", async () => {
+  const secret = { type: "anthropic", secret: "test", metadata: {} };
+  const fetchSecrets = vi
+    .spyOn(braintrustSecrets, "fetchProviderSecrets")
+    .mockResolvedValue(new Map([["anthropic", secret]]));
+  const list = vi
+    .spyOn(PROVIDER_APIS.anthropic, "listModels")
+    .mockResolvedValue(new Set());
+  const probe = vi
+    .spyOn(PROVIDER_APIS.anthropic, "probeModel")
+    .mockResolvedValue({ status: 404, body: "" });
+  const lifecycle = vi
+    .spyOn(globalThis, "fetch")
+    .mockResolvedValue(
+      new Response(
+        "| retired-model | Retired | May 1, 2026 | July 1, 2026 |\n" +
+          "| claude-mythos-5-2 | Active | N/A | Not sooner than November 9, 2027 |",
+      ),
+    );
+  try {
+    const report = await runAudit({
+      braintrustApiKey: "",
+      catalog: Object.fromEntries(
+        ["claude-mythos-5-2", "gated-model", "retired-model"].map((id) => [
+          id,
+          { available_providers: ["anthropic"] },
+        ]),
+      ),
+      indexContent: "",
+      concurrency: 1,
+      providerFilter: ["anthropic"],
+    });
+    expect(report.deprecations.map((d) => d.model)).toEqual(["retired-model"]);
+    expect(report.reviewNotes.map((n) => n.model)).toEqual([
+      "claude-mythos-5-2",
+      "gated-model",
+    ]);
+    expect(lifecycle).toHaveBeenCalledTimes(1);
+  } finally {
+    lifecycle.mockRestore();
+    probe.mockRestore();
+    list.mockRestore();
+    fetchSecrets.mockRestore();
+  }
+});
+
 describe("cohere deprecation adapter", () => {
   it("is registered as an authoritative, list-only, non-report-only provider", () => {
     const api = PROVIDER_APIS.cohere;
@@ -188,17 +234,12 @@ describe("applyDeprecations", () => {
     const catalog: Record<string, Record<string, unknown>> = {
       "model-b": { available_providers: ["xAI"] },
     };
-    const out = applyDeprecations(
-      catalog,
-      baseIndex,
-      baseDeprecatedIds,
-      [{ model: "model-b", provider: "xAI", reason: "probe not-found" }],
-      new Date("2026-11-17T12:00:00Z"),
-    );
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-b", provider: "xAI", reason: "probe not-found" },
+    ]);
     expect(out.catalog["model-b"]).toEqual({
       available_providers: ["xAI"],
       retired: true,
-      retirement_date: "2026-11-17",
     });
     expect(out.indexContent).toContain('"model-b": ["xAI"],');
     expect(out.result.retiredModels).toEqual(["model-b"]);
@@ -206,13 +247,12 @@ describe("applyDeprecations", () => {
     expect(out.deprecatedIds).toContain("model-b");
   });
 
-  it("keeps a past retirement_date and drops a later deprecation_date", () => {
-    const now = new Date("2026-11-17T12:00:00Z");
+  it("keeps past and future retirement dates and drops only an inconsistent deprecation date", () => {
     const past: Record<string, unknown> = {
       available_providers: ["xAI"],
       retirement_date: "2026-10-01",
     };
-    markRetired(past, now);
+    markRetired(past);
     expect(past).toMatchObject({
       retired: true,
       retirement_date: "2026-10-01",
@@ -223,12 +263,17 @@ describe("applyDeprecations", () => {
       deprecation_date: "2026-12-01",
       retirement_date: "2027-03-01",
     };
-    markRetired(early, now);
+    markRetired(early);
     expect(early).toEqual({
       available_providers: ["xAI"],
       retired: true,
-      retirement_date: "2026-11-17",
+      deprecation_date: "2026-12-01",
+      retirement_date: "2027-03-01",
     });
+
+    const inconsistent = { ...past, deprecation_date: "2026-12-01" };
+    markRetired(inconsistent);
+    expect(inconsistent).not.toHaveProperty("deprecation_date");
   });
 
   it("cleans removed fallback references while retaining surviving targets and order", () => {
@@ -372,6 +417,10 @@ describe("NEVER_DEPRECATE_MODELS (don't-deprecate list)", () => {
     ]) {
       expect(NEVER_DEPRECATE_MODELS.has(id)).toBe(true);
     }
+  });
+
+  it("protects the gated Claude Mythos 5.2 preview", () => {
+    expect(NEVER_DEPRECATE_MODELS.has("claude-mythos-5-2")).toBe(true);
   });
 
   it("never lists a preserved model as deprecated (no contradiction)", () => {

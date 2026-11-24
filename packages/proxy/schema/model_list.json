@@ -237,6 +237,14 @@
       "azure"
     ]
   },
+  "gpt-6.2-astra-healthcare": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "GPT-6.2 Astra Healthcare",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-6.2-sol": {
     "format": "openai",
     "flavor": "chat",

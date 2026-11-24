@@ -16121,8 +16121,6 @@
     "displayName": "Claude Mythos 5.2",
     "reasoning": true,
     "reasoning_budget": true,
-    "retired": true,
-    "retirement_date": "2026-11-24",
     "max_input_tokens": 1000000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -32624,7 +32622,6 @@
     "displayName": "Xiaomi: MiMo-V2.5-Pro",
     "reasoning": true,
     "retired": true,
-    "retirement_date": "2026-11-24",
     "max_input_tokens": 1050000,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -33999,7 +33996,6 @@
     "displayName": "Tencent: Hy3 Preview",
     "reasoning": true,
     "retired": true,
-    "retirement_date": "2026-11-24",
     "parent": "tencent/hy3",
     "max_input_tokens": 262144,
     "available_providers": [
@@ -36232,7 +36228,6 @@
     "output_cost_per_mil_tokens": 2.3,
     "displayName": "MoonshotAI: Kimi K2 0711",
     "retired": true,
-    "retirement_date": "2026-11-24",
     "max_input_tokens": 131072,
     "max_output_tokens": 100352,
     "available_providers": [
@@ -36260,7 +36255,6 @@
     "displayName": "MoonshotAI: Kimi K2 Thinking",
     "reasoning": true,
     "retired": true,
-    "retirement_date": "2026-11-24",
     "max_input_tokens": 262144,
     "max_output_tokens": 100352,
     "available_providers": [
@@ -36495,7 +36489,6 @@
     "displayName": "Meituan: LongCat 2.0",
     "reasoning": true,
     "retired": true,
-    "retirement_date": "2026-11-24",
     "max_input_tokens": 1048756,
     "max_output_tokens": 262144,
     "available_providers": [

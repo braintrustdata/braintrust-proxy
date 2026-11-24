@@ -287,6 +287,7 @@ jobs:
             3. Unless a priced endpoint already added or updated the target, find the provider's official public on-demand pricing for this exact target model. Do not use third-party pricing sources, free tiers, batch pricing, promotional pricing, reserved capacity, or guesses. If pricing cannot be mapped confidently to the local schema, leave the catalog unchanged.
             4. Add a complete, schema-valid target entry using verified values only. Include token limits, capabilities, and lifecycle metadata only when official sources make them clear; omit uncertain fields.
                Verify token limits already populated by a provider script as well. Use the exact model or documented snapshot's explicit input and output caps, and check them against the total context window. If the sources conflict, report the conflict and cite the sources in the model validation prompt.
+               For capability flags, use only official evidence for the exact model ID on the specific provider and inference surface (e.g. Fireworks Serverless, not a dedicated deployment). Do not inherit capabilities from the base model or a companion. Explicit provider negatives win over positives; omit unsupported or uncertain flags, including flags from earlier sync steps.
             5. Add the matching provider mapping in `packages/proxy/schema/index.ts`. Preserve the existing JSON formatting and field ordering; do not manually reorder entries, because the next workflow step applies the repository's canonical model ordering and regenerates the provider index.
             6. For the target and every new or existing companion, add or refresh provider/tier `pricing` following `.github/model-pricing.md`, even when a priced endpoint handled the target or the model already exists.
                Check batch, fast, ultrafast, flex, and priority independently on each provider. Batch uses a separate API on many providers; fast can use `service_tier`, `speed`, or a different upstream `model_id`. Record only verified rates and conditions, and report unsupported or unresolved checks. Do not apply the standard-price companion assumptions to tier prices. Use explicit same-model/provider aliases for verified tier synonyms; update the target array only.
@@ -321,6 +322,8 @@ jobs:
 
             If you added or changed any catalog entries, write a model validation prompt for the target and its cloud companions to `${{ runner.temp }}/model-validation-prompt.md`, following `.github/model-validation-prompt.md`. The workflow appends it to the pull request description.
 
+            Write a JSON array to `${{ runner.temp }}/model-capability-evidence.json` (empty if there are no claims). For each new true `multimodal`, `o1_like`, `reasoning`, `reasoning_budget`, `supports_streaming`, `supports_decisions`, or `streaming_only` flag, and each such flag on a newly added provider, include one record per official source checked: `{"model":"exact catalog ID","provider":"catalog provider ID","surface":"exact documented inference surface","capability":"catalog field","supported":true,"source":"https://...","quote":"verbatim evidence"}`. For Fireworks, use `"surface":"serverless"`. Include any conflicting negative as `"supported":false`. A model-family description or a different provider/surface is not evidence.
+
             # Final report
 
             List every official URL checked and, for each requested model, state:
@@ -332,7 +335,7 @@ jobs:
             - which cloud companion slugs, provider mappings, and fallback links were added using the established slug conventions and identical-price assumption; and
             - if no change was made, the specific target requirement that remains unresolved.
 
-            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files and the model validation prompt file.
+            Do not create issues, pull requests, commits, comments, or files outside the two allowed catalog files, model validation prompt, and capability evidence file.
 
       - name: Flush Braintrust trace
         if: always() && steps.claude_trace.outcome == 'success'
@@ -341,6 +344,8 @@ jobs:
       - name: Verify research completed without errors
         env:
           EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+          CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
+          FIREWORKS_API_KEY: ${{ secrets.FIREWORKS_API_KEY }}
         run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
 
       - name: Check whether the target changed the catalog
@@ -385,7 +390,7 @@ jobs:
 
       - name: Validate model schema
         if: steps.changes.outputs.changed == 'true'
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/check_model_research.test.ts
 
       - name: Check model display names
         if: steps.changes.outputs.changed == 'true'

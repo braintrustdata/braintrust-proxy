@@ -81,8 +81,29 @@ function isProviderHost(host: string, provider: string): boolean {
 
 type PricingCatalog = Record<
   string,
-  Record<string, unknown> & { available_providers?: string[] | null }
+  Record<string, unknown> & {
+    available_providers?: string[] | null;
+    displayName?: string | null;
+  }
 >;
+
+function quoteNames(quote: string, name: string): boolean {
+  const literal = name.trim().replace(/\s+/g, " ");
+  if (!literal) return false;
+  const escaped = literal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`(?:^|[^\\w/:-])${escaped}(?![\\w/-]|[.:]\\w)`, "i").test(
+    quote,
+  );
+}
+
+function quoteHasPrice(quote: string, value: number): boolean {
+  const amounts = quote.matchAll(
+    /(?:\$|\bUSD)\s*(\d+(?:,\d{3})*(?:\.\d+)?)(?!\d|[.,]\d)/gi,
+  );
+  return Array.from(amounts).some(
+    ([, amount]) => Number(amount.replace(/,/g, "")) === value,
+  );
+}
 
 export function checkModelPrices(
   before: PricingCatalog,
@@ -126,7 +147,20 @@ export function checkModelPrices(
           ) {
             return false;
           }
-          return isProviderHost(new URL(claim.source).hostname, provider);
+          if (!isProviderHost(new URL(claim.source).hostname, provider)) {
+            return false;
+          }
+
+          const quote = claim.quote.replace(/\s+/g, " ");
+          return (
+            (provider !== "fireworks" ||
+              claim.surface.toLowerCase() === "serverless") &&
+            (quoteNames(quote, model) ||
+              (entry.displayName != null &&
+                quoteNames(quote, entry.displayName))) &&
+            quoteNames(quote, claim.surface) &&
+            quoteHasPrice(quote, claim.value)
+          );
         });
         if (!verified) {
           throw new Error(
@@ -484,29 +518,22 @@ async function main(): Promise<void> {
   checkModelResearch(JSON.parse(readFileSync(executionFile, "utf8")));
   const catalog = "packages/proxy/schema/model_list.json";
   const index = "packages/proxy/schema/index.ts";
+  const readHead = (path: string) =>
+    execFileSync("git", ["show", `HEAD:${path}`], {
+      encoding: "utf8",
+      maxBuffer: 32 * 1024 * 1024,
+    });
   const priceEvidenceFile = process.env.PRICE_EVIDENCE_FILE;
   if (priceEvidenceFile) {
-    const baselineDir = process.env.PRE_RESEARCH_CATALOG_DIR;
-    if (!baselineDir) {
-      throw new Error("Missing pre-research catalog snapshots.");
-    }
     checkModelPrices(
-      JSON.parse(readFileSync(`${baselineDir}/model_list.json`, "utf8")),
+      JSON.parse(readHead(catalog)),
       JSON.parse(readFileSync(catalog, "utf8")),
       JSON.parse(readFileSync(priceEvidenceFile, "utf8")),
-      {
-        before: readFileSync(`${baselineDir}/index.ts`, "utf8"),
-        after: readFileSync(index, "utf8"),
-      },
+      { before: readHead(index), after: readFileSync(index, "utf8") },
     );
   }
   const evidenceFile = process.env.CAPABILITY_EVIDENCE_FILE;
   if (evidenceFile) {
-    const readHead = (path: string) =>
-      execFileSync("git", ["show", `HEAD:${path}`], {
-        encoding: "utf8",
-        maxBuffer: 32 * 1024 * 1024,
-      });
     await checkModelCapabilities(
       JSON.parse(readHead(catalog)),
       JSON.parse(readFileSync(catalog, "utf8")),

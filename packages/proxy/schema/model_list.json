@@ -7512,7 +7512,8 @@
     },
     "displayName": "Qwen4 Max",
     "fallback_models": [
-      "qwen/qwen4-max"
+      "qwen/qwen4-max",
+      "Qwen/Qwen4-Max"
     ],
     "available_providers": [
       "fireworks"
@@ -24018,6 +24019,19 @@
     "output_cost_per_mil_tokens": 4.5,
     "input_cache_read_cost_per_mil_tokens": 0.3,
     "displayName": "Qwen3.7 Max",
+    "reasoning": true,
+    "max_input_tokens": 1000000,
+    "available_providers": [
+      "together"
+    ]
+  },
+  "Qwen/Qwen4-Max": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 4.5,
+    "displayName": "Qwen4 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
     "available_providers": [

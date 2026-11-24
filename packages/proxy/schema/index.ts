@@ -968,6 +968,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "anthropic.claude-fable-5": ["bedrock"],
   "global.anthropic.claude-fable-5": ["bedrock"],
   "Qwen/Qwen3.7-Max": ["together"],
+  "Qwen/Qwen4-Max": ["together"],
   "grok-build-0.1": ["xAI", "openrouter"],
   "deepseek.v3-v1:0": ["bedrock"],
   "deepseek.r1-v1:0": ["bedrock"],

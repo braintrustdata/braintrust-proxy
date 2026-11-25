@@ -38,8 +38,9 @@ type Catalog = Record<
 >;
 type ProviderMappings = { before: string; after: string };
 
+const priceFieldPattern = /^(.+)_cost_per_(second|(?:mil_)?tokens?)$/;
 const priceKeys = Object.keys(ModelSchema.shape).filter((key) =>
-  /_cost_per_(?:mil_)?tokens?$/.test(key),
+  priceFieldPattern.test(key),
 );
 const priceEvidenceSchema = z.array(
   z.object({
@@ -144,11 +145,29 @@ const priceLabels = new Map(
   }),
 );
 
-function priceFieldLabel(text: string): string | undefined {
-  const label = text
+const durationPriceLabels = new Map(
+  Object.entries({
+    active: "audio_duration",
+    "active audio": "audio_duration",
+    "active duration": "audio_duration",
+    duration: "audio_duration",
+    "audio duration": "audio_duration",
+    "metered duration": "audio_duration",
+    "metered audio duration": "audio_duration",
+    standby: "audio_standby",
+    "audio standby": "audio_standby",
+    "standby audio": "audio_standby",
+    "standby duration": "audio_standby",
+  }),
+);
+
+function priceFieldLabel(text: string, perSecond: boolean): string | undefined {
+  const normalized = text
     .trim()
     .toLowerCase()
-    .replace(/[\s-]+/g, " ")
+    .replace(/[\s-]+/g, " ");
+  if (perSecond) return durationPriceLabels.get(normalized);
+  const label = normalized
     .replace(/ tokens?$/, "")
     .replace(/(read|write)s$/, "$1");
   const ttl = /^(\d+[mh]) cache write$|^(?:input )?cache write (\d+[mh])$/.exec(
@@ -171,26 +190,23 @@ const tokenUnitPowers = new Map([
 ]);
 
 function quoteHasPrice(quote: string, field: string, value: number): boolean {
-  const fieldParts = /^(.*)_cost_per_(mil_)?tokens?$/.exec(field);
+  const fieldParts = priceFieldPattern.exec(field);
   if (!fieldParts) return false;
-  const [, expectedLabel, perMillion] = fieldParts;
-  const catalogPower = perMillion ? 6 : 0;
+  const [, expectedLabel, catalogUnit] = fieldParts;
+  const perSecond = catalogUnit === "second";
+  const ratePattern = perSecond
+    ? /(?:\$|\bUSD\s+)\s*(?<amount>\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s*(?:per\s+|\/\s*)(?:(?<prefixLabel>.*?)\s+)?(?<unit>seconds?|secs?|s|minutes?|mins?|hours?|hrs?|h)\b(?:\s+(?:of\s+)?(?<suffixLabel>.*?))?[.)]?\s*$/i
+    : /(?:\$|\bUSD\s+)\s*(?<amount>\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s*(?:per\s+|\/\s*)(?:(?<unit>\d[\d,]*[mk]?|million|thousand|[mk])\s+)?(?<suffixLabel>.*?)\btokens?\b[.)]?\s*$/i;
   return quote.split(/[|;\n]|,(?!\d{3}\b)/).some((clause) => {
-    const rate =
-      /(?:\$|\bUSD\s+)\s*(\d+(?:,\d{3})*(?:\.\d+)?|\.\d+)\s*(?:per\s+|\/\s*)(?:(\d[\d,]*[mk]?|million|thousand|[mk])\s+)?(.*?)\btokens?\b[.)]?\s*$/i.exec(
-        clause,
-      );
-    if (!rate) return false;
-    const [, amount, unit = "", suffix] = rate;
-    const prefix =
-      clause
-        .slice(0, rate.index)
-        .trim()
-        .replace(/[:=]$/, "")
-        .split(":")
-        .pop() ?? "";
-    const before = priceFieldLabel(prefix);
-    const after = priceFieldLabel(suffix);
+    const rate = ratePattern.exec(clause);
+    if (!rate?.groups) return false;
+    const { amount, unit = "", prefixLabel, suffixLabel } = rate.groups;
+    const suffix = [prefixLabel, suffixLabel].filter(Boolean).join(" ");
+    const leadingText = clause.slice(0, rate.index).trim();
+    if (perSecond && /[-−]$/.test(leadingText)) return false;
+    const prefix = leadingText.replace(/[:=]$/, "").split(":").pop() ?? "";
+    const before = priceFieldLabel(prefix, perSecond);
+    const after = priceFieldLabel(suffix, perSecond);
     if (
       (suffix.trim() && !after) ||
       (before && after && before !== after) ||
@@ -199,13 +215,26 @@ function quoteHasPrice(quote: string, field: string, value: number): boolean {
       return false;
     }
 
-    const quotePower = tokenUnitPowers.get(
-      unit.toLowerCase().replace(/,/g, ""),
-    );
+    const normalizedUnit = unit.toLowerCase().replace(/,/g, "");
+    const normalizedAmount = amount.replace(/,/g, "");
+    if (perSecond) {
+      const seconds = normalizedUnit.startsWith("m")
+        ? 60
+        : normalizedUnit.startsWith("h")
+          ? 3600
+          : 1;
+      const converted = Number(normalizedAmount) / seconds;
+      return (
+        Number.isFinite(converted) &&
+        Math.abs(converted - value) <= Number.EPSILON * converted
+      );
+    }
+
+    const catalogPower = catalogUnit.startsWith("mil_") ? 6 : 0;
+    const quotePower = tokenUnitPowers.get(normalizedUnit);
     return (
       quotePower !== undefined &&
-      Number(`${amount.replace(/,/g, "")}e${catalogPower - quotePower}`) ===
-        value
+      Number(`${normalizedAmount}e${catalogPower - quotePower}`) === value
     );
   });
 }

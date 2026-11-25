@@ -172,6 +172,66 @@ describe("checkModelPrices", () => {
     },
   );
 
+  describe("audio rates", () => {
+    const duration = "audio_duration_cost_per_second";
+    const standby = "audio_standby_cost_per_second";
+    const model = "gpt-live";
+    const surface = "OpenAI API";
+    const mappings = { before: "", after: "" };
+    const catalog = (field: string, value: number) => ({
+      [model]: { available_providers: ["openai"], [field]: value },
+    });
+    const check = (field: string, value: number, rates: string) =>
+      checkModelPrices(
+        {},
+        catalog(field, value),
+        [
+          {
+            model,
+            provider: "openai",
+            surface,
+            field,
+            value,
+            source: "https://openai.com/pricing-example",
+            quote: `${surface}: ${model}\n${rates}`,
+          },
+        ],
+        mappings,
+      );
+
+    it.each([duration, standby])("requires evidence for %s", (field) => {
+      expect(() =>
+        checkModelPrices({}, catalog(field, 0.0001), [], mappings),
+      ).toThrow(`missing exact-provider pricing evidence for ${field}`);
+    });
+
+    it.each([
+      [duration, "Duration: $0.006 per minute", 0.0001],
+      [duration, "$0.006 per active minute", 0.0001],
+      [duration, "Active: $0.05/min; Standby: $0.02/min", 0.05 / 60],
+      [standby, "Active: $0.05/min; Standby: $0.02/min", 0.02 / 60],
+      [standby, "Standby: $0.36 per hour", 0.0001],
+      [standby, "USD 0.001 per second of standby", 0.001],
+    ])("verifies %s from %s", (field, quote, value) => {
+      expect(() => check(field, value, quote)).not.toThrow();
+    });
+
+    it.each([
+      [duration, "Standby: $0.006 per minute", 0.0001],
+      [standby, "Active: $0.006 per minute", 0.0001],
+      [duration, "$0.006 per minute", 0.0001],
+      [duration, "Duration: $0.006 per minute of standby", 0.0001],
+      [duration, "Duration: $0.006 per minute", 0.006],
+      [duration, "Duration: $0.0001 per million tokens", 0.0001],
+      [duration, "Active tokens: $0.006 per minute", 0.0001],
+      [duration, "-$0.006 per active minute", 0.0001],
+    ])("rejects %s from %s at %s", (field, quote, value) => {
+      expect(() => check(field, value, quote)).toThrow(
+        "missing exact-provider pricing evidence",
+      );
+    });
+  });
+
   it("requires evidence when direct sync adds a route but leaves its price unchanged", () => {
     const cwd = mkdtempSync(join(tmpdir(), "model-price-evidence-"));
     const write = (path: string, content: string) =>

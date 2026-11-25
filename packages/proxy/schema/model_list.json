@@ -5076,7 +5076,7 @@
   },
   "gpt-4o-mini-transcribe": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "pricing": {
@@ -5100,7 +5100,7 @@
   },
   "gpt-4o-mini-tts": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 12,
     "pricing": {
@@ -5145,7 +5145,7 @@
   },
   "gpt-4o-transcribe": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "pricing": {
@@ -5169,7 +5169,7 @@
   },
   "gpt-4o-transcribe-diarize": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "pricing": {
@@ -5193,7 +5193,7 @@
   },
   "gpt-4o-mini-transcribe-2025-12-15": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "pricing": {
@@ -5218,7 +5218,7 @@
   },
   "gpt-4o-mini-tts-2025-12-15": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 12,
     "pricing": {
@@ -5275,7 +5275,7 @@
   },
   "gpt-4o-mini-transcribe-2025-03-20": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 5,
     "pricing": {
@@ -5300,7 +5300,7 @@
   },
   "gpt-4o-mini-tts-2025-03-20": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 12,
     "pricing": {
@@ -7247,7 +7247,7 @@
   },
   "tts-1": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "displayName": "TTS-1",
     "deprecation_date": "2026-10-01",
     "retirement_date": "2027-01-06",
@@ -7258,7 +7258,7 @@
   },
   "tts-1-hd": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "displayName": "TTS-1 HD",
     "deprecation_date": "2026-10-01",
     "retirement_date": "2027-01-06",
@@ -7269,7 +7269,7 @@
   },
   "tts-1-1106": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "available_providers": [
       "openai",
       "azure"
@@ -7277,7 +7277,7 @@
   },
   "tts-1-hd-1106": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "speech",
     "available_providers": [
       "openai",
       "azure"
@@ -7285,7 +7285,7 @@
   },
   "whisper-1": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "displayName": "Whisper 1",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-02-26",
@@ -11376,7 +11376,7 @@
   },
   "accounts/fireworks/models/whisper-v3": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
@@ -11386,7 +11386,7 @@
   },
   "accounts/fireworks/models/whisper-v3-turbo": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "deprecation_date": "2026-06-10",
     "max_input_tokens": 4096,
     "max_output_tokens": 4096,
@@ -30275,7 +30275,7 @@
   },
   "grok-voice-transcribe-1.0": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "displayName": "Grok Voice Transcribe 1.0",
     "retirement_date": "2026-10-02",
     "available_providers": [
@@ -30284,7 +30284,7 @@
   },
   "grok-voice-transcribe-2.0": {
     "format": "openai",
-    "flavor": "chat",
+    "flavor": "transcription",
     "displayName": "Grok Voice Transcribe 2.0",
     "available_providers": [
       "xAI"

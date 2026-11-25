@@ -602,6 +602,20 @@ it("resolves voice model providers and preserves voice flavors", () => {
   }
 });
 
+// Distinguish dedicated audio endpoints from Chat Completions with audio.
+it.each([
+  ["tts-1", "speech"],
+  ["gpt-4o-mini-tts", "speech"],
+  ["whisper-1", "transcription"],
+  ["gpt-4o-transcribe-diarize", "transcription"],
+  ["accounts/fireworks/models/whisper-v3-turbo", "transcription"],
+  ["grok-voice-transcribe-2.0", "transcription"],
+  ["gpt-audio", "chat"],
+  ["gpt-4o-mini-audio-preview", "chat"],
+])("classifies %s as %s in the catalog", (model, flavor) => {
+  expect(getAvailableModels()[model]?.flavor).toBe(flavor);
+});
+
 it("defines GPT-Live 1.1 like GPT-Live 1 without unverified metadata", () => {
   expect(raw_models["gpt-live-1.1"]).toEqual({
     ...raw_models["gpt-live-1"],

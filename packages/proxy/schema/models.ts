@@ -13,6 +13,8 @@ export const ModelFlavors = [
   "decisions",
   "realtime",
   "live",
+  "speech",
+  "transcription",
 ] as const;
 export type ModelFlavor = (typeof ModelFlavors)[number];
 

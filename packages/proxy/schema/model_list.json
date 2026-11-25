@@ -29075,6 +29075,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
+    "standard_service_tier_aliases": {
+      "inference.baseten.co": "auto"
+    },
     "input_cache_read_cost_per_mil_tokens": 0.007,
     "pricing": {
       "together": {
@@ -29114,6 +29117,9 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.13,
     "output_cost_per_mil_tokens": 0.26,
+    "standard_service_tier_aliases": {
+      "inference.baseten.co": "auto"
+    },
     "input_cache_read_cost_per_mil_tokens": 0.028,
     "providers": {
       "baseten": {
@@ -29209,6 +29215,9 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.5,
+    "standard_service_tier_aliases": {
+      "inference.baseten.co": "auto"
+    },
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "together": {
@@ -29257,6 +29266,9 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
+    "standard_service_tier_aliases": {
+      "inference.baseten.co": "auto"
+    },
     "input_cache_read_cost_per_mil_tokens": 0.14,
     "pricing": {
       "together": {

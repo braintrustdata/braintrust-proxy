@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { type StoredModelSpec as ModelSpec } from "../schema/models";
 import modelList from "../schema/model_list.json";
 import {
   addProviderToProviderMappingContent,
   removeProviderMappingEntriesFromContent,
   resolveRemoteModels,
+  resolveRemoteProviderMetadata,
+  applyProviderMetadata,
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
@@ -1821,6 +1823,124 @@ describe("resolveRemoteModels", () => {
         "gpt-4o-search-preview",
       ),
     ).toBe(true);
+  });
+});
+
+describe("provider metadata sync", () => {
+  const name = "gpt-3.5-turbo-instruct";
+  const today = "2026-08-01";
+  const model: ModelSpec = {
+    format: "openai",
+    flavor: "chat",
+    providers: {
+      openai: { max_input_tokens: 4096, deprecation_date: "2026-07-01" },
+      azure: { max_input_tokens: 4097 },
+    },
+  };
+
+  it("writes the matched provider's limits and LiteLLM shutdown date", () => {
+    const remote = parseRemoteModelList({
+      [name]: { litellm_provider: "openai", max_input_tokens: 4096 },
+      "azure/gpt-35-turbo-instruct": {
+        litellm_provider: "azure",
+        max_input_tokens: 8000,
+        max_output_tokens: 2000,
+        deprecation_date: "2027-01-01",
+      },
+    });
+    const metadata = resolveRemoteProviderMetadata(
+      remote,
+      { [name]: model },
+      "openai",
+    ).get(name);
+    const updated = applyProviderMetadata(
+      name,
+      model,
+      "azure",
+      metadata!.azure!,
+      "LiteLLM",
+      today,
+    );
+    expect(updated.providers).toEqual({
+      openai: model.providers!.openai,
+      azure: {
+        max_input_tokens: 8000,
+        max_output_tokens: 2000,
+        retirement_date: "2027-01-01",
+      },
+    });
+    expect(updated.max_input_tokens).toBe(4096);
+  });
+
+  it("retires only the provider whose shutdown date has passed", () => {
+    const remote = parseRemoteModelList({
+      [name]: { litellm_provider: "openai", deprecation_date: "2026-07-31" },
+    });
+    const metadata = resolveRemoteProviderMetadata(
+      remote,
+      { [name]: model },
+      "openai",
+    ).get(name);
+    const updated = applyProviderMetadata(
+      name,
+      model,
+      "openai",
+      metadata!.openai!,
+      "LiteLLM",
+      today,
+    );
+    expect(updated.providers?.openai).toMatchObject({
+      deprecation_date: "2026-07-01",
+      retirement_date: "2026-07-31",
+      retired: true,
+    });
+    expect(updated.available_providers).toEqual(["azure"]);
+    expect(updated.retired).toBe(false);
+    expect(updated.retirement_date).toBeUndefined();
+    expect(updated.max_input_tokens).toBe(4097);
+
+    const scheduled: ModelSpec = {
+      ...model,
+      providers: {
+        ...model.providers,
+        openai: { ...model.providers?.openai, retirement_date: "2026-07-31" },
+      },
+    };
+    const removedFromFeed = resolveRemoteProviderMetadata(
+      {},
+      { [name]: scheduled },
+      "openai",
+      today,
+    ).get(name);
+    expect(
+      applyProviderMetadata(
+        name,
+        scheduled,
+        "openai",
+        removedFromFeed!.openai!,
+        "LiteLLM",
+        today,
+      ).available_providers,
+    ).toEqual(["azure"]);
+  });
+
+  it("reports the source, provider field, and old and new values for review", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      applyProviderMetadata(
+        name,
+        model,
+        "azure",
+        { max_input_tokens: 8000 },
+        "LiteLLM",
+        today,
+      );
+      expect(warn).toHaveBeenCalledWith(
+        "  [REVIEW] gpt-3.5-turbo-instruct.providers.azure.max_input_tokens: LiteLLM 8000 differs from catalog 4097",
+      );
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
 

@@ -404,6 +404,9 @@ type LiteLLMModelDetail = z.infer<typeof liteLLMModelDetailSchema>;
 type LiteLLMModelList = z.infer<typeof liteLLMModelListSchema>;
 type LocalModelDetail = ModelSpec; // Use ModelSpec from schema/models.ts
 type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schema/models.ts
+type ModelProviders = NonNullable<ModelSpec["providers"]>;
+type CatalogProvider = keyof ModelProviders;
+type ProviderMetadata = NonNullable<ModelProviders[CatalogProvider]>;
 
 export function isSupportedRemoteModel(
   remoteModel: LiteLLMModelDetail,
@@ -777,6 +780,7 @@ const openRouterTopProviderSchema = z
 const openRouterModelSchema = z
   .object({
     id: z.string(),
+    expiration_date: z.string().date().nullish().catch(undefined),
     name: z.string().optional(),
     context_length: z.number().nullish(),
     pricing: openRouterPricingSchema.optional(),
@@ -791,6 +795,46 @@ const openRouterModelListSchema = z
   .passthrough();
 
 type OpenRouterModel = z.infer<typeof openRouterModelSchema>;
+
+const openRouterEndpointsSchema = z.object({
+  data: z.object({
+    endpoints: z.array(
+      z.object({
+        context_length: z.number().nullish(),
+        max_prompt_tokens: z.number().nullish(),
+        max_completion_tokens: z.number().nullish(),
+      }),
+    ),
+  }),
+});
+
+async function fetchOpenRouterEndpointLimits(
+  slug: string,
+): Promise<ProviderMetadata> {
+  const id = slug.split("/").map(encodeURIComponent).join("/");
+  const url = `${OPENROUTER_MODEL_URL}/${id}/endpoints`;
+  const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
+  if (!response.ok) {
+    throw new Error(`GET ${url} returned HTTP ${response.status}`);
+  }
+  const { data } = openRouterEndpointsSchema.parse(await response.json());
+  const minKnown = (values: (number | null | undefined)[]) => {
+    const known = values.filter(
+      (value): value is number => value != null && value > 0,
+    );
+    return known.length ? Math.min(...known) : undefined;
+  };
+  return {
+    max_input_tokens: minKnown(
+      data.endpoints.map(
+        (endpoint) => endpoint.max_prompt_tokens ?? endpoint.context_length,
+      ),
+    ),
+    max_output_tokens: minKnown(
+      data.endpoints.map((endpoint) => endpoint.max_completion_tokens),
+    ),
+  };
+}
 
 // The /api/v1/models directory is public; no API key is required to list models.
 async function fetchOpenRouterModels(): Promise<OpenRouterModel[]> {
@@ -1058,15 +1102,23 @@ const LITELLM_MISSING_SHUTDOWN_DATES: Record<string, string> = {
   "gpt-3.5-turbo-instruct-0914": "2026-09-28",
 };
 
+function getRemoteShutdownDate(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+): string | undefined {
+  const date = z.string().date().safeParse(remoteModel.deprecation_date);
+  return date.success
+    ? date.data
+    : LITELLM_MISSING_SHUTDOWN_DATES[remoteModelName];
+}
+
 // LiteLLM's deprecation_date is the provider's shutdown date.
 function isShutDownRemoteModel(
   remoteModelName: string,
   remoteModel: LiteLLMModelDetail,
   today: string,
 ): boolean {
-  const shutdownDate =
-    remoteModel.deprecation_date ??
-    LITELLM_MISSING_SHUTDOWN_DATES[remoteModelName];
+  const shutdownDate = getRemoteShutdownDate(remoteModelName, remoteModel);
   return shutdownDate !== undefined && shutdownDate <= today;
 }
 
@@ -1189,6 +1241,155 @@ export function resolveRemoteModels(
   }
 
   return result;
+}
+
+export function resolveRemoteProviderMetadata(
+  remoteModels: LiteLLMModelList,
+  localModels: LocalModelList,
+  providerFilter?: string,
+  today: string = new Date().toISOString().slice(0, 10),
+): Map<string, ModelProviders> {
+  const result = new Map<string, ModelProviders>();
+  const filter = providerFilter?.toLowerCase();
+  for (const [name, model] of Object.entries(localModels)) {
+    for (const [provider, metadata] of Object.entries(model.providers ?? {})) {
+      if (
+        filter &&
+        filter !== provider.toLowerCase() &&
+        !(filter === "openai" && provider === "azure")
+      ) {
+        continue;
+      }
+      if (
+        metadata.retired ||
+        !metadata.retirement_date ||
+        metadata.retirement_date > today
+      ) {
+        continue;
+      }
+      const providers = result.get(name) ?? {};
+      providers[provider as CatalogProvider] = {};
+      result.set(name, providers);
+    }
+  }
+
+  for (const remoteName of Object.keys(remoteModels).sort(
+    (a, b) => a.split("/").length - b.split("/").length || a.localeCompare(b),
+  )) {
+    const remote = remoteModels[remoteName];
+    if (!isSupportedRemoteModel(remote)) continue;
+
+    const azure = remote.litellm_provider === "azure";
+    const openRouter = remote.litellm_provider === "openrouter";
+    if (
+      filter &&
+      (azure
+        ? filter !== "openai" && filter !== "azure"
+        : openRouter
+          ? filter !== "openrouter"
+          : !matchesProviderFilter(remoteName, remote, providerFilter))
+    ) {
+      continue;
+    }
+
+    const provider = (
+      azure
+        ? "azure"
+        : openRouter
+          ? "openrouter"
+          : getProviderMappingForModel(remoteName, remote)[0]
+    ) as CatalogProvider | undefined;
+    if (!provider) continue;
+
+    let name = translateToBraintrust(remoteName, remote.litellm_provider);
+    if (azure) {
+      name = remoteName
+        .split("/")
+        .at(-1)!
+        .replace(/^gpt-35-turbo(?=-|$)/, "gpt-3.5-turbo");
+    } else if (openRouter) {
+      const slug = remoteName.replace(/^openrouter\//, "");
+      const canonical = openRouterCanonicalId(slug);
+      if (!canonical) continue;
+      name = localModels[slug]?.providers?.openrouter ? slug : canonical;
+    }
+    if (!localModels[name]?.providers?.[provider]) continue;
+
+    const providers = result.get(name) ?? {};
+    const previous = providers[provider];
+    providers[provider] = {
+      retirement_date:
+        previous?.retirement_date ?? getRemoteShutdownDate(remoteName, remote),
+      max_input_tokens:
+        previous?.max_input_tokens ?? getNonZeroNumber(remote.max_input_tokens),
+      max_output_tokens:
+        previous?.max_output_tokens ??
+        getNonZeroNumber(remote.max_output_tokens),
+    };
+    result.set(name, providers);
+  }
+  return result;
+}
+
+export function applyProviderMetadata(
+  name: string,
+  model: ModelSpec,
+  provider: CatalogProvider,
+  remote: ProviderMetadata,
+  source: string,
+  today: string,
+): ModelSpec {
+  const current = model.providers?.[provider];
+  if (!current) return model;
+
+  const updated = { ...current };
+  let changed = false;
+  const warn = (field: keyof ProviderMetadata, value: string | number) =>
+    console.warn(
+      `  [REVIEW] ${name}.providers.${provider}.${field}: ${source} ${value} differs from catalog ${current[field] ?? "unset"}`,
+    );
+
+  if (
+    remote.retirement_date &&
+    remote.retirement_date !== current.retirement_date
+  ) {
+    warn("retirement_date", remote.retirement_date);
+    if (
+      current.deprecation_date &&
+      remote.retirement_date < current.deprecation_date
+    ) {
+      console.warn(
+        `  [REVIEW] ${name}.providers.${provider}: shutdown precedes deprecation_date; not applied`,
+      );
+    } else {
+      updated.retirement_date = remote.retirement_date;
+      changed = true;
+    }
+  }
+  for (const field of ["max_input_tokens", "max_output_tokens"] as const) {
+    const value = remote[field];
+    if (value != null && value !== current[field]) {
+      warn(field, value);
+      if (!isFieldManuallyPreserved(name, field)) {
+        updated[field] = value;
+        changed = true;
+      }
+    }
+  }
+  if (
+    updated.retirement_date &&
+    updated.retirement_date <= today &&
+    !updated.retired
+  ) {
+    updated.retired = true;
+    changed = true;
+  }
+  return changed
+    ? normalizeModelProviders({
+        ...model,
+        providers: { ...model.providers, [provider]: updated },
+      })
+    : model;
 }
 
 function mergeLocalModelDetails(
@@ -2834,6 +3035,34 @@ async function updateModelsCommand(argv: any) {
       console.log(`(Filtered for provider: ${argv.provider})`);
     }
     let discrepanciesFound = 0;
+    const today = new Date().toISOString().slice(0, 10);
+    const providerMetadata = resolveRemoteProviderMetadata(
+      remoteModels,
+      localModels,
+      argv.provider,
+      today,
+    );
+    for (const [name, providers] of providerMetadata) {
+      const before = updatedLocalModels[name];
+      let after = before;
+      for (const [provider, metadata] of Object.entries(providers)) {
+        after = applyProviderMetadata(
+          name,
+          after,
+          provider as CatalogProvider,
+          metadata,
+          "LiteLLM",
+          today,
+        );
+      }
+      if (after === before) continue;
+      updatedLocalModels[name] = after;
+      discrepanciesFound++;
+      madeChanges = true;
+      console.log(
+        `  ${argv.write ? "[WRITE]" : "[DRY RUN]"} ${name} provider metadata: ${JSON.stringify(after.providers)}`,
+      );
+    }
 
     const modelsToCompare: Array<{
       localModelName: string;
@@ -2843,7 +3072,11 @@ async function updateModelsCommand(argv: any) {
       mergedProviders: string[];
     }> = [];
 
-    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
+    const resolvedRemote = resolveRemoteModels(
+      remoteModels,
+      argv.provider,
+      today,
+    );
 
     if (argv.provider) {
       for (const [
@@ -3089,11 +3322,11 @@ async function updateModelsCommand(argv: any) {
         "max_output_tokens",
       );
 
-      // LiteLLM's deprecation_date is the provider's shutdown date, not the
-      // notice date we store. Lifecycle dates come from the provider-direct
-      // audit, so only report a disagreement.
+      // Without a provider map, a LiteLLM shutdown date is only a review
+      // signal: it does not tell us when every route shuts down.
       const remoteShutdownDate = remoteModelDetail.deprecation_date;
       if (
+        !localModelDetail.providers &&
         remoteShutdownDate &&
         remoteShutdownDate !== localModelDetail.retirement_date
       ) {
@@ -3160,7 +3393,12 @@ async function updateModelsCommand(argv: any) {
     // run (i.e. the provider-filtered set), not the entire local model list.
     // This prevents `update-models --provider openai` from touching unrelated
     // Vertex Gemini entries.
-    const modelsInScope = modelsToCompare.map((item) => item.localModelName);
+    const modelsInScope = [
+      ...new Set([
+        ...modelsToCompare.map((item) => item.localModelName),
+        ...providerMetadata.keys(),
+      ]),
+    ];
     const shouldSyncVertexRegions = modelsInScope.some((name) =>
       updatedLocalModels[name]?.available_providers?.includes("vertex"),
     );
@@ -3811,6 +4049,8 @@ async function syncOpenRouterModelsCommand(argv: any) {
     const modelsToAdd: Array<{ name: string; model: ModelSpec }> = [];
     const providerUnions: string[] = [];
     const pricingUpdates: string[] = [];
+    const metadataUpdates: string[] = [];
+    const today = fetchedAt.slice(0, 10);
     const priceAudit: ReturnType<typeof openRouterPriceAuditEntry>[] = [];
     // Full-slug openrouter-only entries removed because a canonical key (served
     // by a first-class provider) now exists for the same model.
@@ -3835,16 +4075,6 @@ async function syncOpenRouterModelsCommand(argv: any) {
         console.warn(`  [INVALID] Skipping unsupported model id: ${slug}`);
         continue;
       }
-      // Skip if EITHER the openrouter slug or its stripped canonical id is
-      // excluded/deprecated (see isOpenRouterSlugExcluded).
-      if (isOpenRouterSlugExcluded(slug)) {
-        const excludedId = isModelExcludedFromSync(slug) ? slug : canonical;
-        console.log(
-          `  [EXCLUDED] Skipping ${slug} (${excludedId} in SYNC_EXCLUDED_MODELS)`,
-        );
-        continue;
-      }
-
       // Prefer to attach openrouter to a model we already carry: first the
       // stripped canonical id (openrouter `x-ai/grok-4.5` -> our `grok-4.5`),
       // otherwise the full slug if that is itself an existing key (e.g. an id we
@@ -3857,6 +4087,38 @@ async function syncOpenRouterModelsCommand(argv: any) {
         : Object.prototype.hasOwnProperty.call(localModels, slug)
           ? slug
           : null;
+
+      const metadataTarget = localModels[slug]?.providers?.openrouter
+        ? slug
+        : target;
+      if (metadataTarget && localModels[metadataTarget].providers?.openrouter) {
+        const existing = localModels[metadataTarget];
+        const updated = applyProviderMetadata(
+          metadataTarget,
+          existing,
+          "openrouter",
+          {
+            ...(await fetchOpenRouterEndpointLimits(slug)),
+            retirement_date: openRouterModel.expiration_date,
+          },
+          "OpenRouter",
+          today,
+        );
+        if (updated !== existing) {
+          localModels[metadataTarget] = updated;
+          metadataUpdates.push(metadataTarget);
+        }
+      }
+
+      // Skip adding or merging excluded slugs, but still record metadata on an
+      // explicit OpenRouter route.
+      if (isOpenRouterSlugExcluded(slug)) {
+        const excludedId = isModelExcludedFromSync(slug) ? slug : canonical;
+        console.log(
+          `  [EXCLUDED] Skipping ${slug} (${excludedId} in SYNC_EXCLUDED_MODELS)`,
+        );
+        continue;
+      }
 
       if (target) {
         const existing = localModels[target];
@@ -3944,6 +4206,23 @@ async function syncOpenRouterModelsCommand(argv: any) {
       console.log(`  [NEW] ${slug} (openrouter-only)`);
     }
 
+    for (const name of resolveRemoteProviderMetadata(
+      {},
+      localModels,
+      "openrouter",
+      today,
+    ).keys()) {
+      localModels[name] = applyProviderMetadata(
+        name,
+        localModels[name],
+        "openrouter",
+        {},
+        "OpenRouter",
+        today,
+      );
+      metadataUpdates.push(name);
+    }
+
     console.log(`\nSkipped ${variantSkipped} variant slug(s).`);
     if (argv["price-audit"]) {
       await fs.promises.writeFile(
@@ -3960,6 +4239,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
       modelsToAdd.length === 0 &&
       providerUnions.length === 0 &&
       pricingUpdates.length === 0 &&
+      metadataUpdates.length === 0 &&
       migratedSlugs.length === 0
     ) {
       console.log("OpenRouter catalog already in sync. No changes needed.");
@@ -3967,7 +4247,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
     }
 
     console.log(
-      `${modelsToAdd.length} new openrouter-only model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing refresh(es), ${migratedSlugs.length} slug(s) migrated to canonical.`,
+      `${modelsToAdd.length} new openrouter-only model(s), ${providerUnions.length} provider union(s), ${pricingUpdates.length} pricing refresh(es), ${metadataUpdates.length} provider metadata refresh(es), ${migratedSlugs.length} slug(s) migrated to canonical.`,
     );
 
     if (!argv.write) {
@@ -3980,6 +4260,11 @@ async function syncOpenRouterModelsCommand(argv: any) {
       }
       for (const name of pricingUpdates) {
         console.log(`  would refresh OpenRouter pricing on: ${name}`);
+      }
+      for (const name of metadataUpdates) {
+        console.log(
+          `  would refresh OpenRouter metadata on ${name}: ${JSON.stringify(localModels[name].providers?.openrouter)}`,
+        );
       }
       for (const name of migratedSlugs) {
         console.log(`  would remove stale openrouter-only slug: ${name}`);

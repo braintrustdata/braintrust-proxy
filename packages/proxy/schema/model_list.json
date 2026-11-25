@@ -25610,6 +25610,7 @@
   "sonar-pro": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 15,
     "displayName": "Sonar Pro",
@@ -25623,6 +25624,7 @@
   "sonar-reasoning-pro": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "displayName": "Sonar Reasoning Pro",
@@ -25649,6 +25651,7 @@
   "sonar": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 1,
     "displayName": "Sonar",

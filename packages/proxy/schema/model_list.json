@@ -1,5 +1,9 @@
 {
   "gpt-6.2-astra": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -422,6 +426,10 @@
     ]
   },
   "gpt-6.2-sol": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -719,6 +727,10 @@
     ]
   },
   "gpt-6.1-sol": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -1077,6 +1089,10 @@
     ]
   },
   "gpt-6.1-terra": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -1307,6 +1323,10 @@
     ]
   },
   "gpt-6-astra": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -1701,6 +1721,10 @@
     ]
   },
   "gpt-6-luna": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -1972,6 +1996,10 @@
     ]
   },
   "gpt-6-sol": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -2223,6 +2251,10 @@
     ]
   },
   "gpt-5.6": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -2295,6 +2327,10 @@
     ]
   },
   "gpt-5.6-luna": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -2544,6 +2580,10 @@
     ]
   },
   "gpt-5.6-sol": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -2799,6 +2839,10 @@
     ]
   },
   "gpt-5.6-terra": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3046,6 +3090,10 @@
     ]
   },
   "gpt-5.5": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3218,6 +3266,10 @@
     ]
   },
   "gpt-5.5-pro": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3308,6 +3360,10 @@
     ]
   },
   "gpt-5.5-2026-04-23": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3349,6 +3405,10 @@
     ]
   },
   "gpt-5.5-pro-2026-04-23": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3379,6 +3439,10 @@
     ]
   },
   "gpt-5.4": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3536,6 +3600,10 @@
     ]
   },
   "gpt-5.4-mini": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3625,6 +3693,10 @@
     ]
   },
   "gpt-5.4-nano": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3690,6 +3762,10 @@
     ]
   },
   "gpt-5.4-pro": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3796,6 +3872,10 @@
     ]
   },
   "gpt-5.4-mini-2026-03-17": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3827,6 +3907,10 @@
     ]
   },
   "gpt-5.4-nano-2026-03-17": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3860,6 +3944,10 @@
     ]
   },
   "gpt-5.4-2026-03-05": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3901,6 +3989,10 @@
     ]
   },
   "gpt-5.4-pro-2026-03-05": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -3957,6 +4049,10 @@
     ]
   },
   "gpt-5.3-codex": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4008,6 +4104,10 @@
     ]
   },
   "gpt-5.2": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4135,6 +4235,10 @@
     ]
   },
   "gpt-5.2-pro": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4175,6 +4279,10 @@
     ]
   },
   "gpt-5.2-2025-12-11": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4222,6 +4330,10 @@
     ]
   },
   "gpt-5.1": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4389,6 +4501,10 @@
     ]
   },
   "gpt-5.1-2025-11-13": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4422,6 +4538,10 @@
     ]
   },
   "gpt-5": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4525,6 +4645,10 @@
     ]
   },
   "gpt-5-mini": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4603,6 +4727,10 @@
     ]
   },
   "gpt-5-nano": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4668,6 +4796,10 @@
     ]
   },
   "gpt-5-pro": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4759,6 +4891,10 @@
     ]
   },
   "gpt-5-2025-08-07": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4792,6 +4928,10 @@
     ]
   },
   "gpt-5-mini-2025-08-07": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4825,6 +4965,10 @@
     ]
   },
   "gpt-5-nano-2025-08-07": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4858,6 +5002,10 @@
     ]
   },
   "gpt-4.1": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -4914,6 +5062,10 @@
     ]
   },
   "gpt-4.1-mini": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -5100,6 +5252,10 @@
     ]
   },
   "gpt-4o": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -5191,6 +5347,10 @@
     ]
   },
   "gpt-4o-mini": {
+    "base_pricing": {
+      "provider": "openai",
+      "api_host": "api.openai.com"
+    },
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
@@ -17784,6 +17944,10 @@
     ]
   },
   "claude-mythos-5-1": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -17836,6 +18000,10 @@
     ]
   },
   "claude-fable-5-2": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -17938,6 +18106,10 @@
     ]
   },
   "claude-fable-5-1": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -17994,6 +18166,10 @@
     ]
   },
   "claude-fable-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18051,6 +18227,10 @@
     ]
   },
   "claude-opus-5-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18136,6 +18316,10 @@
     ]
   },
   "claude-opus-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18252,6 +18436,10 @@
     ]
   },
   "claude-sonnet-5-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18308,6 +18496,10 @@
     ]
   },
   "claude-sonnet-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18367,6 +18559,10 @@
     ]
   },
   "claude-haiku-5-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18455,6 +18651,10 @@
     ]
   },
   "claude-haiku-4-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18514,6 +18714,10 @@
     ]
   },
   "claude-opus-4-8": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18598,6 +18802,10 @@
     ]
   },
   "claude-sonnet-4-6": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18654,6 +18862,10 @@
     ]
   },
   "claude-opus-4-7": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18710,6 +18922,10 @@
     ]
   },
   "claude-sonnet-4-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18774,6 +18990,10 @@
     ]
   },
   "claude-opus-4-6": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,
@@ -18827,6 +19047,10 @@
     ]
   },
   "claude-opus-4-5": {
+    "base_pricing": {
+      "provider": "anthropic",
+      "api_host": "api.anthropic.com"
+    },
     "format": "anthropic",
     "flavor": "chat",
     "multimodal": true,

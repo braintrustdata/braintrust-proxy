@@ -172,6 +172,15 @@ export const ModelSchema = z.object({
   pricing: ModelPricingSchema.nullish().describe(
     "Verified USD prices per million tokens of the field's modality, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
   ),
+  base_pricing: z
+    .object({
+      provider: z.enum(ModelEndpointType),
+      api_host: z.string().min(1),
+    })
+    .nullish()
+    .describe(
+      "Catalog pricing endpoint inherited by native and custom routes.",
+    ),
   displayName: z
     .string()
     .nullish()

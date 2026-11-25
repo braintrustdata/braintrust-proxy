@@ -8313,6 +8313,7 @@
   "accounts/fireworks/models/qwen4-max": {
     "format": "openai",
     "flavor": "chat",
+    "multimodal": true,
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 4.5,
     "input_cache_read_cost_per_mil_tokens": 0.075,
@@ -36582,8 +36583,8 @@
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax: MiniMax M2.5",
     "reasoning": true,
-    "max_input_tokens": 204800,
-    "max_output_tokens": 196608,
+    "max_input_tokens": 65536,
+    "max_output_tokens": 58982,
     "available_providers": [
       "openrouter"
     ]

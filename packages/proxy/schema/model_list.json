@@ -30273,6 +30273,110 @@
       "mistral"
     ]
   },
+  "voxtral-mini-transcribe-latest": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00005833333333333333
+          }
+        ]
+      }
+    },
+    "displayName": "Voxtral Mini Transcribe 3",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-mini-transcribe-3-0": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00005833333333333333
+          }
+        ]
+      }
+    },
+    "displayName": "Voxtral Mini Transcribe 3 (3.0)",
+    "parent": "voxtral-mini-transcribe-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-mini-transcribe-3": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00005833333333333333
+          }
+        ]
+      }
+    },
+    "parent": "voxtral-mini-transcribe-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-transcribe-latest": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00006666666666666667
+          }
+        ]
+      }
+    },
+    "displayName": "Voxtral Small Transcribe 3",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-transcribe-3-0": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00006666666666666667
+          }
+        ]
+      }
+    },
+    "displayName": "Voxtral Small Transcribe 3 (3.0)",
+    "parent": "voxtral-small-transcribe-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "voxtral-small-transcribe-3": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00006666666666666667
+          }
+        ]
+      }
+    },
+    "parent": "voxtral-small-transcribe-latest",
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "ministral-14b-latest": {
     "format": "openai",
     "flavor": "chat",

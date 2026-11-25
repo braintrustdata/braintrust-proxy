@@ -67,7 +67,7 @@ export const PricingTiers = [
 ] as const;
 export type PricingTier = (typeof PricingTiers)[number];
 
-const tokenPricingSchema = z.object({
+const pricingFieldsSchema = z.object({
   input_cost_per_mil_tokens: z.number().nullish(),
   output_cost_per_mil_tokens: z.number().nullish(),
   input_cache_read_cost_per_mil_tokens: z.number().nullish(),
@@ -79,9 +79,21 @@ const tokenPricingSchema = z.object({
   input_audio_cost_per_mil_tokens: z.number().nullish(),
   output_audio_cost_per_mil_tokens: z.number().nullish(),
   input_audio_cache_read_cost_per_mil_tokens: z.number().nullish(),
+  audio_duration_cost_per_minute: z
+    .number()
+    .nullish()
+    .describe(
+      "USD per minute of metered audio duration from metrics.usage_seconds, excluding any duration reported in metrics.usage_standby_seconds.",
+    ),
+  audio_standby_cost_per_minute: z
+    .number()
+    .nullish()
+    .describe(
+      "USD per minute of standby audio duration from metrics.usage_standby_seconds, which is included in metrics.usage_seconds.",
+    ),
 });
 
-export const PricingRateSchema = tokenPricingSchema.extend({
+export const PricingRateSchema = pricingFieldsSchema.extend({
   endpoints: z
     .array(z.string())
     .nullish()
@@ -176,9 +188,9 @@ export const ModelSchema = z.object({
   multimodal: z.boolean().nullish(),
   input_cost_per_token: z.number().nullish(),
   output_cost_per_token: z.number().nullish(),
-  ...tokenPricingSchema.shape,
+  ...pricingFieldsSchema.shape,
   pricing: ModelPricingSchema.nullish().describe(
-    "Verified USD prices per million tokens of the field's modality, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
+    "Verified USD prices per million tokens or per minute of audio, as indicated by each field, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
   ),
   providers: z
     .record(z.enum(ModelEndpointType), ProviderMetadataSchema)

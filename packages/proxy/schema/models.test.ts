@@ -66,6 +66,8 @@ it("preserves top-level prices when tier pricing is absent or null", () => {
     input_audio_cost_per_mil_tokens: 4,
     output_audio_cost_per_mil_tokens: 8,
     input_audio_cache_read_cost_per_mil_tokens: 1,
+    audio_duration_cost_per_minute: 0.05,
+    audio_standby_cost_per_minute: 0.02,
   };
   expect(ModelSchema.parse(base)).toEqual(base);
   const model = { ...base, pricing: null };
@@ -293,7 +295,7 @@ it("preserves provider prices and their conditions throughout the catalog", () =
         expect(prices.length, `${name}.${provider}.${tier}`).toBeGreaterThan(0);
         for (const price of prices) {
           for (const [key, value] of Object.entries(price)) {
-            if (key.endsWith("_cost_per_mil_tokens")) {
+            if (/_cost_per_(?:mil_tokens|minute)$/.test(key)) {
               expect(
                 value,
                 `${name}.${provider}.${tier}.${key}`,

@@ -7,6 +7,7 @@ import {
   resolveRemoteModels,
   resolveRemoteProviderMetadata,
   applyProviderMetadata,
+  applyProviderMetadataBatch,
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
@@ -1922,6 +1923,42 @@ describe("provider metadata sync", () => {
         today,
       ).available_providers,
     ).toEqual(["azure"]);
+  });
+
+  it("creates a map only when matched data covers every current provider without raising a limit", () => {
+    const id = "gpt-backfill-example";
+    const legacy: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      available_providers: ["openai", "azure"],
+      max_input_tokens: 4096,
+    };
+    const openai = { max_input_tokens: 4096 };
+    const azure = { max_input_tokens: 8192, retirement_date: "2027-01-01" };
+    expect(applyProviderMetadataBatch(id, legacy, { openai }, today)).toBe(
+      legacy,
+    );
+    expect(
+      applyProviderMetadataBatch(id, legacy, { openai: azure, azure }, today),
+    ).toBe(legacy);
+
+    const remote = parseRemoteModelList({
+      [id]: { litellm_provider: "openai", ...openai },
+      [`azure/${id}`]: {
+        litellm_provider: "azure",
+        max_input_tokens: azure.max_input_tokens,
+        deprecation_date: azure.retirement_date,
+      },
+    });
+    const resolved = resolveRemoteProviderMetadata(
+      remote,
+      { [id]: legacy },
+      "openai",
+    ).get(id)!;
+    const updated = applyProviderMetadataBatch(id, legacy, resolved, today);
+    expect(updated.providers).toEqual({ openai, azure });
+    expect(updated.available_providers).toEqual(legacy.available_providers);
+    expect(updated.max_input_tokens).toBe(legacy.max_input_tokens);
   });
 
   it("reports the source, provider field, and old and new values for review", () => {

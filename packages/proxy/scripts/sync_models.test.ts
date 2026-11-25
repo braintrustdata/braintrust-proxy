@@ -1959,6 +1959,19 @@ describe("provider metadata sync", () => {
     expect(updated.providers).toEqual({ openai, azure });
     expect(updated.available_providers).toEqual(legacy.available_providers);
     expect(updated.max_input_tokens).toBe(legacy.max_input_tokens);
+
+    const indirectVertex: ModelSpec = {
+      ...legacy,
+      available_providers: ["openai", "vertex"],
+    };
+    expect(
+      applyProviderMetadataBatch(
+        id,
+        indirectVertex,
+        { openai, vertex: azure },
+        today,
+      ),
+    ).toBe(indirectVertex);
   });
 
   it("restores a route when its shutdown is postponed, but not a manually retired route without a date", () => {

@@ -1494,10 +1494,14 @@ export function applyProviderMetadataBatch(
   };
   const missing = pending.filter((provider) => !proposed.providers?.[provider]);
   if (missing.length) return defer(`no metadata for ${missing.join(", ")}`);
-  const routes = providersForExactModelName(
-    name,
-    proposed.available_providers ?? [],
-  );
+  const available = proposed.available_providers ?? [];
+  const routes = providersForExactModelName(name, available);
+  if (
+    available.length !== routes.length ||
+    available.some((provider, i) => provider !== routes[i])
+  ) {
+    return defer("catalog providers and direct routes would disagree");
+  }
   if (
     (direct.length && routes.some((provider) => !direct.includes(provider))) ||
     direct.some(

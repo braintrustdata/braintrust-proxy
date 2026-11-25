@@ -1381,35 +1381,13 @@ export function applyProviderMetadata(
   const current = model.providers?.[provider] ?? {};
   const updated = { ...current };
   let changed = false;
-  const warn = (field: keyof ProviderMetadata, value: string | number) =>
-    console.warn(
-      `  [REVIEW] ${name}.providers.${provider}.${field}: ${source} ${value} differs from catalog ${current[field] ?? "unset"}`,
-    );
-
   if (
     remote.retirement_date &&
     remote.retirement_date !== current.retirement_date
   ) {
-    warn("retirement_date", remote.retirement_date);
-    if (
-      current.deprecation_date &&
-      remote.retirement_date < current.deprecation_date
-    ) {
-      console.warn(
-        `  [REVIEW] ${name}.providers.${provider}: shutdown precedes deprecation_date; not applied`,
-      );
-    } else {
-      updated.retirement_date = remote.retirement_date;
-      if (
-        current.retired &&
-        current.retirement_date &&
-        current.retirement_date <= today &&
-        remote.retirement_date > today
-      ) {
-        updated.retired = false;
-      }
-      changed = true;
-    }
+    console.warn(
+      `  [REVIEW] ${name}.providers.${provider}.retirement_date: ${source} ${remote.retirement_date} differs from catalog ${current.retirement_date ?? "unset"}; not applied`,
+    );
   }
   for (const field of ["max_input_tokens", "max_output_tokens"] as const) {
     const value = remote[field];
@@ -1430,12 +1408,13 @@ export function applyProviderMetadata(
     }
   }
   if (
-    updated.retirement_date &&
-    updated.retirement_date <= today &&
-    !updated.retired
+    current.retirement_date &&
+    current.retirement_date <= today &&
+    !current.retired
   ) {
-    updated.retired = true;
-    changed = true;
+    console.warn(
+      `  [REVIEW] ${name}.providers.${provider}: catalog shutdown date ${current.retirement_date} has passed; route unchanged`,
+    );
   }
   return changed
     ? normalizeModelProviders({
@@ -1503,14 +1482,10 @@ export function applyProviderMetadataBatch(
     return defer("catalog providers and direct routes would disagree");
   }
   if (
-    (direct.length && routes.some((provider) => !direct.includes(provider))) ||
-    direct.some(
-      (provider) =>
-        !routes.includes(provider) &&
-        proposed.providers?.[provider]?.retired !== true,
-    )
+    direct.length !== routes.length ||
+    direct.some((provider, i) => provider !== routes[i])
   )
-    return defer("would change direct routes without a provider shutdown");
+    return defer("would change direct routes");
   if (
     !proposed.retired &&
     (model.retired || (model.retirement_date && model.retirement_date <= today))
@@ -1546,13 +1521,6 @@ export function applyProviderMetadataBatch(
       )
       .map((field) => [field, [model[field] ?? null, proposed[field] ?? null]]),
   );
-  if (
-    direct.length &&
-    (direct.length !== routes.length ||
-      direct.some((provider, i) => provider !== routes[i]))
-  ) {
-    diff.routes = [direct, routes];
-  }
   console.log(
     `  [BACKFILL] ${JSON.stringify({ name, newMap: !model.providers, providers: pending, diff })}`,
   );
@@ -1832,9 +1800,13 @@ export function normalizeLocalModels(localModels: LocalModelList): {
 }
 
 function normalizeModelProviders(model: ModelSpec): ModelSpec {
-  return model.providers
-    ? { ...model, ...summarizeModelProviders(model.providers) }
-    : model;
+  if (!model.providers) return model;
+  const summary = summarizeModelProviders(model.providers);
+  return {
+    ...model,
+    ...summary,
+    retired: summary.retired || (model.retired == null ? undefined : false),
+  };
 }
 
 function reorderModelProperties(localModels: LocalModelList): LocalModelList {
@@ -2247,16 +2219,15 @@ async function syncProviderMappingsForLocalModels(
   const explicitMappings = modelNames.flatMap((name) => {
     const model = localModels[name];
     if (!model?.providers) return [];
-    return [
-      {
-        name,
-        providers: providersForExactModelName(
-          name,
-          summarizeModelProviders(model.providers).available_providers,
-        ),
-        replace: true,
-      },
-    ];
+    const providers = providersForExactModelName(
+      name,
+      summarizeModelProviders(model.providers).available_providers,
+    );
+    const direct = getDirectModelEndpointTypes(name);
+    return providers.length === direct.length &&
+      providers.every((provider, i) => provider === direct[i])
+      ? []
+      : [{ name, providers, replace: true }];
   });
   if (missingProviderMappings.length > 0 || explicitMappings.length > 0) {
     await updateProviderMapping(

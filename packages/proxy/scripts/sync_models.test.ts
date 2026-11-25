@@ -1839,7 +1839,7 @@ describe("provider metadata sync", () => {
     },
   };
 
-  it("writes the matched provider's limits and LiteLLM shutdown date", () => {
+  it("writes the matched provider's limits and reports its LiteLLM shutdown date", () => {
     const remote = parseRemoteModelList({
       [name]: { litellm_provider: "openai", max_input_tokens: 4096 },
       "azure/gpt-35-turbo-instruct": {
@@ -1854,6 +1854,7 @@ describe("provider metadata sync", () => {
       { [name]: model },
       "openai",
     ).get(name);
+    expect(metadata?.azure?.retirement_date).toBe("2027-01-01");
     const updated = applyProviderMetadata(
       name,
       model,
@@ -1867,13 +1868,12 @@ describe("provider metadata sync", () => {
       azure: {
         max_input_tokens: 8000,
         max_output_tokens: 2000,
-        retirement_date: "2027-01-01",
       },
     });
     expect(updated.max_input_tokens).toBe(4096);
   });
 
-  it("retires only the provider whose shutdown date has passed", () => {
+  it("flags elapsed shutdown dates without retiring the provider", () => {
     const remote = parseRemoteModelList({
       [name]: { litellm_provider: "openai", deprecation_date: "2026-07-31" },
     });
@@ -1890,15 +1890,7 @@ describe("provider metadata sync", () => {
       "LiteLLM",
       today,
     );
-    expect(updated.providers?.openai).toMatchObject({
-      deprecation_date: "2026-07-01",
-      retirement_date: "2026-07-31",
-      retired: true,
-    });
-    expect(updated.available_providers).toEqual(["azure"]);
-    expect(updated.retired).toBe(false);
-    expect(updated.retirement_date).toBeUndefined();
-    expect(updated.max_input_tokens).toBe(4097);
+    expect(updated).toBe(model);
 
     const scheduled: ModelSpec = {
       ...model,
@@ -1921,12 +1913,12 @@ describe("provider metadata sync", () => {
         removedFromFeed!.openai!,
         "LiteLLM",
         today,
-      ).available_providers,
-    ).toEqual(["azure"]);
+      ),
+    ).toBe(scheduled);
   });
 
   it("creates a map only when matched data covers every current provider without raising a limit", () => {
-    const id = "gpt-backfill-example";
+    const id = "o4-mini-2025-04-16";
     const legacy: ModelSpec = {
       format: "openai",
       flavor: "chat",
@@ -1934,7 +1926,7 @@ describe("provider metadata sync", () => {
       max_input_tokens: 4096,
     };
     const openai = { max_input_tokens: 4096 };
-    const azure = { max_input_tokens: 8192, retirement_date: "2027-01-01" };
+    const azure = { max_input_tokens: 8192 };
     expect(applyProviderMetadataBatch(id, legacy, { openai }, today)).toBe(
       legacy,
     );
@@ -1947,7 +1939,7 @@ describe("provider metadata sync", () => {
       [`azure/${id}`]: {
         litellm_provider: "azure",
         max_input_tokens: azure.max_input_tokens,
-        deprecation_date: azure.retirement_date,
+        deprecation_date: "2026-07-31",
       },
     });
     const resolved = resolveRemoteProviderMetadata(
@@ -1959,6 +1951,8 @@ describe("provider metadata sync", () => {
     expect(updated.providers).toEqual({ openai, azure });
     expect(updated.available_providers).toEqual(legacy.available_providers);
     expect(updated.max_input_tokens).toBe(legacy.max_input_tokens);
+    expect(updated.retired).toBeUndefined();
+    expect(updated.retirement_date).toBeUndefined();
 
     const indirectVertex: ModelSpec = {
       ...legacy,
@@ -1974,7 +1968,7 @@ describe("provider metadata sync", () => {
     ).toBe(indirectVertex);
   });
 
-  it("restores a route when its shutdown is postponed, but not a manually retired route without a date", () => {
+  it("does not restore an explicitly retired route from an upstream date", () => {
     const future = { retirement_date: "2027-01-01" };
     const updated = applyProviderMetadata(
       name,
@@ -1991,19 +1985,20 @@ describe("provider metadata sync", () => {
       "LiteLLM",
       today,
     );
-    expect(updated.providers?.openai).toEqual({ ...future, retired: false });
-    expect(updated.available_providers).toEqual(["openai"]);
+    expect(updated.providers?.openai).toEqual({
+      retirement_date: today,
+      retired: true,
+    });
 
     const manual = applyProviderMetadata(
       name,
       updated,
       "azure",
       future,
-      "LiteLLM",
+      "OpenRouter",
       today,
     );
-    expect(manual.providers?.azure).toEqual({ ...future, retired: true });
-    expect(manual.available_providers).toEqual(["openai"]);
+    expect(manual).toBe(updated);
   });
 
   it("reports the source, provider field, and old and new values for review", () => {
@@ -2013,12 +2008,15 @@ describe("provider metadata sync", () => {
         name,
         model,
         "azure",
-        { max_input_tokens: 8000 },
+        { max_input_tokens: 8000, retirement_date: "2026-07-31" },
         "LiteLLM",
         today,
       );
       expect(warn).toHaveBeenCalledWith(
         "  [REVIEW] gpt-3.5-turbo-instruct.providers.azure.max_input_tokens: LiteLLM 8000 differs from catalog 4097",
+      );
+      expect(warn).toHaveBeenCalledWith(
+        "  [REVIEW] gpt-3.5-turbo-instruct.providers.azure.retirement_date: LiteLLM 2026-07-31 differs from catalog unset; not applied",
       );
     } finally {
       warn.mockRestore();

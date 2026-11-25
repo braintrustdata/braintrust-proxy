@@ -21,6 +21,7 @@ import {
   type StoredModelSpec as ModelSpec,
   PricingTierSchema,
   PricingTiers,
+  summarizeModelProviders,
 } from "../schema/models";
 import { cacheWriteRateKeys } from "../schema/cache-metrics.generated";
 
@@ -852,7 +853,7 @@ function buildUnsupportedTicketComment(args: {
     "- `max_output_tokens`",
     "- `available_providers`",
     "- `deprecated` / `deprecation_date` (the provider's deprecation notice date)",
-    "- `retired` / `retirement_date` (the provider's shutdown date, only once every provider in `available_providers` stops serving the model)",
+    "- `retired` / `retirement_date` for models without a `providers` map; otherwise update lifecycle dates, retirement status, and token limits under the affected provider",
     "- `locations` when the provider/model requires explicit location metadata",
   );
 
@@ -1048,7 +1049,10 @@ function providerMappingsForModels(
   const mappings: Record<string, readonly ModelEndpointType[]> = {};
 
   for (const { name, model } of modelsToAdd) {
-    if (!model.available_providers || model.available_providers.length === 0) {
+    if (
+      !model.available_providers ||
+      (!model.providers && model.available_providers.length === 0)
+    ) {
       continue;
     }
     mappings[name] = model.available_providers;
@@ -1486,6 +1490,16 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
   if (patch.available_providers !== undefined) {
     model.available_providers = [...patch.available_providers];
   }
+  if (patch.providers) {
+    model.providers = { ...model.providers };
+    for (const [name, metadata] of Object.entries(patch.providers)) {
+      const provider = name as ModelEndpointType;
+      model.providers[provider] = { ...model.providers[provider], ...metadata };
+    }
+  }
+  if (model.providers) {
+    Object.assign(model, summarizeModelProviders(model.providers));
+  }
   // A patch can reference an existing tier, so validate after all edits merge.
   ModelSchema.shape.pricing.parse(model.pricing);
 }
@@ -1681,6 +1695,7 @@ export function buildModelsForIssue(
     const modelSpecPatch = getModelSpecPatch(parsedIssue.metadata, targetModel);
     // Provider/tier rates require evidence for the new alias itself.
     delete model.pricing;
+    delete model.providers;
     applyModelSpecPatch(model, modelSpecPatch);
     if (!modelSpecPatch?.displayName) {
       delete model.displayName;

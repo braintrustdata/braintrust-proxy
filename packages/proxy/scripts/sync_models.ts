@@ -11,6 +11,7 @@ import { pathToFileURL } from "url";
 import {
   StoredModelSchema as ModelSchema,
   type StoredModelSpec as ModelSpec,
+  summarizeModelProviders,
 } from "../schema/models";
 import { cacheWriteRateKeys } from "../schema/cache-metrics.generated";
 import ts from "typescript";
@@ -1451,7 +1452,9 @@ export function normalizeLocalModels(localModels: LocalModelList): {
 
   const orderedModels: LocalModelList = {};
   for (const modelName of orderedNames) {
-    orderedModels[modelName] = normalizedModels[modelName];
+    orderedModels[modelName] = normalizeModelProviders(
+      normalizedModels[modelName],
+    );
   }
 
   return {
@@ -1460,12 +1463,18 @@ export function normalizeLocalModels(localModels: LocalModelList): {
   };
 }
 
+function normalizeModelProviders(model: ModelSpec): ModelSpec {
+  return model.providers
+    ? { ...model, ...summarizeModelProviders(model.providers) }
+    : model;
+}
+
 function reorderModelProperties(localModels: LocalModelList): LocalModelList {
   const orderedModelsToWrite: LocalModelList = {};
   const schemaKeys = Object.keys(ModelSchema.shape) as Array<keyof ModelSpec>;
 
   for (const modelName in localModels) {
-    const originalModel = localModels[modelName];
+    const originalModel = normalizeModelProviders(localModels[modelName]);
     const orderedModel: Partial<ModelSpec> = {};
 
     for (const key of schemaKeys) {
@@ -1599,6 +1608,7 @@ type ProviderMappingEntryRange = {
 type ProviderMappingUpdate = {
   name: string;
   providers: string[];
+  replace?: boolean;
 };
 
 function isProviderMappingEntryEnd(line: string): boolean {
@@ -1748,6 +1758,7 @@ export function getMissingProviderMappings(
 
   for (const name of modelNames) {
     const model = localModels[name];
+    if (model?.providers) continue;
     const providers = model?.available_providers;
     if (!providers || providers.length === 0) {
       continue;
@@ -1865,12 +1876,23 @@ async function syncProviderMappingsForLocalModels(
     schemaContent,
     modelNames,
   );
-  if (missingProviderMappings.length > 0) {
-    console.log(
-      `\nUpdating ${missingProviderMappings.length} missing provider mappings...`,
-    );
+  const explicitMappings = modelNames.flatMap((name) => {
+    const model = localModels[name];
+    if (!model?.providers) return [];
+    return [
+      {
+        name,
+        providers: providersForExactModelName(
+          name,
+          summarizeModelProviders(model.providers).available_providers,
+        ),
+        replace: true,
+      },
+    ];
+  });
+  if (missingProviderMappings.length > 0 || explicitMappings.length > 0) {
     await updateProviderMapping(
-      missingProviderMappings,
+      [...explicitMappings, ...missingProviderMappings],
       Object.keys(localModels),
     );
     return;
@@ -1892,12 +1914,22 @@ async function updateProviderMapping(
     const lines = normalizedContent.split("\n");
     let changed = normalizedContent !== schemaContent;
 
-    for (const { name, providers } of newModels) {
-      if (findProviderMappingEntryRange(lines, name)) {
+    for (const { name, providers, replace } of newModels) {
+      const range = findProviderMappingEntryRange(lines, name);
+      const newEntry = `  ${JSON.stringify(name)}: ${formatProviderMappingProviders(providers)},`;
+      if (range) {
+        if (replace) {
+          const previous = lines.slice(range.start, range.end + 1).join("\n");
+          const comment = previous.match(/\],\s*(\/\/.*)$/)?.[1];
+          const replacement = comment ? `${newEntry} ${comment}` : newEntry;
+          if (previous !== replacement) {
+            lines.splice(range.start, range.end - range.start + 1, replacement);
+            changed = true;
+          }
+        }
         continue;
       }
 
-      const newEntry = `  ${JSON.stringify(name)}: ${formatProviderMappingProviders(providers)},`;
       let insertionIndex = -1;
 
       if (completeModelOrder) {
@@ -2951,6 +2983,7 @@ async function updateModelsCommand(argv: any) {
         remoteLimit: number | undefined,
         localFieldName: keyof ModelSpec,
       ) => {
+        if (localModelDetail.providers) return;
         if (isFieldManuallyPreserved(localModelName, localFieldName)) {
           console.log(
             `  [PRESERVE] ${localModelName}.${String(
@@ -3089,7 +3122,7 @@ async function updateModelsCommand(argv: any) {
           (provider) => provider !== "baseten",
         );
       }
-      if (remoteProviders.length > 0) {
+      if (!localModelDetail.providers && remoteProviders.length > 0) {
         const currentProviders = (modelInUpdatedList as any)
           .available_providers;
         const same =
@@ -3828,7 +3861,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
       if (target) {
         const existing = localModels[target];
         const providers = existing.available_providers ?? [];
-        if (!providers.includes("openrouter")) {
+        if (!existing.providers && !providers.includes("openrouter")) {
           localModels[target] = {
             ...existing,
             available_providers: [
@@ -3838,7 +3871,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
           };
           providerUnions.push(target);
           console.log(`  [UNION] add openrouter to ${target}`);
-        } else if (providers.length === 1) {
+        } else if (providers.length === 1 && providers[0] === "openrouter") {
           // Openrouter-only entry we previously added: refresh its pricing.
           const priced = applyOpenRouterPricing(
             target,

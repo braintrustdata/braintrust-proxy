@@ -162,6 +162,14 @@ export const ModelPricingSchema = z.record(
 );
 export type ModelPricing = z.infer<typeof ModelPricingSchema>;
 
+const ProviderMetadataSchema = z.object({
+  deprecation_date: z.string().nullish(),
+  retirement_date: z.string().nullish(),
+  retired: z.boolean().nullish(),
+  max_input_tokens: z.number().nullish(),
+  max_output_tokens: z.number().nullish(),
+});
+
 export const ModelSchema = z.object({
   format: z.enum(ModelFormats),
   flavor: z.enum(ModelFlavors),
@@ -172,6 +180,9 @@ export const ModelSchema = z.object({
   pricing: ModelPricingSchema.nullish().describe(
     "Verified USD prices per million tokens of the field's modality, keyed by the resolved provider and pricing tier. Each rate applies only to its endpoint, region, inference geography, deployment, model version, prompt length, and inclusive UTC date bounds. Missing prices are unknown, not zero. Missing non-standard tiers have no verified support and do not fall back to standard prices. Top-level price fields hold default standard prices; pricing.standard can specify conditional standard rates. Tier names are pricing categories, not provider API parameter values; use the tier actually served, not merely requested.",
   ),
+  providers: z
+    .record(z.enum(ModelEndpointType), ProviderMetadataSchema)
+    .optional(),
   displayName: z
     .string()
     .nullish()
@@ -257,6 +268,35 @@ export const StoredModelSchema = ModelSchema.extend({
   ),
 });
 export type StoredModelSpec = z.infer<typeof StoredModelSchema>;
+
+export function summarizeModelProviders(
+  providers: NonNullable<ModelSpec["providers"]>,
+) {
+  const entries = Object.entries(providers) as [
+    ModelEndpointType,
+    z.infer<typeof ProviderMetadataSchema>,
+  ][];
+  const active = entries.filter(([, provider]) => provider.retired !== true);
+  const latestRetirement = entries
+    .map(([, provider]) => provider.retirement_date)
+    .reduce<
+      string | undefined
+    >((latest, date) => (date && (!latest || date > latest) ? date : latest), undefined);
+  const minLimit = (field: "max_input_tokens" | "max_output_tokens") => {
+    const limits = active.flatMap(([, provider]) => provider[field] ?? []);
+    return limits.length > 0 ? Math.min(...limits) : undefined;
+  };
+
+  return {
+    available_providers: active.map(([provider]) => provider),
+    retirement_date: active.some(([, provider]) => !provider.retirement_date)
+      ? undefined
+      : latestRetirement,
+    retired: entries.length > 0 && active.length === 0,
+    max_input_tokens: minLimit("max_input_tokens"),
+    max_output_tokens: minLimit("max_output_tokens"),
+  };
+}
 
 import modelListJson from "./model_list.json";
 const modelListJsonTyped = z.record(ModelSchema).parse(modelListJson);

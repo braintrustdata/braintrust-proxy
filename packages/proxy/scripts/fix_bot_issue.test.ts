@@ -639,6 +639,38 @@ describe("fix_bot_issue", () => {
       expect(existing.retirement_date).toBeUndefined();
     });
 
+    it("patches one provider without retiring the model on other providers", () => {
+      const updated = buildUpdatedLocalModel(
+        issue({
+          providers: {
+            openai: { retired: true, retirement_date: "2026-12-11" },
+          },
+        }),
+        "model",
+        {
+          ...existing,
+          providers: {
+            openai: { max_input_tokens: 10 },
+            azure: { max_input_tokens: 20 },
+          },
+        },
+      );
+      expect(updated).toMatchObject({
+        providers: {
+          openai: {
+            retired: true,
+            retirement_date: "2026-12-11",
+            max_input_tokens: 10,
+          },
+          azure: { max_input_tokens: 20 },
+        },
+        retired: false,
+        available_providers: ["azure"],
+        max_input_tokens: 20,
+      });
+      expect(updated.retirement_date).toBeUndefined();
+    });
+
     it("rejects a deprecation_date after the retirement_date", () => {
       expect(() =>
         buildUpdatedLocalModel(

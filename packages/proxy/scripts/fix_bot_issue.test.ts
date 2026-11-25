@@ -671,6 +671,34 @@ describe("fix_bot_issue", () => {
       expect(updated.retirement_date).toBeUndefined();
     });
 
+    it.each([
+      [
+        "Dec 11, 2026",
+        'retirement_date "Dec 11, 2026" is not a YYYY-MM-DD date',
+      ],
+      [
+        "2026-01-01",
+        "deprecation_date 2026-06-11 is after retirement_date 2026-01-01",
+      ],
+    ])(
+      "rejects invalid merged provider retirement date %s",
+      (retirement_date, message) => {
+        expect(() =>
+          buildUpdatedLocalModel(
+            issue({ providers: { openai: { retirement_date } } }),
+            "model",
+            {
+              ...existing,
+              providers: {
+                openai: { deprecation_date: "2026-06-11" },
+                azure: {},
+              },
+            },
+          ),
+        ).toThrow(`Refusing to update model (openai) because ${message}`);
+      },
+    );
+
     it("rejects a deprecation_date after the retirement_date", () => {
       expect(() =>
         buildUpdatedLocalModel(

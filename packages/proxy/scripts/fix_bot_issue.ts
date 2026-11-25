@@ -874,7 +874,10 @@ function sortLocations(values: string[]): string[] {
 
 const LIFECYCLE_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
-export function validateLifecycleDates(name: string, model: ModelSpec): void {
+export function validateLifecycleDates(
+  name: string,
+  model: Pick<ModelSpec, "deprecation_date" | "retirement_date">,
+): void {
   for (const field of ["deprecation_date", "retirement_date"] as const) {
     const value = model[field];
     if (
@@ -1363,7 +1366,11 @@ function inferFormat(
   return null;
 }
 
-function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
+function applyModelSpecPatch(
+  modelName: string,
+  model: ModelSpec,
+  patch?: PartialModelSpec,
+): void {
   if (!patch) {
     return;
   }
@@ -1494,7 +1501,9 @@ function applyModelSpecPatch(model: ModelSpec, patch?: PartialModelSpec): void {
     model.providers = { ...model.providers };
     for (const [name, metadata] of Object.entries(patch.providers)) {
       const provider = name as ModelEndpointType;
-      model.providers[provider] = { ...model.providers[provider], ...metadata };
+      const merged = { ...model.providers[provider], ...metadata };
+      validateLifecycleDates(`${modelName} (${provider})`, merged);
+      model.providers[provider] = merged;
     }
   }
   if (model.providers) {
@@ -1525,7 +1534,7 @@ function buildManualModelSpec(
     model.available_providers = fallbackProviders;
   }
 
-  applyModelSpecPatch(model, modelSpecPatch);
+  applyModelSpecPatch(modelName, model, modelSpecPatch);
   return model;
 }
 
@@ -1648,7 +1657,7 @@ export function buildUpdatedLocalModel(
   }
 
   const updatedModel = cloneLocalModel(existingModel);
-  applyModelSpecPatch(updatedModel, modelSpecPatch);
+  applyModelSpecPatch(targetModel, updatedModel, modelSpecPatch);
   validateLifecycleDates(targetModel, updatedModel);
   // Only enforce the explicit-locations requirement when the existing entry
   // already declared locations; don't demand it on entries that intentionally
@@ -1696,7 +1705,7 @@ export function buildModelsForIssue(
     // Provider/tier rates require evidence for the new alias itself.
     delete model.pricing;
     delete model.providers;
-    applyModelSpecPatch(model, modelSpecPatch);
+    applyModelSpecPatch(targetModel, model, modelSpecPatch);
     if (!modelSpecPatch?.displayName) {
       delete model.displayName;
     }

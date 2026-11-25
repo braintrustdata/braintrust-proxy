@@ -290,17 +290,137 @@
   "gpt-6.2-astra-healthcare": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 8,
+    "output_cost_per_mil_tokens": 40,
+    "input_cache_read_cost_per_mil_tokens": 0.4,
+    "input_cache_write_cost_per_mil_tokens": 10,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 40,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "input_cache_write_cost_per_mil_tokens": 10,
+            "input_cache_write_30m_cost_per_mil_tokens": 10,
+            "input_cache_write_12h_cost_per_mil_tokens": 20,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 60,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "input_cache_write_cost_per_mil_tokens": 20,
+            "input_cache_write_30m_cost_per_mil_tokens": 20,
+            "input_cache_write_12h_cost_per_mil_tokens": 40,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 16,
+            "output_cost_per_mil_tokens": 80,
+            "input_cache_read_cost_per_mil_tokens": 0.8,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 32,
+            "output_cost_per_mil_tokens": 120,
+            "input_cache_read_cost_per_mil_tokens": 1.6,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        }
+      }
+    },
     "displayName": "GPT-6.2 Astra Healthcare",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-6.2-sol-healthcare": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "input_cache_write_cost_per_mil_tokens": 2.5,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.5,
+            "input_cache_write_30m_cost_per_mil_tokens": 2.5,
+            "input_cache_write_12h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_30m_cost_per_mil_tokens": 5,
+            "input_cache_write_12h_cost_per_mil_tokens": 10,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        }
+      }
+    },
     "displayName": "GPT-6.2 Sol Healthcare",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-6.2-sol": {
@@ -901,9 +1021,62 @@
   "gpt-6.1-sol-healthcare": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 10,
+    "input_cache_read_cost_per_mil_tokens": 0.1,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 15,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 8,
+            "output_cost_per_mil_tokens": 30,
+            "input_cache_read_cost_per_mil_tokens": 0.4,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        }
+      }
+    },
     "displayName": "GPT-6.1 Sol Healthcare",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-6.1-terra": {
@@ -1454,9 +1627,62 @@
   "gpt-6-astra-healthcare": {
     "format": "openai",
     "flavor": "chat",
+    "input_cost_per_mil_tokens": 10,
+    "output_cost_per_mil_tokens": 50,
+    "input_cache_read_cost_per_mil_tokens": 1,
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "input_cost_per_mil_tokens": 10,
+            "output_cost_per_mil_tokens": 50,
+            "input_cache_read_cost_per_mil_tokens": 1,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 75,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 20,
+            "output_cost_per_mil_tokens": 100,
+            "input_cache_read_cost_per_mil_tokens": 2,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "max_input_tokens": 272000
+          },
+          {
+            "input_cost_per_mil_tokens": 40,
+            "output_cost_per_mil_tokens": 150,
+            "input_cache_read_cost_per_mil_tokens": 4,
+            "endpoints": [
+              "api.openai.com"
+            ],
+            "min_input_tokens": 272001
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        }
+      }
+    },
     "displayName": "GPT-6 Astra Healthcare",
+    "max_input_tokens": 922000,
+    "max_output_tokens": 128000,
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-6-cyber": {
@@ -3909,7 +4135,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-5.2-pro": {
@@ -4125,7 +4352,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-5.1-codex-max": {
@@ -4144,7 +4372,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-5.1-codex-mini": {
@@ -4163,7 +4392,8 @@
     "max_output_tokens": 128000,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-5.1-2025-11-13": {
@@ -4299,7 +4529,8 @@
     "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
-      "azure"
+      "azure",
+      "openai"
     ]
   },
   "gpt-5-mini": {
@@ -4775,7 +5006,8 @@
     "max_output_tokens": 32768,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-4.1-2025-04-14": {
@@ -4828,7 +5060,8 @@
     "max_input_tokens": 1047576,
     "max_output_tokens": 32768,
     "available_providers": [
-      "azure"
+      "azure",
+      "openai"
     ]
   },
   "gpt-4": {
@@ -5071,7 +5304,8 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "azure"
+      "azure",
+      "openai"
     ]
   },
   "gpt-4o-mini-transcribe": {
@@ -5102,7 +5336,7 @@
     "format": "openai",
     "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 12,
+    "output_cost_per_mil_tokens": 10,
     "pricing": {
       "openai": {
         "standard": [
@@ -5140,7 +5374,8 @@
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "azure"
+      "azure",
+      "openai"
     ]
   },
   "gpt-4o-transcribe": {
@@ -5220,7 +5455,7 @@
     "format": "openai",
     "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 12,
+    "output_cost_per_mil_tokens": 10,
     "pricing": {
       "openai": {
         "standard": [
@@ -5302,7 +5537,7 @@
     "format": "openai",
     "flavor": "speech",
     "input_cost_per_mil_tokens": 0.6,
-    "output_cost_per_mil_tokens": 12,
+    "output_cost_per_mil_tokens": 10,
     "pricing": {
       "openai": {
         "standard": [
@@ -5501,7 +5736,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-4-turbo-2024-04-09": {
@@ -5549,7 +5785,8 @@
     "max_output_tokens": 4096,
     "available_providers": [
       "azure",
-      "openrouter"
+      "openrouter",
+      "openai"
     ]
   },
   "gpt-3.5-turbo": {
@@ -5612,7 +5849,8 @@
     "max_input_tokens": 8192,
     "max_output_tokens": 4097,
     "available_providers": [
-      "azure"
+      "azure",
+      "openai"
     ]
   },
   "gpt-3.5-turbo-0125": {
@@ -7601,7 +7839,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "displayName": "GPT Chat Latest",
     "reasoning": true,
-    "max_input_tokens": 400000,
+    "max_input_tokens": 272000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openai",
@@ -8114,6 +8352,7 @@
       "qwen/qwen4-max",
       "Qwen/Qwen4-Max"
     ],
+    "max_input_tokens": 262144,
     "available_providers": [
       "fireworks"
     ]
@@ -11553,6 +11792,19 @@
     "retirement_date": "2026-11-07",
     "max_input_tokens": 1048576,
     "max_output_tokens": 1048576,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
+  "accounts/fireworks/models/hy4-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.07,
+    "output_cost_per_mil_tokens": 0.281,
+    "input_cache_read_cost_per_mil_tokens": 0.003,
+    "reasoning": true,
+    "max_input_tokens": 524288,
     "available_providers": [
       "fireworks"
     ]
@@ -31103,6 +31355,20 @@
       "xAI"
     ]
   },
+  "grok-4.6-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "xAI"
+    ]
+  },
   "grok-4.5": {
     "format": "openai",
     "flavor": "chat",
@@ -31643,6 +31909,20 @@
     "available_providers": [
       "xAI",
       "openrouter"
+    ]
+  },
+  "grok-4.7-latest": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 2,
+    "output_cost_per_mil_tokens": 6,
+    "input_cache_read_cost_per_mil_tokens": 0.5,
+    "reasoning": true,
+    "max_input_tokens": 500000,
+    "max_output_tokens": 500000,
+    "available_providers": [
+      "xAI"
     ]
   },
   "grok-4.6": {
@@ -34139,6 +34419,14 @@
     "displayName": "WizardLM-2 8x22B",
     "available_providers": []
   },
+  "databricks-inkling-2-small": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Inkling 2 Small",
+    "available_providers": [
+      "databricks"
+    ]
+  },
   "motif-technologies/motif-3": {
     "format": "openai",
     "flavor": "chat",
@@ -34239,14 +34527,6 @@
     "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
-    ]
-  },
-  "databricks-inkling-2-small": {
-    "format": "openai",
-    "flavor": "chat",
-    "displayName": "Inkling 2 Small",
-    "available_providers": [
-      "databricks"
     ]
   },
   "stealth/crouton-alpha": {
@@ -34352,9 +34632,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.03,
-    "output_cost_per_mil_tokens": 0.2,
-    "input_cache_read_cost_per_mil_tokens": 0.001,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.6,
+    "input_cache_read_cost_per_mil_tokens": 0.003,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -35257,6 +35537,34 @@
       "openrouter"
     ]
   },
+  "upstage/solar-mini-4-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.01,
+    "output_cost_per_mil_tokens": 0.04,
+    "input_cache_read_cost_per_mil_tokens": 0.001,
+    "displayName": "Upstage: Solar Mini 4.5 (Preview)",
+    "reasoning": true,
+    "max_input_tokens": 524288,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "upstage/solar-pro-4-contributor": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.09,
+    "output_cost_per_mil_tokens": 0.36,
+    "input_cache_read_cost_per_mil_tokens": 0.018,
+    "displayName": "Upstage: Solar Pro 4 Contributor",
+    "reasoning": true,
+    "max_input_tokens": 524288,
+    "max_output_tokens": 131072,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "bytedance-seed/seed-2.0-code": {
     "format": "openai",
     "flavor": "chat",
@@ -35391,9 +35699,9 @@
   "nvidia/nemotron-3.5-lightning": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 0.07,
     "output_cost_per_mil_tokens": 0.2,
-    "input_cache_read_cost_per_mil_tokens": 0.01,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
     "displayName": "NVIDIA: Nemotron 3.5 Lightning",
     "reasoning": true,
     "max_input_tokens": 1048576,
@@ -35533,13 +35841,28 @@
       "openrouter"
     ]
   },
+  "xiaomi/mimo-v2.6-flash-mopd": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 1,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "displayName": "Xiaomi: MiMo-V2.6-Flash-MOPD",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "deepseek/deepseek-v4.1-flash": {
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.0507,
-    "output_cost_per_mil_tokens": 0.2028,
-    "input_cache_read_cost_per_mil_tokens": 0.001014,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.42,
+    "input_cache_read_cost_per_mil_tokens": 0.0042,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -35623,9 +35946,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.2156,
-    "output_cost_per_mil_tokens": 0.6468,
-    "input_cache_read_cost_per_mil_tokens": 0.00686,
+    "input_cost_per_mil_tokens": 0.44,
+    "output_cost_per_mil_tokens": 1.32,
+    "input_cache_read_cost_per_mil_tokens": 0.028,
     "displayName": "DeepSeek: DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
@@ -35678,7 +36001,7 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0456,
+    "input_cost_per_mil_tokens": 0.047,
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.035,
     "pricing": {
@@ -36265,9 +36588,9 @@
   "minimax/minimax-m2.5": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.27,
-    "output_cost_per_mil_tokens": 0.95,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
     "displayName": "MiniMax: MiniMax M2.5",
     "reasoning": true,
     "max_input_tokens": 204800,
@@ -36375,9 +36698,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.15,
-    "output_cost_per_mil_tokens": 0.5,
-    "input_cache_read_cost_per_mil_tokens": 0.03,
+    "input_cost_per_mil_tokens": 0.12,
+    "output_cost_per_mil_tokens": 0.38,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -36515,8 +36838,8 @@
   "z-ai/glm-4.5-air": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.13,
-    "output_cost_per_mil_tokens": 0.85,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.86,
     "input_cache_read_cost_per_mil_tokens": 0.025,
     "displayName": "Z.ai: GLM 4.5 Air",
     "reasoning": true,
@@ -36591,7 +36914,7 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 0.9,
-    "input_cache_read_cost_per_mil_tokens": 0.055,
+    "input_cache_read_cost_per_mil_tokens": 0.05,
     "displayName": "Z.ai: GLM 4.6V",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -40345,7 +40668,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.17,
+    "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.25,
     "displayName": "Qwen: Qwen3.5-9B",
     "reasoning": true,
@@ -40373,9 +40696,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.05,
-    "output_cost_per_mil_tokens": 0.7,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cost_per_mil_tokens": 0.1,
+    "output_cost_per_mil_tokens": 0.89,
+    "input_cache_read_cost_per_mil_tokens": 0.035,
     "displayName": "Qwen: Qwen3.6 35B A3B",
     "reasoning": true,
     "max_input_tokens": 262144,

@@ -14058,7 +14058,7 @@
       }
     },
     "displayName": "NVIDIA Nemotron 3.5 Lightning 30B A3B",
-    "deprecation_date": "2026-11-07",
+    "deprecation_date": "2026-10-19",
     "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [

@@ -352,6 +352,7 @@ const liteLLMModelDetailSchema = z
       .optional(),
     input_cost_per_token: z.number().optional(),
     output_cost_per_token: z.number().optional(),
+    output_cost_per_audio_token: z.number().optional(),
     input_cost_per_mil_tokens: z.number().optional(), // From LiteLLM if available
     output_cost_per_mil_tokens: z.number().optional(), // From LiteLLM if available
     output_cost_per_reasoning_token: z.number().optional(),
@@ -1047,14 +1048,71 @@ type ResolvedRemoteEntry = {
   mergedProviders: string[];
 };
 
+// Shutdown dates for LiteLLM entries that lack a deprecation_date even though
+// the provider has shut them down (the dated snapshots they point to are
+// listed on https://developers.openai.com/api/docs/deprecations).
+const LITELLM_MISSING_SHUTDOWN_DATES: Record<string, string> = {
+  "gpt-4o-search-preview": "2026-07-23",
+  "gpt-4o-mini-search-preview": "2026-07-23",
+  "gpt-3.5-turbo-instruct-0914": "2026-09-28",
+};
+
+// LiteLLM's deprecation_date is the provider's shutdown date.
+function isShutDownRemoteModel(
+  remoteModelName: string,
+  remoteModel: LiteLLMModelDetail,
+  today: string,
+): boolean {
+  const shutdownDate =
+    remoteModel.deprecation_date ??
+    LITELLM_MISSING_SHUTDOWN_DATES[remoteModelName];
+  return shutdownDate !== undefined && shutdownDate <= today;
+}
+
+// LiteLLM's output_cost_per_token for speech models is the text-output rate;
+// speech models are billed on audio output tokens.
+function getRemoteOutputCostPerToken(
+  remoteModel: LiteLLMModelDetail,
+): number | undefined {
+  if (remoteModel.mode === "audio_speech") {
+    return (
+      remoteModel.output_cost_per_audio_token ??
+      remoteModel.output_cost_per_token
+    );
+  }
+  return remoteModel.output_cost_per_token;
+}
+
+// LiteLLM lists Azure OpenAI deployments separately (`azure/<model>`,
+// `azure/<region>/<model>`), so use those listings rather than assuming every
+// OpenAI model is also on Azure.
+function getAzureListedModelNames(
+  remoteModels: LiteLLMModelList,
+  today: string,
+): Set<string> {
+  const names = new Set<string>();
+  for (const [remoteModelName, remoteModel] of Object.entries(remoteModels)) {
+    if (
+      remoteModel.litellm_provider === "azure" &&
+      !isShutDownRemoteModel(remoteModelName, remoteModel, today)
+    ) {
+      names.add(remoteModelName.split("/").pop() ?? remoteModelName);
+    }
+  }
+  return names;
+}
+
 // Deduplicate remote models by their translated (local) name.
 // When multiple remote names translate to the same local name, the model data
 // from the first entry is kept and providers from all entries are merged.
-function resolveRemoteModels(
+// Entries past their shutdown date are skipped so they never re-add a provider.
+export function resolveRemoteModels(
   remoteModels: LiteLLMModelList,
   providerFilter?: string,
+  today: string = new Date().toISOString().slice(0, 10),
 ): Map<string, ResolvedRemoteEntry> {
   const result = new Map<string, ResolvedRemoteEntry>();
+  const azureListedModelNames = getAzureListedModelNames(remoteModels, today);
 
   // Sort by provider then model name so collision resolution is deterministic
   // regardless of JSON key order. The alphabetically earliest provider wins as
@@ -1075,6 +1133,9 @@ function resolveRemoteModels(
     if (!isSupportedRemoteModel(remoteModel)) {
       continue;
     }
+    if (isShutDownRemoteModel(remoteModelName, remoteModel, today)) {
+      continue;
+    }
 
     const translatedName = translateToBraintrust(
       remoteModelName,
@@ -1091,7 +1152,15 @@ function resolveRemoteModels(
       );
       continue;
     }
-    const providers = getProviderMappingForModel(remoteModelName, remoteModel);
+    let providers = getProviderMappingForModel(remoteModelName, remoteModel);
+    if (
+      providers.includes("azure") &&
+      !azureListedModelNames.has(
+        remoteModelName.split("/").pop() ?? remoteModelName,
+      )
+    ) {
+      providers = providers.filter((provider) => provider !== "azure");
+    }
 
     if (result.has(translatedName)) {
       const existing = result.get(translatedName)!;
@@ -1994,7 +2063,7 @@ export function convertRemoteToLocalModel(
     baseModel.input_cost_per_mil_tokens = roundCost(inputCostPerToken);
   }
   const outputCostPerToken = getNonZeroNumber(
-    remoteModel.output_cost_per_token,
+    getRemoteOutputCostPerToken(remoteModel),
   );
   if (outputCostPerToken !== undefined) {
     baseModel.output_cost_per_mil_tokens = roundCost(outputCostPerToken);
@@ -2551,7 +2620,7 @@ async function findMissingCommand(argv: any) {
       }
     }
 
-    const resolvedRemote = resolveRemoteModels(filteredRemoteModels);
+    const resolvedRemote = resolveRemoteModels(remoteModels, argv.provider);
 
     for (const [
       translatedName,
@@ -2793,7 +2862,8 @@ async function updateModelsCommand(argv: any) {
         localModelDetail.input_cache_write_cost_per_mil_tokens;
 
       const remoteInputCostPerToken = remoteModelDetail.input_cost_per_token;
-      const remoteOutputCostPerToken = remoteModelDetail.output_cost_per_token;
+      const remoteOutputCostPerToken =
+        getRemoteOutputCostPerToken(remoteModelDetail);
       const remoteCacheReadCostPerToken =
         remoteModelDetail.cache_read_input_token_cost;
       const remoteCacheWriteCostPerToken =

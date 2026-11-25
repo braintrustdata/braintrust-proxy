@@ -5856,6 +5856,23 @@
       "azure"
     ]
   },
+  "gpt-transcribe": {
+    "format": "openai",
+    "flavor": "transcription",
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.000075
+          }
+        ]
+      }
+    },
+    "displayName": "GPT-Transcribe",
+    "available_providers": [
+      "openai"
+    ]
+  },
   "gpt-4o-transcribe": {
     "format": "openai",
     "flavor": "transcription",
@@ -6438,6 +6455,16 @@
   "gpt-live-1.1": {
     "format": "openai",
     "flavor": "live",
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.0008333333333333334,
+            "audio_standby_cost_per_second": 0.0003333333333333333
+          }
+        ]
+      }
+    },
     "displayName": "GPT-Live 1.1",
     "available_providers": [
       "openai",
@@ -6447,6 +6474,16 @@
   "gpt-live-1": {
     "format": "openai",
     "flavor": "live",
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.0008333333333333334,
+            "audio_standby_cost_per_second": 0.0003333333333333333
+          }
+        ]
+      }
+    },
     "displayName": "GPT-Live 1",
     "available_providers": [
       "openai",
@@ -8099,6 +8136,15 @@
   "whisper-1": {
     "format": "openai",
     "flavor": "transcription",
+    "pricing": {
+      "openai": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.0001
+          }
+        ]
+      }
+    },
     "displayName": "Whisper 1",
     "deprecation_date": "2026-08-26",
     "retirement_date": "2027-02-26",
@@ -30192,6 +30238,15 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00006666666666666667
+          }
+        ]
+      }
+    },
     "displayName": "Voxtral Small",
     "max_input_tokens": 32000,
     "available_providers": [
@@ -30204,6 +30259,15 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.4,
+    "pricing": {
+      "mistral": {
+        "standard": [
+          {
+            "audio_duration_cost_per_second": 0.00006666666666666667
+          }
+        ]
+      }
+    },
     "max_input_tokens": 32000,
     "available_providers": [
       "mistral"

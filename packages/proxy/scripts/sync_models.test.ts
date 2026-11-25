@@ -1627,6 +1627,7 @@ describe("assertUnchangedTopLevelPrices", () => {
     input_cost_per_token: 0.000001,
     output_cost_per_mil_tokens: 2,
     input_cache_write_30m_cost_per_mil_tokens: 3,
+    audio_duration_cost_per_second: 0.05 / 60,
   } satisfies ModelSpec;
 
   it("allows metadata and tier prices to change", () => {
@@ -1643,6 +1644,8 @@ describe("assertUnchangedTopLevelPrices", () => {
     { ...model, output_cost_per_mil_tokens: undefined },
     { ...model, input_cache_write_30m_cost_per_mil_tokens: 4 },
     { ...model, input_cache_read_cost_per_mil_tokens: 0.1 },
+    { ...model, audio_duration_cost_per_second: 0.06 / 60 },
+    { ...model, audio_standby_cost_per_second: 0.02 / 60 },
   ])(
     "blocks additions, changes, and removals of top-level prices ($#)",
     (entry) => {

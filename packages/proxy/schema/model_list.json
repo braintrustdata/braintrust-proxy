@@ -8652,15 +8652,21 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.66,
     "input_cache_read_cost_per_mil_tokens": 0.007,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 1048576
+      }
+    },
     "displayName": "DeepSeek V4 Flash Vision Exp",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 1048576,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/glm-5p3-flash": {
     "format": "openai",
@@ -8858,15 +8864,21 @@
     "input_cost_per_mil_tokens": 0.35,
     "output_cost_per_mil_tokens": 1.5,
     "input_cache_read_cost_per_mil_tokens": 0.04,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 131072,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "Muse Glimmer 30B",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/muse-spark-open": {
     "format": "openai",
@@ -8912,16 +8924,22 @@
     "input_cost_per_mil_tokens": 1.32,
     "output_cost_per_mil_tokens": 3.96,
     "input_cache_read_cost_per_mil_tokens": 0.044,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 131072
+      }
+    },
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-pro",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/qwen3p8-max": {
     "format": "openai",
@@ -9001,6 +9019,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.028,
     "providers": {
       "fireworks": {
+        "deprecation_date": "2026-08-14",
         "max_input_tokens": 1048576,
         "max_output_tokens": 384000
       }
@@ -9019,16 +9038,22 @@
     "input_cost_per_mil_tokens": 0.22,
     "output_cost_per_mil_tokens": 0.66,
     "input_cache_read_cost_per_mil_tokens": 0.007,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 131072
+      }
+    },
     "displayName": "DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
     "parent": "accounts/fireworks/models/deepseek-v4-flash",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/deepseek-v4-pro": {
     "format": "openai",
@@ -10688,15 +10713,21 @@
     "input_cost_per_mil_tokens": 1.4,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.14,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 131072
+      }
+    },
     "displayName": "GLM 5.2",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/glm-5p1": {
     "format": "openai",
@@ -10827,14 +10858,20 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 262144,
+        "max_output_tokens": 32768
+      }
+    },
     "displayName": "Kimi K2.7 Code",
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/kimi-k2p6": {
     "format": "openai",
@@ -10842,15 +10879,21 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.16,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-09-12",
+        "retirement_date": "2026-09-25",
+        "retired": true,
+        "max_input_tokens": 262144,
+        "max_output_tokens": 32768
+      }
+    },
     "displayName": "Kimi K2.6",
     "reasoning": true,
     "deprecation_date": "2026-09-12",
+    "retired": true,
     "retirement_date": "2026-09-25",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
-    "available_providers": [
-      "fireworks"
-    ]
+    "available_providers": []
   },
   "accounts/fireworks/models/kimi-k2p5": {
     "format": "openai",
@@ -12674,6 +12717,14 @@
         ]
       }
     },
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-10-19",
+        "retirement_date": "2026-11-07",
+        "max_input_tokens": 131072,
+        "max_output_tokens": 32768
+      }
+    },
     "displayName": "GPT-OSS (120B)",
     "reasoning": true,
     "deprecation_date": "2026-10-19",
@@ -13123,6 +13174,14 @@
             "model_id": "accounts/fireworks/models/nemotron-3-ultra-nvfp4"
           }
         ]
+      }
+    },
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-10-19",
+        "retirement_date": "2026-11-07",
+        "max_input_tokens": 262144,
+        "max_output_tokens": 32768
       }
     },
     "displayName": "NVIDIA Nemotron 3 Ultra NVFP4",
@@ -13886,6 +13945,14 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 4.05,
     "input_cache_read_cost_per_mil_tokens": 0.17,
+    "providers": {
+      "fireworks": {
+        "deprecation_date": "2026-10-19",
+        "retirement_date": "2026-11-07",
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 1048576
+      }
+    },
     "displayName": "Inkling",
     "reasoning": true,
     "deprecation_date": "2026-10-19",
@@ -13971,6 +14038,7 @@
     },
     "providers": {
       "fireworks": {
+        "deprecation_date": "2026-10-19",
         "max_input_tokens": 262144,
         "max_output_tokens": 32768
       }
@@ -28125,6 +28193,13 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 6,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-11-04",
+        "max_input_tokens": 262144,
+        "max_output_tokens": 131072
+      }
+    },
     "displayName": "Qwen3.8 2.4T A95B",
     "reasoning": true,
     "retirement_date": "2026-11-04",
@@ -28229,13 +28304,18 @@
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 3.6,
     "input_cache_read_cost_per_mil_tokens": 0.35,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-06-29",
+        "retired": true,
+        "max_input_tokens": 262144
+      }
+    },
     "displayName": "Qwen3.5 397B A17B",
     "deprecation_date": "2026-06-15",
+    "retired": true,
     "retirement_date": "2026-06-29",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "Qwen/Qwen3.5-9B": {
     "format": "openai",
@@ -28273,23 +28353,33 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.2,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-05-14",
+        "retired": true,
+        "max_input_tokens": 262144
+      }
+    },
     "displayName": "Qwen3 Coder Next FP8",
+    "retired": true,
     "retirement_date": "2026-05-14",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "Qwen/Qwen2.5-72B-Instruct-Turbo": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.2,
     "output_cost_per_mil_tokens": 1.2,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-02-06",
+        "retired": true
+      }
+    },
     "displayName": "Qwen 2.5 72B Instruct Turbo",
+    "retired": true,
     "retirement_date": "2026-02-06",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "Qwen/Qwen2.5-7B-Instruct-Turbo": {
     "format": "openai",
@@ -28313,13 +28403,18 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.19,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-08-27",
+        "retired": true,
+        "max_input_tokens": 262000,
+        "max_output_tokens": 262000
+      }
+    },
     "displayName": "Kimi K2.7 Code",
+    "retired": true,
     "retirement_date": "2026-08-27",
-    "max_input_tokens": 262000,
-    "max_output_tokens": 262000,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "moonshotai/Kimi-K2-Instruct": {
     "format": "openai",
@@ -28348,22 +28443,32 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.59,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-02-06",
+        "retired": true
+      }
+    },
     "displayName": "Llama 4 Scout Instruct (17Bx16E)",
+    "retired": true,
     "retirement_date": "2026-02-06",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1.04,
     "output_cost_per_mil_tokens": 1.04,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-10-22",
+        "retired": true
+      }
+    },
     "displayName": "Llama 3.3 70B Instruct Turbo",
+    "retired": true,
     "retirement_date": "2026-10-22",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "meta-llama/Llama-3.3-70B-Instruct-Turbo-Free": {
     "format": "openai",
@@ -28401,22 +28506,32 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.88,
     "output_cost_per_mil_tokens": 0.88,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-02-25",
+        "retired": true
+      }
+    },
     "displayName": "Llama 3.1 70B Instruct Turbo",
+    "retired": true,
     "retirement_date": "2026-02-25",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.18,
     "output_cost_per_mil_tokens": 0.18,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-03-06",
+        "retired": true
+      }
+    },
     "displayName": "Llama 3.1 8B Instruct Turbo",
+    "retired": true,
     "retirement_date": "2026-03-06",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "MiniMaxAI/MiniMax-M3": {
     "format": "openai",
@@ -28424,6 +28539,12 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.06,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-11-06",
+        "max_input_tokens": 524288
+      }
+    },
     "displayName": "MiniMax M3",
     "retirement_date": "2026-11-06",
     "max_input_tokens": 524288,
@@ -28460,13 +28581,18 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.39,
     "output_cost_per_mil_tokens": 0.97,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-09-15",
+        "retired": true,
+        "max_input_tokens": 262144
+      }
+    },
     "displayName": "Gemma 4 31B IT",
     "deprecation_date": "2026-09-01",
+    "retired": true,
     "retirement_date": "2026-09-15",
-    "max_input_tokens": 262144,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "pearl-ai/gemma-4-31b-it": {
     "format": "openai",
@@ -28522,23 +28648,33 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.8,
     "output_cost_per_mil_tokens": 0.8,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-04-02",
+        "retired": true
+      }
+    },
     "displayName": "Mistral Small (24B) Instruct 25.01",
+    "retired": true,
     "retirement_date": "2026-04-02",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "mistralai/Mixtral-8x7B-Instruct-v0.1": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 0.6,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-04-16",
+        "retired": true
+      }
+    },
     "displayName": "Mixtral 8x7B Instruct v0.1",
     "deprecation_date": "2026-04-14",
+    "retired": true,
     "retirement_date": "2026-04-16",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "nvidia/nemotron-3-ultra-550b-a55b": {
     "format": "openai",
@@ -28562,6 +28698,8 @@
     },
     "providers": {
       "together": {
+        "retirement_date": "2026-08-27",
+        "retired": true,
         "max_input_tokens": 512288,
         "max_output_tokens": 512288
       },
@@ -28576,7 +28714,6 @@
     "max_input_tokens": 202800,
     "max_output_tokens": 16384,
     "available_providers": [
-      "together",
       "openrouter"
     ]
   },
@@ -29121,6 +29258,8 @@
         "max_output_tokens": 384000
       },
       "together": {
+        "retirement_date": "2026-10-22",
+        "retired": true,
         "max_input_tokens": 1048576,
         "max_output_tokens": 1048576
       }
@@ -29130,8 +29269,7 @@
     "max_input_tokens": 1048576,
     "max_output_tokens": 384000,
     "available_providers": [
-      "baseten",
-      "together"
+      "baseten"
     ]
   },
   "zai-org/GLM-5.3-Fast": {
@@ -29315,15 +29453,20 @@
     "input_cost_per_mil_tokens": 1.3,
     "output_cost_per_mil_tokens": 4.3,
     "input_cache_read_cost_per_mil_tokens": 0.26,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-07-10",
+        "retired": true,
+        "max_input_tokens": 202752,
+        "max_output_tokens": 128000
+      }
+    },
     "displayName": "GLM 5.1",
     "reasoning": true,
     "deprecation_date": "2026-06-26",
+    "retired": true,
     "retirement_date": "2026-07-10",
-    "max_input_tokens": 202752,
-    "max_output_tokens": 128000,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "zai-org/GLM-5": {
     "format": "openai",
@@ -29331,11 +29474,16 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 3.15,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-06-22",
+        "retired": true
+      }
+    },
     "displayName": "GLM 5",
+    "retired": true,
     "retirement_date": "2026-06-22",
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "zai-glm-5-2": {
     "format": "openai",
@@ -29436,13 +29584,18 @@
     "input_cost_per_mil_tokens": 0.95,
     "output_cost_per_mil_tokens": 4,
     "input_cache_read_cost_per_mil_tokens": 0.16,
+    "providers": {
+      "together": {
+        "retirement_date": "2026-08-19",
+        "retired": true,
+        "max_input_tokens": 262000,
+        "max_output_tokens": 262000
+      }
+    },
     "displayName": "Kimi K2.6",
+    "retired": true,
     "retirement_date": "2026-08-19",
-    "max_input_tokens": 262000,
-    "max_output_tokens": 262000,
-    "available_providers": [
-      "together"
-    ]
+    "available_providers": []
   },
   "moonshotai/Kimi-K2.5": {
     "format": "openai",
@@ -35854,14 +36007,19 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-11-19",
+        "retired": true,
+        "max_input_tokens": 1048576
+      }
+    },
     "displayName": "DeepSeek V4.1 Flash",
     "reasoning": true,
     "deprecation_date": "2026-10-19",
+    "retired": true,
     "retirement_date": "2026-11-19",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-glm-5-3": {
     "format": "openai",
@@ -36017,27 +36175,37 @@
   "databricks-deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-10-30",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 384000
+      }
+    },
     "displayName": "DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "deprecation_date": "2026-09-23",
+    "retired": true,
     "retirement_date": "2026-10-30",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 384000,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-11-05",
+        "retired": true,
+        "max_input_tokens": 1048576
+      }
+    },
     "displayName": "DeepSeek V4 Flash 0731",
     "reasoning": true,
     "deprecation_date": "2026-10-06",
+    "retired": true,
     "retirement_date": "2026-11-05",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-gemini-3-pro-image": {
     "format": "openai",
@@ -36336,16 +36504,21 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 2.99999,
     "output_cost_per_mil_tokens": 15.00002,
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-10-09",
+        "retired": true,
+        "max_input_tokens": 200000,
+        "max_output_tokens": 64000
+      }
+    },
     "displayName": "Claude Sonnet 4",
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2026-07-08",
+    "retired": true,
     "retirement_date": "2026-10-09",
-    "max_input_tokens": 200000,
-    "max_output_tokens": 64000,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-claude-3-7-sonnet": {
     "format": "openai",
@@ -36650,14 +36823,19 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.30002,
     "output_cost_per_mil_tokens": 2.49998,
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-10-02",
+        "retired": true,
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 65535
+      }
+    },
     "displayName": "Gemini 2.5 Flash",
     "deprecation_date": "2026-07-08",
+    "retired": true,
     "retirement_date": "2026-10-02",
-    "max_input_tokens": 1048576,
-    "max_output_tokens": 65535,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-gemini-2-5-pro": {
     "format": "openai",
@@ -37369,14 +37547,19 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
+    "providers": {
+      "databricks": {
+        "retirement_date": "2026-10-30",
+        "retired": true,
+        "max_input_tokens": 1048576
+      }
+    },
     "displayName": "Inkling",
     "reasoning": true,
     "deprecation_date": "2026-09-28",
+    "retired": true,
     "retirement_date": "2026-10-30",
-    "max_input_tokens": 1048576,
-    "available_providers": [
-      "databricks"
-    ]
+    "available_providers": []
   },
   "databricks-claude-opus-5": {
     "format": "openai",

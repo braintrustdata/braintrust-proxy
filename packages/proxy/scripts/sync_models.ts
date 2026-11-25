@@ -1286,7 +1286,9 @@ export function resolveRemoteProviderMetadata(
     const remote = remoteModels[remoteName];
     if (!isSupportedRemoteModel(remote)) continue;
 
-    const azure = remote.litellm_provider === "azure";
+    const azure =
+      remote.litellm_provider === "azure" ||
+      remote.litellm_provider === "azure_text";
     const openRouter = remote.litellm_provider === "openrouter";
     if (
       filter &&
@@ -1398,6 +1400,14 @@ export function applyProviderMetadata(
       );
     } else {
       updated.retirement_date = remote.retirement_date;
+      if (
+        current.retired &&
+        current.retirement_date &&
+        current.retirement_date <= today &&
+        remote.retirement_date > today
+      ) {
+        updated.retired = false;
+      }
       changed = true;
     }
   }

@@ -1843,7 +1843,7 @@ describe("provider metadata sync", () => {
     const remote = parseRemoteModelList({
       [name]: { litellm_provider: "openai", max_input_tokens: 4096 },
       "azure/gpt-35-turbo-instruct": {
-        litellm_provider: "azure",
+        litellm_provider: "azure_text",
         max_input_tokens: 8000,
         max_output_tokens: 2000,
         deprecation_date: "2027-01-01",
@@ -1959,6 +1959,38 @@ describe("provider metadata sync", () => {
     expect(updated.providers).toEqual({ openai, azure });
     expect(updated.available_providers).toEqual(legacy.available_providers);
     expect(updated.max_input_tokens).toBe(legacy.max_input_tokens);
+  });
+
+  it("restores a route when its shutdown is postponed, but not a manually retired route without a date", () => {
+    const future = { retirement_date: "2027-01-01" };
+    const updated = applyProviderMetadata(
+      name,
+      {
+        ...model,
+        providers: {
+          ...model.providers,
+          openai: { retirement_date: today, retired: true },
+          azure: { retired: true },
+        },
+      },
+      "openai",
+      future,
+      "LiteLLM",
+      today,
+    );
+    expect(updated.providers?.openai).toEqual({ ...future, retired: false });
+    expect(updated.available_providers).toEqual(["openai"]);
+
+    const manual = applyProviderMetadata(
+      name,
+      updated,
+      "azure",
+      future,
+      "LiteLLM",
+      today,
+    );
+    expect(manual.providers?.azure).toEqual({ ...future, retired: true });
+    expect(manual.available_providers).toEqual(["openai"]);
   });
 
   it("reports the source, provider field, and old and new values for review", () => {

@@ -3,12 +3,22 @@ import { GenerateContentParameters } from "../types/google";
 import { ChatCompletionCreateParams } from "openai/resources";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { APISecretSchema } from "./secrets";
+import { getAvailableModels } from "./models";
 import {
   getModelEndpointTypes,
   getDirectModelEndpointTypes,
   ModelFormat,
 } from "./index";
 import { translateParams } from "./translate";
+
+it("keeps catalog provider metadata and direct endpoint mappings in sync", () => {
+  for (const [name, model] of Object.entries(getAvailableModels())) {
+    if (!model.providers) continue;
+    expect(getDirectModelEndpointTypes(name), name).toEqual(
+      model.available_providers,
+    );
+  }
+});
 
 const examples: Record<
   string,

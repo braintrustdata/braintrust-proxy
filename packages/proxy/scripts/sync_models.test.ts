@@ -134,6 +134,97 @@ describe("sync_models", () => {
     expect(JSON.parse(canonicalContent)["gpt-6.1-sol"]).toEqual(model);
   });
 
+  it("derives the latest shutdown and smallest active provider limits", () => {
+    const providers = {
+      openai: {
+        deprecation_date: "2026-04-22",
+        retirement_date: "2026-07-23",
+        retired: true,
+        max_input_tokens: 1,
+        max_output_tokens: 1,
+      },
+      azure: {
+        retirement_date: "2027-04-14",
+        max_input_tokens: 128_000,
+        max_output_tokens: 32_768,
+      },
+      openrouter: {
+        retirement_date: "2027-04-01",
+        max_input_tokens: 100_000,
+        max_output_tokens: 65_536,
+      },
+    };
+    const { canonicalContent } = canonicalizeLocalModelsContent(
+      JSON.stringify({
+        example: {
+          format: "openai",
+          flavor: "chat",
+          providers,
+          retired: true,
+          retirement_date: "2026-07-23",
+          max_input_tokens: 1,
+          max_output_tokens: 1,
+          available_providers: ["openai"],
+        },
+      }),
+    );
+    expect(JSON.parse(canonicalContent).example).toEqual({
+      format: "openai",
+      flavor: "chat",
+      providers,
+      retired: false,
+      retirement_date: "2027-04-14",
+      max_input_tokens: 100_000,
+      max_output_tokens: 32_768,
+      available_providers: ["azure", "openrouter"],
+    });
+  });
+
+  it("drops stale shutdown dates when an active provider has no date", () => {
+    const { canonicalContent } = canonicalizeLocalModelsContent(
+      JSON.stringify({
+        example: {
+          format: "openai",
+          flavor: "chat",
+          retirement_date: "2027-04-14",
+          providers: {
+            azure: { retirement_date: "2027-04-14" },
+            openrouter: {},
+          },
+        },
+      }),
+    );
+    expect(JSON.parse(canonicalContent).example).not.toHaveProperty(
+      "retirement_date",
+    );
+  });
+
+  it("retires the model only when all providers have retired", () => {
+    const { canonicalContent } = canonicalizeLocalModelsContent(
+      JSON.stringify({
+        example: {
+          format: "openai",
+          flavor: "chat",
+          retired: false,
+          max_input_tokens: 42,
+          max_output_tokens: 42,
+          providers: {
+            azure: { retired: true },
+            openai: { retired: true, retirement_date: "2026-07-23" },
+          },
+        },
+      }),
+    );
+    const model = JSON.parse(canonicalContent).example;
+    expect(model).toMatchObject({
+      retired: true,
+      retirement_date: "2026-07-23",
+      available_providers: [],
+    });
+    expect(model).not.toHaveProperty("max_input_tokens");
+    expect(model).not.toHaveProperty("max_output_tokens");
+  });
+
   it("keeps the canonical Fireworks payload when collapsing legacy aliases", () => {
     const normalizedVariants = [
       normalizeLocalModels({

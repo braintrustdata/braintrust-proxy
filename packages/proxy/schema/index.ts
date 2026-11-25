@@ -245,6 +245,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "gpt-4o-audio-preview-2025-06-03": ["openai", "azure"],
   "gpt-4o-mini-transcribe-2025-03-20": ["openai", "azure"],
   "gpt-4o-mini-tts-2025-03-20": ["openai", "azure"],
+  "gpt-4o-mini-search-preview-2025-03-11": ["azure"],
+  "gpt-4o-search-preview-2025-03-11": ["azure"],
   "gpt-4o-audio-preview": ["openai", "azure"],
   "gpt-4o-mini-audio-preview": ["openai", "azure"],
   "gpt-4o-mini-transcribe": ["openai", "azure"],

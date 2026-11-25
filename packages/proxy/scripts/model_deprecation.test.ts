@@ -213,6 +213,30 @@ describe("applyDeprecations", () => {
 `;
   const baseDeprecatedIds: string[] = ["claude-opus-4-7-20260416"];
 
+  it("updates provider metadata before deriving the remaining routes and limits", () => {
+    const catalog = {
+      "model-c": {
+        available_providers: ["openai", "azure"],
+        providers: {
+          openai: { retirement_date: "2026-07-23", max_input_tokens: 10 },
+          azure: { max_input_tokens: 20 },
+        },
+      },
+    };
+    const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
+      { model: "model-c", provider: "openai", reason: "gone" },
+    ]);
+    expect(out.catalog["model-c"]).toMatchObject({
+      available_providers: ["azure"],
+      providers: {
+        openai: { retired: true, retirement_date: "2026-07-23" },
+      },
+      retired: false,
+      max_input_tokens: 20,
+    });
+    expect(out.indexContent).toContain('"model-c": ["azure"]');
+  });
+
   it("narrows providers when a model survives on another provider", () => {
     const catalog = {
       "model-a": { available_providers: ["together", "baseten"] },

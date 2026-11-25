@@ -10,6 +10,10 @@ import type {
   ReviewNote,
 } from "./reconcile_provider_models";
 import { parseIndexEndpointTypes } from "./reconcile_provider_models";
+import {
+  summarizeModelProviders,
+  type StoredModelSpec,
+} from "../schema/models";
 
 // Apply confirmed deprecations from the audit report to the catalog:
 //   - drop the dead provider from a model's available_providers (+ index.ts)
@@ -29,6 +33,7 @@ type ModelSpec = {
   deprecation_date?: string | null;
   retired?: boolean | null;
   retirement_date?: string | null;
+  providers?: StoredModelSpec["providers"];
 } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
 
@@ -42,6 +47,7 @@ export function rewriteIndexEntry(
   content: string,
   model: string,
   providers: string[],
+  keepEmpty = false,
 ): string {
   const lineRe = new RegExp(
     `^  "${escapeRegex(model)}":\\s*\\[[^\\]]*\\],[^\\n]*\\n?`,
@@ -50,7 +56,7 @@ export function rewriteIndexEntry(
   if (!lineRe.test(content)) {
     return content;
   }
-  if (providers.length === 0) {
+  if (providers.length === 0 && !keepEmpty) {
     return content.replace(lineRe, "");
   }
   const arr = `[${providers.map((p) => JSON.stringify(p)).join(", ")}]`;
@@ -76,8 +82,17 @@ export function applyRetirements(
   const applied: string[] = [];
   for (const r of retirements) {
     const spec = catalog[r.model];
-    if (!spec || spec.retirement_date === r.retirement_date) continue;
-    spec.retirement_date = r.retirement_date;
+    if (!spec) continue;
+    if (spec.providers) {
+      const provider =
+        spec.providers[r.provider as keyof typeof spec.providers];
+      if (!provider || provider.retirement_date === r.retirement_date) continue;
+      provider.retirement_date = r.retirement_date;
+      Object.assign(spec, summarizeModelProviders(spec.providers));
+    } else {
+      if (spec.retirement_date === r.retirement_date) continue;
+      spec.retirement_date = r.retirement_date;
+    }
     applied.push(r.model);
   }
   return applied;
@@ -211,6 +226,32 @@ export function applyDeprecations(
     if (dropped.length === 0) {
       continue;
     }
+    if (spec?.providers) {
+      for (const name of dropped) {
+        const provider = spec.providers[name as keyof typeof spec.providers];
+        if (provider) provider.retired = true;
+      }
+      const summary = summarizeModelProviders(spec.providers);
+      Object.assign(spec, summary);
+      nextIndex = rewriteIndexEntry(
+        nextIndex,
+        model,
+        idx.filter((p) => !dead.has(p)),
+        true,
+      );
+      if (summary.retired) {
+        markRetired(spec);
+        retiredModels.push(model);
+      } else {
+        narrowedModels.push({
+          model,
+          dropped,
+          remaining: summary.available_providers,
+        });
+      }
+      continue;
+    }
+
     const remaining = effective.filter((p) => !dead.has(p));
 
     if (remaining.length === 0) {

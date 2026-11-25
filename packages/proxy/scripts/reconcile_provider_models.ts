@@ -3,6 +3,7 @@ import path from "path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { pathToFileURL } from "url";
+import type { ModelEndpointType, StoredModelSpec } from "../schema/models";
 import {
   fetchProviderSecrets,
   resolveBraintrustApiKey,
@@ -27,6 +28,7 @@ const LOCAL_MODEL_LIST_PATH = path.resolve(
 
 type ModelSpec = {
   available_providers?: string[];
+  providers?: StoredModelSpec["providers"];
   retired?: boolean | null;
   retirement_date?: string | null;
 };
@@ -40,7 +42,7 @@ export type Deprecation = {
   detail?: string;
 };
 
-// A provider-published retirement date for a model only that provider serves.
+// A provider-published retirement date.
 export type RetirementUpdate = {
   model: string;
   provider: string;
@@ -218,9 +220,8 @@ export function isRetired(spec: ModelSpec | undefined, now: Date): boolean {
   return !!spec.retirement_date && spec.retirement_date <= today;
 }
 
-// Proposes retirement_date updates from a provider's published dates, only for
-// models that provider alone serves: a model is not retired while another
-// provider still serves it.
+// Without a providers map, a provider's date is safe to store only if it is
+// the model's sole provider.
 export function retirementUpdatesFromDates(args: {
   provider: string;
   models: string[];
@@ -233,14 +234,22 @@ export function retirementUpdatesFromDates(args: {
     const date = args.dates.get(model);
     if (!date) continue;
     const spec = args.catalog[model];
-    const providers = effectiveProviders(model, spec, args.indexMap);
-    if (providers.length !== 1 || providers[0] !== args.provider) continue;
-    if (spec?.retirement_date === date) continue;
+    const provider = spec?.providers?.[args.provider as ModelEndpointType];
+    if (spec?.providers) {
+      if (!provider) continue;
+    } else {
+      const providers = effectiveProviders(model, spec, args.indexMap);
+      if (providers.length !== 1 || providers[0] !== args.provider) continue;
+    }
+    const previousDate = spec?.providers
+      ? provider?.retirement_date
+      : spec?.retirement_date;
+    if (previousDate === date) continue;
     updates.push({
       model,
       provider: args.provider,
       retirement_date: date,
-      previous_retirement_date: spec?.retirement_date ?? null,
+      previous_retirement_date: previousDate ?? null,
       source: RETIREMENT_SOURCES[args.provider] ?? args.provider,
     });
   }
@@ -257,16 +266,20 @@ export function stillServedAfterRetirement(args: {
   now: Date;
 }): ReviewNote[] {
   const today = args.now.toISOString().slice(0, 10);
-  return args.models
-    .filter((model) => {
-      const date = args.catalog[model]?.retirement_date;
-      return !!date && date < today && args.liveList.has(model);
-    })
-    .map((model) => ({
-      model,
-      provider: args.provider,
-      note: `still listed by ${args.provider} after retirement_date ${args.catalog[model]?.retirement_date}`,
-    }));
+  return args.models.flatMap((model) => {
+    const spec = args.catalog[model];
+    const date = spec?.providers
+      ? spec.providers[args.provider as ModelEndpointType]?.retirement_date
+      : spec?.retirement_date;
+    if (!date || date >= today || !args.liveList.has(model)) return [];
+    return [
+      {
+        model,
+        provider: args.provider,
+        note: `still listed by ${args.provider} after retirement_date ${date}`,
+      },
+    ];
+  });
 }
 
 async function auditProvider(

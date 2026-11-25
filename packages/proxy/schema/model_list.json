@@ -5799,13 +5799,10 @@
     "displayName": "GPT 3.5T Instruct",
     "deprecated": true,
     "deprecation_date": "2025-09-26",
-    "retirement_date": "2026-09-28",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
-      "azure",
-      "openrouter"
+      "azure"
     ]
   },
   "gpt-3.5-turbo-1106": {

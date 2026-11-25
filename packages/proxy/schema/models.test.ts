@@ -628,5 +628,6 @@ it("defines GPT-Live 1.1 like GPT-Live 1 without unverified metadata", () => {
     "displayName",
     "flavor",
     "format",
+    "pricing",
   ]);
 });

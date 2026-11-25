@@ -28209,6 +28209,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.5,
     "providers": {
       "together": {
+        "deprecation_date": "2026-10-30",
         "retirement_date": "2026-11-04",
         "max_input_tokens": 262144,
         "max_output_tokens": 131072
@@ -28320,6 +28321,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.35,
     "providers": {
       "together": {
+        "deprecation_date": "2026-06-15",
         "retirement_date": "2026-06-29",
         "max_input_tokens": 262144
       }
@@ -28559,6 +28561,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.06,
     "providers": {
       "together": {
+        "deprecation_date": "2026-10-26",
         "retirement_date": "2026-11-06",
         "max_input_tokens": 524288
       }
@@ -28601,6 +28604,7 @@
     "output_cost_per_mil_tokens": 0.97,
     "providers": {
       "together": {
+        "deprecation_date": "2026-09-01",
         "retirement_date": "2026-09-15",
         "max_input_tokens": 262144
       }
@@ -28685,6 +28689,7 @@
     "output_cost_per_mil_tokens": 0.6,
     "providers": {
       "together": {
+        "deprecation_date": "2026-04-14",
         "retirement_date": "2026-04-16"
       }
     },
@@ -29474,6 +29479,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.26,
     "providers": {
       "together": {
+        "deprecation_date": "2026-06-26",
         "retirement_date": "2026-07-10",
         "max_input_tokens": 202752,
         "max_output_tokens": 128000
@@ -36032,6 +36038,7 @@
     "multimodal": true,
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-10-19",
         "retirement_date": "2026-11-19",
         "max_input_tokens": 1048576
       }
@@ -36201,6 +36208,7 @@
     "flavor": "chat",
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-09-23",
         "retirement_date": "2026-10-30",
         "max_input_tokens": 1048576,
         "max_output_tokens": 384000
@@ -36221,6 +36229,7 @@
     "flavor": "chat",
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-10-06",
         "retirement_date": "2026-11-05",
         "max_input_tokens": 1048576
       }
@@ -36533,6 +36542,7 @@
     "output_cost_per_mil_tokens": 15.00002,
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-07-08",
         "retirement_date": "2026-10-09",
         "max_input_tokens": 200000,
         "max_output_tokens": 64000
@@ -36854,6 +36864,7 @@
     "output_cost_per_mil_tokens": 2.49998,
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-07-08",
         "retirement_date": "2026-10-02",
         "max_input_tokens": 1048576,
         "max_output_tokens": 65535
@@ -37580,6 +37591,7 @@
     "multimodal": true,
     "providers": {
       "databricks": {
+        "deprecation_date": "2026-09-28",
         "retirement_date": "2026-10-30",
         "max_input_tokens": 1048576
       }

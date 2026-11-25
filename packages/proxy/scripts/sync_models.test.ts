@@ -4,6 +4,7 @@ import modelList from "../schema/model_list.json";
 import {
   addProviderToProviderMappingContent,
   removeProviderMappingEntriesFromContent,
+  resolveRemoteModels,
   applyEquivalentModels,
   canonicalizeLocalModelsContent,
   convertBasetenToLocalModel,
@@ -1648,5 +1649,100 @@ describe("applyCohereLiteLLMPricing", () => {
     expect(
       applyCohereLiteLLMPricing("x", already, { input_cost_per_token: 2.5e-6 }),
     ).toBeNull();
+  });
+});
+
+describe("resolveRemoteModels", () => {
+  const today = "2026-11-25";
+  type RemoteModels = Parameters<typeof resolveRemoteModels>[0];
+
+  it("skips entries past their LiteLLM shutdown date", () => {
+    const remote = {
+      "gpt-5-codex": {
+        litellm_provider: "openai",
+        mode: "chat",
+        deprecation_date: "2026-07-23",
+      },
+      "azure/gpt-5-codex": {
+        litellm_provider: "azure",
+        mode: "chat",
+        deprecation_date: "2027-03-17",
+      },
+    } as RemoteModels;
+
+    expect(
+      resolveRemoteModels(remote, "openai", today).has("gpt-5-codex"),
+    ).toBe(false);
+  });
+
+  it("keeps entries whose shutdown date is in the future", () => {
+    const remote = {
+      "gpt-5-codex": {
+        litellm_provider: "openai",
+        mode: "chat",
+        deprecation_date: "2027-01-01",
+      },
+      "azure/gpt-5-codex": { litellm_provider: "azure", mode: "chat" },
+    } as RemoteModels;
+
+    expect(
+      resolveRemoteModels(remote, "openai", today).get("gpt-5-codex")
+        ?.mergedProviders,
+    ).toEqual(["openai", "azure"]);
+  });
+
+  it("adds azure only when LiteLLM lists a live Azure deployment", () => {
+    const remote = {
+      "gpt-6.2-astra": { litellm_provider: "openai", mode: "chat" },
+      "azure/eu/gpt-6.2-astra": { litellm_provider: "azure", mode: "chat" },
+      "gpt-6.2-astra-healthcare": { litellm_provider: "openai", mode: "chat" },
+      "gpt-4o-audio-preview": { litellm_provider: "openai", mode: "chat" },
+      "azure/gpt-4o-audio-preview": {
+        litellm_provider: "azure",
+        mode: "chat",
+        deprecation_date: "2026-01-01",
+      },
+    } as RemoteModels;
+
+    const resolved = resolveRemoteModels(remote, "openai", today);
+    expect(resolved.get("gpt-6.2-astra")?.mergedProviders).toEqual([
+      "openai",
+      "azure",
+    ]);
+    expect(resolved.get("gpt-6.2-astra-healthcare")?.mergedProviders).toEqual([
+      "openai",
+    ]);
+    expect(resolved.get("gpt-4o-audio-preview")?.mergedProviders).toEqual([
+      "openai",
+    ]);
+  });
+
+  it("treats known undated LiteLLM aliases as shut down", () => {
+    const remote = {
+      "gpt-4o-search-preview": { litellm_provider: "openai", mode: "chat" },
+    } as RemoteModels;
+
+    expect(
+      resolveRemoteModels(remote, "openai", today).has("gpt-4o-search-preview"),
+    ).toBe(false);
+    expect(
+      resolveRemoteModels(remote, "openai", "2026-07-22").has(
+        "gpt-4o-search-preview",
+      ),
+    ).toBe(true);
+  });
+});
+
+describe("convertRemoteToLocalModel speech pricing", () => {
+  it("uses the audio output rate for speech models", () => {
+    const model = convertRemoteToLocalModel("gpt-4o-mini-tts", {
+      litellm_provider: "openai",
+      mode: "audio_speech",
+      input_cost_per_token: 6e-7,
+      output_cost_per_token: 1e-5,
+      output_cost_per_audio_token: 1.2e-5,
+    } as Parameters<typeof convertRemoteToLocalModel>[1]);
+
+    expect(model.output_cost_per_mil_tokens).toBe(12);
   });
 });

@@ -1561,6 +1561,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-gemini-4-neon": ["databricks"],
   "accounts/fireworks/models/qwen3p8-max": ["fireworks"],
   "accounts/fireworks/models/qwen4-max": ["fireworks"],
+  "accounts/fireworks/models/hy4-flash": ["fireworks"],
   "databricks-gemini-3-7-flash": ["databricks"],
   "databricks-gemini-3-1-flash-image": ["databricks"],
   "databricks-gemini-3-pro-image": ["databricks"],

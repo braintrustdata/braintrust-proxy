@@ -11785,8 +11785,26 @@
     "input_cost_per_mil_tokens": 0.07,
     "output_cost_per_mil_tokens": 0.281,
     "input_cache_read_cost_per_mil_tokens": 0.003,
+    "pricing": {
+      "fireworks": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.0875,
+            "output_cost_per_mil_tokens": 0.35125,
+            "input_cache_read_cost_per_mil_tokens": 0.00375,
+            "endpoints": [
+              "api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/models/hy4-flash"
+          }
+        ]
+      }
+    },
     "displayName": "Hy4 Flash",
     "reasoning": true,
+    "fallback_models": [
+      "tencent/hy4-flash"
+    ],
     "max_input_tokens": 524288,
     "available_providers": [
       "fireworks"

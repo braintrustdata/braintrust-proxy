@@ -82,15 +82,11 @@ const pricingFieldsSchema = z.object({
   audio_duration_cost_per_second: z
     .number()
     .nullish()
-    .describe(
-      "USD per second of metered audio duration from metrics.usage_seconds, excluding any duration reported in metrics.usage_standby_seconds.",
-    ),
+    .describe("USD per second of metered audio duration."),
   audio_standby_cost_per_second: z
     .number()
     .nullish()
-    .describe(
-      "USD per second of standby audio duration from metrics.usage_standby_seconds, which is included in metrics.usage_seconds.",
-    ),
+    .describe("USD per second of standby audio duration."),
 });
 
 export const PricingRateSchema = pricingFieldsSchema.extend({

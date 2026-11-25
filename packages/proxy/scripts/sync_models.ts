@@ -2921,7 +2921,7 @@ export function applyOpenRouterPricing(
 }
 
 const topLevelPriceKeys = Object.keys(ModelSchema.shape).filter((key) =>
-  /_cost_per_(?:(?:mil_)?tokens?|minute)$/.test(key),
+  /_cost_per_(?:(?:mil_)?tokens?|second)$/.test(key),
 ) as (keyof ModelSpec)[];
 
 function topLevelPrices(model: ModelSpec | undefined) {

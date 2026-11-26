@@ -44,15 +44,10 @@ Batch API support and synchronous service-tier support are separate checks.
   If a source is unavailable or inconclusive, preserve existing metadata and report the unresolved check.
   Missing tier evidence must not block an otherwise verified model addition or standard-price update.
 - When editing catalog entries, preserve unrelated provider/tier pairs.
-  In issue `model_spec`/`model_specs` patches, include only the provider/tier pairs to change, each with its complete intended rate array or alias object.
-  The resolver replaces each supplied tier and preserves omitted providers and tiers; it does not append or merge individual rate entries.
   Update the target array when prices change; keep its aliases as references.
-  An alias patch can point to an existing target or one supplied in the same patch; validation runs after the patch is merged.
-  Set a tier to `null` in an issue patch to remove that tier, a provider to `null` to remove its tier prices, or `pricing` to `null` to remove all tier prices while preserving top-level standard prices.
-  The resolver removes empty maps; do not write empty arrays or nested `null` values into catalog entries.
-  When removing a target, remove or retarget its aliases in the same patch.
-  For an existing model, report a pricing gap as `kind: "stale_metadata"`.
-- In the job report or issue verification section, cite each official source and the rates, support, and conditions it verifies.
+  When removing a target, remove or retarget its aliases in the same catalog change.
+  Delete obsolete keys and any resulting empty maps instead of leaving empty arrays or nested `null` values.
+- In the job report, cite each official source and the rates, support, and conditions it verifies.
   Do not substitute LiteLLM or another aggregator for provider/tier evidence.
   For each model/provider checked, report each tier as verified and recorded, unsupported, or unresolved, with the reason.
   Include the check date, exact API selector, response billing signal, cache discount rules, and any expiry or prompt-length boundary.

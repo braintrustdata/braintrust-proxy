@@ -2,6 +2,7 @@ import fs from "fs";
 import https from "https";
 import path from "path";
 import { pathToFileURL } from "url";
+import { isDeepStrictEqual } from "util";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { z } from "zod";
@@ -849,11 +850,10 @@ function buildUnsupportedTicketComment(args: {
     "- `displayName`",
     "- `parent` for non-base dated snapshots or location-scoped variants when official sources verify the relationship",
     "- pricing fields",
-    "- `max_input_tokens`",
-    "- `max_output_tokens`",
-    "- `available_providers`",
+    "- `max_input_tokens`, `max_output_tokens`, and `available_providers` for models without a `providers` map",
     "- `deprecated` / `deprecation_date` (the provider's deprecation notice date)",
-    "- `retired` / `retirement_date` for models without a `providers` map; otherwise update lifecycle dates, retirement status, and token limits under the affected provider",
+    "- `retired` / `retirement_date` for models without a `providers` map",
+    "- For models with a `providers` map, update the affected `providers.<provider>` entry for provider availability, token limits, or retirement",
     "- `locations` when the provider/model requires explicit location metadata",
   );
 
@@ -1507,7 +1507,27 @@ function applyModelSpecPatch(
     }
   }
   if (model.providers) {
-    Object.assign(model, summarizeModelProviders(model.providers));
+    const summary = summarizeModelProviders(model.providers);
+    for (const field of Object.keys(summary) as Array<keyof typeof summary>) {
+      const requested = patch[field];
+      if (requested === undefined) continue;
+
+      const derived = summary[field];
+      const matches =
+        Array.isArray(derived) && Array.isArray(requested)
+          ? isDeepStrictEqual([...requested].sort(), [...derived].sort())
+          : requested === (derived ?? null);
+      if (!matches) {
+        const providerPath =
+          field === "available_providers"
+            ? "providers.<provider>"
+            : `providers.<provider>.${field}`;
+        throw new Error(
+          `Refusing to update ${modelName} because the top-level \`${field}\` conflicts with the summary derived from \`providers\`. Update the affected entry under \`${providerPath}\` and omit the top-level field from the patch.`,
+        );
+      }
+    }
+    Object.assign(model, summary);
   }
   // A patch can reference an existing tier, so validate after all edits merge.
   ModelSchema.shape.pricing.parse(model.pricing);

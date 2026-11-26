@@ -613,6 +613,73 @@ describe("fix_bot_issue", () => {
     );
   });
 
+  describe("provider-derived metadata patches", () => {
+    const existing: ModelSpec = {
+      format: "openai",
+      flavor: "chat",
+      providers: {
+        openai: { max_input_tokens: 16384, max_output_tokens: 4096 },
+        azure: { max_input_tokens: 8192, max_output_tokens: 4096 },
+      },
+      available_providers: ["openai", "azure"],
+      retired: false,
+      max_input_tokens: 8192,
+      max_output_tokens: 4096,
+    };
+
+    const update = (patch: Partial<ModelSpec>, model = existing) =>
+      buildUpdatedLocalModel(
+        {
+          provider: "openai",
+          models: ["model"],
+          aliasTargets: {},
+          metadata: { kind: "stale_metadata", model_spec: patch },
+        },
+        "model",
+        model,
+      );
+
+    it.each([
+      { max_output_tokens: 2048 },
+      {
+        max_output_tokens: 2048,
+        providers: { openai: { max_input_tokens: 32768 } },
+      },
+    ])(
+      "rejects a token correction that provider normalization would discard (%j)",
+      (patch) => {
+        expect(() => update(patch)).toThrow(
+          "Update the affected entry under `providers.<provider>.max_output_tokens`",
+        );
+      },
+    );
+
+    it("applies a provider correction with a matching top-level summary", () => {
+      expect(
+        update({
+          available_providers: ["azure", "openai"],
+          max_output_tokens: 2048,
+          providers: { openai: { max_output_tokens: 2048 } },
+        }),
+      ).toEqual({
+        ...existing,
+        providers: {
+          ...existing.providers,
+          openai: { max_input_tokens: 16384, max_output_tokens: 2048 },
+        },
+        max_output_tokens: 2048,
+      });
+    });
+
+    it("applies a top-level correction to a model without a provider map", () => {
+      const legacyModel = { ...existing, providers: undefined };
+      expect(update({ max_output_tokens: 2048 }, legacyModel)).toEqual({
+        ...legacyModel,
+        max_output_tokens: 2048,
+      });
+    });
+  });
+
   describe("lifecycle updates", () => {
     const existing: ModelSpec = {
       format: "openai",

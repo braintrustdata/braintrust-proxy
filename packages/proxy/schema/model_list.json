@@ -14155,8 +14155,8 @@
     },
     "displayName": "Qwen 3.8 27B",
     "reasoning": true,
-    "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
     "available_providers": [
       "cerebras"
     ]
@@ -14350,8 +14350,8 @@
     },
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 4096,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 40960,
     "available_providers": [
       "cerebras",
       "openrouter"
@@ -14411,7 +14411,7 @@
     "displayName": "OpenAI GPT-OSS (120B)",
     "reasoning": true,
     "max_input_tokens": 128072,
-    "max_output_tokens": 65536,
+    "max_output_tokens": 128072,
     "available_providers": [
       "groq",
       "together",
@@ -17390,7 +17390,6 @@
       }
     },
     "displayName": "Mistral (7B) Instruct v0.3",
-    "max_input_tokens": 32768,
     "available_providers": [
       "together"
     ]
@@ -17556,7 +17555,6 @@
     "displayName": "Beam 1.0 501B",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 1048576,
     "available_providers": [
       "together"
     ]
@@ -17577,7 +17575,6 @@
     "displayName": "Muse Spark Open 816B",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 1048576,
     "available_providers": [
       "together"
     ]
@@ -18013,7 +18010,7 @@
     "displayName": "GPT-6 Luna",
     "reasoning": true,
     "parent": "openai.gpt-6-luna",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -18036,7 +18033,7 @@
     "displayName": "GPT-6 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6-sol",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -18059,7 +18056,7 @@
     "displayName": "GPT-6 Luna",
     "reasoning": true,
     "parent": "openai.gpt-6-luna",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -18082,7 +18079,7 @@
     "displayName": "GPT-6 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6-sol",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -18452,7 +18449,7 @@
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6.2-sol",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -18477,7 +18474,7 @@
     "displayName": "GPT-6.2 Sol",
     "reasoning": true,
     "parent": "openai.gpt-6.2-sol",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -19078,7 +19075,6 @@
     "displayName": "Kimi K3",
     "parent": "moonshotai.kimi-k3",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 131072,
     "available_providers": [
       "bedrock"
     ]
@@ -19124,7 +19120,6 @@
     "displayName": "Kimi K3",
     "parent": "moonshotai.kimi-k3",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 131072,
     "available_providers": [
       "bedrock"
     ]
@@ -19227,7 +19222,6 @@
     },
     "displayName": "Kimi K3",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 131072,
     "available_providers": [
       "bedrock"
     ]
@@ -21964,7 +21958,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -23160,7 +23154,7 @@
     },
     "displayName": "OpenAI GPT-OSS Safeguard (120B)",
     "max_input_tokens": 128000,
-    "max_output_tokens": 16000,
+    "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
     ]
@@ -23429,7 +23423,7 @@
     },
     "displayName": "OpenAI GPT-OSS Safeguard (20B)",
     "max_input_tokens": 128000,
-    "max_output_tokens": 16000,
+    "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
     ]
@@ -23624,7 +23618,7 @@
     "displayName": "Kimi K2.5",
     "reasoning": true,
     "max_input_tokens": 256000,
-    "max_output_tokens": 16000,
+    "max_output_tokens": 16384,
     "available_providers": [
       "bedrock"
     ]
@@ -24152,7 +24146,7 @@
     },
     "displayName": "MiniMax M2.5",
     "max_input_tokens": 196000,
-    "max_output_tokens": 8000,
+    "max_output_tokens": 98000,
     "available_providers": [
       "bedrock"
     ]
@@ -24295,7 +24289,7 @@
     },
     "displayName": "Ministral 3 14B",
     "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
+    "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
     ]
@@ -24438,7 +24432,7 @@
     },
     "displayName": "Ministral 3 8B",
     "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
+    "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
     ]
@@ -24581,7 +24575,7 @@
     },
     "displayName": "Ministral 3 3B",
     "max_input_tokens": 128000,
-    "max_output_tokens": 8000,
+    "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
     ]
@@ -24816,7 +24810,7 @@
     },
     "displayName": "Mistral Large 24.02",
     "max_input_tokens": 32000,
-    "max_output_tokens": 4096,
+    "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
     ]
@@ -24849,7 +24843,7 @@
     },
     "displayName": "Mistral Small 24.02",
     "max_input_tokens": 32000,
-    "max_output_tokens": 4096,
+    "max_output_tokens": 8191,
     "available_providers": [
       "bedrock"
     ]
@@ -25071,7 +25065,7 @@
     },
     "displayName": "NVIDIA Nemotron 3 Nano 30B",
     "max_input_tokens": 256000,
-    "max_output_tokens": 8000,
+    "max_output_tokens": 8192,
     "available_providers": [
       "bedrock"
     ]
@@ -26912,7 +26906,7 @@
       }
     },
     "displayName": "DeepSeek V3.2",
-    "max_input_tokens": 156000,
+    "max_input_tokens": 164000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
@@ -27136,7 +27130,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -27368,7 +27362,7 @@
     "reasoning_budget": true,
     "parent": "anthropic.claude-sonnet-4-6",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 64000,
+    "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
     ]
@@ -28272,7 +28266,6 @@
     "displayName": "Qwen3.8 Flash",
     "reasoning": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 1000000,
     "available_providers": [
       "together"
     ]
@@ -28326,7 +28319,6 @@
     "displayName": "Qwen3.7 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 1000000,
     "available_providers": [
       "together"
     ]
@@ -28346,7 +28338,6 @@
     "displayName": "Qwen4 Max",
     "reasoning": true,
     "max_input_tokens": 1000000,
-    "max_output_tokens": 1000000,
     "available_providers": [
       "together"
     ]
@@ -28364,7 +28355,6 @@
     },
     "displayName": "Qwen 3.7 Plus",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 1000000,
     "available_providers": [
       "together"
     ]
@@ -28382,7 +28372,6 @@
     },
     "displayName": "Qwen3.6 Plus",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 1000000,
     "supports_streaming": true,
     "streaming_only": true,
     "available_providers": [
@@ -28423,7 +28412,6 @@
     },
     "displayName": "Qwen3.5 9B",
     "max_input_tokens": 262144,
-    "max_output_tokens": 262144,
     "available_providers": [
       "together"
     ]
@@ -28486,7 +28474,6 @@
       }
     },
     "displayName": "Qwen 2.5 7B Instruct Turbo",
-    "max_input_tokens": 32768,
     "available_providers": [
       "together"
     ]
@@ -28810,8 +28797,7 @@
     "displayName": "NVIDIA Nemotron 3 Ultra 550B",
     "reasoning": true,
     "deprecation_date": "2026-08-27",
-    "max_input_tokens": 202800,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 512300,
     "available_providers": [
       "together",
       "openrouter"
@@ -28871,7 +28857,6 @@
     "displayName": "Sonar Reasoning Pro",
     "reasoning": true,
     "max_input_tokens": 128000,
-    "max_output_tokens": 115200,
     "available_providers": [
       "perplexity",
       "openrouter"
@@ -28895,7 +28880,6 @@
     "displayName": "Sonar Deep Research",
     "reasoning": true,
     "max_input_tokens": 128000,
-    "max_output_tokens": 115200,
     "available_providers": [
       "perplexity",
       "openrouter"
@@ -28918,8 +28902,7 @@
       }
     },
     "displayName": "Sonar",
-    "max_input_tokens": 127072,
-    "max_output_tokens": 114364,
+    "max_input_tokens": 128000,
     "available_providers": [
       "perplexity",
       "openrouter"
@@ -29300,8 +29283,7 @@
     },
     "displayName": "DeepSeek V4.1 Flash 1017",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 384000,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
     ]
@@ -29434,8 +29416,8 @@
     },
     "displayName": "GLM 5.3",
     "reasoning": true,
-    "max_input_tokens": 1048575,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten",
       "together"
@@ -29483,8 +29465,8 @@
     },
     "displayName": "GLM 5.3 Flash",
     "reasoning": true,
-    "max_input_tokens": 1048575,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "baseten",
       "together"
@@ -29519,8 +29501,8 @@
     },
     "displayName": "GLM 5.2",
     "reasoning": true,
-    "max_input_tokens": 1048575,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "baseten",
       "together"
@@ -29837,7 +29819,6 @@
     "deprecation_date": "2026-10-31",
     "parent": "mistral-large-latest",
     "max_input_tokens": 262144,
-    "max_output_tokens": 209715,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -29884,8 +29865,6 @@
     },
     "displayName": "Mistral Large 4",
     "experimental": true,
-    "max_input_tokens": 524288,
-    "max_output_tokens": 262144,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -30040,8 +30019,7 @@
     },
     "displayName": "Codestral 2508",
     "parent": "codestral-latest",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 256000,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -30076,7 +30054,6 @@
     },
     "displayName": "Codestral",
     "max_input_tokens": 128000,
-    "max_output_tokens": 128000,
     "available_providers": [
       "mistral"
     ]
@@ -30093,8 +30070,7 @@
       }
     },
     "displayName": "Devstral Medium Latest",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 256000,
+    "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
     ]
@@ -30124,8 +30100,7 @@
       }
     },
     "displayName": "Devstral Latest",
-    "max_input_tokens": 256000,
-    "max_output_tokens": 256000,
+    "max_input_tokens": 262144,
     "available_providers": [
       "mistral"
     ]
@@ -30227,7 +30202,6 @@
     "reasoning_budget": true,
     "parent": "mistral-small-latest",
     "max_input_tokens": 262144,
-    "max_output_tokens": 209715,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -30460,7 +30434,6 @@
     },
     "displayName": "Ministral 14B 2512",
     "max_input_tokens": 262144,
-    "max_output_tokens": 209715,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -30481,7 +30454,6 @@
     },
     "displayName": "Ministral 8B",
     "max_input_tokens": 262144,
-    "max_output_tokens": 262144,
     "available_providers": [
       "mistral"
     ]
@@ -30527,7 +30499,6 @@
     "displayName": "Ministral 8B (2512)",
     "parent": "ministral-8b-latest",
     "max_input_tokens": 262144,
-    "max_output_tokens": 209715,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -30548,7 +30519,6 @@
     },
     "displayName": "Ministral 3B",
     "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
     "available_providers": [
       "mistral"
     ]
@@ -30593,8 +30563,7 @@
     },
     "displayName": "Ministral 3B (2512)",
     "parent": "ministral-3b-latest",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 104857,
+    "max_input_tokens": 262144,
     "available_providers": [
       "mistral",
       "openrouter"
@@ -35365,7 +35334,7 @@
     "displayName": "Grok 4.5",
     "reasoning": true,
     "max_input_tokens": 500000,
-    "max_output_tokens": 450000,
+    "max_output_tokens": 500000,
     "available_providers": [
       "xAI",
       "openrouter"
@@ -35474,7 +35443,7 @@
     "reasoning": true,
     "parent": "grok-4.3-latest",
     "max_input_tokens": 1000000,
-    "max_output_tokens": 900000,
+    "max_output_tokens": 1000000,
     "available_providers": [
       "xAI",
       "openrouter"
@@ -35979,7 +35948,7 @@
     "displayName": "Grok 4.6",
     "reasoning": true,
     "max_input_tokens": 500000,
-    "max_output_tokens": 450000,
+    "max_output_tokens": 500000,
     "available_providers": [
       "xAI",
       "openrouter"
@@ -36093,7 +36062,7 @@
     "displayName": "Grok 4.7",
     "reasoning": true,
     "max_input_tokens": 500000,
-    "max_output_tokens": 450000,
+    "max_output_tokens": 500000,
     "available_providers": [
       "xAI",
       "openrouter"
@@ -36149,7 +36118,6 @@
     "displayName": "Grok 4.7",
     "reasoning": true,
     "max_input_tokens": 500000,
-    "max_output_tokens": 500000,
     "available_providers": [
       "databricks"
     ]
@@ -36835,7 +36803,7 @@
     },
     "displayName": "GPT-5.6 Sol",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
@@ -36853,7 +36821,7 @@
     },
     "displayName": "GPT-5.6 Terra",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
@@ -37135,7 +37103,7 @@
       }
     },
     "displayName": "Llama 3.1 8B Instruct",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 200000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
@@ -37195,7 +37163,7 @@
     },
     "displayName": "GPT-5.5 Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "databricks"
@@ -37866,8 +37834,7 @@
     },
     "displayName": "Kimi K3",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 1048576,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "databricks"
     ]
@@ -38070,7 +38037,7 @@
     },
     "displayName": "Qwen: Qwen3.8 27B",
     "reasoning": true,
-    "max_input_tokens": 65536,
+    "max_input_tokens": 131042,
     "max_output_tokens": 16384,
     "available_providers": [
       "groq",
@@ -38515,7 +38482,7 @@
     "displayName": "GPT-6 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6-astra",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -38732,7 +38699,7 @@
     },
     "displayName": "DeepSeek V3.2",
     "parent": "deepseek.v3.2",
-    "max_input_tokens": 163840,
+    "max_input_tokens": 164000,
     "max_output_tokens": 8000,
     "available_providers": [
       "bedrock"
@@ -38803,7 +38770,7 @@
     "displayName": "GPT-6 Astra",
     "reasoning": true,
     "parent": "openai.gpt-6-astra",
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "bedrock"
@@ -38950,7 +38917,7 @@
     },
     "displayName": "Thinking Machines: Inkling 2 Mini",
     "reasoning": true,
-    "max_input_tokens": 131072,
+    "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -38972,7 +38939,7 @@
     "displayName": "Thinking Machines: Inkling 2 Small",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
+    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -39004,8 +38971,8 @@
       }
     },
     "displayName": "Ricursive: Ripple 65B Preview",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 117964,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -39198,8 +39165,7 @@
     "displayName": "DeepSeek: DeepSeek V4.1 Flash 1017",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4.1-flash",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]
@@ -39386,7 +39352,7 @@
     },
     "displayName": "Qwen: Qwen3.8 Max Prime",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
@@ -39407,7 +39373,7 @@
     },
     "displayName": "Qwen: Qwen3.8 Omni Flash",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
@@ -39532,8 +39498,8 @@
       }
     },
     "displayName": "MythoMax L2 13B",
-    "max_input_tokens": 4096,
-    "max_output_tokens": 3686,
+    "max_input_tokens": 8192,
+    "max_output_tokens": 4096,
     "available_providers": [
       "openrouter"
     ]
@@ -39577,7 +39543,7 @@
     },
     "displayName": "Sao10K: Llama 3 8B Lunaris",
     "max_input_tokens": 8192,
-    "max_output_tokens": 7372,
+    "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
     ]
@@ -39625,8 +39591,8 @@
       }
     },
     "displayName": "Microsoft: Phi 4",
-    "max_input_tokens": 4096,
-    "max_output_tokens": 14745,
+    "max_input_tokens": 16384,
+    "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
     ]
@@ -39646,7 +39612,7 @@
     },
     "displayName": "Cohere: Command A+",
     "reasoning": true,
-    "max_input_tokens": 128000,
+    "max_input_tokens": 192000,
     "max_output_tokens": 64000,
     "available_providers": [
       "openrouter"
@@ -39684,7 +39650,7 @@
     },
     "displayName": "Meta: Llama 3.1 8B Instruct",
     "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -39702,7 +39668,7 @@
     },
     "displayName": "Meta: Llama 3.1 70B Instruct",
     "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
+    "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
     ]
@@ -39746,8 +39712,8 @@
       }
     },
     "displayName": "Meta: Llama 3.3 70B Instruct",
-    "max_input_tokens": 24000,
-    "max_output_tokens": 8192,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -39791,7 +39757,7 @@
       }
     },
     "displayName": "Meta: Llama 4 Scout",
-    "max_input_tokens": 327680,
+    "max_input_tokens": 1310720,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -39849,7 +39815,7 @@
       }
     },
     "displayName": "Meta: Llama Guard 4 12B",
-    "max_input_tokens": 163840,
+    "max_input_tokens": 1048576,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -39992,7 +39958,6 @@
     "displayName": "Nous: Hermes 4 405B",
     "reasoning": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 117964,
     "available_providers": [
       "openrouter"
     ]
@@ -40023,7 +39988,7 @@
     },
     "displayName": "TheDrummer: Skyfall 36B V2",
     "max_input_tokens": 32768,
-    "max_output_tokens": 29491,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -40042,7 +40007,7 @@
     },
     "displayName": "TheDrummer: Cydonia 24B V4.1",
     "max_input_tokens": 131072,
-    "max_output_tokens": 117964,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -40328,7 +40293,7 @@
     "displayName": "ByteDance Seed: Seed 2.1 Turbo",
     "reasoning": true,
     "max_input_tokens": 262144,
-    "max_output_tokens": 235929,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -40420,8 +40385,8 @@
     },
     "displayName": "NVIDIA: Nemotron 3.5 Super VL",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 102400,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 235929,
     "available_providers": [
       "openrouter"
     ]
@@ -40466,8 +40431,8 @@
     },
     "displayName": "NVIDIA: Nemotron 3.5 Lightning",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -40500,7 +40465,7 @@
     },
     "displayName": "NVIDIA: Nemotron 3 Super 120B A12B",
     "reasoning": true,
-    "max_input_tokens": 262144,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -40521,7 +40486,7 @@
     "displayName": "Reka Flash 3",
     "reasoning": true,
     "max_input_tokens": 65536,
-    "max_output_tokens": 58982,
+    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -40541,7 +40506,7 @@
     },
     "displayName": "Reka Edge",
     "max_input_tokens": 16384,
-    "max_output_tokens": 14745,
+    "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
     ]
@@ -40582,8 +40547,8 @@
     },
     "displayName": "Xiaomi: MiMo-V2.6-Flash",
     "reasoning": true,
-    "max_input_tokens": 65536,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -40746,8 +40711,8 @@
     },
     "displayName": "DeepSeek: DeepSeek V4.1 Flash",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
     "available_providers": [
       "openrouter"
     ]
@@ -40769,7 +40734,7 @@
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 262144,
+    "max_output_tokens": 384000,
     "available_providers": [
       "openrouter"
     ]
@@ -40814,8 +40779,8 @@
     "displayName": "DeepSeek: DeepSeek V4 Pro (0813)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-pro",
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 262144,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
     "available_providers": [
       "openrouter"
     ]
@@ -40872,8 +40837,8 @@
     "displayName": "DeepSeek: DeepSeek V4 Flash (0731)",
     "reasoning": true,
     "parent": "deepseek/deepseek-v4-flash",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
     "available_providers": [
       "openrouter"
     ]
@@ -40903,7 +40868,7 @@
       }
     },
     "displayName": "DeepSeek: DeepSeek V3",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 163840,
     "max_output_tokens": 16000,
     "available_providers": [
       "openrouter"
@@ -40923,8 +40888,8 @@
     },
     "displayName": "DeepSeek: DeepSeek V3 (0324)",
     "parent": "deepseek/deepseek-chat",
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 163840,
+    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -40943,8 +40908,8 @@
     },
     "displayName": "DeepSeek: R1 0528",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 32000,
+    "max_input_tokens": 163840,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -41005,8 +40970,8 @@
     },
     "displayName": "DeepSeek: DeepSeek V3.2",
     "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 163840,
+    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -41025,8 +40990,8 @@
     },
     "displayName": "DeepSeek: DeepSeek V4 Flash",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 393216,
     "available_providers": [
       "openrouter"
     ]
@@ -41045,8 +41010,8 @@
     },
     "displayName": "DeepSeek: DeepSeek V4 Pro",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 262144,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 384000,
     "available_providers": [
       "openrouter"
     ]
@@ -41065,7 +41030,6 @@
     },
     "displayName": "Mistral Large",
     "max_input_tokens": 128000,
-    "max_output_tokens": 102400,
     "available_providers": [
       "openrouter"
     ]
@@ -41084,7 +41048,6 @@
     },
     "displayName": "Mistral: Mixtral 8x22B Instruct",
     "max_input_tokens": 65536,
-    "max_output_tokens": 52428,
     "available_providers": [
       "openrouter"
     ]
@@ -41101,7 +41064,7 @@
       }
     },
     "displayName": "Mistral: Mistral Nemo",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -41121,7 +41084,6 @@
     },
     "displayName": "Mistral Large 2407",
     "max_input_tokens": 131072,
-    "max_output_tokens": 104857,
     "available_providers": [
       "openrouter"
     ]
@@ -41158,7 +41120,6 @@
     },
     "displayName": "Mistral: Saba",
     "max_input_tokens": 32768,
-    "max_output_tokens": 26214,
     "available_providers": [
       "openrouter"
     ]
@@ -41177,7 +41138,7 @@
     },
     "displayName": "Mistral: Mistral Small 3.1 24B",
     "max_input_tokens": 128000,
-    "max_output_tokens": 102400,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -41196,8 +41157,7 @@
       }
     },
     "displayName": "Mistral: Mistral Small 3.2 24B",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 256000,
     "available_providers": [
       "openrouter"
     ]
@@ -41229,7 +41189,6 @@
     },
     "displayName": "Mistral: Voxtral Small 24B 2507",
     "max_input_tokens": 32000,
-    "max_output_tokens": 25600,
     "available_providers": [
       "openrouter"
     ]
@@ -41424,8 +41383,8 @@
     },
     "displayName": "StepFun: Step 5 Preview",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 64000,
     "available_providers": [
       "openrouter"
     ]
@@ -41460,8 +41419,8 @@
     },
     "displayName": "StepFun: Step 3.7 Flash",
     "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 230400,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 256000,
     "available_providers": [
       "openrouter"
     ]
@@ -41481,8 +41440,8 @@
     },
     "displayName": "MiniMax: MiniMax M3.1 Flash",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 131072,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]
@@ -41598,7 +41557,7 @@
     },
     "displayName": "MiniMax: MiniMax M2.7",
     "reasoning": true,
-    "max_input_tokens": 196608,
+    "max_input_tokens": 204800,
     "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
@@ -41656,8 +41615,8 @@
     },
     "displayName": "MiniMax: MiniMax M3",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 512000,
     "available_providers": [
       "openrouter"
     ]
@@ -41763,8 +41722,8 @@
     },
     "displayName": "Z.ai: GLM 5.3 Flash",
     "reasoning": true,
-    "max_input_tokens": 32768,
-    "max_output_tokens": 29491,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -41850,8 +41809,8 @@
     },
     "displayName": "Z.ai: GLM 5.3",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -41935,8 +41894,8 @@
     },
     "displayName": "Z.ai: GLM 4.6",
     "reasoning": true,
-    "max_input_tokens": 198000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 204800,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -41990,8 +41949,8 @@
     },
     "displayName": "Z.ai: GLM 4.7",
     "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 204800,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -42041,8 +42000,8 @@
     },
     "displayName": "Z.ai: GLM-5",
     "reasoning": true,
-    "max_input_tokens": 198000,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 204800,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -42178,8 +42137,8 @@
     },
     "displayName": "Z.ai: GLM 5.2",
     "reasoning": true,
-    "max_input_tokens": 202752,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -42450,7 +42409,7 @@
     },
     "displayName": "Tencent: Hy4 flash",
     "reasoning": true,
-    "max_input_tokens": 524288,
+    "max_input_tokens": 1048576,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -42509,7 +42468,7 @@
     },
     "displayName": "AionLabs: Aion-RP 1.0 (8B)",
     "max_input_tokens": 32768,
-    "max_output_tokens": 29491,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -42771,7 +42730,7 @@
     },
     "displayName": "OpenAI: GPT-6.1 Sol Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -42952,7 +42911,7 @@
     },
     "displayName": "OpenAI: GPT-6 Sol Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -43133,7 +43092,7 @@
     },
     "displayName": "OpenAI: GPT-6 Luna Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -43316,7 +43275,7 @@
     },
     "displayName": "OpenAI: GPT-6 Astra Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -43432,7 +43391,7 @@
       }
     },
     "displayName": "OpenAI: GPT Chat Latest",
-    "max_input_tokens": 272000,
+    "max_input_tokens": 400000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -44195,7 +44154,7 @@
     },
     "displayName": "OpenAI: GPT-6.1 Terra Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -44362,7 +44321,7 @@
     },
     "displayName": "OpenAI: GPT-6.2 Astra Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -44529,7 +44488,7 @@
     },
     "displayName": "OpenAI: GPT-6.2 Sol Pro",
     "reasoning": true,
-    "max_input_tokens": 922000,
+    "max_input_tokens": 1050000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -44614,8 +44573,7 @@
     },
     "displayName": "Meta: Muse Spark Open",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 262144,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]
@@ -44637,7 +44595,6 @@
     "reasoning": true,
     "parent": "meta/muse-spark-1.2",
     "max_input_tokens": 1048576,
-    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -44672,7 +44629,6 @@
     "displayName": "Meta: Muse Glimmer 30B",
     "reasoning": true,
     "max_input_tokens": 131072,
-    "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
     ]
@@ -44693,7 +44649,6 @@
     "displayName": "Meta: Muse Spark 1.2",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -44714,7 +44669,6 @@
     "displayName": "Meta: Muse Spark 1.1",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -44735,7 +44689,7 @@
     "displayName": "Meta: Muse Ember",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 524288,
+    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -44798,8 +44752,8 @@
     },
     "displayName": "MoonshotAI: Kimi K3.1 Pro",
     "reasoning": true,
-    "max_input_tokens": 1048320,
-    "max_output_tokens": 128000,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -44860,7 +44814,7 @@
     "displayName": "MoonshotAI: Kimi K2.5",
     "reasoning": true,
     "max_input_tokens": 262144,
-    "max_output_tokens": 131072,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -44880,8 +44834,8 @@
     },
     "displayName": "MoonshotAI: Kimi K2.6",
     "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -44918,8 +44872,8 @@
     },
     "displayName": "MoonshotAI: Kimi K2.7 Code",
     "reasoning": true,
-    "max_input_tokens": 229376,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -44998,8 +44952,7 @@
     },
     "displayName": "MoonshotAI: Kimi K3",
     "reasoning": true,
-    "max_input_tokens": 1000000,
-    "max_output_tokens": 65535,
+    "max_input_tokens": 1048576,
     "available_providers": [
       "openrouter"
     ]
@@ -45416,7 +45369,7 @@
     },
     "displayName": "Anthropic: Claude Sonnet 4.5",
     "reasoning": true,
-    "max_input_tokens": 200000,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 64000,
     "available_providers": [
       "openrouter"
@@ -45688,7 +45641,7 @@
     "displayName": "Qwen: Qwen3.8 Max (0902)",
     "reasoning": true,
     "parent": "qwen/qwen3.8-max",
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
@@ -45709,8 +45662,8 @@
     },
     "displayName": "Qwen: Qwen3.8 Flash",
     "reasoning": true,
-    "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 1000000,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -45774,7 +45727,7 @@
     },
     "displayName": "Qwen2.5 Coder 32B Instruct",
     "max_input_tokens": 32768,
-    "max_output_tokens": 29491,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -45792,7 +45745,7 @@
       }
     },
     "displayName": "Qwen: Qwen-Plus",
-    "max_input_tokens": 995904,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
@@ -45813,7 +45766,7 @@
     },
     "displayName": "Qwen: Qwen2.5 VL 72B Instruct",
     "max_input_tokens": 128000,
-    "max_output_tokens": 115200,
+    "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
     ]
@@ -45844,7 +45797,7 @@
     },
     "displayName": "Qwen: Qwen3 30B A3B",
     "reasoning": true,
-    "max_input_tokens": 40960,
+    "max_input_tokens": 131072,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -45864,7 +45817,7 @@
     },
     "displayName": "Qwen: Qwen3 235B A22B Instruct (2507)",
     "parent": "qwen/qwen3-235b-a22b",
-    "max_input_tokens": 128000,
+    "max_input_tokens": 262144,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"
@@ -45883,7 +45836,7 @@
       }
     },
     "displayName": "Qwen: Qwen3 Coder 480B A35B",
-    "max_input_tokens": 256000,
+    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -45902,8 +45855,8 @@
     },
     "displayName": "Qwen: Qwen3 235B A22B Thinking (2507)",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -45972,7 +45925,7 @@
     },
     "displayName": "Qwen: Qwen3 Next 80B A3B Instruct",
     "max_input_tokens": 262144,
-    "max_output_tokens": 16384,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -45990,7 +45943,7 @@
       }
     },
     "displayName": "Qwen: Qwen3 Coder Flash",
-    "max_input_tokens": 997952,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46010,8 +45963,8 @@
       }
     },
     "displayName": "Qwen: Qwen3 VL 235B A22B Instruct",
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -46030,7 +45983,7 @@
     },
     "displayName": "Qwen: Qwen3 VL 30B A3B Instruct",
     "max_input_tokens": 262144,
-    "max_output_tokens": 16384,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -46079,7 +46032,7 @@
     },
     "displayName": "Qwen: Qwen3 Coder Next",
     "max_input_tokens": 262144,
-    "max_output_tokens": 235929,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -46099,8 +46052,8 @@
     },
     "displayName": "Qwen: Qwen3.5 397B A17B",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 32768,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
     ]
@@ -46119,7 +46072,7 @@
     },
     "displayName": "Qwen: Qwen3.5 Plus 2026-02-15",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46139,7 +46092,7 @@
     },
     "displayName": "Qwen: Qwen3.5-Flash",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46159,7 +46112,7 @@
     },
     "displayName": "Qwen: Qwen3.5 122B A10B",
     "reasoning": true,
-    "max_input_tokens": 258048,
+    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46180,7 +46133,7 @@
     },
     "displayName": "Qwen: Qwen3.5 27B",
     "reasoning": true,
-    "max_input_tokens": 258048,
+    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46201,8 +46154,8 @@
     },
     "displayName": "Qwen: Qwen3.5 35B A3B",
     "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -46222,7 +46175,7 @@
     "displayName": "Qwen: Qwen3.5-9B",
     "reasoning": true,
     "max_input_tokens": 262144,
-    "max_output_tokens": 40960,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -46241,7 +46194,7 @@
     },
     "displayName": "Qwen: Qwen3.6 Plus",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46262,8 +46215,8 @@
     },
     "displayName": "Qwen: Qwen3.6 35B A3B",
     "reasoning": true,
-    "max_input_tokens": 256000,
-    "max_output_tokens": 65536,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -46282,7 +46235,7 @@
     },
     "displayName": "Qwen: Qwen3.6 Flash",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46302,7 +46255,7 @@
     },
     "displayName": "Qwen: Qwen3.5 Plus 2026-04-20",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46365,7 +46318,7 @@
     },
     "displayName": "Qwen: Qwen3.7 Flash",
     "reasoning": true,
-    "max_input_tokens": 983616,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -46406,8 +46359,8 @@
       }
     },
     "displayName": "Google: Gemma 3 27B",
-    "max_input_tokens": 110000,
-    "max_output_tokens": 16384,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -46630,8 +46583,8 @@
     },
     "displayName": "Google: Gemma 4 31B IT",
     "reasoning": true,
-    "max_input_tokens": 131072,
-    "max_output_tokens": 8192,
+    "max_input_tokens": 262144,
+    "max_output_tokens": 262144,
     "available_providers": [
       "openrouter"
     ]
@@ -46651,7 +46604,7 @@
     },
     "displayName": "Google: Gemma 4 26B A4B IT",
     "reasoning": true,
-    "max_input_tokens": 131072,
+    "max_input_tokens": 262144,
     "max_output_tokens": 16384,
     "available_providers": [
       "openrouter"

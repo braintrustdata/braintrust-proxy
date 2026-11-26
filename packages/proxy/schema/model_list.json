@@ -5870,7 +5870,8 @@
     },
     "displayName": "GPT-Transcribe",
     "available_providers": [
-      "openai"
+      "openai",
+      "azure"
     ]
   },
   "gpt-4o-transcribe": {
@@ -10761,6 +10762,26 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/glm-5p3-spot": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 2.2,
+    "input_cache_read_cost_per_mil_tokens": 0.13,
+    "providers": {
+      "fireworks": {
+        "max_input_tokens": 1048576,
+        "max_output_tokens": 128000
+      }
+    },
+    "displayName": "GLM 5.3 Spot",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 128000,
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/glm-5p2": {
     "format": "openai",
     "flavor": "chat",
@@ -14066,11 +14087,17 @@
     "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1,
     "input_cache_read_cost_per_mil_tokens": 0.03,
+    "providers": {
+      "fireworks": {
+        "max_input_tokens": 1048576
+      }
+    },
     "displayName": "Inkling 2 Small",
     "fallback_models": [
       "databricks-inkling-2-small",
       "thinkingmachines/inkling-2-small"
     ],
+    "max_input_tokens": 1048576,
     "available_providers": [
       "fireworks"
     ]
@@ -38833,6 +38860,20 @@
       "databricks"
     ]
   },
+  "tngtech/deepseek-r1t2-chimera": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 1,
+    "output_cost_per_mil_tokens": 2.625,
+    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "displayName": "TNG: DeepSeek R1T2 Chimera",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "motif-technologies/motif-3": {
     "format": "openai",
     "flavor": "chat",
@@ -39074,9 +39115,9 @@
   "reflection/beam-1.0-501b-a23b": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.25,
+    "input_cost_per_mil_tokens": 0.3,
     "output_cost_per_mil_tokens": 1,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
     "providers": {
       "openrouter": {
         "max_input_tokens": 1048576,
@@ -40664,9 +40705,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.0507,
-    "output_cost_per_mil_tokens": 0.2028,
-    "input_cache_read_cost_per_mil_tokens": 0.001014,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.42,
+    "input_cache_read_cost_per_mil_tokens": 0.0042,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -40823,9 +40864,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0456,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.035,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -41034,9 +41075,9 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 1.28,
-    "output_cost_per_mil_tokens": 2.56,
-    "input_cache_read_cost_per_mil_tokens": 0.108,
+    "input_cost_per_mil_tokens": 0.888188,
+    "output_cost_per_mil_tokens": 1.5082,
+    "input_cache_read_cost_per_mil_tokens": 0.2,
     "providers": {
       "openrouter": {
         "max_input_tokens": 1000000,
@@ -41707,9 +41748,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.12,
-    "output_cost_per_mil_tokens": 0.38,
-    "input_cache_read_cost_per_mil_tokens": 0.02,
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -41859,9 +41900,9 @@
   "z-ai/glm-4.5-air": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.14,
-    "output_cost_per_mil_tokens": 0.86,
-    "input_cache_read_cost_per_mil_tokens": 0.025,
+    "input_cost_per_mil_tokens": 0.2,
+    "output_cost_per_mil_tokens": 1.1,
+    "input_cache_read_cost_per_mil_tokens": 0.03,
     "providers": {
       "openrouter": {
         "max_input_tokens": 131072,
@@ -42172,13 +42213,13 @@
     },
     "providers": {
       "openrouter": {
-        "max_input_tokens": 202752,
+        "max_input_tokens": 262144,
         "max_output_tokens": 32768
       }
     },
     "displayName": "Z.ai: GLM 5.2",
     "reasoning": true,
-    "max_input_tokens": 202752,
+    "max_input_tokens": 262144,
     "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
@@ -46088,9 +46129,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.45,
-    "output_cost_per_mil_tokens": 3,
-    "input_cache_read_cost_per_mil_tokens": 0.22,
+    "input_cost_per_mil_tokens": 0.5,
+    "output_cost_per_mil_tokens": 3.6,
+    "input_cache_read_cost_per_mil_tokens": 0.3,
     "providers": {
       "openrouter": {
         "max_input_tokens": 128000,
@@ -46211,7 +46252,7 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.17,
+    "input_cost_per_mil_tokens": 0.1,
     "output_cost_per_mil_tokens": 0.25,
     "providers": {
       "openrouter": {
@@ -46397,7 +46438,7 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.08,
-    "output_cost_per_mil_tokens": 0.16,
+    "output_cost_per_mil_tokens": 0.45,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "providers": {
       "openrouter": {

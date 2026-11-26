@@ -5,6 +5,23 @@ import {
   OpenAIChatCompletionCreateParams,
 } from "../../types";
 
+type GoogleChatRequest = Omit<OpenAIChatCompletionCreateParams, "model">;
+
+async function captureGoogleRequest(body: GoogleChatRequest) {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+
+  await callProxyV1<
+    OpenAIChatCompletionCreateParams,
+    OpenAIChatCompletionChunk
+  >({
+    body: { model: "gemini-2.5-flash", ...body },
+    fetch,
+  });
+
+  expect(requests).toHaveLength(1);
+  return requests[0];
+}
+
 describe("Google parameter translation (captureOnly)", () => {
   describe("basic generation config params", () => {
     it("should send x-goog-api-key on direct Google requests", async () => {
@@ -412,230 +429,71 @@ describe("Google parameter translation (captureOnly)", () => {
   });
 
   describe("tool calling", () => {
-    it("should translate tool_choice 'auto' to tool_config", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+    const weather = {
+      name: "get_weather",
+      description: "Get weather",
+      parameters: { type: "object", properties: {} },
+    };
+    const time = {
+      name: "get_time",
+      description: "Get time",
+      parameters: { type: "object", properties: {} },
+    };
+    const cases: {
+      name: string;
+      choice: OpenAIChatCompletionCreateParams["tool_choice"];
+      declarations: (typeof weather)[];
+      config: { mode: string; allowed_function_names?: string[] };
+    }[] = [
+      {
+        name: "'auto' to tool_config",
+        choice: "auto",
+        declarations: [weather],
+        config: { mode: "AUTO" },
+      },
+      {
+        name: "'required' to tool_config ANY",
+        choice: "required",
+        declarations: [weather],
+        config: { mode: "ANY" },
+      },
+      {
+        name: "'none' to tool_config NONE",
+        choice: "none",
+        declarations: [weather],
+        config: { mode: "NONE" },
+      },
+      {
+        name: "with specific function to tool_config with allowed_function_names",
+        choice: { type: "function", function: { name: "get_weather" } },
+        declarations: [weather, time],
+        config: { mode: "ANY", allowed_function_names: ["get_weather"] },
+      },
+    ];
 
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
+    for (const { name, choice, declarations, config } of cases) {
+      it(`should translate tool_choice ${name}`, async () => {
+        const request = await captureGoogleRequest({
           messages: [{ role: "user", content: "What is the weather?" }],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            },
-          ],
-          tool_choice: "auto",
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
-        tools: [
-          {
-            function_declarations: [
-              {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            ],
-          },
-        ],
-        tool_config: {
-          function_calling_config: {
-            mode: "AUTO",
-          },
-        },
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should translate tool_choice 'required' to tool_config ANY", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "What is the weather?" }],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            },
-          ],
-          tool_choice: "required",
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
-        tools: [
-          {
-            function_declarations: [
-              {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            ],
-          },
-        ],
-        tool_config: {
-          function_calling_config: {
-            mode: "ANY",
-          },
-        },
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should translate tool_choice 'none' to tool_config NONE", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "What is the weather?" }],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            },
-          ],
-          tool_choice: "none",
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
-        tools: [
-          {
-            function_declarations: [
-              {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            ],
-          },
-        ],
-        tool_config: {
-          function_calling_config: {
-            mode: "NONE",
-          },
-        },
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should translate tool_choice with specific function to tool_config with allowed_function_names", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "What is the weather?" }],
-          tools: [
-            {
-              type: "function",
-              function: {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-            },
-            {
-              type: "function",
-              function: {
-                name: "get_time",
-                description: "Get time",
-                parameters: { type: "object", properties: {} },
-              },
-            },
-          ],
-          tool_choice: {
+          tools: declarations.map((declaration) => ({
             type: "function",
-            function: { name: "get_weather" },
-          },
+            function: declaration,
+          })),
+          tool_choice: choice,
           max_tokens: 100,
           stream: false,
-        },
-        fetch,
-      });
+        });
 
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "What is the weather?" }] }],
-        tools: [
-          {
-            function_declarations: [
-              {
-                name: "get_weather",
-                description: "Get weather",
-                parameters: { type: "object", properties: {} },
-              },
-              {
-                name: "get_time",
-                description: "Get time",
-                parameters: { type: "object", properties: {} },
-              },
-            ],
-          },
-        ],
-        tool_config: {
-          function_calling_config: {
-            mode: "ANY",
-            allowed_function_names: ["get_weather"],
-          },
-        },
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
+        expect(request.body).toEqual({
+          contents: [
+            { role: "user", parts: [{ text: "What is the weather?" }] },
+          ],
+          tools: [{ function_declarations: declarations }],
+          tool_config: { function_calling_config: config },
+          generationConfig: { maxOutputTokens: 100 },
+        });
       });
-    });
+    }
 
     it("should translate tools to Google format", async () => {
       const { fetch, requests } = createCapturingFetch({ captureOnly: true });
@@ -1008,153 +866,89 @@ describe("Google parameter translation (captureOnly)", () => {
   });
 
   describe("unsupported params should be filtered", () => {
-    it("should not pass frequency_penalty to Google", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
+    const cases = [
+      { name: "frequency_penalty", params: { frequency_penalty: 0.5 } },
+      { name: "presence_penalty", params: { presence_penalty: 0.5 } },
+      {
+        name: "seed (used only for caching)",
+        params: { seed: 12345 },
+      },
+      { name: "logprobs", params: { logprobs: true, top_logprobs: 5 } },
+      { name: "user", params: { user: "test-user-123" } },
+    ];
 
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
+    for (const { name, params } of cases) {
+      it(`should not pass ${name} to Google`, async () => {
+        const request = await captureGoogleRequest({
           messages: [{ role: "user", content: "Say hello" }],
-          frequency_penalty: 0.5,
+          ...params,
           max_tokens: 100,
           stream: false,
-        },
-        fetch,
-      });
+        });
 
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
+        expect(request.body).toEqual({
+          contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+          generationConfig: { maxOutputTokens: 100 },
+        });
       });
-    });
-
-    it("should not pass presence_penalty to Google", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "Say hello" }],
-          presence_penalty: 0.5,
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
+    }
   });
 
   describe("streaming mode", () => {
-    it("should set alt=sse query param for streaming requests", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+    const cases: {
+      name: string;
+      body: GoogleChatRequest;
+      expected: unknown;
+    }[] = [
+      {
+        name: "should set alt=sse query param for streaming requests",
         body: {
-          model: "gemini-2.5-flash",
           messages: [{ role: "user", content: "Count from 1 to 10" }],
           max_tokens: 200,
           stream: true,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("streamGenerateContent");
-      expect(requests[0].url).toContain("alt=sse");
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Count from 1 to 10" }] }],
-        generationConfig: {
-          maxOutputTokens: 200,
+        expected: {
+          contents: [{ role: "user", parts: [{ text: "Count from 1 to 10" }] }],
+          generationConfig: {
+            maxOutputTokens: 200,
+          },
         },
-      });
-    });
-
-    it("should use generateContent endpoint for non-streaming", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+      },
+      {
+        name: "should use generateContent endpoint for non-streaming",
         body: {
-          model: "gemini-2.5-flash",
           messages: [{ role: "user", content: "Say hello" }],
           max_tokens: 100,
           stream: false,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("generateContent");
-      expect(requests[0].url).not.toContain("streamGenerateContent");
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
+        expected: {
+          contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
+          generationConfig: {
+            maxOutputTokens: 100,
+          },
         },
-      });
-    });
-
-    it("should translate params correctly for streaming with temperature", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+      },
+      {
+        name: "should translate params correctly for streaming with temperature",
         body: {
-          model: "gemini-2.5-flash",
           messages: [{ role: "user", content: "Tell me a story" }],
           temperature: 0.8,
           top_p: 0.95,
           max_tokens: 500,
           stream: true,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("streamGenerateContent");
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Tell me a story" }] }],
-        generationConfig: {
-          temperature: 0.8,
-          topP: 0.95,
-          maxOutputTokens: 500,
+        expected: {
+          contents: [{ role: "user", parts: [{ text: "Tell me a story" }] }],
+          generationConfig: {
+            temperature: 0.8,
+            topP: 0.95,
+            maxOutputTokens: 500,
+          },
         },
-      });
-    });
-
-    it("should translate system message correctly for streaming", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+      },
+      {
+        name: "should translate system message correctly for streaming",
         body: {
-          model: "gemini-2.5-flash",
           messages: [
             { role: "system", content: "You are a helpful assistant." },
             { role: "user", content: "Hello" },
@@ -1162,31 +956,19 @@ describe("Google parameter translation (captureOnly)", () => {
           max_tokens: 100,
           stream: true,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("streamGenerateContent");
-      expect(requests[0].body).toEqual({
-        systemInstruction: {
-          parts: [{ text: "You are a helpful assistant." }],
+        expected: {
+          systemInstruction: {
+            parts: [{ text: "You are a helpful assistant." }],
+          },
+          contents: [{ role: "user", parts: [{ text: "Hello" }] }],
+          generationConfig: {
+            maxOutputTokens: 100,
+          },
         },
-        contents: [{ role: "user", parts: [{ text: "Hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should translate tools correctly for streaming", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+      },
+      {
+        name: "should translate tools correctly for streaming",
         body: {
-          model: "gemini-2.5-flash",
           messages: [{ role: "user", content: "What time is it?" }],
           tools: [
             {
@@ -1202,65 +984,64 @@ describe("Google parameter translation (captureOnly)", () => {
           max_tokens: 100,
           stream: true,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("streamGenerateContent");
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "What time is it?" }] }],
-        tools: [
-          {
-            function_declarations: [
-              {
-                name: "get_time",
-                description: "Get the current time",
-                parameters: { type: "object", properties: {} },
-              },
-            ],
+        expected: {
+          contents: [{ role: "user", parts: [{ text: "What time is it?" }] }],
+          tools: [
+            {
+              function_declarations: [
+                {
+                  name: "get_time",
+                  description: "Get the current time",
+                  parameters: { type: "object", properties: {} },
+                },
+              ],
+            },
+          ],
+          tool_config: {
+            function_calling_config: {
+              mode: "AUTO",
+            },
           },
-        ],
-        tool_config: {
-          function_calling_config: {
-            mode: "AUTO",
+          generationConfig: {
+            maxOutputTokens: 100,
           },
         },
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should translate reasoning params correctly for streaming", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
+      },
+      {
+        name: "should translate reasoning params correctly for streaming",
         body: {
-          model: "gemini-2.5-flash",
           messages: [{ role: "user", content: "Think step by step" }],
           reasoning_budget: 4096,
           max_tokens: 1000,
           stream: true,
         },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].url).toContain("streamGenerateContent");
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Think step by step" }] }],
-        generationConfig: {
-          maxOutputTokens: 1000,
-          thinkingConfig: {
-            includeThoughts: true,
-            thinkingBudget: 4096,
+        expected: {
+          contents: [{ role: "user", parts: [{ text: "Think step by step" }] }],
+          generationConfig: {
+            maxOutputTokens: 1000,
+            thinkingConfig: {
+              includeThoughts: true,
+              thinkingBudget: 4096,
+            },
           },
         },
+      },
+    ];
+
+    for (const { name, body, expected } of cases) {
+      it(name, async () => {
+        const request = await captureGoogleRequest(body);
+
+        if (body.stream) {
+          expect(request.url).toContain("streamGenerateContent");
+          expect(request.url).toContain("alt=sse");
+        } else {
+          expect(request.url).toContain("generateContent");
+          expect(request.url).not.toContain("streamGenerateContent");
+        }
+        expect(request.body).toEqual(expected);
       });
-    });
+    }
   });
 
   describe("max_completion_tokens", () => {
@@ -1311,34 +1092,6 @@ describe("Google parameter translation (captureOnly)", () => {
         contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
         generationConfig: {
           maxOutputTokens: 500,
-        },
-      });
-    });
-  });
-
-  describe("seed parameter", () => {
-    it("should not pass seed to Google (used only for caching)", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "Say hello" }],
-          seed: 12345,
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
         },
       });
     });
@@ -1486,61 +1239,6 @@ describe("Google parameter translation (captureOnly)", () => {
         generationConfig: {
           maxOutputTokens: 100,
           candidateCount: 3,
-        },
-      });
-    });
-  });
-
-  describe("other unsupported params should be filtered", () => {
-    it("should not pass logprobs to Google", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "Say hello" }],
-          logprobs: true,
-          top_logprobs: 5,
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
-        },
-      });
-    });
-
-    it("should not pass user to Google", async () => {
-      const { fetch, requests } = createCapturingFetch({ captureOnly: true });
-
-      await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletionChunk
-      >({
-        body: {
-          model: "gemini-2.5-flash",
-          messages: [{ role: "user", content: "Say hello" }],
-          user: "test-user-123",
-          max_tokens: 100,
-          stream: false,
-        },
-        fetch,
-      });
-
-      expect(requests).toHaveLength(1);
-      expect(requests[0].body).toEqual({
-        contents: [{ role: "user", parts: [{ text: "Say hello" }] }],
-        generationConfig: {
-          maxOutputTokens: 100,
         },
       });
     });

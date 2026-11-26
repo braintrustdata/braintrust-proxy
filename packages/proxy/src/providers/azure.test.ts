@@ -1,17 +1,11 @@
 import { OpenAIChatCompletion, OpenAIChatCompletionCreateParams } from "@types";
 import { expect } from "vitest";
-import { callProxyV1, it } from "../../utils/tests";
+import { callProxyV1, createCapturingFetch, it } from "../../utils/tests";
 
-it("should filter Braintrust parameters when calling OpenAI", async () => {
-  if (!process.env.AZURE_OPENAI_API_KEY) {
-    console.warn(
-      "Skipping Azure OpenAI test because AZURE_OPENAI_API_KEY is not set",
-    );
-    expect(1).toBe(1);
-    return;
-  }
+it("should filter Braintrust parameters when calling Azure OpenAI", async () => {
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
-  const { json } = await callProxyV1<
+  await callProxyV1<
     OpenAIChatCompletionCreateParams & {
       reasoning_enabled?: boolean;
       reasoning_budget?: number;
@@ -20,7 +14,6 @@ it("should filter Braintrust parameters when calling OpenAI", async () => {
   >({
     body: {
       model: "gpt-5",
-      // These Braintrust parameters should be filtered out before reaching OpenAI
       reasoning_enabled: true,
       reasoning_budget: 5000,
       messages: [
@@ -35,25 +28,26 @@ it("should filter Braintrust parameters when calling OpenAI", async () => {
     proxyHeaders: {
       "x-bt-endpoint-name": "azure",
     },
-  });
-
-  expect(json()).toMatchObject({
-    choices: [
+    fetch,
+    getApiSecrets: async () => [
       {
-        finish_reason: "stop",
-        index: 0,
-        logprobs: null,
-        message: {
-          annotations: [],
-          content: expect.any(String),
-          refusal: null,
-          role: "assistant",
+        type: "azure",
+        secret: "test-token",
+        name: "azure",
+        metadata: {
+          api_base: "https://test.openai.azure.com",
+          auth_type: "api_key",
+          deployment: "gpt-5",
+          api_version: "2025-01-01-preview",
         },
       },
     ],
-    created: expect.any(Number),
-    id: expect.any(String),
-    model: expect.stringContaining("gpt-5"),
-    object: "chat.completion",
   });
+
+  expect(requests).toHaveLength(1);
+  expect(requests[0].url).toContain(
+    "https://test.openai.azure.com/openai/deployments/gpt-5/chat/completions",
+  );
+  expect(requests[0].body).not.toHaveProperty("reasoning_enabled");
+  expect(requests[0].body).not.toHaveProperty("reasoning_budget");
 });

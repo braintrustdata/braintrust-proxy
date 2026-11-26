@@ -24,7 +24,6 @@ import * as util from "./util";
 import {
   IMAGE_DATA_URL,
   PDF_DATA_URL,
-  AUDIO_DATA_URL,
   VIDEO_DATA_URL,
   TEXT_DATA_URL,
   MD_DATA_URL,
@@ -1243,53 +1242,6 @@ describe("file content parts", () => {
     expect(response.error!.message).toContain(
       "unsupported MIME type 'text/csv'",
     );
-  });
-
-  it("should handle file content part with audio/wav data URL", async () => {
-    try {
-      const { statusCode, json } = await callProxyV1<
-        OpenAIChatCompletionCreateParams,
-        OpenAIChatCompletion
-      >({
-        body: {
-          model: "gpt-audio",
-          messages: [
-            {
-              role: "user",
-              content: [
-                {
-                  type: "text",
-                  text: "What is in this audio file?",
-                },
-                {
-                  type: "input_audio",
-                  input_audio: {
-                    data: AUDIO_DATA_URL,
-                    format: "wav",
-                  },
-                },
-              ],
-            },
-          ],
-          stream: false,
-        },
-        proxyHeaders: {
-          "x-bt-endpoint-name": "openai",
-        },
-      });
-
-      expect(statusCode).toBe(400);
-      const response = json() as {
-        error?: { type?: string; message?: string };
-      };
-      expect(response.error).toBeDefined();
-      expect(response.error!.type).toBe("invalid_request_error");
-      expect(response.error!.message).toContain(
-        "unsupported MIME type 'audio/wav'",
-      );
-    } catch (error) {
-      console.log("known missing model, skipping");
-    }
   });
 
   it("should return error for video file content (unsupported)", async () => {

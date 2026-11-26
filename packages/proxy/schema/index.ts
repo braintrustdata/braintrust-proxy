@@ -1537,6 +1537,8 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "databricks-glm-5-2": ["databricks"],
   "databricks-inkling": ["databricks"],
   "databricks-inkling-2-small": ["databricks"],
+  "databricks-inkling-2-mini": ["databricks"],
+  "accounts/fireworks/models/inkling-2-mini": ["fireworks"],
   "accounts/fireworks/models/kimi-k3": ["fireworks"],
   "accounts/fireworks/models/kimi-k3p1-pro": ["fireworks"],
   "databricks-claude-opus-5": ["databricks"],

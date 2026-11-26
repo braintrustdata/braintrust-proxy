@@ -14075,6 +14075,36 @@
       "fireworks"
     ]
   },
+  "accounts/fireworks/models/inkling-2-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.15,
+    "output_cost_per_mil_tokens": 0.5,
+    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "pricing": {
+      "fireworks": {
+        "priority": [
+          {
+            "input_cost_per_mil_tokens": 0.1875,
+            "output_cost_per_mil_tokens": 0.625,
+            "input_cache_read_cost_per_mil_tokens": 0.01875,
+            "endpoints": [
+              "api.fireworks.ai"
+            ],
+            "model_id": "accounts/fireworks/models/inkling-2-mini"
+          }
+        ]
+      }
+    },
+    "displayName": "Inkling 2 Mini",
+    "fallback_models": [
+      "databricks-inkling-2-mini",
+      "thinkingmachines/inkling-2-mini"
+    ],
+    "available_providers": [
+      "fireworks"
+    ]
+  },
   "accounts/fireworks/models/nemotron-lightning-3p5-30b-a3b": {
     "format": "openai",
     "flavor": "chat",
@@ -38791,6 +38821,14 @@
     "format": "openai",
     "flavor": "chat",
     "displayName": "Inkling 2 Small",
+    "available_providers": [
+      "databricks"
+    ]
+  },
+  "databricks-inkling-2-mini": {
+    "format": "openai",
+    "flavor": "chat",
+    "displayName": "Inkling 2 Mini",
     "available_providers": [
       "databricks"
     ]

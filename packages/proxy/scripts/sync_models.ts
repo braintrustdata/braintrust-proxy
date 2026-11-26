@@ -408,6 +408,21 @@ type LocalModelList = { [name: string]: ModelSpec }; // Use ModelSpec from schem
 type ModelProviders = NonNullable<ModelSpec["providers"]>;
 type CatalogProvider = keyof ModelProviders;
 type ProviderMetadata = NonNullable<ModelProviders[CatalogProvider]>;
+const PROVIDER_TOKEN_FIELDS = [
+  "max_input_tokens",
+  "max_output_tokens",
+] as const;
+type ProviderTokenField = (typeof PROVIDER_TOKEN_FIELDS)[number];
+
+const SYNC_PRESERVED_PROVIDER_TOKEN_FIELDS: Record<
+  string,
+  Partial<Record<CatalogProvider, readonly ProviderTokenField[]>>
+> = {
+  // OpenAI lists a 4,096-token context for GPT-3.5 Turbo Instruct. Keep the
+  // catalog's OpenAI limits instead of LiteLLM's larger values; Azure differs.
+  "gpt-3.5-turbo-instruct": { openai: ["max_input_tokens"] },
+  "gpt-3.5-turbo-instruct-0914": { openai: PROVIDER_TOKEN_FIELDS },
+};
 
 export function isSupportedRemoteModel(
   remoteModel: LiteLLMModelDetail,
@@ -1389,10 +1404,13 @@ export function applyProviderMetadata(
       `  [REVIEW] ${name}.providers.${provider}.retirement_date: ${source} ${remote.retirement_date} differs from catalog ${current.retirement_date ?? "unset"}; not applied`,
     );
   }
-  for (const field of ["max_input_tokens", "max_output_tokens"] as const) {
+  for (const field of PROVIDER_TOKEN_FIELDS) {
     const value = remote[field];
     if (value == null) continue;
     const preserve = isFieldManuallyPreserved(name, field);
+    const preserveProvider =
+      current[field] != null &&
+      SYNC_PRESERVED_PROVIDER_TOKEN_FIELDS[name]?.[provider]?.includes(field);
     const previous =
       current[field] ??
       (preserve && !originalModel.providers ? originalModel[field] : undefined);
@@ -1401,7 +1419,7 @@ export function applyProviderMetadata(
         `  [REVIEW] ${name}.providers.${provider}.${field}: ${source} ${value} differs from catalog ${previous ?? "unset"}`,
       );
     }
-    const limit = preserve ? previous : value;
+    const limit = preserve || preserveProvider ? previous : value;
     if (limit != null && limit !== current[field]) {
       updated[field] = limit;
       changed = true;

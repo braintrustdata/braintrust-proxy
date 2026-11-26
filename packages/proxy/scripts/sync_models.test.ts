@@ -1876,6 +1876,41 @@ describe("provider metadata sync", () => {
     expect(updated.max_input_tokens).toBe(4096);
   });
 
+  it.each([
+    ["gpt-3.5-turbo-instruct", 4096],
+    ["gpt-3.5-turbo-instruct-0914", 4097],
+  ])("preserves existing OpenAI token limits for %s", (id, maxOutput) => {
+    const local: ModelSpec = {
+      format: "openai",
+      flavor: "completion",
+      available_providers: ["azure"],
+      providers: {
+        openai: {
+          retired: true,
+          max_input_tokens: 4096,
+          max_output_tokens: 4096,
+        },
+        azure: { max_input_tokens: 4097, max_output_tokens: 4097 },
+      },
+    };
+    const remote = parseRemoteModelList({
+      [id]: {
+        litellm_provider: "text-completion-openai",
+        mode: "completion",
+        max_input_tokens: 8192,
+        max_output_tokens: maxOutput,
+      },
+    });
+    const metadata = resolveRemoteProviderMetadata(
+      remote,
+      { [id]: local },
+      "openai",
+      today,
+    ).get(id)!;
+    expect(metadata.openai?.max_input_tokens).toBe(8192);
+    expect(applyProviderMetadataBatch(id, local, metadata, today)).toBe(local);
+  });
+
   it("flags elapsed shutdown dates without retiring the provider", () => {
     const remote = parseRemoteModelList({
       [name]: { litellm_provider: "openai", deprecation_date: "2026-07-31" },

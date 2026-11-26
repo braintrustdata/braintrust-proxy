@@ -47,8 +47,7 @@ Batch API support and synchronous service-tier support are separate checks.
   Update the target array when prices change; keep its aliases as references.
   When removing a target, remove or retarget its aliases in the same catalog change.
   Delete obsolete keys and any resulting empty maps instead of leaving empty arrays or nested `null` values.
-- When reporting a pricing gap, describe the affected model, provider, tier, and proposed rate or alias changes in the issue body.
-- In the job report or issue verification section, cite each official source and the rates, support, and conditions it verifies.
+- In the job report, cite each official source and the rates, support, and conditions it verifies.
   Do not substitute LiteLLM or another aggregator for provider/tier evidence.
   For each model/provider checked, report each tier as verified and recorded, unsupported, or unresolved, with the reason.
   Include the check date, exact API selector, response billing signal, cache discount rules, and any expiry or prompt-length boundary.

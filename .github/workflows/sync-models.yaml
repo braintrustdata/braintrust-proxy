@@ -43,6 +43,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -70,20 +71,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Sync selected providers
+        env:
+          INPUT_PROVIDERS: ${{ inputs.providers }}
         run: |
           set -euo pipefail
 
-          providers="${{ github.event.inputs.providers }}"
-          if [ -z "$providers" ]; then
-            providers="${DEFAULT_PROVIDERS}"
+          providers="${INPUT_PROVIDERS:-$DEFAULT_PROVIDERS}"
+          if [[ ! "$providers" =~ ^[a-zA-Z0-9_-]+(\ [a-zA-Z0-9_-]+)*$ ]]; then
+            echo "Expected a space-separated list of provider names."
+            exit 1
           fi
-
-          echo "Syncing providers: $providers"
-
-          for provider in $providers; do
-            pnpm exec tsx packages/proxy/scripts/sync_models.ts update-models --provider "$provider" --write
-            pnpm exec tsx packages/proxy/scripts/sync_models.ts add-models --provider "$provider" --write
-          done
+          read -r -a selected <<< "$providers"
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-selected-providers \
+            --provider "${selected[@]}" --write --litellm-snapshot "$RUNNER_TEMP/litellm-models.json"
 
       - name: Sync Baseten models from /v1/models
         env:
@@ -116,7 +116,8 @@ jobs:
             exit 0
           fi
 
-          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-cohere --write
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-cohere --write \
+            --litellm-snapshot "$RUNNER_TEMP/litellm-models.json"
 
       - name: Sync Typesafe models and documented pricing
         env:
@@ -142,6 +143,7 @@ jobs:
           # full-slug entry sunk to the bottom of the catalog. :variant slugs are
           # skipped. The endpoint is public, so no API key is required.
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write \
+            --litellm-snapshot "$RUNNER_TEMP/litellm-models.json" \
             --price-audit "$RUNNER_TEMP/openrouter-price-audit.json"
 
       - name: Upload OpenRouter pricing evidence
@@ -151,7 +153,13 @@ jobs:
           path: ${{ runner.temp }}/openrouter-price-audit.json
           if-no-files-found: error
 
-      - name: Collect changed model ids
+      - name: Canonicalize before planning enrichment
+        run: |
+          if ! git diff --quiet -- packages/proxy/schema/model_list.json packages/proxy/schema/index.ts; then
+            pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+          fi
+
+      - name: Plan model enrichment
         id: changed_models
         run: |
           set -euo pipefail
@@ -162,18 +170,19 @@ jobs:
             --before "$RUNNER_TEMP/model_list.head.json" \
             --after "packages/proxy/schema/model_list.json" \
             --output "$RUNNER_TEMP/sync-model-changed.json" \
+            --enrichment-output "$RUNNER_TEMP/sync-model-enrichment.json" \
             --github-output "$GITHUB_OUTPUT"
 
       - name: Set up Braintrust Claude Code tracing
         id: claude_trace
-        if: steps.changed_models.outputs.count != '0'
+        if: steps.changed_models.outputs.enrichment_count != '0'
         continue-on-error: true
         env:
           BT_TRACE_PROJECT: sync-models
         run: python3 -B .github/scripts/claude_trace/setup_claude_trace.py
 
       - name: Enrich changed model metadata with Claude Code
-        if: steps.claude_trace.outcome != 'skipped'
+        if: steps.changed_models.outputs.enrichment_count != '0'
         timeout-minutes: 15
         env:
           BRAINTRUST_API_KEY: ${{ secrets.BRAINTRUST_PROXY_TRACE_API_KEY }}
@@ -192,12 +201,13 @@ jobs:
           prompt: |
             # Goal
 
-            After the deterministic `sync_models.ts` update/add passes finish, enrich the model entries changed on this branch by this run with verified `displayName` metadata, verified provider/tier `pricing`, and, only when appropriate, verified `parent` metadata.
+            Research only the fields and providers requested for each model in the enrichment worklist.
 
             # Inputs
 
             - Changed model id file: `${{ runner.temp }}/sync-model-changed.json`
             - Changed model count: `${{ steps.changed_models.outputs.count }}`
+            - Enrichment worklist: `${{ runner.temp }}/sync-model-enrichment.json`
 
             # Files to inspect first
 
@@ -209,12 +219,12 @@ jobs:
 
             # What to do
 
-            Before enrichment, check the token limits on changed OpenAI entries against official model documentation for the exact ID or its documented snapshot. Compare the published maximum input, maximum output, and total context separately. Treat an input limit above the total context as a source conflict and check the other documented provider surfaces on the entry. Record each mismatch and any unresolved source conflict in the model validation prompt, with the model ID, catalog value, provider values, and source URLs.
+            When `verifyOpenAITokenLimits` is true, check token limits against official model documentation for the exact ID or its documented snapshot. Compare the published maximum input, maximum output, and total context separately. Treat an input limit above the total context as a source conflict and check the other documented provider surfaces on the entry. Record each mismatch and any unresolved source conflict in the model validation prompt, with the model ID, catalog value, provider values, and source URLs.
 
-            1. Read the changed model id file and only work on those exact model ids. Add or refresh their `pricing` following `.github/model-pricing.md`, even when top-level standard prices did not change.
+            1. Read the enrichment worklist. Add or refresh `pricing` only for its `pricingProviders`, following `.github/model-pricing.md`.
                Check batch API prices and each synchronous service tier independently, including fast and ultrafast. Inspect separate pricing tabs, exact endpoint/router IDs, cache TTLs, prompt-length boundaries, and dated rates. Report verified, unsupported, and unresolved tier checks; do not infer rates from standard prices or copy them across providers. Preserve verified tier aliases and update only their target arrays.
-            2. For each changed model, read its current entry in `packages/proxy/schema/model_list.json` and note whether `displayName` and `parent` are already set.
-            3. For fields that are already set, verify the existing value against official provider sources before deciding whether to keep or correct it. Do not go to the web first — read the local value first, then verify.
+            2. Research the display name or parent only when the corresponding worklist flag is true.
+            3. Read the current catalog value before checking official provider sources.
             4. Update only `packages/proxy/schema/model_list.json`.
             5. Preserve existing JSON formatting, field order, and neighboring naming conventions.
             6. Only modify `displayName`, `parent`, and `pricing`. Do not change top-level standard prices, token limits, providers, deprecation fields, format, flavor, or capability flags in this step.
@@ -261,13 +271,13 @@ jobs:
         run: bash .github/scripts/claude_trace/flush.sh
 
       - name: Verify enrichment preserved top-level prices
-        if: ${{ steps.changed_models.outputs.count != '0' }}
+        if: ${{ steps.changed_models.outputs.enrichment_count != '0' }}
         run: |
           pnpm exec tsx packages/proxy/scripts/sync_models.ts check-enrichment-prices \
             --before "$RUNNER_TEMP/model_list.pre-enrichment.json"
 
       - name: Canonicalize model list and equivalent models after metadata enrichment
-        if: ${{ steps.changed_models.outputs.count != '0' }}
+        if: ${{ steps.changed_models.outputs.enrichment_count != '0' }}
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Check expected files only

@@ -22,6 +22,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -49,20 +50,31 @@ jobs:
 
       - name: Apply deprecations to the catalog
         if: steps.reconcile.outputs.change_count != '0'
+        env:
+          DEPRECATION_COUNT: ${{ steps.reconcile.outputs.deprecation_count }}
+          RETIREMENT_COUNT: ${{ steps.reconcile.outputs.retirement_count }}
         run: |
           set -euo pipefail
+          write_args=()
+          if [ "$DEPRECATION_COUNT" != "0" ] || [ "$RETIREMENT_COUNT" != "0" ]; then
+            write_args+=(--write)
+          fi
           pnpm exec tsx packages/proxy/scripts/apply_deprecations.ts \
             --report "$RUNNER_TEMP/deprecations.json" \
-            --summary-output "$RUNNER_TEMP/lifecycle-summary.md" --write
+            --summary-output "$RUNNER_TEMP/lifecycle-summary.md" "${write_args[@]}"
 
-      # Canonicalize so index.ts is re-formatted (Prettier) and consistent.
       - name: Canonicalize model list
+        id: canonicalize
         if: steps.reconcile.outputs.change_count != '0'
-        run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
-
-      - name: Validate model schema
-        if: steps.reconcile.outputs.change_count != '0'
-        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/model_deprecation.test.ts
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
+          if ! git diff --quiet; then
+            git diff > "$RUNNER_TEMP/lifecycle.diff"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build deprecation summary
         if: steps.reconcile.outputs.change_count != '0'
@@ -81,8 +93,23 @@ jobs:
           } > "$RUNNER_TEMP/pr-body.md"
           cat "$RUNNER_TEMP/lifecycle-summary.md" >> "$GITHUB_STEP_SUMMARY"
 
+      - name: Upload lifecycle evidence and proposed diff
+        if: "!cancelled() && steps.reconcile.outcome == 'success'"
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: lifecycle-audit
+          path: |
+            ${{ runner.temp }}/deprecations.json
+            ${{ runner.temp }}/lifecycle-summary.md
+            ${{ runner.temp }}/lifecycle.diff
+          if-no-files-found: error
+
+      - name: Validate model schema
+        if: steps.canonicalize.outputs.changed == 'true'
+        run: pnpm exec vitest run packages/proxy/schema/models.test.ts packages/proxy/schema/index.test.ts packages/proxy/scripts/sync_models.test.ts packages/proxy/scripts/model_deprecation.test.ts
+
       - name: Create PR
-        if: steps.reconcile.outputs.change_count != '0'
+        if: steps.canonicalize.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
           branch: chore/model-deprecation-audit

@@ -34,6 +34,7 @@ type ModelSpec = {
   retired?: boolean | null;
   retirement_date?: string | null;
   providers?: StoredModelSpec["providers"];
+  pricing?: StoredModelSpec["pricing"];
 } & Record<string, unknown>;
 type Catalog = Record<string, ModelSpec>;
 
@@ -226,6 +227,15 @@ export function applyDeprecations(
     if (dropped.length === 0) {
       continue;
     }
+    const remaining = effective.filter((p) => !dead.has(p));
+    if (spec?.pricing && (spec.providers || remaining.length > 0)) {
+      for (const provider of dropped) {
+        delete spec.pricing[provider as keyof typeof spec.pricing];
+      }
+      if (Object.keys(spec.pricing).length === 0) {
+        delete spec.pricing;
+      }
+    }
     if (spec?.providers) {
       for (const name of dropped) {
         const provider = spec.providers[name as keyof typeof spec.providers];
@@ -251,8 +261,6 @@ export function applyDeprecations(
       }
       continue;
     }
-
-    const remaining = effective.filter((p) => !dead.has(p));
 
     if (remaining.length === 0) {
       if (spec) {

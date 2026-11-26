@@ -388,7 +388,7 @@ export const PROVIDER_APIS: Record<string, ProviderApi> = {
         }
         pageToken = parsed.next_page_token;
       }
-      return names;
+      throw new Error("Cohere model list exceeded the pagination limit");
     },
   },
   // OpenRouter's /api/v1/models is a public, authoritative directory of what it

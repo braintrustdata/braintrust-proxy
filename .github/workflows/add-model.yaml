@@ -12,7 +12,7 @@ on:
         required: true
         type: string
       refresh:
-        description: "Regenerate the existing open add-model PR"
+        description: "Retry immediately and regenerate any existing add-model PR"
         type: boolean
         default: false
   repository_dispatch:
@@ -24,13 +24,13 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   target:
     runs-on: ubuntu-latest
     permissions:
+      issues: read
       pull-requests: read
     outputs:
       branch: ${{ steps.target.outputs.branch }}
@@ -38,7 +38,7 @@ jobs:
       model_slug: ${{ steps.target.outputs.model_slug }}
       proceed: ${{ steps.target.outputs.proceed }}
     steps:
-      - name: Validate target model and check for an open generated PR
+      - name: Validate target and check pending automation
         id: target
         uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
         env:
@@ -53,6 +53,7 @@ jobs:
               "baseten",
               "bedrock",
               "cerebras",
+              "cohere",
               "databricks",
               "fireworks",
               "google",
@@ -105,6 +106,22 @@ jobs:
                 core.setOutput("proceed", "false");
                 return;
               }
+              if (context.eventName === "repository_dispatch") {
+                // A dispatch queued during another attempt can outlive the watcher's eligibility check.
+                const title = `add-model could not add ${modelSlug} (${provider})`.toLowerCase();
+                for await (const { data } of github.paginate.iterator(github.rest.issues.listForRepo, {
+                  owner, repo, state: "open", labels: "autofix-blocked", per_page: 100,
+                })) {
+                  const issue = data.find((item) => !item.pull_request && item.title.toLowerCase() === title);
+                  if (!issue) continue;
+                  const retry = issue.body?.split(/\r?\n/, 1)[0].match(/^<!-- add-model-retry: [1-3] (\S+) -->$/);
+                  if (!retry || !(Date.parse(retry[1]) <= Date.now())) {
+                    core.notice(`Skipping ${provider}/${modelSlug}: automation is paused by issue #${issue.number}.`);
+                    core.setOutput("proceed", "false");
+                    return;
+                  }
+                }
+              }
             }
             core.setOutput("proceed", "true");
 
@@ -132,6 +149,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
@@ -363,6 +381,7 @@ jobs:
         run: pnpm exec tsx packages/proxy/scripts/sync_models.ts normalize-local-models --write
 
       - name: Verify research and evidence
+        id: evidence
         env:
           EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
           CAPABILITY_EVIDENCE_FILE: ${{ runner.temp }}/model-capability-evidence.json
@@ -371,7 +390,13 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           BASETEN_API_KEY: ${{ secrets.BASETEN_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
-        run: pnpm exec tsx packages/proxy/scripts/check_model_research.ts
+        run: |
+          status=0
+          pnpm exec tsx packages/proxy/scripts/check_model_research.ts || status=$?
+          if [ "$status" = "2" ]; then
+            echo "blocked=true" >> "$GITHUB_OUTPUT"
+          fi
+          exit "$status"
 
       - name: Check expected files only
         id: changes
@@ -392,74 +417,6 @@ jobs:
           fi
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
-
-      - name: Report blocked model
-        if: success() && steps.research.outcome == 'success' && steps.changes.outputs.changed == 'false'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
-        env:
-          PROVIDER: ${{ needs.target.outputs.provider }}
-          MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
-        with:
-          script: |
-            const fs = require("fs");
-            const { owner, repo } = context.repo;
-            const provider = process.env.PROVIDER;
-            const modelSlug = process.env.MODEL_SLUG;
-            const runUrl = process.env.RUN_URL;
-            const executionFile = process.env.EXECUTION_FILE;
-            const title = `add-model could not add ${modelSlug} (${provider})`;
-            let report = "No final report was available.";
-
-            if (executionFile && fs.existsSync(executionFile)) {
-              const execution = JSON.parse(fs.readFileSync(executionFile, "utf8"));
-              const result = Array.isArray(execution)
-                ? execution.filter((entry) => entry?.type === "result").at(-1)?.result
-                : undefined;
-              if (typeof result === "string") {
-                report =
-                  result.length > 20_000
-                    ? `${result.slice(0, 20_000)}\n\n[Report truncated at 20,000 characters.]`
-                    : result;
-              }
-            }
-
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner,
-              repo,
-              state: "open",
-              labels: "autofix-blocked",
-              per_page: 100,
-            });
-            const existingIssue = issues.find(
-              (issue) => !issue.pull_request && issue.title === title,
-            );
-
-            if (existingIssue) {
-              await github.rest.issues.createComment({
-                owner,
-                repo,
-                issue_number: existingIssue.number,
-                body: `Another add-model attempt ran: ${runUrl}`,
-              });
-              return;
-            }
-
-            await github.rest.issues.create({
-              owner,
-              repo,
-              title,
-              body: [
-                `Workflow run: ${runUrl}`,
-                "",
-                "Agent final report:",
-                report,
-                "",
-                "Close this issue to let the model-drop watcher retry.",
-              ].join("\n"),
-              labels: ["autofix-blocked"],
-            });
 
       - name: Build proxy package
         if: steps.changes.outputs.changed == 'true'
@@ -519,6 +476,7 @@ jobs:
           fi
 
       - name: Create PR
+        id: pr
         if: steps.changes.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7.0.11
         with:
@@ -530,3 +488,66 @@ jobs:
           body-path: ${{ runner.temp }}/pr-body.md
           labels: auto-sync
           signoff: false
+
+      - name: Record model outcome for the watcher
+        if: "!cancelled() && (failure() || steps.changes.outputs.changed == 'false' || steps.pr.outcome == 'success')"
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        env:
+          PROVIDER: ${{ needs.target.outputs.provider }}
+          MODEL_SLUG: ${{ needs.target.outputs.model_slug }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          EXECUTION_FILE: ${{ steps.research.outputs.execution_file }}
+          MODEL_OUTCOME: ${{ steps.pr.outputs.pull-request-number != '' && 'published' || (steps.evidence.outputs.blocked == 'true' || steps.changes.outputs.changed == 'false') && 'blocked' || 'retry' }}
+        with:
+          retries: 3
+          script: |
+            const fs = require("node:fs");
+            const { owner, repo } = context.repo;
+            const title = `add-model could not add ${process.env.MODEL_SLUG} (${process.env.PROVIDER})`;
+            const outcome = process.env.MODEL_OUTCOME;
+            const label = "autofix-blocked";
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner, repo, state: "open", labels: label, per_page: 100,
+            });
+            const issue = issues.find((item) => !item.pull_request && item.title.toLowerCase() === title.toLowerCase());
+            if (outcome === "published") {
+              if (issue) {
+                await github.rest.issues.update({ owner, repo, issue_number: issue.number, state: "closed" });
+              }
+              return;
+            }
+
+            const previousRetry = issue?.body?.match(/^<!-- add-model-retry: ([1-3]) \S+ -->/);
+            const delays = [15, 60, 240];
+            const attempt = Number(previousRetry?.[1] ?? 0) + 1;
+            const retryAt = outcome === "retry" && (!issue || previousRetry) && attempt <= delays.length
+              ? new Date(Date.now() + delays[attempt - 1] * 60_000).toISOString()
+              : undefined;
+            const lines = [
+              retryAt
+                ? `<!-- add-model-retry: ${attempt} ${retryAt} -->`
+                : "<!-- add-model-blocked -->",
+              `Latest workflow run: ${process.env.RUN_URL}`,
+              "",
+              retryAt
+                ? `Automatic retry ${attempt} is eligible at ${retryAt}.`
+                : "Automatic retries are paused. Close this issue or run Add model with refresh after investigating.",
+            ];
+            const executionFile = process.env.EXECUTION_FILE;
+            if (executionFile && fs.existsSync(executionFile)) {
+              try {
+                const execution = JSON.parse(fs.readFileSync(executionFile, "utf8"));
+                const result = Array.isArray(execution) && execution.filter((entry) => entry?.type === "result").at(-1)?.result;
+                if (typeof result === "string") {
+                  lines.push("", "Agent final report:", result.slice(0, 20_000));
+                }
+              } catch {
+                core.warning("Could not read the model research report. See the linked run.");
+              }
+            }
+            const body = lines.join("\n");
+            if (issue) {
+              await github.rest.issues.update({ owner, repo, issue_number: issue.number, body });
+            } else {
+              await github.rest.issues.create({ owner, repo, title, body, labels: [label] });
+            }

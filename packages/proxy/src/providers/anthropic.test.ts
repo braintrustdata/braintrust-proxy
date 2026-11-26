@@ -546,15 +546,9 @@ it("should handle tool_use stop reason correctly with sufficient tokens", async 
 });
 
 it("should avoid anthropic-beta headers for vertex calls", async () => {
-  if (!process.env.VERTEX_AI_API_KEY) {
-    expect(1).toBe(1);
-    return;
-  }
+  const { fetch, requests } = createCapturingFetch({ captureOnly: true });
 
-  const { json } = await callProxyV1<
-    OpenAIChatCompletionCreateParams,
-    OpenAIChatCompletion
-  >({
+  await callProxyV1<OpenAIChatCompletionCreateParams, OpenAIChatCompletion>({
     body: {
       model: "publishers/anthropic/models/claude-sonnet-4",
       messages: [
@@ -592,20 +586,26 @@ it("should avoid anthropic-beta headers for vertex calls", async () => {
       ],
       tool_choice: "required", // Force tool usage
       stream: false,
-      max_tokens: 150, // Sufficient tokens to complete tool call
+      max_tokens: 150,
     },
+    fetch,
+    getApiSecrets: async () => [
+      {
+        type: "vertex",
+        secret: "test-token",
+        name: "vertex",
+        metadata: { project: "test-project", authType: "access_token" },
+      },
+    ],
   });
 
-  const response = json();
-  expect(response).toBeTruthy();
-  expect(response!.choices[0].finish_reason).toBe("tool_calls");
-  expect(response!.choices[0].message.role).toBe("assistant");
-  expect(response!.choices[0].message.tool_calls).toBeTruthy();
-  expect(response!.choices[0].message.tool_calls).toHaveLength(1);
-  expect(response!.choices[0].message.tool_calls![0].function.name).toBe(
-    "calculate",
-  );
-  expect(response!.choices[0].message.tool_calls![0].type).toBe("function");
+  expect(requests).toHaveLength(1);
+  expect(requests[0].url).toContain("aiplatform.googleapis.com");
+  expect(requests[0].body).toMatchObject({
+    tools: [{ name: "calculate" }],
+    tool_choice: { type: "any" },
+  });
+  expect(new Headers(requests[0].headers).has("anthropic-beta")).toBe(false);
 });
 
 it("should handle file content parts with PDF data", async () => {

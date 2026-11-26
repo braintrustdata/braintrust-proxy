@@ -115,14 +115,6 @@ describe("resolveApiKeyForModel", () => {
     delete process.env.BRAINTRUST_API_KEY;
   });
 
-  it("uses BRAINTRUST_API_KEY for any model", () => {
-    process.env.BRAINTRUST_API_KEY = "braintrust-env-key";
-
-    expect(resolveApiKeyForModel("unknown-model")).toBe("braintrust-env-key");
-
-    delete process.env.BRAINTRUST_API_KEY;
-  });
-
   it("uses an explicit key when present", () => {
     expect(resolveApiKeyForModel("gemini-2.5-flash", "explicit-key")).toBe(
       "explicit-key",

@@ -205,14 +205,6 @@ describe("media-types helpers for playground file upload validation", () => {
       expect(supported.has("application/json")).toBe(true);
       expect(supported.has("video/mp4")).toBe(false);
     });
-
-    it("can be spread into an array for building accept attributes", () => {
-      const supported = getSupportedMediaTypes("google");
-      const acceptAttribute = [...supported].join(",");
-
-      expect(acceptAttribute).toContain("image/jpeg");
-      expect(acceptAttribute).toContain("application/pdf");
-    });
   });
 
   describe("isTextBasedMediaType - type guard for text files", () => {

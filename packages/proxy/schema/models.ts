@@ -290,19 +290,12 @@ export function summarizeModelProviders(
     .reduce<
       string | undefined
     >((latest, date) => (date && (!latest || date > latest) ? date : latest), undefined);
-  const minLimit = (field: "max_input_tokens" | "max_output_tokens") => {
-    const limits = active.flatMap(([, provider]) => provider[field] ?? []);
-    return limits.length > 0 ? Math.min(...limits) : undefined;
-  };
-
   return {
     available_providers: active.map(([provider]) => provider),
     retirement_date: active.some(([, provider]) => !provider.retirement_date)
       ? undefined
       : latestRetirement,
     retired: entries.length > 0 && active.length === 0,
-    max_input_tokens: minLimit("max_input_tokens"),
-    max_output_tokens: minLimit("max_output_tokens"),
   };
 }
 

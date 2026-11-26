@@ -1493,27 +1493,8 @@ export function applyProviderMetadataBatch(
     return defer("would reopen a retired model");
   if (model.retirement_date && !proposed.retirement_date)
     return defer("would drop its known retirement date");
-  for (const field of ["max_input_tokens", "max_output_tokens"] as const) {
-    const before = model[field];
-    const after = proposed[field];
-    if (
-      !proposed.retired &&
-      before != null &&
-      (after == null || after > before)
-    ) {
-      return defer(`would lose or increase ${field}`);
-    }
-  }
   const diff = Object.fromEntries(
-    (
-      [
-        "max_input_tokens",
-        "max_output_tokens",
-        "retirement_date",
-        "retired",
-        "available_providers",
-      ] as const
-    )
+    (["retirement_date", "retired", "available_providers"] as const)
       .filter(
         (field) =>
           JSON.stringify(model[field] ?? null) !==

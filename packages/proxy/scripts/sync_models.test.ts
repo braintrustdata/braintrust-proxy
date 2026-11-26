@@ -137,7 +137,8 @@ describe("sync_models", () => {
     expect(JSON.parse(canonicalContent)["gpt-6.1-sol"]).toEqual(model);
   });
 
-  it("derives the latest shutdown and smallest active provider limits", () => {
+  // Canonicalizing provider metadata must not lower the caps used by model-only readers.
+  it("derives the latest shutdown without changing shared token limits", () => {
     const providers = {
       openai: {
         deprecation_date: "2026-04-22",
@@ -165,8 +166,8 @@ describe("sync_models", () => {
           providers,
           retired: true,
           retirement_date: "2026-07-23",
-          max_input_tokens: 1,
-          max_output_tokens: 1,
+          max_input_tokens: 128_000,
+          max_output_tokens: 65_536,
           available_providers: ["openai"],
         },
       }),
@@ -177,8 +178,8 @@ describe("sync_models", () => {
       providers,
       retired: false,
       retirement_date: "2027-04-14",
-      max_input_tokens: 100_000,
-      max_output_tokens: 32_768,
+      max_input_tokens: 128_000,
+      max_output_tokens: 65_536,
       available_providers: ["azure", "openrouter"],
     });
   });
@@ -224,8 +225,8 @@ describe("sync_models", () => {
       retirement_date: "2026-07-23",
       available_providers: [],
     });
-    expect(model).not.toHaveProperty("max_input_tokens");
-    expect(model).not.toHaveProperty("max_output_tokens");
+    expect(model.max_input_tokens).toBe(42);
+    expect(model.max_output_tokens).toBe(42);
   });
 
   it("keeps the canonical Fireworks payload when collapsing legacy aliases", () => {
@@ -1836,6 +1837,7 @@ describe("provider metadata sync", () => {
   const model: ModelSpec = {
     format: "openai",
     flavor: "chat",
+    max_input_tokens: 8192,
     providers: {
       openai: { max_input_tokens: 4096, deprecation_date: "2026-07-01" },
       azure: { max_input_tokens: 4097 },
@@ -1873,7 +1875,8 @@ describe("provider metadata sync", () => {
         max_output_tokens: 2000,
       },
     });
-    expect(updated.max_input_tokens).toBe(4096);
+    expect(updated.max_input_tokens).toBe(8192);
+    expect(updated).not.toHaveProperty("max_output_tokens");
   });
 
   it("flags elapsed shutdown dates without retiring the provider", () => {
@@ -1920,7 +1923,7 @@ describe("provider metadata sync", () => {
     ).toBe(scheduled);
   });
 
-  it("creates a map only when matched data covers every current provider without raising a limit", () => {
+  it("creates a map only when matched data covers every current provider", () => {
     const id = "o4-mini-2025-04-16";
     const legacy: ModelSpec = {
       format: "openai",
@@ -1935,7 +1938,10 @@ describe("provider metadata sync", () => {
     );
     expect(
       applyProviderMetadataBatch(id, legacy, { openai: azure, azure }, today),
-    ).toBe(legacy);
+    ).toMatchObject({
+      providers: { openai: azure, azure },
+      max_input_tokens: legacy.max_input_tokens,
+    });
 
     const remote = parseRemoteModelList({
       [id]: { litellm_provider: "openai", ...openai },

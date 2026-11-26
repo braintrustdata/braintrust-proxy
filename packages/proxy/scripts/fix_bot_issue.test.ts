@@ -642,6 +642,7 @@ describe("fix_bot_issue", () => {
     it("patches one provider without retiring the model on other providers", () => {
       const updated = buildUpdatedLocalModel(
         issue({
+          max_input_tokens: 30,
           providers: {
             openai: { retired: true, retirement_date: "2026-12-11" },
           },
@@ -666,7 +667,7 @@ describe("fix_bot_issue", () => {
         },
         retired: false,
         available_providers: ["azure"],
-        max_input_tokens: 20,
+        max_input_tokens: 30,
       });
       expect(updated.retirement_date).toBeUndefined();
     });

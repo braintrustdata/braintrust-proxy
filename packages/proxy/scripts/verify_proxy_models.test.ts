@@ -114,6 +114,12 @@ describe("resolveApiKeyForModel", () => {
     delete process.env.GEMINI_API_KEY;
     delete process.env.BRAINTRUST_API_KEY;
   });
+
+  it("uses an explicit key when present", () => {
+    expect(resolveApiKeyForModel("gemini-2.5-flash", "explicit-key")).toBe(
+      "explicit-key",
+    );
+  });
 });
 
 describe("getModelEndpointTypesForVerification", () => {

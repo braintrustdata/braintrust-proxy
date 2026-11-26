@@ -4231,14 +4231,23 @@
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-05-08",
+        "retirement_date": "2026-08-10",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 111616,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-5.3 chat",
     "reasoning": true,
     "deprecation_date": "2026-05-08",
-    "retirement_date": "2026-08-10",
     "max_input_tokens": 111616,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4419,15 +4428,24 @@
     "input_cost_per_mil_tokens": 1.75,
     "output_cost_per_mil_tokens": 14,
     "input_cache_read_cost_per_mil_tokens": 0.175,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-05-08",
+        "retirement_date": "2026-08-10",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 111616,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-5.2 chat",
     "reasoning": true,
     "deprecation_date": "2026-05-08",
-    "retirement_date": "2026-08-10",
     "parent": "gpt-5.2",
     "max_input_tokens": 111616,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4686,15 +4704,24 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 111616,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-5.1 chat",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-07-23",
     "parent": "gpt-5.1",
     "max_input_tokens": 111616,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -4914,14 +4941,23 @@
     "input_cost_per_mil_tokens": 1.25,
     "output_cost_per_mil_tokens": 10,
     "input_cache_read_cost_per_mil_tokens": 0.125,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-5 chat",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-07-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -5521,13 +5557,26 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 8192,
+        "max_output_tokens": 4096
+      },
+      "openrouter": {
+        "max_input_tokens": 8192,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT-4",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -5551,13 +5600,26 @@
         ]
       }
     },
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 4096
+      },
+      "openrouter": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT-4 Turbo",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -5624,14 +5686,6 @@
     "input_cost_per_mil_tokens": 2.5,
     "output_cost_per_mil_tokens": 10,
     "pricing": {
-      "openai": {
-        "standard": [
-          {
-            "input_audio_cost_per_mil_tokens": 40,
-            "output_audio_cost_per_mil_tokens": 80
-          }
-        ]
-      },
       "azure": {
         "standard": [
           {
@@ -5643,13 +5697,22 @@
         ]
       }
     },
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-09-15",
+        "retirement_date": "2026-05-07",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-4o Audio Preview",
     "deprecation_date": "2025-09-15",
-    "retirement_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -5715,14 +5778,6 @@
     "input_cost_per_mil_tokens": 0.15,
     "output_cost_per_mil_tokens": 0.6,
     "pricing": {
-      "openai": {
-        "standard": [
-          {
-            "input_audio_cost_per_mil_tokens": 10,
-            "output_audio_cost_per_mil_tokens": 20
-          }
-        ]
-      },
       "azure": {
         "standard": [
           {
@@ -5734,13 +5789,22 @@
         ]
       }
     },
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-09-15",
+        "retirement_date": "2026-05-07",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 16384
+      }
+    },
     "displayName": "GPT-4o mini Audio Preview",
     "deprecation_date": "2025-09-15",
-    "retirement_date": "2026-05-07",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6289,14 +6353,23 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 30,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT-4 Turbo (2024-04-09)",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "parent": "gpt-4-turbo",
     "max_input_tokens": 128000,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6305,14 +6378,23 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 30,
     "output_cost_per_mil_tokens": 60,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 8192,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT-4 (0613)",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "parent": "gpt-4",
     "max_input_tokens": 8192,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6353,14 +6435,27 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 16385,
+        "max_output_tokens": 4096
+      },
+      "openrouter": {
+        "max_input_tokens": 16385,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT 3.5T",
     "deprecated": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -6397,14 +6492,23 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 2,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-09-26",
+        "retirement_date": "2026-09-28",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 16385,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT 3.5T 1106",
     "deprecated": true,
     "deprecation_date": "2025-09-26",
-    "retirement_date": "2026-09-28",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6440,15 +6544,24 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.5,
     "output_cost_per_mil_tokens": 1.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 16385,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "GPT 3.5T 0125",
     "deprecated": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-23",
     "parent": "gpt-3.5-turbo",
     "max_input_tokens": 16385,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6550,18 +6663,6 @@
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
     "pricing": {
-      "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.55,
-            "output_cost_per_mil_tokens": 2.2,
-            "input_cache_read_cost_per_mil_tokens": 0.138,
-            "endpoints": [
-              "api.openai.com"
-            ]
-          }
-        ]
-      },
       "openrouter": {
         "batch": [
           {
@@ -6575,14 +6676,27 @@
         ]
       }
     },
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      },
+      "openrouter": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o4-mini",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -6594,13 +6708,22 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o4-mini Deep Research",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-07-23",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6611,14 +6734,23 @@
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 8,
     "input_cache_read_cost_per_mil_tokens": 0.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o4-mini Deep Research (2025-06-26)",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-07-23",
     "parent": "o4-mini-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6629,29 +6761,24 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.275,
-    "pricing": {
+    "providers": {
       "openai": {
-        "flex": [
-          {
-            "input_cost_per_mil_tokens": 0.55,
-            "output_cost_per_mil_tokens": 2.2,
-            "input_cache_read_cost_per_mil_tokens": 0.138,
-            "endpoints": [
-              "api.openai.com"
-            ]
-          }
-        ]
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
       }
     },
     "displayName": "o4-mini (2025-04-16)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "parent": "o4-mini",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6729,13 +6856,22 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 2.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o3 Deep Research",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6760,14 +6896,27 @@
         ]
       }
     },
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      },
+      "openrouter": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o3 mini",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -6810,14 +6959,23 @@
     "input_cost_per_mil_tokens": 10,
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 2.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o3 Deep Research (2025-06-26)",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "parent": "o3-deep-research",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6879,15 +7037,24 @@
     "input_cost_per_mil_tokens": 1.1,
     "output_cost_per_mil_tokens": 4.4,
     "input_cache_read_cost_per_mil_tokens": 0.55,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o3 mini (2025-01-31)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "parent": "o3-mini",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6898,14 +7065,27 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      },
+      "openrouter": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o1",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -6916,14 +7096,27 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      },
+      "openrouter": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o1 Pro",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure",
       "openrouter"
     ]
@@ -6934,15 +7127,24 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 150,
     "output_cost_per_mil_tokens": 600,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o1 Pro (2025-03-19)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "parent": "o1-pro",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -6953,15 +7155,24 @@
     "input_cost_per_mil_tokens": 15,
     "output_cost_per_mil_tokens": 60,
     "input_cache_read_cost_per_mil_tokens": 7.5,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 200000,
+        "max_output_tokens": 100000
+      }
+    },
     "displayName": "o1 (2024-12-17)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-11-19",
     "parent": "o1",
     "max_input_tokens": 200000,
     "max_output_tokens": 100000,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -7137,24 +7348,23 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.4,
-    "pricing": {
+    "providers": {
       "openai": {
-        "standard": [
-          {
-            "input_audio_cost_per_mil_tokens": 10,
-            "output_audio_cost_per_mil_tokens": 20
-          }
-        ]
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 128000,
+        "max_output_tokens": 16384
       }
     },
     "displayName": "GPT Audio mini (2025-10-06)",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2027-04-06",
     "parent": "gpt-audio-mini",
     "max_input_tokens": 128000,
     "max_output_tokens": 16384,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -7710,11 +7920,17 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 5,
     "input_cache_read_cost_per_mil_tokens": 1.25,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-10-23",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "GPT Image 1",
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-10-28",
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -7913,11 +8129,17 @@
   "dall-e-3": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-11-14",
+        "retirement_date": "2026-05-12",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "DALL-E 3",
     "deprecation_date": "2025-11-14",
-    "retirement_date": "2026-05-12",
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8023,11 +8245,17 @@
   "dall-e-2": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-11-14",
+        "retirement_date": "2026-05-12",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "DALL-E 2",
     "deprecation_date": "2025-11-14",
-    "retirement_date": "2026-05-12",
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8066,22 +8294,34 @@
   "sora-2": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-03-24",
+        "retirement_date": "2026-09-24",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "Sora 2",
     "deprecation_date": "2026-03-24",
-    "retirement_date": "2026-11-02",
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
   "sora-2-pro": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-03-24",
+        "retirement_date": "2026-09-24",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "Sora 2 Pro",
     "deprecation_date": "2026-03-24",
-    "retirement_date": "2026-09-24",
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8174,36 +8414,60 @@
   "text-moderation-007": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-04-28",
+        "retirement_date": "2025-10-27",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 32768
+      }
+    },
     "displayName": "Text Moderation 007",
     "deprecation_date": "2025-04-28",
-    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
   "text-moderation-latest": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-04-28",
+        "retirement_date": "2025-10-27",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 32768
+      }
+    },
     "displayName": "Text Moderation",
     "deprecation_date": "2025-04-28",
-    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
   "text-moderation-stable": {
     "format": "openai",
     "flavor": "chat",
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-04-28",
+        "retirement_date": "2025-10-27",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 32768
+      }
+    },
     "displayName": "Text Moderation Stable",
     "deprecation_date": "2025-04-28",
-    "retirement_date": "2025-10-27",
     "max_input_tokens": 32768,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8212,13 +8476,22 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 0.4,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-09-26",
+        "retirement_date": "2026-09-28",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 16384,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "Babbage 002",
     "deprecation_date": "2025-09-26",
-    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8227,13 +8500,22 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2025-09-26",
+        "retirement_date": "2026-09-28",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 16384,
+        "max_output_tokens": 4096
+      }
+    },
     "displayName": "Davinci 002",
     "deprecation_date": "2025-09-26",
-    "retirement_date": "2026-09-28",
     "max_input_tokens": 16384,
     "max_output_tokens": 4096,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -8483,14 +8765,23 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 3,
     "output_cost_per_mil_tokens": 12,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2026-04-22",
+        "retirement_date": "2026-07-23",
+        "retired": true
+      },
+      "azure": {
+        "max_input_tokens": 8192,
+        "max_output_tokens": 1024
+      }
+    },
     "displayName": "Computer Use Preview (2025-03-11)",
     "reasoning": true,
     "deprecation_date": "2026-04-22",
-    "retirement_date": "2026-07-23",
     "max_input_tokens": 8192,
     "max_output_tokens": 1024,
     "available_providers": [
-      "openai",
       "azure"
     ]
   },
@@ -17277,10 +17568,20 @@
     "flavor": "completion",
     "input_cost_per_mil_tokens": 2,
     "output_cost_per_mil_tokens": 2,
+    "providers": {
+      "openai": {
+        "deprecation_date": "2023-07-06",
+        "retirement_date": "2024-01-04",
+        "retired": true
+      },
+      "azure": {}
+    },
     "displayName": "Text Davinci 003",
     "deprecated": true,
     "deprecation_date": "2023-07-06",
-    "retirement_date": "2024-01-04"
+    "available_providers": [
+      "azure"
+    ]
   },
   "text-embedding-3-large": {
     "format": "openai",

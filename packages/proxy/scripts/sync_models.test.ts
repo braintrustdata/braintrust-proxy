@@ -1921,7 +1921,7 @@ describe("provider metadata sync", () => {
   });
 
   it("creates a map only when matched data covers every current provider without raising a limit", () => {
-    const id = "o4-mini-2025-04-16";
+    const id = "gpt-5-search-api-2025-10-14";
     const legacy: ModelSpec = {
       format: "openai",
       flavor: "chat",

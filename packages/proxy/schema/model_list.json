@@ -40705,9 +40705,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.14,
-    "output_cost_per_mil_tokens": 0.42,
-    "input_cache_read_cost_per_mil_tokens": 0.0042,
+    "input_cost_per_mil_tokens": 0.0507,
+    "output_cost_per_mil_tokens": 0.2028,
+    "input_cache_read_cost_per_mil_tokens": 0.001014,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -40864,9 +40864,9 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.06,
-    "output_cost_per_mil_tokens": 0.18,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "input_cost_per_mil_tokens": 0.0456,
+    "output_cost_per_mil_tokens": 0.3,
+    "input_cache_read_cost_per_mil_tokens": 0.035,
     "pricing": {
       "openrouter": {
         "flex": [

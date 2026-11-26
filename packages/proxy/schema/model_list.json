@@ -6376,7 +6376,7 @@
         "deprecation_date": "2025-09-26",
         "retirement_date": "2026-09-28",
         "retired": true,
-        "max_input_tokens": 8192,
+        "max_input_tokens": 4096,
         "max_output_tokens": 4096
       },
       "azure": {
@@ -6419,8 +6419,8 @@
         "deprecation_date": "2025-09-26",
         "retirement_date": "2026-09-28",
         "retired": true,
-        "max_input_tokens": 8192,
-        "max_output_tokens": 4097
+        "max_input_tokens": 4096,
+        "max_output_tokens": 4096
       },
       "azure": {
         "max_input_tokens": 4097,

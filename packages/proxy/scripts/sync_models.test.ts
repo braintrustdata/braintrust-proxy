@@ -34,7 +34,6 @@ import {
   isBasetenDeprecated,
   isFieldManuallyPreserved,
   isModelExcludedFromSync,
-  isPerplexityGatewayModel,
   isSupportedRemoteModel,
   normalizeLocalModels,
   parseRemoteModelList,
@@ -1034,35 +1033,6 @@ describe("isModelExcludedFromSync", () => {
     // provider uses the Bedrock runtime, so it is not invocable and must not be
     // auto-added by the daily bot.
     expect(isModelExcludedFromSync("anthropic.claude-mythos-5")).toBe(true);
-  });
-
-  it("excludes the Perplexity Gateway (router) models", () => {
-    // Perplexity gateway third-party ids (perplexity/<model> on the perplexity
-    // provider) need the /router/v1 endpoint; the perplexity provider points at
-    // the standard api.perplexity.ai, so they are not routable. Matched
-    // generically by isPerplexityGatewayModel, NOT the hand-listed exclusion set.
-    for (const id of [
-      "perplexity/kimi-k3",
-      "perplexity/glm-5.2",
-      "perplexity/kimi-k2.7-code",
-      "perplexity/deepseek-v4-flash-0731",
-    ]) {
-      expect(isPerplexityGatewayModel(id, "perplexity")).toBe(true);
-      expect(isPerplexityGatewayModel(id, ["perplexity"])).toBe(true);
-    }
-    // Openrouter-served perplexity slugs are kept (routable via openrouter).
-    expect(
-      isPerplexityGatewayModel("perplexity/sonar-pro-search", "openrouter"),
-    ).toBe(false);
-    expect(
-      isPerplexityGatewayModel("perplexity/sonar-pro-search", ["openrouter"]),
-    ).toBe(false);
-    // Native Sonar ids (bare, no perplexity/ prefix) are not gateway models.
-    expect(isPerplexityGatewayModel("sonar-pro", "perplexity")).toBe(false);
-    // A perplexity/ id served by multiple providers incl. a routable one is kept.
-    expect(
-      isPerplexityGatewayModel("perplexity/foo", ["perplexity", "openrouter"]),
-    ).toBe(false);
   });
 });
 

@@ -286,25 +286,6 @@ export function isModelExcludedFromSync(modelName: string): boolean {
   );
 }
 
-// Perplexity Gateway (router) models are third-party ids (e.g.
-// `perplexity/kimi-k3`, `perplexity/glm-5.2`) that Perplexity serves only through
-// its gateway at https://api.perplexity.ai/router/v1/chat/completions. The
-// `perplexity` provider (TS proxy EndpointProviderToBaseURL + lingua) points at
-// the standard https://api.perplexity.ai, which serves only Sonar, so these ids
-// are not routable and must never be auto-added. Match on the `perplexity/`
-// prefix scoped to the `perplexity` provider so openrouter-served slugs such as
-// `perplexity/sonar-pro-search` (available_providers ["openrouter"]) are kept.
-export function isPerplexityGatewayModel(
-  modelName: string,
-  providers: string | ReadonlyArray<string> | undefined,
-): boolean {
-  if (!modelName.startsWith("perplexity/")) {
-    return false;
-  }
-  const list = typeof providers === "string" ? [providers] : providers ?? [];
-  return list.length > 0 && list.every((provider) => provider === "perplexity");
-}
-
 // Models Baseten has deprecated for invocation but LiteLLM or /v1/models may
 // still list (calls return HTTP 410 "the model version ... has been deprecated").
 // They are
@@ -4748,8 +4729,7 @@ async function syncTypesafeModelsCommand() {
 }
 
 // Format schema/index.ts with Prettier so the catalog scripts never emit
-// unlinted TypeScript. fix_bot_issue.ts, the LLM enrichment/Codex-response
-// steps, and older writers can all leave entries like ["openai","azure"]
+// unlinted TypeScript. Catalog writers can leave entries like ["openai","azure"]
 // (no space after the comma) that fail the prettier pre-commit hook; this
 // guarantees the file matches the repo style before it is committed.
 // (model_list.json is intentionally excluded from the prettier hook, so it is

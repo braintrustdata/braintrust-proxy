@@ -485,6 +485,15 @@ async function fetchRemoteModels(url: string): Promise<LiteLLMModelList> {
   });
 }
 
+async function loadRemoteModels(snapshot?: string): Promise<LiteLLMModelList> {
+  if (snapshot) {
+    return parseRemoteModelList(
+      JSON.parse(await fs.promises.readFile(snapshot, "utf8")),
+    );
+  }
+  return fetchRemoteModels(REMOTE_MODEL_URL);
+}
+
 // Baseten Model APIs expose an OpenAI-compatible /v1/models endpoint that lists
 // the models currently served on Baseten's shared inference surface, with
 // pricing (per token, as strings), context length, and feature flags. This is
@@ -3148,10 +3157,13 @@ async function findMissingCommand(argv: any) {
   }
 }
 
-async function updateModelsCommand(argv: any) {
+async function updateModelsCommand(
+  argv: { provider?: string; write: boolean },
+  snapshot?: LiteLLMModelList,
+) {
   try {
     console.log("Fetching remote models for model update...");
-    const remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
+    const remoteModels = snapshot ?? (await loadRemoteModels());
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
     console.log("Reading local models for model update...");
@@ -3587,10 +3599,19 @@ async function updateModelsCommand(argv: any) {
   }
 }
 
-async function addModelsCommand(argv: any) {
+async function addModelsCommand(
+  argv: {
+    provider?: string;
+    write: boolean;
+    filter?: string;
+    modelSlug?: string;
+    updateProviders?: boolean;
+  },
+  snapshot?: LiteLLMModelList,
+) {
   try {
     console.log("Fetching remote models from:", REMOTE_MODEL_URL);
-    const remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
+    const remoteModels = snapshot ?? (await loadRemoteModels());
     console.log(`Fetched ${Object.keys(remoteModels).length} remote models.`);
 
     console.log("Reading local models from:", LOCAL_MODEL_LIST_PATH);
@@ -4341,7 +4362,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
       Object.entries(localModels).filter(([, model]) => !model.providers),
     );
     const metadata = resolveRemoteProviderMetadata(
-      await fetchRemoteModels(REMOTE_MODEL_URL),
+      await loadRemoteModels(argv.litellmSnapshot),
       legacyModels,
       undefined,
       today,
@@ -4541,7 +4562,7 @@ async function syncCohereModelsCommand(argv: any) {
     let remoteModels: LiteLLMModelList = {};
     try {
       console.log("Fetching LiteLLM pricing from:", REMOTE_MODEL_URL);
-      remoteModels = await fetchRemoteModels(REMOTE_MODEL_URL);
+      remoteModels = await loadRemoteModels(argv.litellmSnapshot);
     } catch (error) {
       console.warn(
         `Could not fetch LiteLLM pricing (${(error as Error).message}); adding Cohere models without a pricing overlay.`,
@@ -4818,6 +4839,44 @@ async function normalizeLocalModelsCommand(argv: any) {
 async function main() {
   await yargs(hideBin(process.argv))
     .command(
+      "sync-selected-providers",
+      "Update and add models for the selected providers from one LiteLLM snapshot",
+      (y) =>
+        y
+          .option("provider", {
+            type: "array",
+            string: true,
+            demandOption: true,
+          })
+          .option("write", { type: "boolean", default: false })
+          .option("litellm-snapshot", {
+            type: "string",
+            description: "Save the feed for other sync commands in this run",
+          })
+          .check(({ provider }) => {
+            if (
+              !provider.length ||
+              provider.some((value) => !/^[A-Za-z0-9][\w-]*$/.test(value))
+            ) {
+              throw new Error("Provide at least one valid provider name.");
+            }
+            return true;
+          }),
+      async ({ provider, write, litellmSnapshot }) => {
+        const snapshot = await loadRemoteModels();
+        if (litellmSnapshot) {
+          await fs.promises.writeFile(
+            litellmSnapshot,
+            JSON.stringify(snapshot),
+          );
+        }
+        for (const name of new Set(provider)) {
+          await updateModelsCommand({ provider: name, write }, snapshot);
+          await addModelsCommand({ provider: name, write }, snapshot);
+        }
+      },
+    )
+    .command(
       "sync-typesafe",
       "Sync Typesafe model IDs and documented pricing. Requires TYPESAFE_API_KEY.",
       (y) => y,
@@ -5000,6 +5059,10 @@ async function main() {
             description:
               "Write directory evidence for top-level price changes to this JSON file",
           })
+          .option("litellm-snapshot", {
+            type: "string",
+            description: "Reuse a saved LiteLLM snapshot",
+          })
           .option("write", {
             type: "boolean",
             description:
@@ -5026,12 +5089,17 @@ async function main() {
       "sync-cohere",
       "Sync the catalog against Cohere's /v1/models (add missing Cohere chat models keyed by name; overlay pricing from LiteLLM where available; union the cohere provider into existing ids). Requires COHERE_API_KEY.",
       (y) => {
-        return y.option("write", {
-          type: "boolean",
-          description:
-            "Write the new models and provider mappings to model_list.json / index.ts",
-          default: false,
-        });
+        return y
+          .option("litellm-snapshot", {
+            type: "string",
+            description: "Reuse a saved LiteLLM snapshot",
+          })
+          .option("write", {
+            type: "boolean",
+            description:
+              "Write the new models and provider mappings to model_list.json / index.ts",
+            default: false,
+          });
       },
       async (argv) => {
         await syncCohereModelsCommand(argv);

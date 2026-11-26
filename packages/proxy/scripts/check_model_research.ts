@@ -8,6 +8,16 @@ import {
   parseIndexEndpointTypes,
 } from "./reconcile_provider_models";
 
+class ModelEvidenceError extends Error {}
+
+function checkEvidenceResponse(response: Response): void {
+  if (response.status === 429 || response.status >= 500) {
+    throw new Error(
+      `Provider evidence request failed with HTTP ${response.status}`,
+    );
+  }
+}
+
 const providerType = z.enum(ModelEndpointType);
 const capability = z.enum([
   "multimodal",
@@ -268,7 +278,9 @@ export function checkModelPrices(
         providers.length === 0 &&
         (!unchanged || previousProviders.length > 0)
       ) {
-        throw new Error(`${model}: no provider to verify ${field} against`);
+        throw new ModelEvidenceError(
+          `${model}: no provider to verify ${field} against`,
+        );
       }
       for (const provider of providers) {
         if (unchanged && previousProviders.includes(provider)) continue;
@@ -302,7 +314,7 @@ export function checkModelPrices(
           );
         });
         if (!verified) {
-          throw new Error(
+          throw new ModelEvidenceError(
             `${model} @ ${provider}: missing exact-provider pricing evidence for ${field}; omit the unverified price`,
           );
         }
@@ -373,7 +385,8 @@ function capabilitySourceLoader(): (
     if (!parsed.success) return undefined;
     const domains = pricingRoutes[parsed.data]?.domains;
     if (!domains) return undefined;
-    let url = new URL(source);
+    let url = URL.parse(source);
+    if (!url) return undefined;
     const signal = AbortSignal.timeout(15_000);
     for (let redirects = 0; redirects <= 3; redirects++) {
       if (
@@ -386,12 +399,15 @@ function capabilitySourceLoader(): (
         return undefined;
       }
       const response = await fetch(url, { redirect: "manual", signal });
+      checkEvidenceResponse(response);
       if (response.ok) return new Set(sourceStatements(await response.text()));
       const location = response.headers.get("location");
       if (response.status < 300 || response.status >= 400 || !location) {
         return undefined;
       }
-      url = new URL(location, url);
+      const redirect = URL.parse(location, url.href);
+      if (!redirect) return undefined;
+      url = redirect;
     }
     return undefined;
   }
@@ -399,7 +415,7 @@ function capabilitySourceLoader(): (
     const key = `${provider} ${source}`;
     let result = cache.get(key);
     if (!result) {
-      result = load(source, provider).catch(() => undefined);
+      result = load(source, provider);
       cache.set(key, result);
     }
     return result;
@@ -423,14 +439,20 @@ export async function checkModelCapabilities(
   const evidence = evidenceSchema.parse(rawEvidence);
   const loadSource = capabilitySourceLoader();
   async function hasEvidence(claims: CapabilityClaim[], supported: boolean) {
+    let unavailable: unknown;
     for (const claim of claims) {
       if (claim.supported !== supported) continue;
       const quote = normalizeQuote(claim.quote);
       if (!quoteSupportsClaim(claim, quote)) continue;
-      if ((await loadSource(claim.source, claim.provider))?.has(quote)) {
-        return true;
+      try {
+        if ((await loadSource(claim.source, claim.provider))?.has(quote)) {
+          return true;
+        }
+      } catch (error) {
+        unavailable = error;
       }
     }
+    if (unavailable) throw unavailable;
     return false;
   }
   const beforeIndex = parseIndexEndpointTypes(providerMappings.before);
@@ -461,12 +483,21 @@ export async function checkModelCapabilities(
             (provider !== "fireworks" ||
               claim.surface.toLowerCase() === "serverless"),
         );
-        const structured = await structuredSupport(model, provider, flag);
+        let unavailable: unknown;
+        const structured = await structuredSupport(model, provider, flag).catch(
+          (error: unknown) => {
+            unavailable = error;
+            return undefined;
+          },
+        );
         if (structured === false || (await hasEvidence(claims, false))) {
-          throw new Error(`${model} @ ${provider}: ${flag} is unsupported`);
+          throw new ModelEvidenceError(
+            `${model} @ ${provider}: ${flag} is unsupported`,
+          );
         }
         if (structured !== true && !(await hasEvidence(claims, true))) {
-          throw new Error(
+          if (unavailable) throw unavailable;
+          throw new ModelEvidenceError(
             `${model} @ ${provider}: missing exact-provider evidence for ${flag}`,
           );
         }
@@ -475,7 +506,9 @@ export async function checkModelCapabilities(
         providers.length === 0 &&
         (previous?.[flag] !== true || previousProviders.length > 0)
       ) {
-        throw new Error(`${model}: no provider to verify ${flag} against`);
+        throw new ModelEvidenceError(
+          `${model}: no provider to verify ${flag} against`,
+        );
       }
     }
   }
@@ -492,6 +525,7 @@ async function fireworksCapability(
       headers: { Authorization: `Bearer ${key}` },
       signal: AbortSignal.timeout(15_000),
     });
+    checkEvidenceResponse(response);
     if (response.ok) {
       const metadata = z
         .object({ supportsImageInput: z.boolean().optional() })
@@ -505,6 +539,7 @@ async function fireworksCapability(
   const card = await fetch(`https://fireworks.ai/models/${account}/${slug}`, {
     signal: AbortSignal.timeout(15_000),
   });
+  checkEvidenceResponse(card);
   if (!card.ok) return undefined;
   const html = await card.text();
   if (!html.includes(`"modelApiName\\":\\"${model}\\"`)) return undefined;
@@ -565,6 +600,7 @@ export function providerCapabilityLookup() {
       redirect: "error",
       signal: AbortSignal.timeout(15_000),
     });
+    checkEvidenceResponse(response);
     if (!response.ok) return undefined;
     const list = (await response.json())[endpoint.list ?? "data"];
     if (!Array.isArray(list)) return undefined;
@@ -585,7 +621,7 @@ export function providerCapabilityLookup() {
     if (provider === "xAI" && flag !== "multimodal") return undefined;
     let result = cache.get(provider);
     if (!result) {
-      result = load(provider).catch(() => undefined);
+      result = load(provider);
       cache.set(provider, result);
     }
     const metadata = (await result)?.get(model);
@@ -691,6 +727,6 @@ const entryPointPath = process.argv[1];
 if (entryPointPath && import.meta.url === pathToFileURL(entryPointPath).href) {
   main().catch((error: Error) => {
     console.error(error.message);
-    process.exitCode = 1;
+    process.exitCode = error instanceof ModelEvidenceError ? 2 : 1;
   });
 }

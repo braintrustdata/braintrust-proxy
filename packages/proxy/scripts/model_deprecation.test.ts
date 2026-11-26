@@ -70,6 +70,37 @@ describe("openrouter deprecation adapter", () => {
   });
 });
 
+it("does not retire every model when an authoritative list is empty", async () => {
+  const fetchSecrets = vi
+    .spyOn(braintrustSecrets, "fetchProviderSecrets")
+    .mockResolvedValue(new Map());
+  const adapter = PROVIDER_APIS.openrouter;
+  PROVIDER_APIS.openrouter = {
+    ...adapter,
+    listModels: async () => new Set(),
+    listRetirementDates: async () => new Map(),
+  };
+  try {
+    const report = await runAudit({
+      braintrustApiKey: "",
+      catalog: { "vendor/model": { available_providers: ["openrouter"] } },
+      indexContent: "",
+      concurrency: 1,
+      providerFilter: ["openrouter"],
+    });
+    expect(report.deprecations).toEqual([]);
+    expect(report.skipped).toEqual([
+      {
+        provider: "openrouter",
+        reason: "authoritative list was unexpectedly empty",
+      },
+    ]);
+  } finally {
+    PROVIDER_APIS.openrouter = adapter;
+    fetchSecrets.mockRestore();
+  }
+});
+
 it("keeps account-scoped 404s in review unless public lifecycle confirms removal", async () => {
   const secret = { type: "anthropic", secret: "test", metadata: {} };
   const fetchSecrets = vi
@@ -221,6 +252,7 @@ describe("applyDeprecations", () => {
           openai: { retirement_date: "2026-07-23", max_input_tokens: 10 },
           azure: { max_input_tokens: 20 },
         },
+        pricing: { openai: { standard: [{ input_cost_per_mil_tokens: 1 }] } },
       },
     };
     const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
@@ -235,16 +267,29 @@ describe("applyDeprecations", () => {
       max_input_tokens: 20,
     });
     expect(out.indexContent).toContain('"model-c": ["azure"]');
+    expect(out.catalog["model-c"].pricing).toBeUndefined();
   });
 
   it("narrows providers when a model survives on another provider", () => {
     const catalog = {
-      "model-a": { available_providers: ["together", "baseten"] },
+      "model-a": {
+        available_providers: ["together", "baseten"],
+        pricing: {
+          together: { standard: [{ input_cost_per_mil_tokens: 1 }] },
+          baseten: {
+            standard: [{ input_cost_per_mil_tokens: 2 }],
+            flex: { alias: "standard" as const },
+          },
+        },
+      },
     };
     const out = applyDeprecations(catalog, baseIndex, baseDeprecatedIds, [
       { model: "model-a", provider: "baseten", reason: "probe not-found" },
     ]);
     expect(out.catalog["model-a"].available_providers).toEqual(["together"]);
+    expect(out.catalog["model-a"].pricing).toEqual({
+      together: { standard: [{ input_cost_per_mil_tokens: 1 }] },
+    });
     expect(out.indexContent).toContain('"model-a": ["together"],');
     expect(out.result.retiredModels).toEqual([]);
     expect(out.result.narrowedModels[0]).toMatchObject({

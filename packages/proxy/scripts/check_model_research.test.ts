@@ -293,7 +293,7 @@ describe("checkModelPrices", () => {
       expect(result.stderr).toContain(
         `shared-model @ groq: missing exact-provider pricing evidence for ${field}`,
       );
-      expect(result.status).toBe(1);
+      expect(result.status).toBe(2);
     } finally {
       rmSync(cwd, { recursive: true, force: true });
     }
@@ -410,6 +410,13 @@ describe("checkModelCapabilities", () => {
       checkModelCapabilities({}, after, [claim], async () => undefined),
     ).rejects.toThrow("missing exact-provider evidence for multimodal");
     expect(fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("reports an unavailable source separately from missing provider evidence", async () => {
+    vi.stubGlobal("fetch", async () => new Response(null, { status: 503 }));
+    await expect(
+      checkModelCapabilities({}, after, [claim], async () => undefined),
+    ).rejects.toThrow("Provider evidence request failed with HTTP 503");
   });
 
   it("does not let an unverified negative override structured support", async () => {

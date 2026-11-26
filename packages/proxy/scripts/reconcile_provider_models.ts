@@ -396,6 +396,16 @@ async function auditProvider(
 
   // Step 2a: authoritative list (e.g. Databricks) — absence == deprecated.
   if (api.listIsAuthoritative && liveList !== null) {
+    if (liveList.size === 0) {
+      return {
+        deprecations: [],
+        ...lifecycle,
+        skipped: {
+          provider,
+          reason: "authoritative list was unexpectedly empty",
+        },
+      };
+    }
     return {
       deprecations: suspects.map((model) => ({
         model,

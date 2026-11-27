@@ -20567,6 +20567,36 @@
     "output_cost_per_mil_tokens": 40,
     "input_cache_read_cost_per_mil_tokens": 0.2,
     "input_cache_write_cost_per_mil_tokens": 10,
+    "pricing": {
+      "anthropic": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8,
+            "endpoints": [
+              "api.anthropic.com"
+            ],
+            "inference_geo": "global"
+          },
+          {
+            "input_cost_per_mil_tokens": 4.4,
+            "output_cost_per_mil_tokens": 22,
+            "input_cache_read_cost_per_mil_tokens": 0.11,
+            "input_cache_write_cost_per_mil_tokens": 5.5,
+            "input_cache_write_5m_cost_per_mil_tokens": 5.5,
+            "input_cache_write_1h_cost_per_mil_tokens": 8.8,
+            "endpoints": [
+              "api.anthropic.com"
+            ],
+            "inference_geo": "us"
+          }
+        ]
+      }
+    },
     "providers": {
       "anthropic": {
         "max_input_tokens": 1000000,
@@ -21208,6 +21238,23 @@
     "input_cache_write_cost_per_mil_tokens": 1.25,
     "input_cache_write_5m_cost_per_mil_tokens": 1.25,
     "input_cache_write_1h_cost_per_mil_tokens": 2,
+    "pricing": {
+      "anthropic": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 0.5,
+            "output_cost_per_mil_tokens": 2.5,
+            "input_cache_read_cost_per_mil_tokens": 0.05,
+            "input_cache_write_cost_per_mil_tokens": 0.625,
+            "input_cache_write_5m_cost_per_mil_tokens": 0.625,
+            "input_cache_write_1h_cost_per_mil_tokens": 1,
+            "endpoints": [
+              "api.anthropic.com"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "anthropic": {
         "max_input_tokens": 200000,
@@ -21490,6 +21537,24 @@
     "input_cache_write_cost_per_mil_tokens": 3.75,
     "input_cache_write_5m_cost_per_mil_tokens": 3.75,
     "input_cache_write_1h_cost_per_mil_tokens": 6,
+    "pricing": {
+      "anthropic": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 1.5,
+            "output_cost_per_mil_tokens": 7.5,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
+            "input_cache_write_cost_per_mil_tokens": 1.875,
+            "input_cache_write_5m_cost_per_mil_tokens": 1.875,
+            "input_cache_write_1h_cost_per_mil_tokens": 3,
+            "endpoints": [
+              "api.anthropic.com"
+            ],
+            "max_input_tokens": 200000
+          }
+        ]
+      }
+    },
     "displayName": "Claude Sonnet 4.5 (2025-09-29)",
     "reasoning": true,
     "reasoning_budget": true,
@@ -21615,6 +21680,24 @@
     "input_cache_write_cost_per_mil_tokens": 6.25,
     "input_cache_write_5m_cost_per_mil_tokens": 6.25,
     "input_cache_write_1h_cost_per_mil_tokens": 10,
+    "pricing": {
+      "anthropic": {
+        "batch": [
+          {
+            "input_cost_per_mil_tokens": 2.5,
+            "output_cost_per_mil_tokens": 12.5,
+            "input_cache_read_cost_per_mil_tokens": 0.25,
+            "input_cache_write_cost_per_mil_tokens": 3.125,
+            "input_cache_write_5m_cost_per_mil_tokens": 3.125,
+            "input_cache_write_1h_cost_per_mil_tokens": 5,
+            "endpoints": [
+              "api.anthropic.com"
+            ],
+            "max_input_tokens": 200000
+          }
+        ]
+      }
+    },
     "providers": {
       "anthropic": {
         "max_input_tokens": 200000,

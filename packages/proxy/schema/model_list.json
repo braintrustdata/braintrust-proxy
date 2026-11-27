@@ -14926,6 +14926,9 @@
             "valid_until": "2026-11-30"
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "supported_regions": [
@@ -31398,6 +31401,9 @@
             "valid_until": "2026-11-30"
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "valid_from": "2026-12-01"
@@ -31473,10 +31479,10 @@
       "openrouter": {
         "standard": [
           {
-            "input_cost_per_mil_tokens": 1,
-            "output_cost_per_mil_tokens": 5,
-            "input_cache_read_cost_per_mil_tokens": 0.05,
-            "input_cache_write_cost_per_mil_tokens": 1.09375
+            "input_cost_per_mil_tokens": 2,
+            "output_cost_per_mil_tokens": 10,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "input_cache_write_cost_per_mil_tokens": 2.1875
           }
         ],
         "flex": [
@@ -31528,6 +31534,9 @@
             "valid_until": "2026-11-30"
           },
           {
+            "input_cost_per_mil_tokens": 4,
+            "output_cost_per_mil_tokens": 20,
+            "input_cache_read_cost_per_mil_tokens": 0.2,
             "input_audio_cost_per_mil_tokens": 4,
             "input_audio_cache_read_cost_per_mil_tokens": 0.2,
             "supported_regions": [

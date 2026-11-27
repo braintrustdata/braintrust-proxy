@@ -29941,26 +29941,11 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
-    "pricing": {
-      "openrouter": {
-        "standard": [
-          {
-            "input_cost_per_mil_tokens": 0.44,
-            "output_cost_per_mil_tokens": 2.2,
-            "input_cache_read_cost_per_mil_tokens": 0.044,
-            "endpoints": [
-              "mistral/eu"
-            ]
-          }
-        ]
-      }
-    },
     "displayName": "Mistral Medium 3",
     "parent": "mistral-medium-3.5",
     "max_input_tokens": 256000,
     "available_providers": [
-      "mistral",
-      "openrouter"
+      "mistral"
     ]
   },
   "mistral-medium": {
@@ -39476,6 +39461,7 @@
     "output_cost_per_mil_tokens": 3.2,
     "input_cache_read_cost_per_mil_tokens": 0.03,
     "displayName": "Pareto 26.10",
+    "retired": true,
     "max_input_tokens": 1048576,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -39490,6 +39476,7 @@
     "output_cost_per_mil_tokens": 7.5,
     "input_cache_read_cost_per_mil_tokens": 0.25,
     "displayName": "Pareto 26.9",
+    "retired": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -40659,6 +40646,7 @@
     "input_cache_read_cost_per_mil_tokens": 0.08,
     "displayName": "Xiaomi: MiMo-V2.5",
     "reasoning": true,
+    "retired": true,
     "max_input_tokens": 1050000,
     "max_output_tokens": 131072,
     "available_providers": [
@@ -41251,6 +41239,7 @@
     "output_cost_per_mil_tokens": 2.2,
     "input_cache_read_cost_per_mil_tokens": 0.044,
     "displayName": "Mistral: Mistral Medium 3.1",
+    "retired": true,
     "max_input_tokens": 131072,
     "available_providers": [
       "openrouter"

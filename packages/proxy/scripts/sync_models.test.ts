@@ -22,6 +22,7 @@ import {
   applyOpenRouterPricing,
   assertUnchangedTopLevelPrices,
   openRouterPriceAuditEntry,
+  openRouterPriceHoldReason,
   convertOpenRouterToLocalModel,
   openRouterCanonicalId,
   isOpenRouterSlugExcluded,
@@ -1489,7 +1490,11 @@ describe("applyOpenRouterPricing", () => {
     } satisfies ModelSpec;
     const directory = {
       id: slug,
-      pricing: { prompt: "0.0000000456", request: "0" },
+      pricing: {
+        prompt: "0.0000000456",
+        completion: "0.0000003",
+        request: "0",
+      },
       top_provider: { context_length: 1048576 },
     };
     const updated = applyOpenRouterPricing(slug, old, directory);
@@ -1498,7 +1503,10 @@ describe("applyOpenRouterPricing", () => {
       model: slug,
       provider: "openrouter",
       oldPrices: { input_cost_per_mil_tokens: 0.047 },
-      newPrices: { input_cost_per_mil_tokens: 0.0456 },
+      newPrices: {
+        input_cost_per_mil_tokens: 0.0456,
+        output_cost_per_mil_tokens: 0.3,
+      },
       directory,
     });
   });
@@ -1587,6 +1595,76 @@ describe("applyOpenRouterPricing", () => {
       pricing: { prompt: "0.000009", completion: "0.000009" },
     };
     expect(applyOpenRouterPricing("x-ai/grok-4.5", model, orModel)).toBeNull();
+  });
+});
+
+describe("openRouterPriceHoldReason", () => {
+  const before: ModelSpec = {
+    format: "openai",
+    flavor: "chat",
+    available_providers: ["openrouter"],
+    input_cost_per_mil_tokens: 0.0507,
+    output_cost_per_mil_tokens: 0.2028,
+    input_cache_read_cost_per_mil_tokens: 0.001014,
+  };
+  const currentEndpoint = {
+    service_tier: null,
+    pricing: {
+      prompt: "0.0000000507",
+      completion: "0.0000002028",
+      input_cache_read: "0.000000001014",
+    },
+  };
+  const directory = {
+    id: "deepseek/deepseek-v4.1-flash",
+    pricing: {
+      prompt: "0.00000014",
+      completion: "0.00000042",
+      input_cache_read: "0.0000000042",
+    },
+  };
+  const proposed = {
+    ...before,
+    input_cost_per_mil_tokens: 0.14,
+    output_cost_per_mil_tokens: 0.42,
+    input_cache_read_cost_per_mil_tokens: 0.0042,
+  };
+  const newEndpoint = { service_tier: null, pricing: directory.pricing };
+
+  it("keeps the catalog price when the directory switches standard endpoints", () => {
+    expect(
+      openRouterPriceHoldReason(before, proposed, [
+        currentEndpoint,
+        newEndpoint,
+      ]),
+    ).toBeDefined();
+  });
+
+  it.each([
+    ["missing endpoint data", []],
+    ["a tier endpoint", [{ ...newEndpoint, service_tier: "flex" }]],
+    [
+      "an endpoint with different cache pricing",
+      [
+        {
+          ...newEndpoint,
+          pricing: { ...directory.pricing, input_cache_read: "0" },
+        },
+      ],
+    ],
+  ] as const)("holds the proposal with %s", (_, endpoints) => {
+    expect(
+      openRouterPriceHoldReason(before, proposed, [...endpoints]),
+    ).toBeDefined();
+  });
+
+  it("allows a confirmed replacement when the previous standard rate is gone", () => {
+    expect(
+      openRouterPriceHoldReason(before, proposed, [
+        { ...currentEndpoint, service_tier: "flex" },
+        newEndpoint,
+      ]),
+    ).toBeUndefined();
   });
 });
 

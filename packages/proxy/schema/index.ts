@@ -1055,7 +1055,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "zai.glm-5": ["bedrock"],
   "nvidia.nemotron-super-3-120b": ["bedrock"],
   "mistral-medium-3.5": ["mistral"],
-  "mistral-medium-3": ["mistral", "openrouter"],
+  "mistral-medium-3": ["mistral"],
   "deepseek.v3.2": ["bedrock"],
   "amazon.nova-premier-v1:0": ["bedrock"],
   "amazon.nova-2-lite-v1:0": ["bedrock"],

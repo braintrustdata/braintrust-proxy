@@ -238,6 +238,7 @@ export const APISecretSchema = z.union([
         "xAI",
         "openrouter",
         "typesafe",
+        "nace",
         "js",
       ]),
       metadata: BaseMetadataSchema.nullish(),

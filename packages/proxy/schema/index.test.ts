@@ -8,6 +8,8 @@ import {
   getModelEndpointTypes,
   getDirectModelEndpointTypes,
   ModelFormat,
+  AISecretTypes,
+  EndpointProviderToBaseURL,
 } from "./index";
 import { translateParams } from "./translate";
 
@@ -329,6 +331,15 @@ describe("getDirectModelEndpointTypes", () => {
 });
 
 describe("APISecretSchema compatibility", () => {
+  it("accepts Nace credentials and resolves their native endpoint", () => {
+    expect(APISecretSchema.parse({ type: "nace", secret: null })).toEqual({
+      type: "nace",
+      secret: null,
+    });
+    expect(AISecretTypes.NACE_API_KEY).toBe("nace");
+    expect(EndpointProviderToBaseURL.nace).toBe("https://console.nace.ai/v1");
+  });
+
   it("accepts Typesafe provider secrets", () => {
     expect(APISecretSchema.parse({ type: "typesafe", secret: null })).toEqual({
       type: "typesafe",

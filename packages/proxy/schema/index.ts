@@ -201,6 +201,9 @@ export const DefaultEndpointTypes: {
 };
 
 export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
+  "drex-max-v1.1": ["nace"],
+  "drex-max-finance": ["nace"],
+  "drex-v2.0": ["nace"],
   "gpt-realtime-2.1": ["openai"],
   "gpt-image-2.6-flare": ["openai", "azure"],
   "gpt-image-2.6-sunburst": ["openai", "azure"],
@@ -1734,6 +1737,7 @@ export function getModelEndpointTypes(model: string): ModelEndpointType[] {
 
 export const AISecretTypes: { [keyName: string]: ModelEndpointType } = {
   OPENAI_API_KEY: "openai",
+  NACE_API_KEY: "nace",
   ANTHROPIC_API_KEY: "anthropic",
   GEMINI_API_KEY: "google",
   MISTRAL_API_KEY: "mistral",
@@ -1768,6 +1772,7 @@ export const EndpointProviderToBaseURL: {
   openai: "https://api.openai.com/v1",
   braintrust: null,
   typesafe: null,
+  nace: "https://console.nace.ai/v1",
   anthropic: "https://api.anthropic.com/v1",
   perplexity: "https://api.perplexity.ai",
   replicate: "https://openai-proxy.replicate.com/v1",

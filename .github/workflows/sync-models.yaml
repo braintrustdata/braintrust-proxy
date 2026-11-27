@@ -136,12 +136,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          # OpenRouter's /api/v1/models is the authoritative source for the
-          # openrouter provider + pricing/context. This unions `openrouter` into
-          # models we already carry (matched by stripped canonical id or full
-          # slug) and adds any model no first-class provider serves as a new
-          # full-slug entry sunk to the bottom of the catalog. :variant slugs are
-          # skipped. The endpoint is public, so no API key is required.
+          # The directory supplies model IDs and initial prices. For existing
+          # OpenRouter-only entries, refresh prices only when a standard
+          # endpoint confirms the new price and none still offer the old one.
           pnpm exec tsx packages/proxy/scripts/sync_models.ts sync-openrouter --write \
             --litellm-snapshot "$RUNNER_TEMP/litellm-models.json" \
             --price-audit "$RUNNER_TEMP/openrouter-price-audit.json"

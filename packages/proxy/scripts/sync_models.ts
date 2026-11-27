@@ -756,9 +756,8 @@ async function fetchCerebrasModels(): Promise<CerebrasModel[]> {
 
 // OpenRouter's public model directory (https://openrouter.ai/api/v1/models).
 // Prices are per-token decimal strings; context_length / top_provider carry the
-// window and max output. We only mirror models we ALREADY carry under a
-// different (openrouter slug) id, so the directory is used as an authoritative
-// source of the slug + pricing/context for those alternates.
+// window and max output. The directory supplies initial pricing for new
+// entries. Refreshes to existing prices are checked against standard endpoints.
 const OPENROUTER_MODEL_URL = "https://openrouter.ai/api/v1/models";
 
 const openRouterPricingSchema = z
@@ -809,27 +808,39 @@ const openRouterEndpointsSchema = z.object({
         context_length: z.number().nullish(),
         max_prompt_tokens: z.number().nullish(),
         max_completion_tokens: z.number().nullish(),
+        pricing: openRouterPricingSchema.optional().catch(undefined),
+        service_tier: z.string().nullable().optional().catch(undefined),
       }),
     ),
   }),
 });
 
-async function fetchOpenRouterEndpointLimits(
+type OpenRouterEndpoint = z.infer<
+  typeof openRouterEndpointsSchema
+>["data"]["endpoints"][number];
+
+async function fetchOpenRouterEndpoints(
   slug: string,
-): Promise<ProviderMetadata | undefined> {
+): Promise<OpenRouterEndpoint[]> {
   const id = slug.split("/").map(encodeURIComponent).join("/");
   const url = `${OPENROUTER_MODEL_URL}/${id}/endpoints`;
   const response = await fetch(url, { signal: AbortSignal.timeout(30_000) });
   if (response.status === 404) {
     console.warn(
-      `  [REVIEW] GET ${url} returned HTTP 404; no endpoint limits available`,
+      `  [REVIEW] GET ${url} returned HTTP 404; no endpoint data available`,
     );
-    return;
+    return [];
   }
   if (!response.ok) {
     throw new Error(`GET ${url} returned HTTP ${response.status}`);
   }
   const { data } = openRouterEndpointsSchema.parse(await response.json());
+  return data.endpoints;
+}
+
+function getOpenRouterEndpointLimits(
+  endpoints: OpenRouterEndpoint[],
+): ProviderMetadata {
   const minKnown = (values: (number | null | undefined)[]) => {
     const known = values.filter(
       (value): value is number => value != null && value > 0,
@@ -838,12 +849,12 @@ async function fetchOpenRouterEndpointLimits(
   };
   return {
     max_input_tokens: minKnown(
-      data.endpoints.map(
+      endpoints.map(
         (endpoint) => endpoint.max_prompt_tokens ?? endpoint.context_length,
       ),
     ),
     max_output_tokens: minKnown(
-      data.endpoints.map((endpoint) => endpoint.max_completion_tokens),
+      endpoints.map((endpoint) => endpoint.max_completion_tokens),
     ),
   };
 }
@@ -2820,12 +2831,23 @@ export function isSupportedOpenRouterModel(model: OpenRouterModel): boolean {
   );
 }
 
+function openRouterStandardPrices(pricing: OpenRouterModel["pricing"]) {
+  const perMillion = (raw: string | undefined): number | undefined => {
+    const cost = parseBasetenPrice(raw);
+    return cost !== undefined && cost > 0
+      ? Number((cost * 1_000_000).toFixed(8))
+      : undefined;
+  };
+  return {
+    input_cost_per_mil_tokens: perMillion(pricing?.prompt),
+    output_cost_per_mil_tokens: perMillion(pricing?.completion),
+    input_cache_read_cost_per_mil_tokens: perMillion(pricing?.input_cache_read),
+  };
+}
+
 export function convertOpenRouterToLocalModel(
   model: OpenRouterModel,
 ): ModelSpec {
-  const roundCost = (costPerToken: number): number =>
-    parseFloat((costPerToken * 1_000_000).toFixed(8));
-
   const baseModel: Partial<ModelSpec> = { format: "openai", flavor: "chat" };
 
   if (model.architecture?.input_modalities?.includes("image")) {
@@ -2836,21 +2858,11 @@ export function convertOpenRouterToLocalModel(
     baseModel.reasoning = true;
   }
 
-  const inputCost = getNonZeroNumber(parseBasetenPrice(model.pricing?.prompt));
-  if (inputCost !== undefined) {
-    baseModel.input_cost_per_mil_tokens = roundCost(inputCost);
-  }
-  const outputCost = getNonZeroNumber(
-    parseBasetenPrice(model.pricing?.completion),
-  );
-  if (outputCost !== undefined) {
-    baseModel.output_cost_per_mil_tokens = roundCost(outputCost);
-  }
-  const cacheReadCost = getNonZeroNumber(
-    parseBasetenPrice(model.pricing?.input_cache_read),
-  );
-  if (cacheReadCost !== undefined) {
-    baseModel.input_cache_read_cost_per_mil_tokens = roundCost(cacheReadCost);
+  const prices = openRouterStandardPrices(model.pricing);
+  for (const field of INPUT_OUTPUT_CACHE_COST_FIELDS) {
+    if (prices[field] !== undefined) {
+      baseModel[field] = prices[field];
+    }
   }
 
   if (model.name) {
@@ -2874,10 +2886,8 @@ export function convertOpenRouterToLocalModel(
   return baseModel as ModelSpec;
 }
 
-// Refresh an openrouter-managed alternate's pricing from OpenRouter's directory.
-// Mirrors applyBasetenPricing: overwrites input/output/cached prices, never
-// touches a field in SYNC_PRESERVED_FIELDS. Returns a new ModelSpec if anything
-// changed, else null.
+// Build a candidate refresh from one directory price. The caller checks it
+// against the endpoints before writing it to the catalog.
 export function applyOpenRouterPricing(
   name: string,
   model: ModelSpec,
@@ -2891,41 +2901,59 @@ export function applyOpenRouterPricing(
   if (providers.length !== 1 || providers[0] !== "openrouter") {
     return null;
   }
-  const roundCost = (costPerToken: number): number =>
-    parseFloat((costPerToken * 1_000_000).toFixed(8));
+  const prices = openRouterStandardPrices(openRouterModel.pricing);
+  if (
+    prices.input_cost_per_mil_tokens === undefined ||
+    prices.output_cost_per_mil_tokens === undefined
+  ) {
+    return null;
+  }
+
   const updated: ModelSpec = { ...model };
   let changed = false;
-
-  const apply = (
-    field:
-      | "input_cost_per_mil_tokens"
-      | "output_cost_per_mil_tokens"
-      | "input_cache_read_cost_per_mil_tokens",
-    raw: string | undefined,
-  ): void => {
-    if (isFieldManuallyPreserved(name, field)) {
-      return;
+  for (const field of INPUT_OUTPUT_CACHE_COST_FIELDS) {
+    const value = prices[field];
+    if (
+      value === undefined ||
+      isFieldManuallyPreserved(name, field) ||
+      model[field] === value
+    ) {
+      continue;
     }
-    const value = getNonZeroNumber(parseBasetenPrice(raw));
-    if (value === undefined) {
-      return;
-    }
-    const rounded = roundCost(value);
-    if (updated[field] === rounded) {
-      return;
-    }
-    updated[field] = rounded;
+    updated[field] = value;
     changed = true;
-  };
-
-  apply("input_cost_per_mil_tokens", openRouterModel.pricing?.prompt);
-  apply("output_cost_per_mil_tokens", openRouterModel.pricing?.completion);
-  apply(
-    "input_cache_read_cost_per_mil_tokens",
-    openRouterModel.pricing?.input_cache_read,
-  );
+  }
 
   return changed ? updated : null;
+}
+
+export function openRouterPriceHoldReason(
+  before: ModelSpec,
+  proposed: ModelSpec,
+  endpoints: OpenRouterEndpoint[],
+): string | undefined {
+  // The directory can switch between endpoint prices while both are still
+  // offered. Keep a supported catalog rate to avoid publishing those swings.
+  const standardPrices = endpoints
+    .filter((endpoint) => endpoint.service_tier === null)
+    .map((endpoint) => openRouterStandardPrices(endpoint.pricing))
+    .filter(
+      (prices) =>
+        prices.input_cost_per_mil_tokens !== undefined &&
+        prices.output_cost_per_mil_tokens !== undefined,
+    );
+  const matches = (model: ModelSpec) =>
+    standardPrices.some((prices) =>
+      INPUT_OUTPUT_CACHE_COST_FIELDS.every(
+        (field) => (model[field] ?? undefined) === prices[field],
+      ),
+    );
+  if (matches(before)) {
+    return "the catalog price is still offered by a standard endpoint";
+  }
+  if (!matches(proposed)) {
+    return "no standard endpoint confirms the proposed price";
+  }
 }
 
 const topLevelPriceKeys = Object.keys(ModelSchema.shape).filter((key) =>
@@ -4200,6 +4228,7 @@ async function syncOpenRouterModelsCommand(argv: any) {
     const metadataUpdates: string[] = [];
     const today = fetchedAt.slice(0, 10);
     const endpointTargets = new Map<string, OpenRouterModel>();
+    const priceRefreshSlugs = new Map<string, string>();
     const priceAudit: ReturnType<typeof openRouterPriceAuditEntry>[] = [];
     // Full-slug openrouter-only entries removed because a canonical key (served
     // by a first-class provider) now exists for the same model.
@@ -4280,24 +4309,9 @@ async function syncOpenRouterModelsCommand(argv: any) {
           providerUnions.push(target);
           console.log(`  [UNION] add openrouter to ${target}`);
         } else if (providers.length === 1 && providers[0] === "openrouter") {
-          // Openrouter-only entry we previously added: refresh its pricing.
-          const priced = applyOpenRouterPricing(
-            target,
-            localModels[target],
-            openRouterModel,
-          );
-          if (priced) {
-            localModels[target] = priced;
-            pricingUpdates.push(target);
-            priceAudit.push(
-              openRouterPriceAuditEntry(
-                target,
-                existing,
-                priced,
-                openRouterModel,
-              ),
-            );
-            console.log(`  [PRICING] refresh OpenRouter pricing on ${target}`);
+          priceRefreshSlugs.set(target, slug);
+          if (!endpointTargets.has(target)) {
+            endpointTargets.set(target, openRouterModel);
           }
         }
 
@@ -4376,31 +4390,46 @@ async function syncOpenRouterModelsCommand(argv: any) {
         addedModels.has(name),
     );
     for (let i = 0; i < targets.length; i += 8) {
-      const limits = await Promise.all(
-        targets.slice(i, i + 8).map(
-          async ([name, model]) =>
-            [
-              name,
-              {
-                ...(await fetchOpenRouterEndpointLimits(model.id)),
-                retirement_date: model.expiration_date,
-              },
-            ] as const,
-        ),
+      const results = await Promise.all(
+        targets
+          .slice(i, i + 8)
+          .map(
+            async ([name, model]) =>
+              [name, model, await fetchOpenRouterEndpoints(model.id)] as const,
+          ),
       );
-      for (const [name, openrouter] of limits) {
+      for (const [name, model, endpoints] of results) {
+        if (priceRefreshSlugs.get(name) === model.id) {
+          const before = localModels[name];
+          const priced = applyOpenRouterPricing(name, before, model);
+          if (priced) {
+            const hold = openRouterPriceHoldReason(before, priced, endpoints);
+            if (hold) {
+              console.warn(
+                `  [REVIEW] Keeping OpenRouter pricing on ${name}: ${hold}`,
+              );
+            } else {
+              localModels[name] = priced;
+              pricingUpdates.push(name);
+              priceAudit.push(
+                openRouterPriceAuditEntry(name, before, priced, model),
+              );
+              console.log(`  [PRICING] refresh OpenRouter pricing on ${name}`);
+            }
+          }
+        }
+
+        const limits = getOpenRouterEndpointLimits(endpoints);
         const remote = metadata.get(name) ?? {};
         metadata.set(name, {
           ...remote,
           openrouter: {
             retirement_date:
-              openrouter.retirement_date ?? remote.openrouter?.retirement_date,
+              model.expiration_date ?? remote.openrouter?.retirement_date,
             max_input_tokens:
-              openrouter.max_input_tokens ??
-              remote.openrouter?.max_input_tokens,
+              limits.max_input_tokens ?? remote.openrouter?.max_input_tokens,
             max_output_tokens:
-              openrouter.max_output_tokens ??
-              remote.openrouter?.max_output_tokens,
+              limits.max_output_tokens ?? remote.openrouter?.max_output_tokens,
           },
         });
       }

@@ -17822,7 +17822,8 @@
     "input_cost_per_mil_tokens": 0.2,
     "output_cost_per_mil_tokens": 0.6,
     "displayName": "Mistral Saba",
-    "deprecation_date": "2025-09-30",
+    "deprecation_date": "2025-06-10",
+    "retirement_date": "2025-09-30",
     "available_providers": [
       "mistral"
     ]
@@ -29837,12 +29838,37 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 1.5,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 2.1,
+    "input_cache_read_cost_per_mil_tokens": 0.07,
+    "providers": {
+      "mistral": {
+        "max_input_tokens": 1000000,
+        "max_output_tokens": 262144
+      }
+    },
     "displayName": "Mistral Large",
-    "max_input_tokens": 262144,
+    "max_input_tokens": 1000000,
     "max_output_tokens": 262144,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-large-4": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 2.1,
+    "input_cache_read_cost_per_mil_tokens": 0.07,
+    "providers": {
+      "mistral": {
+        "max_input_tokens": 1000000
+      }
+    },
+    "displayName": "Mistral Large 4",
+    "parent": "mistral-large-4-0",
+    "max_input_tokens": 1000000,
     "available_providers": [
       "mistral"
     ]
@@ -29855,6 +29881,8 @@
     "output_cost_per_mil_tokens": 1.5,
     "providers": {
       "mistral": {
+        "deprecation_date": "2026-10-31",
+        "retirement_date": "2027-04-30",
         "max_input_tokens": 262144,
         "max_output_tokens": 262144
       },
@@ -29864,7 +29892,6 @@
       }
     },
     "displayName": "Mistral Large 3 (2512)",
-    "deprecation_date": "2026-10-31",
     "parent": "mistral-large-latest",
     "max_input_tokens": 262144,
     "max_output_tokens": 209715,
@@ -29877,9 +29904,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 1.36,
-    "output_cost_per_mil_tokens": 4.18,
-    "input_cache_read_cost_per_mil_tokens": 0.14,
+    "input_cost_per_mil_tokens": 0.7,
+    "output_cost_per_mil_tokens": 2.1,
+    "input_cache_read_cost_per_mil_tokens": 0.07,
     "pricing": {
       "openrouter": {
         "standard": [
@@ -29904,7 +29931,7 @@
     },
     "providers": {
       "mistral": {
-        "max_input_tokens": 1048576,
+        "max_input_tokens": 1000000,
         "max_output_tokens": 1048576
       },
       "openrouter": {
@@ -29913,7 +29940,6 @@
       }
     },
     "displayName": "Mistral Large 4",
-    "experimental": true,
     "max_input_tokens": 524288,
     "max_output_tokens": 262144,
     "available_providers": [
@@ -29938,6 +29964,48 @@
       "mistral"
     ]
   },
+  "mistral-medium-3-5": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "providers": {
+      "mistral": {
+        "deprecation_date": "2026-10-31",
+        "retirement_date": "2027-04-30",
+        "max_input_tokens": 256000
+      }
+    },
+    "displayName": "Mistral Medium 3.5",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2026-10-31",
+    "retirement_date": "2027-04-30",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
+  "mistral-medium-3-5-26-04": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 1.5,
+    "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
+    "displayName": "Mistral Medium 3.5 (26.04)",
+    "reasoning": true,
+    "reasoning_budget": true,
+    "deprecation_date": "2026-10-31",
+    "retirement_date": "2027-04-30",
+    "parent": "mistral-medium-3-5",
+    "max_input_tokens": 256000,
+    "available_providers": [
+      "mistral"
+    ]
+  },
   "mistral-medium-3": {
     "format": "openai",
     "flavor": "chat",
@@ -29945,7 +30013,7 @@
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
     "displayName": "Mistral Medium 3",
-    "parent": "mistral-medium-3.5",
+    "parent": "mistral-medium-3-5",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -29970,9 +30038,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Mistral Medium 3.5",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-31",
+    "retirement_date": "2027-04-30",
     "max_input_tokens": 256000,
     "available_providers": [
       "mistral"
@@ -29984,9 +30055,12 @@
     "multimodal": true,
     "input_cost_per_mil_tokens": 1.5,
     "output_cost_per_mil_tokens": 7.5,
+    "input_cache_read_cost_per_mil_tokens": 0.15,
     "displayName": "Mistral Medium 3.5 (2604)",
     "reasoning": true,
     "reasoning_budget": true,
+    "deprecation_date": "2026-10-31",
+    "retirement_date": "2027-04-30",
     "parent": "mistral-medium-latest",
     "max_input_tokens": 256000,
     "available_providers": [
@@ -30030,7 +30104,8 @@
     "output_cost_per_mil_tokens": 5,
     "displayName": "Magistral Medium Latest",
     "deprecated": true,
-    "deprecation_date": "2026-07-31",
+    "deprecation_date": "2026-05-22",
+    "retirement_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [
@@ -30103,11 +30178,15 @@
     "output_cost_per_mil_tokens": 2,
     "providers": {
       "mistral": {
+        "deprecation_date": "2026-05-22",
+        "retirement_date": "2026-07-31",
         "max_input_tokens": 256000,
         "max_output_tokens": 256000
       }
     },
     "displayName": "Devstral Medium Latest",
+    "deprecation_date": "2026-05-22",
+    "retirement_date": "2026-07-31",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -30119,11 +30198,21 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.4,
     "output_cost_per_mil_tokens": 2,
+    "providers": {
+      "mistral": {
+        "deprecation_date": "2026-05-22",
+        "retirement_date": "2026-07-31",
+        "retired": true
+      },
+      "openrouter": {
+        "max_input_tokens": 262144,
+        "max_output_tokens": 209715
+      }
+    },
     "displayName": "Devstral 2 (2512)",
-    "deprecation_date": "2026-05-22",
     "max_input_tokens": 262144,
+    "max_output_tokens": 209715,
     "available_providers": [
-      "mistral",
       "openrouter"
     ]
   },
@@ -30134,11 +30223,15 @@
     "output_cost_per_mil_tokens": 2,
     "providers": {
       "mistral": {
+        "deprecation_date": "2026-05-22",
+        "retirement_date": "2026-07-31",
         "max_input_tokens": 256000,
         "max_output_tokens": 256000
       }
     },
     "displayName": "Devstral Latest",
+    "deprecation_date": "2026-05-22",
+    "retirement_date": "2026-07-31",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -30152,11 +30245,15 @@
     "output_cost_per_mil_tokens": 0.3,
     "providers": {
       "mistral": {
+        "deprecation_date": "2026-02-27",
+        "retirement_date": "2026-03-31",
         "max_input_tokens": 256000,
         "max_output_tokens": 256000
       }
     },
     "displayName": "Devstral Small Latest",
+    "deprecation_date": "2026-02-27",
+    "retirement_date": "2026-03-31",
     "max_input_tokens": 256000,
     "max_output_tokens": 256000,
     "available_providers": [
@@ -30255,7 +30352,8 @@
     "output_cost_per_mil_tokens": 1.5,
     "displayName": "Magistral Small Latest",
     "deprecated": true,
-    "deprecation_date": "2026-07-31",
+    "deprecation_date": "2026-04-30",
+    "retirement_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 40000,
     "available_providers": [
@@ -30641,12 +30739,15 @@
     "output_cost_per_mil_tokens": 0.15,
     "providers": {
       "mistral": {
+        "deprecation_date": "2026-05-22",
+        "retirement_date": "2026-07-31",
         "max_input_tokens": 128000,
         "max_output_tokens": 128000
       }
     },
     "displayName": "Mistral NeMo",
-    "deprecation_date": "2026-07-31",
+    "deprecation_date": "2026-05-22",
+    "retirement_date": "2026-07-31",
     "max_input_tokens": 128000,
     "max_output_tokens": 128000,
     "available_providers": [
@@ -41295,6 +41396,7 @@
     "displayName": "Mistral: Mistral Medium 3.5",
     "reasoning": true,
     "retirement_date": "2027-01-31",
+    "parent": "mistral-medium-3-5",
     "max_input_tokens": 262144,
     "available_providers": [
       "openrouter"

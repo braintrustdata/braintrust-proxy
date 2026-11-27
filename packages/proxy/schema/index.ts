@@ -368,6 +368,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "google/gemma-2-27b-it": ["together"],
   "liquid/lfm-3-1.7b": ["openrouter"],
   "google/gemini-omni-1.1-flash": ["openrouter"],
+  "inclusionai/lingsante-3.1-air-vl": ["openrouter"],
   "tngtech/deepseek-r1t2-chimera": ["openrouter"],
   "upstage/solar-mini-4-5": ["openrouter"],
   "upstage/solar-pro-4-contributor": ["openrouter"],

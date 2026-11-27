@@ -38866,6 +38866,12 @@
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 2.625,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "providers": {
+      "openrouter": {
+        "max_input_tokens": 131072,
+        "max_output_tokens": 32768
+      }
+    },
     "displayName": "TNG: DeepSeek R1T2 Chimera",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -38980,18 +38986,45 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.075,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.015,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.24,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.0375,
+            "output_cost_per_mil_tokens": 0.15,
+            "input_cache_read_cost_per_mil_tokens": 0.0075,
+            "endpoints": [
+              "primeintellect/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.15,
+            "output_cost_per_mil_tokens": 0.6,
+            "input_cache_read_cost_per_mil_tokens": 0.03,
+            "endpoints": [
+              "primeintellect/fast"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
-        "max_input_tokens": 131072,
+        "max_input_tokens": 262144,
         "max_output_tokens": 65536
       }
     },
     "displayName": "Thinking Machines: Inkling 2 Mini",
     "reasoning": true,
-    "max_input_tokens": 131072,
+    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -39061,13 +39094,13 @@
     "providers": {
       "openrouter": {
         "max_input_tokens": 1048576,
-        "max_output_tokens": 131072
+        "max_output_tokens": 943718
       }
     },
     "displayName": "Particle AI: Particle-1",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
+    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -39777,9 +39810,9 @@
   "meta-llama/llama-3.3-70b-instruct": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.71,
-    "output_cost_per_mil_tokens": 0.71,
-    "input_cache_read_cost_per_mil_tokens": 0.71,
+    "input_cost_per_mil_tokens": 0.59,
+    "output_cost_per_mil_tokens": 0.79,
+    "input_cache_read_cost_per_mil_tokens": 0.295,
     "providers": {
       "openrouter": {
         "max_input_tokens": 24000,
@@ -40705,9 +40738,9 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.0507,
-    "output_cost_per_mil_tokens": 0.2028,
-    "input_cache_read_cost_per_mil_tokens": 0.001014,
+    "input_cost_per_mil_tokens": 0.14,
+    "output_cost_per_mil_tokens": 0.42,
+    "input_cache_read_cost_per_mil_tokens": 0.0042,
     "pricing": {
       "openrouter": {
         "flex": [
@@ -40797,9 +40830,36 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.44,
-    "output_cost_per_mil_tokens": 1.32,
-    "input_cache_read_cost_per_mil_tokens": 0.028,
+    "input_cost_per_mil_tokens": 0.2156,
+    "output_cost_per_mil_tokens": 0.6468,
+    "input_cache_read_cost_per_mil_tokens": 0.00686,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.17248,
+            "output_cost_per_mil_tokens": 0.51744,
+            "input_cache_read_cost_per_mil_tokens": 0.005488,
+            "endpoints": [
+              "deepinfra/fp8/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.3234,
+            "output_cost_per_mil_tokens": 0.9702,
+            "input_cache_read_cost_per_mil_tokens": 0.01029,
+            "endpoints": [
+              "deepinfra/fp8/priority"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 1048576,
@@ -40818,11 +40878,21 @@
   "deepseek/deepseek-v4-pro-0813": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.111,
-    "output_cost_per_mil_tokens": 4.44,
-    "input_cache_read_cost_per_mil_tokens": 0.097,
+    "input_cost_per_mil_tokens": 0.0999,
+    "output_cost_per_mil_tokens": 5,
+    "input_cache_read_cost_per_mil_tokens": 0.0999,
     "pricing": {
       "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1.04,
+            "output_cost_per_mil_tokens": 2.08,
+            "input_cache_read_cost_per_mil_tokens": 0.08,
+            "endpoints": [
+              "deepinfra/fp8/flex"
+            ]
+          }
+        ],
         "priority": {
           "alias": "fast"
         },
@@ -40864,7 +40934,7 @@
   "deepseek/deepseek-v4-flash-0731": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.0456,
+    "input_cost_per_mil_tokens": 0.047,
     "output_cost_per_mil_tokens": 0.3,
     "input_cache_read_cost_per_mil_tokens": 0.035,
     "pricing": {
@@ -41406,6 +41476,21 @@
     "reasoning": true,
     "max_input_tokens": 262144,
     "max_output_tokens": 250000,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "inclusionai/lingsante-3.1-air-vl": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "displayName": "inclusionAI: LingSante 3.1 Air VL",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
     "available_providers": [
       "openrouter"
     ]
@@ -44687,8 +44772,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.35,
-    "output_cost_per_mil_tokens": 1.5,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 1.2,
     "input_cache_read_cost_per_mil_tokens": 0.04,
     "pricing": {
       "openrouter": {
@@ -44863,9 +44948,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.5,
+    "providers": {
+      "openrouter": {
+        "max_input_tokens": 262144,
+        "max_output_tokens": 98304
+      }
+    },
     "displayName": "MoonshotAI: Kimi K2 0905",
     "max_input_tokens": 262144,
-    "max_output_tokens": 100352,
+    "max_output_tokens": 98304,
     "available_providers": [
       "openrouter"
     ]
@@ -44889,8 +44980,8 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.5,
-    "output_cost_per_mil_tokens": 2.5,
+    "input_cost_per_mil_tokens": 0.6,
+    "output_cost_per_mil_tokens": 3,
     "input_cache_read_cost_per_mil_tokens": 0.15,
     "providers": {
       "openrouter": {
@@ -46438,8 +46529,33 @@
     "flavor": "chat",
     "multimodal": true,
     "input_cost_per_mil_tokens": 0.08,
-    "output_cost_per_mil_tokens": 0.45,
+    "output_cost_per_mil_tokens": 0.16,
     "input_cache_read_cost_per_mil_tokens": 0.04,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.064,
+            "output_cost_per_mil_tokens": 0.128,
+            "endpoints": [
+              "deepinfra/fp8/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.12,
+            "output_cost_per_mil_tokens": 0.24,
+            "endpoints": [
+              "deepinfra/fp8/priority"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 110000,
@@ -46501,9 +46617,34 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.04,
-    "output_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 0.05,
+    "output_cost_per_mil_tokens": 0.1,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.04,
+            "output_cost_per_mil_tokens": 0.08,
+            "endpoints": [
+              "deepinfra/bf16/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.075,
+            "output_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "deepinfra/bf16/priority"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 131072,

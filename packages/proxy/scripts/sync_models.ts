@@ -403,8 +403,8 @@ const SYNC_PRESERVED_PROVIDER_TOKEN_FIELDS: Record<
   // catalog's OpenAI limits instead of LiteLLM's larger values; Azure differs.
   "gpt-3.5-turbo-instruct": { openai: ["max_input_tokens"] },
   "gpt-3.5-turbo-instruct-0914": { openai: PROVIDER_TOKEN_FIELDS },
-  // Mistral model cards list 1,000,000 and 256,000 tokens respectively.
-  // LiteLLM rounds the direct Mistral context windows up to powers of two.
+  // The Mistral model cards publish smaller direct context windows than LiteLLM.
+  "mistral-large-4": { mistral: ["max_input_tokens"] },
   "mistral-large-4-0": { mistral: ["max_input_tokens"] },
   "mistral-large-latest": { mistral: ["max_input_tokens"] },
   "mistral-medium-3-5": { mistral: ["max_input_tokens"] },

@@ -29999,6 +29999,7 @@
     "reasoning": true,
     "reasoning_budget": true,
     "deprecation_date": "2026-10-31",
+    "retired": true,
     "retirement_date": "2027-04-30",
     "parent": "mistral-medium-3-5",
     "max_input_tokens": 256000,
@@ -46037,17 +46038,15 @@
     "output_cost_per_mil_tokens": 3.5,
     "providers": {
       "openrouter": {
+        "retired": true,
         "max_input_tokens": 128000,
         "max_output_tokens": 16384
       }
     },
     "displayName": "Qwen: Qwen3 235B A22B Thinking (2507)",
     "reasoning": true,
-    "max_input_tokens": 128000,
-    "max_output_tokens": 16384,
-    "available_providers": [
-      "openrouter"
-    ]
+    "retired": true,
+    "available_providers": []
   },
   "qwen/qwen3-30b-a3b-instruct-2507": {
     "format": "openai",

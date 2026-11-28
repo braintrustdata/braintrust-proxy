@@ -30193,29 +30193,6 @@
       "mistral"
     ]
   },
-  "devstral-2512": {
-    "format": "openai",
-    "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.4,
-    "output_cost_per_mil_tokens": 2,
-    "providers": {
-      "mistral": {
-        "deprecation_date": "2026-05-22",
-        "retirement_date": "2026-07-31",
-        "retired": true
-      },
-      "openrouter": {
-        "max_input_tokens": 262144,
-        "max_output_tokens": 209715
-      }
-    },
-    "displayName": "Devstral 2 (2512)",
-    "max_input_tokens": 262144,
-    "max_output_tokens": 209715,
-    "available_providers": [
-      "openrouter"
-    ]
-  },
   "devstral-latest": {
     "format": "openai",
     "flavor": "chat",
@@ -38955,12 +38932,42 @@
       "databricks"
     ]
   },
+  "devstral-2512": {
+    "format": "openai",
+    "flavor": "chat",
+    "input_cost_per_mil_tokens": 0.4,
+    "output_cost_per_mil_tokens": 2,
+    "input_cache_read_cost_per_mil_tokens": 0.04,
+    "providers": {
+      "mistral": {
+        "deprecation_date": "2026-05-22",
+        "retirement_date": "2026-07-31",
+        "retired": true
+      },
+      "openrouter": {
+        "max_input_tokens": 262144,
+        "max_output_tokens": 209715
+      }
+    },
+    "displayName": "Devstral 2 (2512)",
+    "max_input_tokens": 262144,
+    "max_output_tokens": 209715,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "tngtech/deepseek-r1t2-chimera": {
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 1,
     "output_cost_per_mil_tokens": 2.625,
     "input_cache_read_cost_per_mil_tokens": 0.02,
+    "providers": {
+      "openrouter": {
+        "max_input_tokens": 131072,
+        "max_output_tokens": 32768
+      }
+    },
     "displayName": "TNG: DeepSeek R1T2 Chimera",
     "reasoning": true,
     "max_input_tokens": 131072,
@@ -39080,13 +39087,13 @@
     "input_cache_read_cost_per_mil_tokens": 0.015,
     "providers": {
       "openrouter": {
-        "max_input_tokens": 131072,
+        "max_input_tokens": 262144,
         "max_output_tokens": 65536
       }
     },
     "displayName": "Thinking Machines: Inkling 2 Mini",
     "reasoning": true,
-    "max_input_tokens": 131072,
+    "max_input_tokens": 262144,
     "max_output_tokens": 65536,
     "available_providers": [
       "openrouter"
@@ -39156,13 +39163,13 @@
     "providers": {
       "openrouter": {
         "max_input_tokens": 1048576,
-        "max_output_tokens": 131072
+        "max_output_tokens": 943718
       }
     },
     "displayName": "Particle AI: Particle-1",
     "reasoning": true,
     "max_input_tokens": 1048576,
-    "max_output_tokens": 131072,
+    "max_output_tokens": 943718,
     "available_providers": [
       "openrouter"
     ]
@@ -40895,9 +40902,36 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.44,
-    "output_cost_per_mil_tokens": 1.32,
-    "input_cache_read_cost_per_mil_tokens": 0.028,
+    "input_cost_per_mil_tokens": 0.2156,
+    "output_cost_per_mil_tokens": 0.6468,
+    "input_cache_read_cost_per_mil_tokens": 0.00686,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.17248,
+            "output_cost_per_mil_tokens": 0.51744,
+            "input_cache_read_cost_per_mil_tokens": 0.005488,
+            "endpoints": [
+              "deepinfra/fp8/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.3234,
+            "output_cost_per_mil_tokens": 0.9702,
+            "input_cache_read_cost_per_mil_tokens": 0.01029,
+            "endpoints": [
+              "deepinfra/fp8/priority"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 1048576,
@@ -40963,7 +40997,7 @@
     "format": "openai",
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.0456,
-    "output_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.27,
     "input_cache_read_cost_per_mil_tokens": 0.035,
     "pricing": {
       "openrouter": {
@@ -41173,9 +41207,36 @@
   "deepseek/deepseek-v4-pro": {
     "format": "openai",
     "flavor": "chat",
-    "input_cost_per_mil_tokens": 0.888188,
-    "output_cost_per_mil_tokens": 1.5082,
+    "input_cost_per_mil_tokens": 0.89,
+    "output_cost_per_mil_tokens": 1.5069,
     "input_cache_read_cost_per_mil_tokens": 0.2,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 1.04,
+            "output_cost_per_mil_tokens": 2.08,
+            "input_cache_read_cost_per_mil_tokens": 0.08,
+            "endpoints": [
+              "deepinfra/fp8/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 1.95,
+            "output_cost_per_mil_tokens": 3.9,
+            "input_cache_read_cost_per_mil_tokens": 0.15,
+            "endpoints": [
+              "deepinfra/fp8/priority"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 1000000,
@@ -41510,6 +41571,36 @@
       "openrouter"
     ]
   },
+  "inclusionai/lingsante-3.1-air-vl": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.06,
+    "output_cost_per_mil_tokens": 0.18,
+    "input_cache_read_cost_per_mil_tokens": 0.012,
+    "displayName": "inclusionAI: LingSante 3.1 Air VL",
+    "reasoning": true,
+    "max_input_tokens": 131072,
+    "max_output_tokens": 32768,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
+  "inclusionai/ling-3.2-flash": {
+    "format": "openai",
+    "flavor": "chat",
+    "multimodal": true,
+    "input_cost_per_mil_tokens": 0.3,
+    "output_cost_per_mil_tokens": 0.9,
+    "input_cache_read_cost_per_mil_tokens": 0.06,
+    "displayName": "inclusionAI: Ling 3.2 Flash",
+    "reasoning": true,
+    "max_input_tokens": 1048576,
+    "max_output_tokens": 262144,
+    "available_providers": [
+      "openrouter"
+    ]
+  },
   "perceptron/perceptron-mk1.5": {
     "format": "openai",
     "flavor": "chat",
@@ -41792,13 +41883,13 @@
     "providers": {
       "openrouter": {
         "max_input_tokens": 262144,
-        "max_output_tokens": 32768
+        "max_output_tokens": 131072
       }
     },
     "displayName": "MiniMax: MiniMax M3",
     "reasoning": true,
     "max_input_tokens": 262144,
-    "max_output_tokens": 32768,
+    "max_output_tokens": 131072,
     "available_providers": [
       "openrouter"
     ]
@@ -44933,13 +45024,13 @@
     },
     "providers": {
       "openrouter": {
-        "max_input_tokens": 1048320,
+        "max_input_tokens": 600000,
         "max_output_tokens": 128000
       }
     },
     "displayName": "MoonshotAI: Kimi K3.1 Pro",
     "reasoning": true,
-    "max_input_tokens": 1048320,
+    "max_input_tokens": 600000,
     "max_output_tokens": 128000,
     "available_providers": [
       "openrouter"
@@ -44963,9 +45054,15 @@
     "flavor": "chat",
     "input_cost_per_mil_tokens": 0.6,
     "output_cost_per_mil_tokens": 2.5,
+    "providers": {
+      "openrouter": {
+        "max_input_tokens": 262144,
+        "max_output_tokens": 98304
+      }
+    },
     "displayName": "MoonshotAI: Kimi K2 0905",
     "max_input_tokens": 262144,
-    "max_output_tokens": 100352,
+    "max_output_tokens": 98304,
     "available_providers": [
       "openrouter"
     ]
@@ -46781,9 +46878,36 @@
     "format": "openai",
     "flavor": "chat",
     "multimodal": true,
-    "input_cost_per_mil_tokens": 0.09,
-    "output_cost_per_mil_tokens": 0.3,
-    "input_cache_read_cost_per_mil_tokens": 0.05,
+    "input_cost_per_mil_tokens": 0.0675,
+    "output_cost_per_mil_tokens": 0.225,
+    "input_cache_read_cost_per_mil_tokens": 0.0375,
+    "pricing": {
+      "openrouter": {
+        "flex": [
+          {
+            "input_cost_per_mil_tokens": 0.05,
+            "output_cost_per_mil_tokens": 0.18,
+            "input_cache_read_cost_per_mil_tokens": 0.025,
+            "endpoints": [
+              "primeintellect/flex"
+            ]
+          }
+        ],
+        "priority": {
+          "alias": "fast"
+        },
+        "fast": [
+          {
+            "input_cost_per_mil_tokens": 0.2,
+            "output_cost_per_mil_tokens": 0.72,
+            "input_cache_read_cost_per_mil_tokens": 0.1,
+            "endpoints": [
+              "primeintellect/fast"
+            ]
+          }
+        ]
+      }
+    },
     "providers": {
       "openrouter": {
         "max_input_tokens": 131072,

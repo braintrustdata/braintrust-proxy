@@ -659,7 +659,7 @@ export const AvailableEndpointTypes: { [name: string]: ModelEndpointType[] } = {
   "qwen/qwen3-30b-a3b-instruct-2507": ["openrouter"],
   "z-ai/glm-4.5": ["openrouter"],
   "z-ai/glm-4.5-air": ["openrouter"],
-  "qwen/qwen3-235b-a22b-thinking-2507": ["openrouter"],
+  "qwen/qwen3-235b-a22b-thinking-2507": [],
   "qwen/qwen3-coder": ["openrouter"],
   "bytedance/ui-tars-1.5-7b": ["openrouter"],
   "qwen/qwen3-235b-a22b-2507": ["openrouter"],
